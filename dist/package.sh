@@ -314,7 +314,7 @@ smoke_run() {
   if sh "$here/smoke.sh" "$@" >"$smoke_log" 2>&1; then
     tail -4 "$smoke_log"
   else
-    tail -8 "$smoke_log"
+    cat "$smoke_log"
     rm -f "$smoke_log"
     fail "smoke test failed for $1"
     return 1
