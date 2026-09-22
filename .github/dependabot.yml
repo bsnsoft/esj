@@ -1,0 +1,33 @@
+# Dependabot keeps the dependencies current: one weekly pull request per
+# ecosystem, grouped so that a routine update is one review, not ten.
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      maven:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /bindings/typescript
+    schedule:
+      interval: weekly
+    groups:
+      npm:
+        patterns: ["*"]
+  - package-ecosystem: nuget
+    directory: /bindings/csharp
+    schedule:
+      interval: weekly
+    groups:
+      nuget:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /dist
+    schedule:
+      interval: weekly
