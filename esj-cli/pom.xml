@@ -352,6 +352,8 @@
               module's tests are written by the time it runs.
             -->
             <esj.repository>${project.basedir}/..</esj.repository>
+            <!-- MavenCoordinatesTest holds the coordinates the pages print against this. -->
+            <esj.version>${project.version}</esj.version>
           </systemPropertyVariables>
         </configuration>
       </plugin>
