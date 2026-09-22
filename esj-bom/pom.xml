@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-bom</artifactId>
+  <packaging>pom</packaging>
+
+  <name>EN16931 Semantic JSON :: Bill of materials</name>
+  <description>
+    The versions of every published module of this project, to be imported once so that a
+    build names an artifact without naming a version. The command line tool is not among
+    them: it ships as the archives of a release and not as a library.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-typed</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-xr</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-syntax</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-rules</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-invoice</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-b2c</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-bindings</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-pdf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-render</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bsnsoft.esj</groupId>
+        <artifactId>esj-generator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

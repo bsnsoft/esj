@@ -1,0 +1,73 @@
+name: Publish to Maven Central
+
+# The libraries of a release go to Maven Central from here, and nothing else: the
+# archives of the command line tool are built and attached by release.yml, and the
+# module esj-cli is the one the deployment leaves out.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The tag to publish, for example v0.9.0
+        required: true
+
+# Third-party actions are pinned to a commit. Nothing here writes the repository.
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Deploy the libraries to Maven Central
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.event.release.tag_name }}
+
+      # The libraries are compiled for release 17 and run from Java 17 up; the
+      # deployment is built once, on the everyday JDK of this project. setup-java
+      # writes the settings.xml the publishing plugin reads its credentials from
+      # and imports the signing key into the keyring of the runner.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: '21'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      # A deployment cannot be taken back, so the version is read before anything is
+      # built: a snapshot is never published, and the tag has to name the version the
+      # POM carries.
+      - name: Refuse anything but the released version
+        run: |
+          version=$(mvn -B -q -DforceStdout -Dexpression=project.version \
+              org.apache.maven.plugins:maven-help-plugin:3.5.2:evaluate)
+          tag='${{ inputs.tag || github.event.release.tag_name }}'
+          echo "version $version, tag $tag"
+          case "$version" in
+            *-SNAPSHOT)
+              echo "::error::$version is a snapshot; nothing is published"
+              exit 1
+              ;;
+          esac
+          if [ "$tag" != "v$version" ]; then
+            echo "::error::tag $tag does not name version $version"
+            exit 1
+          fi
+
+      # No tests here: ci.yml runs every test of this commit on JDK 17, 21 and 25,
+      # and a second run would not test the deployed artefacts any further. The
+      # release profile signs every file and hands the reactor to the Portal as one
+      # deployment, which is validated and published or rejected as a whole.
+      - name: Deploy
+        run: mvn -B -Prelease -DskipTests deploy
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

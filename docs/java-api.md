@@ -10,8 +10,8 @@ they do not. `SPEC.md` is the normative specification of the format.
 The format needs no library: `SPEC.md` is normative and complete, `schema/esj.schema.json` covers
 most of layer L1 for any JSON Schema 2020-12 validator, `model/en16931/2017.json` carries the
 registry L2 and L3 check against, and every document in `examples/` has a canonical twin. Every
-module is built for Java 17 and depends on `esj-core`; nothing is published to a repository yet
-(see **Building from source** below).
+module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Maven Central; until
+that release, **Building from source** below.
 
 | Artefact | What it adds | What it pulls in |
 |---|---|---|
@@ -27,13 +27,23 @@ module is built for Java 17 and depends on `esj-core`; nothing is published to a
 | `esj-render` | the XR export, the HTML page and the PDF/A-3b rendering, plain or on a template | `esj-xr`, PDFBox, ZXing |
 | `esj-generator` | generates the sources of `esj-typed` and the per-term schema, under `-Pgenerate` | — |
 | `esj-cli` | the `esj` command line tool | every module above but `esj-invoice`, picocli |
+| `esj-bom` | the version of every module above but `esj-cli`, which is not published | — |
+
+Import the bill of materials once, then name a module of the table as a dependency without a
+version of its own; `esj-cli` is the tool and is on no repository ([`releasing.md`](releasing.md)).
 
 ```xml
-<dependency>
-  <groupId>de.bsnsoft.esj</groupId>
-  <artifactId>esj-core</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
-</dependency>
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-bom</artifactId>
+      <version>0.9.0</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
 ```
 
 The public API lives in eight packages of `esj-core` — `de.bsnsoft.esj` for paths,
@@ -884,7 +894,7 @@ A reader needs none, so a document of an edition without one is read, canonicali
 the model layers report `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` 9.2). The extension registry is
 versioned by the specification it describes, `XRechnung 3.0.2`.
 
-The **artifact version** is the Maven version of the eleven modules, which share it. It says
-nothing about the format, and nothing is published to a repository yet. All three are constants in
-`de.bsnsoft.esj.Esj` where a program needs them: `FORMAT`, `VERSION`, `SEMANTIC_MODEL`,
-`MEDIA_TYPE` and `FILE_EXTENSION`.
+The **artifact version** is the Maven version every module shares; it says nothing about the
+format. From 0.9.0 the libraries are published under `de.bsnsoft.esj` on Maven Central
+([`releasing.md`](releasing.md)). All three are constants in `de.bsnsoft.esj.Esj` where a program
+needs them: `FORMAT`, `VERSION`, `SEMANTIC_MODEL`, `MEDIA_TYPE` and `FILE_EXTENSION`.

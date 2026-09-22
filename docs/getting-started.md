@@ -7,9 +7,9 @@ test that runs the commands.
 
 ## Build it
 
-Nothing is published to Maven Central or to any other repository yet, so the modules are built
-from source. A JDK 17, 21 or 25 and Maven 3.9 or newer; the compiler targets release 17, so
-what it builds runs on Java 17 and later.
+Nothing is on Maven Central until 0.9.0 is released ([`releasing.md`](releasing.md)), so the
+modules are built from source. A JDK 17, 21 or 25 and Maven 3.9 or newer; the compiler targets
+release 17, so what it builds runs on Java 17 and later.
 
 ```text
 mvn -B verify

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         child.project.url.inherit.append.path="false">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>de.bsnsoft.esj</groupId>
@@ -16,9 +17,12 @@
     term identifiers, and its semantic data type comes from the term registry.
   </description>
   <!--
-    No url and no scm element: the project has no public home yet, and a placeholder
-    would travel into the source jar and from there into a repository.
+    Four attributes, one on the project element above and three on the scm element below,
+    keep the url and the scm of a module the url and the scm of this repository: without
+    them Maven appends the directory of the module to what it inherits, and every
+    published module would name a place that does not exist.
   -->
+  <url>https://github.com/bsnsoft/esj</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>
@@ -35,8 +39,10 @@
 
   <developers>
     <developer>
+      <id>cbuerckert</id>
       <name>Christian Bürckert</name>
       <organization>BSNSoft Solutions GmbH</organization>
+      <organizationUrl>https://bsnsoft.de</organizationUrl>
       <roles>
         <role>author</role>
       </roles>
@@ -56,12 +62,28 @@
     <module>esj-pdf</module>
     <module>esj-render</module>
     <module>esj-cli</module>
+    <module>esj-bom</module>
   </modules>
+
+  <scm child.scm.connection.inherit.append.path="false"
+       child.scm.developerConnection.inherit.append.path="false"
+       child.scm.url.inherit.append.path="false">
+    <connection>scm:git:https://github.com/bsnsoft/esj.git</connection>
+    <developerConnection>scm:git:git@github.com:bsnsoft/esj.git</developerConnection>
+    <url>https://github.com/bsnsoft/esj</url>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!--
+      Reproducible builds: every archive entry carries this timestamp instead of the
+      moment of the build, so two builds of one commit write the same bytes. It is set
+      to the date of the release being prepared (docs/releasing.md).
+    -->
+    <project.build.outputTimestamp>2026-09-22T00:00:00Z</project.build.outputTimestamp>
 
     <jackson.version>2.22.2</jackson.version>
     <picocli.version>4.7.6</picocli.version>
@@ -80,6 +102,9 @@
     <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
     <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
+    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
 
     <!--
       The files of EN 16931-1:2026 are separable: model/en16931/2026.paths lists the
@@ -277,6 +302,16 @@
           <artifactId>maven-source-plugin</artifactId>
           <version>${maven-source-plugin.version}</version>
         </plugin>
+        <!--
+          No build uses it; it is named here so that the one command that sets the version
+          of every module, in docs/releasing.md, runs a version this project chose rather
+          than whichever one is newest on the day of a release.
+        -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>${versions-maven-plugin.version}</version>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
@@ -339,6 +374,74 @@
   </build>
 
   <profiles>
+    <profile>
+      <!--
+        What a release adds to the everyday build: a signature beside every file, and the
+        upload of the reactor to the Central Portal as one deployment. The source and the
+        Javadoc jar are not in here. Every build writes them, because the Javadoc run is
+        one of this project's gates — it fails on a warning — and a gate a release is the
+        first to run is no gate.
+      -->
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven-gpg-plugin.version}</version>
+            <configuration>
+              <!--
+                The passphrase is read from the environment variable MAVEN_GPG_PASSPHRASE
+                and from nowhere else: bestPractices refuses one that stands in a file or on
+                the command line. The signer calls gpg in batch mode, without a terminal and
+                with the loopback pinentry, so an unattended build needs no further argument;
+                the key it signs with is the one secret key of the keyring the build imported.
+              -->
+              <bestPractices>true</bestPractices>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${central-publishing-maven-plugin.version}</version>
+            <!--
+              An extension, because it takes the deploy phase away from maven-deploy-plugin:
+              the whole reactor travels as one bundle to the Portal, which validates it and
+              publishes it or rejects it as a whole.
+            -->
+            <extensions>true</extensions>
+            <configuration>
+              <!-- The credentials are the Portal user token, under this id in settings.xml. -->
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+              <waitUntil>validated</waitUntil>
+              <!-- What the deployment is called on the Portal. Not the artifact id of a
+                   module: the goal runs once for the whole reactor, in the module that
+                   happens to be last. -->
+              <deploymentName>EN16931 Semantic JSON ${project.version}</deploymentName>
+              <!--
+                esj-cli is the command line tool, and it ships as the archives of a GitHub
+                release rather than as a library (docs/install.md). It is built here like
+                every other module and is the one module the deployment leaves out.
+              -->
+              <excludeArtifacts>
+                <excludeArtifact>esj-cli</excludeArtifact>
+              </excludeArtifacts>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <profile>
       <!--
         Builds ESJ without the files of EN 16931-1:2026. Whether a registry of that

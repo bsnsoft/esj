@@ -73,8 +73,10 @@ dist/out/esj-<version>-native-<os>-<arch>/esj validate invoice.xml
 ```
 
 `bin/esj` runs the jar unpackaged; the transcripts here and under `docs/` write `esj` for that
-script with `bin/` on the `PATH`, [`docs/install.md`](docs/install.md) has what each artefact needs,
-and `mvn -B install` installs `de.bsnsoft.esj:esj-core:0.9.0-SNAPSHOT` and its siblings.
+script with `bin/` on the `PATH`, and [`docs/install.md`](docs/install.md) has what each artefact
+needs. From 0.9.0 the libraries come from Maven Central: `de.bsnsoft.esj:esj-bom` imported once,
+then a module by name ([`docs/java-api.md`](docs/java-api.md)). Until that release `mvn -B install`
+installs `de.bsnsoft.esj:esj-core:0.9.0-SNAPSHOT` and its siblings.
 
 ```console
 $ esj validate conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -209,6 +211,7 @@ released yet.
 - [`docs/legal-de.md`](docs/legal-de.md) — § 14 UStG and the interoperability wording
 - [`docs/sources.md`](docs/sources.md) — every source, its licence and its digest
 - [`model/README.md`](model/README.md) — how each column of every registry was derived
+- [`docs/releasing.md`](docs/releasing.md) — how a version is cut, and where it goes
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — what a useful contribution looks like
 
 ## License

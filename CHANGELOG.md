@@ -97,6 +97,9 @@ First version. What it carries is the "Works today" list of the README.
   accepts is not called invalid here.
 - Packaging: a native executable, a Java 25 runtime image, a self-contained jar, a container
   image, and the release archives with their checksums.
+- The libraries on Maven Central under `de.bsnsoft.esj`, each with its source and Javadoc jar and
+  a signature, and `esj-bom` so that a build names a module without a version. The command line
+  tool stays a release asset ([`docs/releasing.md`](docs/releasing.md)).
 - The fixture manifest ([`conformance/fixtures/`](conformance/fixtures/README.md)): every case an
   implementation of the format has to pass, written in no programming language, generated from the
   reference implementation and held to it on every build, with a runner that drives an
