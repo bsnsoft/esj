@@ -99,9 +99,12 @@ esj_no_build_paths() {
 esj_runtime_libraries() {
   target=$1
   graal=$2
+  # What each platform's GraalVM ships beside libjvm: on macOS the AWT stack
+  # brings its own FreeType and the image library, on Linux they are part of
+  # libawt or come from the system, and the X11 half of AWT is a file of its own.
   case $(uname -s) in
     Darwin) ext=dylib; names="awt awt_lwawt fontmanager freetype java javajpeg lcms mlib_image osxapp" ;;
-    Linux)  ext=so;    names="awt awt_headless fontmanager freetype java javajpeg lcms mlib_image" ;;
+    Linux)  ext=so;    names="awt awt_headless awt_xawt fontmanager java javajpeg lcms" ;;
     *) echo "checks.sh: no list of runtime libraries for $(uname -s)" >&2; return 1 ;;
   esac
   missing=
@@ -116,6 +119,14 @@ esj_runtime_libraries() {
       else
         missing="$missing $file"
       fi
+    fi
+  done
+  # Libraries a GraalVM may ship in addition: taken along where they exist, never required.
+  for name in freetype mlib_image; do
+    file="lib$name.$ext"
+    if [ ! -f "$target/$file" ] && [ -f "$graal/lib/$file" ]; then
+      cp "$graal/lib/$file" "$target/$file"
+      echo "checks.sh: $file copied from the GraalVM that built the image"
     fi
   done
   if [ -n "$missing" ]; then
