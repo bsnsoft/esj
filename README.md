@@ -1,9 +1,9 @@
 # EN16931 Semantic JSON
 
 [![CI](https://github.com/bsnsoft/esj/actions/workflows/ci.yml/badge.svg)](https://github.com/bsnsoft/esj/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/bsnsoft/esj?label=release)](https://github.com/bsnsoft/esj/releases)
+[![Release](https://img.shields.io/github/v/release/bsnsoft/esj?label=release&color=blue)](https://github.com/bsnsoft/esj/releases)
 [![Maven Central](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fde%2Fbsnsoft%2Fesj%2Fesj-bom%2Fmaven-metadata.xml&label=Maven%20Central&color=blue)](https://central.sonatype.com/artifact/de.bsnsoft.esj/esj-bom)
-[![Homebrew](https://img.shields.io/badge/homebrew-bsnsoft%2Ftap%2Fesj-orange)](https://github.com/bsnsoft/homebrew-tap)
+[![Homebrew](https://img.shields.io/badge/homebrew-bsnsoft%2Ftap%2Fesj-blue)](https://github.com/bsnsoft/homebrew-tap)
 [![License](https://img.shields.io/github/license/bsnsoft/esj)](LICENSE)
 
 **ESJ is the missing application format for EN 16931.** EN 16931 defines the invoice; ESJ makes it
