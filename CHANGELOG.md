@@ -12,7 +12,10 @@ still change; a change to it is named here under *Format*.
   libraries of the Java runtime that a rendering loads (`Can't load library: awt`). The packaging
   now copies them from the GraalVM that built the image where `native-image` leaves them out and
   fails the build where any is missing; a smoke test whose cases differ from the jar fails the
-  build again instead of being lost in a pipe.
+  build again instead of being lost in a pipe. The GraalVM build the executables are made with is
+  now pinned by release and SHA-256 (`dist/graalvm.sh`): the 25.0.x line of the community builds,
+  which the release runner had picked, produces a macOS image that cannot load `libawt` even with
+  the libraries beside it; the 25.3 line does.
 
 ## [0.9.0] — 2026-09-22
 

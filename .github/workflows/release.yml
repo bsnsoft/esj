@@ -34,13 +34,8 @@ jobs:
       # executable and nothing else; the reference run and the runtime image
       # come from a standard JDK 25 (a runtime image linked from GraalVM
       # carries the JVMCI module the ahead-of-time cache does not expect).
-      - name: Set up GraalVM 25 (native executable only)
-        uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1.6.6
-        with:
-          distribution: graalvm-community
-          java-version: '25'
-      - name: Keep GraalVM aside
-        run: echo "ESJ_GRAALVM_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+      - name: Set up the pinned GraalVM build (native executable only)
+        run: echo "ESJ_GRAALVM_HOME=$(sh dist/graalvm.sh "$RUNNER_TEMP/graalvm")" >> "$GITHUB_ENV"
 
       - name: Set up JDK 25 (reference runtime, runtime image)
         uses: actions/setup-java@v4

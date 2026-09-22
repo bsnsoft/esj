@@ -102,7 +102,7 @@ $ dist/package.sh native smoke        # one of them, and the comparison with the
 |---|---|---|
 | `jar` | `esj-cli/target/esj.jar` | JDK 17 or newer |
 | `runtime-image` | a runtime image with the cache | JDK 25 (`ESJ_JDK25_HOME`) |
-| `native` | the executable of this machine | GraalVM 25 (`ESJ_GRAALVM_HOME`) |
+| `native` | the executable of this machine | GraalVM 25 (`ESJ_GRAALVM_HOME`; `dist/graalvm.sh <dir>` fetches the pinned build the releases use) |
 | `linux-native` | the Linux executable | Docker |
 | `docker` | the container image | Docker |
 | `zip` | the archives of a release | `zip` |
