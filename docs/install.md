@@ -2,7 +2,9 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-Four artefacts, one tool: each of them answers exactly as the self-contained jar does, which
+`brew install bsnsoft/tap/esj` installs the native executable on macOS (Apple silicon) and Linux;
+every artefact below is attached to the [release](https://github.com/bsnsoft/esj/releases) with
+its SHA-256. Four artefacts, one tool: each of them answers exactly as the self-contained jar does, which
 `dist/smoke.sh` checks by running every command of the tool with both and comparing what they
 write, the verdict they reach and the code they leave with.
 

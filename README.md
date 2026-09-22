@@ -1,5 +1,11 @@
 # EN16931 Semantic JSON
 
+[![CI](https://github.com/bsnsoft/esj/actions/workflows/ci.yml/badge.svg)](https://github.com/bsnsoft/esj/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/bsnsoft/esj?label=release)](https://github.com/bsnsoft/esj/releases)
+[![Maven Central](https://img.shields.io/maven-central/v/de.bsnsoft.esj/esj-bom?label=Maven%20Central)](https://central.sonatype.com/artifact/de.bsnsoft.esj/esj-bom)
+[![Homebrew](https://img.shields.io/badge/homebrew-bsnsoft%2Ftap%2Fesj-orange)](https://github.com/bsnsoft/homebrew-tap)
+[![License](https://img.shields.io/github/license/bsnsoft/esj)](LICENSE)
+
 **ESJ is the missing application format for EN 16931.** EN 16931 defines the invoice; ESJ makes it
 directly usable by software: a flat JSON map keyed by the standard's business terms —
 `"/BT-1": "RE-2026-4711"`, `"/BG-25/0/BT-131": "84.03"`. UBL and CII stay transport bindings; the
@@ -64,7 +70,10 @@ often and of what type are facts of one registry per edition ([`model/README.md`
 
 ## Quick start
 
-No Maven Central release yet, and none to download; three lines build an executable needing no Java:
+`brew install bsnsoft/tap/esj` on macOS and Linux, or an archive of the
+[release](https://github.com/bsnsoft/esj/releases): a native executable needing no Java, a Java 25
+runtime image, or the jar ([`docs/install.md`](docs/install.md)). From source, three lines build
+the same executable:
 
 ```sh
 mvn -B verify                                 # the self-contained jar, on JDK 17, 21 or 25
