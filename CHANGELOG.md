@@ -4,7 +4,7 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). Until 1.0 the format itself may
 still change; a change to it is named here under *Format*.
 
-## [0.9.0] — unreleased
+## [0.9.0] — 2026-09-22
 
 First version. What it carries is the "Works today" list of the README.
 

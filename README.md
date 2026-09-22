@@ -75,8 +75,8 @@ dist/out/esj-<version>-native-<os>-<arch>/esj validate invoice.xml
 `bin/esj` runs the jar unpackaged; the transcripts here and under `docs/` write `esj` for that
 script with `bin/` on the `PATH`, and [`docs/install.md`](docs/install.md) has what each artefact
 needs. From 0.9.0 the libraries come from Maven Central: `de.bsnsoft.esj:esj-bom` imported once,
-then a module by name ([`docs/java-api.md`](docs/java-api.md)). Until that release `mvn -B install`
-installs `de.bsnsoft.esj:esj-core:0.9.0-SNAPSHOT` and its siblings.
+then a module by name ([`docs/java-api.md`](docs/java-api.md)); `mvn -B install` builds
+`de.bsnsoft.esj:esj-core:0.9.0` and its siblings from source.
 
 ```console
 $ esj validate conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -179,8 +179,7 @@ container image ([`docs/install.md`](docs/install.md)). Where a build carries it
 16931-1:2026 stands beside the default 2017 edition, with `esj upgrade` between the two
 ([`docs/editions.md`](docs/editions.md)). Beside the Java library, a TypeScript and a C#
 implementation of the format, measured by the shared fixture manifest. Changes:
-[`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.md`](SECURITY.md). 0.9.0 is not
-released yet.
+[`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.md`](SECURITY.md).
 
 ## Documentation
 

@@ -10,8 +10,8 @@ they do not. `SPEC.md` is the normative specification of the format.
 The format needs no library: `SPEC.md` is normative and complete, `schema/esj.schema.json` covers
 most of layer L1 for any JSON Schema 2020-12 validator, `model/en16931/2017.json` carries the
 registry L2 and L3 check against, and every document in `examples/` has a canonical twin. Every
-module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Maven Central; until
-that release, **Building from source** below.
+module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Maven Central;
+**Building from source** below builds the tree itself.
 
 | Artefact | What it adds | What it pulls in |
 |---|---|---|
@@ -882,7 +882,7 @@ when a generated file differs.
 |---|---|---|
 | format version | the `version` member of every document, `SPEC.md` | `0.1` |
 | semantic model edition | the `semanticModel` member of every document, the `edition` member of the registry | `EN16931-1:2017+A1:2019/AC:2020`, `EN16931-1:2026` |
-| artifact version | `pom.xml` | `0.9.0-SNAPSHOT` |
+| artifact version | `pom.xml` | `0.9.0` |
 
 The **format version** is the version of `SPEC.md`, not of the semantic model. It follows
 `MAJOR.MINOR`, and until 1.0 any version may change the format in incompatible ways. A reader

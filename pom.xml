@@ -7,7 +7,7 @@
 
   <groupId>de.bsnsoft.esj</groupId>
   <artifactId>en16931-semantic-json</artifactId>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.0</version>
   <packaging>pom</packaging>
 
   <name>EN16931 Semantic JSON</name>
