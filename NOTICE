@@ -40,10 +40,13 @@ that is shipped. The text of that edition is not available free of charge: it wa
 obtained as a copy bought from a national standards body, it is not redistributed
 here, and no prose of it is reproduced. The licence agreement named above is
 documented for the 2017 version of the standard and is to be renegotiated on
-revision, so this project claims no CEN permission for the 2026 edition and
-answers that question before publishing the files that carry its facts. CEN and
-the national standards bodies give no warranty for this implementation, and where
-this project and the standard disagree, the standard governs.
+revision, so this project claims no CEN permission for the 2026 edition. The
+publisher of this project decided to distribute those files as what they are:
+the identifiers, cardinalities and data types an implementation needs in order
+to run, in this project's own words, with no text of the standard and none of
+its processes. CEN and the national standards bodies give no warranty for this
+implementation, and where this project and the standard disagree, the standard
+governs.
 
 --------------------------------------------------------------------------------
 Third-party attribution

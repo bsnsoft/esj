@@ -91,8 +91,11 @@ two documents are two statements about two different models.
 
 ## Separability
 
-Whether a registry derived from the 2026 edition may be published is not settled, so the files
-that carry facts of that edition are separable from the rest. `model/en16931/2026.paths` lists
+The registry of the 2026 edition carries the facts an implementation needs, in this project's
+words and without the standard's text; no official validation artefact and no public syntax
+binding exist for that edition yet, and whether the licence agreement between the European
+Commission and CEN extends to it has not been published (`NOTICE`). The files that carry facts
+of that edition are therefore separable from the rest, for a build that wants none of them. `model/en16931/2026.paths` lists
 every one of them — the registry, the generated schema, the generated typed view, the upgrade
 mapping, the examples, the fixtures, the manifest part of `conformance/fixtures/` and the
 generated view of the C# binding — and the Maven profile leaves them out:
