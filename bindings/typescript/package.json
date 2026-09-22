@@ -1,0 +1,47 @@
+{
+  "name": "en16931-semantic-json",
+  "version": "0.9.0",
+  "description": "EN16931 Semantic JSON: reader, canonical form, digests, validator and rule engine for the path-addressed JSON binding of the EN 16931 semantic invoice model.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/data.d.ts",
+      "import": "./dist/node/data.js"
+    },
+    "./generated/*": {
+      "types": "./dist/generated/*.d.ts",
+      "import": "./dist/generated/*.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  },
+  "scripts": {
+    "sync": "node scripts/sync-data.mjs",
+    "generate": "node scripts/generate-typed.ts",
+    "prebuild": "npm run sync && npm run generate",
+    "build": "tsc -p tsconfig.json",
+    "pretest": "npm run sync && npm run generate",
+    "test": "node --test test/*.test.ts",
+    "fixtures": "python3 ../../conformance/fixtures/run.py --binding node tools/fixture-binding.ts"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "listId": "untdid-2005",
+  "name": "UNTDID 2005 date or time or period function code qualifier, as admitted by EN 16931",
+  "publisher": "UN/CEFACT (UNTDID), listed for EN 16931 by the European Commission",
+  "source": "https://ec.europa.eu/digital-building-blocks/sites/download/attachments/467108974/EN16931%20code%20lists%20values%20v17b%20-%20used%20from%202026-05-15.xlsx , sheet \"Time\"",
+  "retrieved": "2026-09-19",
+  "terms": "The page states no licence. It is the European Commission's publication of which codes of each list the European eInvoicing standard admits, offered for implementation of EN 16931; the workbook itself says that it lists codes and does not replace the publication of each list by its own publisher. Reuse of Commission documents is generally governed by Decision 2011/833/EU, which the page does not cite. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "3",
+      "name": "Invoice document issue date time"
+    },
+    {
+      "value": "35",
+      "name": "Delivery date/time, actual"
+    },
+    {
+      "value": "432",
+      "name": "Paid to date"
+    }
+  ]
+}

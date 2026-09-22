@@ -1,0 +1,7 @@
+# The build stages copy the repository; what a build produces does not travel
+# back into it, except the one jar the container builds from.
+.git
+dist/out
+conformance/scale/out
+**/target/*
+!esj-cli/target/esj.jar

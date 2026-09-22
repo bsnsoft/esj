@@ -1,0 +1,27 @@
+# Maven
+target/
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+nbproject/private/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Generated measurement instances (conformance/scale/README.md says how to remake them)
+conformance/scale/out/
+
+# Artefacts of dist/package.sh
+dist/out/

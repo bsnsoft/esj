@@ -1,0 +1,63 @@
+{
+  "format": "EN16931-Semantic-JSON-writer-roundtrip",
+  "version": "0.1",
+  "syntax": "CII",
+  "writer": "esj-bindings, CiiWriter",
+  "pack": "xrechnung/3.0.2/2026-08-31",
+  "corpus": {
+    "instances": 86,
+    "fromCii": 41,
+    "fromUbl": 45,
+    "accepted": 85,
+    "refused": 1,
+    "identical": 80,
+    "differing": 6,
+    "differingPaths": 706
+  },
+  "xslt": {
+    "accepted": 85,
+    "identical": 79
+  },
+  "examples": {
+    "count": 10,
+    "structural": 10,
+    "ruleClean": 7,
+    "identical": 10
+  },
+  "exampleRules": {
+    "BR-48": 3,
+    "BR-CO-26": 3,
+    "BR-Z-02": 3,
+    "BR-Z-05": 3
+  },
+  "refusals": [
+    {
+      "rule": "BR-CO-16",
+      "cause": "extension-not-bound",
+      "instances": 1
+    }
+  ],
+  "losses": [
+    {
+      "id": "extension-sub-invoice-lines",
+      "note": "TERM_NOT_BOUND",
+      "pathPattern": "^/BG-25/[0-9]+/BG-DEX-.*$",
+      "instances": 4,
+      "paths": 696
+    },
+    {
+      "id": "extension-terms",
+      "note": "TERM_NOT_BOUND",
+      "pathPattern": "^/BG-DEX-09/[0-9]+/BT-DEX-00[123]$",
+      "instances": 1,
+      "paths": 6
+    },
+    {
+      "id": "preceding-invoice-references",
+      "note": "GROUP_NOT_REPEATABLE",
+      "pathPattern": "^/BG-3/[0-9]+/BT-2[56]$",
+      "instances": 2,
+      "paths": 4
+    }
+  ]
+}

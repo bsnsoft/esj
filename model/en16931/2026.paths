@@ -1,0 +1,42 @@
+# Every file this distribution leaves out when EN 16931-1:2026 is not shipped: the
+# registry, the artefacts generated from it, the upgrade mapping, the examples and the
+# conformance measurements.
+#
+# It is not a list of everywhere the edition is mentioned. Prose that states facts of it —
+# NOTICE, README.md, SPEC.md with the time grammar, CHANGELOG.md, model/README.md,
+# examples/README.md, examples/invalid/README.md, docs/editions.md, docs/sources.md,
+# docs/design-decisions.md and docs/java-api.md — is not separable and is not listed: the
+# open question is whether a registry built from that edition may be published, not whether
+# an identifier, a count or a grammar may be written down. NOTICE is among them because it
+# states this project's legal position rather than shipping a fact of the model, and the
+# paragraph it gives that edition says of itself that it describes a distribution which
+# carries the registry. Nor is the machinery listed. The reader, the registry loader, the
+# generator, the upgrade engine and the command line work with whatever registries are
+# present, and the edition is data they load rather than code they contain.
+#
+# Remove the paths below and the build still passes. The Maven profile
+# without-edition-2026 leaves them out of the artefacts, and
+# bin/without-edition-2026.sh assembles a copy of the tree without the files at all
+# and builds it, so the claim is checked rather than asserted.
+#
+# One path per line; a path that names a directory covers everything under it. A
+# line starting with # is a comment, and a blank line is ignored. Where this tree
+# carries the edition, every path listed here has to be there, and every file that
+# carries the edition and is not one of the prose pages named above has to be covered
+# by one of them: Edition2026PathsTest of esj-generator checks the list against the
+# repository in both directions. It reads every file of the tree that is not binary,
+# whatever its name, and a file carries the edition when it names that edition or when it
+# names a business term or group the 2026 registry adds over the 2017 one. A later phase
+# that adds the rule pack of this edition adds its path here.
+
+model/en16931/2026.json
+model/en16931/upgrade-2017-2026.json
+schema/esj-en16931-2026.schema.json
+esj-typed/src/main/java/de/bsnsoft/esj/typed/v2026
+esj-typed/src/test/java/de/bsnsoft/esj/typed/v2026
+examples/edition-2026.esj.json
+examples/edition-2026.canonical.esj.json
+examples/invalid/edition-2026-time-without-offset.esj.json
+conformance/editions
+conformance/fixtures/manifest-en16931-2026.json
+bindings/csharp/En16931.SemanticJson/Typed/Invoice2026.cs

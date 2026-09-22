@@ -1,0 +1,1984 @@
+{
+  "pack": "xrechnung/3.0.2/2026-08-31",
+  "namespaces": {
+    "ubl": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
+    "cn": "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
+    "cac": "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
+    "cbc": "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
+    "rsm": "urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100",
+    "ram": "urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100",
+    "udt": "urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100",
+    "qdt": "urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
+  },
+  "mutations": [
+    {
+      "id": "xsd-ubl-missing-invoice-number",
+      "category": "UBL-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The invoice number is removed, which the UBL Invoice schema requires.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cbc:ID"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.4.a",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-ubl-amount-not-a-number",
+      "category": "UBL-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "An amount is given as text, which the schema types as a decimal.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount",
+          "value": "dreihundert"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.2",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          },
+          {
+            "code": "cvc-datatype-valid.1.2.1",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-ubl-date-not-a-date",
+      "category": "UBL-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The issue date names a month and a day that do not exist.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cbc:IssueDate",
+          "value": "2016-13-45"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.2",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          },
+          {
+            "code": "cvc-datatype-valid.1.2.1",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-ubl-unknown-element",
+      "category": "UBL-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "An element of no schema module is put into the invoice.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/ubl:Invoice/cbc:ID",
+          "value": "<cbc:Unheardof>x</cbc:Unheardof>"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.4.a",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-ubl-element-out-of-order",
+      "category": "UBL-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The document currency code is repeated after the buyer reference, where the sequence of the schema does not allow it.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/ubl:Invoice/cbc:BuyerReference",
+          "value": "<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.4.a",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-cii-missing-issue-date",
+      "category": "CII-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The issue date of the document is removed, which the CII schema requires.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:IssueDateTime"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.4.a",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "CII-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-cii-amount-not-a-number",
+      "category": "CII-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "A monetary total is given as text.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:GrandTotalAmount",
+          "value": "dreihundert"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.2",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "CII-XSD"
+          },
+          {
+            "code": "cvc-datatype-valid.1.2.1",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "CII-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-cii-unknown-element",
+      "category": "CII-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "An element of no schema module is put into the exchanged document.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:ID",
+          "value": "<ram:Unheardof>x</ram:Unheardof>"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.4.a",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "CII-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-10-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The sum of the line net amounts is raised by a cent.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:LineExtensionAmount",
+          "value": "314.87"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-10",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-13",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-13-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The invoice total without VAT no longer follows from the lines.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount",
+          "value": "315.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-13",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-15",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-15-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The invoice total with VAT is not the total without VAT plus the VAT.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount",
+          "value": "340.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-15",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-16",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-16-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The amount due for payment does not follow from the total with VAT.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount",
+          "value": "400.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-16",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-14-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The VAT total is not the sum of the VAT category amounts.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal/cbc:TaxAmount",
+          "value": "30.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-14",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-15",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-s-08-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The VAT amount of the standard-rate category does not follow from its taxable amount and its rate.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxAmount",
+          "value": "30.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-14",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-17",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-S-09",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-s-09-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The taxable amount of the standard-rate category is not the sum of the lines of that category.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxableAmount",
+          "value": "300.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-17",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-S-08",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-S-09",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-06-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The seller name is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-06",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-07-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The buyer name is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-07",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          },
+          {
+            "code": "PEPPOL-EN16931-R008",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xsd-ubl-no-invoice-line",
+      "category": "UBL-XSD",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "Every invoice line is removed. EN 16931 asks for at least one, and the UBL schema asks for it first, so no rule set runs at all.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "cvc-complex-type.2.4.b",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-XSD"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-05-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The document currency code is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cbc:DocumentCurrencyCode"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-05",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-25-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The name of the item of a line is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Item/cbc:Name"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-25",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-26-ubl",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The net price of the item of a line is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Price"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-26",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-27",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          },
+          {
+            "code": "PEPPOL-EN16931-R120",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-10-cii",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The sum of the line net amounts is raised by a cent.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:LineTotalAmount",
+          "value": "314.87"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-10",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-13",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-16-cii",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The amount due for payment does not follow from the total with VAT.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:DuePayableAmount",
+          "value": "400.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-16",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-06-cii",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The seller name is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-06",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-16-cii",
+      "category": "EN-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "Every invoice line is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-16",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-10",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-S-08",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-dec-line-net-amount-ubl",
+      "category": "EN-DEC",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "A line net amount is given with four fraction digits.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cbc:LineExtensionAmount",
+          "value": "288.7900"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DEC-23",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-DEC"
+          },
+          {
+            "code": "UBL-DT-01",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-dec-invoice-total-ubl",
+      "category": "EN-DEC",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The invoice total with VAT is given with three fraction digits.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount",
+          "value": "336.900"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DEC-14",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-DEC"
+          },
+          {
+            "code": "UBL-DT-01",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ubl-binding-vat-total-decimals",
+      "category": "UBL-BINDING",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The VAT total is given with three fraction digits. It is the data type rule of the UBL binding that objects, before any decimal rule of the standard does.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal/cbc:TaxAmount",
+          "value": "22.040"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "UBL-DT-01",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-dec-taxable-amount-ubl",
+      "category": "EN-DEC",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The taxable amount of a VAT category is given with three fraction digits.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxableAmount",
+          "value": "314.860"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DEC-19",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-DEC"
+          },
+          {
+            "code": "UBL-DT-01",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-dec-line-net-amount-cii",
+      "category": "EN-DEC",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "A line net amount is given with four fraction digits.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem[1]/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount",
+          "value": "288.7900"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DEC-23",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-DEC"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-currency-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The document currency is spelled out rather than coded.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cbc:DocumentCurrencyCode",
+          "value": "EURO"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-15",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CL-04",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-country-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The seller country is given in three letters.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode",
+          "value": "DEU"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-14",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-endpoint-scheme-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The seller electronic address uses a scheme identifier of no published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID",
+          "value": "XR01"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-25",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-item-classification-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The item classification uses a scheme identifier of no published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID",
+          "value": "CVD"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-13",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-payment-means-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The payment means code is not one of the published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:PaymentMeans/cbc:PaymentMeansCode",
+          "value": "999"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-16",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-unit-code-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The unit of measure of a line is not one of the published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cbc:InvoicedQuantity/@unitCode",
+          "value": "ZZZ"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "BR-CL-23",
+            "severity": "warning",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-invoice-type-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The invoice type code is not one of the published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cbc:InvoiceTypeCode",
+          "value": "999"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-01",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-17",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-vat-category-ubl",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The VAT category code of a line is not one of the published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Item/cac:ClassifiedTaxCategory/cbc:ID",
+          "value": "Q"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-S-08",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CL-18",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-country-cii",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The seller country is given in three letters.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:CountryID",
+          "value": "DEU"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-14",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-unit-code-cii",
+      "category": "EN-CL",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The unit of measure of a line is not one of the published list.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem[1]/ram:SpecifiedLineTradeDelivery/ram:BilledQuantity/@unitCode",
+          "value": "ZZZ"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "BR-CL-23",
+            "severity": "warning",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-buyer-reference-ubl",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The buyer reference is removed, which EN 16931 allows and the German specification does not.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cbc:BuyerReference"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DE-15",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-seller-contact-ubl",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The seller contact is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DE-2",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-seller-city-ubl",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The city of the seller postal address is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DE-3",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-seller-mail-ubl",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The electronic mail address of the seller contact is not an address.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ElectronicMail",
+          "value": "seller at email de"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "BR-DE-28",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-payment-account-ubl",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The payment account identifier is removed from a credit transfer.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-50",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-61",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-DE-19",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          },
+          {
+            "code": "PEPPOL-EN16931-R008",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-buyer-reference-cii",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The buyer reference is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerReference"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DE-15",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-seller-contact-cii",
+      "category": "XR-BR",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The seller contact is removed.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-DE-2",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ubl-binding-copy-indicator",
+      "category": "UBL-BINDING",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "A copy indicator is added, which the EN 16931 binding to UBL does not map.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/ubl:Invoice/cbc:ID",
+          "value": "<cbc:CopyIndicator>false</cbc:CopyIndicator>"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "UBL-CR-004",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ubl-binding-issue-time",
+      "category": "UBL-BINDING",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "An issue time is added, which the binding does not map.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/ubl:Invoice/cbc:IssueDate",
+          "value": "<cbc:IssueTime>10:00:00</cbc:IssueTime>"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "UBL-CR-006",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ubl-binding-uuid",
+      "category": "UBL-BINDING",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "A document identifier of a second kind is added, which the binding does not map.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/ubl:Invoice/cbc:ID",
+          "value": "<cbc:UUID>6E09886B-DC6E-439F-82D1-7CCAC7F4E3B1</cbc:UUID>"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "UBL-CR-005",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cii-binding-document-name",
+      "category": "CII-BINDING",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "A document name is added, which the EN 16931 binding to CII does not map.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:ID",
+          "value": "<ram:Name>Rechnung</ram:Name>"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "CII-SR-013",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "CII-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cii-binding-language",
+      "category": "CII-BINDING",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "A document language is added, which the binding does not map.",
+      "changes": [
+        {
+          "op": "insert-before",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:IncludedNote",
+          "value": "<ram:LanguageID>de</ram:LanguageID>"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "CII-SR-019",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "CII-BINDING"
+          },
+          {
+            "code": "BR-DE-TMP-32",
+            "severity": "information",
+            "flag": "information",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "profile-unknown-cius-ubl",
+      "category": "PROFILE",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The document names a core invoice usage specification the pack carries no rules for. The EN 16931 artefacts still apply; the rules of the German specification do not.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cbc:CustomizationID",
+          "value": "urn:cen.eu:en16931:2017#compliant#urn:example.org:cius:1.0"
+        }
+      ],
+      "expect": {
+        "verdict": "INDETERMINATE",
+        "findings": [],
+        "profileNote": "no core invoice usage specification of this pack applies to this profile: the EN 16931 artefacts ran, no CIUS rules did"
+      }
+    },
+    {
+      "id": "profile-unknown-entirely-ubl",
+      "category": "PROFILE",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The document names a specification of nothing the pack knows. Only the schema applies.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cbc:CustomizationID",
+          "value": "urn:example.org:own:1"
+        }
+      ],
+      "expect": {
+        "verdict": "INDETERMINATE",
+        "findings": [],
+        "profileNote": "no rule set of this pack applies to this profile: schema validation only"
+      }
+    },
+    {
+      "id": "profile-unknown-cius-cii",
+      "category": "PROFILE",
+      "source": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "note": "The document names a core invoice usage specification the pack carries no rules for.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocumentContext/ram:GuidelineSpecifiedDocumentContextParameter/ram:ID",
+          "value": "urn:cen.eu:en16931:2017#compliant#urn:example.org:cius:1.0"
+        }
+      ],
+      "expect": {
+        "verdict": "INDETERMINATE",
+        "findings": [],
+        "profileNote": "no core invoice usage specification of this pack applies to this profile: the EN 16931 artefacts ran, no CIUS rules did"
+      }
+    },
+    {
+      "id": "profile-plain-en16931-ubl",
+      "category": "PROFILE",
+      "source": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "note": "The document names EN 16931 alone, which is a profile the CEN artefacts apply to and the German rules do not.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cbc:CustomizationID",
+          "value": "urn:cen.eu:en16931:2017"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [],
+        "profileNote": "no core invoice usage specification of this pack applies to this profile: the EN 16931 artefacts ran, no CIUS rules did"
+      }
+    },
+    {
+      "id": "en-cl-endpoint-scheme-ubl-extension",
+      "category": "EN-CL",
+      "source": "business-cases/extension/04.01a-INVOICE_ubl.xml",
+      "note": "The seller electronic address of an extension invoice uses a scheme identifier of no published list. The extension profile levels that rule differently from the standard one.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID/@schemeID",
+          "value": "XR01"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "BR-CL-25",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "UBL-CR-646",
+            "severity": "information",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-16-ubl-extension",
+      "category": "EN-BR",
+      "source": "business-cases/extension/04.01a-INVOICE_ubl.xml",
+      "note": "The amount due for payment of an extension invoice does not follow from the total with VAT.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount",
+          "value": "400.00"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-16",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "UBL-CR-646",
+            "severity": "information",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "BR-DEX-09",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-EXT"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-cl-item-classification-ubl-cvd",
+      "category": "EN-CL",
+      "source": "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
+      "note": "The item classification of a CVD invoice uses a scheme identifier of no published list, which is what the CVD profile is about.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID",
+          "value": "CVD"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-13",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-CL-13",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-CVD-04",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          },
+          {
+            "code": "BR-DE-CVD-06-b",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ubl-binding-copy-indicator-extension",
+      "category": "UBL-BINDING",
+      "source": "business-cases/extension/04.01a-INVOICE_ubl.xml",
+      "note": "A copy indicator is added to an extension invoice, where the profile levels the binding rule differently from the standard profile.",
+      "changes": [
+        {
+          "op": "insert-after",
+          "xpath": "/ubl:Invoice/cbc:ID",
+          "value": "<cbc:CopyIndicator>false</cbc:CopyIndicator>"
+        }
+      ],
+      "expect": {
+        "verdict": "VALID",
+        "findings": [
+          {
+            "code": "UBL-CR-004",
+            "severity": "warning",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          },
+          {
+            "code": "UBL-CR-646",
+            "severity": "information",
+            "flag": "warning",
+            "category": "UBL-BINDING"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-10-ubl-comprehensive",
+      "category": "EN-BR",
+      "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
+      "note": "The sum of the line net amounts of the comprehensive instance is raised by a cent, so that the arithmetic rules meet a document with allowances, charges and several VAT categories.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal/cbc:LineExtensionAmount",
+          "value": "0.01"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-10",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-13",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          }
+        ]
+      }
+    },
+    {
+      "id": "en-br-co-10-cii-comprehensive",
+      "category": "EN-BR",
+      "source": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+      "note": "The sum of the line net amounts of the comprehensive instance is changed.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:LineTotalAmount",
+          "value": "0.01"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CO-10",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "BR-CO-13",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "EN-BR"
+          },
+          {
+            "code": "CII-SR-475",
+            "severity": "information",
+            "flag": "warning",
+            "category": "CII-BINDING"
+          },
+          {
+            "code": "CII-SR-476",
+            "severity": "information",
+            "flag": "warning",
+            "category": "CII-BINDING"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xr-br-seller-contact-cii-extension",
+      "category": "XR-BR",
+      "source": "business-cases/extension/04.05a-INVOICE_uncefact.xml",
+      "note": "The seller contact is removed from an extension invoice.",
+      "changes": [
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact"
+        }
+      ],
+      "expect": {
+        "verdict": "INVALID",
+        "findings": [
+          {
+            "code": "BR-CL-10",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-CL-10",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-CL-10",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-CL-21",
+            "severity": "information",
+            "flag": "fatal",
+            "category": "EN-CL"
+          },
+          {
+            "code": "BR-DE-2",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "XR-BR"
+          }
+        ]
+      }
+    }
+  ]
+}

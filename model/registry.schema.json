@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:bsnsoft.de,2026:esj/model/0.1/registry.schema.json",
+  "title": "EN16931 Semantic JSON term registry",
+  "description": "Format of the ESJ term registry files under model/, for example model/en16931/2017.json, model/en16931/2026.json and model/xrechnung/3.0.2.json. A registry is a header plus a flat array of business terms and business groups in document order. One file describes exactly one edition of one model. It describes structure only; it carries no normative prose from any standard.",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "model",
+    "edition",
+    "license",
+    "notice",
+    "generated",
+    "sourceStatement",
+    "terms"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "description": "Fixed format marker of an ESJ registry file.",
+      "const": "EN16931-Semantic-JSON-registry"
+    },
+    "version": {
+      "description": "Version of the registry file format, not of the described model.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "model": {
+      "description": "Short token naming the described model, for example EN16931-1.",
+      "type": "string",
+      "minLength": 1
+    },
+    "edition": {
+      "description": "Edition of the described model. One registry file describes exactly one edition, and the file name under model/ is the short key of that edition.",
+      "type": "string",
+      "minLength": 1
+    },
+    "imports": {
+      "description": "The models this registry builds on. An extension registry whose terms hang under a parent of another model, or whose groups carry terms of another model through reusesTerms, names that model and the exact edition string of the registry it was written against. A loader refuses a registry whose import does not match the edition of the registry it is combined with. It names the edition of another model and never a version of this registry's own namespace: an extension namespace is permanent, so a published identifier keeps its meaning, its datatype and its structural semantics in every later registry of that namespace, and an incompatible revision takes a new namespace (specification, sections 5.6 and 10).",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/import" }
+    },
+    "transport": {
+      "description": "States that the terms of this registry have no binding in any transport syntax, by design rather than for want of a binding table. Only an extension registry states it, and only where its terms record something about the document that UBL and CII do not carry; a value a writer leaves behind at such a term is then not a loss, and a validator that runs the official artefacts over the written XML may count that check as having run (specification, section 10). Absent from every registry whose terms are bound by a syntax.",
+      "const": "none"
+    },
+    "transportNote": {
+      "description": "Why the terms of this registry are not bound by a syntax, and what carries the invoice instead. Required beside transport; documentation only.",
+      "type": "string",
+      "minLength": 1
+    },
+    "license": {
+      "description": "SPDX identifier of the licence of this file.",
+      "type": "string",
+      "minLength": 1
+    },
+    "notice": {
+      "description": "Attribution and licensing statement for the described standard.",
+      "type": "string",
+      "minLength": 1
+    },
+    "generated": {
+      "description": "Date the file was generated, as YYYY-MM-DD.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "sourceStatement": {
+      "description": "How the content of this file was derived and cross-checked.",
+      "type": "string",
+      "minLength": 1
+    },
+    "terms": {
+      "description": "All business terms and business groups, in the document order of the described model.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/term" }
+    }
+  },
+  "allOf": [
+    {
+      "description": "A registry whose groups carry terms of another model one level deeper builds on that model and names it. A parent identifier that is not defined in the same file has the same consequence; no schema can see that, so a loader checks it (specification, section 10).",
+      "if": {
+        "properties": {
+          "terms": { "contains": { "required": ["reusesTerms"] } }
+        },
+        "required": ["terms"]
+      },
+      "then": { "required": ["imports"] }
+    },
+    {
+      "description": "A registry that declares its terms untransported says why, and is an extension of a model whose own terms do travel: a registry describing a model of its own is the thing a syntax binds.",
+      "if": { "required": ["transport"] },
+      "then": { "required": ["transportNote", "imports"] }
+    }
+  ],
+
+  "$defs": {
+    "import": {
+      "description": "One model this registry builds on, named by its short token and by the exact edition string the imported registry carries.",
+      "type": "object",
+      "required": ["model", "edition"],
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "description": "Short token of the imported model, for example EN16931-1.",
+          "type": "string",
+          "minLength": 1
+        },
+        "edition": {
+          "description": "Edition string of the imported registry, character for character.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "termId": {
+      "description": "A business term or business group identifier: BT-1, BG-25, or an extension identifier carrying a namespace such as BG-DEX-01. An identifier once published in a namespace is permanent: a later registry of that namespace may add identifiers, but may not change what a published one means, which datatype it carries or where it sits (specification, section 5.6).",
+      "type": "string",
+      "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+$"
+    },
+    "cardinalityMin": {
+      "description": "Minimum occurrences relative to the parent group.",
+      "type": "integer",
+      "enum": [0, 1]
+    },
+    "cardinalityMax": {
+      "description": "Maximum occurrences relative to the parent group; \"n\" means unbounded.",
+      "oneOf": [
+        { "type": "integer", "const": 1 },
+        { "type": "string", "const": "n" }
+      ]
+    },
+    "datatype": {
+      "description": "The semantic data type of a business term. Null for business groups.",
+      "type": ["string", "null"],
+      "enum": [
+        "Amount",
+        "UnitPriceAmount",
+        "Quantity",
+        "Percentage",
+        "Code",
+        "Identifier",
+        "DocumentReference",
+        "Date",
+        "Time",
+        "Text",
+        "BinaryObject",
+        null
+      ]
+    },
+    "component": {
+      "description": "A supplementary component of the semantic data type of a business term. Components are not terms of their own and never appear in terms[].",
+      "type": "object",
+      "required": ["id", "role", "name", "min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Component identifier, by convention the term identifier with a suffix.",
+          "type": "string",
+          "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+-[0-9]+$"
+        },
+        "role": {
+          "description": "Which ESJ value member carries this component.",
+          "type": "string",
+          "enum": ["scheme", "schemeVersion", "mimeCode", "filename"]
+        },
+        "name": {
+          "description": "Name of the component in the described model.",
+          "type": "string",
+          "minLength": 1
+        },
+        "schemeList": {
+          "description": "Name of the code list the identification scheme is taken from, without a version. Present where the described model or its validation artefacts fix one; the justification, with the rule identifier, appears in the term's notes. Documentation only: it reaches the Javadoc of the generated accessors, and membership of a code list is a business rule that the structural layers do not check.",
+          "type": "string",
+          "minLength": 1
+        },
+        "min": { "$ref": "#/$defs/cardinalityMin" },
+        "max": { "$ref": "#/$defs/cardinalityMax" }
+      },
+      "allOf": [
+        {
+          "description": "Only an identification scheme is taken from a code list.",
+          "if": { "required": ["schemeList"] },
+          "then": { "properties": { "role": { "const": "scheme" } } }
+        }
+      ]
+    },
+    "term": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "slug",
+        "parent",
+        "path",
+        "depth",
+        "min",
+        "max",
+        "datatype",
+        "components",
+        "order",
+        "description",
+        "notes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/termId" },
+        "kind": {
+          "description": "BT for a business term that carries a value, BG for a business group.",
+          "type": "string",
+          "enum": ["BT", "BG"]
+        },
+        "name": {
+          "description": "Business term name as spelled in the described model.",
+          "type": "string",
+          "minLength": 1
+        },
+        "slug": {
+          "description": "Language-neutral API name stem for code generation: a lowerCamelCase ASCII stem, unique among the children of the same parent. It is not a name in any particular language. A generator applies the naming convention of its target language to the stem and escapes that language's keywords itself. Two editorial rules no schema can check: a semantic concept that appears under more than one group carries the same stem everywhere, and a stem shortened against the term name still names the concept. An ESJ convention, not part of any standard.",
+          "type": "string",
+          "pattern": "^[a-z][A-Za-z0-9]*$"
+        },
+        "parent": {
+          "description": "Identifier of the enclosing group, or null for a term directly under the invoice root.",
+          "oneOf": [{ "$ref": "#/$defs/termId" }, { "type": "null" }]
+        },
+        "path": {
+          "description": "Identifiers from the invoice root down to and including this term.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/termId" }
+        },
+        "depth": {
+          "description": "Number of enclosing groups; equals the length of path minus one.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "min": { "$ref": "#/$defs/cardinalityMin" },
+        "max": { "$ref": "#/$defs/cardinalityMax" },
+        "datatype": { "$ref": "#/$defs/datatype" },
+        "maxDecimals": {
+          "description": "Maximum number of fraction digits allowed for this term, where the described edition fixes a constant. Absent where it sets no limit, and absent where it makes the limit depend on the document, which maxDecimalsRule states instead.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxDecimalsRule": {
+          "description": "How many fraction digits the term allows, where the described edition derives the limit from the document instead of fixing a number. \"iso4217-minor-unit\" is the minor unit of the currency the value is written in, \"iso4217-minor-unit-plus-2\" is that number plus two. Present in place of maxDecimals, never beside it. Documentation on the same terms as maxDecimals: which minor unit a currency has is a fact that a rule pack dates, so no structural layer evaluates it (specification, section 10).",
+          "type": "string",
+          "enum": ["iso4217-minor-unit", "iso4217-minor-unit-plus-2"]
+        },
+        "reqIds": {
+          "description": "The requirement identifiers the described edition's term table gives for this entry, in the order the table prints them. Absent where the cell is empty or where the edition has no such column. Documentation: it says which requirements of the standard the term serves, never what a document may say.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^R[0-9]+[a-z]?$" }
+        },
+        "codeList": {
+          "description": "Name of the code list the value is taken from, without a version. Present on code terms only; the justification is in notes.",
+          "type": "string",
+          "minLength": 1
+        },
+        "components": {
+          "description": "Supplementary components of the semantic data type; empty for every type that has none.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/component" }
+        },
+        "reusesTerms": {
+          "description": "Identifiers of terms of the base model that this extension group carries one level deeper. Extension registries only.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/termId" }
+        },
+        "order": {
+          "description": "One-based position of the term in the document order of the described model.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "description": "One sentence explaining the term, written for this registry.",
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "description": "Further remarks written for this registry, including the justification of codeList, schemeList and the decimal limit.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "allOf": [
+        {
+          "description": "Only business terms carry a semantic data type.",
+          "if": { "properties": { "kind": { "const": "BG" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "datatype": { "type": "null" },
+              "components": { "type": "array", "maxItems": 0 }
+            },
+            "not": {
+              "anyOf": [
+                { "required": ["maxDecimals"] },
+                { "required": ["maxDecimalsRule"] },
+                { "required": ["codeList"] }
+              ]
+            }
+          }
+        },
+        {
+          "description": "Only business terms carry a semantic data type.",
+          "if": { "properties": { "kind": { "const": "BT" } }, "required": ["kind"] },
+          "then": { "properties": { "datatype": { "type": "string" } } }
+        },
+        {
+          "description": "Supplementary components exist only on Identifier and Binary Object terms.",
+          "if": {
+            "properties": {
+              "datatype": { "not": { "enum": ["Identifier", "BinaryObject"] } }
+            },
+            "required": ["datatype"]
+          },
+          "then": { "properties": { "components": { "type": "array", "maxItems": 0 } } }
+        },
+        {
+          "description": "An Identifier has the components scheme and schemeVersion and no other, at most one of each, and a scheme version only beside a scheme (EN 16931-1, 6.5.6).",
+          "if": { "properties": { "datatype": { "const": "Identifier" } }, "required": ["datatype"] },
+          "then": {
+            "properties": {
+              "components": {
+                "items": { "properties": { "role": { "enum": ["scheme", "schemeVersion"] } } },
+                "allOf": [
+                  {
+                    "contains": { "properties": { "role": { "const": "scheme" } }, "required": ["role"] },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": { "properties": { "role": { "const": "schemeVersion" } }, "required": ["role"] },
+                    "minContains": 0,
+                    "maxContains": 1
+                  },
+                  {
+                    "if": {
+                      "contains": { "properties": { "role": { "const": "schemeVersion" } }, "required": ["role"] }
+                    },
+                    "then": {
+                      "contains": { "properties": { "role": { "const": "scheme" } }, "required": ["role"] }
+                    }
+                  },
+                  {
+                    "$comment": "A mandatory scheme version needs a mandatory scheme: a value carrying a scheme version without a scheme is refused by the format itself, so a term declaring the one mandatory and the other optional could never be written at all.",
+                    "if": {
+                      "contains": {
+                        "properties": { "role": { "const": "schemeVersion" }, "min": { "minimum": 1 } },
+                        "required": ["role", "min"]
+                      }
+                    },
+                    "then": {
+                      "contains": {
+                        "properties": { "role": { "const": "scheme" }, "min": { "minimum": 1 } },
+                        "required": ["role", "min"]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "A Binary Object has exactly the components mimeCode and filename, and both are mandatory (EN 16931-1, 6.5.11).",
+          "if": { "properties": { "datatype": { "const": "BinaryObject" } }, "required": ["datatype"] },
+          "then": {
+            "properties": {
+              "components": {
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "properties": {
+                    "role": { "enum": ["mimeCode", "filename"] },
+                    "min": { "const": 1 },
+                    "max": { "const": 1 }
+                  }
+                },
+                "allOf": [
+                  {
+                    "contains": { "properties": { "role": { "const": "mimeCode" } }, "required": ["role"] },
+                    "minContains": 1,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": { "properties": { "role": { "const": "filename" } }, "required": ["role"] },
+                    "minContains": 1,
+                    "maxContains": 1
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "description": "A code list may be named only for a code term.",
+          "if": { "required": ["codeList"] },
+          "then": { "properties": { "datatype": { "const": "Code" } } }
+        },
+        {
+          "description": "A decimal limit applies only to the numeric semantic data types.",
+          "if": { "required": ["maxDecimals"] },
+          "then": {
+            "properties": {
+              "datatype": {
+                "enum": ["Amount", "UnitPriceAmount", "Quantity", "Percentage"]
+              }
+            }
+          }
+        },
+        {
+          "description": "A decimal limit that the document decides applies only to the numeric semantic data types.",
+          "if": { "required": ["maxDecimalsRule"] },
+          "then": {
+            "properties": {
+              "datatype": {
+                "enum": ["Amount", "UnitPriceAmount", "Quantity", "Percentage"]
+              }
+            }
+          }
+        },
+        {
+          "description": "A term states its decimal limit as a number or as a rule, never as both: two limits are two answers to one question.",
+          "not": { "required": ["maxDecimals", "maxDecimalsRule"] }
+        },
+        {
+          "description": "A term without a parent sits at the invoice root, so its path holds only itself.",
+          "if": { "properties": { "parent": { "type": "null" } }, "required": ["parent"] },
+          "then": { "properties": { "path": { "type": "array", "maxItems": 1 }, "depth": { "const": 0 } } }
+        }
+      ]
+    }
+  }
+}

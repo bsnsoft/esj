@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-render</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Renderer</name>
+  <description>
+    Renders an ESJ document for a human reader, as HTML and as PDF. The HTML rendering is
+    the one of the KoSIT XRechnung visualization: the document is written as the semantic
+    XR representation by esj-xr and handed to the stylesheet of that project, so the
+    layout, the labels and the two languages are the ones invoice recipients in Germany
+    already see. The PDF rendering is laid out by this module with PDFBox, from the
+    registry rather than from a template, and shows every value the document carries. The
+    validation report is the third thing it writes: what a whole validation run came to,
+    as one self-contained HTML page or as a PDF that carries the invoice after it.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-xr</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      PDFBox writes the PDF. It is the only thing in this project that does, it is the
+      only PDF library here, and the optional cryptography of its own POM is left out:
+      this renderer writes a document and encrypts nothing.
+    -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+    </dependency>
+    <!--
+      ZXing encodes the one code this renderer draws: the EPC QR code that carries a credit
+      transfer of the invoice. Only the encoder is used, and only its matrix of modules —
+      the squares are drawn into the page as vectors, so no image object enters the file and
+      the PDF/A claim is unaffected. Apache-2.0, pure Java, no transitive dependency.
+    -->
+    <dependency>
+      <groupId>com.google.zxing</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <!--
+      The read view of esj-typed is what the tests of this module build their fixtures
+      with and read the rendered document back against. The renderer itself works on the
+      semantic document, because what it renders is every value the document carries and
+      not a selection a typed view would make.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-typed</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--
+      esj-pdf reads a hybrid invoice and writes one. It is test scope here and nothing of
+      this module depends on it: the tests render a document, embed the invoice into the
+      rendering with that module, and read it back out, which is the one place in the
+      build where the renderer and the container meet.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-pdf</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--
+      veraPDF is the oracle for the PDF/A-3b claim the renderer makes: the tests validate
+      every rendering of the conformance corpus against the profile of ISO 19005-3 with the
+      reference validator rather than against this project's reading of the standard. It is
+      test scope, it is in no published artefact of this project, and it is dual-licensed
+      GPLv3+ / MPLv2+ by the veraPDF Consortium; docs/pdf-output.md records that.
+    -->
+    <dependency>
+      <groupId>org.verapdf</groupId>
+      <artifactId>validation-model-jakarta</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      The JSON Schema validator that checks schema/render-template.schema.json against the
+      example templates, as esj-core checks its own two schemas. Test scope, as there.
+    -->
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The embedding snippet of docs/pdf-output.md is run by HybridInvoiceTest, which is
+          the only place in the build where the renderer and the container meet, so the
+          page cannot describe a call this project does not make. The template snippets of
+          docs/templates.md and docs/letter-layout.md are checked against the example
+          template they were taken from.
+        -->
+        <directory>${project.basedir}/..</directory>
+        <includes>
+          <include>docs/pdf-output.md</include>
+          <include>docs/templates.md</include>
+          <include>docs/letter-layout.md</include>
+          <include>schema/render-template.schema.json</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <!--
+          The dated code list snapshots the English display names of this module were taken
+          from. DisplayNamesTest compares the two, code for code, so that a name this module
+          prints as a fact is the fact the snapshot carries.
+        -->
+        <directory>${project.basedir}/../rules/en16931/1.3.16/codelists</directory>
+        <targetPath>rules/en16931/1.3.16/codelists</targetPath>
+        <includes>
+          <include>untdid-1001/**</include>
+          <include>untdid-4461/**</include>
+          <include>untdid-5305/**</include>
+          <include>unece-rec20/**</include>
+          <include>unece-rec21/**</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <excludes>
+          <exclude>scale/out/**</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+  </build>
+</project>

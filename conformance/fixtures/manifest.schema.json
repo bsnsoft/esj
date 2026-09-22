@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:bsnsoft.de,2026:esj/conformance/fixtures/manifest.schema.json",
+  "title": "ESJ fixture manifest",
+  "description": "A manifest file: the core manifest, or one part of it. Both have the same shape; a part carries the fixtures of one edition and is left out of a distribution that does not ship that edition.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "part"],
+  "properties": {
+    "format": {
+      "description": "The kind of file. A rule case file says -Rules.",
+      "enum": ["EN16931-Semantic-JSON-Fixtures", "EN16931-Semantic-JSON-Fixtures-Rules"]
+    },
+    "version": {
+      "description": "The version of the fixture contract, raised when a member changes meaning.",
+      "const": "1"
+    },
+    "part": {
+      "description": "core, or the name of the edition part.",
+      "type": "string",
+      "minLength": 1
+    },
+    "specification": {
+      "description": "The specification the fixtures are of, relative to the repository root.",
+      "type": "string"
+    },
+    "parts": {
+      "description": "Further manifest files, beside this one. A part that is not in the distribution is not an error: it is an edition this distribution does not carry.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "semanticModel": {
+      "description": "The edition a part belongs to, as a document names it.",
+      "type": "string"
+    },
+    "whenEditionAbsent": {
+      "description": "The finding an implementation that does not carry this edition reports instead of evaluating L2 and L3.",
+      "const": "ESJ-L2-EDITION-UNKNOWN"
+    },
+    "registries": {
+      "description": "The registries to load before anything else in this file is run.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/registry" }
+    },
+    "documents": {
+      "description": "Documents that are conformant, unless a findings member says otherwise.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/document" }
+    },
+    "invalid": {
+      "description": "Documents that must be rejected, with the layer and the code.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/invalid" }
+    },
+    "canonicalOrder": {
+      "description": "Documents whose members are written in the wrong order, with the bytes a canonicalizer has to produce.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/canonicalOrder" }
+    },
+    "grammars": {
+      "description": "The value grammars of the specification, section 6, as accept and reject tables.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/grammar" }
+    },
+    "rules": {
+      "description": "Where the rule pack and its cases are.",
+      "$ref": "#/$defs/rules"
+    },
+    "pack": { "type": "string" },
+    "directory": { "type": "string" },
+    "cases": {
+      "description": "In a rule case file, the cases themselves.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "path": {
+      "description": "A semantic path of the specification, section 5.1.",
+      "type": "string",
+      "pattern": "^(/([0-9]+|[A-Za-z0-9.:_-]*B[TG]-[0-9A-Za-z-]+))+$"
+    },
+    "code": {
+      "description": "A finding code of the specification, section 9.6.",
+      "type": "string",
+      "pattern": "^ESJ-L[123]-[A-Z0-9-]+$"
+    },
+    "digest": {
+      "description": "SHA-256, lowercase hexadecimal.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "value": {
+      "description": "A value as a document writes it: a string, or the object of the specification, section 6.1.",
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {
+            "value": { "type": "string", "minLength": 1 },
+            "scheme": { "type": "string", "minLength": 1 },
+            "schemeVersion": { "type": "string", "minLength": 1 },
+            "mimeCode": { "type": "string", "minLength": 1 },
+            "filename": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "semanticModel", "terms", "samplePaths"],
+      "properties": {
+        "file": { "type": "string" },
+        "semanticModel": { "type": "string" },
+        "terms": { "type": "integer", "minimum": 1 },
+        "businessTerms": { "type": "integer", "minimum": 0 },
+        "businessGroups": { "type": "integer", "minimum": 0 },
+        "samplePaths": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "term", "kind", "min", "max"],
+            "properties": {
+              "path": { "$ref": "#/$defs/path" },
+              "term": { "type": "string" },
+              "kind": { "enum": ["BT", "BG"] },
+              "min": { "type": "integer", "minimum": 0 },
+              "max": {
+                "description": "A number, or n where the registry writes n.",
+                "oneOf": [{ "type": "integer", "minimum": 1 }, { "const": "n" }]
+              },
+              "datatype": { "type": "string" },
+              "components": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["member", "min"],
+                  "properties": {
+                    "member": {
+                      "enum": ["scheme", "schemeVersion", "mimeCode", "filename"]
+                    },
+                    "min": { "type": "integer", "minimum": 0 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "semanticModel", "registries", "values", "canonicalBytes",
+                   "semanticDigest", "documentDigest"],
+      "properties": {
+        "file": {
+          "description": "The document in pretty form, relative to the repository root.",
+          "type": "string"
+        },
+        "canonical": {
+          "description": "The canonical bytes, where the repository carries them. Where it does not, documentDigest is what pins them.",
+          "type": "string"
+        },
+        "semanticModel": { "type": "string" },
+        "registries": {
+          "description": "The registry files this document was measured with, the core registry of its edition first. An implementation that carries fewer of them measures other terms than the manifest records.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "values": { "type": "integer", "minimum": 0 },
+        "canonicalBytes": { "type": "integer", "minimum": 2 },
+        "semanticDigest": { "$ref": "#/$defs/digest" },
+        "documentDigest": { "$ref": "#/$defs/digest" },
+        "findings": {
+          "description": "The errors layers L2 and L3 report, in the order a validator reports them. Absent means none.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "code"],
+            "properties": {
+              "path": { "type": "string" },
+              "code": { "$ref": "#/$defs/code" },
+              "subject": {
+                "description": "What the finding is about where the path cannot name it.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "invalid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "layer"],
+      "properties": {
+        "file": { "type": "string" },
+        "layer": {
+          "description": "The layer that catches the defect. limit is a configured bound and not a defect of the document; business-rule is a document no layer of this specification rejects.",
+          "enum": ["L1", "L2", "L3", "limit", "business-rule"]
+        },
+        "code": { "$ref": "#/$defs/code" },
+        "path": { "type": "string" }
+      }
+    },
+    "canonicalOrder": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scrambled", "canonical", "values", "documentDigest"],
+      "properties": {
+        "scrambled": { "type": "string" },
+        "canonical": { "type": "string" },
+        "values": { "type": "integer", "minimum": 1 },
+        "documentDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "grammar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["datatype", "code", "base", "path", "accept", "reject"],
+      "properties": {
+        "datatype": { "type": "string" },
+        "code": { "$ref": "#/$defs/code" },
+        "base": {
+          "description": "The document a candidate is substituted into.",
+          "type": "string"
+        },
+        "path": { "$ref": "#/$defs/path" },
+        "accept": { "type": "array", "items": { "$ref": "#/$defs/value" } },
+        "reject": { "type": "array", "items": { "$ref": "#/$defs/value" } }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pack", "directory", "casesFile", "cases"],
+      "properties": {
+        "pack": { "type": "string" },
+        "directory": { "type": "string" },
+        "casesFile": { "type": "string" },
+        "cases": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rule", "base", "changes", "expect"],
+      "properties": {
+        "id": { "type": "string" },
+        "rule": {
+          "description": "The rule the case is aimed at, empty for a near miss.",
+          "type": "string"
+        },
+        "base": {
+          "description": "The conformant document the changes are applied to.",
+          "type": "string"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path"],
+            "properties": {
+              "path": { "$ref": "#/$defs/path" },
+              "value": { "$ref": "#/$defs/value" },
+              "remove": { "const": true }
+            },
+            "oneOf": [{ "required": ["value"] }, { "required": ["remove"] }]
+          }
+        },
+        "expect": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rules", "warnings"],
+          "properties": {
+            "rules": {
+              "description": "Every rule identifier the pack reports, sorted.",
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "warnings": {
+              "description": "The subset whose findings decide no verdict.",
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

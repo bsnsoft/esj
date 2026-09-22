@@ -1,0 +1,40 @@
+{
+  "id": "XRECHNUNG_3_0_2",
+  "constant": "XRECHNUNG_3_0",
+  "name": "XRechnung 3.0.2",
+  "typeSuffix": "Xrechnung",
+  "base": false,
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "fixed": [
+    {
+      "id": "BT-24",
+      "value": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0"
+    },
+    {
+      "id": "BT-23",
+      "value": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+    }
+  ],
+  "narrows": [
+    { "id": "BT-10", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-23", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-34", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-37", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-38", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-41", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-42", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-43", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-49", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-52", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-53", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-77", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-78", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-89", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-90", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-91", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BT-119", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BG-6", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 },
+    { "id": "BG-16", "coreMin": 0, "coreMax": 1, "min": 1, "max": 1 }
+  ]
+}

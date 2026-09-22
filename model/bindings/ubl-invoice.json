@@ -1,0 +1,2183 @@
+{
+  "format": "EN16931-Semantic-JSON-binding",
+  "version": "0.1",
+  "syntax": "UBL-Invoice",
+  "syntaxName": "OASIS UBL 2.1 Invoice",
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "rootElement": "Invoice",
+  "license": "Apache-2.0",
+  "notice": "The identifiers, XPaths, supplementary component XPaths and note codes in this file are facts taken from the SeMoX model of the XRechnung CIUS published by KoSIT (Koordinierungsstelle für IT-Standards), release 2026-08-31, binding ubl-inv. No description, note text, rule or example of that model is reproduced here: every sentence in this file is the author's own wording. The licence of the model repository the facts come from is being clarified with KoSIT; see model/bindings/README.md. This file itself is Apache-2.0. ESJ is not an XRechnung format and this file is not a KoSIT deliverable.",
+  "source": {
+    "name": "KoSIT SeMoX model of the XRechnung CIUS",
+    "file": "xrechnung-cius-model.xml",
+    "binding": "ubl-inv",
+    "release": "2026-08-31"
+  },
+  "generator": "model/bindings/tools/semox_to_bindings.py",
+  "namespaces": {
+    "": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
+    "cac": "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
+    "cbc": "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
+    "cec": "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+  },
+  "corrections": [
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID",
+      "to": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[not(@schemeID = 'SEPA')]",
+      "reason": "The source binds BT-90 to this element with the predicate @schemeID = 'SEPA' and binds this term to the same element without a predicate, so without the condition one element carries both terms and the bank assigned creditor identifier is stored a second time as a party identifier. The condition leaves that occurrence to BT-90."
+    },
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID",
+      "to": "/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID[not(@schemeID = 'SEPA')]",
+      "reason": "The source binds BT-90 to this element with the predicate @schemeID = 'SEPA' and binds this term to the same element without a predicate, so without the condition one element carries both terms and the bank assigned creditor identifier is stored a second time as a party identifier. The condition leaves that occurrence to BT-90."
+    },
+    {
+      "member": "terms",
+      "term": "BT-48",
+      "from": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID",
+      "to": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID = 'VAT']/cbc:CompanyID",
+      "reason": "The source binds this term to the element without a condition on the tax scheme, so a buyer that states a tax beside value added tax has the term taken from whichever element the document writes first. The CEN validation artefact of packs/ and the KoSIT visualization stylesheet vendored in esj-xr both read this element with the condition that its tax scheme is VAT, and the source itself writes that condition on the seller's terms bound to the same kind of element."
+    },
+    {
+      "member": "terms",
+      "term": "BT-63",
+      "from": "/Invoice/cac:TaxRepresentativeParty/cac:PartyTaxScheme/cbc:CompanyID",
+      "to": "/Invoice/cac:TaxRepresentativeParty/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID = 'VAT']/cbc:CompanyID",
+      "reason": "The source binds this term to the element without a condition on the tax scheme, so a tax representative that states a tax beside value added tax has the term taken from whichever element the document writes first. The CEN validation artefact of packs/ and the KoSIT visualization stylesheet vendored in esj-xr both read this element with the condition that its tax scheme is VAT, and the source itself writes that condition on the seller's terms bound to the same kind of element."
+    },
+    {
+      "member": "terms",
+      "term": "BT-118",
+      "from": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:ID",
+      "to": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "reason": "The source binds this term to the element without a condition on the tax scheme, so a tax breakdown that states a tax beside value added tax has the term taken from whichever element the document writes first. The CEN validation artefact of packs/ and the KoSIT visualization stylesheet vendored in esj-xr both read this element with the condition that its tax scheme is VAT, and the source itself writes that condition on the seller's terms bound to the same kind of element."
+    },
+    {
+      "member": "terms",
+      "term": "BT-151",
+      "from": "/Invoice/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory/cbc:ID",
+      "to": "/Invoice/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "reason": "The source binds this term to the element without a condition on the tax scheme, so a line item that states a tax beside value added tax has the term taken from whichever element the document writes first. The CEN validation artefact of packs/ and the KoSIT visualization stylesheet vendored in esj-xr both read this element with the condition that its tax scheme is VAT, and the source itself writes that condition on the seller's terms bound to the same kind of element."
+    },
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:AdditionalDocumentReference",
+      "to": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']",
+      "reason": "The syntax writes the invoiced object identifier BT-18 (130) and the supporting document group into the same element and tells them apart by cbc:DocumentTypeCode; the source states that condition on those terms and omits it here. Without it every additional document reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The CEN validation artefact of packs/ reads this element with the document type code 130 excluded, and the KoSIT visualization stylesheet vendored in esj-xr excludes 50 from the credit note."
+    },
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:AdditionalDocumentReference/cbc:ID",
+      "to": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cbc:ID",
+      "reason": "The syntax writes the invoiced object identifier BT-18 (130) and the supporting document group into the same element and tells them apart by cbc:DocumentTypeCode; the source states that condition on those terms and omits it here. Without it every additional document reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The CEN validation artefact of packs/ reads this element with the document type code 130 excluded, and the KoSIT visualization stylesheet vendored in esj-xr excludes 50 from the credit note."
+    },
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:AdditionalDocumentReference/cbc:DocumentDescription",
+      "to": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cbc:DocumentDescription",
+      "reason": "The syntax writes the invoiced object identifier BT-18 (130) and the supporting document group into the same element and tells them apart by cbc:DocumentTypeCode; the source states that condition on those terms and omits it here. Without it every additional document reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The CEN validation artefact of packs/ reads this element with the document type code 130 excluded, and the KoSIT visualization stylesheet vendored in esj-xr excludes 50 from the credit note."
+    },
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:URI",
+      "to": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cac:Attachment/cac:ExternalReference/cbc:URI",
+      "reason": "The syntax writes the invoiced object identifier BT-18 (130) and the supporting document group into the same element and tells them apart by cbc:DocumentTypeCode; the source states that condition on those terms and omits it here. Without it every additional document reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The CEN validation artefact of packs/ reads this element with the document type code 130 excluded, and the KoSIT visualization stylesheet vendored in esj-xr excludes 50 from the credit note."
+    },
+    {
+      "member": "terms",
+      "from": "/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject",
+      "to": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject",
+      "reason": "The syntax writes the invoiced object identifier BT-18 (130) and the supporting document group into the same element and tells them apart by cbc:DocumentTypeCode; the source states that condition on those terms and omits it here. Without it every additional document reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The CEN validation artefact of packs/ reads this element with the document type code 130 excluded, and the KoSIT visualization stylesheet vendored in esj-xr excludes 50 from the credit note."
+    },
+    {
+      "member": "terms",
+      "term": "BT-151",
+      "from": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:ClassifiedTaxCategory/cbc:ID",
+      "to": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:ClassifiedTaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "reason": "The same omission as on the invoice line above, on the copy of the term that the sub invoice line of the extension reuses: the element is bound without a condition on the tax scheme, so a sub line that states a tax beside value added tax has its category code taken from whichever element the document writes first. The condition is the one the CEN validation artefact of packs/ and the KoSIT visualization stylesheet write on the element of an invoice line, and the extension states that a sub invoice line carries the business terms of a line."
+    }
+  ],
+  "conventions": [
+    {
+      "element": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:ID",
+      "condition": "parent-written-element-absent",
+      "value": "FC",
+      "option": "taxRegistrationScheme",
+      "requiredBy": "UBL-SR-53",
+      "source": "The cross industry invoice binding of the same source model writes BT-32 at an element whose schemeID is FC, the UNTDID 1153 code for a fiscal number, so the code is the one the standard already uses for this registration."
+    },
+    {
+      "element": "/Invoice/cac:OrderReference/cbc:ID",
+      "condition": "parent-written-element-absent",
+      "value": "NA",
+      "term": "BT-13",
+      "notReadBeside": "cbc:SalesOrderID",
+      "requiredBy": "schema",
+      "source": "Peppol BIS Billing 3.0 records NA at this element for a document that states a sales order reference and no purchase order reference."
+    },
+    {
+      "element": "/Invoice/cac:PaymentMeans/cac:CardAccount/cbc:NetworkID",
+      "condition": "parent-written-element-absent",
+      "value": "NA",
+      "requiredBy": "schema",
+      "source": "Peppol BIS Billing 3.0 records NA as the value of this element, which its syntax requires and no business term of EN 16931-1 names."
+    }
+  ],
+  "flagDefinitions": {
+    "CAR-2": "The semantic model requires the term where the syntax leaves the element optional.",
+    "CAR-3": "The syntax lets the element repeat where the semantic model allows the term only once.",
+    "SEM-2": "The syntax element is semantically wider than the term; a predicate or a convention picks out the occurrence that carries it.",
+    "SEM-3": "The syntax element means something else in its own syntax, so the binding is a convention rather than a like-for-like match.",
+    "STR-5": "A series of like terms of the semantic model is spread over differently named syntax elements.",
+    "SYN-2": "The lexical form in the syntax is not the semantic value written plainly: it is prefixed, formatted or otherwise encoded.",
+    "not-represented": "The source model states that this syntax has no representation for the term, so the entry carries no XPath.",
+    "subject-code-prefix": "The subject code is written into the text value as a #CODE# prefix instead of into an element of its own."
+  },
+  "counts": {
+    "terms": 196,
+    "bound": 194,
+    "notRepresented": 2,
+    "components": 16,
+    "extensionTerms": 12,
+    "extensionBound": 12,
+    "extensionReusedTerms": 36,
+    "extensionReusedBound": 36
+  },
+  "terms": [
+    {
+      "id": "BT-1",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:ID"
+    },
+    {
+      "id": "BT-2",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:IssueDate"
+    },
+    {
+      "id": "BT-3",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:InvoiceTypeCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-5",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:DocumentCurrencyCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-6",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:TaxCurrencyCode",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-7",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:TaxPointDate",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-8",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoicePeriod/cbc:DescriptionCode",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-9",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:DueDate"
+    },
+    {
+      "id": "BT-10",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:BuyerReference"
+    },
+    {
+      "id": "BT-11",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:ProjectReference/cbc:ID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-12",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:ContractDocumentReference/cbc:ID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-13",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:OrderReference/cbc:ID"
+    },
+    {
+      "id": "BT-14",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:OrderReference/cbc:SalesOrderID"
+    },
+    {
+      "id": "BT-15",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:ReceiptDocumentReference/cbc:ID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-16",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:DespatchDocumentReference/cbc:ID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-17",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:OriginatorDocumentReference/cbc:ID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-18",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode = '130']/cbc:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode = '130']/cbc:ID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-19",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:AccountingCost"
+    },
+    {
+      "id": "BT-20",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentTerms/cbc:Note",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-1",
+      "kind": "BG",
+      "bound": false,
+      "flags": [
+        "not-represented"
+      ]
+    },
+    {
+      "id": "BT-21",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:Note",
+      "flags": [
+        "SEM-2",
+        "SYN-2",
+        "subject-code-prefix"
+      ]
+    },
+    {
+      "id": "BT-22",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:Note"
+    },
+    {
+      "id": "BG-2",
+      "kind": "BG",
+      "bound": false,
+      "flags": [
+        "not-represented"
+      ]
+    },
+    {
+      "id": "BT-23",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:ProfileID"
+    },
+    {
+      "id": "BT-24",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cbc:CustomizationID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BG-3",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:BillingReference/cac:InvoiceDocumentReference",
+      "instanceElement": "cac:InvoiceDocumentReference",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-25",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID"
+    },
+    {
+      "id": "BT-26",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:BillingReference/cac:InvoiceDocumentReference/cbc:IssueDate"
+    },
+    {
+      "id": "BG-4",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty",
+      "instanceElement": "cac:AccountingSupplierParty"
+    },
+    {
+      "id": "BT-27",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-28",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-29",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[not(@schemeID = 'SEPA')]",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[not(@schemeID = 'SEPA')]"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-30",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-31",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID = 'VAT']/cbc:CompanyID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-32",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID != 'VAT']/cbc:CompanyID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-33",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyLegalForm",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-34",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID"
+        }
+      ]
+    },
+    {
+      "id": "BG-5",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress",
+      "instanceElement": "cac:PostalAddress",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-35",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-36",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AdditionalStreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-162",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:AddressLine/cbc:Line",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-37",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName"
+    },
+    {
+      "id": "BT-38",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PostalZone"
+    },
+    {
+      "id": "BT-39",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CountrySubentity"
+    },
+    {
+      "id": "BT-40",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BG-6",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact",
+      "instanceElement": "cac:Contact"
+    },
+    {
+      "id": "BT-41",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Name"
+    },
+    {
+      "id": "BT-42",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Telephone"
+    },
+    {
+      "id": "BT-43",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ElectronicMail"
+    },
+    {
+      "id": "BG-7",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty",
+      "instanceElement": "cac:AccountingCustomerParty"
+    },
+    {
+      "id": "BT-44",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-45",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-46",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-47",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-48",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID = 'VAT']/cbc:CompanyID",
+      "flags": [
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-49",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID"
+        }
+      ]
+    },
+    {
+      "id": "BG-8",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress",
+      "instanceElement": "cac:PostalAddress",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-50",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-51",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AdditionalStreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-163",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:AddressLine/cbc:Line",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-52",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CityName"
+    },
+    {
+      "id": "BT-53",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PostalZone"
+    },
+    {
+      "id": "BT-54",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CountrySubentity"
+    },
+    {
+      "id": "BT-55",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BG-9",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:Contact",
+      "instanceElement": "cac:Contact"
+    },
+    {
+      "id": "BT-56",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Name"
+    },
+    {
+      "id": "BT-57",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Telephone"
+    },
+    {
+      "id": "BT-58",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ElectronicMail"
+    },
+    {
+      "id": "BG-10",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:PayeeParty",
+      "instanceElement": "cac:PayeeParty"
+    },
+    {
+      "id": "BT-59",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PayeeParty/cac:PartyName/cbc:Name",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-60",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID[not(@schemeID = 'SEPA')]",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID[not(@schemeID = 'SEPA')]"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-61",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PayeeParty/cac:PartyLegalEntity/cbc:CompanyID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:PayeeParty/cac:PartyLegalEntity/cbc:CompanyID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-11",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty",
+      "instanceElement": "cac:TaxRepresentativeParty"
+    },
+    {
+      "id": "BT-62",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PartyName/cbc:Name",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-63",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID = 'VAT']/cbc:CompanyID",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-12",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress",
+      "instanceElement": "cac:PostalAddress",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-64",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cbc:StreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-65",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cbc:AdditionalStreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-164",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cac:AddressLine/cbc:Line",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-66",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cbc:CityName"
+    },
+    {
+      "id": "BT-67",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cbc:PostalZone"
+    },
+    {
+      "id": "BT-68",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cbc:CountrySubentity"
+    },
+    {
+      "id": "BT-69",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxRepresentativeParty/cac:PostalAddress/cac:Country/cbc:IdentificationCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BG-13",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery",
+      "instanceElement": "cac:Delivery",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-70",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryParty/cac:PartyName/cbc:Name",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-71",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cbc:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:Delivery/cac:DeliveryLocation/cbc:ID"
+        }
+      ]
+    },
+    {
+      "id": "BT-72",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cbc:ActualDeliveryDate"
+    },
+    {
+      "id": "BG-14",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoicePeriod",
+      "instanceElement": "cac:InvoicePeriod",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-73",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoicePeriod/cbc:StartDate"
+    },
+    {
+      "id": "BT-74",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoicePeriod/cbc:EndDate"
+    },
+    {
+      "id": "BG-15",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address",
+      "instanceElement": "cac:Address"
+    },
+    {
+      "id": "BT-75",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:StreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-76",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AdditionalStreetName",
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-165",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:AddressLine/cbc:Line",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-77",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName"
+    },
+    {
+      "id": "BT-78",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone"
+    },
+    {
+      "id": "BT-79",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentity"
+    },
+    {
+      "id": "BT-80",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BG-16",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans",
+      "instanceElement": "cac:PaymentMeans",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-81",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cbc:PaymentMeansCode"
+    },
+    {
+      "id": "BT-82",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cbc:PaymentMeansCode/@name",
+      "flags": [
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-83",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cbc:PaymentID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-17",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount",
+      "instanceElement": "cac:PayeeFinancialAccount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-84",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:ID"
+    },
+    {
+      "id": "BT-85",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:Name"
+    },
+    {
+      "id": "BT-86",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:ID"
+    },
+    {
+      "id": "BG-18",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:CardAccount",
+      "instanceElement": "cac:CardAccount"
+    },
+    {
+      "id": "BT-87",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:CardAccount/cbc:PrimaryAccountNumberID"
+    },
+    {
+      "id": "BT-88",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:CardAccount/cbc:HolderName"
+    },
+    {
+      "id": "BG-19",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PaymentMandate",
+      "instanceElement": "cac:PaymentMandate"
+    },
+    {
+      "id": "BT-89",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PaymentMandate/cbc:ID"
+    },
+    {
+      "id": "BT-90",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID[@schemeID = 'SEPA']",
+      "alternatives": [
+        {
+          "xpath": "/Invoice/cac:PayeeParty/cac:PartyIdentification/cbc:ID[@schemeID = 'SEPA']",
+          "flags": [
+            "CAR-3"
+          ]
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-91",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:PaymentMeans/cac:PaymentMandate/cac:PayerFinancialAccount/cbc:ID"
+    },
+    {
+      "id": "BG-20",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']",
+      "instanceElement": "cac:AllowanceCharge",
+      "instancePredicates": [
+        "cbc:ChargeIndicator = 'false'"
+      ],
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-92",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:Amount"
+    },
+    {
+      "id": "BT-93",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:BaseAmount"
+    },
+    {
+      "id": "BT-94",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:MultiplierFactorNumeric",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-95",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cac:TaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "flags": [
+        "CAR-2",
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-96",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cac:TaxCategory/cbc:Percent",
+      "flags": [
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-97",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:AllowanceChargeReason",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-98",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:AllowanceChargeReasonCode"
+    },
+    {
+      "id": "BG-21",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']",
+      "instanceElement": "cac:AllowanceCharge",
+      "instancePredicates": [
+        "cbc:ChargeIndicator = 'true'"
+      ],
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-99",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:Amount"
+    },
+    {
+      "id": "BT-100",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:BaseAmount"
+    },
+    {
+      "id": "BT-101",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:MultiplierFactorNumeric",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-102",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cac:TaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "flags": [
+        "CAR-2",
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-103",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cac:TaxCategory/cbc:Percent",
+      "flags": [
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-104",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:AllowanceChargeReason",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-105",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:AllowanceChargeReasonCode"
+    },
+    {
+      "id": "BG-22",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal",
+      "instanceElement": "cac:LegalMonetaryTotal"
+    },
+    {
+      "id": "BT-106",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:LineExtensionAmount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-107",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:AllowanceTotalAmount"
+    },
+    {
+      "id": "BT-108",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:ChargeTotalAmount"
+    },
+    {
+      "id": "BT-109",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-110",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cbc:TaxAmount[@currencyID = /Invoice/cbc:DocumentCurrencyCode]",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-111",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cbc:TaxAmount[@currencyID = /Invoice/cbc:TaxCurrencyCode]",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-112",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-113",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:PrepaidAmount"
+    },
+    {
+      "id": "BT-114",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:PayableRoundingAmount"
+    },
+    {
+      "id": "BT-115",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount"
+    },
+    {
+      "id": "BG-23",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal",
+      "instanceElement": "cac:TaxSubtotal",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-116",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxableAmount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-117",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxAmount"
+    },
+    {
+      "id": "BT-118",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "flags": [
+        "CAR-2",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-119",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:Percent",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-120",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReason",
+      "flags": [
+        "CAR-3",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-121",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TaxExemptionReasonCode",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BG-24",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']",
+      "instanceElement": "cac:AdditionalDocumentReference",
+      "instancePredicates": [
+        "cbc:DocumentTypeCode != '130'"
+      ]
+    },
+    {
+      "id": "BT-122",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cbc:ID"
+    },
+    {
+      "id": "BT-123",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cbc:DocumentDescription"
+    },
+    {
+      "id": "BT-124",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cac:Attachment/cac:ExternalReference/cbc:URI"
+    },
+    {
+      "id": "BT-125",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject",
+      "components": [
+        {
+          "role": "mimeCode",
+          "xpath": "@mimeCode",
+          "anchor": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject"
+        },
+        {
+          "role": "filename",
+          "xpath": "@filename",
+          "anchor": "/Invoice/cac:AdditionalDocumentReference[cbc:DocumentTypeCode != '130']/cac:Attachment/cbc:EmbeddedDocumentBinaryObject"
+        }
+      ]
+    },
+    {
+      "id": "BG-25",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine",
+      "instanceElement": "cac:InvoiceLine"
+    },
+    {
+      "id": "BT-126",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cbc:ID"
+    },
+    {
+      "id": "BT-127",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cbc:Note",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-128",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:DocumentReference[cbc:DocumentTypeCode = '130']/cbc:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:InvoiceLine/cac:DocumentReference[cbc:DocumentTypeCode = '130']/cbc:ID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-129",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cbc:InvoicedQuantity",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-130",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cbc:InvoicedQuantity/@unitCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-131",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cbc:LineExtensionAmount"
+    },
+    {
+      "id": "BT-132",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:OrderLineReference/cbc:LineID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-133",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cbc:AccountingCost"
+    },
+    {
+      "id": "BG-26",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:InvoicePeriod",
+      "instanceElement": "cac:InvoicePeriod",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-134",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:InvoicePeriod/cbc:StartDate"
+    },
+    {
+      "id": "BT-135",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:InvoicePeriod/cbc:EndDate"
+    },
+    {
+      "id": "BG-27",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']",
+      "instanceElement": "cac:AllowanceCharge",
+      "instancePredicates": [
+        "cbc:ChargeIndicator = 'false'"
+      ],
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-136",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:Amount"
+    },
+    {
+      "id": "BT-137",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:BaseAmount"
+    },
+    {
+      "id": "BT-138",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:MultiplierFactorNumeric",
+      "flags": [
+        "SYN-2"
+      ]
+    },
+    {
+      "id": "BT-139",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:AllowanceChargeReason",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-140",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:AllowanceChargeReasonCode"
+    },
+    {
+      "id": "BG-28",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']",
+      "instanceElement": "cac:AllowanceCharge",
+      "instancePredicates": [
+        "cbc:ChargeIndicator = 'true'"
+      ],
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-141",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:Amount"
+    },
+    {
+      "id": "BT-142",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:BaseAmount"
+    },
+    {
+      "id": "BT-143",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:MultiplierFactorNumeric",
+      "flags": [
+        "SYN-2"
+      ]
+    },
+    {
+      "id": "BT-144",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:AllowanceChargeReason",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-145",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:AllowanceChargeReasonCode"
+    },
+    {
+      "id": "BG-29",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Price",
+      "instanceElement": "cac:Price",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-146",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Price/cbc:PriceAmount"
+    },
+    {
+      "id": "BT-147",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Price/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:Amount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-148",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Price/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:BaseAmount",
+      "flags": [
+        "CAR-3",
+        "SEM-3"
+      ]
+    },
+    {
+      "id": "BT-149",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Price/cbc:BaseQuantity"
+    },
+    {
+      "id": "BT-150",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Price/cbc:BaseQuantity/@unitCode"
+    },
+    {
+      "id": "BG-30",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory",
+      "instanceElement": "cac:ClassifiedTaxCategory",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-151",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-152",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:ClassifiedTaxCategory/cbc:Percent",
+      "flags": [
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BG-31",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item",
+      "instanceElement": "cac:Item"
+    },
+    {
+      "id": "BT-153",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cbc:Name",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-154",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cbc:Description",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-155",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:SellersItemIdentification/cbc:ID"
+    },
+    {
+      "id": "BT-156",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:BuyersItemIdentification/cbc:ID"
+    },
+    {
+      "id": "BT-157",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:StandardItemIdentification/cbc:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/Invoice/cac:InvoiceLine/cac:Item/cac:StandardItemIdentification/cbc:ID"
+        }
+      ]
+    },
+    {
+      "id": "BT-158",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@listID",
+          "anchor": "/Invoice/cac:InvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode"
+        },
+        {
+          "role": "schemeVersion",
+          "xpath": "@listVersionID",
+          "anchor": "/Invoice/cac:InvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode"
+        }
+      ]
+    },
+    {
+      "id": "BT-159",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:OriginCountry/cbc:IdentificationCode"
+    },
+    {
+      "id": "BG-32",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:AdditionalItemProperty",
+      "instanceElement": "cac:AdditionalItemProperty"
+    },
+    {
+      "id": "BT-160",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:AdditionalItemProperty/cbc:Name"
+    },
+    {
+      "id": "BT-161",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/Invoice/cac:InvoiceLine/cac:Item/cac:AdditionalItemProperty/cbc:Value",
+      "flags": [
+        "CAR-2"
+      ]
+    }
+  ],
+  "extension": {
+    "model": "XRechnung-Extension",
+    "edition": "XRechnung 3.0.2",
+    "source": {
+      "name": "KoSIT SeMoX tailoring model of the XRechnung extension",
+      "file": "xrechnung-extension-model-tailoring.xml",
+      "release": "2026-08-31"
+    },
+    "terms": [
+      {
+        "id": "BG-DEX-01",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine",
+        "instanceElement": "cac:SubInvoiceLine"
+      },
+      {
+        "id": "BG-DEX-02",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item",
+        "instanceElement": "cac:Item"
+      },
+      {
+        "id": "BG-DEX-03",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']",
+        "instanceElement": "cac:AllowanceCharge",
+        "instancePredicates": [
+          "cbc:ChargeIndicator = 'false'"
+        ],
+        "flags": [
+          "SEM-2"
+        ]
+      },
+      {
+        "id": "BG-DEX-04",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']",
+        "instanceElement": "cac:AllowanceCharge",
+        "instancePredicates": [
+          "cbc:ChargeIndicator = 'true'"
+        ],
+        "flags": [
+          "SEM-2"
+        ]
+      },
+      {
+        "id": "BG-DEX-05",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:InvoicePeriod",
+        "instanceElement": "cac:InvoicePeriod",
+        "flags": [
+          "CAR-3"
+        ]
+      },
+      {
+        "id": "BG-DEX-06",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:ClassifiedTaxCategory",
+        "instanceElement": "cac:ClassifiedTaxCategory",
+        "flags": [
+          "CAR-2",
+          "CAR-3"
+        ]
+      },
+      {
+        "id": "BG-DEX-07",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Price",
+        "instanceElement": "cac:Price",
+        "flags": [
+          "CAR-2"
+        ]
+      },
+      {
+        "id": "BG-DEX-08",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:AdditionalItemProperty",
+        "instanceElement": "cac:AdditionalItemProperty"
+      },
+      {
+        "id": "BG-DEX-09",
+        "kind": "BG",
+        "bound": true,
+        "xpath": "/Invoice/cac:PrepaidPayment",
+        "instanceElement": "cac:PrepaidPayment"
+      },
+      {
+        "id": "BT-DEX-001",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:PrepaidPayment/cbc:ID",
+        "flags": [
+          "CAR-2",
+          "SYN-2"
+        ]
+      },
+      {
+        "id": "BT-DEX-002",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:PrepaidPayment/cbc:PaidAmount",
+        "flags": [
+          "CAR-2"
+        ]
+      },
+      {
+        "id": "BT-DEX-003",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:PrepaidPayment/cbc:InstructionID",
+        "flags": [
+          "CAR-2",
+          "SYN-2"
+        ]
+      }
+    ],
+    "reusedTerms": [
+      {
+        "id": "BT-126",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cbc:ID"
+      },
+      {
+        "id": "BT-127",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cbc:Note"
+      },
+      {
+        "id": "BT-128",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:DocumentReference[cbc:DocumentTypeCode = '130']/cbc:ID",
+        "components": [
+          {
+            "role": "scheme",
+            "xpath": "@schemeID",
+            "anchor": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:DocumentReference[cbc:DocumentTypeCode = '130']/cbc:ID"
+          }
+        ]
+      },
+      {
+        "id": "BT-129",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cbc:InvoicedQuantity"
+      },
+      {
+        "id": "BT-130",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cbc:InvoicedQuantity/@unitCode"
+      },
+      {
+        "id": "BT-131",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cbc:LineExtensionAmount"
+      },
+      {
+        "id": "BT-132",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:OrderLineReference/cbc:LineID"
+      },
+      {
+        "id": "BT-133",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cbc:AccountingCost"
+      },
+      {
+        "id": "BT-153",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cbc:Name"
+      },
+      {
+        "id": "BT-154",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cbc:Description"
+      },
+      {
+        "id": "BT-155",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:SellersItemIdentification/cbc:ID"
+      },
+      {
+        "id": "BT-156",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:BuyersItemIdentification/cbc:ID"
+      },
+      {
+        "id": "BT-157",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:StandardItemIdentification/cbc:ID",
+        "components": [
+          {
+            "role": "scheme",
+            "xpath": "@schemeID",
+            "anchor": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:StandardItemIdentification/cbc:ID"
+          }
+        ]
+      },
+      {
+        "id": "BT-158",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode",
+        "components": [
+          {
+            "role": "scheme",
+            "xpath": "@listID",
+            "anchor": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode"
+          },
+          {
+            "role": "schemeVersion",
+            "xpath": "@listVersionID",
+            "anchor": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode"
+          }
+        ]
+      },
+      {
+        "id": "BT-159",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:OriginCountry/cbc:IdentificationCode"
+      },
+      {
+        "id": "BT-136",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:Amount"
+      },
+      {
+        "id": "BT-137",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:BaseAmount"
+      },
+      {
+        "id": "BT-138",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:MultiplierFactorNumeric"
+      },
+      {
+        "id": "BT-139",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:AllowanceChargeReason"
+      },
+      {
+        "id": "BT-140",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:AllowanceChargeReasonCode"
+      },
+      {
+        "id": "BT-141",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:Amount"
+      },
+      {
+        "id": "BT-142",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:BaseAmount"
+      },
+      {
+        "id": "BT-143",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:MultiplierFactorNumeric"
+      },
+      {
+        "id": "BT-144",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:AllowanceChargeReason"
+      },
+      {
+        "id": "BT-145",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:AllowanceCharge[cbc:ChargeIndicator = 'true']/cbc:AllowanceChargeReasonCode"
+      },
+      {
+        "id": "BT-134",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:InvoicePeriod/cbc:StartDate"
+      },
+      {
+        "id": "BT-135",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:InvoicePeriod/cbc:EndDate"
+      },
+      {
+        "id": "BT-151",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:ClassifiedTaxCategory[cac:TaxScheme/cbc:ID = 'VAT']/cbc:ID"
+      },
+      {
+        "id": "BT-152",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:ClassifiedTaxCategory/cbc:Percent"
+      },
+      {
+        "id": "BT-146",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Price/cbc:PriceAmount"
+      },
+      {
+        "id": "BT-147",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Price/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:Amount"
+      },
+      {
+        "id": "BT-148",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Price/cac:AllowanceCharge[cbc:ChargeIndicator = 'false']/cbc:BaseAmount"
+      },
+      {
+        "id": "BT-149",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Price/cbc:BaseQuantity"
+      },
+      {
+        "id": "BT-150",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Price/cbc:BaseQuantity/@unitCode"
+      },
+      {
+        "id": "BT-160",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:AdditionalItemProperty/cbc:Name"
+      },
+      {
+        "id": "BT-161",
+        "kind": "BT",
+        "bound": true,
+        "xpath": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine/cac:Item/cac:AdditionalItemProperty/cbc:Value"
+      }
+    ]
+  }
+}

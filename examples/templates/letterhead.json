@@ -1,0 +1,19 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Letterhead (PDF)",
+  "letterhead": {
+    "first":     { "file": "letterhead.pdf", "page": 1 },
+    "following": { "file": "letterhead.pdf", "page": 2 }
+  },
+  "colors": {
+    "heading": "#123a63",
+    "muted": "#5a6472",
+    "rule": "#c3cbd6",
+    "tableHeaderFill": "#eceff3",
+    "tableHeaderText": "#123a63"
+  },
+  "margins": {
+    "first":     { "top": 148, "bottom": 82, "left": 56, "right": 56 },
+    "following": { "top": 84,  "bottom": 82 }
+  }
+}

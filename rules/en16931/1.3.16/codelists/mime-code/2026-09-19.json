@@ -1,0 +1,28 @@
+{
+  "listId": "mime-code",
+  "name": "Media types of an attached document, as admitted by EN 16931",
+  "publisher": "IANA, registry of media types",
+  "source": "https://www.iana.org/assignments/media-types/{application,image,text}.csv , restricted to the media types EN 16931-1, 6.5.11 admits",
+  "retrieved": "2026-09-19",
+  "terms": "The IANA registries are published as the assignments of the media type registration procedure of RFC 6838; the pages state no licence for the CSV form. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "application/pdf"
+    },
+    {
+      "value": "image/png"
+    },
+    {
+      "value": "image/jpeg"
+    },
+    {
+      "value": "text/csv"
+    },
+    {
+      "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    },
+    {
+      "value": "application/vnd.oasis.opendocument.spreadsheet"
+    }
+  ]
+}

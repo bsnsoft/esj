@@ -1,0 +1,2242 @@
+{
+  "format": "EN16931-Semantic-JSON-Fixtures",
+  "version": "1",
+  "part": "core",
+  "specification": "SPEC.md",
+  "parts": [
+    "manifest-en16931-2026.json"
+  ],
+  "registries": [
+    {
+      "file": "model/en16931/2017.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "terms": 196,
+      "businessTerms": 164,
+      "businessGroups": 32,
+      "samplePaths": [
+        {
+          "path": "/BT-1",
+          "term": "BT-1",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Identifier"
+        },
+        {
+          "path": "/BT-2",
+          "term": "BT-2",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Date"
+        },
+        {
+          "path": "/BT-3",
+          "term": "BT-3",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Code"
+        },
+        {
+          "path": "/BT-10",
+          "term": "BT-10",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Text"
+        },
+        {
+          "path": "/BT-11",
+          "term": "BT-11",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "DocumentReference"
+        },
+        {
+          "path": "/BT-18",
+          "term": "BT-18",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-4/BT-29/0",
+          "term": "BT-29",
+          "kind": "BT",
+          "min": 0,
+          "max": "n",
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-4/BT-30",
+          "term": "BT-30",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-4/BT-34",
+          "term": "BT-34",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-7/BT-46",
+          "term": "BT-46",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-7/BT-47",
+          "term": "BT-47",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-7/BT-49",
+          "term": "BT-49",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-10/BT-60",
+          "term": "BT-60",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "term": "BT-61",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-13/BT-71",
+          "term": "BT-71",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-20/0/BT-92",
+          "term": "BT-92",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Amount"
+        },
+        {
+          "path": "/BG-20/0/BT-94",
+          "term": "BT-94",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Percentage"
+        },
+        {
+          "path": "/BG-24/0/BT-125",
+          "term": "BT-125",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "BinaryObject",
+          "components": [
+            {
+              "member": "mimeCode",
+              "min": 1
+            },
+            {
+              "member": "filename",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BT-128",
+          "term": "BT-128",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BT-129",
+          "term": "BT-129",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Quantity"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "term": "BT-146",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "UnitPriceAmount"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BT-157",
+          "term": "BT-157",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BG-31/BT-158/0",
+          "term": "BT-158",
+          "kind": "BT",
+          "min": 0,
+          "max": "n",
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            },
+            {
+              "member": "schemeVersion",
+              "min": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "model/xrechnung/3.0.2.json",
+      "semanticModel": "XRechnung3.0.2",
+      "terms": 12,
+      "businessTerms": 3,
+      "businessGroups": 9,
+      "samplePaths": [
+        {
+          "path": "/BG-DEX-09/0/BT-DEX-001",
+          "term": "BT-DEX-001",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Text"
+        },
+        {
+          "path": "/BG-DEX-09/0/BT-DEX-002",
+          "term": "BT-DEX-002",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Amount"
+        }
+      ]
+    },
+    {
+      "file": "model/b2c/0.1.json",
+      "semanticModel": "ESJ-B2C0.1",
+      "terms": 4,
+      "businessTerms": 4,
+      "businessGroups": 0,
+      "samplePaths": [
+        {
+          "path": "/BG-25/0/BT-B2C-001",
+          "term": "BT-B2C-001",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "UnitPriceAmount"
+        },
+        {
+          "path": "/BG-25/0/BT-B2C-002",
+          "term": "BT-B2C-002",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Amount"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "file": "examples/allowances.esj.json",
+      "canonical": "examples/allowances.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 69,
+      "canonicalBytes": 2045,
+      "semanticDigest": "2ad1888857e00f8175170f5fa1b24645b66275c971b0b3f92bf1aebc6d6be976",
+      "documentDigest": "f9ce573887ae5a6a102fb81375af0e6e1134d3a6af25a9e0b0e6ec9783b0d9bf"
+    },
+    {
+      "file": "examples/b2c-gross.esj.json",
+      "canonical": "examples/b2c-gross.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 66,
+      "canonicalBytes": 2036,
+      "semanticDigest": "fc4dc48662eebcd1450f061ee01d59168141ade50d77be66d5053f065bb1a97c",
+      "documentDigest": "fe959fb6892dce5affdcf163b577c99643fc544653688dca4d2605c0d1607285"
+    },
+    {
+      "file": "examples/charges.esj.json",
+      "canonical": "examples/charges.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 65,
+      "canonicalBytes": 1972,
+      "semanticDigest": "badcdc2d7084ccf24890e7a0ba4e575c3148b1bc7c77dfece982b056469f6d1c",
+      "documentDigest": "0d7d05d5e23c9b8f72abf5220b760b94d9543af8bc4b908808ea3e88d38aedcb"
+    },
+    {
+      "file": "examples/credit-note.esj.json",
+      "canonical": "examples/credit-note.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 46,
+      "canonicalBytes": 1437,
+      "semanticDigest": "a1fbdf551318e58015aff2839ab8ab9ef2691091500f6c578621e7a72255704f",
+      "documentDigest": "df7eccec8612204baec6a25362d9cc6910b4c42cf6edc5fcae2813af75e4ec06"
+    },
+    {
+      "file": "examples/extended.esj.json",
+      "canonical": "examples/extended.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 23,
+      "canonicalBytes": 1423,
+      "semanticDigest": "3cf1c0d54df6a342434ca2284b78f51a4c5e0def601956e46870acccfcf9a385",
+      "documentDigest": "a32e6647465f1fb0bc49468f0a2f0a1a1575fa228ffb7fa368b20eb5a8fc8ac1"
+    },
+    {
+      "file": "examples/extension-depth.esj.json",
+      "canonical": "examples/extension-depth.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 23,
+      "canonicalBytes": 795,
+      "semanticDigest": "3cf1c0d54df6a342434ca2284b78f51a4c5e0def601956e46870acccfcf9a385",
+      "documentDigest": "3dbb4212aee47f6cae74dcc98b4b873bba551bdbc06fc15afd376a465cac744a"
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "canonical": "examples/minimal.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 23,
+      "canonicalBytes": 676,
+      "semanticDigest": "3cf1c0d54df6a342434ca2284b78f51a4c5e0def601956e46870acccfcf9a385",
+      "documentDigest": "f794bd37b57d197a82c9eb099e201e154ec353450be6a50be84dc6851ec50d9a"
+    },
+    {
+      "file": "examples/multiple-lines.esj.json",
+      "canonical": "examples/multiple-lines.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 166,
+      "canonicalBytes": 5482,
+      "semanticDigest": "8f4e68d5bce16744b92a4cf2da4d9d63b30f9e9ada3e322b1a93ac9f8d244c80",
+      "documentDigest": "68dbdecdd176b421829e05b21c75d0e9b65a28da9fe37adc6d08def7bc0748e1"
+    },
+    {
+      "file": "examples/self-billed.esj.json",
+      "canonical": "examples/self-billed.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 61,
+      "canonicalBytes": 1939,
+      "semanticDigest": "3503f718af5e44b361b429a5bc70ade6105bb9c86e11c8f1e4a3314af8de17f9",
+      "documentDigest": "e565576a6fcac9e5ad1491d0055713b9b6bb68696b5923a03b0b406e0cdfdb98"
+    },
+    {
+      "file": "examples/smallest-valid.esj.json",
+      "canonical": "examples/smallest-valid.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 27,
+      "canonicalBytes": 775,
+      "semanticDigest": "1da9ad909f77c893e00b308634a7d789768f4c7da316d16851e1f4c65822ce74",
+      "documentDigest": "9e170680e744ef59fc67bd0211a8c6ea63e714475c3c59345066446f6ca5d730"
+    },
+    {
+      "file": "examples/standard-invoice.esj.json",
+      "canonical": "examples/standard-invoice.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 81,
+      "canonicalBytes": 2764,
+      "semanticDigest": "6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a",
+      "documentDigest": "951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4"
+    },
+    {
+      "file": "conformance/esj/business-cases/extension/04.01a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 192,
+      "canonicalBytes": 9091,
+      "semanticDigest": "1094829c035e1e0f8002a57416d23bdc449c5308ea1d11ad352fa25a80f4d143",
+      "documentDigest": "17540fcd04597ffda4a02c9296706b839c506cb24758ee1c7b13039e41277808"
+    },
+    {
+      "file": "conformance/esj/business-cases/extension/04.02a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 68,
+      "canonicalBytes": 2615,
+      "semanticDigest": "046e41adb07dbbd953f9580c0e5072386d02affde8217dc5d84aebaf1a6c82e3",
+      "documentDigest": "5264363db6eecce4dee6f977d8d66d26465b8fc96cd9777fb4e2ab8b0a8ecb9a"
+    },
+    {
+      "file": "conformance/esj/business-cases/extension/04.03a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 571,
+      "canonicalBytes": 36925,
+      "semanticDigest": "079004119ffeb2f2f80a726b8f19a52f84a5f844fcd4969df4cc57926ffc02fc",
+      "documentDigest": "f7472ec1867217e35344a00b94337abf9fcff10dc70e62c297b1851922cb7680",
+      "findings": [
+        {
+          "path": "/BG-25/0/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2/BG-DEX-01/1",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2/BG-DEX-01/7",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/3",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/7",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/8",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/1",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/2",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/3",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/2",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/6",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/7",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/8",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-129"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        },
+        {
+          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8/BG-DEX-01/1",
+          "code": "ESJ-L3-MISSING-TERM",
+          "subject": "BT-130"
+        }
+      ]
+    },
+    {
+      "file": "conformance/esj/business-cases/extension/04.04a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 116,
+      "canonicalBytes": 5679,
+      "semanticDigest": "9a32ed24263b47ed4458b8f20d8a910a0c0b2025dc4251914d5c03e60f106b0b",
+      "documentDigest": "bdcee8b9293b0062c48610c8a9f4c3af15aa15a1359e25e9ef10fc95cfcd3bc4",
+      "findings": [
+        {
+          "path": "/BG-25/0/BG-DEX-01/0",
+          "code": "ESJ-L3-MISSING-GROUP",
+          "subject": "BG-DEX-07"
+        }
+      ]
+    },
+    {
+      "file": "conformance/esj/business-cases/extension/04.05a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 53,
+      "canonicalBytes": 2079,
+      "semanticDigest": "985fc72077f8b0b32d427849e8eb7a61da584fef5bdd55551646c2fb5e3b6fb0",
+      "documentDigest": "4eec62a74a4e708c2e378dc43f6689a249a50bf9b24215d54458fa479d1c25a6"
+    },
+    {
+      "file": "conformance/esj/business-cases/extension/05.01a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 70,
+      "canonicalBytes": 2902,
+      "semanticDigest": "f047dd775123b8430598d09e02679696b68f7f150d86a6f71138d68e2c79b49b",
+      "documentDigest": "a405c2d7c82354a86baaf41de569baf66c5edcd33c45b146799ffadd29186efa"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.01a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 64,
+      "canonicalBytes": 2499,
+      "semanticDigest": "93c410bd2be4e613ca102876cfcbb5c9e1cdc9c905667d99bc74b1b4cdca577c",
+      "documentDigest": "8c5cb5bbebcfc789ac97b7348d532d13dd594b9f23374037a8113e3e2641a0d2"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.01a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 64,
+      "canonicalBytes": 2499,
+      "semanticDigest": "93c410bd2be4e613ca102876cfcbb5c9e1cdc9c905667d99bc74b1b4cdca577c",
+      "documentDigest": "b0157613f86c12ac74725b5821712f761a50ce4cc899b8bd7643cd053a01c085"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.02a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 62,
+      "canonicalBytes": 2760,
+      "semanticDigest": "b7509c89c313b5e359cf936d637967ba10a1db124d9fa342d8442e84f7defab7",
+      "documentDigest": "275e6d1e4b791d3e88e6bb30245b24008002742712ed8547680fba9060d4104c"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.02a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 61,
+      "canonicalBytes": 2739,
+      "semanticDigest": "f5830f90fdf4fd1b873b8709f09078c639507979862feee5e08c21e25209f413",
+      "documentDigest": "c016bfdd64edb5145ee7b6e5b78e20da9c1d8ba7f4e09922d7a6d4fac19afb88"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.03a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 69,
+      "canonicalBytes": 2678,
+      "semanticDigest": "4e5c28977fd9f7d3d600c4b82eac5cc9bc576f99f37d54ff6bd70d7f8eb48644",
+      "documentDigest": "acd59b1ad5f7ca03518eaabe6c66b918b307bb65523443a1c16a34e870949f4f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.03a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 69,
+      "canonicalBytes": 2678,
+      "semanticDigest": "4e5c28977fd9f7d3d600c4b82eac5cc9bc576f99f37d54ff6bd70d7f8eb48644",
+      "documentDigest": "b72d9abd640a71e076d233210c5c5ff5e3e385020dacad6b0ad7e75f644cc559"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.04a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 52,
+      "canonicalBytes": 2273,
+      "semanticDigest": "870562ea9ae7009ee7ddcf285531041e6a6354fb92473b7c2b0b3ecd89a1a016",
+      "documentDigest": "e568eab9aaca3a55c8bda653c50c3aeab06442a9a87e206b4da98146b13eea7b"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.04a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 52,
+      "canonicalBytes": 2273,
+      "semanticDigest": "870562ea9ae7009ee7ddcf285531041e6a6354fb92473b7c2b0b3ecd89a1a016",
+      "documentDigest": "fa44511696089622024bc6e8a8e9b98a599e9594c1f365bdfddeb8fbd324961e"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.05a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 80,
+      "canonicalBytes": 2748,
+      "semanticDigest": "c7b22eb2365a09ac70b4468fea0cfbd5ea97f1bb2db335cb4a04e29d0a4708b7",
+      "documentDigest": "cb9b9e7c6918329a956397aae6cda5816954f583e3a285764336cf538e4a48e2"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.05a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 80,
+      "canonicalBytes": 2748,
+      "semanticDigest": "c7b22eb2365a09ac70b4468fea0cfbd5ea97f1bb2db335cb4a04e29d0a4708b7",
+      "documentDigest": "5315395169ea0a1f7022484d89f30a056bf0e8f235c20452a52e4b3181a9e1d9"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.06a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 105,
+      "canonicalBytes": 3817,
+      "semanticDigest": "7631837bf7c9d4e6b23179b5d1008fd7f48f4b83f8cb9bf9e8ac1f922175e67e",
+      "documentDigest": "245b8c0eb306c4c623abf61134d76e189aadf25ae8b08eedcde6ebe50f768307"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.06a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 105,
+      "canonicalBytes": 3817,
+      "semanticDigest": "7631837bf7c9d4e6b23179b5d1008fd7f48f4b83f8cb9bf9e8ac1f922175e67e",
+      "documentDigest": "05390d7554975d5b4e5fa0100903d5c7b182c4fb5094b63586603a830536ed27"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.07a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 57,
+      "canonicalBytes": 2715,
+      "semanticDigest": "1ddb8a1ccee5eaa8daf81694dce1751cd787031241ceae788035cf15c13a8b1f",
+      "documentDigest": "a129c10830534c2e0ed27133f24684d8032bc880c3f1c7a479858362ddc723c8"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.07a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 57,
+      "canonicalBytes": 2715,
+      "semanticDigest": "1ddb8a1ccee5eaa8daf81694dce1751cd787031241ceae788035cf15c13a8b1f",
+      "documentDigest": "3c5fd7a62492b5a7f525300fb9247452bc40d2dedddf5f7f04294e4f166dc34c"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.08a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 53,
+      "canonicalBytes": 2132,
+      "semanticDigest": "0453f04a29defa8f91bcf6d1bf8194a629971aa7d8456267e3d79dc6847311dd",
+      "documentDigest": "f2d413cc6b034d7d514be46b3aeafb01ce97eeb10f16a0edfb1a1ef00f4e99ec"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.08a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 52,
+      "canonicalBytes": 2111,
+      "semanticDigest": "fc4664e29e724da015b9250836ef211ac88700a776b8810cea056e085826dac7",
+      "documentDigest": "29e22ad071e3d9b639c01c356aea9b2fcfdeb78ecfc82c9d43f6d9447602ddb9"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.09a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 52,
+      "canonicalBytes": 1974,
+      "semanticDigest": "a42e245c4770d60f62f1a206c7e42034386fa1827bf599b61dec8d6aec2089a6",
+      "documentDigest": "7661932eb5fc4fd4bb36856aa4ce1ceb1733e463aea82d7a1dde35bf8cf27289"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.09a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 51,
+      "canonicalBytes": 1953,
+      "semanticDigest": "a7f9d28afb3b26242bc25117b78a7d5208fe13b5c288a04912c5d2d65f8f7928",
+      "documentDigest": "a498ee8010325d8b09d4ab1f839dd5d08deb0784b4e467ba2c3cc7948124201f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.10a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 60,
+      "canonicalBytes": 2594,
+      "semanticDigest": "ee46c4bf4c42d9c43fa7b6001da45d10bd77f574796901abfff55955ad22469e",
+      "documentDigest": "a8622135ad37102fcc7d85362ddf13e2ffbe13a68f31680cd4c3c5d469877fa8"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.10a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 59,
+      "canonicalBytes": 2573,
+      "semanticDigest": "7091544a8a10c5a61a49b31dadc5c199725262b1119de0273ef955f3eda9720b",
+      "documentDigest": "bcba503383728ed2f0cfee85f2b36dff37c515dd98b6bdc3a0e0ff9a0533014f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.11a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 69,
+      "canonicalBytes": 2474,
+      "semanticDigest": "a3d91d9819ac66ebed41628dcb2223bdef9bac3e59ee2369e94f0ab8b4de57f6",
+      "documentDigest": "f57b1fc910cff30cb6d85e4f78f5a9d1cdb39fff02b0e30bc51135bba5e6440f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.11a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 68,
+      "canonicalBytes": 2453,
+      "semanticDigest": "c7802df04a60eb89f2747aa1f2a86306d858246a792e792abf9e094042c23607",
+      "documentDigest": "0d73d79f250fdfb5b65c21bb6e5d3f346af5bdb63d13ef88b009ecba072c511f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.12a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 87,
+      "canonicalBytes": 2990,
+      "semanticDigest": "f16889a5a6310ecf5c8e227026a0c449509ba823a11e8f6637fb661ba0c921a0",
+      "documentDigest": "105f9f990bb71e8b35e12a8b2e2f525945d3f6d61ed586ac0ccd302eb96d9a9b"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.12a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 86,
+      "canonicalBytes": 2969,
+      "semanticDigest": "dae53caadf92217a4b3bbbb2d3907d6dae38a9bc0080c4cbe054047d6b0e40fd",
+      "documentDigest": "fdc2fbea21f0a0a2c630ff351ac001e6d5cac9a459404172fcae659f725605df"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.13a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 131,
+      "canonicalBytes": 4298,
+      "semanticDigest": "4fdf1923af28b0e3a11a17d7cf4b3c64c4d1dda6c38da0114edd0e2c8013f6e8",
+      "documentDigest": "b23adac80aabc087d5cedb9448f11c509518ffda91fc4d70bb3a5a76c0b5ecca"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.13a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 130,
+      "canonicalBytes": 4277,
+      "semanticDigest": "d2e4bc12650e8140399f0e7cdf7b981b21ba563cbb99d61018ecb048d5a08b49",
+      "documentDigest": "081303d33f5683e548dd6161b37ab096cf342123dd1bf84989207fd4b043bbbe"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.14a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 77,
+      "canonicalBytes": 2555,
+      "semanticDigest": "9acec45f5665d277fbe7158bf00252e5e771b17546a747b90815d355afc37e49",
+      "documentDigest": "09627f87dd6a8153e92db6ca12d61ca3014fc2ec51d78ef93dca8b76ef67eabd"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.14a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 77,
+      "canonicalBytes": 2555,
+      "semanticDigest": "9acec45f5665d277fbe7158bf00252e5e771b17546a747b90815d355afc37e49",
+      "documentDigest": "1d141822505a80540abbe36e987f58fae81b0f31bc5af8d2de234aaf5530457a"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.15a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 89,
+      "canonicalBytes": 203309,
+      "semanticDigest": "97f36483030fe734f9633c4e29e31fe31ae38d3ac89750730ec8efe133816247",
+      "documentDigest": "bfd563942a7dd6dcbcaa4bf1e25afed7cfc72ab7ab8c6307c0441a70ba246fb6"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.15a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 89,
+      "canonicalBytes": 203309,
+      "semanticDigest": "97f36483030fe734f9633c4e29e31fe31ae38d3ac89750730ec8efe133816247",
+      "documentDigest": "66145e706cbc2458597280492383eb6679f103ceabb1527cddf0cb24b321986c"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.17a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 65,
+      "canonicalBytes": 2523,
+      "semanticDigest": "e3aac61aaf9668e9b72e7932ae8262d38bc9ec2f5e944fd4edc8f36303200345",
+      "documentDigest": "bfad40536cb3127ad913947a00810264c7d181429631dd172eddcabf0c254108"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.17a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 65,
+      "canonicalBytes": 2523,
+      "semanticDigest": "e3aac61aaf9668e9b72e7932ae8262d38bc9ec2f5e944fd4edc8f36303200345",
+      "documentDigest": "edae873587f636f8093cae126bf5e4296e9ed6244531bbd403d5b4c1cca46b38"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.18a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 81,
+      "canonicalBytes": 2777,
+      "semanticDigest": "76f257f3af688d4aaad6b5459efbb00e0f1c7361ff7c6be5396b527a8fcc0f63",
+      "documentDigest": "43cc806fcad5a29a67cddd03dc2b636395a9c7443b18740a7382d051a7485bea"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.18a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 81,
+      "canonicalBytes": 2777,
+      "semanticDigest": "76f257f3af688d4aaad6b5459efbb00e0f1c7361ff7c6be5396b527a8fcc0f63",
+      "documentDigest": "22e425fdf9043a58759b2956911ad9f50cc956e999bbe6094f67b94a29c2e913"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.19a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 78,
+      "canonicalBytes": 2730,
+      "semanticDigest": "9d6d36257d37b2d2d122da4e6efc145bc101c770dd86053605f92044c5075578",
+      "documentDigest": "ce3e6f85d8e1947383e3f79457fef83acceefbf9f041750fb95df91fa19141b8"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.19a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 78,
+      "canonicalBytes": 2730,
+      "semanticDigest": "9d6d36257d37b2d2d122da4e6efc145bc101c770dd86053605f92044c5075578",
+      "documentDigest": "03dd2cea8fc56b9aacf30cd51e5048ab9c4a2d121bda3f4221d37eb45e029220"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.20a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 79,
+      "canonicalBytes": 2701,
+      "semanticDigest": "9f85e3b7f6357bca694ddd2b11802e95a6b5025b91495d77a0f4256133cc070f",
+      "documentDigest": "7dbdce4288086c07f7e2a541a35207e77f0ef463434e092cb5b31448cf73a776"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.20a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 82,
+      "canonicalBytes": 2747,
+      "semanticDigest": "1296a43d410715c529d35bd6eb741897a2de12822ad8b3234865333b402f617e",
+      "documentDigest": "717779d2a6a7e6b0d0ec97730a4c38c8399604bf28ab4723528f3c183cb4c8a3"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 62,
+      "canonicalBytes": 2107,
+      "semanticDigest": "4ae06303ab126e89989a3397d8c1a51b7f434b40e511b94e871ea11630ee7956",
+      "documentDigest": "f1369ee4191b94530a051485d913697f9c0d99beddad72d4f0ee89b7095303bf"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 63,
+      "canonicalBytes": 2115,
+      "semanticDigest": "ef0445db07d2ac931d32a9a229cbe81506fabd8a50e71dc0ad4776f15b1006ed",
+      "documentDigest": "1c62a19a17256dbeb1c72a4fa828eb48558d122bbd660fd0157fc8f498467a5d"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.01a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 128,
+      "canonicalBytes": 204719,
+      "semanticDigest": "1c07698fe44e4b260e5e5328c9566e2ec3739a82d30b30d457fbf77d016eb5b2",
+      "documentDigest": "e2cfbcfcbedb3952a3c6d85fc274ce6cd24b76c761a257b77e747d5b3a9c103f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.01a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 129,
+      "canonicalBytes": 204739,
+      "semanticDigest": "a185074c46c1476668057aac7e65734b219d8b12f5ea7f79ae54f0c89aed33b0",
+      "documentDigest": "3f2c6c49c90cb617ff43df94e6247e43f7161b32592c04858b01d0f286724e0a"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.02a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 124,
+      "canonicalBytes": 204589,
+      "semanticDigest": "20a309ebe16f47fa51e58abc37df0b91dadbe5c2b4bbc22a73ca61ad6542ad07",
+      "documentDigest": "d5fb7f320911f52cd7c0912390692a659e994451aa778285ca2f968cf10902d7"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.02a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 125,
+      "canonicalBytes": 204609,
+      "semanticDigest": "c5e18a17f60e74ff16da722da3c9a7f3d93cec6b5fe0a9c3d2caded54a46110b",
+      "documentDigest": "604f525a675bee4c563e7cb2eecb33afe128502980b7a78357f70aae56e74d98"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.03a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 128,
+      "canonicalBytes": 204719,
+      "semanticDigest": "26f434d57f7470e81bd4aa0d52aeb5b3b262385f2b7339fcbdded2894f9cda94",
+      "documentDigest": "4d56fc15d26891d3a9b8eda56b72b946814f8621b4fc2798387f4d8eed098ccb"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.03a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 129,
+      "canonicalBytes": 204739,
+      "semanticDigest": "30abb40a4ea7c6f8e3c5726f48bc167dd30b032ca1e0efd2371f81eae90a1037",
+      "documentDigest": "6a8faeafde6eb555c74b8a6c8ae4d0de07e2d8dd2801029b3b9ef9344550482e"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.04a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 128,
+      "canonicalBytes": 204645,
+      "semanticDigest": "397e3dbc886f7347daac7c7a1ce8d18fe7534e509f59357a3dd8f5b9708f82c5",
+      "documentDigest": "8af6e30cf16c58480265e713a0f4ca07f91185654dfb13c7a5e0f65fcc6fddd1"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.04a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 129,
+      "canonicalBytes": 204665,
+      "semanticDigest": "882017dc7dceae7256d68b5db986500cb2e9d174fdeddcf9d5046504d832a750",
+      "documentDigest": "9701f9abef7a6b9036ba3b8e71c23248ad581757303ddcd66075b26b74add08a"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.05a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 262,
+      "canonicalBytes": 208248,
+      "semanticDigest": "54cd64a44976e581d2761d0cfbbbb503347a72577dc5b2e70cc23b16d9682880",
+      "documentDigest": "86973b162d781e3ec6eb71907e2198bec19d0a429adf0a50d266d968307eb562"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.05a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 262,
+      "canonicalBytes": 208248,
+      "semanticDigest": "54cd64a44976e581d2761d0cfbbbb503347a72577dc5b2e70cc23b16d9682880",
+      "documentDigest": "9969755a6eaab3f71d74e89717239cf39c550a1f0b56121e7ff4736053330d2b"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.06a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 74,
+      "canonicalBytes": 203056,
+      "semanticDigest": "aaf9e6fcde61b62fb49297e8b1e0d3fdf280c133c8c71e846a5788252ef9b742",
+      "documentDigest": "d913c058468c08c7314e8884a3fe7185d1b6fca10cc5dc1ddf495edd9f033fe9"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/02.06a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 74,
+      "canonicalBytes": 203056,
+      "semanticDigest": "aaf9e6fcde61b62fb49297e8b1e0d3fdf280c133c8c71e846a5788252ef9b742",
+      "documentDigest": "775b42b03977a2e44f46d0e090150cf9fc9d6a45d8e26c6f934333160387ea25"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.01a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 208,
+      "canonicalBytes": 207106,
+      "semanticDigest": "d8cf517ad4919f801d10dc9ce22a9638c81cbc71fdedf63582eff6d3c1a4fcb1",
+      "documentDigest": "1b6f95683fc5ec2115cd016bdc4463aaac3789b544718654a7d7af17c581ce1f"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.01a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 207,
+      "canonicalBytes": 207077,
+      "semanticDigest": "6b5dd9e5e1dc935d9e8a0ac15c834ab863860162084a11f60646ba0b631d9536",
+      "documentDigest": "7fe4c2c1f0aa55fcc3320684463f566a894b16293ff8087b1059ef683c31c207"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.02a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 89,
+      "canonicalBytes": 203308,
+      "semanticDigest": "c62f10509d5751161d7c2a73b59d70b25bc75a682857410d2a363b3a021f23f9",
+      "documentDigest": "a49f1a945dff5270afdc7fa13562ef0124d96582e16a48c4d75e3ce37011d5e2"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.02a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 89,
+      "canonicalBytes": 203308,
+      "semanticDigest": "c62f10509d5751161d7c2a73b59d70b25bc75a682857410d2a363b3a021f23f9",
+      "documentDigest": "80e03aab8359e483620f0e3c9814b620208294997dd5b074e3293eaa7c0101c1"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.03a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 92,
+      "canonicalBytes": 3238,
+      "semanticDigest": "847d5322e4a7246430ea5f6e040256ce056dbd4a6b592c16b51b8f84cbb73b96",
+      "documentDigest": "4b9a299e278dfc79fba231a12ad12b9003989bb348821c61899e0a591161168b"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.03a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 92,
+      "canonicalBytes": 3238,
+      "semanticDigest": "847d5322e4a7246430ea5f6e040256ce056dbd4a6b592c16b51b8f84cbb73b96",
+      "documentDigest": "d833de867230db945445bf0666efd474938f4873fe4b55db83f10490b233dd03"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.04a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 147,
+      "canonicalBytes": 205244,
+      "semanticDigest": "7354212721be70585f27c388c1adbae19e4dce31745d24c951326fcbad09638f",
+      "documentDigest": "45b8e0a679c9c4a5ff10edd5848a74e95cefca867cb3d4379090889a9938b159"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.04a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 147,
+      "canonicalBytes": 205244,
+      "semanticDigest": "7354212721be70585f27c388c1adbae19e4dce31745d24c951326fcbad09638f",
+      "documentDigest": "8e21f540e738572f038b17030033daa07eb68972c8b5023aeb3495ae00966f67"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.05a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 86,
+      "canonicalBytes": 203265,
+      "semanticDigest": "dab3420bdbe11818c8d1fe93076503260999e34c374663d9fa084cd4bcb85b75",
+      "documentDigest": "6387f26ffc87d81b4d75828df05ffc6624455f978bda78233bbe05ee659572f0"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.05a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 86,
+      "canonicalBytes": 203265,
+      "semanticDigest": "dab3420bdbe11818c8d1fe93076503260999e34c374663d9fa084cd4bcb85b75",
+      "documentDigest": "9c4b936fc18300f22c925f1b0d4196b193419ca9e285e19ae3c49d64bfabbbca"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.06a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 86,
+      "canonicalBytes": 2841,
+      "semanticDigest": "63451759fa50dd78ef99667c4467448d9bb5839ee71b317af2c1ba54ad5866bc",
+      "documentDigest": "d404accf659abdac354b631b1df53e544c2a51c960d3ead2799f62852784e3ad"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.06a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 86,
+      "canonicalBytes": 2841,
+      "semanticDigest": "229091c51378e8ec85f3854c38fb6d1f14bbc9b07d49224b674d8b8b35e76162",
+      "documentDigest": "baa063fc556a0137084ebe1f8d24dfeafcc5a660da01a2423b0453f43a12897c"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.07a-INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 218,
+      "canonicalBytes": 408484,
+      "semanticDigest": "4907453df7d35484cad53824bce23c2273c4c9dc7cc7c750067d30b446900594",
+      "documentDigest": "323432027b34ad382b4e70fbea607b7bb674a0ad2b73344cd98df3c8064953e8"
+    },
+    {
+      "file": "conformance/esj/business-cases/standard/03.07a-INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 222,
+      "canonicalBytes": 408634,
+      "semanticDigest": "db32d5f3528445e1648ec2dea0343d96251f4ce280c098a03d136cfa762595da",
+      "documentDigest": "92743c8531ea1eca256832baa61ab3ec088699457b459691f1c919fb9ca9fe3e"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 208,
+      "canonicalBytes": 407851,
+      "semanticDigest": "145e380030db58e970f43b35c7064ab71ac1c4fd86dcf57f2e02a99c5871c02f",
+      "documentDigest": "429f9dbb9f65aae4e2e55ae7b5acd0f4fd9af8f36162cebe2c4559ddb8379eaa"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 208,
+      "canonicalBytes": 407882,
+      "semanticDigest": "bb14bb36fa0ceb2d0bcd8f43f2a6638fcaf56fc0e9630e019b25d94e482d89d9",
+      "documentDigest": "dc7abcef4f1968b734ada290f932744bc93f42fbcb5d446b1fa9f196d5bca853"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.02_comprehensive_test_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 173,
+      "canonicalBytes": 206469,
+      "semanticDigest": "147548b750420d774d3e50d01aca0c362b5a0c73dc901c29ef63b5c5aefc8c3c",
+      "documentDigest": "0ed1fffbc1b6d7e3e6e91a4450f39d7e52767deaec4bdee654c3dc03338a1f7e"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.02_comprehensive_test_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 173,
+      "canonicalBytes": 206492,
+      "semanticDigest": "3f00552f6112b6eae634da86f1d1f35ad7bd0ef846d59f7a4898db8ff4103851",
+      "documentDigest": "c51467ba27d2c3bbe25c935f4ec6e0f500b97eef2ac26e0371887edf93b52270"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.03_comprehensive_test_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 169,
+      "canonicalBytes": 206239,
+      "semanticDigest": "c10b14ac16da8e0659b5c83ef34e354cc9c4c48ac2483d5f5d39af9798f211a2",
+      "documentDigest": "f8b42e8ba73f6ca37b91e277f4c329129c0b9b33adfdfafc5d628034b9411083"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.03_comprehensive_test_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 169,
+      "canonicalBytes": 206268,
+      "semanticDigest": "d09c63d5b358857189b0bcab2edd422a5bd4b6169c8404905512d562d9d15cef",
+      "documentDigest": "60d68b4fba22d521fcc9b9e26f3bfc1c25968fe578697ff842247c44331e7401"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.04_comprehensive_test_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 170,
+      "canonicalBytes": 206329,
+      "semanticDigest": "ea94094ed0930cbe2be42e4dfa12391fc28624a4e102fe0beac2c2a668fed520",
+      "documentDigest": "5bdab8c948bd604376357d5f9a5b149ed762a41686bb08d2dbdaa4b3ed026e09"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.04_comprehensive_test_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 170,
+      "canonicalBytes": 206358,
+      "semanticDigest": "e7a06ee43c81b811a5185295726f4726938b2300b4272f44e7514c67fff15b6b",
+      "documentDigest": "e9c8b53e8311995714c15e7aa57dc4c08b93840ccfc4ef9e03fc301725c237ae"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.05_minimal_test_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 41,
+      "canonicalBytes": 1491,
+      "semanticDigest": "ad1d8b2b9a4373a15a2ddaa5f375ec9bc7c60b993d4bfb7d55e3f463f36fee07",
+      "documentDigest": "27156ce5d6b485cfcb1c66d5cbac29c5416b301c94a056772fb6a7c29115c9c1"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.05_minimal_test_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 40,
+      "canonicalBytes": 1471,
+      "semanticDigest": "a885a4329f2d4c66bda11d67fe924319488d48350c9ccf8f019250c78d56f0d2",
+      "documentDigest": "043024854f11bae91606b55b8186b779cb6840fdb40527fb5379b020fd078240"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 42,
+      "canonicalBytes": 1529,
+      "semanticDigest": "eb48b91e7e41bc4b5ee4e3d4e001f3f8fbb77bf740d85d4ea65e28bfda0ee77a",
+      "documentDigest": "59bdb9f259df48325c8b6504fceaffaab956bb462963d9be27a70919218dfd3e"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cius/01.06_minimal_test_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 42,
+      "canonicalBytes": 1529,
+      "semanticDigest": "eb48b91e7e41bc4b5ee4e3d4e001f3f8fbb77bf740d85d4ea65e28bfda0ee77a",
+      "documentDigest": "b87cbd17e20e380ffb91df4eb1dbb4e5f1eef22f573da738ddde45bf8c42431b"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 214,
+      "canonicalBytes": 7897,
+      "semanticDigest": "b2db1d245cea503c754ee8e1d20cfc51ff91c8955394aae366a5ed9c276e07bf",
+      "documentDigest": "dc0cc3cefd629a193f0a3a07d1abd570b10ded40870520da6851f20da87cd200"
+    },
+    {
+      "file": "conformance/esj/technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 218,
+      "canonicalBytes": 8049,
+      "semanticDigest": "5b213d0a714494179add04efcbd4878d60bea57697a979bc83df1c0b6be135d4",
+      "documentDigest": "1f64753a35896069b24b7c6dfd77b397569d69eac2ee93bc483bd3ae17ef1488"
+    }
+  ],
+  "invalid": [
+    {
+      "file": "examples/invalid/arithmetic-mismatch.esj.json",
+      "layer": "business-rule"
+    },
+    {
+      "file": "examples/invalid/b2c-decimal-trailing-zeros.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-DECIMAL",
+      "path": "/BG-25/0/BT-B2C-001"
+    },
+    {
+      "file": "examples/invalid/base64-non-canonical.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-BASE64",
+      "path": "/BG-24/0/BT-125"
+    },
+    {
+      "file": "examples/invalid/binary-without-filename.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-COMPONENT-MISSING",
+      "path": "/BG-24/0/BT-125"
+    },
+    {
+      "file": "examples/invalid/calendar-impossible-date.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-DATE",
+      "path": "/BT-2"
+    },
+    {
+      "file": "examples/invalid/decimal-too-long.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-DECIMAL",
+      "path": "/BG-25/0/BT-129"
+    },
+    {
+      "file": "examples/invalid/decimal-trailing-zeros.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-DECIMAL",
+      "path": "/BG-22/BT-106"
+    },
+    {
+      "file": "examples/invalid/duplicate-and-surrogate-in-value-object.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-DUPLICATE-MEMBER",
+      "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/duplicate-below-bad-owner-token.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-OWNER-TOKEN",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/duplicate-in-two-value-objects.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-DUPLICATE-MEMBER",
+      "path": "/BG-4/BT-29/0"
+    },
+    {
+      "file": "examples/invalid/duplicate-in-value-object.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-DUPLICATE-MEMBER",
+      "path": "/BG-4/BT-29/0"
+    },
+    {
+      "file": "examples/invalid/duplicate-member.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-DUPLICATE-MEMBER",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/duplicate-path-of-value-objects.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-VALUE-SHAPE",
+      "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/duplicate-path-of-value-objects.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-DUPLICATE-MEMBER",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/empty-extensions.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-ENVELOPE-VALUE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/empty-string-value.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-EMPTY-STRING",
+      "path": "/BG-4/BT-27"
+    },
+    {
+      "file": "examples/invalid/empty-string-with-missing-term.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-EMPTY-STRING",
+      "path": "/BG-4/BT-27"
+    },
+    {
+      "file": "examples/invalid/extension-depth-33.esj.json",
+      "layer": "limit",
+      "code": "ESJ-L1-LIMIT",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/extension-number-too-long.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-EXT-NUMBER",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/index-gap.esj.json",
+      "layer": "L3",
+      "code": "ESJ-L3-INDEX-GAP",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/index-on-bt-1.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-INDEX-FORBIDDEN",
+      "path": "/BT-1/0"
+    },
+    {
+      "file": "examples/invalid/lone-surrogate.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": "/BG-4/BT-27"
+    },
+    {
+      "file": "examples/invalid/missing-mandatory-term.esj.json",
+      "layer": "L3",
+      "code": "ESJ-L3-MISSING-TERM",
+      "path": "/BG-25/0"
+    },
+    {
+      "file": "examples/invalid/number-instead-of-string.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-JSON-TYPE",
+      "path": "/BG-25/0/BT-129"
+    },
+    {
+      "file": "examples/invalid/object-without-component.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-VALUE-SHAPE",
+      "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/owner-token-syntax.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-OWNER-TOKEN",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/path-leading-zero-index.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-PATH-SYNTAX",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/scheme-on-text-value.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-COMPONENT-NOT-ALLOWED",
+      "path": "/BG-4/BT-27"
+    },
+    {
+      "file": "examples/invalid/scheme-version-without-scheme.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-VALUE-MEMBER",
+      "path": "/BG-25/0/BG-31/BT-158/0"
+    },
+    {
+      "file": "examples/invalid/source-empty-syntax.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-ENVELOPE-VALUE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/source-lone-surrogate.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/source-sha256-uppercase.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-ENVELOPE-VALUE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/surrogate-and-duplicate-in-value-object.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/surrogate-below-bad-owner-token.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-OWNER-TOKEN",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/surrogate-in-envelope-member-name.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/surrogate-in-path.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/surrogate-in-shapeless-value-object.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/surrogate-in-shapeless-value-object.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-VALUE-SHAPE",
+      "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/surrogate-in-source-member-name.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-SURROGATE",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/unknown-envelope-member.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-ENVELOPE-MEMBER",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/unknown-object-member.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-VALUE-MEMBER",
+      "path": "/BG-4/BT-29/0"
+    },
+    {
+      "file": "examples/invalid/unknown-term.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-UNKNOWN-TERM",
+      "path": "/BT-999"
+    },
+    {
+      "file": "examples/invalid/value-not-a-string.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-VALUE-SHAPE",
+      "path": "/BG-4/BT-29/0"
+    },
+    {
+      "file": "examples/invalid/value-object-members-17.esj.json",
+      "layer": "limit",
+      "code": "ESJ-L1-LIMIT",
+      "path": "/BT-1"
+    }
+  ],
+  "canonicalOrder": [
+    {
+      "scrambled": "conformance/fixtures/canonical-order/scrambled.esj.json",
+      "canonical": "examples/extended.canonical.esj.json",
+      "values": 23,
+      "documentDigest": "a32e6647465f1fb0bc49468f0a2f0a1a1575fa228ffb7fa368b20eb5a8fc8ac1"
+    },
+    {
+      "scrambled": "conformance/fixtures/canonical-order/indices.esj.json",
+      "canonical": "conformance/fixtures/canonical-order/indices.canonical.esj.json",
+      "values": 93,
+      "documentDigest": "d26eb250982f469d14d3e9c93a03c6462d1456cc1719019049c097458278b870"
+    }
+  ],
+  "grammars": [
+    {
+      "datatype": "Amount",
+      "code": "ESJ-L2-DECIMAL",
+      "base": "examples/minimal.esj.json",
+      "path": "/BG-22/BT-106",
+      "accept": [
+        "0",
+        "100",
+        "-100",
+        "0.5",
+        "42.015",
+        "-0.01",
+        "1111111111111111111111111111111111111111111111111111111111111111"
+      ],
+      "reject": [
+        "100.00",
+        "007",
+        "1E2",
+        "1e-3",
+        "+1",
+        "100.",
+        ".5",
+        "-0",
+        "-0.00",
+        "1 000",
+        "1,5",
+        "0x10",
+        "11111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "datatype": "Date",
+      "code": "ESJ-L2-DATE",
+      "base": "examples/minimal.esj.json",
+      "path": "/BT-2",
+      "accept": [
+        "2026-01-15",
+        "2024-02-29",
+        "1000-01-01",
+        "9999-12-31"
+      ],
+      "reject": [
+        "2026-02-30",
+        "2023-02-29",
+        "0999-12-31",
+        "2026-1-5",
+        "20260115",
+        "2026-01-15Z",
+        "2026-13-01",
+        "2026-01-32"
+      ]
+    },
+    {
+      "datatype": "BinaryObject",
+      "code": "ESJ-L2-BASE64",
+      "base": "examples/minimal.esj.json",
+      "path": "/BG-24/0/BT-125",
+      "accept": [
+        {
+          "value": "QUJDRQ==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJD",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QQ==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        }
+      ],
+      "reject": [
+        {
+          "value": "QUJDRR==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJDRQ",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJD RQ==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJDR-==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJDRQ===",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "pack": "en16931/1.3.16",
+    "directory": "rules/en16931/1.3.16",
+    "casesFile": "cases-en16931-1.3.16.json",
+    "cases": 448
+  }
+}

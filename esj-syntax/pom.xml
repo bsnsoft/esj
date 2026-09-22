@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-syntax</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Syntax engine</name>
+  <description>
+    Validates a UBL 2.1 or UN/CEFACT CII invoice against the official validation
+    artefacts of its profile: the XML Schema modules of the syntax and the compiled
+    Schematron of EN 16931 and of the CIUS. The artefacts are not reimplemented here.
+    They are carried as data in the validation packs of the repository, which this
+    module packages and executes.
+  </description>
+
+  <dependencies>
+    <!--
+      The secure XML front door of this project and the XSLT processor that runs the
+      compiled Schematron artefacts both live in esj-xr, which is where the parser and
+      processor settings of this project are configured once rather than per module.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-xr</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      The manifest of a pack is read with the streaming parser of jackson-core, as every
+      other JSON file of this repository is.
+    -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <!--
+          The validation packs live at the root of the repository, because they are
+          material of the project rather than of this module: they are reviewed, their
+          digests are recorded in packs/SOURCES.md and their licences are listed in the
+          NOTICE beside them. They are put on the class path below the package of this
+          module so that the engine reads them from the class path and never from a
+          file system path. The two markdown files at the root of packs/ document the
+          directory for a reader of the repository and are not part of any artefact.
+        -->
+        <directory>${project.basedir}/../packs</directory>
+        <targetPath>de/bsnsoft/esj/syntax/packs</targetPath>
+        <excludes>
+          <exclude>*.md</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+    </resources>
+    <!--
+      The conformance corpus lives at the root of the repository. The tests of this module
+      run every instance of it through both engines, so it is copied onto the test class
+      path the way esj-xr does it.
+    -->
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <!--
+        The two markdown files at the root of packs/ are not part of any artefact, so
+        the main resources above exclude them. SOURCES.md states the file count and the
+        byte total of each pack, and a test weighs the packaged tree against those two
+        figures, so it is put on the test class path alone.
+      -->
+      <testResource>
+        <directory>${project.basedir}/../packs</directory>
+        <targetPath>packs</targetPath>
+        <includes>
+          <include>SOURCES.md</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+      </testResource>
+    </testResources>
+  </build>
+</project>

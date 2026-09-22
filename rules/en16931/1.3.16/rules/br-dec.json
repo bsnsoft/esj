@@ -1,0 +1,359 @@
+[
+  {
+    "id": "BR-DEC-01",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-92"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-92",
+        2
+      ]
+    },
+    "message": "The document level allowance amount (BT-92) at {@/BT-92} is {/BT-92}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-92",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-02",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-93"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-93",
+        2
+      ]
+    },
+    "message": "The document level allowance base amount (BT-93) at {@/BT-93} is {/BT-93}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-93",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-05",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-99"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-99",
+        2
+      ]
+    },
+    "message": "The document level charge amount (BT-99) at {@/BT-99} is {/BT-99}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-99",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-06",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-100"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-100",
+        2
+      ]
+    },
+    "message": "The document level charge base amount (BT-100) at {@/BT-100} is {/BT-100}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-100",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-09",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-106"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-106",
+        2
+      ]
+    },
+    "message": "The sum of invoice line net amount (BT-106) at {@/BT-106} is {/BT-106}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-106",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-10",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-107"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-107",
+        2
+      ]
+    },
+    "message": "The sum of allowances on document level (BT-107) at {@/BT-107} is {/BT-107}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-107",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-11",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-108"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-108",
+        2
+      ]
+    },
+    "message": "The sum of charges on document level (BT-108) at {@/BT-108} is {/BT-108}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-108",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-12",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-109"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-109",
+        2
+      ]
+    },
+    "message": "The invoice total amount without VAT (BT-109) at {@/BT-109} is {/BT-109}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-109",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-13",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-110"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-110",
+        2
+      ]
+    },
+    "message": "The invoice total VAT amount (BT-110) at {@/BT-110} is {/BT-110}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-110",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-14",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-112"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-112",
+        2
+      ]
+    },
+    "message": "The invoice total amount with VAT (BT-112) at {@/BT-112} is {/BT-112}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-112",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-15",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-111"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-111",
+        2
+      ]
+    },
+    "message": "The invoice total VAT amount in accounting currency (BT-111) at {@/BT-111} is {/BT-111}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-111",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-16",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-113"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-113",
+        2
+      ]
+    },
+    "message": "The paid amount (BT-113) at {@/BT-113} is {/BT-113}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-113",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-17",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-114"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-114",
+        2
+      ]
+    },
+    "message": "The rounding amount (BT-114) at {@/BT-114} is {/BT-114}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-114",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-18",
+    "severity": "fatal",
+    "context": "/BG-22",
+    "terms": [
+      "BT-115"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-115",
+        2
+      ]
+    },
+    "message": "The amount due for payment (BT-115) at {@/BT-115} is {/BT-115}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-115",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-19",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-116"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-116",
+        2
+      ]
+    },
+    "message": "The VAT category taxable amount (BT-116) at {@/BT-116} is {/BT-116}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-116",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-20",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-117"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-117",
+        2
+      ]
+    },
+    "message": "The VAT category tax amount (BT-117) at {@/BT-117} is {/BT-117}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-117",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-23",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-131"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-131",
+        2
+      ]
+    },
+    "message": "The invoice line net amount (BT-131) at {@/BT-131} is {/BT-131}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-131",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-24",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-136"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-136",
+        2
+      ]
+    },
+    "message": "The invoice line allowance amount (BT-136) at {@/BT-136} is {/BT-136}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-136",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-25",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-137"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-137",
+        2
+      ]
+    },
+    "message": "The invoice line allowance base amount (BT-137) at {@/BT-137} is {/BT-137}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-137",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-27",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-141"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-141",
+        2
+      ]
+    },
+    "message": "The invoice line charge amount (BT-141) at {@/BT-141} is {/BT-141}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-141",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  },
+  {
+    "id": "BR-DEC-28",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-142"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-142",
+        2
+      ]
+    },
+    "message": "The invoice line charge base amount (BT-142) at {@/BT-142} is {/BT-142}, which needs more than two fraction digits; an amount of this standard carries at most two.",
+    "source": "EN 16931-1, 6.5.12, Table 26, BT-142",
+    "note": "The number an identifier of this family carries is the official validation artefacts' and not the standard's: clause 6.5.12 states the allowed number of fraction digits per business term in a table and gives the restriction no rule identifier, and the artefacts number one rule per row. The identifier is kept so that a report can be compared with theirs. The statement is about how many fraction digits an amount may carry. An ESJ document has no second spelling of a number — the decimal form of the specification carries no trailing fraction zeros and a value that carries them is refused at layer L2 — so what is counted here is the fraction digits the number needs. An invoice that reached the official artefacts as XML spelling 100.00 counts two digits there and none here; the two answers differ only where the spelling differs from the number, which the ledger records."
+  }
+]

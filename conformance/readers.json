@@ -1,0 +1,95 @@
+{
+  "format": "EN16931-Semantic-JSON-reader-comparison",
+  "version": "0.1",
+  "readers": {
+    "streaming": "esj-bindings, the table-driven streaming reader, which writes conformance/esj",
+    "xslt": "esj-xr, the XSLT bootstrap, which stays available as the oracle"
+  },
+  "corpus": {
+    "instances": 86,
+    "identical": 74,
+    "differing": 12,
+    "differingPaths": 13
+  },
+  "causes": [
+    {
+      "id": "line-object-identifier-scheme",
+      "kind": "overcome",
+      "side": "differing-value",
+      "pathPattern": "^/BG-25/\\d+/BT-128$",
+      "instances": 6,
+      "paths": 6,
+      "where": "xslt"
+    },
+    {
+      "id": "object-identifier-as-supporting-document",
+      "kind": "overcome",
+      "side": "xslt-only",
+      "pathPattern": "^/BG-24/\\d+/BT-122$",
+      "instances": 6,
+      "paths": 6,
+      "where": "xslt"
+    },
+    {
+      "id": "tax-point-date-code-list",
+      "kind": "overcome",
+      "side": "differing-value",
+      "pathPattern": "^/BT-8$",
+      "instances": 1,
+      "paths": 1,
+      "where": "xslt"
+    }
+  ],
+  "beyondTheCorpus": [
+    {
+      "id": "order-reference-convention",
+      "kind": "overcome",
+      "side": "xslt-only",
+      "path": "/BT-13",
+      "where": "xslt",
+      "document": "a UBL invoice written for it in StreamingReaderTest and ReaderCorpusTest",
+      "why": "no instance of the corpus carries the conventional value at cac:OrderReference/cbc:ID, so the corpus does not reach this difference"
+    }
+  ],
+  "notes": {
+    "DUPLICATE_PATH /BG-16/BT-81": {
+      "occurrences": 30,
+      "instances": 22,
+      "bySyntax": {
+        "CII": {
+          "occurrences": 15,
+          "instances": 11
+        },
+        "UBL": {
+          "occurrences": 15,
+          "instances": 11
+        }
+      }
+    },
+    "DUPLICATE_PATH /BG-16/BT-83": {
+      "occurrences": 4,
+      "instances": 4,
+      "bySyntax": {
+        "CII": {
+          "occurrences": 0,
+          "instances": 0
+        },
+        "UBL": {
+          "occurrences": 4,
+          "instances": 4
+        }
+      }
+    }
+  },
+  "creditNote": {
+    "instance": "conformance/creditnote/credit-note_ubl.xml",
+    "why": "the corpus holds no UBL credit note, so the credit note table is measured here",
+    "differingPaths": [
+      "/BG-24/0/BT-122",
+      "/BG-24/0/BT-123",
+      "/BG-24/1/BT-122",
+      "/BG-24/1/BT-123"
+    ],
+    "cause": "supporting-document-type-130"
+  }
+}

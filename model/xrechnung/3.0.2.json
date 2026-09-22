@@ -1,0 +1,334 @@
+{
+  "format": "EN16931-Semantic-JSON-registry",
+  "version": "0.1",
+  "model": "XRechnung-Extension",
+  "edition": "XRechnung 3.0.2",
+  "imports": [
+    {
+      "model": "EN16931-1",
+      "edition": "EN 16931-1:2017+A1:2019/AC:2020"
+    }
+  ],
+  "license": "Apache-2.0",
+  "notice": "The identifiers, names, cardinalities and semantic data types in this file are facts taken from the XRechnung 3.0.2 UBL syntax-binding extension, which is published by KoSIT; its standard text is copyright CEN and distributed under the European Commission / CEN Licence Agreement. The accompanying KoSIT schema material is licensed Apache-2.0. This file reproduces no normative prose: every description and note is the author's own wording, and the file itself is Apache-2.0. ESJ is not an XRechnung format and this registry is not a KoSIT deliverable.",
+  "generated": "2026-09-19",
+  "sourceStatement": "Identifiers, names and cardinalities come from the semantic model column of table 1.1 of the XRechnung 3.0.2 UBL syntax-binding extension; the structure was cross-checked against the KoSIT XRechnung semantic-model XSD. BG-DEX-01 hangs under BG-25 of model/en16931/2017.json, which is the only parent identifier not defined in this file. The groups of the SUB INVOICE LINE tree carry ordinary EN 16931-1 business terms one level deeper; those terms are listed per group in reusesTerms instead of being repeated as terms of this registry.",
+  "terms": [
+    {
+      "id": "BG-DEX-01",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE",
+      "slug": "subInvoiceLines",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-DEX-01"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BG-DEX-01",
+        "BT-126",
+        "BT-127",
+        "BT-128",
+        "BT-129",
+        "BT-130",
+        "BT-131",
+        "BT-132",
+        "BT-133"
+      ],
+      "order": 1,
+      "description": "Group carrying one subordinate invoice line beneath an invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1.",
+        "In the KoSIT visualization XSD this element is typed xr:INVOICE_LINEType, i.e. it recurses into INVOICE LINE; the dedicated xr:SUB_INVOICE_* types exist in the schema but are unreachable from the root."
+      ]
+    },
+    {
+      "id": "BG-DEX-02",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE ITEM INFORMATION",
+      "slug": "item",
+      "parent": "BG-DEX-01",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-02"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-153",
+        "BT-154",
+        "BT-155",
+        "BT-156",
+        "BT-157",
+        "BT-158",
+        "BT-159"
+      ],
+      "order": 2,
+      "description": "Group describing the goods or services invoiced on the sub invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BG-DEX-03",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE ALLOWANCES",
+      "slug": "allowances",
+      "parent": "BG-DEX-01",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-03"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-136",
+        "BT-137",
+        "BT-138",
+        "BT-139",
+        "BT-140"
+      ],
+      "order": 3,
+      "description": "Group carrying an allowance that applies to the sub invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BG-DEX-04",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE CHARGES",
+      "slug": "charges",
+      "parent": "BG-DEX-01",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-04"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-141",
+        "BT-142",
+        "BT-143",
+        "BT-144",
+        "BT-145"
+      ],
+      "order": 4,
+      "description": "Group carrying a charge that applies to the sub invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BG-DEX-05",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE PERIOD",
+      "slug": "period",
+      "parent": "BG-DEX-01",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-05"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-134",
+        "BT-135"
+      ],
+      "order": 5,
+      "description": "Group giving the period the sub invoice line relates to.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1.",
+        "The bound UBL element has a different syntax cardinality than the semantic one."
+      ]
+    },
+    {
+      "id": "BG-DEX-06",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE VAT INFORMATION",
+      "slug": "vat",
+      "parent": "BG-DEX-01",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-06"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-151",
+        "BT-152"
+      ],
+      "order": 6,
+      "description": "Group carrying the VAT information for the item on the sub invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BG-DEX-07",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE PRICE DETAILS",
+      "slug": "price",
+      "parent": "BG-DEX-01",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-07"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-146",
+        "BT-147",
+        "BT-148",
+        "BT-149",
+        "BT-150"
+      ],
+      "order": 7,
+      "description": "Group carrying the price information for the item on the sub invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1.",
+        "The bound UBL element has a different syntax cardinality than the semantic one."
+      ]
+    },
+    {
+      "id": "BG-DEX-08",
+      "kind": "BG",
+      "name": "SUB INVOICE LINE ITEM ATTRIBUTES",
+      "slug": "itemAttributes",
+      "parent": "BG-DEX-02",
+      "path": [
+        "BG-25",
+        "BG-DEX-01",
+        "BG-DEX-02",
+        "BG-DEX-08"
+      ],
+      "depth": 3,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "reusesTerms": [
+        "BT-160",
+        "BT-161"
+      ],
+      "order": 8,
+      "description": "Group carrying one additional attribute of the item on the sub invoice line.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BG-DEX-09",
+      "kind": "BG",
+      "name": "THIRD PARTY PAYMENT",
+      "slug": "thirdPartyPayments",
+      "parent": null,
+      "path": [
+        "BG-DEX-09"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 9,
+      "description": "Group carrying information about a third-party claim that is settled together with the invoice.",
+      "notes": [
+        "Identifier, name and cardinality are taken from the semantic model column of the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BT-DEX-001",
+      "kind": "BT",
+      "name": "Third party payment type",
+      "slug": "type",
+      "parent": "BG-DEX-09",
+      "path": [
+        "BG-DEX-09",
+        "BT-DEX-001"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 10,
+      "description": "Kind of the third-party claim.",
+      "notes": [
+        "Identifier, name, cardinality and semantic data type are taken from the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    },
+    {
+      "id": "BT-DEX-002",
+      "kind": "BT",
+      "name": "Third party payment amount",
+      "slug": "amount",
+      "parent": "BG-DEX-09",
+      "path": [
+        "BG-DEX-09",
+        "BT-DEX-002"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "components": [],
+      "order": 11,
+      "description": "Amount of the third-party claim.",
+      "notes": [
+        "Identifier, name, cardinality and semantic data type are taken from the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1.",
+        "EN 16931-1, 6.5.12, Table 26 lists decimal limits for core business terms only, so no maxDecimals is recorded for this extension term."
+      ]
+    },
+    {
+      "id": "BT-DEX-003",
+      "kind": "BT",
+      "name": "Third party payment description",
+      "slug": "description",
+      "parent": "BG-DEX-09",
+      "path": [
+        "BG-DEX-09",
+        "BT-DEX-003"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 12,
+      "description": "Description of the third-party claim, unique within the invoice.",
+      "notes": [
+        "Identifier, name, cardinality and semantic data type are taken from the XRechnung 3.0.2 UBL syntax-binding extension, table 1.1."
+      ]
+    }
+  ]
+}

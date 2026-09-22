@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:bsnsoft.de,2026:esj/schema/0.1/esj.schema.json",
+  "$comment": "Provisional identifier. It is a tag URI (RFC 4151) because no schema is published under an https URL yet; the identifier will move to an https URL when the project publishes one, and the change will be noted in SPEC.md.",
+  "title": "EN16931 Semantic JSON 0.1",
+  "description": "Format schema for an ESJ document. It is the machine-readable form of most of validation layer L1 of SPEC.md: envelope members, semantic path grammar and the shape of a value. It deliberately knows nothing about EN 16931 business terms: which terms exist, which semantic data type each one has, which grammar a term's content must satisfy, which supplementary components a term allows, which terms are repeatable and which are mandatory is decided by the term registry in model/en16931/2017.json at layers L2 and L3. schema/esj-en16931-2017.schema.json is generated from that registry and adds the per-term typing to JSON Schema users. What this schema cannot check is listed in SPEC.md section 9.1: duplicate member names, lone surrogates, the encoding and a leading byte order mark, the number of path segments, the nesting depth inside extensions, and the fact that the length limits are counted in UTF-8 bytes rather than in code points.",
+
+  "type": "object",
+  "required": ["format", "version", "semanticModel", "values"],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "description": "Fixed format marker.",
+      "const": "EN16931-Semantic-JSON"
+    },
+    "version": {
+      "description": "Version of the ESJ format, not of the semantic model.",
+      "const": "0.1"
+    },
+    "semanticModel": {
+      "description": "Edition of the semantic model whose business terms the paths name. Layer L1 checks the edition grammar of SPEC.md section 4.4 and nothing more: whether a registry for the named edition is available is an L2 question, and a document of an edition no registry describes is well formed and can be read, canonicalized and hashed. ESJ 0.1 ships a registry for EN16931-1:2017+A1:2019/AC:2020; schema/esj-en16931-2017.schema.json is the schema that pins that one edition, because it carries that registry's terms.",
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*:[0-9]{4}(?:\\+A[0-9]+:[0-9]{4})?(?:/AC[0-9]*:[0-9]{4})?(?:\\+A[0-9]+:[0-9]{4}(?:/AC[0-9]*:[0-9]{4})?)*$"
+    },
+    "values": {
+      "description": "The document content: one member per business term occurrence, keyed by its semantic path. maxProperties is the default reader limit of SPEC.md section 12.2; a reader configured with another limit is authoritative.",
+      "type": "object",
+      "maxProperties": 100000,
+      "propertyNames": { "$ref": "#/$defs/semanticPath" },
+      "additionalProperties": { "$ref": "#/$defs/value" }
+    },
+    "extensions": {
+      "description": "Data outside the semantic model, keyed by an owner token. MUST be absent when it would be empty. Inside an owner's member any JSON is allowed.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/extensionOwner" }
+    },
+    "source": {
+      "description": "Provenance of the document. Never part of its semantic identity. MUST be absent when it would be empty.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "syntax": {
+          "description": "Syntax the document was derived from, for example UBL, CII or ESJ.",
+          "$ref": "#/$defs/content"
+        },
+        "sha256": {
+          "description": "SHA-256 of the bytes of the source document, lowercase hexadecimal.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "semanticPath": {
+      "$comment": "path = *( '/' bg-term [ '/' index ] ) '/' bt-term [ '/' index ]; core terms carry no leading zeros, extension terms carry an uppercase namespace between kind and number and their numbers are verbatim. Whether an index is required or forbidden follows the declared cardinality of the term and is checked at L2.",
+      "description": "An absolute semantic path: a chain of business group segments, each optionally followed by an occurrence index, ending in a business term segment that is itself optionally followed by an occurrence index.",
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 256,
+      "pattern": "^(?:/BG-(?:[1-9][0-9]*|[A-Z][A-Z0-9]*-[0-9]+)(?:/(?:0|[1-9][0-9]*))?)*/BT-(?:[1-9][0-9]*|[A-Z][A-Z0-9]*-[0-9]+)(?:/(?:0|[1-9][0-9]*))?$"
+    },
+
+    "extensionOwner": {
+      "description": "Owner token of an extension. A reverse domain name is recommended. It is never a business term identifier.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^(?!B[TG]-)[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$"
+    },
+
+    "content": {
+      "description": "A JSON string with at least one character. Every string inside values is one of these; a business term that is present always carries content. maxLength is the default string limit of SPEC.md section 12.2, expressed here in code points because that is what JSON Schema counts; the reader counts UTF-8 bytes and is authoritative.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1048576
+    },
+
+    "objectContent": {
+      "description": "The content member of a value object. The larger bound of SPEC.md section 12.2 applies here, because this schema cannot make one bound depend on whether mimeCode or filename stands beside the content. It is a guard rather than the limit: section 12.2 applies the larger bound only to an object that carries one of those two members, and the reader is authoritative.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 33554432
+    },
+
+    "value": {
+      "description": "One value: the content as a JSON string, or a JSON object carrying the content and the supplementary components of the semantic data type. Which of the two shapes is correct is decided by the content alone, so a document has exactly one spelling for it.",
+      "oneOf": [
+        { "$ref": "#/$defs/content" },
+        { "$ref": "#/$defs/componentObject" }
+      ]
+    },
+
+    "componentObject": {
+      "description": "A value with at least one supplementary component: scheme and schemeVersion for an identifier, mimeCode and filename for a binary object. Which components a term allows and which of them it requires is decided by the registry at L2. An object with no component is an error here already, because the content alone is written as a string: without that rule one content would have two spellings and two digests. A schemeVersion without a scheme is an error here too, because a scheme version identifies the version of a scheme and no term in any registry declares the one component without the other (SPEC.md section 6.6, rule 4).",
+      "type": "object",
+      "required": ["value"],
+      "additionalProperties": false,
+      "dependentRequired": { "schemeVersion": ["scheme"] },
+      "anyOf": [
+        { "required": ["scheme"] },
+        { "required": ["schemeVersion"] },
+        { "required": ["mimeCode"] },
+        { "required": ["filename"] }
+      ],
+      "properties": {
+        "value": {
+          "description": "The content of the business term.",
+          "$ref": "#/$defs/objectContent"
+        },
+        "scheme": {
+          "description": "Identifier of the scheme the content is issued under.",
+          "$ref": "#/$defs/content"
+        },
+        "schemeVersion": {
+          "description": "Version of that scheme. Never present without a scheme.",
+          "$ref": "#/$defs/content"
+        },
+        "mimeCode": {
+          "description": "Media type of an embedded file.",
+          "$ref": "#/$defs/content"
+        },
+        "filename": {
+          "description": "File name of an embedded file.",
+          "$ref": "#/$defs/content"
+        }
+      }
+    }
+  }
+}

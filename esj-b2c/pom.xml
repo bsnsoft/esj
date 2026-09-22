@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-b2c</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: B2C overlay</name>
+  <description>
+    The B2C extension: the overlay that reads and writes the four terms of model/b2c/0.1.json
+    through the paths of the core model, and the gross authoring policies over it. The overlay
+    sources are generated from the extension registry by esj-generator and are checked in; the
+    core API stays the core API. The policies are hand-written and derive the net core terms
+    from the gross figures a consumer was shown, with the arithmetic of EN 16931-1 and one
+    report per run.
+  </description>
+
+  <dependencies>
+    <!--
+      The document, the path and the registry are types of the core module, and the public
+      API of this one hands them over, so it depends on that module by name rather than
+      through the typed view.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-typed</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      A consistency finding is a finding of the rule engine, in its shape and with its
+      severities, so that a report prints one beside the findings of the EN 16931-1 pack
+      instead of carrying a second vocabulary for the same thing.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-rules</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The gross entry into the domain API wraps Invoice.draft and hands back what the domain
+      API hands back. The dependency points this way and never the other: esj-invoice knows
+      nothing of this extension, so an application that does not price gross carries none of
+      it.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-invoice</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <!--
+          The example documents have one source, the directory of the repository; the tests
+          read them from the class path so that no test knows a path outside the module.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+      </testResource>
+    </testResources>
+  </build>
+
+</project>

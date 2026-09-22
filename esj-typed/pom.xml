@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-typed</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Typed view</name>
+  <description>
+    Per business group of EN 16931-1 an interface with an accessor per business term, and
+    an editor interface with a setter per business term. One view per edition of the
+    semantic model, generated from that edition's registry by esj-generator and checked
+    in; a view holds no data of its own and an editor writes into one document builder.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!--
+          The typed view of the 2026 edition lies in a package of its own, and
+          model/en16931/2026.paths lists it. Under the profile without-edition-2026 that
+          package is not compiled and its test is not compiled either: the view of an
+          edition is as separable as the registry it was generated from, and nothing in
+          the module refers to it.
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>${esj.edition-2026.exclude-sources}</exclude>
+          </excludes>
+          <testExcludes>
+            <testExclude>${esj.edition-2026.exclude-sources}</testExclude>
+          </testExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The example documents and the two schemas have one source, the directories of
+          the repository. The tests read them from the classpath so that no test knows a
+          path outside the module.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../schema</directory>
+        <targetPath>schema</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-schema}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The ESJ side of the conformance corpus, for the one claim about the generated
+          schema that the example documents cannot support: it is scoped to the terms of
+          one registry, and the documents carrying an extension term are outside it.
+        -->
+        <directory>${project.basedir}/../conformance/esj</directory>
+        <targetPath>conformance/esj</targetPath>
+      </testResource>
+    </testResources>
+  </build>
+</project>

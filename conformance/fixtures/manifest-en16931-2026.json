@@ -1,0 +1,393 @@
+{
+  "format": "EN16931-Semantic-JSON-Fixtures",
+  "version": "1",
+  "part": "en16931-2026",
+  "semanticModel": "EN16931-1:2026",
+  "whenEditionAbsent": "ESJ-L2-EDITION-UNKNOWN",
+  "registries": [
+    {
+      "file": "model/en16931/2026.json",
+      "semanticModel": "EN16931-1:2026",
+      "terms": 255,
+      "businessTerms": 216,
+      "businessGroups": 39,
+      "samplePaths": [
+        {
+          "path": "/BT-1",
+          "term": "BT-1",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Identifier"
+        },
+        {
+          "path": "/BT-2",
+          "term": "BT-2",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Date"
+        },
+        {
+          "path": "/BT-166",
+          "term": "BT-166",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Time"
+        },
+        {
+          "path": "/BT-3",
+          "term": "BT-3",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Code"
+        },
+        {
+          "path": "/BT-167",
+          "term": "BT-167",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Amount"
+        },
+        {
+          "path": "/BT-10/0",
+          "term": "BT-10",
+          "kind": "BT",
+          "min": 0,
+          "max": "n",
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BT-11",
+          "term": "BT-11",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "DocumentReference"
+        },
+        {
+          "path": "/BT-18",
+          "term": "BT-18",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BT-19",
+          "term": "BT-19",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Text"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "term": "BT-171",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Percentage"
+        },
+        {
+          "path": "/BG-4/BT-29/0",
+          "term": "BT-29",
+          "kind": "BT",
+          "min": 0,
+          "max": "n",
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-4/BT-30",
+          "term": "BT-30",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-4/BT-32",
+          "term": "BT-32",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-4/BT-34",
+          "term": "BT-34",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-7/BT-46/0",
+          "term": "BT-46",
+          "kind": "BT",
+          "min": 0,
+          "max": "n",
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-7/BT-47",
+          "term": "BT-47",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-7/BT-49",
+          "term": "BT-49",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-10/BT-60",
+          "term": "BT-60",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "term": "BT-61",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-13/BT-71",
+          "term": "BT-71",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-24/0/BT-125",
+          "term": "BT-125",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "BinaryObject",
+          "components": [
+            {
+              "member": "mimeCode",
+              "min": 1
+            },
+            {
+              "member": "filename",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BT-128",
+          "term": "BT-128",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 0
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BT-129",
+          "term": "BT-129",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "Quantity"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BT-186",
+          "term": "BT-186",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "term": "BT-146",
+          "kind": "BT",
+          "min": 1,
+          "max": 1,
+          "datatype": "UnitPriceAmount"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BT-157",
+          "term": "BT-157",
+          "kind": "BT",
+          "min": 0,
+          "max": 1,
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            }
+          ]
+        },
+        {
+          "path": "/BG-25/0/BG-31/BT-158/0",
+          "term": "BT-158",
+          "kind": "BT",
+          "min": 0,
+          "max": "n",
+          "datatype": "Identifier",
+          "components": [
+            {
+              "member": "scheme",
+              "min": 1
+            },
+            {
+              "member": "schemeVersion",
+              "min": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "file": "examples/edition-2026.esj.json",
+      "canonical": "examples/edition-2026.canonical.esj.json",
+      "semanticModel": "EN16931-1:2026",
+      "registries": [
+        "model/en16931/2026.json"
+      ],
+      "values": 50,
+      "canonicalBytes": 1713,
+      "semanticDigest": "2e584ace78f8e570a2d2bbeebf7704c584868e360d4f381035acbdbe0594e86a",
+      "documentDigest": "117cf345834ddd4dcb7b4a867ad87ba6a43c3852a1245724f445af7e74ce3a3b"
+    }
+  ],
+  "invalid": [
+    {
+      "file": "examples/invalid/edition-2026-time-without-offset.esj.json",
+      "layer": "L2",
+      "code": "ESJ-L2-TIME",
+      "path": "/BT-166"
+    }
+  ],
+  "grammars": [
+    {
+      "datatype": "Time",
+      "code": "ESJ-L2-TIME",
+      "base": "examples/edition-2026.esj.json",
+      "path": "/BT-166",
+      "accept": [
+        "09:15:00Z",
+        "00:00:00Z",
+        "23:59:59+14:00",
+        "12:00:00-05:30",
+        "12:00:00+01:00"
+      ],
+      "reject": [
+        "09:15:00",
+        "09:15:00+00:00",
+        "09:15:00-00:00",
+        "9:15:00Z",
+        "09:15Z",
+        "24:00:00Z",
+        "23:59:60Z",
+        "09:15:00.5Z",
+        "09:15:00z",
+        "09:15:00+15:00"
+      ]
+    }
+  ]
+}

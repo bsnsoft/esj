@@ -1,0 +1,58 @@
+{
+  "format": "EN16931-Semantic-JSON",
+  "version": "0.1",
+  "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+  "values": {
+    "/BT-1": "1234567",
+    "/BT-2": "2018-04-13",
+    "/BT-3": "380",
+    "/BT-5": "EUR",
+    "/BT-9": "2018-04-13",
+    "/BT-10": "90000000-03083-72",
+    "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+    "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+    "/BG-4/BT-27": "[Seller name]",
+    "/BG-4/BT-29/0": "9876543217894897438",
+    "/BG-4/BT-34": {
+      "value": "rechnungsausgang@test.com",
+      "scheme": "EM"
+    },
+    "/BG-4/BG-5/BT-37": "[Seller city]",
+    "/BG-4/BG-5/BT-38": "12345",
+    "/BG-4/BG-5/BT-40": "DE",
+    "/BG-4/BG-6/BT-41": "Tim Tester",
+    "/BG-4/BG-6/BT-42": "012 3456789",
+    "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+    "/BG-7/BT-44": "[Buyer name]",
+    "/BG-7/BT-49": {
+      "value": "rechnungseingang@test.de",
+      "scheme": "EM"
+    },
+    "/BG-7/BG-8/BT-52": "[Buyer city]",
+    "/BG-7/BG-8/BT-53": "98765",
+    "/BG-7/BG-8/BT-55": "DE",
+    "/BG-16/BT-81": "58",
+    "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+    "/BG-22/BT-106": "4743.75",
+    "/BG-22/BT-109": "4743.75",
+    "/BG-22/BT-110": "0",
+    "/BG-22/BT-112": "4743.75",
+    "/BG-22/BT-115": "4743.75",
+    "/BG-23/0/BT-116": "4743.75",
+    "/BG-23/0/BT-117": "0",
+    "/BG-23/0/BT-118": "O",
+    "/BG-23/0/BT-119": "0",
+    "/BG-23/0/BT-121": "VATEX-EU-O",
+    "/BG-25/0/BT-126": "1",
+    "/BG-25/0/BT-129": "30",
+    "/BG-25/0/BT-130": "XPP",
+    "/BG-25/0/BT-131": "4743.75",
+    "/BG-25/0/BG-29/BT-146": "158.125",
+    "/BG-25/0/BG-30/BT-151": "O",
+    "/BG-25/0/BG-31/BT-153": "Beratung"
+  },
+  "source": {
+    "syntax": "UBL",
+    "sha256": "db30815f3d29d5acfebb435c6828580a5fc80b0dd07c26ed1203adef2b78f454"
+  }
+}

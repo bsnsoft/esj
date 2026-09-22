@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# Runs the esj command line tool from a built tree.
+#
+# The jar is found relative to this script rather than through an environment
+# variable, so that a checkout can be used without installing anything: build it
+# with `mvn -B verify` and then call `bin/esj` from anywhere.
+#
+# The Java options are the ones docs/deployment.md prescribes: a heap ceiling the
+# process cannot talk its way past, and an abort on a heap exhaustion rather than a
+# virtual machine that keeps trying. A wrapper that shipped without them would teach
+# the opposite of what that page asks for, and could not be given them at all.
+# ESJ_JAVA_OPTS replaces them:
+#
+#   ESJ_JAVA_OPTS='-Xmx2g -XX:+ExitOnOutOfMemoryError' bin/esj convert --limits large big.xml
+#   ESJ_JAVA_OPTS= bin/esj --version          # the defaults of the machine
+#
+# Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
+
+set -eu
+
+here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+jar="$here/../esj-cli/target/esj.jar"
+
+if [ ! -f "$jar" ]; then
+  # 127 is the shell's "there is no such command", and it is outside the exit code
+  # table of the tool on purpose: nothing ran, so nothing was decided about any
+  # document, and a caller is told to treat an unknown code as a crash.
+  echo "error: $jar does not exist; build it with 'mvn -B verify' in $(dirname -- "$here")" >&2
+  exit 127
+fi
+
+# Unquoted on purpose: the value is a list of options, not one option.
+exec java ${ESJ_JAVA_OPTS--Xms32m -Xmx512m -XX:+ExitOnOutOfMemoryError} -jar "$jar" "$@"

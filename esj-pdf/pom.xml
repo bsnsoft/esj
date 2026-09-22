@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-pdf</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: PDF input</name>
+  <description>
+    Reads the electronic invoice out of a hybrid PDF: the embedded file streams, the
+    associated files array and the XMP packet of a Factur-X, ZUGFeRD 2.x or comparable
+    container, and from there the ordinary import path of esj-xr. Nothing is extracted
+    from the visual page content: a PDF without an embedded structured invoice is
+    reported as such and nothing else is attempted.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-xr</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The cross industry invoice this module embeds is written by esj-bindings. Embedding
+      is the one direction in which this module writes rather than reads, and the XML it
+      writes is the XML that project writes everywhere else: there is no second CII
+      writer here. The same module carries the reader the snippet of README.md and
+      docs/getting-started.md uses, which GettingStartedExamplesTest runs.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-bindings</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      PDFBox is a dependency of this module and of esj-render, which writes the PDF
+      rendering with it. It is licensed under the Apache License, Version 2.0; see the
+      NOTICE file of the repository. Here it is used for
+      the object structure, the catalog name trees, the associated files array, the
+      embedded file streams and the XMP packet, and for nothing else: no page is rendered,
+      no font is loaded and no form is processed.
+    -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!--
+        The tests of this module read streams that decode to more than this ceiling, and
+        they are the point: a decoder that holds what a stream produces before it applies
+        a bound ends the process here rather than passing quietly. See BoundedStreamTest.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx256m</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <!--
+      The conformance corpus lives at the root of the repository. The tests of this module
+      embed its instances into generated PDFs and read them back out again, so it is
+      copied onto the test classpath here as it is in esj-xr.
+    -->
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <excludes>
+          <exclude>scale/out/**</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+  </build>
+</project>

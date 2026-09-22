@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validation report — &lt;stdin&gt;</title>
+<style>
+:root {
+  --ink: #16191d; --soft: #5b6470; --rule: #d7dce2; --panel: #f6f8fa;
+  --ok: #1f7a4d; --bad: #b3261e; --warn: #8a5a00; --none: #5b6470;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 2rem 1rem; background: #fff; color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 60rem; margin: 0 auto; }
+h1 { font-size: 1.4rem; margin: 0 0 1.2rem; }
+h2 { font-size: 1.05rem; margin: 2rem 0 .6rem; }
+h3 { font-size: .95rem; margin: 1.2rem 0 .4rem; color: var(--soft); }
+.card { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.2rem; }
+.verdict { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; }
+.verdict b { font-size: 1.5rem; letter-spacing: .04em; }
+.verdict-VALID b { color: var(--ok); }
+.verdict-INVALID b { color: var(--bad); }
+.verdict-INDETERMINATE b { color: var(--warn); }
+.verdict-NONE b { color: var(--none); }
+.verdict span { color: var(--soft); }
+.subjects { margin: .4rem 0 0; }
+.subjects span { color: var(--soft); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .9rem;
+     margin: 1rem 0 0; }
+dt { color: var(--soft); }
+dd { margin: 0; overflow-wrap: anywhere; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: .3rem .6rem .3rem 0;
+         border-bottom: 1px solid var(--rule); vertical-align: top; }
+tr.block th { background: var(--panel); padding-left: .6rem; }
+td.status { width: 40%; }
+.finding { border-left: 3px solid var(--rule); padding: .1rem 0 .1rem .8rem;
+           margin: .8rem 0; break-inside: avoid; }
+.finding-error { border-left-color: var(--bad); }
+.finding-warning { border-left-color: var(--warn); }
+.finding-head { font-weight: 600; margin: 0; }
+.finding-where, .mono { font-family: ui-monospace, SFMono-Regular, Menlo,
+                        Consolas, monospace; font-size: .85em; }
+.finding-where { color: var(--soft); margin: .15rem 0; overflow-wrap: anywhere; }
+.finding-message { margin: .15rem 0; overflow-wrap: anywhere; }
+.note { color: var(--soft); margin: .2rem 0 .8rem; }
+ul { margin: .2rem 0; padding-left: 1.2rem; }
+iframe { width: 100%; height: 1400px; border: 1px solid var(--rule);
+         border-radius: 6px; background: #fff; }
+@media print {
+  body { padding: 0; font-size: 11pt; }
+  .card, .finding, section { break-inside: avoid; }
+  iframe { height: 24cm; page-break-before: always; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Validation report</h1>
+<section class="card">
+<p class="verdict verdict-VALID"><span>Verdict</span> <b>VALID</b></p>
+<dl>
+<dt>Input</dt><dd class="mono">&lt;stdin&gt;</dd>
+<dt>Detected syntax</dt><dd class="mono">ESJ</dd>
+<dt>Semantic model</dt><dd class="mono">EN16931-1:2017+A1:2019/AC:2020</dd>
+<dt>SHA-256 of the input</dt><dd class="mono">b8e3ffa87195da3649e9f91c4d18d1f1810a527c2dfcc4b278d17139f14c4618</dd>
+<dt>Semantic digest</dt><dd class="mono">6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a</dd>
+<dt>Document digest</dt><dd class="mono">951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4</dd>
+<dt>Packs</dt><dd class="mono">rules: en16931/1.3.16 (bundled)</dd>
+<dt>Tool</dt><dd class="mono">esj ${version}</dd>
+</dl>
+</section>
+<section>
+<h2>Checks</h2>
+<table>
+<tr class="block"><th colspan="2">Syntax</th></tr>
+<tr><td>Validation pack</td><td class="status">not applicable: no XML</td></tr>
+<tr><td>Official artefacts over the written document (CII)</td><td class="status">OK</td></tr>
+<tr><td>CII D16B XSD</td><td class="status">OK</td></tr>
+<tr><td>EN 16931 CII Schematron</td><td class="status">OK</td></tr>
+<tr><td>XRechnung CII Schematron</td><td class="status">skipped: it validates no document of the profile this one names</td></tr>
+<tr class="block"><th colspan="2">Semantic</th></tr>
+<tr><td>ESJ format (L1)</td><td class="status">OK</td></tr>
+<tr><td>Model (L2)</td><td class="status">OK</td></tr>
+<tr><td>Cardinality (L3)</td><td class="status">OK</td></tr>
+<tr><td>EN 16931 business rules (native, pack en16931/1.3.16)</td><td class="status">OK</td></tr>
+</table>
+</section>
+<section>
+<h2>Findings</h2>
+<p class="note">Nothing was found.</p>
+</section>
+</main>
+</body>
+</html>

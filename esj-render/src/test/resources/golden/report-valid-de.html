@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prüfbericht — 01.01a-INVOICE_ubl.xml</title>
+<style>
+:root {
+  --ink: #16191d; --soft: #5b6470; --rule: #d7dce2; --panel: #f6f8fa;
+  --ok: #1f7a4d; --bad: #b3261e; --warn: #8a5a00; --none: #5b6470;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 2rem 1rem; background: #fff; color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 60rem; margin: 0 auto; }
+h1 { font-size: 1.4rem; margin: 0 0 1.2rem; }
+h2 { font-size: 1.05rem; margin: 2rem 0 .6rem; }
+h3 { font-size: .95rem; margin: 1.2rem 0 .4rem; color: var(--soft); }
+.card { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.2rem; }
+.verdict { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; }
+.verdict b { font-size: 1.5rem; letter-spacing: .04em; }
+.verdict-VALID b { color: var(--ok); }
+.verdict-INVALID b { color: var(--bad); }
+.verdict-INDETERMINATE b { color: var(--warn); }
+.verdict-NONE b { color: var(--none); }
+.verdict span { color: var(--soft); }
+.subjects { margin: .4rem 0 0; }
+.subjects span { color: var(--soft); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .9rem;
+     margin: 1rem 0 0; }
+dt { color: var(--soft); }
+dd { margin: 0; overflow-wrap: anywhere; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: .3rem .6rem .3rem 0;
+         border-bottom: 1px solid var(--rule); vertical-align: top; }
+tr.block th { background: var(--panel); padding-left: .6rem; }
+td.status { width: 40%; }
+.finding { border-left: 3px solid var(--rule); padding: .1rem 0 .1rem .8rem;
+           margin: .8rem 0; break-inside: avoid; }
+.finding-error { border-left-color: var(--bad); }
+.finding-warning { border-left-color: var(--warn); }
+.finding-head { font-weight: 600; margin: 0; }
+.finding-where, .mono { font-family: ui-monospace, SFMono-Regular, Menlo,
+                        Consolas, monospace; font-size: .85em; }
+.finding-where { color: var(--soft); margin: .15rem 0; overflow-wrap: anywhere; }
+.finding-message { margin: .15rem 0; overflow-wrap: anywhere; }
+.note { color: var(--soft); margin: .2rem 0 .8rem; }
+ul { margin: .2rem 0; padding-left: 1.2rem; }
+iframe { width: 100%; height: 1400px; border: 1px solid var(--rule);
+         border-radius: 6px; background: #fff; }
+@media print {
+  body { padding: 0; font-size: 11pt; }
+  .card, .finding, section { break-inside: avoid; }
+  iframe { height: 24cm; page-break-before: always; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Prüfbericht</h1>
+<section class="card">
+<p class="verdict verdict-VALID"><span>Urteil</span> <b>VALID</b></p>
+<dl>
+<dt>Eingabe</dt><dd class="mono">01.01a-INVOICE_ubl.xml</dd>
+<dt>Erkannte Syntax</dt><dd class="mono">UBL Invoice</dd>
+<dt>Leser</dt><dd class="mono">streaming — der Streaming-Leser der Bindungstabellen</dd>
+<dt>Semantisches Modell</dt><dd class="mono">EN16931-1:2017+A1:2019/AC:2020</dd>
+<dt>Profil</dt><dd class="mono">urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_3.0</dd>
+<dt>SHA-256 der Eingabe</dt><dd class="mono">74fb09c609d5fba15a8c543060998d3b92858f56a81fb5b0ed244d6794e498d1</dd>
+<dt>Semantischer Digest</dt><dd class="mono">93c410bd2be4e613ca102876cfcbb5c9e1cdc9c905667d99bc74b1b4cdca577c</dd>
+<dt>Dokument-Digest</dt><dd class="mono">8c5cb5bbebcfc789ac97b7348d532d13dd594b9f23374037a8113e3e2641a0d2</dd>
+<dt>SHA-256 der Quelle</dt><dd class="mono">74fb09c609d5fba15a8c543060998d3b92858f56a81fb5b0ed244d6794e498d1</dd>
+<dt>Pakete</dt><dd class="mono">syntax: xrechnung/3.0.2, release 2026-08-31 (bundled)</dd>
+<dt></dt><dd class="mono">rules: en16931/1.3.16 (bundled)</dd>
+<dt>Werkzeug</dt><dd class="mono">esj 0.1.0</dd>
+</dl>
+</section>
+<section>
+<h2>Prüfungen</h2>
+<table>
+<tr class="block"><th colspan="2">Syntax</th></tr>
+<tr><td>XML</td><td class="status">OK</td></tr>
+<tr><td>UBL 2.1 XSD</td><td class="status">OK</td></tr>
+<tr><td>EN 16931 UBL Schematron</td><td class="status">OK</td></tr>
+<tr><td>XRechnung UBL Schematron</td><td class="status">OK</td></tr>
+<tr class="block"><th colspan="2">Semantik</th></tr>
+<tr><td>Import</td><td class="status">OK</td></tr>
+<tr><td>ESJ-Format (L1)</td><td class="status">nicht anwendbar: die Eingabe kam als XML</td></tr>
+<tr><td>Modell (L2)</td><td class="status">OK</td></tr>
+<tr><td>Kardinalität (L3)</td><td class="status">OK</td></tr>
+<tr><td>EN-16931-Geschäftsregeln (nativ, Paket en16931/1.3.16)</td><td class="status">OK</td></tr>
+</table>
+</section>
+<section>
+<h2>Befunde</h2>
+<p class="note">Nichts gefunden.</p>
+</section>
+</main>
+</body>
+</html>

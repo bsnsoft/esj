@@ -1,0 +1,722 @@
+{
+  "listId": "iso-4217",
+  "name": "ISO 4217 alpha-3 currency codes",
+  "publisher": "ISO, maintenance agency SIX Group",
+  "source": "https://www.six-group.com/dam/download/financial-information/data-center/iso-currrency/lists/list-one.xml",
+  "retrieved": "2026-09-19",
+  "terms": "The page offers the list for download without stating a licence; SIX publishes it as the ISO 4217 maintenance agency. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "AFN",
+      "name": "Afghani"
+    },
+    {
+      "value": "EUR",
+      "name": "Euro"
+    },
+    {
+      "value": "ALL",
+      "name": "Lek"
+    },
+    {
+      "value": "DZD",
+      "name": "Algerian Dinar"
+    },
+    {
+      "value": "USD",
+      "name": "US Dollar"
+    },
+    {
+      "value": "AOA",
+      "name": "Kwanza"
+    },
+    {
+      "value": "XCD",
+      "name": "East Caribbean Dollar"
+    },
+    {
+      "value": "XAD",
+      "name": "Arab Accounting Dinar"
+    },
+    {
+      "value": "ARS",
+      "name": "Argentine Peso"
+    },
+    {
+      "value": "AMD",
+      "name": "Armenian Dram"
+    },
+    {
+      "value": "AWG",
+      "name": "Aruban Florin"
+    },
+    {
+      "value": "AUD",
+      "name": "Australian Dollar"
+    },
+    {
+      "value": "AZN",
+      "name": "Azerbaijan Manat"
+    },
+    {
+      "value": "BSD",
+      "name": "Bahamian Dollar"
+    },
+    {
+      "value": "BHD",
+      "name": "Bahraini Dinar"
+    },
+    {
+      "value": "BDT",
+      "name": "Taka"
+    },
+    {
+      "value": "BBD",
+      "name": "Barbados Dollar"
+    },
+    {
+      "value": "BYN",
+      "name": "Belarusian Ruble"
+    },
+    {
+      "value": "BZD",
+      "name": "Belize Dollar"
+    },
+    {
+      "value": "XOF",
+      "name": "CFA Franc BCEAO"
+    },
+    {
+      "value": "BMD",
+      "name": "Bermudian Dollar"
+    },
+    {
+      "value": "INR",
+      "name": "Indian Rupee"
+    },
+    {
+      "value": "BTN",
+      "name": "Ngultrum"
+    },
+    {
+      "value": "BOB",
+      "name": "Boliviano"
+    },
+    {
+      "value": "BOV",
+      "name": "Mvdol"
+    },
+    {
+      "value": "BAM",
+      "name": "Convertible Mark"
+    },
+    {
+      "value": "BWP",
+      "name": "Pula"
+    },
+    {
+      "value": "NOK",
+      "name": "Norwegian Krone"
+    },
+    {
+      "value": "BRL",
+      "name": "Brazilian Real"
+    },
+    {
+      "value": "BND",
+      "name": "Brunei Dollar"
+    },
+    {
+      "value": "BIF",
+      "name": "Burundi Franc"
+    },
+    {
+      "value": "CVE",
+      "name": "Cabo Verde Escudo"
+    },
+    {
+      "value": "KHR",
+      "name": "Riel"
+    },
+    {
+      "value": "XAF",
+      "name": "CFA Franc BEAC"
+    },
+    {
+      "value": "CAD",
+      "name": "Canadian Dollar"
+    },
+    {
+      "value": "KYD",
+      "name": "Cayman Islands Dollar"
+    },
+    {
+      "value": "CLP",
+      "name": "Chilean Peso"
+    },
+    {
+      "value": "CLF",
+      "name": "Unidad de Fomento"
+    },
+    {
+      "value": "CNY",
+      "name": "Yuan Renminbi"
+    },
+    {
+      "value": "COP",
+      "name": "Colombian Peso"
+    },
+    {
+      "value": "COU",
+      "name": "Unidad de Valor Real"
+    },
+    {
+      "value": "KMF",
+      "name": "Comorian Franc"
+    },
+    {
+      "value": "CDF",
+      "name": "Congolese Franc"
+    },
+    {
+      "value": "NZD",
+      "name": "New Zealand Dollar"
+    },
+    {
+      "value": "CRC",
+      "name": "Costa Rican Colon"
+    },
+    {
+      "value": "CUP",
+      "name": "Cuban Peso"
+    },
+    {
+      "value": "XCG",
+      "name": "Caribbean Guilder"
+    },
+    {
+      "value": "CZK",
+      "name": "Czech Koruna"
+    },
+    {
+      "value": "DKK",
+      "name": "Danish Krone"
+    },
+    {
+      "value": "DJF",
+      "name": "Djibouti Franc"
+    },
+    {
+      "value": "DOP",
+      "name": "Dominican Peso"
+    },
+    {
+      "value": "EGP",
+      "name": "Egyptian Pound"
+    },
+    {
+      "value": "SVC",
+      "name": "El Salvador Colon"
+    },
+    {
+      "value": "ERN",
+      "name": "Nakfa"
+    },
+    {
+      "value": "SZL",
+      "name": "Lilangeni"
+    },
+    {
+      "value": "ETB",
+      "name": "Ethiopian Birr"
+    },
+    {
+      "value": "FKP",
+      "name": "Falkland Islands Pound"
+    },
+    {
+      "value": "FJD",
+      "name": "Fiji Dollar"
+    },
+    {
+      "value": "XPF",
+      "name": "CFP Franc"
+    },
+    {
+      "value": "GMD",
+      "name": "Dalasi"
+    },
+    {
+      "value": "GEL",
+      "name": "Lari"
+    },
+    {
+      "value": "GHS",
+      "name": "Ghana Cedi"
+    },
+    {
+      "value": "GIP",
+      "name": "Gibraltar Pound"
+    },
+    {
+      "value": "GTQ",
+      "name": "Quetzal"
+    },
+    {
+      "value": "GBP",
+      "name": "Pound Sterling"
+    },
+    {
+      "value": "GNF",
+      "name": "Guinean Franc"
+    },
+    {
+      "value": "GYD",
+      "name": "Guyana Dollar"
+    },
+    {
+      "value": "HTG",
+      "name": "Gourde"
+    },
+    {
+      "value": "HNL",
+      "name": "Lempira"
+    },
+    {
+      "value": "HKD",
+      "name": "Hong Kong Dollar"
+    },
+    {
+      "value": "HUF",
+      "name": "Forint"
+    },
+    {
+      "value": "ISK",
+      "name": "Iceland Krona"
+    },
+    {
+      "value": "IDR",
+      "name": "Rupiah"
+    },
+    {
+      "value": "XDR",
+      "name": "SDR (Special Drawing Right)"
+    },
+    {
+      "value": "IRR",
+      "name": "Iranian Rial"
+    },
+    {
+      "value": "IQD",
+      "name": "Iraqi Dinar"
+    },
+    {
+      "value": "ILS",
+      "name": "New Israeli Sheqel"
+    },
+    {
+      "value": "JMD",
+      "name": "Jamaican Dollar"
+    },
+    {
+      "value": "JPY",
+      "name": "Yen"
+    },
+    {
+      "value": "JOD",
+      "name": "Jordanian Dinar"
+    },
+    {
+      "value": "KZT",
+      "name": "Tenge"
+    },
+    {
+      "value": "KES",
+      "name": "Kenyan Shilling"
+    },
+    {
+      "value": "KPW",
+      "name": "North Korean Won"
+    },
+    {
+      "value": "KRW",
+      "name": "Won"
+    },
+    {
+      "value": "KWD",
+      "name": "Kuwaiti Dinar"
+    },
+    {
+      "value": "KGS",
+      "name": "Som"
+    },
+    {
+      "value": "LAK",
+      "name": "Lao Kip"
+    },
+    {
+      "value": "LBP",
+      "name": "Lebanese Pound"
+    },
+    {
+      "value": "LSL",
+      "name": "Loti"
+    },
+    {
+      "value": "ZAR",
+      "name": "Rand"
+    },
+    {
+      "value": "LRD",
+      "name": "Liberian Dollar"
+    },
+    {
+      "value": "LYD",
+      "name": "Libyan Dinar"
+    },
+    {
+      "value": "CHF",
+      "name": "Swiss Franc"
+    },
+    {
+      "value": "MOP",
+      "name": "Pataca"
+    },
+    {
+      "value": "MKD",
+      "name": "Denar"
+    },
+    {
+      "value": "MGA",
+      "name": "Malagasy Ariary"
+    },
+    {
+      "value": "MWK",
+      "name": "Malawi Kwacha"
+    },
+    {
+      "value": "MYR",
+      "name": "Malaysian Ringgit"
+    },
+    {
+      "value": "MVR",
+      "name": "Rufiyaa"
+    },
+    {
+      "value": "MRU",
+      "name": "Ouguiya"
+    },
+    {
+      "value": "MUR",
+      "name": "Mauritius Rupee"
+    },
+    {
+      "value": "XUA",
+      "name": "ADB Unit of Account"
+    },
+    {
+      "value": "MXN",
+      "name": "Mexican Peso"
+    },
+    {
+      "value": "MXV",
+      "name": "Mexican Unidad de Inversion (UDI)"
+    },
+    {
+      "value": "MDL",
+      "name": "Moldovan Leu"
+    },
+    {
+      "value": "MNT",
+      "name": "Tugrik"
+    },
+    {
+      "value": "MAD",
+      "name": "Moroccan Dirham"
+    },
+    {
+      "value": "MZN",
+      "name": "Mozambique Metical"
+    },
+    {
+      "value": "MMK",
+      "name": "Kyat"
+    },
+    {
+      "value": "NAD",
+      "name": "Namibia Dollar"
+    },
+    {
+      "value": "NPR",
+      "name": "Nepalese Rupee"
+    },
+    {
+      "value": "NIO",
+      "name": "Cordoba Oro"
+    },
+    {
+      "value": "NGN",
+      "name": "Naira"
+    },
+    {
+      "value": "OMR",
+      "name": "Rial Omani"
+    },
+    {
+      "value": "PKR",
+      "name": "Pakistan Rupee"
+    },
+    {
+      "value": "PAB",
+      "name": "Balboa"
+    },
+    {
+      "value": "PGK",
+      "name": "Kina"
+    },
+    {
+      "value": "PYG",
+      "name": "Guarani"
+    },
+    {
+      "value": "PEN",
+      "name": "Sol"
+    },
+    {
+      "value": "PHP",
+      "name": "Philippine Peso"
+    },
+    {
+      "value": "PLN",
+      "name": "Zloty"
+    },
+    {
+      "value": "QAR",
+      "name": "Qatari Rial"
+    },
+    {
+      "value": "RON",
+      "name": "Romanian Leu"
+    },
+    {
+      "value": "RUB",
+      "name": "Russian Ruble"
+    },
+    {
+      "value": "RWF",
+      "name": "Rwanda Franc"
+    },
+    {
+      "value": "SHP",
+      "name": "Saint Helena Pound"
+    },
+    {
+      "value": "WST",
+      "name": "Tala"
+    },
+    {
+      "value": "STN",
+      "name": "Dobra"
+    },
+    {
+      "value": "SAR",
+      "name": "Saudi Riyal"
+    },
+    {
+      "value": "RSD",
+      "name": "Serbian Dinar"
+    },
+    {
+      "value": "SCR",
+      "name": "Seychelles Rupee"
+    },
+    {
+      "value": "SLE",
+      "name": "Leone"
+    },
+    {
+      "value": "SGD",
+      "name": "Singapore Dollar"
+    },
+    {
+      "value": "XSU",
+      "name": "Sucre"
+    },
+    {
+      "value": "SBD",
+      "name": "Solomon Islands Dollar"
+    },
+    {
+      "value": "SOS",
+      "name": "Somali Shilling"
+    },
+    {
+      "value": "SSP",
+      "name": "South Sudanese Pound"
+    },
+    {
+      "value": "LKR",
+      "name": "Sri Lanka Rupee"
+    },
+    {
+      "value": "SDG",
+      "name": "Sudanese Pound"
+    },
+    {
+      "value": "SRD",
+      "name": "Surinam Dollar"
+    },
+    {
+      "value": "SEK",
+      "name": "Swedish Krona"
+    },
+    {
+      "value": "CHE",
+      "name": "WIR Euro"
+    },
+    {
+      "value": "CHW",
+      "name": "WIR Franc"
+    },
+    {
+      "value": "SYP",
+      "name": "Syrian Pound"
+    },
+    {
+      "value": "TWD",
+      "name": "New Taiwan Dollar"
+    },
+    {
+      "value": "TJS",
+      "name": "Somoni"
+    },
+    {
+      "value": "TZS",
+      "name": "Tanzanian Shilling"
+    },
+    {
+      "value": "THB",
+      "name": "Baht"
+    },
+    {
+      "value": "TOP",
+      "name": "Pa’anga"
+    },
+    {
+      "value": "TTD",
+      "name": "Trinidad and Tobago Dollar"
+    },
+    {
+      "value": "TND",
+      "name": "Tunisian Dinar"
+    },
+    {
+      "value": "TRY",
+      "name": "Turkish Lira"
+    },
+    {
+      "value": "TMT",
+      "name": "Turkmenistan New Manat"
+    },
+    {
+      "value": "UGX",
+      "name": "Uganda Shilling"
+    },
+    {
+      "value": "UAH",
+      "name": "Hryvnia"
+    },
+    {
+      "value": "AED",
+      "name": "UAE Dirham"
+    },
+    {
+      "value": "USN",
+      "name": "US Dollar (Next day)"
+    },
+    {
+      "value": "UYU",
+      "name": "Peso Uruguayo"
+    },
+    {
+      "value": "UYI",
+      "name": "Uruguay Peso en Unidades Indexadas (UI)"
+    },
+    {
+      "value": "UYW",
+      "name": "Unidad Previsional"
+    },
+    {
+      "value": "UZS",
+      "name": "Uzbekistan Sum"
+    },
+    {
+      "value": "VUV",
+      "name": "Vatu"
+    },
+    {
+      "value": "VES",
+      "name": "Bolívar Soberano"
+    },
+    {
+      "value": "VED",
+      "name": "Bolívar Soberano"
+    },
+    {
+      "value": "VND",
+      "name": "Dong"
+    },
+    {
+      "value": "YER",
+      "name": "Yemeni Rial"
+    },
+    {
+      "value": "ZMW",
+      "name": "Zambian Kwacha"
+    },
+    {
+      "value": "ZWG",
+      "name": "Zimbabwe Gold"
+    },
+    {
+      "value": "XBA",
+      "name": "Bond Markets Unit European Composite Unit (EURCO)"
+    },
+    {
+      "value": "XBB",
+      "name": "Bond Markets Unit European Monetary Unit (E.M.U.-6)"
+    },
+    {
+      "value": "XBC",
+      "name": "Bond Markets Unit European Unit of Account 9 (E.U.A.-9)"
+    },
+    {
+      "value": "XBD",
+      "name": "Bond Markets Unit European Unit of Account 17 (E.U.A.-17)"
+    },
+    {
+      "value": "XTS",
+      "name": "Codes specifically reserved for testing purposes"
+    },
+    {
+      "value": "XXX",
+      "name": "The codes assigned for transactions where no currency is involved"
+    },
+    {
+      "value": "XAU",
+      "name": "Gold"
+    },
+    {
+      "value": "XPD",
+      "name": "Palladium"
+    },
+    {
+      "value": "XPT",
+      "name": "Platinum"
+    },
+    {
+      "value": "XAG",
+      "name": "Silver"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "input": "<stdin>",
+  "detected": "esj",
+  "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+  "container": null,
+  "invoice": {
+    "checked": true,
+    "ok": true,
+    "reason": null
+  },
+  "xml": null,
+  "syntax": {
+    "checked": false,
+    "ok": null,
+    "reason": "not applicable (no XML)",
+    "customizationId": null,
+    "pack": null,
+    "profileNote": null,
+    "profileRulesSkipped": false,
+    "ran": [],
+    "skipped": [],
+    "findings": []
+  },
+  "written": {
+    "required": true,
+    "checked": true,
+    "target": "CII",
+    "reason": null,
+    "byDesign": [],
+    "syntax": {
+      "checked": true,
+      "ok": true,
+      "reason": null,
+      "customizationId": "urn:cen.eu:en16931:2017",
+      "pack": {
+        "directory": "xrechnung/3.0.2/2026-08-31",
+        "id": "xrechnung",
+        "version": "3.0.2",
+        "release": "2026-08-31",
+        "source": "bundled"
+      },
+      "profileNote": "no core invoice usage specification of this pack applies to this profile: the EN 16931 artefacts ran, no CIUS rules did",
+      "profileRulesSkipped": true,
+      "ran": [
+        {
+          "component": "cii-d16b-xsd",
+          "engine": "xsd",
+          "stopped": false
+        },
+        {
+          "component": "en16931-cii-schematron",
+          "engine": "schematron",
+          "stopped": false
+        }
+      ],
+      "skipped": [
+        {
+          "component": "ubl-2.1-xsd",
+          "reason": "it validates no UN/CEFACT CII D16B CrossIndustryInvoice"
+        },
+        {
+          "component": "en16931-ubl-schematron",
+          "reason": "it validates no UN/CEFACT CII D16B CrossIndustryInvoice"
+        },
+        {
+          "component": "xrechnung-ubl-schematron",
+          "reason": "it validates no UN/CEFACT CII D16B CrossIndustryInvoice"
+        },
+        {
+          "component": "xrechnung-cii-schematron",
+          "reason": "it validates no document of the profile this one names"
+        }
+      ],
+      "findings": []
+    }
+  },
+  "layers": {
+    "l1": {
+      "checked": true,
+      "ok": true,
+      "findings": []
+    },
+    "l2": {
+      "checked": true,
+      "ok": true,
+      "findings": []
+    },
+    "l3": {
+      "checked": true,
+      "ok": true,
+      "findings": []
+    }
+  },
+  "rules": {
+    "checked": true,
+    "ok": true,
+    "reason": null,
+    "pack": {
+      "id": "en16931",
+      "version": "1.3.16"
+    },
+    "findings": []
+  },
+  "notChecked": [],
+  "reasons": [],
+  "warnings": [],
+  "information": [],
+  "verdict": "VALID"
+}

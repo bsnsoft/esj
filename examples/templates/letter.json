@@ -1,0 +1,23 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Business letter on the example letterhead",
+  "layout": "letter",
+  "letterhead": {
+    "first":     { "file": "letterhead.pdf", "page": 1 },
+    "following": { "file": "letterhead.pdf", "page": 2 }
+  },
+  "logo": { "file": "mark.png", "x": 501, "y": 49, "width": 66, "height": 19.8,
+            "pages": "first" },
+  "colors": {
+    "heading": "#123a63",
+    "tableHeaderText": "#123a63"
+  },
+  "letter": {
+    "addressWindow": "din5008-b",
+    "information": "line",
+    "foldMarks": true,
+    "holeMark": true,
+    "sellerDetails": "footer",
+    "paymentCode": true
+  }
+}

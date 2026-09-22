@@ -1,0 +1,351 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:bsnsoft.de,2026:esj/model/0.1/bindings/binding.schema.json",
+  "title": "EN16931 Semantic JSON syntax binding table",
+  "description": "Format of the ESJ binding tables under model/bindings/: ubl-invoice.json, ubl-creditnote.json and cii.json. A table is a header plus one entry per business term of the semantic model, in the order of the registry, saying where that term lives in one XML syntax. It records structure only; it carries no normative prose and no rule text from any source.",
+  "type": "object",
+  "required": [
+    "format",
+    "version",
+    "syntax",
+    "syntaxName",
+    "model",
+    "edition",
+    "rootElement",
+    "license",
+    "notice",
+    "source",
+    "generator",
+    "namespaces",
+    "corrections",
+    "conventions",
+    "flagDefinitions",
+    "counts",
+    "terms"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "description": "Fixed format marker of an ESJ binding table.",
+      "const": "EN16931-Semantic-JSON-binding"
+    },
+    "version": {
+      "description": "Version of the table format, not of the bound syntax or model.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "syntax": {
+      "description": "Short token naming the bound syntax.",
+      "enum": ["UBL-Invoice", "UBL-CreditNote", "CII"]
+    },
+    "syntaxName": {
+      "description": "The syntax in the spelling its own publisher uses.",
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "description": "Short token naming the bound semantic model, as in a registry file.",
+      "type": "string",
+      "minLength": 1
+    },
+    "edition": {
+      "description": "Edition of the bound semantic model, character for character as the registry writes it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "rootElement": {
+      "description": "First step of every bound path, that is the document element of the syntax as the paths spell it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "license": {
+      "description": "Licence of this file.",
+      "type": "string",
+      "minLength": 1
+    },
+    "notice": {
+      "description": "Attribution for the source the facts were taken from, and the statement of what was not taken.",
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "description": "The file and the binding within it that the entries were generated from.",
+      "type": "object",
+      "required": ["name", "file", "binding", "release"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "binding": { "type": "string", "minLength": 1 },
+        "release": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+      }
+    },
+    "generator": {
+      "description": "Repository-relative path of the script that writes this file.",
+      "type": "string",
+      "minLength": 1
+    },
+    "namespaces": {
+      "description": "Prefix to namespace name, for every prefix a path of this file uses. The empty key is the default namespace: a path step without a prefix is in it, which XPath 1.0 cannot express and a consumer has to arrange for itself.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^([A-Za-z_][A-Za-z0-9_.-]*)?$" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "corrections": {
+      "description": "Deliberate departures from the source, each with the reason for it. Empty where the source needed none.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["member", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "member": { "type": "string", "minLength": 1 },
+          "prefix": { "type": "string" },
+          "term": { "type": "string", "minLength": 1 },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "conventions": {
+      "description": "Values this project writes where the syntax requires an element that no business term of the semantic model states. Each one is a fact about the syntax: which element, under which condition, which value, what asks for the element, and where the value comes from. A writer applies them; a reader applies the read-back members of them. Empty where the syntax requires no such element.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["element", "condition", "value", "requiredBy", "source"],
+        "additionalProperties": false,
+        "properties": {
+          "element": {
+            "description": "Absolute path of the element the value is written at, spelled as the bound paths are and without predicates.",
+            "$ref": "#/$defs/xpath"
+          },
+          "condition": {
+            "description": "When the convention applies. `parent-written-element-absent`: the document has the element above it and no business term states this element.",
+            "enum": ["parent-written-element-absent"]
+          },
+          "value": {
+            "description": "The value written. It carries no business statement and is not read back as one.",
+            "type": "string",
+            "minLength": 1
+          },
+          "option": {
+            "description": "The writer setting that overrides the value, where the value is a caller's choice.",
+            "type": "string",
+            "minLength": 1
+          },
+          "requiredBy": {
+            "description": "What asks for the element: `schema` for the XML Schema of the syntax, otherwise the identifier of the rule of the validation artefacts that asks for it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "term": {
+            "description": "The business term whose content this element otherwise carries. Absent where no term names the element at all.",
+            "$ref": "#/$defs/identifier"
+          },
+          "notReadBeside": {
+            "description": "Prefixed name of a sibling element. Where this element carries exactly `value` and that sibling is present, a reader does not read it as `term`, because the document states the convention rather than the business term.",
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "description": "Where the value comes from, with attribution.",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "dependentRequired": { "notReadBeside": ["term"] }
+      }
+    },
+    "flagDefinitions": {
+      "description": "Every flag this file uses, with the one line ESJ gives it. A flag in upper case is a note code carried through from the source model; a flag in lower case is derived by the generator from the bound paths.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^([A-Z]{3}-[0-9]+|[a-z][a-z0-9-]*)$" },
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "counts": {
+      "description": "What the file contains, so that a consumer can check what it read.",
+      "type": "object",
+      "required": [
+        "terms",
+        "bound",
+        "notRepresented",
+        "components",
+        "extensionTerms",
+        "extensionBound",
+        "extensionReusedTerms",
+        "extensionReusedBound"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "terms": { "type": "integer", "minimum": 0 },
+        "bound": { "type": "integer", "minimum": 0 },
+        "notRepresented": { "type": "integer", "minimum": 0 },
+        "components": { "type": "integer", "minimum": 0 },
+        "extensionTerms": { "type": "integer", "minimum": 0 },
+        "extensionBound": { "type": "integer", "minimum": 0 },
+        "extensionReusedTerms": { "type": "integer", "minimum": 0 },
+        "extensionReusedBound": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "terms": {
+      "description": "One entry per term of the core registry, in the order of that registry.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "extension": {
+      "description": "The terms of an extension registry, bound in the same syntax. Present when the tables were generated with an extension model.",
+      "type": "object",
+      "required": ["model", "edition", "source", "terms", "reusedTerms"],
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string", "minLength": 1 },
+        "edition": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "object",
+          "required": ["name", "file", "release"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "file": { "type": "string", "minLength": 1 },
+            "release": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+          }
+        },
+        "terms": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/entry" }
+        },
+        "reusedTerms": {
+          "description": "One entry per term of the core registry that a group of the extension registry carries through its reusesTerms member, in the order those groups and members are written in. Such a term is bound twice by this file: in terms, where the semantic model puts it, and here, inside the extension group. A consumer that does not load the extension reads terms alone and is unaffected by this member.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/entry" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "description": "A business term or business group identifier of a registry.",
+      "type": "string",
+      "pattern": "^(BT|BG)-[A-Z0-9]+(-[0-9]+)?$"
+    },
+    "xpath": {
+      "description": "An absolute path from the document element, prefixed with the prefixes of namespaces, with the predicates the source states.",
+      "type": "string",
+      "pattern": "^/"
+    },
+    "flags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^([A-Z]{3}-[0-9]+|[a-z][a-z0-9-]*)$" }
+    },
+    "entry": {
+      "type": "object",
+      "required": ["id", "kind", "bound"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/identifier" },
+        "kind": {
+          "description": "BT for a term that carries a value, BG for a group.",
+          "enum": ["BT", "BG"]
+        },
+        "bound": {
+          "description": "Whether this syntax has a place for the term. False entries carry a flag saying why and no path.",
+          "type": "boolean"
+        },
+        "xpath": { "$ref": "#/$defs/xpath" },
+        "alternatives": {
+          "description": "Further paths the term is bound to. A document uses one of them; which one is a question for the flags of the entry.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["xpath", "flags"],
+            "additionalProperties": false,
+            "properties": {
+              "xpath": { "$ref": "#/$defs/xpath" },
+              "flags": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^([A-Z]{3}-[0-9]+|[a-z][a-z0-9-]*)$"
+                }
+              }
+            }
+          }
+        },
+        "instanceElement": {
+          "description": "Groups only: the element one instance of the group is, prefixed and without its predicate.",
+          "type": "string",
+          "minLength": 1
+        },
+        "instancePredicates": {
+          "description": "Groups only, and only where the bound path ends in at least one: the conditions that tell this group's instances from those of another group bound to the same element. They hold together.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "components": {
+          "description": "The supplementary components of the term, with the path of each one relative to the element it hangs off.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["role", "xpath", "anchor"],
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "description": "The ESJ value member this component feeds.",
+                "enum": ["scheme", "schemeVersion", "mimeCode", "filename"]
+              },
+              "xpath": {
+                "description": "Path of the component relative to `anchor`. An attribute of the value itself, or a step out of it where the syntax carries the component elsewhere.",
+                "type": "string",
+                "minLength": 1
+              },
+              "anchor": {
+                "description": "The bound path the relative path starts from: the entry's own path, or one of its alternatives.",
+                "$ref": "#/$defs/xpath"
+              }
+            }
+          }
+        },
+        "flags": { "$ref": "#/$defs/flags" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "bound": { "const": true } }, "required": ["bound"] },
+          "then": { "required": ["xpath"] },
+          "else": {
+            "required": ["flags"],
+            "not": { "anyOf": [
+              { "required": ["xpath"] },
+              { "required": ["alternatives"] },
+              { "required": ["components"] },
+              { "required": ["instanceElement"] }
+            ] }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "BT" } }, "required": ["kind"] },
+          "then": {
+            "not": { "anyOf": [
+              { "required": ["instanceElement"] },
+              { "required": ["instancePredicates"] }
+            ] }
+          }
+        },
+        {
+          "if": { "required": ["instancePredicates"] },
+          "then": { "required": ["instanceElement"] }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,112 @@
+# KoSIT XRechnung test suite instances
+
+The files under `business-cases/` and `technical-cases/` are copies, byte for byte
+unmodified, of the invoice instances of the XRechnung test suite. They are the input
+side of the conformance corpus described in the README one directory up.
+
+| Item | Value |
+|---|---|
+| Repository | <https://github.com/itplr-kosit/xrechnung-testsuite> |
+| Tag | `v2026-08-31` |
+| Path in that repository | `src/test/` |
+| License | Apache License, Version 2.0 (see the `LICENSE` file beside this one) |
+| Publisher | Koordinierungsstelle für IT-Standards (KoSIT) / XStandards Einkauf |
+| Modified | no |
+
+The invoices are synthetic examples of the test suite. They contain no data of a real
+party.
+
+## Checksums
+
+SHA-256 over the bytes of every instance, in the format of `sha256sum`, relative to
+this directory. A test of `esj-xr` recomputes the list, which is at the same time how
+it enumerates the corpus: a file that is not listed here is not part of it.
+
+```text
+bd93caab863ad27cf16e98f61b737b64fd5773c2bdbf452bb573b15f867f1ea6  business-cases/extension/04.01a-INVOICE_ubl.xml
+46d993acf7d68994acc67524d256a46e6bb85ecb947c56321ddc1856110934a3  business-cases/extension/04.02a-INVOICE_ubl.xml
+f50a6ed345e344008638c02d477b3113356083ed970050b44de084fa3b47cfaf  business-cases/extension/04.03a-INVOICE_ubl.xml
+275929283c921191be88f9c5fcd947432d62e57a14f692d8b9003d6debb37237  business-cases/extension/04.04a-INVOICE_ubl.xml
+5ab587a3c10b18f1da85626054de3bcd9162cfc4add31b2e3fa44be0b40bcf3e  business-cases/extension/04.05a-INVOICE_uncefact.xml
+ba11d1f57e88b51642390a400cfe4882a58ab51e86c9aa745059649fda06a7fc  business-cases/extension/05.01a-INVOICE_ubl.xml
+74fb09c609d5fba15a8c543060998d3b92858f56a81fb5b0ed244d6794e498d1  business-cases/standard/01.01a-INVOICE_ubl.xml
+727b51982a84c9b406599a7384783570910440ed405c9bb6d918b22442636886  business-cases/standard/01.01a-INVOICE_uncefact.xml
+0250e3d8d45b14f0ba31c0e928d532ca4fb228442a204d392775aee1cb725501  business-cases/standard/01.02a-INVOICE_ubl.xml
+4d04b67a753b3cac8e1e7759745b27bc6a19ce9913ab303942384b634bc1fae0  business-cases/standard/01.02a-INVOICE_uncefact.xml
+281ed60e09df9921d5a963eb9d42d30868a1f628880335fc0fcf222812aaeaf3  business-cases/standard/01.03a-INVOICE_ubl.xml
+4926207a26939a034845d9342ea6f5d664020da6f1c0dedf7c408564e6a19da2  business-cases/standard/01.03a-INVOICE_uncefact.xml
+91208ec877fabe65228471fb76b5ff7a24deeb6aa5ed88b568edded6e3968724  business-cases/standard/01.04a-INVOICE_ubl.xml
+42ac152e480463adb81999aa7d70da490a8b709808e239f54531c7ddd4319b4f  business-cases/standard/01.04a-INVOICE_uncefact.xml
+09cff10c3ad2a6934e4825b1f5e1ab595410443ff2f150d3cda634d2f0eedc6c  business-cases/standard/01.05a-INVOICE_ubl.xml
+8f95097b5231474c835bf6685aa215bd41076af8ac0c0c8be0e98fdd93001764  business-cases/standard/01.05a-INVOICE_uncefact.xml
+71d357d848e6911ecd5365d2ef61a5caba9241ae6cfd9f5e53aa8c27477748c7  business-cases/standard/01.06a-INVOICE_ubl.xml
+2f073590a86308b020671dc40b41feb76f0e8918ae04d7066f7984b1aaa0fd17  business-cases/standard/01.06a-INVOICE_uncefact.xml
+dfc84cc824a9cb9b1aa1e866550e6e6fc0aa06f69203a68e70f2a6d515d23d96  business-cases/standard/01.07a-INVOICE_ubl.xml
+6c8ece702656e7592acf1fbe9155965e07981fec4ad7bb65c2908c1e2685a945  business-cases/standard/01.07a-INVOICE_uncefact.xml
+b38c9d2666dd6e18f992a955b5d3f94950252dbdfa1927420f0fe511734ae37c  business-cases/standard/01.08a-INVOICE_ubl.xml
+96db4c3c6e5ce9fdc28fec75f911274ea2f7d94bed5ddfce195fdaf357ba4a75  business-cases/standard/01.08a-INVOICE_uncefact.xml
+93aa62fbf2fe463aa71c0081fe69444f356e02045ff7f6ca9e7e3c33e7a949e6  business-cases/standard/01.09a-INVOICE_ubl.xml
+36aa85ae8a80f681b75b30cbaedb86477cee200461bf1b7c4b28e247ea5affde  business-cases/standard/01.09a-INVOICE_uncefact.xml
+a0a788d308eeeee9256932e30be0b67f5c881f22ae5c6e24f02771e32c7dc983  business-cases/standard/01.10a-INVOICE_ubl.xml
+3755ea7764f6e2c8c7427ab24777d64add1cc4e489362ed9c3d1049fdb2629d3  business-cases/standard/01.10a-INVOICE_uncefact.xml
+3f413a4f33c3844e184480f609d3f4eb31c8165431be03157d6eb84f53be514d  business-cases/standard/01.11a-INVOICE_ubl.xml
+0cbcf2d8e4a2f9d8ac2ae9d5a70ed21292233a8e18b7a512c7fb7809803fe847  business-cases/standard/01.11a-INVOICE_uncefact.xml
+cc281f765dd41b38a81d7b4cc9bb995b4b92ee846654cfcbd0e2ab9859e7a2c7  business-cases/standard/01.12a-INVOICE_ubl.xml
+b6b3186df8ade85abaea25b083e34864a5e3427cdbee62bf929a996bbd304c1d  business-cases/standard/01.12a-INVOICE_uncefact.xml
+03558b27fea3e1270786eb8da84a31457bcbd7c0cfe018698cf6bd54c154db52  business-cases/standard/01.13a-INVOICE_ubl.xml
+bf3a7deaeb49fe4ea1e03edeb5642df662f5ed71d5dfad5637a534b398e22b20  business-cases/standard/01.13a-INVOICE_uncefact.xml
+44699c5b9089800e8cc8b5d952ca809c19d6bbfbb17557916cb9447b824f0751  business-cases/standard/01.14a-INVOICE_ubl.xml
+8c6b4a9e40f140bc633bd67d01c549c4cff227f5e500dcdea1a75eb1bb905c03  business-cases/standard/01.14a-INVOICE_uncefact.xml
+0bc82a93113dc663c49982c06f292a28a7587c5453567d2a15c8057c6d16d9ec  business-cases/standard/01.15a-INVOICE_ubl.xml
+b89c8593f45f8057f691726cc1a1ec48d1289a2f6d25d95b85fa694aeeacd41e  business-cases/standard/01.15a-INVOICE_uncefact.xml
+54f477a8ddc0488f0b5a03977ab1fa8b94d735c7b90f0a51e56aeff6112f3392  business-cases/standard/01.17a-INVOICE_ubl.xml
+99832b7873fcf11c85506f9fd3614fa3841e0fda435ca424bb37ce0833294fdc  business-cases/standard/01.17a-INVOICE_uncefact.xml
+55f90ad3793e46131eabfdbd36a4d2c3f9c989313ff0e44b7da72a2d6fde0be0  business-cases/standard/01.18a-INVOICE_ubl.xml
+6be54635ad7afff2516151458f68eeb59340cbb602463f3123b60de348b3861f  business-cases/standard/01.18a-INVOICE_uncefact.xml
+c3d3744cf48e83e4089eb2b8e1c1ebfaf8addcda5edf3ea7ce6444547062ffcf  business-cases/standard/01.19a-INVOICE_ubl.xml
+c1f62d00d1d0dac9dc1c3387bb76e47b58fe98881fe0c879901fdf3f8c474f47  business-cases/standard/01.19a-INVOICE_uncefact.xml
+51fe9b285d86eb57bdb5bfe2682e62dce485af71c003b56b447d5bdc1b61c368  business-cases/standard/01.20a-INVOICE_ubl.xml
+b86fb34c45e0c30cc8b8f50a375ef8d68d0914ac902a3aac6e0009d35f73196b  business-cases/standard/01.20a-INVOICE_uncefact.xml
+8ed131cc276bb37d160ffc243dee9eade601de9ed04392ab38eac5ce26e9ac77  business-cases/standard/01.21a-INVOICE_ubl.xml
+e88c6b6498bf96f78aa1ff20d20d0751fa790704e8e879fd388c0499df2c1ee1  business-cases/standard/01.21a-INVOICE_uncefact.xml
+942f3ac502fdebe48e3f1e130dd75174e9eb8c4b982b92f2664b14cf5dfc6149  business-cases/standard/02.01a-INVOICE_ubl.xml
+b0bc3f139d52d6717e35415fb4ddbd91fe656eb431da41ef41c7edcd911005e3  business-cases/standard/02.01a-INVOICE_uncefact.xml
+e92aae369f69a61c3514c86e14f93fecca5c4d0bd62e20d82567c11e76680a18  business-cases/standard/02.02a-INVOICE_ubl.xml
+551e9667b1c54b9845d46d0b650961e867e90fd61e81f76206c23efa8943148f  business-cases/standard/02.02a-INVOICE_uncefact.xml
+b5e4654362adde98a455b06149f891a6884aa1927d472ddf72319479bd879571  business-cases/standard/02.03a-INVOICE_ubl.xml
+0c1d5983bd99613bb0352634b16990f9d70c43d189dca31b979b7191b45bb51e  business-cases/standard/02.03a-INVOICE_uncefact.xml
+1dae874fdafb1b5bb7271181c67171e05fcfe5e0e2e650a9df77797a97e08cf5  business-cases/standard/02.04a-INVOICE_ubl.xml
+451f14f8b45814e92d11212dffba91bcb0c02f1698b30eeb474d3bd5ea1bf16e  business-cases/standard/02.04a-INVOICE_uncefact.xml
+89124d6a1d66df8de32e70c0a183fd372217d9ce7ff48539d781ff0c56debb4f  business-cases/standard/02.05a-INVOICE_ubl.xml
+abdb5ddd5b0c177d54029c3e10e71e3ebfc6ec78a8c6e23772218b109e90a962  business-cases/standard/02.05a-INVOICE_uncefact.xml
+7906603158c98eaef43c0afde03487d4c68940b03a6f29d2db4191c318707453  business-cases/standard/02.06a-INVOICE_ubl.xml
+17a539fe569a2d75366078d3e435a5427c234fdbdf690219a6f898cfc05d6076  business-cases/standard/02.06a-INVOICE_uncefact.xml
+f8a2b313d823e3d0319fa878f3b9da47d844e5f5b0c19f2583e621d93df2b81e  business-cases/standard/03.01a-INVOICE_ubl.xml
+f42a6b02d0acada2bd9e9d1520b88385878f2377cb99444f0e87052eafb1e1de  business-cases/standard/03.01a-INVOICE_uncefact.xml
+065145e6a6277ca8687359db3af1408cc3a7f546a72f82184b2f3937ec9694f0  business-cases/standard/03.02a-INVOICE_ubl.xml
+c19244a664390db2d45424db3129659e785daa643fc0ec9434ac6c85e1413646  business-cases/standard/03.02a-INVOICE_uncefact.xml
+68110106c5f68ff7e7f3b493a744e74b7bc4f86739ebef44bc591e384452fec0  business-cases/standard/03.03a-INVOICE_ubl.xml
+6d61b2ebce34ec02fcd8395debc59b235af6364aa9cf5bfde7cc40b5bb0729f0  business-cases/standard/03.03a-INVOICE_uncefact.xml
+b12d17301f84759cf1f9718ed72716edb59d36bfce5177cb52e4d2640576ef14  business-cases/standard/03.04a-INVOICE_ubl.xml
+49701b86b040112823b9a279634dcaf68fa371848dba85d2028fb0dc2d5b9d8d  business-cases/standard/03.04a-INVOICE_uncefact.xml
+0bd9e9cb2a380a441b7ed8d65b30c23aa5209e3a03491db8f4e8662540571817  business-cases/standard/03.05a-INVOICE_ubl.xml
+86fa1ea53fdb2ee15ba5541dd71c5f0e0d5132bd88ea2b6249a39ce3c3c5503f  business-cases/standard/03.05a-INVOICE_uncefact.xml
+e6a5cd7fce70f9b729db01be2e035e87b2cba594fb436b8c554d39defbcc3a4a  business-cases/standard/03.06a-INVOICE_ubl.xml
+7401cbb320bd2dd9665b27eb594dcfe5d577184cd6c1c85a22773a643da71d35  business-cases/standard/03.06a-INVOICE_uncefact.xml
+8156b20b1e6646ce51138c135b470da680c7136f7e88a7c98d8887be122286ef  business-cases/standard/03.07a-INVOICE_ubl.xml
+0240935e541603f57cd52d3e1ff5707ca21eedfe7db8a16b29cf14ca2b14b4fa  business-cases/standard/03.07a-INVOICE_uncefact.xml
+13104371d8445f23e47e375b61a58a05fdce7363626cdd8c9e8819c0bb1ec7ff  technical-cases/cius/01.01_comprehensive_test_ubl.xml
+655f3d18f71f672b5bd695143e9f59c439f2614ac3d4b1fbdd195993ab7c6c9a  technical-cases/cius/01.01_comprehensive_test_uncefact.xml
+9b17fabf9cf50411a4906c88a95c85ecbdc2d0d0e22b36758a461524a71fc5e6  technical-cases/cius/01.02_comprehensive_test_ubl.xml
+f010dd7b0eababe271f4a57f711fdef1a0d0f428fbbec1dcc67354bb1290576f  technical-cases/cius/01.02_comprehensive_test_uncefact.xml
+2bb362a4160aec45b0e1b4be71ed3708641b31dae5848f1f0b35dfe1d341c497  technical-cases/cius/01.03_comprehensive_test_ubl.xml
+c6e56f680e76b408fe5ec9e0cb428f23bf723da271788e3a7167f3a3dedfc09a  technical-cases/cius/01.03_comprehensive_test_uncefact.xml
+d964a03caeab2bd57d4b010572f249bb158f8cf460b882d9bf7cea7cb88283b5  technical-cases/cius/01.04_comprehensive_test_ubl.xml
+078fb1aa93511206e7934ea4fa861f4707bd53dce9acb88a163dc68ce9b205ee  technical-cases/cius/01.04_comprehensive_test_uncefact.xml
+db30815f3d29d5acfebb435c6828580a5fc80b0dd07c26ed1203adef2b78f454  technical-cases/cius/01.05_minimal_test_ubl.xml
+f8f7035ca6ec6c9b9b648028490bce950fb670e3f2eb3b9859680e0b42d846ab  technical-cases/cius/01.05_minimal_test_uncefact.xml
+9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a  technical-cases/cius/01.06_minimal_test_ubl.xml
+d5a0245bf6c83cc8a5f34e425bd18ef82f1e5d53bbf02902c258fb9805ef8c89  technical-cases/cius/01.06_minimal_test_uncefact.xml
+6e426f2029464010c8cc95ce9a5530d6f52351fc97d14830d1efaeb4eecd5177  technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml
+3deab5eea780a94de447fcddbf2409ab079a410a5b18d243fb1a95d0e9917b7e  technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml
+```

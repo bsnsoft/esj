@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-core</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Core</name>
+  <description>
+    Semantic paths, semantic values, documents, reader, writer, canonicalizer and
+    structural validator for the EN16931 Semantic JSON format.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <!--
+          The registry files have one source, the model directory of the repository.
+          They are put on the classpath beside the Registry class rather than copied.
+        -->
+        <directory>${project.basedir}/../model</directory>
+        <targetPath>de/bsnsoft/esj/model</targetPath>
+        <includes>
+          <!--
+            Every core registry the repository carries, not a named one: an edition is
+            data, and a distribution that leaves one out is a build that does not know
+            that edition (Registry.editions()).
+          -->
+          <include>en16931/*.json</include>
+          <include>xrechnung/3.0.2.json</include>
+          <include>b2c/0.1.json</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.schema.json</exclude>
+          <exclude>${esj.edition-2026.exclude}</exclude>
+          <exclude>${esj.edition-2026.exclude-upgrade}</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The example documents and the format schema have one source, the directories of
+          the repository. The tests read them from the classpath so that no test knows a
+          path outside the module.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../schema</directory>
+        <targetPath>schema</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-schema}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The registry files and the schema they are described by, so that a test can
+          check the claim that the two validate against the third.
+        -->
+        <directory>${project.basedir}/../model</directory>
+        <targetPath>model</targetPath>
+        <includes>
+          <include>en16931/*.json</include>
+          <include>en16931/2026.paths</include>
+          <include>xrechnung/3.0.2.json</include>
+          <include>b2c/0.1.json</include>
+          <include>registry.schema.json</include>
+          <include>bindings/*.json</include>
+          <include>bindings/README.md</include>
+        </includes>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude}</exclude>
+          <exclude>${esj.edition-2026.exclude-upgrade}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The cross-check report of the binding tables, so that a test can check the
+          claim of model/bindings/README.md that it leaves no difference unexplained; the
+          corpus as semantic documents and the upgrade ledger, so that the measurement of
+          conformance/editions/upgrade.md is recomputed from the corpus on every build.
+        -->
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <includes>
+          <include>bindings/crosscheck.md</include>
+          <include>esj/**/*.esj.json</include>
+          <include>editions/upgrade.json</include>
+          <include>editions/upgrade.md</include>
+        </includes>
+      </testResource>
+    </testResources>
+  </build>
+</project>

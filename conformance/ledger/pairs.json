@@ -1,0 +1,629 @@
+{
+  "format": "esj-conformance-pairs",
+  "version": "2",
+  "corpus": "itplr-kosit/xrechnung-testsuite v2026-08-31",
+  "pairs": [
+    {
+      "stem": "business-cases/standard/01.01a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.02a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.03a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.04a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.05a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.06a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.07a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.08a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.09a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.10a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.11a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.12a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.13a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BT-13",
+          "kind": "fixture",
+          "cause": "order-reference-placeholder"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.14a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.15a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.17a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.18a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.19a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/01.20a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BG-5/BT-35",
+          "kind": "fixture",
+          "cause": "address-placeholder-wording"
+        },
+        {
+          "path": "/BG-4/BG-5/BT-37",
+          "kind": "fixture",
+          "cause": "address-placeholder-wording"
+        },
+        {
+          "path": "/BG-22/BT-107",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-22/BT-108",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-22/BT-113",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/01.21a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BT-31",
+          "kind": "fixture",
+          "cause": "seller-vat-identifier"
+        },
+        {
+          "path": "/BG-16/BT-82",
+          "kind": "fixture",
+          "cause": "payment-means-text"
+        },
+        {
+          "path": "/BG-22/BT-107",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "kind": "fixture",
+          "cause": "vat-exemption-reason"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/02.01a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/02.02a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/02.03a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/02.04a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/02.05a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/02.06a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/03.01a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-7/BT-45",
+          "kind": "fixture",
+          "cause": "buyer-trading-name-only-ubl"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/03.02a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/03.03a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/03.04a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/03.05a-INVOICE",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "business-cases/standard/03.06a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BG-5/BT-37",
+          "kind": "fixture",
+          "cause": "address-city-postcode-swapped"
+        },
+        {
+          "path": "/BG-4/BG-5/BT-38",
+          "kind": "fixture",
+          "cause": "address-city-postcode-swapped"
+        },
+        {
+          "path": "/BG-7/BG-8/BT-52",
+          "kind": "fixture",
+          "cause": "address-city-postcode-swapped"
+        },
+        {
+          "path": "/BG-7/BG-8/BT-53",
+          "kind": "fixture",
+          "cause": "address-city-postcode-swapped"
+        }
+      ]
+    },
+    {
+      "stem": "business-cases/standard/03.07a-INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-4/BT-29/1",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-4/BT-29/2",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "kind": "fixture",
+          "cause": "payee-legal-registration"
+        },
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "technical-cases/cius/01.01_comprehensive_test",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-3/1/BT-25",
+          "kind": "fixture",
+          "cause": "preceding-invoice-references"
+        },
+        {
+          "path": "/BG-3/1/BT-26",
+          "kind": "fixture",
+          "cause": "preceding-invoice-references"
+        },
+        {
+          "path": "/BG-4/BT-29/0",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-4/BT-29/1",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-4/BT-29/2",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-7/BT-44",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-7/BT-45",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "kind": "fixture",
+          "cause": "payee-legal-registration"
+        },
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-149",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-150",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        }
+      ]
+    },
+    {
+      "stem": "technical-cases/cius/01.02_comprehensive_test",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-7/BT-44",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-7/BT-45",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "kind": "fixture",
+          "cause": "payee-legal-registration"
+        },
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-149",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-150",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        }
+      ]
+    },
+    {
+      "stem": "technical-cases/cius/01.03_comprehensive_test",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BG-6/BT-41",
+          "kind": "fixture",
+          "cause": "seller-contact-point"
+        },
+        {
+          "path": "/BG-7/BT-44",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-7/BT-45",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "kind": "fixture",
+          "cause": "payee-legal-registration"
+        },
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-149",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-150",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        }
+      ]
+    },
+    {
+      "stem": "technical-cases/cius/01.04_comprehensive_test",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BG-6/BT-41",
+          "kind": "fixture",
+          "cause": "seller-contact-point"
+        },
+        {
+          "path": "/BG-7/BT-44",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-7/BT-45",
+          "kind": "fixture",
+          "cause": "buyer-name-and-trading-name"
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "kind": "fixture",
+          "cause": "payee-legal-registration"
+        },
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-149",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-150",
+          "kind": "fixture",
+          "cause": "price-base-quantity"
+        }
+      ]
+    },
+    {
+      "stem": "technical-cases/cius/01.05_minimal_test",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-22/BT-110",
+          "kind": "fixture",
+          "cause": "zero-total"
+        }
+      ]
+    },
+    {
+      "stem": "technical-cases/cius/01.06_minimal_test",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "stem": "technical-cases/cvd/02.01a-cvd_INVOICE",
+      "identical": false,
+      "differences": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-4/BT-29/1",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-4/BT-29/2",
+          "kind": "fixture",
+          "cause": "seller-identifiers"
+        },
+        {
+          "path": "/BG-10/BT-61",
+          "kind": "fixture",
+          "cause": "payee-legal-registration"
+        },
+        {
+          "path": "/BG-22/BT-114",
+          "kind": "fixture",
+          "cause": "zero-total"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BT-154",
+          "kind": "fixture",
+          "cause": "item-description-typo"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-160",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-161",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/1/BT-160",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/1/BT-161",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/2/BT-160",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/2/BT-161",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/3/BT-160",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/3/BT-161",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/4/BT-160",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/4/BT-161",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/5/BT-160",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/5/BT-161",
+          "kind": "fixture",
+          "cause": "item-attribute-order"
+        }
+      ]
+    }
+  ]
+}

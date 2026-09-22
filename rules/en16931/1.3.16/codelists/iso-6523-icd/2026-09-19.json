@@ -1,0 +1,982 @@
+{
+  "listId": "iso-6523-icd",
+  "name": "ISO/IEC 6523 international code designators for identification schemes",
+  "publisher": "ISO/IEC 6523 maintenance agency, listed for EN 16931 by the European Commission",
+  "source": "https://ec.europa.eu/digital-building-blocks/sites/download/attachments/467108974/EN16931%20code%20lists%20values%20v17b%20-%20used%20from%202026-05-15.xlsx , sheet \"ICD\"",
+  "retrieved": "2026-09-19",
+  "terms": "The page states no licence. It is the European Commission's publication of which codes of each list the European eInvoicing standard admits, offered for implementation of EN 16931; the workbook itself says that it lists codes and does not replace the publication of each list by its own publisher. Reuse of Commission documents is generally governed by Decision 2011/833/EU, which the page does not cite. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "0002",
+      "name": "System Information et Repertoire des Entreprise et des Etablissements: SIRENE"
+    },
+    {
+      "value": "0003",
+      "name": "Codification Numerique des Etablissments Financiers En Belgique"
+    },
+    {
+      "value": "0004",
+      "name": "NBS/OSI NETWORK"
+    },
+    {
+      "value": "0005",
+      "name": "USA FED GOV OSI NETWORK"
+    },
+    {
+      "value": "0006",
+      "name": "USA DOD OSI NETWORK"
+    },
+    {
+      "value": "0007",
+      "name": "Organisationsnummer"
+    },
+    {
+      "value": "0008",
+      "name": "LE NUMERO NATIONAL"
+    },
+    {
+      "value": "0009",
+      "name": "SIRET-CODE"
+    },
+    {
+      "value": "0010",
+      "name": "Organizational Identifiers for Structured Names under ISO 9541 Part 2"
+    },
+    {
+      "value": "0011",
+      "name": "International Code Designator for the Identification of OSI-based, Amateur Radio Organizations, Network Objects and Application Services."
+    },
+    {
+      "value": "0012",
+      "name": "European Computer Manufacturers Association: ECMA"
+    },
+    {
+      "value": "0013",
+      "name": "VSA FTP CODE (FTP = File Transfer Protocol)"
+    },
+    {
+      "value": "0014",
+      "name": "NIST/OSI Implememts' Workshop"
+    },
+    {
+      "value": "0015",
+      "name": "Electronic Data Interchange: EDI"
+    },
+    {
+      "value": "0016",
+      "name": "EWOS Object Identifiers"
+    },
+    {
+      "value": "0017",
+      "name": "COMMON LANGUAGE"
+    },
+    {
+      "value": "0018",
+      "name": "SNA/OSI Network"
+    },
+    {
+      "value": "0019",
+      "name": "Air Transport Industry Services Communications Network"
+    },
+    {
+      "value": "0020",
+      "name": "European Laboratory for Particle Physics: CERN"
+    },
+    {
+      "value": "0021",
+      "name": "SOCIETY FOR WORLDWIDE INTERBANK FINANCIAL, TELECOMMUNICATION S.W.I.F.T."
+    },
+    {
+      "value": "0022",
+      "name": "OSF Distributed Computing Object Identification"
+    },
+    {
+      "value": "0023",
+      "name": "Nordic University and Research Network: NORDUnet"
+    },
+    {
+      "value": "0024",
+      "name": "Digital Equipment Corporation: DEC"
+    },
+    {
+      "value": "0025",
+      "name": "OSI ASIA-OCEANIA WORKSHOP"
+    },
+    {
+      "value": "0026",
+      "name": "NATO ISO 6523 ICDE coding scheme"
+    },
+    {
+      "value": "0027",
+      "name": "Aeronautical Telecommunications Network (ATN)"
+    },
+    {
+      "value": "0028",
+      "name": "International Standard ISO 6523"
+    },
+    {
+      "value": "0029",
+      "name": "The All-Union Classifier of Enterprises and Organisations"
+    },
+    {
+      "value": "0030",
+      "name": "AT&T/OSI Network"
+    },
+    {
+      "value": "0031",
+      "name": "EDI Partner Identification Code"
+    },
+    {
+      "value": "0032",
+      "name": "Telecom Australia"
+    },
+    {
+      "value": "0033",
+      "name": "S G W OSI Internetwork"
+    },
+    {
+      "value": "0034",
+      "name": "Reuter Open Address Standard"
+    },
+    {
+      "value": "0035",
+      "name": "ISO 6523 - ICD"
+    },
+    {
+      "value": "0036",
+      "name": "TeleTrust Object Identifiers"
+    },
+    {
+      "value": "0037",
+      "name": "LY-tunnus"
+    },
+    {
+      "value": "0038",
+      "name": "The Australian GOSIP Network"
+    },
+    {
+      "value": "0039",
+      "name": "The OZ DOD OSI Network"
+    },
+    {
+      "value": "0040",
+      "name": "Unilever Group Companies"
+    },
+    {
+      "value": "0041",
+      "name": "Citicorp Global Information Network"
+    },
+    {
+      "value": "0042",
+      "name": "DBP Telekom Object Identifiers"
+    },
+    {
+      "value": "0043",
+      "name": "HydroNETT"
+    },
+    {
+      "value": "0044",
+      "name": "Thai Industrial Standards Institute (TISI)"
+    },
+    {
+      "value": "0045",
+      "name": "ICI Company Identification System"
+    },
+    {
+      "value": "0046",
+      "name": "FUNLOC"
+    },
+    {
+      "value": "0047",
+      "name": "BULL ODI/DSA/UNIX Network"
+    },
+    {
+      "value": "0048",
+      "name": "OSINZ"
+    },
+    {
+      "value": "0049",
+      "name": "Auckland Area Health"
+    },
+    {
+      "value": "0050",
+      "name": "Firmenich"
+    },
+    {
+      "value": "0051",
+      "name": "AGFA-DIS"
+    },
+    {
+      "value": "0052",
+      "name": "Society of Motion Picture and Television Engineers (SMPTE)"
+    },
+    {
+      "value": "0053",
+      "name": "Migros_Network M_NETOPZ"
+    },
+    {
+      "value": "0054",
+      "name": "ISO6523 - ICDPCR"
+    },
+    {
+      "value": "0055",
+      "name": "Energy Net"
+    },
+    {
+      "value": "0056",
+      "name": "Nokia Object Identifiers (NOI)"
+    },
+    {
+      "value": "0057",
+      "name": "Saint Gobain"
+    },
+    {
+      "value": "0058",
+      "name": "Siemens Corporate Network"
+    },
+    {
+      "value": "0059",
+      "name": "DANZNET"
+    },
+    {
+      "value": "0060",
+      "name": "Data Universal Numbering System (D-U-N-S Number)"
+    },
+    {
+      "value": "0061",
+      "name": "SOFFEX OSI"
+    },
+    {
+      "value": "0062",
+      "name": "KPN OVN"
+    },
+    {
+      "value": "0063",
+      "name": "ascomOSINet"
+    },
+    {
+      "value": "0064",
+      "name": "UTC: Uniforme Transport Code"
+    },
+    {
+      "value": "0065",
+      "name": "SOLVAY OSI CODING"
+    },
+    {
+      "value": "0066",
+      "name": "Roche Corporate Network"
+    },
+    {
+      "value": "0067",
+      "name": "ZellwegerOSINet"
+    },
+    {
+      "value": "0068",
+      "name": "Intel Corporation OSI"
+    },
+    {
+      "value": "0069",
+      "name": "SITA Object Identifier Tree"
+    },
+    {
+      "value": "0070",
+      "name": "DaimlerChrysler Corporate Network"
+    },
+    {
+      "value": "0071",
+      "name": "LEGO /OSI NETWORK"
+    },
+    {
+      "value": "0072",
+      "name": "NAVISTAR/OSI Network"
+    },
+    {
+      "value": "0073",
+      "name": "ICD Formatted ATM address"
+    },
+    {
+      "value": "0074",
+      "name": "ARINC"
+    },
+    {
+      "value": "0075",
+      "name": "Alcanet/Alcatel-Alsthom Corporate Network"
+    },
+    {
+      "value": "0076",
+      "name": "Sistema Italiano di Identificazione di ogetti gestito da UNINFO"
+    },
+    {
+      "value": "0077",
+      "name": "Sistema Italiano di Indirizzamento di Reti OSI Gestito da UNINFO"
+    },
+    {
+      "value": "0078",
+      "name": "Mitel terminal or switching equipment"
+    },
+    {
+      "value": "0079",
+      "name": "ATM Forum"
+    },
+    {
+      "value": "0080",
+      "name": "UK National Health Service Scheme, (EDIRA compliant)"
+    },
+    {
+      "value": "0081",
+      "name": "International NSAP"
+    },
+    {
+      "value": "0082",
+      "name": "Norwegian Telecommunications Authority's, NTA'S, EDI, identifier scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0083",
+      "name": "Advanced Telecommunications Modules Limited, Corporate Network"
+    },
+    {
+      "value": "0084",
+      "name": "Athens Chamber of Commerce & Industry Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0085",
+      "name": "Swiss Chambers of Commerce Scheme (EDIRA) compliant"
+    },
+    {
+      "value": "0086",
+      "name": "United States Council for International Business (USCIB) Scheme, (EDIRA compliant)"
+    },
+    {
+      "value": "0087",
+      "name": "National Federation of Chambers of Commerce & Industry of Belgium, Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0088",
+      "name": "EAN Location Code"
+    },
+    {
+      "value": "0089",
+      "name": "The Association of British Chambers of Commerce Ltd. Scheme, (EDIRA compliant)"
+    },
+    {
+      "value": "0090",
+      "name": "Internet IP addressing - ISO 6523 ICD encoding"
+    },
+    {
+      "value": "0091",
+      "name": "Cisco Sysytems / OSI Network"
+    },
+    {
+      "value": "0093",
+      "name": "Revenue Canada Business Number Registration (EDIRA compliant)"
+    },
+    {
+      "value": "0094",
+      "name": "DEUTSCHER INDUSTRIE- UND HANDELSTAG (DIHT) Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0095",
+      "name": "Hewlett - Packard Company Internal AM Network"
+    },
+    {
+      "value": "0096",
+      "name": "The Danish Business Authority - P-number (DK:P)"
+    },
+    {
+      "value": "0097",
+      "name": "FTI - Ediforum Italia, (EDIRA compliant)"
+    },
+    {
+      "value": "0098",
+      "name": "CHAMBER OF COMMERCE TEL AVIV-JAFFA Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0099",
+      "name": "Siemens Supervisory Systems Network"
+    },
+    {
+      "value": "0100",
+      "name": "PNG_ICD Scheme"
+    },
+    {
+      "value": "0101",
+      "name": "South African Code Allocation"
+    },
+    {
+      "value": "0102",
+      "name": "HEAG"
+    },
+    {
+      "value": "0104",
+      "name": "BT - ICD Coding System"
+    },
+    {
+      "value": "0105",
+      "name": "Portuguese Chamber of Commerce and Industry Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0106",
+      "name": "Vereniging van Kamers van Koophandel en Fabrieken in Nederland (Association of Chambers of Commerce and Industry in the Netherlands), Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0107",
+      "name": "Association of Swedish Chambers of Commerce and Industry Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0108",
+      "name": "Australian Chambers of Commerce and Industry Scheme (EDIRA compliant)"
+    },
+    {
+      "value": "0109",
+      "name": "BellSouth ICD AESA (ATM End System Address)"
+    },
+    {
+      "value": "0110",
+      "name": "Bell Atlantic"
+    },
+    {
+      "value": "0111",
+      "name": "Object Identifiers"
+    },
+    {
+      "value": "0112",
+      "name": "ISO register for Standards producing Organizations"
+    },
+    {
+      "value": "0113",
+      "name": "OriginNet"
+    },
+    {
+      "value": "0114",
+      "name": "Check Point Software Technologies"
+    },
+    {
+      "value": "0115",
+      "name": "Pacific Bell Data Communications Network"
+    },
+    {
+      "value": "0116",
+      "name": "PSS Object Identifiers"
+    },
+    {
+      "value": "0117",
+      "name": "STENTOR-ICD CODING SYSTEM"
+    },
+    {
+      "value": "0118",
+      "name": "ATM-Network ZN'96"
+    },
+    {
+      "value": "0119",
+      "name": "MCI / OSI Network"
+    },
+    {
+      "value": "0120",
+      "name": "Advantis"
+    },
+    {
+      "value": "0121",
+      "name": "Affable Software Data Interchange Codes"
+    },
+    {
+      "value": "0122",
+      "name": "BB-DATA GmbH"
+    },
+    {
+      "value": "0123",
+      "name": "BASF Company ATM-Network"
+    },
+    {
+      "value": "0124",
+      "name": "IOTA Identifiers for Organizations for Telecommunications Addressing using the ICD system format defined in ISO/IEC 8348"
+    },
+    {
+      "value": "0125",
+      "name": "Henkel Corporate Network (H-Net)"
+    },
+    {
+      "value": "0126",
+      "name": "GTE/OSI Network"
+    },
+    {
+      "value": "0127",
+      "name": "Dresdner Bank Corporate Network"
+    },
+    {
+      "value": "0128",
+      "name": "BCNR (Swiss Clearing Bank Number)"
+    },
+    {
+      "value": "0129",
+      "name": "BPI (Swiss Business Partner Identification) code"
+    },
+    {
+      "value": "0130",
+      "name": "Directorates of the European Commission"
+    },
+    {
+      "value": "0131",
+      "name": "Code for the Identification of National Organizations"
+    },
+    {
+      "value": "0132",
+      "name": "Certicom Object Identifiers"
+    },
+    {
+      "value": "0133",
+      "name": "TC68 OID"
+    },
+    {
+      "value": "0134",
+      "name": "Infonet Services Corporation"
+    },
+    {
+      "value": "0135",
+      "name": "SIA Object Identifiers"
+    },
+    {
+      "value": "0136",
+      "name": "Cable & Wireless Global ATM End-System Address Plan"
+    },
+    {
+      "value": "0137",
+      "name": "Global AESA scheme"
+    },
+    {
+      "value": "0138",
+      "name": "France Telecom ATM End System Address Plan"
+    },
+    {
+      "value": "0139",
+      "name": "Savvis Communications AESA:."
+    },
+    {
+      "value": "0140",
+      "name": "Toshiba Organizations, Partners, And Suppliers' (TOPAS) Code"
+    },
+    {
+      "value": "0141",
+      "name": "NATO Commercial and Government Entity system"
+    },
+    {
+      "value": "0142",
+      "name": "SECETI Object Identifiers"
+    },
+    {
+      "value": "0143",
+      "name": "EINESTEINet AG"
+    },
+    {
+      "value": "0144",
+      "name": "DoDAAC (Department of Defense Activity Address Code)"
+    },
+    {
+      "value": "0145",
+      "name": "DGCP (Direction Générale de la Comptabilité Publique)administrative accounting identification scheme"
+    },
+    {
+      "value": "0146",
+      "name": "DGI (Direction Générale des Impots) code"
+    },
+    {
+      "value": "0147",
+      "name": "Standard Company Code"
+    },
+    {
+      "value": "0148",
+      "name": "ITU (International Telecommunications Union)Data Network Identification Codes (DNIC)"
+    },
+    {
+      "value": "0149",
+      "name": "Global Business Identifier"
+    },
+    {
+      "value": "0150",
+      "name": "Madge Networks Ltd- ICD ATM Addressing Scheme"
+    },
+    {
+      "value": "0151",
+      "name": "Australian Business Number (ABN) Scheme"
+    },
+    {
+      "value": "0152",
+      "name": "Edira Scheme Identifier Code"
+    },
+    {
+      "value": "0153",
+      "name": "Concert Global Network Services ICD AESA"
+    },
+    {
+      "value": "0154",
+      "name": "Identification number of economic subjects: (ICO)"
+    },
+    {
+      "value": "0155",
+      "name": "Global Crossing AESA (ATM End System Address)"
+    },
+    {
+      "value": "0156",
+      "name": "AUNA"
+    },
+    {
+      "value": "0157",
+      "name": "ATM interconnection with the Dutch KPN Telecom"
+    },
+    {
+      "value": "0158",
+      "name": "Identification number of economic subject (ICO) Act on State Statistics of 29 November 2'001, § 27"
+    },
+    {
+      "value": "0159",
+      "name": "ACTALIS Object Identifiers"
+    },
+    {
+      "value": "0160",
+      "name": "GTIN - Global Trade Item Number"
+    },
+    {
+      "value": "0161",
+      "name": "ECCMA Open Technical Directory"
+    },
+    {
+      "value": "0162",
+      "name": "CEN/ISSS Object Identifier Scheme"
+    },
+    {
+      "value": "0163",
+      "name": "US-EPA Facility Identifier"
+    },
+    {
+      "value": "0164",
+      "name": "TELUS Corporation"
+    },
+    {
+      "value": "0165",
+      "name": "FIEIE Object identifiers"
+    },
+    {
+      "value": "0166",
+      "name": "Swissguide Identifier Scheme"
+    },
+    {
+      "value": "0167",
+      "name": "Priority Telecom ATM End System Address Plan"
+    },
+    {
+      "value": "0168",
+      "name": "Vodafone Ireland OSI Addressing"
+    },
+    {
+      "value": "0169",
+      "name": "Swiss Federal Business Identification Number. Central Business names Index (zefix) Identification Number"
+    },
+    {
+      "value": "0170",
+      "name": "Teikoku Company Code"
+    },
+    {
+      "value": "0171",
+      "name": "Luxembourg CP & CPS (Certification Policy and Certification Practice Statement) Index"
+    },
+    {
+      "value": "0172",
+      "name": "Project Group “Lists of Properties” (PROLIST®)"
+    },
+    {
+      "value": "0173",
+      "name": "eCI@ss"
+    },
+    {
+      "value": "0174",
+      "name": "StepNexus"
+    },
+    {
+      "value": "0175",
+      "name": "Siemens AG"
+    },
+    {
+      "value": "0176",
+      "name": "Paradine GmbH"
+    },
+    {
+      "value": "0177",
+      "name": "Odette International Limited"
+    },
+    {
+      "value": "0178",
+      "name": "Route1 MobiNET"
+    },
+    {
+      "value": "0179",
+      "name": "Penango Object Identifiers"
+    },
+    {
+      "value": "0180",
+      "name": "Lithuanian military PKI"
+    },
+    {
+      "value": "0183",
+      "name": "Numéro d'identification suisse des enterprises (IDE), Swiss Unique Business Identification Number (UIDB)"
+    },
+    {
+      "value": "0184",
+      "name": "DIGSTORG"
+    },
+    {
+      "value": "0185",
+      "name": "Perceval Object Code"
+    },
+    {
+      "value": "0186",
+      "name": "TrustPoint Object Identifiers"
+    },
+    {
+      "value": "0187",
+      "name": "Amazon Unique Identification Scheme"
+    },
+    {
+      "value": "0188",
+      "name": "Corporate Number of The Social Security and Tax Number System"
+    },
+    {
+      "value": "0189",
+      "name": "European Business Identifier (EBID)"
+    },
+    {
+      "value": "0190",
+      "name": "Organisatie Indentificatie Nummer (OIN)"
+    },
+    {
+      "value": "0191",
+      "name": "Company Code (Estonia)"
+    },
+    {
+      "value": "0192",
+      "name": "Organisasjonsnummer"
+    },
+    {
+      "value": "0193",
+      "name": "UBL.BE Party Identifier"
+    },
+    {
+      "value": "0194",
+      "name": "KOIOS Open Technical Dictionary"
+    },
+    {
+      "value": "0195",
+      "name": "Singapore Nationwide E-lnvoice Framework"
+    },
+    {
+      "value": "0196",
+      "name": "Icelandic identifier - Íslensk kennitala"
+    },
+    {
+      "value": "0197",
+      "name": "APPLiA Pl Standard"
+    },
+    {
+      "value": "0198",
+      "name": "ERSTORG"
+    },
+    {
+      "value": "0199",
+      "name": "Legal Entity Identifier (LEI)"
+    },
+    {
+      "value": "0200",
+      "name": "Legal entity code (Lithuania)"
+    },
+    {
+      "value": "0201",
+      "name": "Codice Univoco Unità Organizzativa iPA"
+    },
+    {
+      "value": "0202",
+      "name": "Indirizzo di Posta Elettronica Certificata"
+    },
+    {
+      "value": "0203",
+      "name": "eDelivery Network Participant identifier"
+    },
+    {
+      "value": "0204",
+      "name": "Leitweg-ID"
+    },
+    {
+      "value": "0205",
+      "name": "CODDEST"
+    },
+    {
+      "value": "0206",
+      "name": "Registre du Commerce et de l’Industrie : RCI"
+    },
+    {
+      "value": "0207",
+      "name": "PiLog Ontology Codification Identifier (POCI)"
+    },
+    {
+      "value": "0208",
+      "name": "Numero d'entreprise / ondernemingsnummer / Unternehmensnummer"
+    },
+    {
+      "value": "0209",
+      "name": "GS1 identification keys"
+    },
+    {
+      "value": "0210",
+      "name": "CODICE FISCALE"
+    },
+    {
+      "value": "0211",
+      "name": "PARTITA IVA"
+    },
+    {
+      "value": "0212",
+      "name": "Finnish Organization Identifier"
+    },
+    {
+      "value": "0213",
+      "name": "Finnish Organization Value Add Tax Identifier"
+    },
+    {
+      "value": "0214",
+      "name": "Tradeplace TradePI Standard"
+    },
+    {
+      "value": "0215",
+      "name": "Net service ID"
+    },
+    {
+      "value": "0216",
+      "name": "OVTcode"
+    },
+    {
+      "value": "0217",
+      "name": "The Netherlands Chamber of Commerce and Industry establishment number"
+    },
+    {
+      "value": "0218",
+      "name": "Unified registration number (Latvia)"
+    },
+    {
+      "value": "0219",
+      "name": "Taxpayer registration code (Latvia)"
+    },
+    {
+      "value": "0220",
+      "name": "The Register of Natural Persons (Latvia)"
+    },
+    {
+      "value": "0221",
+      "name": "The registered number of the qualified invoice issuer"
+    },
+    {
+      "value": "0222",
+      "name": "Metadata Registry Support"
+    },
+    {
+      "value": "0223",
+      "name": "EU based company"
+    },
+    {
+      "value": "0224",
+      "name": "FTCTC CODE ROUTAGE"
+    },
+    {
+      "value": "0225",
+      "name": "FRCTC ELECTRONIC ADDRESS"
+    },
+    {
+      "value": "0226",
+      "name": "FRCTC Particulier"
+    },
+    {
+      "value": "0227",
+      "name": "NON - EU based company"
+    },
+    {
+      "value": "0228",
+      "name": "Répertoire des Entreprises et des Etablissements (RIDET)"
+    },
+    {
+      "value": "0229",
+      "name": "T.A.H.I.T.I (traitement automatique hiérarchisé des institutions de Tahiti et des îles)"
+    },
+    {
+      "value": "0230",
+      "name": "National e-Invoicing Framework"
+    },
+    {
+      "value": "0231",
+      "name": "Single taxable company (France)"
+    },
+    {
+      "value": "0232",
+      "name": "NOBB product number"
+    },
+    {
+      "value": "0233",
+      "name": "Elnummer"
+    },
+    {
+      "value": "0234",
+      "name": "Toimitusosoite ID"
+    },
+    {
+      "value": "0235",
+      "name": "UAE Tax Identification Number (TIN)"
+    },
+    {
+      "value": "0236",
+      "name": "ToimipaikkalD"
+    },
+    {
+      "value": "0237",
+      "name": "CPR (Danish person civil registration number)"
+    },
+    {
+      "value": "0238",
+      "name": "Plateforme.s agréée.s à la facturation électronique (PPF/PDP)"
+    },
+    {
+      "value": "0239",
+      "name": "EAEU"
+    },
+    {
+      "value": "0240",
+      "name": "Register of legal persons (in French : Répertoire des personnes morales)"
+    },
+    {
+      "value": "0241",
+      "name": "Hitachi Rail"
+    },
+    {
+      "value": "0242",
+      "name": "OpenPeppol Service Provider Identification Scheme (SPIS)"
+    },
+    {
+      "value": "0243",
+      "name": "Business Partner Number (Catena-X)"
+    },
+    {
+      "value": "0244",
+      "name": "Tax Identification (Tax ID), Nigeria"
+    },
+    {
+      "value": "0245",
+      "name": "Tax identification number (DIČ, Slovakia)"
+    },
+    {
+      "value": "0246",
+      "name": "German Electronic Business Address"
+    },
+    {
+      "value": "0247",
+      "name": "Name unknown"
+    },
+    {
+      "value": "0248",
+      "name": "Oman Value Added Tax Identification Number (VATIN)"
+    }
+  ]
+}

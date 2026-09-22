@@ -1,0 +1,883 @@
+[
+  {
+    "id": "BR-01",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-24"
+    ],
+    "assert": {
+      "exists": "/BG-2/BT-24"
+    },
+    "message": "The specification identifier (BT-24), which says which model the invoice follows, is missing: nothing stands at {@/BG-2/BT-24}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-1"
+  },
+  {
+    "id": "BR-02",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-1"
+    ],
+    "assert": {
+      "exists": "/BT-1"
+    },
+    "message": "The invoice number (BT-1) is missing: nothing stands at {@/BT-1}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-2"
+  },
+  {
+    "id": "BR-03",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-2"
+    ],
+    "assert": {
+      "exists": "/BT-2"
+    },
+    "message": "The invoice issue date (BT-2) is missing: nothing stands at {@/BT-2}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-3"
+  },
+  {
+    "id": "BR-04",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-3"
+    ],
+    "assert": {
+      "exists": "/BT-3"
+    },
+    "message": "The invoice type code (BT-3) is missing: nothing stands at {@/BT-3}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-4"
+  },
+  {
+    "id": "BR-05",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-5"
+    ],
+    "assert": {
+      "exists": "/BT-5"
+    },
+    "message": "The invoice currency code (BT-5) is missing: nothing stands at {@/BT-5}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-5"
+  },
+  {
+    "id": "BR-06",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-27"
+    ],
+    "assert": {
+      "exists": "/BG-4/BT-27"
+    },
+    "message": "The seller name (BT-27) is missing: nothing stands at {@/BG-4/BT-27}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-6"
+  },
+  {
+    "id": "BR-07",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-44"
+    ],
+    "assert": {
+      "exists": "/BG-7/BT-44"
+    },
+    "message": "The buyer name (BT-44) is missing: nothing stands at {@/BG-7/BT-44}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-7"
+  },
+  {
+    "id": "BR-08",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BG-5"
+    ],
+    "assert": {
+      "exists": "/BG-4/BG-5"
+    },
+    "message": "The invoice carries no seller postal address (BG-5).",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-8"
+  },
+  {
+    "id": "BR-09",
+    "severity": "fatal",
+    "context": "/BG-4/BG-5",
+    "terms": [
+      "BT-40"
+    ],
+    "assert": {
+      "exists": "/BT-40"
+    },
+    "message": "The seller country code (BT-40) is missing: nothing stands at {@/BT-40}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-9"
+  },
+  {
+    "id": "BR-10",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BG-8"
+    ],
+    "assert": {
+      "exists": "/BG-7/BG-8"
+    },
+    "message": "The invoice carries no buyer postal address (BG-8).",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-10"
+  },
+  {
+    "id": "BR-11",
+    "severity": "fatal",
+    "context": "/BG-7/BG-8",
+    "terms": [
+      "BT-55"
+    ],
+    "assert": {
+      "exists": "/BT-55"
+    },
+    "message": "The buyer country code (BT-55) is missing: nothing stands at {@/BT-55}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-11"
+  },
+  {
+    "id": "BR-12",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-106"
+    ],
+    "assert": {
+      "exists": "/BG-22/BT-106"
+    },
+    "message": "The sum of the invoice line net amounts (BT-106) is missing: nothing stands at {@/BG-22/BT-106}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-12"
+  },
+  {
+    "id": "BR-13",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-109"
+    ],
+    "assert": {
+      "exists": "/BG-22/BT-109"
+    },
+    "message": "The invoice total amount without VAT (BT-109) is missing: nothing stands at {@/BG-22/BT-109}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-13"
+  },
+  {
+    "id": "BR-14",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-112"
+    ],
+    "assert": {
+      "exists": "/BG-22/BT-112"
+    },
+    "message": "The invoice total amount with VAT (BT-112) is missing: nothing stands at {@/BG-22/BT-112}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-14"
+  },
+  {
+    "id": "BR-15",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-115"
+    ],
+    "assert": {
+      "exists": "/BG-22/BT-115"
+    },
+    "message": "The amount due for payment (BT-115) is missing: nothing stands at {@/BG-22/BT-115}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-15"
+  },
+  {
+    "id": "BR-16",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BG-25"
+    ],
+    "assert": {
+      "gt": [
+        {
+          "count": "/BG-25/*"
+        },
+        {
+          "const": 0
+        }
+      ]
+    },
+    "message": "The invoice carries no invoice line (BG-25); an invoice states at least one.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-16"
+  },
+  {
+    "id": "BR-17",
+    "severity": "fatal",
+    "context": "/BG-10",
+    "terms": [
+      "BT-59"
+    ],
+    "assert": {
+      "exists": "/BT-59"
+    },
+    "message": "The payee name (BT-59), which a payee group (BG-10) needs is missing: nothing stands at {@/BT-59}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-17",
+    "note": "The statement makes the name due where the payee differs from the seller. This rule asks for the name of every payee group the document carries, which is the same thing wherever the group is there at all: a payee group that repeats the seller carries no information, and the official artefacts additionally compare the two names. That comparison is left out here because two parties that spell one name are not thereby one party."
+  },
+  {
+    "id": "BR-18",
+    "severity": "fatal",
+    "context": "/BG-11",
+    "terms": [
+      "BT-62"
+    ],
+    "assert": {
+      "exists": "/BT-62"
+    },
+    "message": "The seller tax representative name (BT-62) is missing: nothing stands at {@/BT-62}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-18"
+  },
+  {
+    "id": "BR-19",
+    "severity": "fatal",
+    "context": "/BG-11",
+    "terms": [
+      "BG-12"
+    ],
+    "assert": {
+      "exists": "/BG-12"
+    },
+    "message": "The seller tax representative carries no postal address (BG-12).",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-19"
+  },
+  {
+    "id": "BR-20",
+    "severity": "fatal",
+    "context": "/BG-11/BG-12",
+    "terms": [
+      "BT-69"
+    ],
+    "assert": {
+      "exists": "/BT-69"
+    },
+    "message": "The tax representative country code (BT-69) is missing: nothing stands at {@/BT-69}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-20"
+  },
+  {
+    "id": "BR-21",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-126"
+    ],
+    "assert": {
+      "exists": "/BT-126"
+    },
+    "message": "The invoice line identifier (BT-126) is missing: nothing stands at {@/BT-126}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-21"
+  },
+  {
+    "id": "BR-22",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-129"
+    ],
+    "assert": {
+      "exists": "/BT-129"
+    },
+    "message": "The invoiced quantity (BT-129) is missing: nothing stands at {@/BT-129}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-22"
+  },
+  {
+    "id": "BR-23",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-130"
+    ],
+    "assert": {
+      "exists": "/BT-130"
+    },
+    "message": "The invoiced quantity unit of measure code (BT-130) is missing: nothing stands at {@/BT-130}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-23"
+  },
+  {
+    "id": "BR-24",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-131"
+    ],
+    "assert": {
+      "exists": "/BT-131"
+    },
+    "message": "The invoice line net amount (BT-131) is missing: nothing stands at {@/BT-131}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-24"
+  },
+  {
+    "id": "BR-25",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-153"
+    ],
+    "assert": {
+      "exists": "/BG-31/BT-153"
+    },
+    "message": "The item name (BT-153) is missing: nothing stands at {@/BG-31/BT-153}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-25"
+  },
+  {
+    "id": "BR-26",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-146"
+    ],
+    "assert": {
+      "exists": "/BG-29/BT-146"
+    },
+    "message": "The item net price (BT-146) is missing: nothing stands at {@/BG-29/BT-146}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-26"
+  },
+  {
+    "id": "BR-27",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-146"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-146"
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BT-146"
+            },
+            {
+              "const": "0"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The item net price (BT-146) at {@/BT-146} is {/BT-146}; a net price is not negative.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-27"
+  },
+  {
+    "id": "BR-28",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-148"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-148"
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BT-148"
+            },
+            {
+              "const": "0"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The item gross price (BT-148) at {@/BT-148} is {/BT-148}; a gross price is not negative.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-28"
+  },
+  {
+    "id": "BR-29",
+    "severity": "fatal",
+    "context": "/BG-13/BG-14",
+    "terms": [
+      "BT-73",
+      "BT-74"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-73"
+            },
+            {
+              "exists": "/BT-74"
+            }
+          ]
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BT-74"
+            },
+            {
+              "value": "/BT-73"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoicing period ends at {/BT-74} and starts at {/BT-73}; a period does not end before it starts.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-29"
+  },
+  {
+    "id": "BR-30",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-26",
+    "terms": [
+      "BT-134",
+      "BT-135"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-134"
+            },
+            {
+              "exists": "/BT-135"
+            }
+          ]
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BT-135"
+            },
+            {
+              "value": "/BT-134"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice line period at {.} ends at {/BT-135} and starts at {/BT-134}; a period does not end before it starts.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-30"
+  },
+  {
+    "id": "BR-31",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-92"
+    ],
+    "assert": {
+      "exists": "/BT-92"
+    },
+    "message": "The document level allowance amount (BT-92) is missing: nothing stands at {@/BT-92}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-31"
+  },
+  {
+    "id": "BR-32",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-95"
+    ],
+    "assert": {
+      "exists": "/BT-95"
+    },
+    "message": "The document level allowance VAT category code (BT-95) is missing: nothing stands at {@/BT-95}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-32"
+  },
+  {
+    "id": "BR-33",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-97",
+      "BT-98"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-97"
+        },
+        {
+          "exists": "/BT-98"
+        }
+      ]
+    },
+    "message": "The document level allowance at {.} states no reason: neither a reason text (BT-97) nor a reason code (BT-98) is there.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-33"
+  },
+  {
+    "id": "BR-36",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-99"
+    ],
+    "assert": {
+      "exists": "/BT-99"
+    },
+    "message": "The document level charge amount (BT-99) is missing: nothing stands at {@/BT-99}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-36"
+  },
+  {
+    "id": "BR-37",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102"
+    ],
+    "assert": {
+      "exists": "/BT-102"
+    },
+    "message": "The document level charge VAT category code (BT-102) is missing: nothing stands at {@/BT-102}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-37"
+  },
+  {
+    "id": "BR-38",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-104",
+      "BT-105"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-104"
+        },
+        {
+          "exists": "/BT-105"
+        }
+      ]
+    },
+    "message": "The document level charge at {.} states no reason: neither a reason text (BT-104) nor a reason code (BT-105) is there.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-38"
+  },
+  {
+    "id": "BR-41",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-136"
+    ],
+    "assert": {
+      "exists": "/BT-136"
+    },
+    "message": "The invoice line allowance amount (BT-136) is missing: nothing stands at {@/BT-136}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-41"
+  },
+  {
+    "id": "BR-42",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-139",
+      "BT-140"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-139"
+        },
+        {
+          "exists": "/BT-140"
+        }
+      ]
+    },
+    "message": "The invoice line allowance at {.} states no reason: neither a reason text (BT-139) nor a reason code (BT-140) is there.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-42"
+  },
+  {
+    "id": "BR-43",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-141"
+    ],
+    "assert": {
+      "exists": "/BT-141"
+    },
+    "message": "The invoice line charge amount (BT-141) is missing: nothing stands at {@/BT-141}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-43"
+  },
+  {
+    "id": "BR-44",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-144",
+      "BT-145"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-144"
+        },
+        {
+          "exists": "/BT-145"
+        }
+      ]
+    },
+    "message": "The invoice line charge at {.} states no reason: neither a reason text (BT-144) nor a reason code (BT-145) is there.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-44"
+  },
+  {
+    "id": "BR-45",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-116"
+    ],
+    "assert": {
+      "exists": "/BT-116"
+    },
+    "message": "The VAT category taxable amount (BT-116) is missing: nothing stands at {@/BT-116}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-45"
+  },
+  {
+    "id": "BR-46",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-117"
+    ],
+    "assert": {
+      "exists": "/BT-117"
+    },
+    "message": "The VAT category tax amount (BT-117) is missing: nothing stands at {@/BT-117}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-46"
+  },
+  {
+    "id": "BR-47",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-118"
+    ],
+    "assert": {
+      "exists": "/BT-118"
+    },
+    "message": "The VAT category code (BT-118) is missing: nothing stands at {@/BT-118}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-47"
+  },
+  {
+    "id": "BR-48",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-118",
+      "BT-119"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "ne": [
+            {
+              "value": "/BT-118"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "exists": "/BT-119"
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised {/BT-118} and states no VAT category rate (BT-119); a rate is due for every category but the one that is not subject to VAT.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-48"
+  },
+  {
+    "id": "BR-49",
+    "severity": "fatal",
+    "context": "/BG-16",
+    "terms": [
+      "BT-81"
+    ],
+    "assert": {
+      "exists": "/BT-81"
+    },
+    "message": "The payment means type code (BT-81) is missing: nothing stands at {@/BT-81}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-49"
+  },
+  {
+    "id": "BR-50",
+    "severity": "fatal",
+    "context": "/BG-16/BG-17/*",
+    "terms": [
+      "BT-84"
+    ],
+    "assert": {
+      "exists": "/BT-84"
+    },
+    "message": "The payment account identifier (BT-84) is missing: nothing stands at {@/BT-84}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-50"
+  },
+  {
+    "id": "BR-51",
+    "severity": "warning",
+    "context": "/BG-16/BG-18",
+    "terms": [
+      "BT-87"
+    ],
+    "assert": {
+      "matches": [
+        {
+          "value": "/BT-87"
+        },
+        "(?:[^0-9]*[0-9]){0,10}[^0-9]*"
+      ]
+    },
+    "message": "The payment card primary account number (BT-87) at {@/BT-87} is {/BT-87}, which shows more than ten digits of the card number; at most the first six and the last four may be shown.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-51",
+    "note": "The statement names the digits that may be shown, which is at most six at the front and four at the back, and this rule counts the digits of the value and asks for at most ten of them. The official validation artefacts ask instead that the whole value be at most ten characters long, which faults a number masked to its last four digits — sixteen characters of which twelve are asterisks — although such a number shows four digits and satisfies the statement. The two readings differ on a masked number, the norm is followed here, and the ledger records it."
+  },
+  {
+    "id": "BR-52",
+    "severity": "fatal",
+    "context": "/BG-24/*",
+    "terms": [
+      "BT-122"
+    ],
+    "assert": {
+      "exists": "/BT-122"
+    },
+    "message": "The supporting document reference (BT-122) is missing: nothing stands at {@/BT-122}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-52"
+  },
+  {
+    "id": "BR-53",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-6",
+      "BT-111"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-6"
+        },
+        "then": {
+          "exists": "/BG-22/BT-111"
+        }
+      }
+    },
+    "message": "The invoice names a VAT accounting currency (BT-6) of {/BT-6} and states no invoice total VAT amount in that currency (BT-111).",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-53"
+  },
+  {
+    "id": "BR-54",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-31/BG-32/*",
+    "terms": [
+      "BT-160",
+      "BT-161"
+    ],
+    "assert": {
+      "and": [
+        {
+          "exists": "/BT-160"
+        },
+        {
+          "exists": "/BT-161"
+        }
+      ]
+    },
+    "message": "The item attribute at {.} is incomplete: an attribute carries both a name (BT-160) and a value (BT-161).",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-54"
+  },
+  {
+    "id": "BR-55",
+    "severity": "fatal",
+    "context": "/BG-3/*",
+    "terms": [
+      "BT-25"
+    ],
+    "assert": {
+      "exists": "/BT-25"
+    },
+    "message": "The preceding invoice reference (BT-25) is missing: nothing stands at {@/BT-25}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-55"
+  },
+  {
+    "id": "BR-56",
+    "severity": "fatal",
+    "context": "/BG-11",
+    "terms": [
+      "BT-63"
+    ],
+    "assert": {
+      "exists": "/BT-63"
+    },
+    "message": "The seller tax representative VAT identifier (BT-63) is missing: nothing stands at {@/BT-63}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-56"
+  },
+  {
+    "id": "BR-57",
+    "severity": "fatal",
+    "context": "/BG-13/BG-15",
+    "terms": [
+      "BT-80"
+    ],
+    "assert": {
+      "exists": "/BT-80"
+    },
+    "message": "The deliver to country code (BT-80) is missing: nothing stands at {@/BT-80}.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-57"
+  },
+  {
+    "id": "BR-61",
+    "severity": "fatal",
+    "context": "/BG-16",
+    "terms": [
+      "BT-81",
+      "BT-84"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "or": [
+            {
+              "eq": [
+                {
+                  "value": "/BT-81"
+                },
+                {
+                  "const": "30"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-81"
+                },
+                {
+                  "const": "58"
+                }
+              ]
+            }
+          ]
+        },
+        "then": {
+          "exists": "/BG-17/*/BT-84"
+        }
+      }
+    },
+    "message": "The payment means type code (BT-81) is {/BT-81}, which is a credit transfer, and no payment account identifier (BT-84) is there to transfer to.",
+    "source": "EN 16931-1, 6.4.1, Table 3, BR-61",
+    "note": "The statement names three kinds of credit transfer. The codes of UNTDID 4461 the official artefacts read as those kinds are 30 and 58, and this rule asks about the same two."
+  }
+]

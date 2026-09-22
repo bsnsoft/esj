@@ -1,0 +1,76 @@
+{
+  "displayNames": "esj-render-display-names/0.1",
+  "list": "payment-means",
+  "english": "The names of UNTDID 4461 as the dated code list snapshot rules/en16931/1.3.16/codelists/untdid-4461/2026-09-19.json carries them. A means of payment not listed here is shown as its code.",
+  "german": "This project's wording, written the way a German invoice writes it. It is not a translation of any published list.",
+  "languages": [
+    "en",
+    "de"
+  ],
+  "names": {
+    "1": {
+      "en": "Instrument not defined",
+      "de": "Zahlungsart nicht festgelegt"
+    },
+    "10": {
+      "en": "In cash",
+      "de": "Barzahlung"
+    },
+    "20": {
+      "en": "Cheque",
+      "de": "Scheck"
+    },
+    "30": {
+      "en": "Credit transfer",
+      "de": "Überweisung"
+    },
+    "31": {
+      "en": "Debit transfer",
+      "de": "Lastschriftübertrag"
+    },
+    "42": {
+      "en": "Payment to bank account",
+      "de": "Zahlung auf ein Bankkonto"
+    },
+    "48": {
+      "en": "Bank card",
+      "de": "Kartenzahlung"
+    },
+    "49": {
+      "en": "Direct debit",
+      "de": "Lastschrift"
+    },
+    "54": {
+      "en": "Credit card",
+      "de": "Kreditkarte"
+    },
+    "55": {
+      "en": "Debit card",
+      "de": "Debitkarte"
+    },
+    "57": {
+      "en": "Standing agreement",
+      "de": "Dauervereinbarung"
+    },
+    "58": {
+      "en": "SEPA credit transfer",
+      "de": "SEPA-Überweisung"
+    },
+    "59": {
+      "en": "SEPA direct debit",
+      "de": "SEPA-Lastschrift"
+    },
+    "68": {
+      "en": "Online payment service",
+      "de": "Online-Zahlungsdienst"
+    },
+    "97": {
+      "en": "Clearing between partners",
+      "de": "Verrechnung zwischen den Partnern"
+    },
+    "ZZZ": {
+      "en": "Mutually defined",
+      "de": "Gegenseitig vereinbart"
+    }
+  }
+}

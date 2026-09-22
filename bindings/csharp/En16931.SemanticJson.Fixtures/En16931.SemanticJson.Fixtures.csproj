@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>En16931.SemanticJson.Fixtures</RootNamespace>
+    <AssemblyName>esj-fixtures</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Answers the request protocol of conformance/fixtures/run.py for this binding.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../En16931.SemanticJson/En16931.SemanticJson.csproj" />
+  </ItemGroup>
+
+</Project>

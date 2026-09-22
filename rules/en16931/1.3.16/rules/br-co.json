@@ -1,0 +1,1066 @@
+[
+  {
+    "id": "BR-CO-03",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-7",
+      "BT-8"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-7"
+          },
+          {
+            "exists": "/BT-8"
+          }
+        ]
+      }
+    },
+    "message": "The invoice carries both a value added tax point date (BT-7) of {/BT-7} and a value added tax point date code (BT-8) of {/BT-8}; one of the two states the tax point, never both.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-3"
+  },
+  {
+    "id": "BR-CO-04",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-151"
+    ],
+    "assert": {
+      "exists": "/BG-30/BT-151"
+    },
+    "message": "The invoice line at {.} is not categorised: the invoiced item VAT category code (BT-151) is missing.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-4"
+  },
+  {
+    "id": "BR-CO-10",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-106",
+      "BT-131"
+    ],
+    "assert": {
+      "eq": [
+        {
+          "value": "/BG-22/BT-106"
+        },
+        {
+          "round": [
+            {
+              "sum": "/BG-25/*/BT-131"
+            },
+            2
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "lines": {
+        "round": [
+          {
+            "sum": "/BG-25/*/BT-131"
+          },
+          2
+        ]
+      }
+    },
+    "message": "The sum of the invoice line net amounts (BT-131) is {$lines}, and the sum of invoice line net amount (BT-106) at {@/BG-22/BT-106} carries {/BG-22/BT-106}.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-10"
+  },
+  {
+    "id": "BR-CO-11",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-107",
+      "BT-92"
+    ],
+    "assert": {
+      "or": [
+        {
+          "and": [
+            {
+              "exists": "/BG-22/BT-107"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-107"
+                },
+                {
+                  "round": [
+                    {
+                      "sum": "/BG-20/*/BT-92"
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "and": [
+            {
+              "absent": "/BG-22/BT-107"
+            },
+            {
+              "eq": [
+                {
+                  "count": "/BG-20/*"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "allowances": {
+        "round": [
+          {
+            "sum": "/BG-20/*/BT-92"
+          },
+          2
+        ]
+      }
+    },
+    "message": "The document level allowance amounts (BT-92) add up to {$allowances}, and the sum of allowances on document level (BT-107) carries {/BG-22/BT-107}.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-11"
+  },
+  {
+    "id": "BR-CO-12",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-108",
+      "BT-99"
+    ],
+    "assert": {
+      "or": [
+        {
+          "and": [
+            {
+              "exists": "/BG-22/BT-108"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-108"
+                },
+                {
+                  "round": [
+                    {
+                      "sum": "/BG-21/*/BT-99"
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "and": [
+            {
+              "absent": "/BG-22/BT-108"
+            },
+            {
+              "eq": [
+                {
+                  "count": "/BG-21/*"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "charges": {
+        "round": [
+          {
+            "sum": "/BG-21/*/BT-99"
+          },
+          2
+        ]
+      }
+    },
+    "message": "The document level charge amounts (BT-99) add up to {$charges}, and the sum of charges on document level (BT-108) carries {/BG-22/BT-108}.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-12"
+  },
+  {
+    "id": "BR-CO-13",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-106",
+      "BT-107",
+      "BT-108",
+      "BT-109"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BG-22/BT-107"
+        },
+        "then": {
+          "if": {
+            "condition": {
+              "exists": "/BG-22/BT-108"
+            },
+            "then": {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-109"
+                },
+                {
+                  "round": [
+                    {
+                      "add": [
+                        {
+                          "sub": [
+                            {
+                              "value": "/BG-22/BT-106"
+                            },
+                            {
+                              "value": "/BG-22/BT-107"
+                            }
+                          ]
+                        },
+                        {
+                          "value": "/BG-22/BT-108"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-109"
+                },
+                {
+                  "round": [
+                    {
+                      "sub": [
+                        {
+                          "value": "/BG-22/BT-106"
+                        },
+                        {
+                          "value": "/BG-22/BT-107"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "condition": {
+              "exists": "/BG-22/BT-108"
+            },
+            "then": {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-109"
+                },
+                {
+                  "round": [
+                    {
+                      "add": [
+                        {
+                          "value": "/BG-22/BT-106"
+                        },
+                        {
+                          "value": "/BG-22/BT-108"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-109"
+                },
+                {
+                  "value": "/BG-22/BT-106"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "The invoice total amount without VAT (BT-109) carries {/BG-22/BT-109}, and the sum of the invoice line net amounts (BT-106) of {/BG-22/BT-106} less the allowances (BT-107) and plus the charges (BT-108) on document level comes to something else.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-13"
+  },
+  {
+    "id": "BR-CO-14",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-110",
+      "BT-117"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BG-22/BT-110"
+        },
+        "then": {
+          "eq": [
+            {
+              "value": "/BG-22/BT-110"
+            },
+            {
+              "round": [
+                {
+                  "sum": "/BG-23/*/BT-117"
+                },
+                2
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bind": {
+      "vat": {
+        "round": [
+          {
+            "sum": "/BG-23/*/BT-117"
+          },
+          2
+        ]
+      }
+    },
+    "message": "The VAT category tax amounts (BT-117) add up to {$vat}, and the invoice total VAT amount (BT-110) carries {/BG-22/BT-110}.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-14"
+  },
+  {
+    "id": "BR-CO-15",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-109",
+      "BT-110",
+      "BT-112"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BG-22/BT-110"
+        },
+        "then": {
+          "eq": [
+            {
+              "value": "/BG-22/BT-112"
+            },
+            {
+              "round": [
+                {
+                  "add": [
+                    {
+                      "value": "/BG-22/BT-109"
+                    },
+                    {
+                      "value": "/BG-22/BT-110"
+                    }
+                  ]
+                },
+                2
+              ]
+            }
+          ]
+        },
+        "else": {
+          "eq": [
+            {
+              "value": "/BG-22/BT-112"
+            },
+            {
+              "value": "/BG-22/BT-109"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice total amount with VAT (BT-112) carries {/BG-22/BT-112}, and the total without VAT (BT-109) of {/BG-22/BT-109} plus the total VAT amount (BT-110) of {/BG-22/BT-110} comes to something else.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-15"
+  },
+  {
+    "id": "BR-CO-16",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-112",
+      "BT-113",
+      "BT-114",
+      "BT-115"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BG-22/BT-113"
+        },
+        "then": {
+          "if": {
+            "condition": {
+              "exists": "/BG-22/BT-114"
+            },
+            "then": {
+              "eq": [
+                {
+                  "round": [
+                    {
+                      "sub": [
+                        {
+                          "value": "/BG-22/BT-115"
+                        },
+                        {
+                          "value": "/BG-22/BT-114"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                },
+                {
+                  "round": [
+                    {
+                      "sub": [
+                        {
+                          "value": "/BG-22/BT-112"
+                        },
+                        {
+                          "value": "/BG-22/BT-113"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-115"
+                },
+                {
+                  "round": [
+                    {
+                      "sub": [
+                        {
+                          "value": "/BG-22/BT-112"
+                        },
+                        {
+                          "value": "/BG-22/BT-113"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "condition": {
+              "exists": "/BG-22/BT-114"
+            },
+            "then": {
+              "eq": [
+                {
+                  "round": [
+                    {
+                      "sub": [
+                        {
+                          "value": "/BG-22/BT-115"
+                        },
+                        {
+                          "value": "/BG-22/BT-114"
+                        }
+                      ]
+                    },
+                    2
+                  ]
+                },
+                {
+                  "value": "/BG-22/BT-112"
+                }
+              ]
+            },
+            "else": {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-115"
+                },
+                {
+                  "value": "/BG-22/BT-112"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "The amount due for payment (BT-115) carries {/BG-22/BT-115}, and the total with VAT (BT-112) of {/BG-22/BT-112} less the paid amount (BT-113) of {/BG-22/BT-113} plus the rounding amount (BT-114) of {/BG-22/BT-114} comes to something else.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-16"
+  },
+  {
+    "id": "BR-CO-17",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-116",
+      "BT-117",
+      "BT-119"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-119"
+        },
+        "then": {
+          "if": {
+            "condition": {
+              "eq": [
+                {
+                  "round": [
+                    {
+                      "value": "/BT-119"
+                    },
+                    0
+                  ]
+                },
+                {
+                  "const": "0"
+                }
+              ]
+            },
+            "then": {
+              "eq": [
+                {
+                  "round": [
+                    {
+                      "value": "/BT-117"
+                    },
+                    0
+                  ]
+                },
+                {
+                  "const": "0"
+                }
+              ]
+            },
+            "else": {
+              "and": [
+                {
+                  "le": [
+                    {
+                      "sub": [
+                        {
+                          "abs": {
+                            "value": "/BT-117"
+                          }
+                        },
+                        {
+                          "const": 1
+                        }
+                      ]
+                    },
+                    {
+                      "round": [
+                        {
+                          "div": [
+                            {
+                              "mul": [
+                                {
+                                  "abs": {
+                                    "value": "/BT-116"
+                                  }
+                                },
+                                {
+                                  "value": "/BT-119"
+                                }
+                              ]
+                            },
+                            {
+                              "const": 100
+                            }
+                          ]
+                        },
+                        2
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "ge": [
+                    {
+                      "add": [
+                        {
+                          "abs": {
+                            "value": "/BT-117"
+                          }
+                        },
+                        {
+                          "const": 1
+                        }
+                      ]
+                    },
+                    {
+                      "round": [
+                        {
+                          "div": [
+                            {
+                              "mul": [
+                                {
+                                  "abs": {
+                                    "value": "/BT-116"
+                                  }
+                                },
+                                {
+                                  "value": "/BT-119"
+                                }
+                              ]
+                            },
+                            {
+                              "const": 100
+                            }
+                          ]
+                        },
+                        2
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "else": {
+          "eq": [
+            {
+              "round": [
+                {
+                  "value": "/BT-117"
+                },
+                0
+              ]
+            },
+            {
+              "const": "0"
+            }
+          ]
+        }
+      }
+    },
+    "warn": {
+      "assert": {
+        "if": {
+          "condition": {
+            "exists": "/BT-119"
+          },
+          "then": {
+            "if": {
+              "condition": {
+                "eq": [
+                  {
+                    "round": [
+                      {
+                        "value": "/BT-119"
+                      },
+                      0
+                    ]
+                  },
+                  {
+                    "const": "0"
+                  }
+                ]
+              },
+              "then": {
+                "eq": [
+                  {
+                    "round": [
+                      {
+                        "value": "/BT-117"
+                      },
+                      0
+                    ]
+                  },
+                  {
+                    "const": "0"
+                  }
+                ]
+              },
+              "else": {
+                "and": [
+                  {
+                    "lt": [
+                      {
+                        "sub": [
+                          {
+                            "abs": {
+                              "value": "/BT-117"
+                            }
+                          },
+                          {
+                            "const": 1
+                          }
+                        ]
+                      },
+                      {
+                        "round": [
+                          {
+                            "div": [
+                              {
+                                "mul": [
+                                  {
+                                    "abs": {
+                                      "value": "/BT-116"
+                                    }
+                                  },
+                                  {
+                                    "value": "/BT-119"
+                                  }
+                                ]
+                              },
+                              {
+                                "const": 100
+                              }
+                            ]
+                          },
+                          2
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "gt": [
+                      {
+                        "add": [
+                          {
+                            "abs": {
+                              "value": "/BT-117"
+                            }
+                          },
+                          {
+                            "const": 1
+                          }
+                        ]
+                      },
+                      {
+                        "round": [
+                          {
+                            "div": [
+                              {
+                                "mul": [
+                                  {
+                                    "abs": {
+                                      "value": "/BT-116"
+                                    }
+                                  },
+                                  {
+                                    "value": "/BT-119"
+                                  }
+                                ]
+                              },
+                              {
+                                "const": 100
+                              }
+                            ]
+                          },
+                          2
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "else": {
+            "eq": [
+              {
+                "round": [
+                  {
+                    "value": "/BT-117"
+                  },
+                  0
+                ]
+              },
+              {
+                "const": "0"
+              }
+            ]
+          }
+        }
+      },
+      "message": "In the VAT breakdown at {.} the taxable amount (BT-116) is {/BT-116} at the rate (BT-119) of {/BT-119} per cent, which comes to {$computed}, and the VAT category tax amount (BT-117) carries {/BT-117}, exactly one unit of the invoice currency away; the official UBL artefact of release 1.3.16 faults that difference and the CII artefact admits it."
+    },
+    "bind": {
+      "computed": {
+        "round": [
+          {
+            "div": [
+              {
+                "mul": [
+                  {
+                    "abs": {
+                      "value": "/BT-116"
+                    }
+                  },
+                  {
+                    "value": "/BT-119"
+                  }
+                ]
+              },
+              {
+                "const": 100
+              }
+            ]
+          },
+          2
+        ]
+      }
+    },
+    "message": "In the VAT breakdown at {.} the taxable amount (BT-116) is {/BT-116} at the rate (BT-119) of {/BT-119} per cent, which comes to {$computed}, and the VAT category tax amount (BT-117) carries {/BT-117}.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-17",
+    "note": "Three readings of the statement are settled here. The product is compared in absolute value rather than signed, and within one unit of the invoice currency rather than exactly, which is the slack both official artefacts of release 1.3.16 allow a party that rounds its own way; where the rate rounds to zero, or where there is no rate at all, what is asked is that the tax amount round to zero. At the boundary the two artefacts part: the UBL one admits a difference below one unit and the CII one a difference of one unit as well. A difference beyond the wider of the two readings is fatal here and a difference of exactly one unit, which only the CII artefact admits, is the second assertion and reports a warning naming UBL; conformance/rules/ledger.md measures both."
+  },
+  {
+    "id": "BR-CO-18",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BG-23"
+    ],
+    "assert": {
+      "gt": [
+        {
+          "count": "/BG-23/*"
+        },
+        {
+          "const": 0
+        }
+      ]
+    },
+    "message": "The invoice carries no VAT breakdown (BG-23); an invoice states at least one.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-18"
+  },
+  {
+    "id": "BR-CO-19",
+    "severity": "fatal",
+    "context": "/BG-13/BG-14",
+    "terms": [
+      "BT-73",
+      "BT-74"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-73"
+        },
+        {
+          "exists": "/BT-74"
+        }
+      ]
+    },
+    "message": "The invoicing period (BG-14) is there and states neither a start date (BT-73) nor an end date (BT-74).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-19",
+    "note": "The rule is implemented and cannot fail on a document that passed layer L1. A business group of an ESJ document exists exactly when it carries a value, and the group this rule is about carries no business term other than the two it asks for; a group with neither of them is not an empty group but no group at all. The XML binding can write the empty element the rule was written for, so the rule earns its place in a pack that also serves documents imported from XML — but it earns it as a statement, not as a check that can speak here."
+  },
+  {
+    "id": "BR-CO-20",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-26",
+    "terms": [
+      "BT-134",
+      "BT-135"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-134"
+        },
+        {
+          "exists": "/BT-135"
+        }
+      ]
+    },
+    "message": "The invoice line period at {.} states neither a start date (BT-134) nor an end date (BT-135).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-20",
+    "note": "The rule is implemented and cannot fail on a document that passed layer L1. A business group of an ESJ document exists exactly when it carries a value, and the group this rule is about carries no business term other than the two it asks for; a group with neither of them is not an empty group but no group at all. The XML binding can write the empty element the rule was written for, so the rule earns its place in a pack that also serves documents imported from XML — but it earns it as a statement, not as a check that can speak here."
+  },
+  {
+    "id": "BR-CO-21",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-97",
+      "BT-98"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-97"
+        },
+        {
+          "exists": "/BT-98"
+        }
+      ]
+    },
+    "message": "The document level allowance at {.} states neither a reason text (BT-97) nor a reason code (BT-98).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-21"
+  },
+  {
+    "id": "BR-CO-22",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-104",
+      "BT-105"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-104"
+        },
+        {
+          "exists": "/BT-105"
+        }
+      ]
+    },
+    "message": "The document level charge at {.} states neither a reason text (BT-104) nor a reason code (BT-105).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-22"
+  },
+  {
+    "id": "BR-CO-23",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-139",
+      "BT-140"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-139"
+        },
+        {
+          "exists": "/BT-140"
+        }
+      ]
+    },
+    "message": "The invoice line allowance at {.} states neither a reason text (BT-139) nor a reason code (BT-140).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-23"
+  },
+  {
+    "id": "BR-CO-24",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-144",
+      "BT-145"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-144"
+        },
+        {
+          "exists": "/BT-145"
+        }
+      ]
+    },
+    "message": "The invoice line charge at {.} states neither a reason text (BT-144) nor a reason code (BT-145).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-24"
+  },
+  {
+    "id": "BR-CO-25",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-9",
+      "BT-20",
+      "BT-115"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "gt": [
+            {
+              "value": "/BG-22/BT-115"
+            },
+            {
+              "const": "0"
+            }
+          ]
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BT-9"
+            },
+            {
+              "exists": "/BT-20"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The amount due for payment (BT-115) is {/BG-22/BT-115}, and the invoice states neither a payment due date (BT-9) nor payment terms (BT-20) to pay it by.",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-25"
+  },
+  {
+    "id": "BR-CO-26",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-29",
+      "BT-30",
+      "BT-31"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BG-4/BT-29/*"
+        },
+        {
+          "exists": "/BG-4/BT-30"
+        },
+        {
+          "exists": "/BG-4/BT-31"
+        }
+      ]
+    },
+    "message": "The seller carries no identifier a buyer could recognise it by: neither a seller identifier (BT-29), nor a legal registration identifier (BT-30), nor a VAT identifier (BT-31).",
+    "source": "EN 16931-1, 6.4.2, Table 4, BR-CO-26"
+  }
+]

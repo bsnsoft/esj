@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-generator</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Generator</name>
+  <description>
+    Emits the checked-in sources of the typed view and the model schema from a term
+    registry. It is a build tool: nothing depends on it at runtime.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <!--
+        Regenerates the checked-in sources of esj-typed, the code list enums of
+        esj-invoice, the model schema of each edition and the B2C overlay of esj-b2c:
+        mvn -B -Pgenerate -pl esj-generator -am process-classes
+        The generator runs only under this profile, so an ordinary build never writes
+        into the working tree. One run writes the artefacts of one edition or one
+        overlay, so there is an execution per edition and one for the overlay.
+      -->
+      <id>generate</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>generate</id>
+                <phase>process-classes</phase>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+                <configuration>
+                  <mainClass>de.bsnsoft.esj.generator.Generate</mainClass>
+                  <arguments>
+                    <argument>--typed</argument>
+                    <argument>${project.basedir}/../esj-typed/src/main/java</argument>
+                    <argument>--schema</argument>
+                    <argument>${project.basedir}/../schema/esj-en16931-2017.schema.json</argument>
+                    <argument>--format-schema</argument>
+                    <argument>${project.basedir}/../schema/esj.schema.json</argument>
+                    <argument>--derivable</argument>
+                    <argument>${project.basedir}/../model/derivable-terms.json</argument>
+                    <argument>--profiles</argument>
+                    <argument>${project.basedir}/../model/profiles</argument>
+                    <argument>--enums</argument>
+                    <argument>${project.basedir}/../esj-invoice/src/main/java</argument>
+                    <argument>--enum-facts</argument>
+                    <argument>${project.basedir}/../model/enums.json</argument>
+                    <argument>--rules</argument>
+                    <argument>${project.basedir}/../rules</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <!--
+                  The artefacts of the 2026 edition: a second run over a second registry,
+                  writing that edition's model schema and its own typed view into a
+                  package of its own. One view belongs to one edition, because a path is
+                  an address relative to an edition.
+                -->
+                <id>generate-edition-2026</id>
+                <phase>process-classes</phase>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+                <configuration>
+                  <mainClass>de.bsnsoft.esj.generator.Generate</mainClass>
+                  <arguments>
+                    <argument>--edition</argument>
+                    <argument>2026</argument>
+                    <argument>--typed</argument>
+                    <argument>${project.basedir}/../esj-typed/src/main/java</argument>
+                    <argument>--typed-package</argument>
+                    <argument>de.bsnsoft.esj.typed.v2026</argument>
+                    <argument>--schema</argument>
+                    <argument>${project.basedir}/../schema/esj-en16931-2026.schema.json</argument>
+                    <argument>--format-schema</argument>
+                    <argument>${project.basedir}/../schema/esj.schema.json</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <!--
+                  The overlay of the B2C extension: a run of its own, because a run that
+                  names an extension registry without an overlay directory would write
+                  that extension into the typed view of the core model, which this
+                  repository does not ship. It writes the overlay and nothing else, so it
+                  names neither a typed source root nor the inputs of the builder and of
+                  the code list enums; the two schema options are named because every run
+                  takes them, and this one leaves both files untouched.
+                -->
+                <id>generate-overlay-b2c</id>
+                <phase>process-classes</phase>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+                <configuration>
+                  <mainClass>de.bsnsoft.esj.generator.Generate</mainClass>
+                  <arguments>
+                    <argument>--schema</argument>
+                    <argument>${project.basedir}/../schema/esj-en16931-2017.schema.json</argument>
+                    <argument>--format-schema</argument>
+                    <argument>${project.basedir}/../schema/esj.schema.json</argument>
+                    <argument>--extension</argument>
+                    <argument>${project.basedir}/../model/b2c/0.1.json</argument>
+                    <argument>--overlay</argument>
+                    <argument>${project.basedir}/../esj-b2c/src/main/java</argument>
+                    <argument>--overlay-prefix</argument>
+                    <argument>B2c</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

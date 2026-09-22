@@ -1,0 +1,205 @@
+{
+  "displayNames": "esj-render-display-names/0.1",
+  "list": "unit",
+  "english": "The names of UN/ECE Recommendation 20 and of its Recommendation 21 extension as the dated code list snapshots rules/en16931/1.3.16/codelists/unece-rec20/2026-09-19.json and unece-rec21/2026-09-19.json carry them, with one exception: Recommendation 21 calls XPP Piece, which is the word Recommendation 20 uses for H87, and a quantity column has to tell the two apart, so XPP reads Packaging piece. A unit not listed here is shown as its code. The name for more than one is written in the case of the name for one.",
+  "german": "This project's wording, written the way a German invoice writes it. It is not a translation of any published list. A code whose name reads differently for more than one of the thing carries that name too, under enPlural and dePlural; a quantity of three is written with it.",
+  "languages": [
+    "en",
+    "de"
+  ],
+  "names": {
+    "H87": {
+      "en": "piece",
+      "enPlural": "pieces",
+      "de": "Stück"
+    },
+    "C62": {
+      "en": "one",
+      "de": "Einheit"
+    },
+    "HUR": {
+      "en": "hour",
+      "enPlural": "hours",
+      "de": "Stunde",
+      "dePlural": "Stunden"
+    },
+    "DAY": {
+      "en": "day",
+      "enPlural": "days",
+      "de": "Tag",
+      "dePlural": "Tage"
+    },
+    "MON": {
+      "en": "month",
+      "enPlural": "months",
+      "de": "Monat",
+      "dePlural": "Monate"
+    },
+    "ANN": {
+      "en": "year",
+      "enPlural": "years",
+      "de": "Jahr",
+      "dePlural": "Jahre"
+    },
+    "WEE": {
+      "en": "week",
+      "enPlural": "weeks",
+      "de": "Woche",
+      "dePlural": "Wochen"
+    },
+    "MIN": {
+      "en": "minute [unit of time]",
+      "enPlural": "minutes",
+      "de": "Minute",
+      "dePlural": "Minuten"
+    },
+    "SEC": {
+      "en": "second [unit of time]",
+      "enPlural": "seconds",
+      "de": "Sekunde",
+      "dePlural": "Sekunden"
+    },
+    "DZN": {
+      "en": "dozen",
+      "de": "Dutzend"
+    },
+    "KGM": {
+      "en": "kilogram",
+      "enPlural": "kilograms",
+      "de": "Kilogramm"
+    },
+    "GRM": {
+      "en": "gram",
+      "enPlural": "grams",
+      "de": "Gramm"
+    },
+    "TNE": {
+      "en": "tonne (metric ton)",
+      "enPlural": "tonnes",
+      "de": "Tonne",
+      "dePlural": "Tonnen"
+    },
+    "MTR": {
+      "en": "metre",
+      "enPlural": "metres",
+      "de": "Meter"
+    },
+    "KMT": {
+      "en": "kilometre",
+      "enPlural": "kilometres",
+      "de": "Kilometer"
+    },
+    "CMT": {
+      "en": "centimetre",
+      "enPlural": "centimetres",
+      "de": "Zentimeter"
+    },
+    "MMT": {
+      "en": "millimetre",
+      "enPlural": "millimetres",
+      "de": "Millimeter"
+    },
+    "MTK": {
+      "en": "square metre",
+      "enPlural": "square metres",
+      "de": "Quadratmeter"
+    },
+    "MTQ": {
+      "en": "cubic metre",
+      "enPlural": "cubic metres",
+      "de": "Kubikmeter"
+    },
+    "LTR": {
+      "en": "litre",
+      "enPlural": "litres",
+      "de": "Liter"
+    },
+    "MLT": {
+      "en": "millilitre",
+      "enPlural": "millilitres",
+      "de": "Milliliter"
+    },
+    "KWH": {
+      "en": "kilowatt hour",
+      "enPlural": "kilowatt hours",
+      "de": "Kilowattstunde",
+      "dePlural": "Kilowattstunden"
+    },
+    "MWH": {
+      "en": "megawatt hour (1000 kW.h)",
+      "enPlural": "megawatt hours",
+      "de": "Megawattstunde",
+      "dePlural": "Megawattstunden"
+    },
+    "SET": {
+      "en": "set",
+      "enPlural": "sets",
+      "de": "Satz",
+      "dePlural": "Sätze"
+    },
+    "PR": {
+      "en": "pair",
+      "enPlural": "pairs",
+      "de": "Paar",
+      "dePlural": "Paare"
+    },
+    "NAR": {
+      "en": "number of articles",
+      "de": "Anzahl Artikel"
+    },
+    "LS": {
+      "en": "lump sum",
+      "de": "Pauschale"
+    },
+    "P1": {
+      "en": "percent",
+      "de": "Prozent"
+    },
+    "E48": {
+      "en": "service unit",
+      "enPlural": "service units",
+      "de": "Leistungseinheit",
+      "dePlural": "Leistungseinheiten"
+    },
+    "E49": {
+      "en": "working day",
+      "enPlural": "working days",
+      "de": "Arbeitstag",
+      "dePlural": "Arbeitstage"
+    },
+    "CEL": {
+      "en": "degree Celsius",
+      "de": "Grad Celsius"
+    },
+    "XPP": {
+      "en": "Packaging piece",
+      "enPlural": "Packaging pieces",
+      "de": "Packstück",
+      "dePlural": "Packstücke"
+    },
+    "XBX": {
+      "en": "Box",
+      "enPlural": "Boxes",
+      "de": "Schachtel",
+      "dePlural": "Schachteln"
+    },
+    "XPK": {
+      "en": "Package",
+      "enPlural": "Packages",
+      "de": "Packung",
+      "dePlural": "Packungen"
+    },
+    "XCT": {
+      "en": "Carton",
+      "enPlural": "Cartons",
+      "de": "Karton",
+      "dePlural": "Kartons"
+    },
+    "XPA": {
+      "en": "Packet",
+      "enPlural": "Packets",
+      "de": "Paket",
+      "dePlural": "Pakete"
+    }
+  }
+}

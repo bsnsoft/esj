@@ -1,0 +1,33 @@
+Input:                      <stdin>
+Detected syntax:            ESJ
+Read with:                  (none — the input is already ESJ)
+Semantic model:             EN16931-1:2017+A1:2019/AC:2020
+Profile (BT-24):            urn:cen.eu:en16931:2017
+Type code (BT-3):           380
+Invoice number (BT-1):      RE-2026-0042
+Issue date (BT-2):          2026-02-03
+Currency (BT-5):            EUR
+Seller (BT-27):             Example GmbH
+Buyer (BT-44):              Muster AG
+Invoice lines:              3
+Line net total (BT-106):    2450
+Total without VAT (BT-109): 2450
+Total VAT (BT-110):         465.5
+Total with VAT (BT-112):    2915.5
+Amount due (BT-115):        2915.5
+Validation pack:            not applicable (no XML)
+Semantic digest:            6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a
+Document digest:            951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4
+
+Syntax
+  not run (esj validate runs the official artefacts)
+  official artefacts over the written CII:
+    not run (esj validate runs the official artefacts over the written document)
+
+Semantic
+  ESJ format (L1):           OK
+  Model (L2):                OK
+  Cardinality (L3):          OK
+  EN 16931 business rules (native, pack en16931/1.3.16): not run (esj validate runs the business rules)
+
+INDETERMINATE — nothing fatal found; missing from the check: written-syntax (not-run-by-this-command), business-rules (not-run-by-this-command)

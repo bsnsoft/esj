@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-invoice</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Domain API</name>
+  <description>
+    The domain layer over the typed editor and the constrained builder: enums for the code
+    lists a business term draws from, and the invoice types written in the words of the
+    domain rather than in the identifiers of the standard. The enums are generated from the
+    dated code list snapshots of the rule pack by esj-generator and are checked in.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-typed</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The rule pack decides which snapshot of a code list this version of the project
+      speaks about; the enums are generated from those snapshot files, and the test that
+      weighs a constant against its code reads them through this module's reader.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-rules</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The example documents have one source, the directory of the repository; the
+          tests read them from the class path so that no test knows a path outside the
+          module.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+      </testResource>
+    </testResources>
+  </build>
+
+</project>

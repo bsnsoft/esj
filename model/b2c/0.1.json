@@ -1,0 +1,114 @@
+{
+  "format": "EN16931-Semantic-JSON-registry",
+  "version": "0.1",
+  "model": "ESJ-B2C",
+  "edition": "ESJ-B2C 0.1",
+  "imports": [
+    {
+      "model": "EN16931-1",
+      "edition": "EN 16931-1:2017+A1:2019/AC:2020"
+    }
+  ],
+  "transport": "none",
+  "transportNote": "The terms of this registry have no binding in any transport syntax by design: a gross-priced invoice travels in UBL and in CII as the net values of the core terms with the difference in BT-114, so that the total with VAT (BT-112) is the figure the customer was shown, and the terms below record that price statement rather than anything a syntax carries.",
+  "license": "Apache-2.0",
+  "notice": "The business terms in this file are defined by this project. They are not part of EN 16931-1 and are not published by any standards body. The registry this file imports describes EN 16931-1:2017+A1:2019/AC:2020; no normative prose of that standard is reproduced here, and every description and note is the author's own wording. This file is licensed Apache-2.0, like the rest of the repository.",
+  "generated": "2026-09-21",
+  "sourceStatement": "The terms of this extension record figures that were part of the price statement a customer saw or agreed to: a gross unit price, a gross line total, a line VAT amount and a gross invoice total. Presence of a term means that its figure was shown or agreed; absence means that nothing was shown at that level. This registry defines no arithmetic relation between its own terms, and none between one of them and a term of EN 16931-1: it does not declare the gross line total to follow from the gross unit price and the invoiced quantity, nor the gross invoice total to be the sum of the line figures. The core terms keep the meaning EN 16931-1 gives them, BT-114 among them, which stays the invoice rounding amount and is not a balancing account of this extension. Everything that computes one of these figures from another is a policy of the SDK, which states its preconditions and reports what it did.",
+  "terms": [
+    {
+      "id": "BT-B2C-001",
+      "kind": "BT",
+      "name": "Displayed gross unit price",
+      "slug": "displayedGrossUnitPrice",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-B2C-001"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "UnitPriceAmount",
+      "components": [],
+      "order": 1,
+      "description": "The unit price of the item of this invoice line with VAT included, as it was shown to or agreed with the customer; the term is present only where such a figure was part of the price statement, and this registry defines no arithmetic relation between it and any other term.",
+      "notes": [
+        "Presence means that a gross unit price was shown or agreed; absence means that nothing was shown at unit level. A merchant who displayed only a gross line total records BT-B2C-002 and not this term.",
+        "The term does not restate BT-146, the item net price of EN 16931-1, which keeps its meaning and stays the price the invoice is calculated from.",
+        "Semantic data type Unit Price Amount, which EN 16931-1, 6.5 leaves unlimited in fraction digits. The figure is recorded at the scale it was displayed with, and nothing in ESJ rounds, normalises or cuts it."
+      ]
+    },
+    {
+      "id": "BT-B2C-002",
+      "kind": "BT",
+      "name": "Displayed gross line total",
+      "slug": "displayedGrossLineTotal",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-B2C-002"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 2,
+      "description": "The total of this invoice line with VAT included, as it was shown to or agreed with the customer; the term is present only where such a figure was part of the price statement, and this registry defines no arithmetic relation between it and any other term.",
+      "notes": [
+        "In particular the term is not declared to be BT-B2C-001 multiplied by the invoiced quantity (BT-129): a price base quantity, a line allowance and a line charge each break that, and a merchant may have shown a line total that no multiplication of the displayed unit price reaches.",
+        "The term does not restate BT-131, the invoice line net amount of EN 16931-1, which keeps its meaning and stays the amount the document totals are built from.",
+        "Semantic data type Amount, declared here with the two fraction digits EN 16931-1, 6.5.12, Table 26 fixes for that type."
+      ]
+    },
+    {
+      "id": "BT-B2C-003",
+      "kind": "BT",
+      "name": "Displayed line VAT amount",
+      "slug": "displayedLineVatAmount",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-B2C-003"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 3,
+      "description": "The VAT amount of this invoice line as it was shown to the customer; the term is present only where a VAT amount was actually shown at line level, and this registry defines no arithmetic relation between it and any other term.",
+      "notes": [
+        "A price statement that names one VAT rate for the whole basket shows no VAT amount per line, and such an invoice carries no instance of this term.",
+        "The term does not restate the VAT breakdown BG-23 of EN 16931-1, which keeps its meaning and stays the place where VAT is accounted for per category and rate.",
+        "Semantic data type Amount, declared here with the two fraction digits EN 16931-1, 6.5.12, Table 26 fixes for that type."
+      ]
+    },
+    {
+      "id": "BT-B2C-010",
+      "kind": "BT",
+      "name": "Displayed invoice gross total",
+      "slug": "displayedGrossTotal",
+      "parent": null,
+      "path": [
+        "BT-B2C-010"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 4,
+      "description": "The total of the invoice with VAT included, as it was shown to or agreed with the customer; the term is present only where such a figure was part of the price statement, and this registry defines no arithmetic relation between it and any other term.",
+      "notes": [
+        "In particular the term is not declared to be the sum of the displayed line figures, which a document level allowance or charge breaks, and not a copy of BT-112 or BT-115 of EN 16931-1, which keep their meaning.",
+        "BT-114 of EN 16931-1 is the invoice rounding amount and is not a balancing account of this extension. Where an authoring policy of the SDK writes it so that BT-115 meets a displayed total, it says so in its report.",
+        "Semantic data type Amount, declared here with the two fraction digits EN 16931-1, 6.5.12, Table 26 fixes for that type."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-cli</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Command line</name>
+  <description>
+    The esj command line tool: convert, validate, render, inspect, extract, get, list,
+    diff and canonicalize. It wires streams, detects the syntax of its input and formats
+    what the other modules return; every rule about invoices, paths, values, canonical
+    bytes, syntax packs, PDF containers and renderings lives in esj-core, esj-typed,
+    esj-xr, esj-bindings, esj-syntax, esj-pdf and esj-render, and none of it is repeated
+    here.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-typed</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-xr</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The syntax engine, which brings the validation packs with it: the official XML
+      Schema and Schematron artefacts, packaged as data. It is what turns esj validate on
+      an XML input into a complete verdict rather than a structural one, and it is the
+      reason the fat jar carries the licences of those artefacts.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-syntax</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The binding tables with the streaming reader this tool reads XML with by default and
+      the writer behind the cross industry invoice target of convert. It brings esj-xr
+      with it, which stays available as the second reader.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-bindings</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      PDF input: a hybrid invoice is a container, and this is the module that opens it.
+      The dependency stops here. esj-pdf is the module that reads a container, and this
+      module composes it with the readers rather than learning either job.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-pdf</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The renderings esj render writes. The vendored KoSIT visualization and the vendored
+      font faces travel into the fat jar as its resources; the NOTICE of this repository
+      names all of them.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-render</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The semantic rule engine and the EN 16931 rule pack it carries. It is what lets
+      esj validate check the business rules of the standard over the business terms
+      themselves, which is the only way they can be checked at all for a document that
+      was never XML. The oracle test of this module needs it on the same class path as
+      the syntax engine for a second reason: it runs both over the same mutated bytes and
+      compares what each of them reports.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-rules</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      Argument parsing, usage text and the command tree. picocli is a dependency of this
+      module and of no other: it is a property of the command line, not of the format.
+      Apache License, Version 2.0; see the NOTICE file of the repository.
+    -->
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+    </dependency>
+    <!--
+      The reports this tool writes in JSON are its own output, not ESJ documents, so they
+      are written with the streaming generator rather than with the ESJ writer. The
+      dependency is declared here because it is used here; esj-core brings it in anyway.
+    -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+
+    <!--
+      The domain API, for one test only: it compiles examples/java/HybridInvoice.java and
+      runs it, and that example writes an invoice in the words of the domain. Test scope,
+      because the command line itself takes invoices as files and builds none; nothing of
+      esj-invoice is in the fat jar or in any other artefact this module publishes.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-invoice</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <!--
+          The version banner is filtered, so that the number the tool prints is the number
+          the build carries and cannot be typed twice.
+        -->
+        <directory>${project.basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/version.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+        <excludes>
+          <exclude>**/version.properties</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The examples and the conformance corpus have one source, the directories of the
+          repository. The tests read them from the classpath so that no test knows a path
+          outside the module.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <!--
+          The synthetic instances of conformance/scale/out are generated, are as large as
+          the measurements they are for, and belong on no classpath. The manifest part of
+          an edition this distribution does not carry goes the way of that edition's
+          registry, so that a binding never meets a fixture it has no model for.
+        -->
+        <excludes>
+          <exclude>scale/out/**</exclude>
+          <exclude>${esj.edition-2026.exclude-fixtures}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The packaging: the scripts that build the artefacts and the page that documents
+          them. A test reads them from the classpath and holds them against the tool, so
+          that a command added later cannot be packaged without a case to exercise it and
+          a target cannot be added without being documented.
+        -->
+        <directory>${project.basedir}/../dist</directory>
+        <targetPath>dist</targetPath>
+        <!-- dist/out is where the packaging writes; it belongs on no classpath. -->
+        <excludes>
+          <exclude>out/**</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The README, docs/getting-started.md, docs/cli.md and docs/b2c.md show what this
+          tool prints, docs/deployment.md shows the Java a caller spawns it with, and
+          docs/validation.md quotes figures of the ledger. Tests compare the pages with the
+          tool and with the data, so that they describe what the command does and not what
+          it did once. docs/conformance.md and the README repeat figures the ledgers of
+          conformance/ compute, and ConformanceFiguresTest holds them to those ledgers.
+          docs/install.md and the Homebrew formula name artefacts and print a document, and
+          are held against the packaging and against the tool the same way. docs/faq.md and
+          docs/faq-de.md answer with a command line each, which FaqExamplesTest runs, and
+          with blocks it quotes from the README, docs/getting-started.md, docs/java-api.md,
+          docs/b2c.md, docs/storage.md, docs/bindings-ts.md and docs/bindings-csharp.md,
+          which that test compares them with so that an answer cannot outlive the API it
+          shows.
+        -->
+        <directory>${project.basedir}/..</directory>
+        <includes>
+          <include>README.md</include>
+          <include>docs/getting-started.md</include>
+          <include>docs/cli.md</include>
+          <include>docs/conformance.md</include>
+          <include>docs/deployment.md</include>
+          <include>docs/validation.md</include>
+          <include>docs/b2c.md</include>
+          <include>docs/install.md</include>
+          <include>docs/faq.md</include>
+          <include>docs/faq-de.md</include>
+          <include>docs/java-api.md</include>
+          <include>docs/storage.md</include>
+          <include>docs/bindings-ts.md</include>
+          <include>docs/bindings-csharp.md</include>
+          <include>docs/homebrew/esj.rb</include>
+        </includes>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <!--
+        The command tree is data for picocli, which reaches it by reflection, so a native
+        executable has to be told about it. The annotation processor of picocli writes
+        that metadata under META-INF/native-image at compile time, from the annotations
+        themselves rather than from a run that happened to use an option, and the file
+        travels into the jar and from there into the image.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>info.picocli</groupId>
+                  <artifactId>picocli-codegen</artifactId>
+                  <version>${picocli.version}</version>
+                </path>
+              </annotationProcessorPaths>
+              <compilerArgs>
+                <!--
+                  Every lint of the parent stays fatal but one: the processor writes
+                  files without claiming the annotations it read, which javac reports
+                  under processing. That is a statement about the processor, not about
+                  this code.
+                -->
+                <arg>-Xlint:all,-processing</arg>
+                <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+              </compilerArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        The tests that spawn that jar: the caller's example of docs/deployment.md and the
+        outcomes a process boundary is written against. They cannot run in the test phase,
+        because the jar is written at package, one phase later — as unit tests they skipped
+        themselves on every clean build, which is every build that mattered. Failsafe runs
+        them at integration-test and reports them at verify, so a clean `mvn verify` runs
+        them and a failure still fails the build.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>deployment-its</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        The self-contained jar redistributes its dependencies, and Apache-2.0 section 4(d)
+        asks a redistributor to pass on the attribution notices of a work that has a NOTICE
+        file. PDFBox's own NOTICE names the Adobe Glyph List, the Zapf Dingbats Glyph List,
+        the Unicode Bidi Mirroring property, parts of TwelveMonkeys ImageIO and a CC0 ICC
+        profile, and its LICENSE carries those components' own terms, which are not the
+        Apache licence; FontBox adds the Unicode Script property. So the legal files of
+        every dependency travel with the jar, each under its own path, instead of being
+        dropped for the repository's own. The modules of this repository are excluded:
+        their LICENSE and NOTICE are the ones the jar already carries under META-INF.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>dependency-legal-files</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <excludeGroupIds>de.bsnsoft.esj</excludeGroupIds>
+              <includes>META-INF/LICENSE*,META-INF/NOTICE*,META-INF/DEPENDENCIES</includes>
+              <useSubDirectoryPerArtifact>true</useSubDirectoryPerArtifact>
+              <outputDirectory>${project.build.outputDirectory}/META-INF/dependencies</outputDirectory>
+              <overWriteReleases>true</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!--
+        The tests of this module run under a heap ceiling rather than under whatever a
+        build machine happens to offer, so that the largest thing they do — reading an
+        invoice of tens of thousands of lines into the semantic model and running every
+        rule of the pack over it — is measured against a number a reader can compare
+        their own deployment with. ScaleValidationTest is the one it is set for; its size
+        is -Desj.cli.scale.lines and the field sizes need a larger -Xmx, which
+        docs/validation-measurements.md records.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx1g</argLine>
+          <systemPropertyVariables>
+            <!--
+              SnippetMarkerTest holds the snippet markers of every module's tests against
+              the pages they name. A page is copied onto a class path where a test reads
+              it, but the test sources of the other modules are not, so this one test is
+              given the repository itself. It is the last module of the reactor, so every
+              module's tests are written by the time it runs.
+            -->
+            <esj.repository>${project.basedir}/..</esj.repository>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <!--
+        The self-contained jar. It is what bin/esj runs, and it is the only artefact of
+        this repository that redistributes its dependencies, so it is also the only one
+        that has to carry their licences and notices: META-INF/LICENSE and META-INF/NOTICE
+        are the files of this repository, whose NOTICE names picocli, jackson-core,
+        Saxon-HE and PDFBox and the licences they travel under, and the supplementary licence files
+        jackson-core ships for the code it bundles are kept as they are.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven-shade-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>esj-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <finalName>esj</finalName>
+              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <transformers>
+                <transformer
+                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>de.bsnsoft.esj.cli.Main</mainClass>
+                  <manifestEntries>
+                    <!-- jackson-core ships classes under META-INF/versions. -->
+                    <Multi-Release>true</Multi-Release>
+                  </manifestEntries>
+                </transformer>
+                <transformer
+                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer
+                    implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/LICENSE</resource>
+                  <file>${project.basedir}/../LICENSE</file>
+                </transformer>
+                <transformer
+                    implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/NOTICE</resource>
+                  <file>${project.basedir}/../NOTICE</file>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <!--
+                      Re-added by the two transformers above, exactly once. The LICENSE and
+                      NOTICE of every dependency are kept, under
+                      META-INF/dependencies/<artifact>/, by the dependency plugin above;
+                      what is dropped here is only the copy that would land at the root and
+                      overwrite this repository's own.
+                    -->
+                    <exclude>META-INF/LICENSE</exclude>
+                    <exclude>META-INF/LICENSE.txt</exclude>
+                    <exclude>META-INF/NOTICE</exclude>
+                    <exclude>META-INF/NOTICE.txt</exclude>
+                    <exclude>META-INF/DEPENDENCIES</exclude>
+                    <!-- Saxon-HE is a signed jar; its signature does not survive shading. -->
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <exclude>META-INF/maven/**</exclude>
+                    <exclude>module-info.class</exclude>
+                    <exclude>META-INF/versions/*/module-info.class</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

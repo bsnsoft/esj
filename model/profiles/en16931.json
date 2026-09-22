@@ -1,0 +1,16 @@
+{
+  "id": "EN16931",
+  "constant": "EN16931",
+  "name": "EN 16931",
+  "typeSuffix": "",
+  "base": true,
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "fixed": [
+    {
+      "id": "BT-24",
+      "value": "urn:cen.eu:en16931:2017"
+    }
+  ],
+  "narrows": []
+}

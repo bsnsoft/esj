@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # The library is compiled for Java 17 and is therefore tested on 17, on the
+  # release in between and on the release the packaged command line ships on.
+  build:
+    name: Build and test on JDK ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21', '25']
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test
+        run: mvn -B verify
+
+  generated:
+    name: Generated sources are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Regenerate the typed view, the code list enums and the model schema
+        run: mvn -B -q -Pgenerate -pl esj-generator -am process-classes
+
+      - name: Check that the generated sources are up to date
+        run: |
+          git diff --exit-code -- esj-typed/src esj-invoice/src/main \
+            schema/esj-en16931-2017.schema.json
+          test -z "$(git status --porcelain -- esj-typed/src esj-invoice/src/main \
+            schema/esj-en16931-2017.schema.json)"
+
+  # The packaged tool has to answer exactly as the jar does. dist/smoke.sh runs
+  # every command of the tool with both and compares what they write, the
+  # verdict they reach and the code they leave with.
+  package:
+    name: Package and smoke test
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM 25
+        uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1.6.6
+        with:
+          distribution: graalvm-community
+          java-version: '25'
+          cache: maven
+
+      - name: Package the command line
+        run: dist/package.sh jar runtime-image native
+
+      # --small-heap is the same artefact with a ceiling no run fits in: it
+      # checks that the abort on heap exhaustion is the artefact's own default.
+      - name: Compare the runtime image with the jar
+        run: |
+          launcher=$(echo dist/out/*-linux-*/bin/esj)
+          image=$(dirname "$(dirname "$launcher")")
+          dist/smoke.sh "$launcher" --small-heap \
+            "$image/bin/java -Xmx16m -XX:+ExitOnOutOfMemoryError -jar $image/app/esj.jar"
+
+      - name: Compare the native executable with the jar
+        run: |
+          native=$(echo dist/out/*-native-linux-*/esj)
+          dist/smoke.sh "$native" --small-heap "$native -Xmx16m"

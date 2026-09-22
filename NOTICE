@@ -1,0 +1,500 @@
+EN16931 Semantic JSON (ESJ)
+Copyright 2026 BSNSoft Solutions GmbH
+
+This product includes software developed by BSNSoft Solutions GmbH.
+Author: Christian Bürckert.
+Licensed under the Apache License, Version 2.0 (see the LICENSE file).
+
+--------------------------------------------------------------------------------
+EN 16931-1 attribution
+--------------------------------------------------------------------------------
+
+This is an implementation of the semantic data model of EN 16931-1:2017+A1:2019/
+AC:2020 (Electronic invoicing - Part 1: Semantic data model of the core elements
+of an electronic invoice) and, for the cross industry invoice, of one of the two
+mandatory syntaxes of EN 16931-2; the universal business language is read but not
+yet written. Such reproduction is granted with the permission of CEN and the
+relevant member national standardisation bodies as copyright owners.
+
+CEN and the relevant member national standardisation bodies bear no liability
+from the content and implementation of such derivative applications and, in case
+of doubt, users shall always refer to the official authoritative content of the
+semantic data model and two mandatory syntaxes.
+
+The English text of EN 16931-1 was accessed free of charge through the national
+standards body Úrad pre normalizáciu, metrológiu a skúšobníctvo Slovenskej
+republiky (ÚNMS SR), under the licence agreement between the European Commission
+and CEN of 18 December 2018.
+
+No normative prose of EN 16931-1 is reproduced in this repository. The files here
+carry business term identifiers, cardinalities, data type names and paraphrased
+descriptions written for this project, and they cite the clauses of the standard
+rather than quoting them. See docs/sources.md for how to obtain the text.
+
+Where this distribution carries the term registry model/en16931/2026.json, this
+project also implements EN 16931-1:2026, the 2026 edition of that standard, in
+that registry and in the artefacts generated from it. The file
+model/en16931/2026.paths lists those files; a distribution built without them
+carries no registry of that edition, and this paragraph then describes nothing
+that is shipped. The text of that edition is not available free of charge: it was
+obtained as a copy bought from a national standards body, it is not redistributed
+here, and no prose of it is reproduced. The licence agreement named above is
+documented for the 2017 version of the standard and is to be renegotiated on
+revision, so this project claims no CEN permission for the 2026 edition and
+answers that question before publishing the files that carry its facts. CEN and
+the national standards bodies give no warranty for this implementation, and where
+this project and the standard disagree, the standard governs.
+
+--------------------------------------------------------------------------------
+Third-party attribution
+--------------------------------------------------------------------------------
+
+XRechnung extension (model/xrechnung/3.0.2.json)
+  The identifiers, names and cardinalities of the BG-DEX-* and BT-DEX-* terms
+  are facts taken from the semantic model column of table 1.1 of the XRechnung
+  3.0.2 UBL syntax-binding extension. That document is published by the
+  Koordinierungsstelle für IT-Standards (KoSIT) / XStandards Einkauf; it is a
+  specification document under the CEN / European Commission licence regime of
+  EN 16931, copyright CEN, and is not open-source licensed. It is cited, not
+  redistributed, and none of its text is reproduced here.
+
+  The structure was cross-checked against the machine-readable XRechnung
+  semantic-model schema at
+  https://github.com/itplr-kosit/xrechnung-visualization
+  (file src/xsd/xrechnung-semantic-model.xsd), which KoSIT publishes under the
+  Apache License, Version 2.0. That schema was used as a check, not as the
+  source of the registry, and no KoSIT text is reproduced. A copy of it is
+  vendored for a second purpose; see the entry below.
+
+  The core registry (model/en16931/2017.json) was additionally cross-checked, term
+  by term, against the KoSIT SeMoX models of XRechnung, which describe the same
+  business terms in the SeMoX modelling language. The older of those models is
+  published under the MIT licence, Copyright 2022-2024 Coordination Office for IT
+  Standards (CoSIT). Only facts were read from them — identifiers, semantic data
+  types, code list references and cardinalities — and none of their text is
+  reproduced here.
+
+  ESJ is not an XRechnung format and this registry is not a KoSIT deliverable.
+
+Profile overlays (model/profiles/xrechnung-3.0.2.json)
+  The nineteen narrowed cardinalities and the two fixed identifier values in this
+  file are facts read from the KoSIT SeMoX model of the XRechnung CIUS, published
+  under the MIT licence, Copyright 2022-2024 Coordination Office for IT Standards
+  (CoSIT). Only business term identifiers and cardinalities were read; no
+  description, note text, rule or example of that model is reproduced.
+
+  ESJ is not an XRechnung format and this overlay is not a KoSIT deliverable.
+
+Syntax binding tables (model/bindings/ubl-invoice.json, ubl-creditnote.json, cii.json)
+  The business term identifiers, the XPaths, the XPaths of the supplementary
+  components and the note codes in these three files are facts taken from the
+  SeMoX model of the XRechnung CIUS and from its tailoring model for the
+  XRechnung extension, release 2026-08-31, published by the Koordinierungsstelle
+  für IT-Standards (KoSIT) / XStandards Einkauf at
+  https://projekte.kosit.org/xrechnung/xrechnung-model-semox
+
+  No description, note text, rule or example of that model is reproduced. The
+  prose of the model is specification text under the CEN / European Commission
+  licence regime of EN 16931, copyright CEN. Every sentence in the three files,
+  in model/bindings/README.md and in conformance/bindings/crosscheck.md is
+  written for this repository.
+
+  KoSIT publishes these models as a data basis for further application scenarios
+  (https://xeinkauf.de/xrechnung, section Komponenten). The SeMoX modelling
+  framework is published under the MIT licence, Copyright Coordination Office for
+  IT Standards (CoSIT). The model repository itself carries no licence file, and
+  this project claims none for it: only facts are taken from it, no descriptions
+  and no rule text.
+
+  The tables were cross-checked against the KoSIT visualization stylesheets named
+  below (Apache-2.0) and against the CEN/TC 434 validation artefacts of packs/
+  (EUPL-1.2). Both were read for element names and paths only; no rule text was
+  read, translated or reproduced.
+
+  ESJ is not an XRechnung format and these tables are not a KoSIT deliverable.
+
+XRechnung visualization stylesheets (esj-xr/src/main/resources/de/bsnsoft/esj/xr/kosit/)
+  The files cii-xr.xsl, common-xr.xsl, functions.xsl, ubl-creditnote-xr.xsl and
+  ubl-invoice-xr.xsl are unmodified copies of src/xsl/ of the repository
+  https://github.com/itplr-kosit/xrechnung-visualization at the tag v2026-08-31,
+  published by the Koordinierungsstelle für IT-Standards (KoSIT) / XStandards
+  Einkauf under the Apache License, Version 2.0. The LICENSE file of that project is
+  shipped beside them, and the README.md beside them records the tag and the SHA-256
+  of every file. They transform a UBL or CII document into the semantic XR
+  representation; esj-xr reads the business term identifiers of that representation
+  and nothing else.
+
+XRechnung visualization, HTML side (esj-render/src/main/resources/de/bsnsoft/esj/render/kosit/)
+  The files xrechnung-html.xsl, common-xr.xsl, functions.xsl, l10n/de.xml,
+  l10n/en.xml, xrechnung-viewer.css and xrechnung-viewer.js are unmodified copies
+  of src/xsl/ of the repository
+  https://github.com/itplr-kosit/xrechnung-visualization at the tag v2026-08-31,
+  published by the Koordinierungsstelle für IT-Standards (KoSIT) / XStandards
+  Einkauf under the Apache License, Version 2.0. The LICENSE file of that project
+  is shipped beside them, and the README.md beside them records the tag and the
+  SHA-256 of every file. Together they render a document of the semantic XR
+  representation as one self-contained HTML page, in German or in English;
+  esj-render writes the XR representation with esj-xr and runs that stylesheet
+  over it. common-xr.xsl and functions.xsl are the same two files that are
+  vendored in esj-xr; each module ships the closure of what it runs.
+
+  esj-render is not an XRechnung implementation and not a KoSIT deliverable.
+
+  The file esj-render/src/main/resources/de/bsnsoft/esj/render/xsl/
+  esj-html.xsl is this project's and is derived from that stylesheet: it imports
+  xrechnung-html.xsl and overrides one of its template rules, the one that matches
+  xr:ADDITIONAL_SUPPORTING_DOCUMENTS, so that an external document location of a
+  scheme a reader should not be asked to follow is written as text rather than as
+  a link, and so that the three values of the download link are escaped for the
+  string literals they stand in. The rest of that rule is copied from the file it
+  overrides, so that the page keeps the layout its readers know. The change is
+  noted in the file itself; the vendored bytes are untouched.
+
+FileSaver.js (esj-render/src/main/resources/de/bsnsoft/esj/render/
+kosit/FileSaver-v2.0.5.js)
+  An unmodified copy of the file of the same name in src/xsl/ of the KoSIT
+  repository named above, where it is third-party material under its own licence:
+  FileSaver.js, copyright Eli Grey, published under the MIT licence; source at
+  https://github.com/eligrey/FileSaver.js. The file states its author and its
+  licence in a comment at its head, by a link. The stylesheet inlines it into every
+  rendering so that a reader can save an attachment out of the page.
+
+  The MIT licence asks for its copyright notice and its permission notice to be
+  included in every copy, and neither that file nor the repository it was taken
+  from carries the text itself. It is shipped beside the file as
+  FileSaver-LICENSE.txt, which is the one file in that directory this project
+  wrote rather than copied.
+
+Liberation Sans (esj-render/src/main/resources/de/bsnsoft/esj/render/
+fonts/)
+  The files LiberationSans-Regular.ttf and LiberationSans-Bold.ttf are unmodified
+  copies from the release archive liberation-fonts-ttf-2.1.5.tar.gz of the project
+  Liberation Fonts, https://github.com/liberationfonts/liberation-fonts. They are
+  licensed under the SIL Open Font License, Version 1.1; digitized data copyright
+  (c) 2010 Google Corporation with Reserved Font Arimo, Tinos and Cousine, and
+  copyright (c) 2012 Red Hat, Inc. with Reserved Font Name Liberation. The licence
+  text of that release is shipped beside them as LICENSE, and the README.md beside
+  them records the release and the SHA-256 of every file. The PDF renderer of
+  esj-render embeds a subset of these two faces in every document it writes, which
+  the licence permits; nothing here modifies them and nothing sells them.
+
+sRGB ICC profile (esj-render/src/main/resources/de/bsnsoft/esj/render/
+icc/sRGB2014.icc)
+  An unmodified copy of the v2 sRGB profile of the profile library of the
+  International Color Consortium, https://registry.color.org/profile-library/,
+  offered at https://registry.color.org/rgb-registry/srgbprofiles; the copyright
+  tag inside the file reads "Copyright International Color Consortium, 2015". The
+  README.md beside it records its origin and the SHA-256 of the file, and a test
+  of esj-render recomputes that digest and reads the header back on every build.
+  The ICC states the terms of that library as follows:
+
+    This profile is made available by the International Color Consortium, and may
+    be copied, distributed, embedded, made, used, and sold without restriction.
+    Altered versions of this profile shall have the original identification and
+    copyright information removed and shall not be misrepresented as the original
+    profile.
+
+  The PDF renderer of esj-render embeds the file, unaltered, in every document it
+  writes: a PDF/A-3b file has to carry the profile its output intent names, so a
+  copy of it reaches every reader of a rendering.
+
+veraPDF (test-scope dependency of esj-render)
+  The tests of esj-render validate every rendering of the conformance corpus
+  against PDF/A-3b with org.verapdf:validation-model-jakarta, published by the
+  veraPDF Consortium under the GNU General Public License, version 3 or later, or
+  the Mozilla Public License, version 2.0 or later, at the recipient's choice;
+  source at https://github.com/veraPDF. It is the reference implementation of the
+  PDF/A validation model and it is the oracle for the conformance claim this
+  project makes. It is test scope: Maven resolves it for a build, no module
+  depends on it at run time, and it is in no artefact this project publishes.
+
+XRechnung semantic model schema (esj-xr/src/test/resources/kosit-model/)
+  The file xrechnung-semantic-model.xsd is an unmodified copy of src/xsd/ of the
+  repository https://github.com/itplr-kosit/xrechnung-visualization at the tag
+  v2026-08-31, published by the Koordinierungsstelle für IT-Standards (KoSIT) /
+  XStandards Einkauf under the Apache License, Version 2.0. The LICENSE file of
+  that project is shipped beside it, and the README.md beside them records the
+  tag and the SHA-256 of both files. Facts are read from it — element names, the
+  business term identifier in the xs:appinfo of each element, the type names and
+  the order of the elements — and they are read once, at generation time, into
+  the table esj-xr/src/main/resources/de/bsnsoft/esj/xr/
+  xr-elements.tsv, which the exporter of esj-xr writes XR documents from. The
+  schema is a test resource: it is on no run-time classpath and is not part of
+  any published artefact of this project. None of its German documentation is
+  reproduced here.
+
+XRechnung test suite instances (conformance/kosit/)
+  Unmodified copies of src/test/ of the repository
+  https://github.com/itplr-kosit/xrechnung-testsuite at the tag v2026-08-31, published
+  by KoSIT / XStandards Einkauf under the Apache License, Version 2.0. They are the input
+  side of the conformance corpus of this repository and are not part of any published
+  artefact of this project. The LICENSE file of that project is shipped beside them, and
+  conformance/kosit/README.md records the tag and the SHA-256 of every file.
+
+  The ESJ documents under conformance/esj/ and the ledgers under conformance/ledger/ are
+  derived from those instances by this project. They carry business term identifiers and
+  the content of the synthetic invoices; they are licensed under the Apache License,
+  Version 2.0, like the rest of this repository, and the attribution above covers the
+  material they are derived from.
+
+Validation packs (packs/)
+  The directory packs/ carries the official validation artefacts of the profiles
+  the syntax engine checks against, unmodified and each under its own licence.
+  None of it is this project's work, and nothing in this repository is derived
+  from the expressions inside those files: they are executed as data.
+  packs/SOURCES.md records for every file the upstream release, the licence, the
+  SHA-256 of the archive it came from and of the file itself, and the date of
+  retrieval; a test of esj-syntax recomputes every digest on every build. The
+  pack xrechnung/3.0.2/2026-08-31 contains four components and eight level tables.
+
+  EN 16931 Schematron, compiled (packs/xrechnung/3.0.2/2026-08-31/cen/1.3.16/)
+    The files EN16931-UBL-validation.xslt and EN16931-CII-validation.xslt are
+    unmodified copies from the release assets en16931-ubl-1.3.16.zip and
+    en16931-cii-1.3.16.zip of the tag validation-1.3.16 of the repository
+    https://github.com/ConnectingEurope/eInvoicing-EN16931, published for
+    CEN/TC 434 by the Connecting Europe eInvoicing project under the European
+    Union Public Licence, version 1.2. The licence text of that release is
+    shipped beside them as LICENSE.
+
+  XRechnung Schematron, compiled (packs/xrechnung/3.0.2/2026-08-31/
+  xrechnung-schematron/2.6.0/)
+    The files XRechnung-UBL-validation.xsl and XRechnung-CII-validation.xsl are
+    unmodified copies from the release v2026-08-31 of the repository
+    https://github.com/itplr-kosit/validator-configuration-xrechnung, published
+    by the Koordinierungsstelle für IT-Standards (KoSIT) / XStandards Einkauf
+    under the Apache License, Version 2.0. They are the XRechnung Schematron
+    rules of version 2.6.0 compiled to XSLT. The licence file of that release is
+    shipped beside them as LICENSE; it carries, after the Apache text, KoSIT's
+    addendum on the standard itself, which states that the copyright in
+    EN 16931 rests with CEN, that copies are distributed by the national
+    standards bodies, and that reproduction of XRechnung as an implementation of
+    that model is permitted by CEN and DIN, who give no warranty for such
+    derivatives.
+
+  UBL 2.1 schema modules (packs/xrechnung/3.0.2/2026-08-31/xsd/ubl-2.1/)
+    Fifteen unmodified schema modules of OASIS Universal Business Language 2.1
+    OS, released 04 November 2013, published by OASIS Open at
+    http://docs.oasis-open.org/ubl/os-UBL-2.1/ and copyright (c) OASIS Open
+    2013. They are the transitive import closure of the Invoice and CreditNote
+    document schemas. Every file carries the OASIS notice in a comment at its
+    head, and that comment grants nothing: the permission to copy and
+    redistribute is the Notices section of the UBL 2.1 OS specification, which
+    requires that the copyright notice and that section accompany every copy.
+    The NOTICE beside the files carries both, the file header and the Notices
+    section, each verbatim.
+
+  UN/CEFACT CII D16B schema modules (packs/xrechnung/3.0.2/2026-08-31/xsd/
+  cii-d16b/)
+    Four unmodified schema modules of the UN/CEFACT Cross Industry Invoice,
+    schema version 100.D16B of 10 October 2016, Copyright (C) UN/CEFACT (2016),
+    all rights reserved. The notice in those files permits copying and
+    redistribution provided the copyright notice and the permission paragraph
+    accompany the copies, and forbids modifying the documents; the files here
+    are byte for byte the published ones, they carry the notice inside them, and
+    the NOTICE beside them quotes it verbatim. The file esj-bindings/src/main/
+    resources/de/bsnsoft/esj/bindings/cii-schema.json is generated
+    from these four modules and carries facts of them and nothing else: the name
+    of each element, the order and the occurrence bounds the schema gives it, and
+    the names of the attributes. No documentation, annotation or other prose of
+    the modules is reproduced in it.
+
+  Both schema sets were obtained from the XRechnung validator configuration
+  release named above, which redistributes them; they are published by OASIS and
+  by UN/CEFACT respectively.
+
+  Rule levels of the XRechnung profiles (levels of packs/xrechnung/3.0.2/
+  2026-08-31/pack.json)
+    The level each XRechnung profile gives a rule of the artefacts above is
+    transcribed from scenarios.xml of the same release v2026-08-31 of
+    https://github.com/itplr-kosit/validator-configuration-xrechnung, published
+    by the Koordinierungsstelle für IT-Standards (KoSIT) / XStandards Einkauf
+    under the Apache License, Version 2.0. The file itself is not shipped here;
+    what is shipped is 56 statements of the form "for documents of this profile,
+    the rule of this identifier is fatal, a warning or information", which that
+    release states in its customLevel elements. packs/SOURCES.md lists all of
+    them.
+
+Saxon-HE (dependency of esj-xr)
+  esj-xr depends at runtime on net.sf.saxon:Saxon-HE, published by Saxonica Limited
+  under the Mozilla Public License, Version 2.0 (https://www.mozilla.org/MPL/2.0/).
+  Its source is available from https://github.com/Saxonica/Saxon-HE. It is not
+  redistributed in source form here; Maven resolves it for a build, and the
+  self-contained jar of esj-cli described below carries a copy of it in binary form.
+  esj-xr is the only module that declares it; esj-syntax and esj-render run
+  stylesheets through it because they build on esj-xr. esj-core depends on
+  jackson-core alone.
+
+Apache PDFBox (dependency of esj-pdf and of esj-render)
+  esj-pdf and esj-render depend at runtime on org.apache.pdfbox:pdfbox, published by
+  the Apache Software Foundation under the Apache License, Version 2.0. Its source is
+  available from https://github.com/apache/pdfbox. It brings org.apache.pdfbox:pdfbox-io,
+  org.apache.pdfbox:fontbox and commons-logging:commons-logging with it, all three
+  artefacts under the same licence — which is a statement about the artefacts and not
+  about every component inside them; the components PDFBox and fontbox carry under
+  their own terms are named further down, with the self-contained jar. The optional
+  Bouncy Castle dependencies of its own POM are not used, because this project writes
+  documents and encrypts nothing. Of the other modules of this project, only esj-cli
+  depends on esj-pdf and on esj-render, and none depends on PDFBox directly.
+
+  esj-render writes the PDF rendering with it. In esj-pdf it is used for the object
+  structure of a PDF, the catalog name trees, the associated files array, the embedded
+  file streams and the XMP packet, and not to render a page, to load a font, to process
+  a form or to produce a PDF.
+
+  The container formats esj-pdf reads are Factur-X and ZUGFeRD 2.x. The facts that
+  module relies on — the namespace of the XMP extension schema, the names of its
+  properties, the allowed values of AFRelationship, the conventional attachment names
+  and the profiles — are taken from the public specification documents of those formats
+  and were cross-checked against Mustangproject (https://www.mustangproject.org/), which
+  is published under the Apache License, Version 2.0. Those documents are cited, not
+  redistributed; none of their text is reproduced here and no code was copied from
+  Mustangproject. docs/pdf-input.md records each fact with its source.
+
+ZXing Core (dependency of esj-render)
+  esj-render depends at runtime on com.google.zxing:core, published by the ZXing
+  Authors under the Apache License, Version 2.0. Its source is available from
+  https://github.com/zxing/zxing. It is pure Java, brings no dependency of its own,
+  and only its QR encoder is used: esj-render asks it for the matrix of modules of
+  the EPC QR code of a credit transfer and draws those modules into the page itself,
+  so nothing of the library reaches the rendering. The artefact com.google.zxing:javase
+  is not used. Of the other modules of this project, only esj-cli depends on
+  esj-render, and none depends on ZXing directly.
+
+picocli (dependency of esj-cli)
+  esj-cli depends at runtime on info.picocli:picocli, published by Remko Popma under
+  the Apache License, Version 2.0. Its source is available from
+  https://github.com/remkop/picocli. No other module of this project depends on it.
+
+Code list snapshots (rules/en16931/1.3.16/codelists/)
+  The membership tests of the EN 16931 rule pack are decided against dated
+  snapshots of published code lists. Each snapshot file carries a list of codes and
+  the short names their publisher gives them, and no prose of any publisher is
+  reproduced. They were extracted mechanically on 2026-09-19 from four
+  publications, none of which states a licence for the data on the page it is
+  offered from; rules/en16931/1.3.16/codelists/SOURCES.md records the URL, the
+  SHA-256 of the bytes downloaded and what was found on the page, and records the
+  uncertainty about the terms as an open question rather than an answer.
+
+    - The listing of the code lists used in EN 16931, the Electronic Address Scheme
+      code list and the VAT Exemption Reason code list, published by the European
+      Commission in its registry of supporting artefacts for EN 16931. These are the
+      source of the UNTDID, ISO/IEC 6523 ICD, country and unit of measure snapshots,
+      which are the Commission's statement of which codes of each list this standard
+      admits; the underlying lists are published by UN/CEFACT, UNECE and ISO.
+    - The ISO 4217 currency code table, published by SIX Group as the ISO 4217
+      maintenance agency.
+    - The ISO 639-1 language code vocabulary, published by the Library of Congress
+      as the ISO 639-2 registration authority.
+    - The media types registry, published by IANA. Only the six media types that
+      EN 16931-1 admits for an attachment are carried, each looked up in that
+      registry.
+
+  The same codes and publisher names travel a second time in the generated enums of
+  esj-invoice (de.bsnsoft.esj.invoice.code), which are emitted from these
+  snapshot files and carry nothing that is not in them.
+
+  No code list in this repository is taken from the code list files distributed with
+  the CEN validation artefacts, which are EUPL-1.2 material.
+
+Country names (esj-render/src/main/resources/de/bsnsoft/esj/render/
+names/country.json)
+  The letter layout of esj-render writes the name of a country where an address
+  carries a country code. Those names are the ones of the Unicode Common Locale
+  Data Repository (CLDR, https://cldr.unicode.org/), read once out of the locale
+  data of a Java runtime by the generator CountryNames of esj-render and checked
+  in as data. They are used under the Unicode Terms of Use / Unicode License v3,
+  https://www.unicode.org/license.txt, which permits use and redistribution of the
+  Unicode Data Files with the copyright notice and the permission notice:
+
+    Copyright (c) 1991-Present Unicode, Inc. All rights reserved.
+    Distributed under the Terms of Use in https://www.unicode.org/copyright.html.
+
+  Only names are carried; no other part of the CLDR and no prose of it is
+  reproduced. The header of the file records the runtime the names were read from,
+  and a test regenerates and compares on that runtime. The renderer never reads
+  the locale data of the machine it runs on, so a rendering is the same bytes
+  everywhere.
+
+  The four other tables beside that file — invoice type, unit of measure, means of
+  payment and VAT category — carry the English names of the dated code list
+  snapshots of rules/en16931/1.3.16/codelists/ named above, under the entry for
+  those snapshots, and German names written for this project.
+
+The self-contained jar of the command line tool (esj-cli/target/esj.jar)
+  That jar is the only artefact of this repository that redistributes its
+  dependencies. It carries, in binary form:
+
+    - jackson-core, the Jackson JSON processor, copyright 2007- Tatu Saloranta
+      (tatu.saloranta@iki.fi) and the Jackson contributors, published by FasterXML
+      under the Apache License, Version 2.0; source at
+      https://github.com/FasterXML/jackson-core. jackson-core itself
+      bundles a shaded copy of FastDoubleParser
+      (https://github.com/wrandelshofer/FastDoubleParser, MIT licence,
+      copyright 2023 Werner Randelshofer) and a copy of the Schubfach number writing
+      code (https://github.com/c4f7fcce9cb06515/Schubfach, MIT licence,
+      copyright 2018-2020 Raffaello Giulietti); the licence files jackson-core ships
+      for both, and for the third-party code inside FastDoubleParser, travel with
+      them under META-INF in the jar.
+    - picocli, Apache License, Version 2.0, as above.
+    - ZXing Core, Apache License, Version 2.0, as above; source at
+      https://github.com/zxing/zxing.
+    - Apache PDFBox and its dependencies pdfbox-io, fontbox and commons-logging,
+      each published under the Apache License, Version 2.0; source at
+      https://github.com/apache/pdfbox and https://github.com/apache/commons-logging.
+      The artefacts are under that licence; not everything inside them is. PDFBox
+      carries the Adobe Glyph List and the Zapf Dingbats Glyph List (copyright
+      Adobe Systems Incorporated), the Unicode Bidi Mirroring property (copyright
+      1991-2015 Unicode, Inc.), parts of TwelveMonkeys ImageIO (copyright 2008-2016
+      Harald Kuhr) and a CMYK ICC profile released under CC0 by Clinton Ingram;
+      fontbox carries the Unicode Script property. Those components have their own
+      terms, and both the NOTICE and the LICENSE of every dependency travel with
+      the jar; see below.
+    - The vendored files of esj-render, with that module's classes: the XRechnung
+      visualization stylesheets and FileSaver.js under the entries above, the two
+      Liberation Sans faces under the SIL Open Font License, Version 1.1, the sRGB
+      profile of the International Color Consortium and the tables of display names,
+      each under the entry above.
+    - xmlresolver, published by Norman Walsh under the Apache License, Version 2.0;
+      source at https://github.com/xmlresolver/xmlresolver. It is a dependency of
+      Saxon-HE.
+    - Saxon-HE, Mozilla Public License, Version 2.0, as above. MPL-2.0 section 3.2
+      applies to those files and to no others in the jar: their source form is
+      available under the MPL from https://github.com/Saxonica/Saxon-HE, and the
+      recipient of the jar may obtain it there.
+
+  META-INF/LICENSE and META-INF/NOTICE inside that jar are the LICENSE and this
+  NOTICE of this repository, and they are about this repository's own code.
+  What every dependency says about itself travels beside them: the LICENSE, the
+  NOTICE and the DEPENDENCIES file of each bundled artefact are carried unchanged
+  under META-INF/dependencies/<artefact>/META-INF/ in the same jar. That is where
+  the attribution notices Apache-2.0 section 4(d) asks a redistributor to pass on
+  are to be read, together with the separate terms of the components a dependency
+  carries inside itself. The jar is built by the shade plugin and is not published
+  to a repository.
+
+The packaged artefacts (dist/package.sh)
+  Three of them redistribute more than the jar above, and each carries the LICENSE
+  and this NOTICE beside it:
+
+    - The native executable is built with GraalVM Community Edition 25, published
+      by Oracle under the GNU General Public License, Version 2, with the Classpath
+      Exception; source at https://github.com/oracle/graal. An executable it
+      produces contains parts of the Substrate VM runtime under those terms, which
+      is why the Community Edition is the one used: its Classpath Exception is what
+      lets this project distribute the executables it builds. The shared libraries
+      beside the executable (libawt, libfontmanager, libfreetype, libjavajpeg,
+      liblcms, libmlib_image and their platform siblings) are libraries of the Java
+      runtime, under the same terms.
+    - The runtime image carries a Java 25 runtime built with jlink from the OpenJDK
+      distribution of the packaging machine, under the GNU General Public License,
+      Version 2, with the Classpath Exception; the ahead-of-time cache beside it is
+      generated data of that runtime. Which distribution and build wrote it is in
+      the release/ file of the image.
+    - The container image adds the base image named in dist/Dockerfile, an Eclipse
+      Temurin JRE, published by the Eclipse Adoptium project under the same terms.
+
+  The build-time tools are not redistributed: the picocli annotation processor
+  (picocli-codegen, Apache License, Version 2.0) writes reachability metadata into
+  the jar and is on no class path at run time.
+
+No Peppol material is included in this repository.

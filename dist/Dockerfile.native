@@ -1,0 +1,34 @@
+# The Linux native executable, built with GraalVM in a container so that a
+# machine of any kind can produce it:
+#
+#   docker build --platform linux/arm64 -f dist/Dockerfile.native \
+#       --target artefact --output type=local,dest=dist/out/linux-arm64 .
+#
+# The build stage runs dist/native-image.sh, the same script that builds the
+# executable of the host, so the two are built from the same cases and the same
+# resource discovery. The last stage is the executable and the shared libraries
+# it loads, nothing else, so that the output of the build is the artefact.
+#
+# Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
+
+FROM ghcr.io/graalvm/native-image-community:25 AS build
+WORKDIR /src
+COPY . /src
+RUN dist/native-image.sh esj-cli/target/esj.jar /out \
+    && mkdir /artefact \
+    && cp /out/esj /src/LICENSE /src/NOTICE /artefact/ \
+    && cp -R /out/legal /artefact/legal \
+    && cp /out/*.so* /artefact/ 2>/dev/null || true
+
+FROM scratch AS artefact
+COPY --from=build /artefact /
+
+# The same executable in an image that can run it: a base with the C library it
+# is linked against and nothing else to speak of.
+FROM gcr.io/distroless/base-debian12:nonroot AS image
+COPY --from=build /out/esj /opt/esj/esj
+COPY --from=build /src/LICENSE /src/NOTICE /opt/esj/
+WORKDIR /work
+USER nonroot
+ENTRYPOINT ["/opt/esj/esj"]
+CMD ["--help"]

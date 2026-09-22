@@ -1,0 +1,722 @@
+{
+  "listId": "untdid-7161",
+  "name": "UNTDID 7161 special services code",
+  "publisher": "UN/CEFACT (UNTDID), listed for EN 16931 by the European Commission",
+  "source": "https://ec.europa.eu/digital-building-blocks/sites/download/attachments/467108974/EN16931%20code%20lists%20values%20v17b%20-%20used%20from%202026-05-15.xlsx , sheet \"Charge\"",
+  "retrieved": "2026-09-19",
+  "terms": "The page states no licence. It is the European Commission's publication of which codes of each list the European eInvoicing standard admits, offered for implementation of EN 16931; the workbook itself says that it lists codes and does not replace the publication of each list by its own publisher. Reuse of Commission documents is generally governed by Decision 2011/833/EU, which the page does not cite. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "AA",
+      "name": "Advertising"
+    },
+    {
+      "value": "AAA",
+      "name": "Telecommunication"
+    },
+    {
+      "value": "AAC",
+      "name": "Technical modification"
+    },
+    {
+      "value": "AAD",
+      "name": "Job-order production"
+    },
+    {
+      "value": "AAE",
+      "name": "Outlays"
+    },
+    {
+      "value": "AAF",
+      "name": "Off-premises"
+    },
+    {
+      "value": "AAH",
+      "name": "Additional processing"
+    },
+    {
+      "value": "AAI",
+      "name": "Attesting"
+    },
+    {
+      "value": "AAS",
+      "name": "Acceptance"
+    },
+    {
+      "value": "AAT",
+      "name": "Rush delivery"
+    },
+    {
+      "value": "AAV",
+      "name": "Special construction"
+    },
+    {
+      "value": "AAY",
+      "name": "Airport facilities"
+    },
+    {
+      "value": "AAZ",
+      "name": "Concession"
+    },
+    {
+      "value": "ABA",
+      "name": "Compulsory storage"
+    },
+    {
+      "value": "ABB",
+      "name": "Fuel removal"
+    },
+    {
+      "value": "ABC",
+      "name": "Into plane"
+    },
+    {
+      "value": "ABD",
+      "name": "Overtime"
+    },
+    {
+      "value": "ABF",
+      "name": "Tooling"
+    },
+    {
+      "value": "ABK",
+      "name": "Miscellaneous"
+    },
+    {
+      "value": "ABL",
+      "name": "Additional packaging"
+    },
+    {
+      "value": "ABN",
+      "name": "Dunnage"
+    },
+    {
+      "value": "ABR",
+      "name": "Containerisation"
+    },
+    {
+      "value": "ABS",
+      "name": "Carton packing"
+    },
+    {
+      "value": "ABT",
+      "name": "Hessian wrapped"
+    },
+    {
+      "value": "ABU",
+      "name": "Polyethylene wrap packing"
+    },
+    {
+      "value": "ACF",
+      "name": "Miscellaneous treatment"
+    },
+    {
+      "value": "ACG",
+      "name": "Enamelling treatment"
+    },
+    {
+      "value": "ACH",
+      "name": "Heat treatment"
+    },
+    {
+      "value": "ACI",
+      "name": "Plating treatment"
+    },
+    {
+      "value": "ACJ",
+      "name": "Painting"
+    },
+    {
+      "value": "ACK",
+      "name": "Polishing"
+    },
+    {
+      "value": "ACL",
+      "name": "Priming"
+    },
+    {
+      "value": "ACM",
+      "name": "Preservation treatment"
+    },
+    {
+      "value": "ACS",
+      "name": "Fitting"
+    },
+    {
+      "value": "ADC",
+      "name": "Consolidation"
+    },
+    {
+      "value": "ADE",
+      "name": "Bill of lading"
+    },
+    {
+      "value": "ADJ",
+      "name": "Airbag"
+    },
+    {
+      "value": "ADK",
+      "name": "Transfer"
+    },
+    {
+      "value": "ADL",
+      "name": "Slipsheet"
+    },
+    {
+      "value": "ADM",
+      "name": "Binding"
+    },
+    {
+      "value": "ADN",
+      "name": "Repair or replacement of broken returnable package"
+    },
+    {
+      "value": "ADO",
+      "name": "Efficient logistics"
+    },
+    {
+      "value": "ADP",
+      "name": "Merchandising"
+    },
+    {
+      "value": "ADQ",
+      "name": "Product mix"
+    },
+    {
+      "value": "ADR",
+      "name": "Other services"
+    },
+    {
+      "value": "ADT",
+      "name": "Pick-up"
+    },
+    {
+      "value": "ADW",
+      "name": "Chronic illness"
+    },
+    {
+      "value": "ADY",
+      "name": "New product introduction"
+    },
+    {
+      "value": "ADZ",
+      "name": "Direct delivery"
+    },
+    {
+      "value": "AEA",
+      "name": "Diversion"
+    },
+    {
+      "value": "AEB",
+      "name": "Disconnect"
+    },
+    {
+      "value": "AEC",
+      "name": "Distribution"
+    },
+    {
+      "value": "AED",
+      "name": "Handling of hazardous cargo"
+    },
+    {
+      "value": "AEF",
+      "name": "Rents and leases"
+    },
+    {
+      "value": "AEH",
+      "name": "Location differential"
+    },
+    {
+      "value": "AEI",
+      "name": "Aircraft refueling"
+    },
+    {
+      "value": "AEJ",
+      "name": "Fuel shipped into storage"
+    },
+    {
+      "value": "AEK",
+      "name": "Cash on delivery"
+    },
+    {
+      "value": "AEL",
+      "name": "Small order processing service"
+    },
+    {
+      "value": "AEM",
+      "name": "Clerical or administrative services"
+    },
+    {
+      "value": "AEN",
+      "name": "Guarantee"
+    },
+    {
+      "value": "AEO",
+      "name": "Collection and recycling"
+    },
+    {
+      "value": "AEP",
+      "name": "Copyright fee collection"
+    },
+    {
+      "value": "AES",
+      "name": "Veterinary inspection service"
+    },
+    {
+      "value": "AET",
+      "name": "Pensioner service"
+    },
+    {
+      "value": "AEU",
+      "name": "Medicine free pass holder"
+    },
+    {
+      "value": "AEV",
+      "name": "Environmental protection service"
+    },
+    {
+      "value": "AEW",
+      "name": "Environmental clean-up service"
+    },
+    {
+      "value": "AEX",
+      "name": "National cheque processing service outside account area"
+    },
+    {
+      "value": "AEY",
+      "name": "National payment service outside account area"
+    },
+    {
+      "value": "AEZ",
+      "name": "National payment service within account area"
+    },
+    {
+      "value": "AJ",
+      "name": "Adjustments"
+    },
+    {
+      "value": "AU",
+      "name": "Authentication"
+    },
+    {
+      "value": "CA",
+      "name": "Cataloguing"
+    },
+    {
+      "value": "CAB",
+      "name": "Cartage"
+    },
+    {
+      "value": "CAD",
+      "name": "Certification"
+    },
+    {
+      "value": "CAE",
+      "name": "Certificate of conformance"
+    },
+    {
+      "value": "CAF",
+      "name": "Certificate of origin"
+    },
+    {
+      "value": "CAI",
+      "name": "Cutting"
+    },
+    {
+      "value": "CAJ",
+      "name": "Consular service"
+    },
+    {
+      "value": "CAK",
+      "name": "Customer collection"
+    },
+    {
+      "value": "CAL",
+      "name": "Payroll payment service"
+    },
+    {
+      "value": "CAM",
+      "name": "Cash transportation"
+    },
+    {
+      "value": "CAN",
+      "name": "Home banking service"
+    },
+    {
+      "value": "CAO",
+      "name": "Bilateral agreement service"
+    },
+    {
+      "value": "CAP",
+      "name": "Insurance brokerage service"
+    },
+    {
+      "value": "CAQ",
+      "name": "Cheque generation"
+    },
+    {
+      "value": "CAR",
+      "name": "Preferential merchandising location"
+    },
+    {
+      "value": "CAS",
+      "name": "Crane"
+    },
+    {
+      "value": "CAT",
+      "name": "Special colour service"
+    },
+    {
+      "value": "CAU",
+      "name": "Sorting"
+    },
+    {
+      "value": "CAV",
+      "name": "Battery collection and recycling"
+    },
+    {
+      "value": "CAW",
+      "name": "Product take back fee"
+    },
+    {
+      "value": "CAX",
+      "name": "Quality control released"
+    },
+    {
+      "value": "CAY",
+      "name": "Quality control held"
+    },
+    {
+      "value": "CAZ",
+      "name": "Quality control embargo"
+    },
+    {
+      "value": "CD",
+      "name": "Car loading"
+    },
+    {
+      "value": "CG",
+      "name": "Cleaning"
+    },
+    {
+      "value": "CS",
+      "name": "Cigarette stamping"
+    },
+    {
+      "value": "CT",
+      "name": "Count and recount"
+    },
+    {
+      "value": "DAB",
+      "name": "Layout/design"
+    },
+    {
+      "value": "DAC",
+      "name": "Assortment allowance"
+    },
+    {
+      "value": "DAD",
+      "name": "Driver assigned unloading"
+    },
+    {
+      "value": "DAF",
+      "name": "Debtor bound"
+    },
+    {
+      "value": "DAG",
+      "name": "Dealer allowance"
+    },
+    {
+      "value": "DAH",
+      "name": "Allowance transferable to the consumer"
+    },
+    {
+      "value": "DAI",
+      "name": "Growth of business"
+    },
+    {
+      "value": "DAJ",
+      "name": "Introduction allowance"
+    },
+    {
+      "value": "DAK",
+      "name": "Multi-buy promotion"
+    },
+    {
+      "value": "DAL",
+      "name": "Partnership"
+    },
+    {
+      "value": "DAM",
+      "name": "Return handling"
+    },
+    {
+      "value": "DAN",
+      "name": "Minimum order not fulfilled charge"
+    },
+    {
+      "value": "DAO",
+      "name": "Point of sales threshold allowance"
+    },
+    {
+      "value": "DAP",
+      "name": "Wholesaling discount"
+    },
+    {
+      "value": "DAQ",
+      "name": "Documentary credits transfer commission"
+    },
+    {
+      "value": "DL",
+      "name": "Delivery"
+    },
+    {
+      "value": "EG",
+      "name": "Engraving"
+    },
+    {
+      "value": "EP",
+      "name": "Expediting"
+    },
+    {
+      "value": "ER",
+      "name": "Exchange rate guarantee"
+    },
+    {
+      "value": "FAA",
+      "name": "Fabrication"
+    },
+    {
+      "value": "FAB",
+      "name": "Freight equalization"
+    },
+    {
+      "value": "FAC",
+      "name": "Freight extraordinary handling"
+    },
+    {
+      "value": "FC",
+      "name": "Freight service"
+    },
+    {
+      "value": "FH",
+      "name": "Filling/handling"
+    },
+    {
+      "value": "FI",
+      "name": "Financing"
+    },
+    {
+      "value": "GAA",
+      "name": "Grinding"
+    },
+    {
+      "value": "HAA",
+      "name": "Hose"
+    },
+    {
+      "value": "HD",
+      "name": "Handling"
+    },
+    {
+      "value": "HH",
+      "name": "Hoisting and hauling"
+    },
+    {
+      "value": "IAA",
+      "name": "Installation"
+    },
+    {
+      "value": "IAB",
+      "name": "Installation and warranty"
+    },
+    {
+      "value": "ID",
+      "name": "Inside delivery"
+    },
+    {
+      "value": "IF",
+      "name": "Inspection"
+    },
+    {
+      "value": "IR",
+      "name": "Installation and training"
+    },
+    {
+      "value": "IS",
+      "name": "Invoicing"
+    },
+    {
+      "value": "KO",
+      "name": "Koshering"
+    },
+    {
+      "value": "L1",
+      "name": "Carrier count"
+    },
+    {
+      "value": "LA",
+      "name": "Labelling"
+    },
+    {
+      "value": "LAA",
+      "name": "Labour"
+    },
+    {
+      "value": "LAB",
+      "name": "Repair and return"
+    },
+    {
+      "value": "LF",
+      "name": "Legalisation"
+    },
+    {
+      "value": "MAE",
+      "name": "Mounting"
+    },
+    {
+      "value": "MI",
+      "name": "Mail invoice"
+    },
+    {
+      "value": "ML",
+      "name": "Mail invoice to each location"
+    },
+    {
+      "value": "NAA",
+      "name": "Non-returnable containers"
+    },
+    {
+      "value": "OA",
+      "name": "Outside cable connectors"
+    },
+    {
+      "value": "PA",
+      "name": "Invoice with shipment"
+    },
+    {
+      "value": "PAA",
+      "name": "Phosphatizing (steel treatment)"
+    },
+    {
+      "value": "PC",
+      "name": "Packing"
+    },
+    {
+      "value": "PL",
+      "name": "Palletizing"
+    },
+    {
+      "value": "PRV",
+      "name": "Price variation"
+    },
+    {
+      "value": "RAB",
+      "name": "Repacking"
+    },
+    {
+      "value": "RAC",
+      "name": "Repair"
+    },
+    {
+      "value": "RAD",
+      "name": "Returnable container"
+    },
+    {
+      "value": "RAF",
+      "name": "Restocking"
+    },
+    {
+      "value": "RE",
+      "name": "Re-delivery"
+    },
+    {
+      "value": "RF",
+      "name": "Refurbishing"
+    },
+    {
+      "value": "RH",
+      "name": "Rail wagon hire"
+    },
+    {
+      "value": "RV",
+      "name": "Loading"
+    },
+    {
+      "value": "SA",
+      "name": "Salvaging"
+    },
+    {
+      "value": "SAA",
+      "name": "Shipping and handling"
+    },
+    {
+      "value": "SAD",
+      "name": "Special packaging"
+    },
+    {
+      "value": "SAE",
+      "name": "Stamping"
+    },
+    {
+      "value": "SAI",
+      "name": "Consignee unload"
+    },
+    {
+      "value": "SG",
+      "name": "Shrink-wrap"
+    },
+    {
+      "value": "SH",
+      "name": "Special handling"
+    },
+    {
+      "value": "SM",
+      "name": "Special finish"
+    },
+    {
+      "value": "SU",
+      "name": "Set-up"
+    },
+    {
+      "value": "TAB",
+      "name": "Tank renting"
+    },
+    {
+      "value": "TAC",
+      "name": "Testing"
+    },
+    {
+      "value": "TT",
+      "name": "Transportation - third party billing"
+    },
+    {
+      "value": "TV",
+      "name": "Transportation by vendor"
+    },
+    {
+      "value": "V1",
+      "name": "Drop yard"
+    },
+    {
+      "value": "V2",
+      "name": "Drop dock"
+    },
+    {
+      "value": "WH",
+      "name": "Warehousing"
+    },
+    {
+      "value": "XAA",
+      "name": "Combine all same day shipment"
+    },
+    {
+      "value": "YY",
+      "name": "Split pick-up"
+    },
+    {
+      "value": "ZZZ",
+      "name": "Mutually defined"
+    }
+  ]
+}

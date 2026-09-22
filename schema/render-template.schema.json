@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:bsnsoft.de,2026:esj/schema/0.1/render-template.schema.json",
+  "$comment": "Provisional identifier. It is a tag URI (RFC 4151) because no schema is published under an https URL yet; the identifier will move to an https URL when the project publishes one.",
+  "title": "ESJ render template 0.1",
+  "description": "A branded PDF rendering: a letterhead, a logo, a colour scheme, fonts, page margins, and the places the layout gives to terms of a model extension. A template carries no layout: the sections, the tables and the order of the invoice are the ones of the generic rendering of esj-render, and every value of the document reaches a page either way. Files are named relative to the template and stay in its directory. docs/templates.md is what each member does.",
+
+  "type": "object",
+  "required": ["template"],
+  "additionalProperties": false,
+  "properties": {
+    "template": {
+      "description": "Fixed format marker of a template this version reads.",
+      "const": "esj-render-template/0.1"
+    },
+    "name": {
+      "description": "What the template calls itself. It appears nowhere on the page and is there for whoever keeps the templates.",
+      "type": "string",
+      "maxLength": 200
+    },
+    "layout": {
+      "description": "Which of the two page layouts the rendering is drawn in: the registry-driven generic layout, which is the shape of the semantic model, or the letter layout, which is the shape of a business letter. Every term occurrence of the document reaches a page in either. An explicit choice by the caller wins over this. Default: generic.",
+      "enum": ["generic", "letter"]
+    },
+    "letter": {
+      "description": "What the letter layout leaves to the sender: the address field, where the number, the dates and the references stand, the marks printed in the left margin, and where the seller's own business details go. Ignored by the generic layout.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "addressWindow": {
+          "description": "The address field the recipient is written into: the field of DIN 5008 form B (85 by 45 mm, 20 mm from the left edge, 45 mm from the top), the same field of form A (27 mm from the top), or none, which writes the recipient at the head of the letter instead. Default: din5008-b.",
+          "enum": ["din5008-b", "din5008-a", "none"]
+        },
+        "information": {
+          "description": "Where the number, the dates and the references stand: in the reference line, in the flow under the address zone and over the title, across the text width, which asks nothing of the paper; or in the block beside the address field at the place DIN 5008 gives it, for paper whose top right is free. Every field reaches a page either way. Default: line.",
+          "enum": ["line", "block"]
+        },
+        "printedHead": {
+          "description": "How far below the top edge of the paper the printed head of the letterhead reaches, in points. The information block starts under it rather than at 45 mm, so that it does not stand on a contact block the paper already prints. It has no effect on the reference line, which stands in the flow. Default: 0.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 400
+        },
+        "foldMarks": {
+          "description": "Whether the two fold marks are printed in the left margin, 105 mm and 210 mm below the top edge. Default: false.",
+          "type": "boolean"
+        },
+        "holeMark": {
+          "description": "Whether the punch mark is printed in the left margin, 148.5 mm below the top edge. Default: false.",
+          "type": "boolean"
+        },
+        "paymentCode": {
+          "description": "Whether the payment block carries the EPC QR code of a credit transfer, known in Germany as the GiroCode. It is drawn where the invoice states a credit transfer in euro into a well-formed IBAN and an amount the guideline allows, and left out where it does not; it carries values the block prints beside it and computes nothing. Default: true.",
+          "type": "boolean"
+        },
+        "sellerDetails": {
+          "description": "Where the seller's own business details go: along the foot of the letter in columns, or under the closing heading with everything else, for a letterhead that prints them already. Nothing is dropped either way. Default: footer.",
+          "enum": ["footer", "details"]
+        }
+      }
+    },
+    "letterhead": {
+      "description": "What is drawn under the text of a page: one page of a PDF, imported as a form with its own resources, or a raster image stretched over the page. A template that names only the first page gives the same letterhead to all of them.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "first": { "$ref": "#/$defs/sheet" },
+        "following": { "$ref": "#/$defs/sheet" }
+      }
+    },
+    "logo": {
+      "description": "An image drawn over the letterhead, at a place and a size the template gives in points.",
+      "type": "object",
+      "required": ["file", "width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "$ref": "#/$defs/reference" },
+        "x": {
+          "description": "How far the left edge of the image is from the left edge of the page, in points.",
+          "type": "number",
+          "minimum": 0
+        },
+        "y": {
+          "description": "How far the top edge of the image is below the top edge of the page, in points.",
+          "type": "number",
+          "minimum": 0
+        },
+        "width": { "description": "How wide the image is drawn, in points.", "type": "number", "exclusiveMinimum": 0 },
+        "height": { "description": "How tall it is drawn, in points.", "type": "number", "exclusiveMinimum": 0 },
+        "pages": {
+          "description": "Whether the logo goes on the first page only or on every page. Default: first.",
+          "enum": ["first", "all"]
+        }
+      }
+    },
+    "colors": {
+      "description": "The six colours the layout draws in, each written as #rrggbb in sRGB. A colour the template leaves out keeps the grey the generic rendering uses.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": { "$ref": "#/$defs/color", "description": "A value, and anything else that is not a label." },
+        "muted": { "$ref": "#/$defs/color", "description": "A label, a detail line under a table row, the page footer." },
+        "rule": { "$ref": "#/$defs/color", "description": "A hairline between two blocks." },
+        "heading": { "$ref": "#/$defs/color", "description": "A section heading and the invoice number." },
+        "tableHeaderFill": { "$ref": "#/$defs/color", "description": "The band a column header sits on." },
+        "tableHeaderText": { "$ref": "#/$defs/color", "description": "The column header itself." }
+      }
+    },
+    "fonts": {
+      "description": "The two TrueType faces the rendering is written in. A template brings both weights or neither; without them the vendored Liberation Sans is used. The licence of a face a template brings must permit embedding it in a document.",
+      "type": "object",
+      "required": ["regular", "bold"],
+      "additionalProperties": false,
+      "properties": {
+        "regular": { "$ref": "#/$defs/reference" },
+        "bold": { "$ref": "#/$defs/reference" }
+      }
+    },
+    "margins": {
+      "description": "The white a page keeps around its text, in points, so that the text stays out of the printed matter of the letterhead. A member given here is put over the margin the layout decided, so a template that names only a top margin keeps the rest. The left and the right margin are the same on the first page and on the pages after it, because a table lays out its columns once.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "first": { "$ref": "#/$defs/margins" },
+        "following": { "$ref": "#/$defs/margins" }
+      }
+    },
+    "extensionTerms": {
+      "description": "The terms of a model extension this template has a place for. The renderer fills a place only where the document carries the term, and marks what it fills as a figure that was displayed rather than as a business term of EN 16931-1. Only an extension term may be placed: a core term has a place in the layout already.",
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "required": ["term", "position"],
+        "additionalProperties": false,
+        "properties": {
+          "term": {
+            "description": "The identifier of the extension term, for example BT-B2C-001.",
+            "type": "string",
+            "pattern": "^BT-[A-Z][A-Z0-9]*-[0-9]+$"
+          },
+          "position": {
+            "description": "Where the value goes: a column beside the net unit price, the VAT or the net amount of an invoice line, or a row among the totals of the document.",
+            "enum": ["line.unitPrice", "line.vat", "line.amount", "totals"]
+          },
+          "label": {
+            "description": "What the column or the row is called, per language. Without it the name comes from the registry of the rendering, and from the identifier where that registry does not know the term.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "de": { "type": "string", "maxLength": 200 },
+              "en": { "type": "string", "maxLength": 200 }
+            }
+          },
+          "type": {
+            "description": "The semantic data type the figure is written down with where the registry of the rendering does not know the term. The registry wins where it does.",
+            "enum": ["Text", "Identifier", "Code", "Date", "Amount", "UnitPriceAmount", "Quantity", "Percentage", "DocumentReference", "BinaryObject"]
+          }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "reference": {
+      "description": "The name of a file beside the template. A name that is absolute, that leaves the directory of the template or that is not a plain relative path is refused.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(^|/)\\.\\.(/|$)).+$"
+    },
+    "sheet": {
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "$ref": "#/$defs/reference" },
+        "page": {
+          "description": "Which page of a letterhead PDF to take, counted from one. Ignored for an image. Default: 1.",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "margins": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "top": { "type": "number", "minimum": 0 },
+        "bottom": {
+          "type": "number",
+          "minimum": 25,
+          "description": "The page footer — the invoice number and the page number — sits inside the bottom margin, 22 points below its top, and its descenders reach 3 points further, so a bottom margin under 25 points would write the footer onto the bottom edge of the paper or past it. A letterhead with a printed foot states here how much of the lower edge it occupies plus those 22 points and a little air."
+        },
+        "left": { "type": "number", "minimum": 0 },
+        "right": { "type": "number", "minimum": 0 }
+      }
+    },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    }
+  }
+}

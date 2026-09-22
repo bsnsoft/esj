@@ -1,0 +1,2225 @@
+{
+  "format": "EN16931-Semantic-JSON-binding",
+  "version": "0.1",
+  "syntax": "CII",
+  "syntaxName": "UN/CEFACT Cross Industry Invoice D16B",
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "rootElement": "rsm:CrossIndustryInvoice",
+  "license": "Apache-2.0",
+  "notice": "The identifiers, XPaths, supplementary component XPaths and note codes in this file are facts taken from the SeMoX model of the XRechnung CIUS published by KoSIT (Koordinierungsstelle für IT-Standards), release 2026-08-31, binding cii. No description, note text, rule or example of that model is reproduced here: every sentence in this file is the author's own wording. The licence of the model repository the facts come from is being clarified with KoSIT; see model/bindings/README.md. This file itself is Apache-2.0. ESJ is not an XRechnung format and this file is not a KoSIT deliverable.",
+  "source": {
+    "name": "KoSIT SeMoX model of the XRechnung CIUS",
+    "file": "xrechnung-cius-model.xml",
+    "binding": "cii",
+    "release": "2026-08-31"
+  },
+  "generator": "model/bindings/tools/semox_to_bindings.py",
+  "namespaces": {
+    "qdt": "urn:un:unece:uncefact:data:standard:QualifiedDataType:100",
+    "ram": "urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100",
+    "rsm": "urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100",
+    "udt": "urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+  },
+  "corrections": [
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:GlobalID[@schemeID]",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:GlobalID",
+      "reason": "The schemeID attribute is optional in the schema of this syntax, so a document that states a global identifier without one is conformant and the condition loses the identifier rather than its scheme; BR-CO-26 then faults an invoice that does identify its seller. The CEN validation artefact of packs/ reads this element without the condition, and the scheme remains bound as the supplementary component of the term."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:GlobalID[@schemeID]",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:GlobalID",
+      "reason": "The schemeID attribute is optional in the schema of this syntax, so a document that states a global identifier without one is conformant and the condition loses the identifier rather than its scheme; BR-CO-26 then faults an invoice that does identify its seller. The CEN validation artefact of packs/ reads this element without the condition, and the scheme remains bound as the supplementary component of the term."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:GlobalID[@schemeID]",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:GlobalID",
+      "reason": "The schemeID attribute is optional in the schema of this syntax, so a document that states a global identifier without one is conformant and the condition loses the identifier rather than its scheme; BR-CO-26 then faults an invoice that does identify its seller. The CEN validation artefact of packs/ reads this element without the condition, and the scheme remains bound as the supplementary component of the term."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:GlobalID[@schemeID]",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:GlobalID",
+      "reason": "The schemeID attribute is optional in the schema of this syntax, so a document that states a global identifier without one is conformant and the condition loses the identifier rather than its scheme; BR-CO-26 then faults an invoice that does identify its seller. The CEN validation artefact of packs/ reads this element without the condition, and the scheme remains bound as the supplementary component of the term."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']",
+      "reason": "The syntax writes the tender or lot reference, the invoiced object identifier and the supporting document group into the same element and tells them apart by ram:TypeCode; the source states that condition for BT-17, BT-18 and BT-122 and omits it here. Without it every additional reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The condition 916 is the one the CEN validation artefact of packs/ writes on this element for BT-123 and BT-125."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument/ram:Name",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:Name",
+      "reason": "The syntax writes the tender or lot reference, the invoiced object identifier and the supporting document group into the same element and tells them apart by ram:TypeCode; the source states that condition for BT-17, BT-18 and BT-122 and omits it here. Without it every additional reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The condition 916 is the one the CEN validation artefact of packs/ writes on this element for BT-123 and BT-125."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument/ram:URIID",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:URIID",
+      "reason": "The syntax writes the tender or lot reference, the invoiced object identifier and the supporting document group into the same element and tells them apart by ram:TypeCode; the source states that condition for BT-17, BT-18 and BT-122 and omits it here. Without it every additional reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The condition 916 is the one the CEN validation artefact of packs/ writes on this element for BT-123 and BT-125."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument/ram:AttachmentBinaryObject",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:AttachmentBinaryObject",
+      "reason": "The syntax writes the tender or lot reference, the invoiced object identifier and the supporting document group into the same element and tells them apart by ram:TypeCode; the source states that condition for BT-17, BT-18 and BT-122 and omits it here. Without it every additional reference of any kind opens a supporting document group, and a reference that stands before the supporting document in the file moves that document's occurrence index, which is part of its semantic path. The condition 916 is the one the CEN validation artefact of packs/ writes on this element for BT-123 and BT-125."
+    },
+    {
+      "member": "terms",
+      "from": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:BasisQuantity/@UnitCode",
+      "to": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:BasisQuantity/@unitCode",
+      "reason": "The quantity type of UN/CEFACT CII D16B carries the unit of measure on an attribute named unitCode, and the schema modules of that syntax declare no attribute named UnitCode on it or on anything else. Every other unit of measure the source binds, in this syntax and in the two UBL ones, is bound to the attribute with the lower case first letter."
+    }
+  ],
+  "conventions": [],
+  "flagDefinitions": {
+    "CAR-2": "The semantic model requires the term where the syntax leaves the element optional.",
+    "CAR-3": "The syntax lets the element repeat where the semantic model allows the term only once.",
+    "CAR-4": "The syntax bounds the element more narrowly than the semantic model bounds the term.",
+    "SEM-2": "The syntax element is semantically wider than the term; a predicate or a convention picks out the occurrence that carries it.",
+    "STR-2": "The syntax nests the element inside a group that the semantic model places it outside of.",
+    "STR-3": "No element of the syntax corresponds one to one to the term; it is reached through an element that stands for something else, or through more than one.",
+    "STR-4": "One syntax element serves several terms or groups, and an indicator element or an attribute value tells them apart.",
+    "STR-5": "A series of like terms of the semantic model is spread over differently named syntax elements.",
+    "SYN-1": "The syntax offers two elements for the value, and which one carries it depends on whether an identification scheme can be given.",
+    "SYN-2": "The lexical form in the syntax is not the semantic value written plainly: it is prefixed, formatted or otherwise encoded.",
+    "code-list-2475": "The bound element states the code in UNTDID 2475, the list this syntax gives it, while the term's code list is UNTDID 2005; a reader and a writer translate between the two.",
+    "date-format-102": "The bound element is a CII date string whose format attribute is 102, so the value is written as ccyymmdd rather than as an ISO date.",
+    "extension-not-bound": "The extension that defines this term states a binding for other syntaxes only, so this table has no XPath for it.",
+    "scheme-as-sibling-element": "The identification scheme is carried by a sibling element of the value rather than by an attribute of it."
+  },
+  "counts": {
+    "terms": 196,
+    "bound": 196,
+    "notRepresented": 0,
+    "components": 16,
+    "extensionTerms": 12,
+    "extensionBound": 0,
+    "extensionReusedTerms": 36,
+    "extensionReusedBound": 0
+  },
+  "terms": [
+    {
+      "id": "BT-1",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:ID"
+    },
+    {
+      "id": "BT-2",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BT-3",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:TypeCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-5",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:InvoiceCurrencyCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-6",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:TaxCurrencyCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-7",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:TaxPointDate/udt:DateString[@format = '102']",
+      "flags": [
+        "STR-2",
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BT-8",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:DueDateTypeCode",
+      "flags": [
+        "STR-2",
+        "code-list-2475"
+      ]
+    },
+    {
+      "id": "BT-9",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms/ram:DueDateDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BT-10",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerReference"
+    },
+    {
+      "id": "BT-11",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SpecifiedProcuringProject[ram:Name='Project reference']/ram:ID"
+    },
+    {
+      "id": "BT-12",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:ContractReferencedDocument/ram:IssuerAssignedID"
+    },
+    {
+      "id": "BT-13",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerOrderReferencedDocument/ram:IssuerAssignedID"
+    },
+    {
+      "id": "BT-14",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerOrderReferencedDocument/ram:IssuerAssignedID"
+    },
+    {
+      "id": "BT-15",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ReceivingAdviceReferencedDocument/ram:IssuerAssignedID"
+    },
+    {
+      "id": "BT-16",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:DespatchAdviceReferencedDocument/ram:IssuerAssignedID"
+    },
+    {
+      "id": "BT-17",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '50']/ram:IssuerAssignedID"
+    },
+    {
+      "id": "BT-18",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '130']/ram:IssuerAssignedID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "../ram:ReferenceTypeCode",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '130']/ram:IssuerAssignedID"
+        }
+      ],
+      "flags": [
+        "CAR-2",
+        "scheme-as-sibling-element"
+      ]
+    },
+    {
+      "id": "BT-19",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ReceivableSpecifiedTradeAccountingAccount/ram:ID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-20",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms/ram:Description",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-1",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:IncludedNote",
+      "instanceElement": "ram:IncludedNote"
+    },
+    {
+      "id": "BT-21",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:IncludedNote/ram:SubjectCode"
+    },
+    {
+      "id": "BT-22",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocument/ram:IncludedNote/ram:Content",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-2",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocumentContext",
+      "instanceElement": "rsm:ExchangedDocumentContext"
+    },
+    {
+      "id": "BT-23",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocumentContext/ram:BusinessProcessSpecifiedDocumentContextParameter/ram:ID"
+    },
+    {
+      "id": "BT-24",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:ExchangedDocumentContext/ram:GuidelineSpecifiedDocumentContextParameter/ram:ID",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-3",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:InvoiceReferencedDocument",
+      "instanceElement": "ram:InvoiceReferencedDocument"
+    },
+    {
+      "id": "BT-25",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:InvoiceReferencedDocument/ram:IssuerAssignedID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-26",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:InvoiceReferencedDocument/ram:FormattedIssueDateTime/qdt:DateTimeString[@format = '102']",
+      "flags": [
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BG-4",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty",
+      "instanceElement": "ram:SellerTradeParty"
+    },
+    {
+      "id": "BT-27",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Name",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-28",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:SpecifiedLegalOrganization/ram:TradingBusinessName"
+    },
+    {
+      "id": "BT-29",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:ID",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:GlobalID",
+          "flags": [
+            "SYN-1",
+            "CAR-3"
+          ]
+        }
+      ],
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:GlobalID"
+        }
+      ],
+      "flags": [
+        "CAR-3",
+        "SYN-1"
+      ]
+    },
+    {
+      "id": "BT-30",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:SpecifiedLegalOrganization/ram:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:SpecifiedLegalOrganization/ram:ID"
+        }
+      ]
+    },
+    {
+      "id": "BT-31",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:SpecifiedTaxRegistration/ram:ID[@schemeID = 'VA']"
+    },
+    {
+      "id": "BT-32",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:SpecifiedTaxRegistration/ram:ID[@schemeID = 'FC']"
+    },
+    {
+      "id": "BT-33",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:Description",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-34",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:URIUniversalCommunication/ram:URIID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:URIUniversalCommunication/ram:URIID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-5",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress",
+      "instanceElement": "ram:PostalTradeAddress"
+    },
+    {
+      "id": "BT-35",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:LineOne"
+    },
+    {
+      "id": "BT-36",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:LineTwo"
+    },
+    {
+      "id": "BT-162",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:LineThree"
+    },
+    {
+      "id": "BT-37",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:CityName"
+    },
+    {
+      "id": "BT-38",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:PostcodeCode"
+    },
+    {
+      "id": "BT-39",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:CountrySubDivisionName",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-40",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:PostalTradeAddress/ram:CountryID"
+    },
+    {
+      "id": "BG-6",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact",
+      "instanceElement": "ram:DefinedTradeContact",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-41",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact/ram:PersonName",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact/ram:DepartmentName",
+          "flags": [
+            "STR-5"
+          ]
+        }
+      ],
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-42",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact/ram:TelephoneUniversalCommunication/ram:CompleteNumber"
+    },
+    {
+      "id": "BT-43",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTradeParty/ram:DefinedTradeContact/ram:EmailURIUniversalCommunication/ram:URIID"
+    },
+    {
+      "id": "BG-7",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty",
+      "instanceElement": "ram:BuyerTradeParty"
+    },
+    {
+      "id": "BT-44",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:Name",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-45",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:SpecifiedLegalOrganization/ram:TradingBusinessName"
+    },
+    {
+      "id": "BT-46",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:ID",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:GlobalID",
+          "flags": [
+            "SYN-1",
+            "CAR-3"
+          ]
+        }
+      ],
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:GlobalID"
+        }
+      ],
+      "flags": [
+        "CAR-3",
+        "SYN-1"
+      ]
+    },
+    {
+      "id": "BT-47",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:SpecifiedLegalOrganization/ram:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:SpecifiedLegalOrganization/ram:ID"
+        }
+      ]
+    },
+    {
+      "id": "BT-48",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:SpecifiedTaxRegistration/ram:ID[@schemeID = 'VA']"
+    },
+    {
+      "id": "BT-49",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:URIUniversalCommunication/ram:URIID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:URIUniversalCommunication/ram:URIID"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-8",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress",
+      "instanceElement": "ram:PostalTradeAddress"
+    },
+    {
+      "id": "BT-50",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:LineOne"
+    },
+    {
+      "id": "BT-51",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:LineTwo"
+    },
+    {
+      "id": "BT-163",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:LineThree"
+    },
+    {
+      "id": "BT-52",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:CityName"
+    },
+    {
+      "id": "BT-53",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:PostcodeCode"
+    },
+    {
+      "id": "BT-54",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:CountrySubDivisionName",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-55",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:PostalTradeAddress/ram:CountryID"
+    },
+    {
+      "id": "BG-9",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:DefinedTradeContact",
+      "instanceElement": "ram:DefinedTradeContact",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-56",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:DefinedTradeContact/ram:PersonName",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:DefinedTradeContact/ram:DepartmentName",
+          "flags": [
+            "STR-5"
+          ]
+        }
+      ],
+      "flags": [
+        "STR-5"
+      ]
+    },
+    {
+      "id": "BT-57",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:DefinedTradeContact/ram:TelephoneUniversalCommunication/ram:CompleteNumber"
+    },
+    {
+      "id": "BT-58",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:BuyerTradeParty/ram:DefinedTradeContact/ram:EmailURIUniversalCommunication/ram:URIID"
+    },
+    {
+      "id": "BG-10",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty",
+      "instanceElement": "ram:PayeeTradeParty"
+    },
+    {
+      "id": "BT-59",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:Name"
+    },
+    {
+      "id": "BT-60",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:ID",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:GlobalID",
+          "flags": [
+            "SYN-1",
+            "CAR-3"
+          ]
+        }
+      ],
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:GlobalID"
+        }
+      ],
+      "flags": [
+        "CAR-3",
+        "SYN-1"
+      ]
+    },
+    {
+      "id": "BT-61",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:SpecifiedLegalOrganization/ram:ID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PayeeTradeParty/ram:SpecifiedLegalOrganization/ram:ID"
+        }
+      ]
+    },
+    {
+      "id": "BG-11",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty",
+      "instanceElement": "ram:SellerTaxRepresentativeTradeParty"
+    },
+    {
+      "id": "BT-62",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:Name"
+    },
+    {
+      "id": "BT-63",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:SpecifiedTaxRegistration/ram:ID[@schemeID = 'VA']",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-12",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress",
+      "instanceElement": "ram:PostalTradeAddress"
+    },
+    {
+      "id": "BT-64",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:LineOne"
+    },
+    {
+      "id": "BT-65",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:LineTwo"
+    },
+    {
+      "id": "BT-164",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:LineThree"
+    },
+    {
+      "id": "BT-66",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:CityName"
+    },
+    {
+      "id": "BT-67",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:PostcodeCode"
+    },
+    {
+      "id": "BT-68",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:CountrySubDivisionName",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-69",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:SellerTaxRepresentativeTradeParty/ram:PostalTradeAddress/ram:CountryID"
+    },
+    {
+      "id": "BG-13",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty",
+      "instanceElement": "ram:ShipToTradeParty",
+      "flags": [
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BT-70",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:Name"
+    },
+    {
+      "id": "BT-71",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:ID",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:GlobalID",
+          "flags": [
+            "SYN-1",
+            "CAR-3"
+          ]
+        }
+      ],
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:GlobalID"
+        }
+      ],
+      "flags": [
+        "CAR-3",
+        "SYN-1"
+      ]
+    },
+    {
+      "id": "BT-72",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ActualDeliverySupplyChainEvent/ram:OccurrenceDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BG-14",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod",
+      "instanceElement": "ram:BillingSpecifiedPeriod"
+    },
+    {
+      "id": "BT-73",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "CAR-2",
+        "SYN-2",
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BT-74",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "CAR-2",
+        "SYN-2",
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BG-15",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress",
+      "instanceElement": "ram:PostalTradeAddress"
+    },
+    {
+      "id": "BT-75",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:LineOne"
+    },
+    {
+      "id": "BT-76",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:LineTwo"
+    },
+    {
+      "id": "BT-165",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:LineThree"
+    },
+    {
+      "id": "BT-77",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:CityName"
+    },
+    {
+      "id": "BT-78",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:PostcodeCode"
+    },
+    {
+      "id": "BT-79",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:CountrySubDivisionName",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-80",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeDelivery/ram:ShipToTradeParty/ram:PostalTradeAddress/ram:CountryID"
+    },
+    {
+      "id": "BG-16",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans",
+      "instanceElement": "ram:SpecifiedTradeSettlementPaymentMeans",
+      "flags": [
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BT-81",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:TypeCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-82",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:Information",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-83",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:PaymentReference",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-17",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount",
+      "instanceElement": "ram:PayeePartyCreditorFinancialAccount",
+      "flags": [
+        "CAR-4",
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BT-84",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:IBANID",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:ProprietaryID",
+          "flags": [
+            "CAR-2",
+            "SEM-2"
+          ]
+        }
+      ],
+      "flags": [
+        "CAR-2",
+        "SEM-2"
+      ]
+    },
+    {
+      "id": "BT-85",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeePartyCreditorFinancialAccount/ram:AccountName"
+    },
+    {
+      "id": "BT-86",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeeSpecifiedDebtorFinancialInstitution/ram:BICID",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayeeSpecifiedCreditorFinancialInstitution/ram:BICID",
+          "flags": [
+            "STR-3"
+          ]
+        }
+      ],
+      "flags": [
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BG-18",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:ApplicableTradeSettlementFinancialCard",
+      "instanceElement": "ram:ApplicableTradeSettlementFinancialCard"
+    },
+    {
+      "id": "BT-87",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:ApplicableTradeSettlementFinancialCard/ram:ID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-88",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:ApplicableTradeSettlementFinancialCard/ram:CardholderName"
+    },
+    {
+      "id": "BG-19",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement",
+      "instanceElement": "ram:ApplicableHeaderTradeSettlement",
+      "flags": [
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BT-89",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradePaymentTerms/ram:DirectDebitMandateID"
+    },
+    {
+      "id": "BT-90",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:CreditorReferenceID"
+    },
+    {
+      "id": "BT-91",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementPaymentMeans/ram:PayerPartyDebtorFinancialAccount/ram:IBANID"
+    },
+    {
+      "id": "BG-20",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']",
+      "instanceElement": "ram:SpecifiedTradeAllowanceCharge",
+      "instancePredicates": [
+        "ram:ChargeIndicator/udt:Indicator = 'false'"
+      ],
+      "flags": [
+        "STR-4"
+      ]
+    },
+    {
+      "id": "BT-92",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:ActualAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-93",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:BasisAmount"
+    },
+    {
+      "id": "BT-94",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:CalculationPercent"
+    },
+    {
+      "id": "BT-95",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:CategoryTradeTax[ram:TypeCode = 'VAT']/ram:CategoryCode"
+    },
+    {
+      "id": "BT-96",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:CategoryTradeTax/ram:RateApplicablePercent"
+    },
+    {
+      "id": "BT-97",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:Reason"
+    },
+    {
+      "id": "BT-98",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:ReasonCode"
+    },
+    {
+      "id": "BG-21",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']",
+      "instanceElement": "ram:SpecifiedTradeAllowanceCharge",
+      "instancePredicates": [
+        "ram:ChargeIndicator/udt:Indicator = 'true'"
+      ],
+      "flags": [
+        "STR-4"
+      ]
+    },
+    {
+      "id": "BT-99",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:ActualAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-100",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:BasisAmount"
+    },
+    {
+      "id": "BT-101",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:CalculationPercent"
+    },
+    {
+      "id": "BT-102",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:CategoryTradeTax[ram:TypeCode = 'VAT']/ram:CategoryCode"
+    },
+    {
+      "id": "BT-103",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:CategoryTradeTax/ram:RateApplicablePercent"
+    },
+    {
+      "id": "BT-104",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:Reason"
+    },
+    {
+      "id": "BT-105",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:ReasonCode"
+    },
+    {
+      "id": "BG-22",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation",
+      "instanceElement": "ram:SpecifiedTradeSettlementHeaderMonetarySummation"
+    },
+    {
+      "id": "BT-106",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:LineTotalAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-107",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:AllowanceTotalAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-108",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:ChargeTotalAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-109",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxBasisTotalAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-110",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxTotalAmount[@currencyID=/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:InvoiceCurrencyCode]",
+      "flags": [
+        "CAR-3",
+        "STR-4"
+      ]
+    },
+    {
+      "id": "BT-111",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TaxTotalAmount[@currencyID=/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:TaxCurrencyCode]",
+      "flags": [
+        "CAR-3",
+        "STR-4"
+      ]
+    },
+    {
+      "id": "BT-112",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:GrandTotalAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-113",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:TotalPrepaidAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-114",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:RoundingAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-115",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:SpecifiedTradeSettlementHeaderMonetarySummation/ram:DuePayableAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-23",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax",
+      "instanceElement": "ram:ApplicableTradeTax",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-116",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:BasisAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-117",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:CalculatedAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-118",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax[ram:TypeCode = 'VAT']/ram:CategoryCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-119",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:RateApplicablePercent"
+    },
+    {
+      "id": "BT-120",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:ExemptionReason"
+    },
+    {
+      "id": "BT-121",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeSettlement/ram:ApplicableTradeTax/ram:ExemptionReasonCode"
+    },
+    {
+      "id": "BG-24",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']",
+      "instanceElement": "ram:AdditionalReferencedDocument",
+      "instancePredicates": [
+        "ram:TypeCode = '916'"
+      ]
+    },
+    {
+      "id": "BT-122",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:IssuerAssignedID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-123",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:Name",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-124",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:URIID"
+    },
+    {
+      "id": "BT-125",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:AttachmentBinaryObject",
+      "components": [
+        {
+          "role": "mimeCode",
+          "xpath": "@mimeCode",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:AttachmentBinaryObject"
+        },
+        {
+          "role": "filename",
+          "xpath": "@filename",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:ApplicableHeaderTradeAgreement/ram:AdditionalReferencedDocument[ram:TypeCode = '916']/ram:AttachmentBinaryObject"
+        }
+      ],
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-25",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem",
+      "instanceElement": "ram:IncludedSupplyChainTradeLineItem",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-126",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:AssociatedDocumentLineDocument/ram:LineID",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-127",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:AssociatedDocumentLineDocument/ram:IncludedNote/ram:Content",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-128",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:AdditionalReferencedDocument[ram:TypeCode = '130']/ram:IssuerAssignedID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "../ram:ReferenceTypeCode",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:AdditionalReferencedDocument[ram:TypeCode = '130']/ram:IssuerAssignedID"
+        }
+      ],
+      "flags": [
+        "scheme-as-sibling-element"
+      ]
+    },
+    {
+      "id": "BT-129",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeDelivery/ram:BilledQuantity",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-130",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeDelivery/ram:BilledQuantity/@unitCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-131",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeSettlementLineMonetarySummation/ram:LineTotalAmount",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-132",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:BuyerOrderReferencedDocument/ram:LineID"
+    },
+    {
+      "id": "BT-133",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:ReceivableSpecifiedTradeAccountingAccount/ram:ID",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BG-26",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod",
+      "instanceElement": "ram:BillingSpecifiedPeriod"
+    },
+    {
+      "id": "BT-134",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod/ram:StartDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BT-135",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:BillingSpecifiedPeriod/ram:EndDateTime/udt:DateTimeString[@format = '102']",
+      "flags": [
+        "date-format-102"
+      ]
+    },
+    {
+      "id": "BG-27",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']",
+      "instanceElement": "ram:SpecifiedTradeAllowanceCharge",
+      "instancePredicates": [
+        "ram:ChargeIndicator/udt:Indicator = 'false'"
+      ],
+      "flags": [
+        "STR-4"
+      ]
+    },
+    {
+      "id": "BT-136",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:ActualAmount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-137",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:BasisAmount"
+    },
+    {
+      "id": "BT-138",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:CalculationPercent"
+    },
+    {
+      "id": "BT-139",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:Reason"
+    },
+    {
+      "id": "BT-140",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'false']/ram:ReasonCode"
+    },
+    {
+      "id": "BG-28",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']",
+      "instanceElement": "ram:SpecifiedTradeAllowanceCharge",
+      "instancePredicates": [
+        "ram:ChargeIndicator/udt:Indicator = 'true'"
+      ],
+      "flags": [
+        "STR-4"
+      ]
+    },
+    {
+      "id": "BT-141",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:ActualAmount",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-142",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:BasisAmount"
+    },
+    {
+      "id": "BT-143",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:CalculationPercent"
+    },
+    {
+      "id": "BT-144",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:Reason"
+    },
+    {
+      "id": "BT-145",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:SpecifiedTradeAllowanceCharge[ram:ChargeIndicator/udt:Indicator = 'true']/ram:ReasonCode"
+    },
+    {
+      "id": "BG-29",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement",
+      "instanceElement": "ram:SpecifiedLineTradeAgreement",
+      "flags": [
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BT-146",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:ChargeAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-147",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:GrossPriceProductTradePrice/ram:AppliedTradeAllowanceCharge/ram:ActualAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-148",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:GrossPriceProductTradePrice/ram:ChargeAmount",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-149",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:GrossPriceProductTradePrice/ram:BasisQuantity",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:BasisQuantity",
+          "flags": [
+            "STR-3"
+          ]
+        }
+      ],
+      "flags": [
+        "STR-3"
+      ]
+    },
+    {
+      "id": "BT-150",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:GrossPriceProductTradePrice/ram:BasisQuantity/@unitCode",
+      "alternatives": [
+        {
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeAgreement/ram:NetPriceProductTradePrice/ram:BasisQuantity/@unitCode",
+          "flags": []
+        }
+      ]
+    },
+    {
+      "id": "BG-30",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:ApplicableTradeTax",
+      "instanceElement": "ram:ApplicableTradeTax",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-151",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:ApplicableTradeTax[ram:TypeCode = 'VAT']/ram:CategoryCode",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-152",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement/ram:ApplicableTradeTax/ram:RateApplicablePercent"
+    },
+    {
+      "id": "BG-31",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct",
+      "instanceElement": "ram:SpecifiedTradeProduct",
+      "flags": [
+        "CAR-2"
+      ]
+    },
+    {
+      "id": "BT-153",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:Name",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-154",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:Description",
+      "flags": [
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-155",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:SellerAssignedID"
+    },
+    {
+      "id": "BT-156",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:BuyerAssignedID"
+    },
+    {
+      "id": "BT-157",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:GlobalID",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@schemeID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:GlobalID"
+        }
+      ]
+    },
+    {
+      "id": "BT-158",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:DesignatedProductClassification/ram:ClassCode",
+      "components": [
+        {
+          "role": "scheme",
+          "xpath": "@listID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:DesignatedProductClassification/ram:ClassCode"
+        },
+        {
+          "role": "schemeVersion",
+          "xpath": "@listVersionID",
+          "anchor": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:DesignatedProductClassification/ram:ClassCode"
+        }
+      ]
+    },
+    {
+      "id": "BT-159",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:OriginTradeCountry/ram:ID"
+    },
+    {
+      "id": "BG-32",
+      "kind": "BG",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:ApplicableProductCharacteristic",
+      "instanceElement": "ram:ApplicableProductCharacteristic"
+    },
+    {
+      "id": "BT-160",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:ApplicableProductCharacteristic/ram:Description",
+      "flags": [
+        "CAR-2",
+        "CAR-3"
+      ]
+    },
+    {
+      "id": "BT-161",
+      "kind": "BT",
+      "bound": true,
+      "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:IncludedSupplyChainTradeLineItem/ram:SpecifiedTradeProduct/ram:ApplicableProductCharacteristic/ram:Value",
+      "flags": [
+        "CAR-2",
+        "CAR-3",
+        "SYN-2"
+      ]
+    }
+  ],
+  "extension": {
+    "model": "XRechnung-Extension",
+    "edition": "XRechnung 3.0.2",
+    "source": {
+      "name": "KoSIT SeMoX tailoring model of the XRechnung extension",
+      "file": "xrechnung-extension-model-tailoring.xml",
+      "release": "2026-08-31"
+    },
+    "terms": [
+      {
+        "id": "BG-DEX-01",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-02",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-03",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-04",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-05",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-06",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-07",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-08",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BG-DEX-09",
+        "kind": "BG",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-DEX-001",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-DEX-002",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-DEX-003",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      }
+    ],
+    "reusedTerms": [
+      {
+        "id": "BT-126",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-127",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-128",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-129",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-130",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-131",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-132",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-133",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-153",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-154",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-155",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-156",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-157",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-158",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-159",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-136",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-137",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-138",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-139",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-140",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-141",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-142",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-143",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-144",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-145",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-134",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-135",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-151",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-152",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-146",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-147",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-148",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-149",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-150",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-160",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      },
+      {
+        "id": "BT-161",
+        "kind": "BT",
+        "bound": false,
+        "flags": [
+          "extension-not-bound"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "format": "EN16931-Semantic-JSON-writer-roundtrip",
+  "version": "0.1",
+  "syntax": "UBL",
+  "writer": "esj-bindings, UblWriter",
+  "pack": "xrechnung/3.0.2/2026-08-31",
+  "corpus": {
+    "instances": 86,
+    "fromCii": 41,
+    "fromUbl": 45,
+    "accepted": 85,
+    "refused": 1,
+    "identical": 86,
+    "differing": 0,
+    "differingPaths": 0
+  },
+  "xslt": {
+    "accepted": 84,
+    "identical": 86
+  },
+  "examples": {
+    "count": 10,
+    "structural": 6,
+    "ruleClean": 6,
+    "identical": 10
+  },
+  "exampleRules": {
+    "cvc-complex-type.2.4.a": 4
+  },
+  "refusals": [
+    {
+      "rule": "cvc-complex-type.2.4.a",
+      "cause": "term-the-document-does-not-state",
+      "instances": 1
+    }
+  ],
+  "conventions": [
+    {
+      "id": "tax-registration-scheme",
+      "element": "cac:TaxScheme/cbc:ID",
+      "value": "FC",
+      "instances": 36,
+      "notes": 36
+    },
+    {
+      "id": "purchase-order-reference",
+      "element": "cac:OrderReference/cbc:ID",
+      "value": "NA",
+      "instances": 7,
+      "notes": 7
+    },
+    {
+      "id": "payment-card-network",
+      "element": "cac:CardAccount/cbc:NetworkID",
+      "value": "NA",
+      "instances": 6,
+      "notes": 6
+    }
+  ],
+  "unstated": [
+    {
+      "id": "value-added-tax-total",
+      "element": "cbc:TaxAmount",
+      "shape": "absent",
+      "instances": 1,
+      "notes": 1
+    }
+  ]
+}

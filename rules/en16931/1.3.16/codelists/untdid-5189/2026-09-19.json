@@ -1,0 +1,86 @@
+{
+  "listId": "untdid-5189",
+  "name": "UNTDID 5189 allowance or charge identification code, as admitted by EN 16931",
+  "publisher": "UN/CEFACT (UNTDID), listed for EN 16931 by the European Commission",
+  "source": "https://ec.europa.eu/digital-building-blocks/sites/download/attachments/467108974/EN16931%20code%20lists%20values%20v17b%20-%20used%20from%202026-05-15.xlsx , sheet \"Allowance\"",
+  "retrieved": "2026-09-19",
+  "terms": "The page states no licence. It is the European Commission's publication of which codes of each list the European eInvoicing standard admits, offered for implementation of EN 16931; the workbook itself says that it lists codes and does not replace the publication of each list by its own publisher. Reuse of Commission documents is generally governed by Decision 2011/833/EU, which the page does not cite. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "41",
+      "name": "Bonus for works ahead of schedule"
+    },
+    {
+      "value": "42",
+      "name": "Other bonus"
+    },
+    {
+      "value": "60",
+      "name": "Manufacturer’s consumer discount"
+    },
+    {
+      "value": "62",
+      "name": "Due to military status"
+    },
+    {
+      "value": "63",
+      "name": "Due to work accident"
+    },
+    {
+      "value": "64",
+      "name": "Special agreement"
+    },
+    {
+      "value": "65",
+      "name": "Production error discount"
+    },
+    {
+      "value": "66",
+      "name": "New outlet discount"
+    },
+    {
+      "value": "67",
+      "name": "Sample discount"
+    },
+    {
+      "value": "68",
+      "name": "End-of-range discount"
+    },
+    {
+      "value": "70",
+      "name": "Incoterm discount"
+    },
+    {
+      "value": "71",
+      "name": "Point of sales threshold allowance"
+    },
+    {
+      "value": "88",
+      "name": "Material surcharge/deduction"
+    },
+    {
+      "value": "95",
+      "name": "Discount"
+    },
+    {
+      "value": "100",
+      "name": "Special rebate"
+    },
+    {
+      "value": "102",
+      "name": "Fixed long term"
+    },
+    {
+      "value": "103",
+      "name": "Temporary"
+    },
+    {
+      "value": "104",
+      "name": "Standard"
+    },
+    {
+      "value": "105",
+      "name": "Yearly turnover"
+    }
+  ]
+}

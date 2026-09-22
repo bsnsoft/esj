@@ -1,0 +1,1634 @@
+{
+  "listId": "unece-rec21",
+  "name": "UN/ECE Recommendation 21, codes for types of cargo, packages and packaging materials",
+  "publisher": "UNECE, listed for EN 16931 by the European Commission",
+  "source": "https://ec.europa.eu/digital-building-blocks/sites/download/attachments/467108974/EN16931%20code%20lists%20values%20v17b%20-%20used%20from%202026-05-15.xlsx , sheet \"Unit\", rows whose source column reads rec21",
+  "retrieved": "2026-09-19",
+  "terms": "The page states no licence. It is the European Commission's publication of which codes of each list the European eInvoicing standard admits, offered for implementation of EN 16931; the workbook itself says that it lists codes and does not replace the publication of each list by its own publisher. Reuse of Commission documents is generally governed by Decision 2011/833/EU, which the page does not cite. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "X1A",
+      "name": "Drum, steel"
+    },
+    {
+      "value": "X1B",
+      "name": "Drum, aluminium"
+    },
+    {
+      "value": "X1D",
+      "name": "Drum, plywood"
+    },
+    {
+      "value": "X1F",
+      "name": "Container, flexible"
+    },
+    {
+      "value": "X1G",
+      "name": "Drum, fibre"
+    },
+    {
+      "value": "X1W",
+      "name": "Drum, wooden"
+    },
+    {
+      "value": "X2C",
+      "name": "Barrel, wooden"
+    },
+    {
+      "value": "X3A",
+      "name": "Jerrican, steel"
+    },
+    {
+      "value": "X3H",
+      "name": "Jerrican, plastic"
+    },
+    {
+      "value": "X43",
+      "name": "Bag, super bulk"
+    },
+    {
+      "value": "X44",
+      "name": "Bag, polybag"
+    },
+    {
+      "value": "X4A",
+      "name": "Box, steel"
+    },
+    {
+      "value": "X4B",
+      "name": "Box, aluminium"
+    },
+    {
+      "value": "X4C",
+      "name": "Box, natural wood"
+    },
+    {
+      "value": "X4D",
+      "name": "Box, plywood"
+    },
+    {
+      "value": "X4F",
+      "name": "Box, reconstituted wood"
+    },
+    {
+      "value": "X4G",
+      "name": "Box, fibreboard"
+    },
+    {
+      "value": "X4H",
+      "name": "Box, plastic"
+    },
+    {
+      "value": "X5H",
+      "name": "Bag, woven plastic"
+    },
+    {
+      "value": "X5L",
+      "name": "Bag, textile"
+    },
+    {
+      "value": "X5M",
+      "name": "Bag, paper"
+    },
+    {
+      "value": "X6H",
+      "name": "Composite packaging, plastic receptacle"
+    },
+    {
+      "value": "X6P",
+      "name": "Composite packaging, glass receptacle"
+    },
+    {
+      "value": "X7A",
+      "name": "Case, car"
+    },
+    {
+      "value": "X7B",
+      "name": "Case, wooden"
+    },
+    {
+      "value": "X8A",
+      "name": "Pallet, wooden"
+    },
+    {
+      "value": "X8B",
+      "name": "Crate, wooden"
+    },
+    {
+      "value": "X8C",
+      "name": "Bundle, wooden"
+    },
+    {
+      "value": "XAA",
+      "name": "Intermediate bulk container, rigid plastic"
+    },
+    {
+      "value": "XAB",
+      "name": "Receptacle, fibre"
+    },
+    {
+      "value": "XAC",
+      "name": "Receptacle, paper"
+    },
+    {
+      "value": "XAD",
+      "name": "Receptacle, wooden"
+    },
+    {
+      "value": "XAE",
+      "name": "Aerosol"
+    },
+    {
+      "value": "XAF",
+      "name": "Pallet, modular, collars 80cms * 60cms"
+    },
+    {
+      "value": "XAG",
+      "name": "Pallet, shrinkwrapped"
+    },
+    {
+      "value": "XAH",
+      "name": "Pallet, 100cms * 110cms"
+    },
+    {
+      "value": "XAI",
+      "name": "Clamshell"
+    },
+    {
+      "value": "XAJ",
+      "name": "Cone"
+    },
+    {
+      "value": "XAL",
+      "name": "Ball"
+    },
+    {
+      "value": "XAM",
+      "name": "Ampoule, non-protected"
+    },
+    {
+      "value": "XAP",
+      "name": "Ampoule, protected"
+    },
+    {
+      "value": "XAT",
+      "name": "Atomizer"
+    },
+    {
+      "value": "XAV",
+      "name": "Capsule"
+    },
+    {
+      "value": "XB4",
+      "name": "Belt"
+    },
+    {
+      "value": "XBA",
+      "name": "Barrel"
+    },
+    {
+      "value": "XBB",
+      "name": "Bobbin"
+    },
+    {
+      "value": "XBC",
+      "name": "Bottlecrate / bottlerack"
+    },
+    {
+      "value": "XBD",
+      "name": "Board"
+    },
+    {
+      "value": "XBE",
+      "name": "Bundle"
+    },
+    {
+      "value": "XBF",
+      "name": "Balloon, non-protected"
+    },
+    {
+      "value": "XBG",
+      "name": "Bag"
+    },
+    {
+      "value": "XBH",
+      "name": "Bunch"
+    },
+    {
+      "value": "XBI",
+      "name": "Bin"
+    },
+    {
+      "value": "XBJ",
+      "name": "Bucket"
+    },
+    {
+      "value": "XBK",
+      "name": "Basket"
+    },
+    {
+      "value": "XBL",
+      "name": "Bale, compressed"
+    },
+    {
+      "value": "XBM",
+      "name": "Basin"
+    },
+    {
+      "value": "XBN",
+      "name": "Bale, non-compressed"
+    },
+    {
+      "value": "XBO",
+      "name": "Bottle, non-protected, cylindrical"
+    },
+    {
+      "value": "XBP",
+      "name": "Balloon, protected"
+    },
+    {
+      "value": "XBQ",
+      "name": "Bottle, protected cylindrical"
+    },
+    {
+      "value": "XBR",
+      "name": "Bar"
+    },
+    {
+      "value": "XBS",
+      "name": "Bottle, non-protected, bulbous"
+    },
+    {
+      "value": "XBT",
+      "name": "Bolt"
+    },
+    {
+      "value": "XBU",
+      "name": "Butt"
+    },
+    {
+      "value": "XBV",
+      "name": "Bottle, protected bulbous"
+    },
+    {
+      "value": "XBW",
+      "name": "Box, for liquids"
+    },
+    {
+      "value": "XBX",
+      "name": "Box"
+    },
+    {
+      "value": "XBY",
+      "name": "Board, in bundle/bunch/truss"
+    },
+    {
+      "value": "XBZ",
+      "name": "Bars, in bundle/bunch/truss"
+    },
+    {
+      "value": "XCA",
+      "name": "Can, rectangular"
+    },
+    {
+      "value": "XCB",
+      "name": "Crate, beer"
+    },
+    {
+      "value": "XCC",
+      "name": "Churn"
+    },
+    {
+      "value": "XCD",
+      "name": "Can, with handle and spout"
+    },
+    {
+      "value": "XCE",
+      "name": "Creel"
+    },
+    {
+      "value": "XCF",
+      "name": "Coffer"
+    },
+    {
+      "value": "XCG",
+      "name": "Cage"
+    },
+    {
+      "value": "XCH",
+      "name": "Chest"
+    },
+    {
+      "value": "XCI",
+      "name": "Canister"
+    },
+    {
+      "value": "XCJ",
+      "name": "Coffin"
+    },
+    {
+      "value": "XCK",
+      "name": "Cask"
+    },
+    {
+      "value": "XCL",
+      "name": "Coil"
+    },
+    {
+      "value": "XCM",
+      "name": "Card"
+    },
+    {
+      "value": "XCN",
+      "name": "Container, not otherwise specified as transport equipment"
+    },
+    {
+      "value": "XCO",
+      "name": "Carboy, non-protected"
+    },
+    {
+      "value": "XCP",
+      "name": "Carboy, protected"
+    },
+    {
+      "value": "XCQ",
+      "name": "Cartridge"
+    },
+    {
+      "value": "XCR",
+      "name": "Crate"
+    },
+    {
+      "value": "XCS",
+      "name": "Case"
+    },
+    {
+      "value": "XCT",
+      "name": "Carton"
+    },
+    {
+      "value": "XCU",
+      "name": "Cup"
+    },
+    {
+      "value": "XCV",
+      "name": "Cover"
+    },
+    {
+      "value": "XCW",
+      "name": "Cage, roll"
+    },
+    {
+      "value": "XCX",
+      "name": "Can, cylindrical"
+    },
+    {
+      "value": "XCY",
+      "name": "Cylinder"
+    },
+    {
+      "value": "XCZ",
+      "name": "Canvas"
+    },
+    {
+      "value": "XDA",
+      "name": "Crate, multiple layer, plastic"
+    },
+    {
+      "value": "XDB",
+      "name": "Crate, multiple layer, wooden"
+    },
+    {
+      "value": "XDC",
+      "name": "Crate, multiple layer, cardboard"
+    },
+    {
+      "value": "XDG",
+      "name": "Cage, Commonwealth Handling Equipment Pool (CHEP)"
+    },
+    {
+      "value": "XDH",
+      "name": "Box, Commonwealth Handling Equipment Pool (CHEP), Eurobox"
+    },
+    {
+      "value": "XDI",
+      "name": "Drum, iron"
+    },
+    {
+      "value": "XDJ",
+      "name": "Demijohn, non-protected"
+    },
+    {
+      "value": "XDK",
+      "name": "Crate, bulk, cardboard"
+    },
+    {
+      "value": "XDL",
+      "name": "Crate, bulk, plastic"
+    },
+    {
+      "value": "XDM",
+      "name": "Crate, bulk, wooden"
+    },
+    {
+      "value": "XDN",
+      "name": "Dispenser"
+    },
+    {
+      "value": "XDP",
+      "name": "Demijohn, protected"
+    },
+    {
+      "value": "XDR",
+      "name": "Drum"
+    },
+    {
+      "value": "XDS",
+      "name": "Tray, one layer no cover, plastic"
+    },
+    {
+      "value": "XDT",
+      "name": "Tray, one layer no cover, wooden"
+    },
+    {
+      "value": "XDU",
+      "name": "Tray, one layer no cover, polystyrene"
+    },
+    {
+      "value": "XDV",
+      "name": "Tray, one layer no cover, cardboard"
+    },
+    {
+      "value": "XDW",
+      "name": "Tray, two layers no cover, plastic tray"
+    },
+    {
+      "value": "XDX",
+      "name": "Tray, two layers no cover, wooden"
+    },
+    {
+      "value": "XDY",
+      "name": "Tray, two layers no cover, cardboard"
+    },
+    {
+      "value": "XEC",
+      "name": "Bag, plastic"
+    },
+    {
+      "value": "XED",
+      "name": "Case, with pallet base"
+    },
+    {
+      "value": "XEE",
+      "name": "Case, with pallet base, wooden"
+    },
+    {
+      "value": "XEF",
+      "name": "Case, with pallet base, cardboard"
+    },
+    {
+      "value": "XEG",
+      "name": "Case, with pallet base, plastic"
+    },
+    {
+      "value": "XEH",
+      "name": "Case, with pallet base, metal"
+    },
+    {
+      "value": "XEI",
+      "name": "Case, isothermic"
+    },
+    {
+      "value": "XEN",
+      "name": "Envelope"
+    },
+    {
+      "value": "XFB",
+      "name": "Flexibag"
+    },
+    {
+      "value": "XFC",
+      "name": "Crate, fruit"
+    },
+    {
+      "value": "XFD",
+      "name": "Crate, framed"
+    },
+    {
+      "value": "XFE",
+      "name": "Flexitank"
+    },
+    {
+      "value": "XFI",
+      "name": "Firkin"
+    },
+    {
+      "value": "XFL",
+      "name": "Flask"
+    },
+    {
+      "value": "XFO",
+      "name": "Footlocker"
+    },
+    {
+      "value": "XFP",
+      "name": "Filmpack"
+    },
+    {
+      "value": "XFR",
+      "name": "Frame"
+    },
+    {
+      "value": "XFT",
+      "name": "Foodtainer"
+    },
+    {
+      "value": "XFW",
+      "name": "Cart, flatbed"
+    },
+    {
+      "value": "XFX",
+      "name": "Bag, flexible container"
+    },
+    {
+      "value": "XGB",
+      "name": "Bottle, gas"
+    },
+    {
+      "value": "XGI",
+      "name": "Girder"
+    },
+    {
+      "value": "XGL",
+      "name": "Container, gallon"
+    },
+    {
+      "value": "XGR",
+      "name": "Receptacle, glass"
+    },
+    {
+      "value": "XGU",
+      "name": "Tray, containing horizontally stacked flat items"
+    },
+    {
+      "value": "XGY",
+      "name": "Bag, gunny"
+    },
+    {
+      "value": "XGZ",
+      "name": "Girders, in bundle/bunch/truss"
+    },
+    {
+      "value": "XHA",
+      "name": "Basket, with handle, plastic"
+    },
+    {
+      "value": "XHB",
+      "name": "Basket, with handle, wooden"
+    },
+    {
+      "value": "XHC",
+      "name": "Basket, with handle, cardboard"
+    },
+    {
+      "value": "XHG",
+      "name": "Hogshead"
+    },
+    {
+      "value": "XHN",
+      "name": "Hanger"
+    },
+    {
+      "value": "XHR",
+      "name": "Hamper"
+    },
+    {
+      "value": "XIA",
+      "name": "Package, display, wooden"
+    },
+    {
+      "value": "XIB",
+      "name": "Package, display, cardboard"
+    },
+    {
+      "value": "XIC",
+      "name": "Package, display, plastic"
+    },
+    {
+      "value": "XID",
+      "name": "Package, display, metal"
+    },
+    {
+      "value": "XIE",
+      "name": "Package, show"
+    },
+    {
+      "value": "XIF",
+      "name": "Package, flow"
+    },
+    {
+      "value": "XIG",
+      "name": "Package, paper wrapped"
+    },
+    {
+      "value": "XIH",
+      "name": "Drum, plastic"
+    },
+    {
+      "value": "XIK",
+      "name": "Package, cardboard, with bottle grip-holes"
+    },
+    {
+      "value": "XIL",
+      "name": "Tray, rigid, lidded stackable (CEN TS 14482:2002)"
+    },
+    {
+      "value": "XIN",
+      "name": "Ingot"
+    },
+    {
+      "value": "XIZ",
+      "name": "Ingots, in bundle/bunch/truss"
+    },
+    {
+      "value": "XJB",
+      "name": "Bag, jumbo"
+    },
+    {
+      "value": "XJC",
+      "name": "Jerrican, rectangular"
+    },
+    {
+      "value": "XJG",
+      "name": "Jug"
+    },
+    {
+      "value": "XJR",
+      "name": "Jar"
+    },
+    {
+      "value": "XJT",
+      "name": "Jutebag"
+    },
+    {
+      "value": "XJY",
+      "name": "Jerrican, cylindrical"
+    },
+    {
+      "value": "XKG",
+      "name": "Keg"
+    },
+    {
+      "value": "XKI",
+      "name": "Kit"
+    },
+    {
+      "value": "XLE",
+      "name": "Luggage"
+    },
+    {
+      "value": "XLG",
+      "name": "Log"
+    },
+    {
+      "value": "XLT",
+      "name": "Lot"
+    },
+    {
+      "value": "XLU",
+      "name": "Lug"
+    },
+    {
+      "value": "XLV",
+      "name": "Liftvan"
+    },
+    {
+      "value": "XLZ",
+      "name": "Logs, in bundle/bunch/truss"
+    },
+    {
+      "value": "XMA",
+      "name": "Crate, metal"
+    },
+    {
+      "value": "XMB",
+      "name": "Bag, multiply"
+    },
+    {
+      "value": "XMC",
+      "name": "Crate, milk"
+    },
+    {
+      "value": "XME",
+      "name": "Container, metal"
+    },
+    {
+      "value": "XMR",
+      "name": "Receptacle, metal"
+    },
+    {
+      "value": "XMS",
+      "name": "Sack, multi-wall"
+    },
+    {
+      "value": "XMT",
+      "name": "Mat"
+    },
+    {
+      "value": "XMW",
+      "name": "Receptacle, plastic wrapped"
+    },
+    {
+      "value": "XMX",
+      "name": "Matchbox"
+    },
+    {
+      "value": "XNA",
+      "name": "Not available"
+    },
+    {
+      "value": "XNE",
+      "name": "Unpacked or unpackaged"
+    },
+    {
+      "value": "XNF",
+      "name": "Unpacked or unpackaged, single unit"
+    },
+    {
+      "value": "XNG",
+      "name": "Unpacked or unpackaged, multiple units"
+    },
+    {
+      "value": "XNS",
+      "name": "Nest"
+    },
+    {
+      "value": "XNT",
+      "name": "Net"
+    },
+    {
+      "value": "XNU",
+      "name": "Net, tube, plastic"
+    },
+    {
+      "value": "XNV",
+      "name": "Net, tube, textile"
+    },
+    {
+      "value": "XO1",
+      "name": "Two sided cage on wheels with fixing strap"
+    },
+    {
+      "value": "XO2",
+      "name": "Trolley"
+    },
+    {
+      "value": "XO3",
+      "name": "Oneway pallet ISO 0 - 1/2 EURO Pallet"
+    },
+    {
+      "value": "XO4",
+      "name": "Oneway pallet ISO 1 - 1/1 EURO Pallet"
+    },
+    {
+      "value": "XO5",
+      "name": "Oneway pallet ISO 2 - 2/1 EURO Pallet"
+    },
+    {
+      "value": "XO6",
+      "name": "Pallet with exceptional dimensions"
+    },
+    {
+      "value": "XO7",
+      "name": "Wooden pallet 40 cm x 80 cm"
+    },
+    {
+      "value": "XO8",
+      "name": "Plastic pallet SRS 60 cm x 80 cm"
+    },
+    {
+      "value": "XO9",
+      "name": "Plastic pallet SRS 80 cm x 120 cm"
+    },
+    {
+      "value": "XOA",
+      "name": "Pallet, CHEP 40 cm x 60 cm"
+    },
+    {
+      "value": "XOB",
+      "name": "Pallet, CHEP 80 cm x 120 cm"
+    },
+    {
+      "value": "XOC",
+      "name": "Pallet, CHEP 100 cm x 120 cm"
+    },
+    {
+      "value": "XOD",
+      "name": "Pallet, AS 4068-1993"
+    },
+    {
+      "value": "XOE",
+      "name": "Pallet, ISO T11"
+    },
+    {
+      "value": "XOF",
+      "name": "Platform, unspecified weight or dimension"
+    },
+    {
+      "value": "XOG",
+      "name": "Pallet ISO 0 - 1/2 EURO Pallet"
+    },
+    {
+      "value": "XOH",
+      "name": "Pallet ISO 1 - 1/1 EURO Pallet"
+    },
+    {
+      "value": "XOI",
+      "name": "Pallet ISO 2 – 2/1 EURO Pallet"
+    },
+    {
+      "value": "XOJ",
+      "name": "1/4 EURO Pallet"
+    },
+    {
+      "value": "XOK",
+      "name": "Block"
+    },
+    {
+      "value": "XOL",
+      "name": "1/8 EURO Pallet"
+    },
+    {
+      "value": "XOM",
+      "name": "Synthetic pallet ISO 1"
+    },
+    {
+      "value": "XON",
+      "name": "Synthetic pallet ISO 2"
+    },
+    {
+      "value": "XOP",
+      "name": "Wholesaler pallet"
+    },
+    {
+      "value": "XOQ",
+      "name": "Pallet 80 X 100 cm"
+    },
+    {
+      "value": "XOR",
+      "name": "Pallet 60 X 100 cm"
+    },
+    {
+      "value": "XOS",
+      "name": "Oneway pallet"
+    },
+    {
+      "value": "XOT",
+      "name": "Octabin"
+    },
+    {
+      "value": "XOU",
+      "name": "Container, outer"
+    },
+    {
+      "value": "XOV",
+      "name": "Returnable pallet"
+    },
+    {
+      "value": "XOW",
+      "name": "Large bag, pallet sized"
+    },
+    {
+      "value": "XOX",
+      "name": "A wheeled pallet with raised rim (81 x 67 x 135)"
+    },
+    {
+      "value": "XOY",
+      "name": "A Wheeled pallet with raised rim (81 x 72 x 135)"
+    },
+    {
+      "value": "XOZ",
+      "name": "Wheeled pallet with raised rim ( 81 x 60 x 16)"
+    },
+    {
+      "value": "XP1",
+      "name": "CHEP pallet 60 cm x 80 cm"
+    },
+    {
+      "value": "XP2",
+      "name": "Pan"
+    },
+    {
+      "value": "XP3",
+      "name": "LPR pallet 60 cm x 80 cm"
+    },
+    {
+      "value": "XP4",
+      "name": "LPR pallet 80 cm x 120 cm"
+    },
+    {
+      "value": "XPA",
+      "name": "Packet"
+    },
+    {
+      "value": "XPB",
+      "name": "Pallet, box Combined open-ended box and pallet"
+    },
+    {
+      "value": "XPC",
+      "name": "Parcel"
+    },
+    {
+      "value": "XPD",
+      "name": "Pallet, modular, collars 80cms * 100cms"
+    },
+    {
+      "value": "XPE",
+      "name": "Pallet, modular, collars 80cms * 120cms"
+    },
+    {
+      "value": "XPF",
+      "name": "Pen"
+    },
+    {
+      "value": "XPG",
+      "name": "Plate"
+    },
+    {
+      "value": "XPH",
+      "name": "Pitcher"
+    },
+    {
+      "value": "XPI",
+      "name": "Pipe"
+    },
+    {
+      "value": "XPJ",
+      "name": "Punnet"
+    },
+    {
+      "value": "XPK",
+      "name": "Package"
+    },
+    {
+      "value": "XPL",
+      "name": "Pail"
+    },
+    {
+      "value": "XPN",
+      "name": "Plank"
+    },
+    {
+      "value": "XPO",
+      "name": "Pouch"
+    },
+    {
+      "value": "XPP",
+      "name": "Piece"
+    },
+    {
+      "value": "XPR",
+      "name": "Receptacle, plastic"
+    },
+    {
+      "value": "XPT",
+      "name": "Pot"
+    },
+    {
+      "value": "XPU",
+      "name": "Tray"
+    },
+    {
+      "value": "XPV",
+      "name": "Pipes, in bundle/bunch/truss"
+    },
+    {
+      "value": "XPX",
+      "name": "Pallet"
+    },
+    {
+      "value": "XPY",
+      "name": "Plates, in bundle/bunch/truss"
+    },
+    {
+      "value": "XPZ",
+      "name": "Planks, in bundle/bunch/truss"
+    },
+    {
+      "value": "XQA",
+      "name": "Drum, steel, non-removable head"
+    },
+    {
+      "value": "XQB",
+      "name": "Drum, steel, removable head"
+    },
+    {
+      "value": "XQC",
+      "name": "Drum, aluminium, non-removable head"
+    },
+    {
+      "value": "XQD",
+      "name": "Drum, aluminium, removable head"
+    },
+    {
+      "value": "XQF",
+      "name": "Drum, plastic, non-removable head"
+    },
+    {
+      "value": "XQG",
+      "name": "Drum, plastic, removable head"
+    },
+    {
+      "value": "XQH",
+      "name": "Barrel, wooden, bung type"
+    },
+    {
+      "value": "XQJ",
+      "name": "Barrel, wooden, removable head"
+    },
+    {
+      "value": "XQK",
+      "name": "Jerrican, steel, non-removable head"
+    },
+    {
+      "value": "XQL",
+      "name": "Jerrican, steel, removable head"
+    },
+    {
+      "value": "XQM",
+      "name": "Jerrican, plastic, non-removable head"
+    },
+    {
+      "value": "XQN",
+      "name": "Jerrican, plastic, removable head"
+    },
+    {
+      "value": "XQP",
+      "name": "Box, wooden, natural wood, ordinary"
+    },
+    {
+      "value": "XQQ",
+      "name": "Box, wooden, natural wood, with sift proof walls"
+    },
+    {
+      "value": "XQR",
+      "name": "Box, plastic, expanded"
+    },
+    {
+      "value": "XQS",
+      "name": "Box, plastic, solid"
+    },
+    {
+      "value": "XRD",
+      "name": "Rod"
+    },
+    {
+      "value": "XRG",
+      "name": "Ring"
+    },
+    {
+      "value": "XRJ",
+      "name": "Rack, clothing hanger"
+    },
+    {
+      "value": "XRK",
+      "name": "Rack"
+    },
+    {
+      "value": "XRL",
+      "name": "Reel"
+    },
+    {
+      "value": "XRO",
+      "name": "Roll"
+    },
+    {
+      "value": "XRT",
+      "name": "Rednet"
+    },
+    {
+      "value": "XRZ",
+      "name": "Rods, in bundle/bunch/truss"
+    },
+    {
+      "value": "XSA",
+      "name": "Sack"
+    },
+    {
+      "value": "XSB",
+      "name": "Slab"
+    },
+    {
+      "value": "XSC",
+      "name": "Crate, shallow"
+    },
+    {
+      "value": "XSD",
+      "name": "Spindle"
+    },
+    {
+      "value": "XSE",
+      "name": "Sea-chest"
+    },
+    {
+      "value": "XSH",
+      "name": "Sachet"
+    },
+    {
+      "value": "XSI",
+      "name": "Skid"
+    },
+    {
+      "value": "XSK",
+      "name": "Case, skeleton"
+    },
+    {
+      "value": "XSL",
+      "name": "Slipsheet"
+    },
+    {
+      "value": "XSM",
+      "name": "Sheetmetal"
+    },
+    {
+      "value": "XSO",
+      "name": "Spool"
+    },
+    {
+      "value": "XSP",
+      "name": "Sheet, plastic wrapping"
+    },
+    {
+      "value": "XSS",
+      "name": "Case, steel"
+    },
+    {
+      "value": "XST",
+      "name": "Sheet"
+    },
+    {
+      "value": "XSU",
+      "name": "Suitcase"
+    },
+    {
+      "value": "XSV",
+      "name": "Envelope, steel"
+    },
+    {
+      "value": "XSW",
+      "name": "Shrinkwrapped"
+    },
+    {
+      "value": "XSX",
+      "name": "Set"
+    },
+    {
+      "value": "XSY",
+      "name": "Sleeve"
+    },
+    {
+      "value": "XSZ",
+      "name": "Sheets, in bundle/bunch/truss"
+    },
+    {
+      "value": "XT1",
+      "name": "Tablet"
+    },
+    {
+      "value": "XTB",
+      "name": "Tub"
+    },
+    {
+      "value": "XTC",
+      "name": "Tea-chest"
+    },
+    {
+      "value": "XTD",
+      "name": "Tube, collapsible"
+    },
+    {
+      "value": "XTE",
+      "name": "Tyre"
+    },
+    {
+      "value": "XTG",
+      "name": "Tank container, generic"
+    },
+    {
+      "value": "XTI",
+      "name": "Tierce"
+    },
+    {
+      "value": "XTK",
+      "name": "Tank, rectangular"
+    },
+    {
+      "value": "XTL",
+      "name": "Tub, with lid"
+    },
+    {
+      "value": "XTN",
+      "name": "Tin"
+    },
+    {
+      "value": "XTO",
+      "name": "Tun"
+    },
+    {
+      "value": "XTR",
+      "name": "Trunk"
+    },
+    {
+      "value": "XTS",
+      "name": "Truss"
+    },
+    {
+      "value": "XTT",
+      "name": "Bag, tote"
+    },
+    {
+      "value": "XTU",
+      "name": "Tube"
+    },
+    {
+      "value": "XTV",
+      "name": "Tube, with nozzle"
+    },
+    {
+      "value": "XTW",
+      "name": "Pallet, triwall"
+    },
+    {
+      "value": "XTY",
+      "name": "Tank, cylindrical"
+    },
+    {
+      "value": "XTZ",
+      "name": "Tubes, in bundle/bunch/truss"
+    },
+    {
+      "value": "XUC",
+      "name": "Uncaged"
+    },
+    {
+      "value": "XUN",
+      "name": "Unit"
+    },
+    {
+      "value": "XVA",
+      "name": "Vat"
+    },
+    {
+      "value": "XVG",
+      "name": "Bulk, gas (at 1031 mbar and 15°C)"
+    },
+    {
+      "value": "XVI",
+      "name": "Vial"
+    },
+    {
+      "value": "XVK",
+      "name": "Vanpack"
+    },
+    {
+      "value": "XVL",
+      "name": "Bulk, liquid"
+    },
+    {
+      "value": "XVN",
+      "name": "Vehicle"
+    },
+    {
+      "value": "XVO",
+      "name": "Bulk, solid, large particles (“nodules”)"
+    },
+    {
+      "value": "XVP",
+      "name": "Vacuum-packed"
+    },
+    {
+      "value": "XVQ",
+      "name": "Bulk, liquefied gas (at abnormal temperature/pressure)"
+    },
+    {
+      "value": "XVR",
+      "name": "Bulk, solid, granular particles (“grains”)"
+    },
+    {
+      "value": "XVS",
+      "name": "Bulk, scrap metal"
+    },
+    {
+      "value": "XVY",
+      "name": "Bulk, solid, fine particles (“powders”)"
+    },
+    {
+      "value": "XWA",
+      "name": "Intermediate bulk container"
+    },
+    {
+      "value": "XWB",
+      "name": "Wickerbottle"
+    },
+    {
+      "value": "XWC",
+      "name": "Intermediate bulk container, steel"
+    },
+    {
+      "value": "XWD",
+      "name": "Intermediate bulk container, aluminium"
+    },
+    {
+      "value": "XWF",
+      "name": "Intermediate bulk container, metal"
+    },
+    {
+      "value": "XWG",
+      "name": "Intermediate bulk container, steel, pressurised > 10 kpa"
+    },
+    {
+      "value": "XWH",
+      "name": "Intermediate bulk container, aluminium, pressurised > 10 kpa"
+    },
+    {
+      "value": "XWJ",
+      "name": "Intermediate bulk container, metal, pressure 10 kpa"
+    },
+    {
+      "value": "XWK",
+      "name": "Intermediate bulk container, steel, liquid"
+    },
+    {
+      "value": "XWL",
+      "name": "Intermediate bulk container, aluminium, liquid"
+    },
+    {
+      "value": "XWM",
+      "name": "Intermediate bulk container, metal, liquid"
+    },
+    {
+      "value": "XWN",
+      "name": "Intermediate bulk container, woven plastic, without coat/liner"
+    },
+    {
+      "value": "XWP",
+      "name": "Intermediate bulk container, woven plastic, coated"
+    },
+    {
+      "value": "XWQ",
+      "name": "Intermediate bulk container, woven plastic, with liner"
+    },
+    {
+      "value": "XWR",
+      "name": "Intermediate bulk container, woven plastic, coated and liner"
+    },
+    {
+      "value": "XWS",
+      "name": "Intermediate bulk container, plastic film"
+    },
+    {
+      "value": "XWT",
+      "name": "Intermediate bulk container, textile with out coat/liner"
+    },
+    {
+      "value": "XWU",
+      "name": "Intermediate bulk container, natural wood, with inner liner"
+    },
+    {
+      "value": "XWV",
+      "name": "Intermediate bulk container, textile, coated"
+    },
+    {
+      "value": "XWW",
+      "name": "Intermediate bulk container, textile, with liner"
+    },
+    {
+      "value": "XWX",
+      "name": "Intermediate bulk container, textile, coated and liner"
+    },
+    {
+      "value": "XWY",
+      "name": "Intermediate bulk container, plywood, with inner liner"
+    },
+    {
+      "value": "XWZ",
+      "name": "Intermediate bulk container, reconstituted wood, with inner liner"
+    },
+    {
+      "value": "XXA",
+      "name": "Bag, woven plastic, without inner coat/liner"
+    },
+    {
+      "value": "XXB",
+      "name": "Bag, woven plastic, sift proof"
+    },
+    {
+      "value": "XXC",
+      "name": "Bag, woven plastic, water resistant"
+    },
+    {
+      "value": "XXD",
+      "name": "Bag, plastics film"
+    },
+    {
+      "value": "XXF",
+      "name": "Bag, textile, without inner coat/liner"
+    },
+    {
+      "value": "XXG",
+      "name": "Bag, textile, sift proof"
+    },
+    {
+      "value": "XXH",
+      "name": "Bag, textile, water resistant"
+    },
+    {
+      "value": "XXJ",
+      "name": "Bag, paper, multi-wall"
+    },
+    {
+      "value": "XXK",
+      "name": "Bag, paper, multi-wall, water resistant"
+    },
+    {
+      "value": "XYA",
+      "name": "Composite packaging, plastic receptacle in steel drum"
+    },
+    {
+      "value": "XYB",
+      "name": "Composite packaging, plastic receptacle in steel crate box"
+    },
+    {
+      "value": "XYC",
+      "name": "Composite packaging, plastic receptacle in aluminium drum"
+    },
+    {
+      "value": "XYD",
+      "name": "Composite packaging, plastic receptacle in aluminium crate"
+    },
+    {
+      "value": "XYF",
+      "name": "Composite packaging, plastic receptacle in wooden box"
+    },
+    {
+      "value": "XYG",
+      "name": "Composite packaging, plastic receptacle in plywood drum"
+    },
+    {
+      "value": "XYH",
+      "name": "Composite packaging, plastic receptacle in plywood box"
+    },
+    {
+      "value": "XYJ",
+      "name": "Composite packaging, plastic receptacle in fibre drum"
+    },
+    {
+      "value": "XYK",
+      "name": "Composite packaging, plastic receptacle in fibreboard box"
+    },
+    {
+      "value": "XYL",
+      "name": "Composite packaging, plastic receptacle in plastic drum"
+    },
+    {
+      "value": "XYM",
+      "name": "Composite packaging, plastic receptacle in solid plastic box"
+    },
+    {
+      "value": "XYN",
+      "name": "Composite packaging, glass receptacle in steel drum"
+    },
+    {
+      "value": "XYP",
+      "name": "Composite packaging, glass receptacle in steel crate box"
+    },
+    {
+      "value": "XYQ",
+      "name": "Composite packaging, glass receptacle in aluminium drum"
+    },
+    {
+      "value": "XYR",
+      "name": "Composite packaging, glass receptacle in aluminium crate"
+    },
+    {
+      "value": "XYS",
+      "name": "Composite packaging, glass receptacle in wooden box"
+    },
+    {
+      "value": "XYT",
+      "name": "Composite packaging, glass receptacle in plywood drum"
+    },
+    {
+      "value": "XYV",
+      "name": "Composite packaging, glass receptacle in wickerwork hamper"
+    },
+    {
+      "value": "XYW",
+      "name": "Composite packaging, glass receptacle in fibre drum"
+    },
+    {
+      "value": "XYX",
+      "name": "Composite packaging, glass receptacle in fibreboard box"
+    },
+    {
+      "value": "XYY",
+      "name": "Composite packaging, glass receptacle in expandable plastic pack"
+    },
+    {
+      "value": "XYZ",
+      "name": "Composite packaging, glass receptacle in solid plastic pack"
+    },
+    {
+      "value": "XZA",
+      "name": "Intermediate bulk container, paper, multi-wall"
+    },
+    {
+      "value": "XZB",
+      "name": "Bag, large"
+    },
+    {
+      "value": "XZC",
+      "name": "Intermediate bulk container, paper, multi-wall, water resistant"
+    },
+    {
+      "value": "XZD",
+      "name": "Intermediate bulk container, rigid plastic, with structural equipment, solids"
+    },
+    {
+      "value": "XZF",
+      "name": "Intermediate bulk container, rigid plastic, freestanding, solids"
+    },
+    {
+      "value": "XZG",
+      "name": "Intermediate bulk container, rigid plastic, with structural equipment, pressurised"
+    },
+    {
+      "value": "XZH",
+      "name": "Intermediate bulk container, rigid plastic, freestanding, pressurised"
+    },
+    {
+      "value": "XZJ",
+      "name": "Intermediate bulk container, rigid plastic, with structural equipment, liquids"
+    },
+    {
+      "value": "XZK",
+      "name": "Intermediate bulk container, rigid plastic, freestanding, liquids"
+    },
+    {
+      "value": "XZL",
+      "name": "Intermediate bulk container, composite, rigid plastic, solids"
+    },
+    {
+      "value": "XZM",
+      "name": "Intermediate bulk container, composite, flexible plastic, solids"
+    },
+    {
+      "value": "XZN",
+      "name": "Intermediate bulk container, composite, rigid plastic, pressurised"
+    },
+    {
+      "value": "XZP",
+      "name": "Intermediate bulk container, composite, flexible plastic, pressurised"
+    },
+    {
+      "value": "XZQ",
+      "name": "Intermediate bulk container, composite, rigid plastic, liquids"
+    },
+    {
+      "value": "XZR",
+      "name": "Intermediate bulk container, composite, flexible plastic, liquids"
+    },
+    {
+      "value": "XZS",
+      "name": "Intermediate bulk container, composite"
+    },
+    {
+      "value": "XZT",
+      "name": "Intermediate bulk container, fibreboard"
+    },
+    {
+      "value": "XZU",
+      "name": "Intermediate bulk container, flexible"
+    },
+    {
+      "value": "XZV",
+      "name": "Intermediate bulk container, metal, other than steel"
+    },
+    {
+      "value": "XZW",
+      "name": "Intermediate bulk container, natural wood"
+    },
+    {
+      "value": "XZX",
+      "name": "Intermediate bulk container, plywood"
+    },
+    {
+      "value": "XZY",
+      "name": "Intermediate bulk container, reconstituted wood"
+    },
+    {
+      "value": "XZZ",
+      "name": "Mutually defined"
+    }
+  ]
+}

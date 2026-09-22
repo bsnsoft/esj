@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-xr</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: XR importer and exporter</name>
+  <description>
+    Reads UBL 2.1 invoices and credit notes and UN/CEFACT CII D16B invoices into ESJ
+    documents, and writes an ESJ document back as the XR representation. The syntax
+    knowledge is not this module's: the documents are first transformed into the semantic
+    XR representation by the stylesheets of the KoSIT XRechnung visualization, and only the
+    business term identifiers of that representation are mapped to semantic paths.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      Saxon-HE is a runtime dependency of this module and of no other. It is licensed
+      under the Mozilla Public License 2.0; see the NOTICE file of the repository.
+    -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      A real PostgreSQL for the tests of docs/storage.md, started from binaries of a Maven
+      artefact. Test scope: nothing of it is redistributed, and where the platform cannot
+      run the binary the test skips itself with the reason.
+    -->
+    <dependency>
+      <groupId>io.zonky.test</groupId>
+      <artifactId>embedded-postgres</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.zonky.test.postgres</groupId>
+      <artifactId>embedded-postgres-binaries-linux-arm64v8</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.zonky.test.postgres</groupId>
+      <artifactId>embedded-postgres-binaries-darwin-arm64v8</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!--
+      The conformance corpus lives at the root of the repository, because it is material of
+      the project rather than of this module: the instances, the ESJ documents built from
+      them and the ledgers that record what the importer could not build. The tests of this
+      module read it from the classpath, so it is copied in here as a test resource.
+    -->
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The example documents of the repository. The round trip through the XR
+          representation is checked on them as well as on the conformance corpus: they are
+          the documents that were written by hand rather than read out of an invoice, and
+          they carry the parts of the format the corpus has no instance of.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The page that shows SQL. A test runs every statement of it against a PostgreSQL
+          of its own, so the page cannot print a statement that does not run.
+        -->
+        <directory>${project.basedir}/..</directory>
+        <includes>
+          <include>docs/storage.md</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <!--
+          The synthetic instances of conformance/scale/out are generated, are as large as
+          the measurements they are for, and belong on no classpath.
+        -->
+        <excludes>
+          <exclude>scale/out/**</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+  </build>
+</project>

@@ -1,0 +1,48 @@
+{
+  "displayNames": "esj-render-display-names/0.1",
+  "list": "vat-category",
+  "english": "The names of UNTDID 5305 as the dated code list snapshot rules/en16931/1.3.16/codelists/untdid-5305/2026-09-19.json carries them.",
+  "german": "This project's wording, written the way a German invoice writes it. It is not a translation of any published list.",
+  "languages": [
+    "en",
+    "de"
+  ],
+  "names": {
+    "S": {
+      "en": "Standard rate",
+      "de": "Regelsteuersatz"
+    },
+    "Z": {
+      "en": "Zero rated goods",
+      "de": "Nullsatz"
+    },
+    "E": {
+      "en": "Exempt from tax",
+      "de": "steuerfrei"
+    },
+    "AE": {
+      "en": "VAT Reverse charge",
+      "de": "Steuerschuldnerschaft des Leistungsempfängers"
+    },
+    "K": {
+      "en": "VAT exempt for EEA intra-community supply of goods and services",
+      "de": "innergemeinschaftliche Lieferung"
+    },
+    "G": {
+      "en": "Free export item, tax not charged",
+      "de": "Ausfuhrlieferung"
+    },
+    "O": {
+      "en": "Service outside scope of tax",
+      "de": "nicht steuerbar"
+    },
+    "L": {
+      "en": "Canary Islands general indirect tax",
+      "de": "allgemeine indirekte Steuer der Kanarischen Inseln"
+    },
+    "M": {
+      "en": "Tax for production, services and importation in Ceuta and Melilla",
+      "de": "Steuer in Ceuta und Melilla"
+    }
+  }
+}

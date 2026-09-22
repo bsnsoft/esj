@@ -1,0 +1,26 @@
+# A service that hands documents to esj one process at a time. Each request is
+# its own container run with its own heap ceiling, which is what makes an
+# invoice that exhausts memory cost one document rather than the service
+# (docs/deployment.md).
+#
+#   docker compose -f dist/compose.yaml run --rm esj validate /work/invoice.xml
+#
+# Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
+services:
+  esj:
+    image: esj:latest
+    build:
+      context: ..
+      dockerfile: dist/Dockerfile
+    environment:
+      ESJ_MAX_HEAP: 512m
+    # The ceiling the container is allowed, above the heap so that the class
+    # data, the stacks and the code cache fit under it.
+    mem_limit: 1g
+    cpus: 1.0
+    read_only: true
+    user: "10001"
+    volumes:
+      - ./work:/work:ro
+    # Nothing this tool does needs a network.
+    network_mode: none

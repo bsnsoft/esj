@@ -1,0 +1,3228 @@
+{
+  "pack": "xrechnung/3.0.2/2026-08-31",
+  "instances": [
+    {
+      "instance": "business-cases/extension/04.01a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "UBL-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "UBL-CR-646",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/extension/04.02a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "UBL-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "UBL-CR-646",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/extension/04.03a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "UBL-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "UBL-CR-646",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/extension/04.04a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "UBL-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "UBL-CR-646",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/extension/04.05a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "EN-CL",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CL-10",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:BuyerTradeParty[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:GlobalID[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "EN-CL",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CL-10",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:SellerTradeParty[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:GlobalID[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "EN-CL",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CL-10",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeSettlement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:PayeeTradeParty[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:GlobalID[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "EN-CL",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CL-21",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:IncludedSupplyChainTradeLineItem[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:SpecifiedTradeProduct[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:GlobalID[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/extension/05.01a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "EN-BR",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CO-16",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]/*:LegalMonetaryTotal[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "UBL-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "UBL-CR-470",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.02a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.02a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.03a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.03a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.04a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.04a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.05a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.05a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.06a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.06a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.07a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.07a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.08a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.08a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.09a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.09a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.10a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.10a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.11a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.11a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.12a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.12a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.13a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.13a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.14a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.14a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.15a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.15a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.17a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.17a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/01.18a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.18a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.19a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.19a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.20a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.20a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.21a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.01a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.01a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.02a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.02a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.03a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.03a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.04a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.04a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/02.05a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/02.05a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/02.06a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/02.06a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/03.01a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.01a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.02a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/03.02a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/03.03a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/03.03a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "CII-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "CII-SR-475",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "business-cases/standard/03.04a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.04a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.05a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.05a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.06a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.06a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.07a-INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "business-cases/standard/03.07a-INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "CII-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "CII-SR-475",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "CII-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "CII-SR-476",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "CII-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "CII-SR-475",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        },
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "CII-BINDING",
+          "severity": "information",
+          "flag": "warning",
+          "code": "CII-SR-476",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cius/01.02_comprehensive_test_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.02_comprehensive_test_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.03_comprehensive_test_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.03_comprehensive_test_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.04_comprehensive_test_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.04_comprehensive_test_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": []
+    },
+    {
+      "instance": "technical-cases/cius/01.05_minimal_test_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cius/01.05_minimal_test_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cius/01.06_minimal_test_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-ubl-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:oasis:names:specification:ubl:schema:xsd:Invoice-2}Invoice[1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cius/01.06_minimal_test_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "xrechnung-cii-schematron",
+          "category": "XR-BR",
+          "severity": "information",
+          "flag": "information",
+          "code": "BR-DE-TMP-32",
+          "location": "/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
+      "syntax": "UBL_INVOICE",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-ubl-schematron",
+          "category": "EN-CL",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CL-13",
+          "location": "/*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]/*:InvoiceLine[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'][1]/*:Item[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'][1]/*:CommodityClassification[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2'][1]/*:ItemClassificationCode[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2'][1]"
+        }
+      ]
+    },
+    {
+      "instance": "technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml",
+      "syntax": "CII",
+      "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9",
+      "verdict": "VALID",
+      "findings": [
+        {
+          "engine": "schematron",
+          "component": "en16931-cii-schematron",
+          "category": "EN-CL",
+          "severity": "information",
+          "flag": "fatal",
+          "code": "BR-CL-13",
+          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:IncludedSupplyChainTradeLineItem[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:SpecifiedTradeProduct[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:DesignatedProductClassification[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]/*:ClassCode[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
+        }
+      ]
+    }
+  ],
+  "oracle": {
+    "takenDown": "2026-09-19",
+    "validator": {
+      "name": "KoSIT Validator",
+      "version": "1.6.3",
+      "download": "https://github.com/itplr-kosit/validator/releases/download/v1.6.3/validator-1.6.3-standalone.jar",
+      "sha256": "799e64befca97d4080e03608c80b85dd5a5ecc5f4ae4f35d1116ec2855b9a7c9",
+      "configuration": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip",
+      "configurationSha256": "2530cd107c414511c5d0462ec10f886910395abfca820db82e83d70bf01221a8"
+    },
+    "inputs": {
+      "corpus": 86,
+      "mutations": 63,
+      "total": 149
+    },
+    "agreement": {
+      "documents": 149,
+      "ruleIds": 149,
+      "flags": 149,
+      "verdict": 146,
+      "locations": 94,
+      "nodes": 149
+    },
+    "acceptanceLevels": {
+      "documentsAffected": 19,
+      "verdictsThatWouldDifferWithoutThem": 7,
+      "documents": [
+        {
+          "document": "business-cases/extension/04.01a-INVOICE_ubl.xml",
+          "rules": {
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "business-cases/extension/04.02a-INVOICE_ubl.xml",
+          "rules": {
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "business-cases/extension/04.03a-INVOICE_ubl.xml",
+          "rules": {
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "business-cases/extension/04.04a-INVOICE_ubl.xml",
+          "rules": {
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "business-cases/extension/04.05a-INVOICE_uncefact.xml",
+          "rules": {
+            "BR-CL-10": "fatal -> information",
+            "BR-CL-21": "fatal -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "business-cases/extension/05.01a-INVOICE_ubl.xml",
+          "rules": {
+            "BR-CO-16": "fatal -> information",
+            "UBL-CR-470": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "business-cases/standard/03.03a-INVOICE_uncefact.xml",
+          "rules": {
+            "CII-SR-475": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "business-cases/standard/03.07a-INVOICE_uncefact.xml",
+          "rules": {
+            "CII-SR-475": "warning -> information",
+            "CII-SR-476": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "en-br-co-10-cii-comprehensive",
+          "rules": {
+            "CII-SR-475": "warning -> information",
+            "CII-SR-476": "warning -> information"
+          },
+          "verdict": "INVALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "en-br-co-16-ubl-extension",
+          "rules": {
+            "BR-CO-16": "fatal -> information",
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "INVALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "en-cl-endpoint-scheme-ubl-extension",
+          "rules": {
+            "BR-CL-25": "fatal -> information",
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "en-cl-item-classification-ubl-cvd",
+          "rules": {
+            "BR-CL-13": "fatal -> information"
+          },
+          "verdict": "INVALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "en-cl-unit-code-cii",
+          "rules": {
+            "BR-CL-23": "fatal -> warning"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "en-cl-unit-code-ubl",
+          "rules": {
+            "BR-CL-23": "fatal -> warning"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+          "rules": {
+            "CII-SR-475": "warning -> information",
+            "CII-SR-476": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
+          "rules": {
+            "BR-CL-13": "fatal -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml",
+          "rules": {
+            "BR-CL-13": "fatal -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        },
+        {
+          "document": "ubl-binding-copy-indicator-extension",
+          "rules": {
+            "UBL-CR-646": "warning -> information"
+          },
+          "verdict": "VALID",
+          "verdictOnTheFlagsAlone": "VALID"
+        },
+        {
+          "document": "xr-br-seller-contact-cii-extension",
+          "rules": {
+            "BR-CL-10": "fatal -> information",
+            "BR-CL-21": "fatal -> information"
+          },
+          "verdict": "INVALID",
+          "verdictOnTheFlagsAlone": "INVALID"
+        }
+      ]
+    },
+    "deviations": [
+      {
+        "kind": "scenario selection",
+        "agreementAffected": [
+          "verdict"
+        ],
+        "documents": [
+          "profile-unknown-cius-cii",
+          "profile-unknown-cius-ubl",
+          "profile-unknown-entirely-ubl"
+        ],
+        "cause": "The official validator chooses its artefacts with a table of scenarios, each of which matches one exact customization identifier, and rejects a document that matches none of them before running anything. The syntax engine chooses per artefact instead: a document whose profile no rule set of the pack recognizes is still checked against the schema of its syntax, and against the EN 16931 rules where it says it follows EN 16931. This engine therefore reaches no verdict on such a document: it reports INDETERMINATE with the cause no-rules-for-profile, names the rule sets that were left out and why, and leaves with exit code 9. Both runs decline to call the document valid; they decline differently, one before looking and one after checking what applies."
+      },
+      {
+        "kind": "location expression",
+        "agreementAffected": [
+          "locations"
+        ],
+        "documents": [
+          "business-cases/extension/04.01a-INVOICE_ubl.xml",
+          "business-cases/extension/04.02a-INVOICE_ubl.xml",
+          "business-cases/extension/04.03a-INVOICE_ubl.xml",
+          "business-cases/extension/04.04a-INVOICE_ubl.xml",
+          "business-cases/extension/04.05a-INVOICE_uncefact.xml",
+          "business-cases/extension/05.01a-INVOICE_ubl.xml",
+          "business-cases/standard/03.03a-INVOICE_uncefact.xml",
+          "business-cases/standard/03.07a-INVOICE_uncefact.xml",
+          "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+          "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
+          "technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml",
+          "cii-binding-document-name",
+          "cii-binding-language",
+          "en-br-05-ubl",
+          "en-br-06-cii",
+          "en-br-06-ubl",
+          "en-br-07-ubl",
+          "en-br-16-cii",
+          "en-br-25-ubl",
+          "en-br-26-ubl",
+          "en-br-co-10-cii",
+          "en-br-co-10-cii-comprehensive",
+          "en-br-co-10-ubl",
+          "en-br-co-10-ubl-comprehensive",
+          "en-br-co-13-ubl",
+          "en-br-co-14-ubl",
+          "en-br-co-15-ubl",
+          "en-br-co-16-cii",
+          "en-br-co-16-ubl",
+          "en-br-co-16-ubl-extension",
+          "en-br-s-08-ubl",
+          "en-br-s-09-ubl",
+          "en-cl-country-cii",
+          "en-cl-country-ubl",
+          "en-cl-currency-ubl",
+          "en-cl-endpoint-scheme-ubl",
+          "en-cl-endpoint-scheme-ubl-extension",
+          "en-cl-invoice-type-ubl",
+          "en-cl-item-classification-ubl",
+          "en-cl-item-classification-ubl-cvd",
+          "en-cl-payment-means-ubl",
+          "en-cl-unit-code-cii",
+          "en-cl-unit-code-ubl",
+          "en-cl-vat-category-ubl",
+          "en-dec-invoice-total-ubl",
+          "en-dec-line-net-amount-cii",
+          "en-dec-line-net-amount-ubl",
+          "en-dec-taxable-amount-ubl",
+          "ubl-binding-copy-indicator",
+          "ubl-binding-copy-indicator-extension",
+          "ubl-binding-issue-time",
+          "ubl-binding-uuid",
+          "ubl-binding-vat-total-decimals",
+          "xr-br-payment-account-ubl",
+          "xr-br-seller-contact-cii-extension"
+        ],
+        "codes": {
+          "BR-05": 1,
+          "BR-06": 2,
+          "BR-07": 1,
+          "BR-16": 1,
+          "BR-25": 1,
+          "BR-26": 1,
+          "BR-27": 1,
+          "BR-50": 1,
+          "BR-61": 1,
+          "BR-CL-01": 1,
+          "BR-CL-04": 1,
+          "BR-CL-10": 2,
+          "BR-CL-13": 4,
+          "BR-CL-14": 2,
+          "BR-CL-16": 1,
+          "BR-CL-18": 1,
+          "BR-CL-21": 2,
+          "BR-CL-23": 2,
+          "BR-CL-25": 2,
+          "BR-CO-10": 5,
+          "BR-CO-13": 5,
+          "BR-CO-14": 2,
+          "BR-CO-15": 4,
+          "BR-CO-16": 5,
+          "BR-CO-17": 2,
+          "BR-DEC-14": 1,
+          "BR-DEC-19": 1,
+          "BR-DEC-23": 2,
+          "BR-S-08": 3,
+          "BR-S-09": 2,
+          "CII-SR-013": 1,
+          "CII-SR-019": 1,
+          "CII-SR-475": 4,
+          "CII-SR-476": 3,
+          "UBL-CR-004": 2,
+          "UBL-CR-005": 1,
+          "UBL-CR-006": 1,
+          "UBL-CR-470": 1,
+          "UBL-CR-646": 7,
+          "UBL-DT-01": 4
+        },
+        "cause": "The two runs execute two compilations of the same EN 16931 rules of release 1.3.16: this pack carries the one CEN published, the validator configuration ships one of its own. The rules, the identifiers and the flags are the same; the two Schematron compilers write the location of a finding differently, one as /Q{namespace}name[1] and the other as /*:name[namespace-uri()='namespace'][1]. Reduced to the node each expression names, the two runs agree on every finding of every document. Only findings of the EN 16931 components are affected; the XRechnung artefact is the same file in both runs and its locations are identical in form as well."
+      }
+    ],
+    "documents": [
+      {
+        "document": "business-cases/extension/04.01a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/extension/04.02a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/extension/04.03a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/extension/04.04a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/extension/04.05a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung Extension (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/extension/05.01a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.01a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.01a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.02a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.02a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.03a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.03a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.04a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.04a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.05a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.05a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.06a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.06a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.07a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.07a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.08a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.08a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.09a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.09a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.10a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.10a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.11a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.11a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.12a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.12a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.13a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.13a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.14a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.14a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.15a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.15a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.17a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.17a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.18a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.18a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.19a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.19a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.20a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.20a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.21a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.01a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.01a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.02a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.02a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.03a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.03a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.04a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.04a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.05a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.05a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.06a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/02.06a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.01a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.01a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.02a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.02a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.03a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.03a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.04a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.04a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.05a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.05a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.06a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.06a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.07a-INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "business-cases/standard/03.07a-INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.02_comprehensive_test_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.02_comprehensive_test_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.03_comprehensive_test_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.03_comprehensive_test_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.04_comprehensive_test_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.04_comprehensive_test_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.05_minimal_test_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.05_minimal_test_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.06_minimal_test_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cius/01.06_minimal_test_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung CVD (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml",
+        "kind": "corpus",
+        "officialScenario": "EN16931 XRechnung CVD (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "cii-binding-document-name",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "cii-binding-language",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-05-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-06-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-06-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-07-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-16-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-25-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-26-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-10-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-10-cii-comprehensive",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-10-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-10-ubl-comprehensive",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-13-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-14-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-15-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-16-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-16-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-co-16-ubl-extension",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-s-08-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-br-s-09-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-country-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-country-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-currency-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-endpoint-scheme-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-endpoint-scheme-ubl-extension",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-invoice-type-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-item-classification-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-item-classification-ubl-cvd",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung CVD (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-payment-means-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-unit-code-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-unit-code-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-cl-vat-category-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-dec-invoice-total-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-dec-line-net-amount-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-dec-line-net-amount-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "en-dec-taxable-amount-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "profile-plain-en16931-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "profile-unknown-cius-cii",
+        "kind": "mutation",
+        "officialScenario": null,
+        "officialVerdict": "reject",
+        "esjVerdict": "INDETERMINATE",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": false
+      },
+      {
+        "document": "profile-unknown-cius-ubl",
+        "kind": "mutation",
+        "officialScenario": null,
+        "officialVerdict": "reject",
+        "esjVerdict": "INDETERMINATE",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": false
+      },
+      {
+        "document": "profile-unknown-entirely-ubl",
+        "kind": "mutation",
+        "officialScenario": null,
+        "officialVerdict": "reject",
+        "esjVerdict": "INDETERMINATE",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": false
+      },
+      {
+        "document": "ubl-binding-copy-indicator",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "ubl-binding-copy-indicator-extension",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung Extension (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "ubl-binding-issue-time",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "ubl-binding-uuid",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "ubl-binding-vat-total-decimals",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-buyer-reference-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-buyer-reference-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-payment-account-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-seller-city-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-seller-contact-cii",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-seller-contact-cii-extension",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung Extension (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": false,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-seller-contact-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xr-br-seller-mail-ubl",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "accept",
+        "esjVerdict": "VALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-cii-amount-not-a-number",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-cii-missing-issue-date",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-cii-unknown-element",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (CII)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-ubl-amount-not-a-number",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-ubl-date-not-a-date",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-ubl-element-out-of-order",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-ubl-missing-invoice-number",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-ubl-no-invoice-line",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      },
+      {
+        "document": "xsd-ubl-unknown-element",
+        "kind": "mutation",
+        "officialScenario": "EN16931 XRechnung (UBL Invoice)",
+        "officialVerdict": "reject",
+        "esjVerdict": "INVALID",
+        "ruleIds": true,
+        "flags": true,
+        "locations": true,
+        "nodes": true,
+        "verdict": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Letterhead (image) with a mark",
+  "letterhead": {
+    "first":     { "file": "band-first.png" },
+    "following": { "file": "band-following.png" }
+  },
+  "logo": { "file": "mark.png", "x": 501, "y": 49, "width": 66, "height": 19.8,
+            "pages": "first" },
+  "colors": {
+    "heading": "#123a63",
+    "muted": "#5a6472",
+    "rule": "#c3cbd6",
+    "tableHeaderFill": "#eceff3",
+    "tableHeaderText": "#123a63"
+  },
+  "margins": {
+    "first":     { "top": 142, "bottom": 82, "left": 56, "right": 56 },
+    "following": { "top": 80,  "bottom": 82 }
+  }
+}

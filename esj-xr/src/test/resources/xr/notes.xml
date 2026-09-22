@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  A hand-written document in the XR representation. It is not a plausible invoice: every
+  element in it is here to make the importer write one kind of note, so that the report
+  is tested on content the stylesheets of a real document never produce.
+-->
+<xr:invoice xmlns:xr="urn:ce.eu:en16931:2017:xoev-de:kosit:standard:xrechnung-1">
+   <xr:Invoice_number xr:id="BT-1">RE-2026-0001</xr:Invoice_number>
+   <xr:Invoice_issue_date xr:id="BT-2">the fourteenth of March</xr:Invoice_issue_date>
+   <xr:Invoice_type_code xr:id="BT-3"></xr:Invoice_type_code>
+   <xr:Invoice_currency_code xr:id="BT-5">EUR</xr:Invoice_currency_code>
+   <xr:Made_up xr:id="BT-9999">nothing</xr:Made_up>
+   <xr:Item_net_price xr:id="BT-146">10</xr:Item_net_price>
+   <xr:PROCESS_CONTROL xr:id="BG-2">
+      <xr:Specification_identifier xr:id="BT-24">urn:example:first</xr:Specification_identifier>
+      <xr:Specification_identifier xr:id="BT-24">urn:example:second</xr:Specification_identifier>
+   </xr:PROCESS_CONTROL>
+   <xr:SELLER xr:id="BG-4">
+      <xr:Seller_name xr:id="BT-27">Example GmbH</xr:Seller_name>
+      <xr:Seller_VAT_identifier xr:id="BT-31" scheme_identifier="VA">DE123456789</xr:Seller_VAT_identifier>
+      <xr:Seller_electronic_address xr:id="BT-34">office@example.test</xr:Seller_electronic_address>
+   </xr:SELLER>
+   <xr:DOCUMENT_TOTALS xr:id="BG-22">
+      <xr:Invoice_total_amount_with_VAT xr:id="BT-112">12,50</xr:Invoice_total_amount_with_VAT>
+   </xr:DOCUMENT_TOTALS>
+</xr:invoice>

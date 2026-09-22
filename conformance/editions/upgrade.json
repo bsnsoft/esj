@@ -1,0 +1,32 @@
+{
+  "measurement": "esj-upgrade-corpus",
+  "mapping": "model/en16931/upgrade-2017-2026.json",
+  "from": "EN 16931-1:2017+A1:2019/AC:2020",
+  "to": "EN 16931-1:2026",
+  "corpus": {
+    "documents": 97,
+    "instances": 86,
+    "examples": 11
+  },
+  "upgrade": {
+    "upgraded": 97,
+    "refused": 0,
+    "pathsMoved": 408,
+    "documentsWithMovedPaths": 93
+  },
+  "structure": {
+    "clean": 18,
+    "schemeGapsOnly": 79,
+    "otherFindings": 0
+  },
+  "openPoints": {
+    "scheme-missing": 155,
+    "specification-identifier": 97,
+    "extension-carried": 6
+  },
+  "downgrade": {
+    "downgraded": 97,
+    "byteIdentical": 97,
+    "refused": 0
+  }
+}

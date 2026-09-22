@@ -1,0 +1,4137 @@
+{
+  "format": "EN16931-Semantic-JSON-registry",
+  "version": "0.1",
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "license": "Apache-2.0",
+  "notice": "This registry is a derived application of EN 16931-1:2017+A1:2019 with the corrigendum AC:2020 applied: it implements that European Standard. The standard text was obtained free of charge under the European Commission / CEN Licence Agreement of 18 December 2018 as published by the Slovak Office of Standards, Metrology and Testing (ÚNMS SR); reproduction of the standard is with the consent of CEN and ÚNMS SR. The registry itself reproduces no normative prose: identifiers, names, cardinalities and semantic data types are facts of the model, and every description and note in this file is the author's own wording.",
+  "generated": "2026-09-19",
+  "sourceStatement": "Structure, cardinalities, semantic data types and supplementary components follow EN 16931-1:2017+A1:2019/AC:2020, Table 2 and clause 6.5; the order member is the 1-based position in Table 2. maxDecimals follows Table 26 in 6.5.12. Each codeList assignment is justified in the term's notes by a BR-CL rule of the CEN/TC 434 validation artefacts 1.3.16 (EUPL-1.2) or by a Table 2 usage note, or by both. The model was cross-checked against the KoSIT XRechnung semantic-model XSD (Apache-2.0) and against the Peppol BIS Billing 3.0 structure files; no text from those sources is reproduced here. Slugs are an ESJ convention for code generation and carry no normative weight.",
+  "terms": [
+    {
+      "id": "BT-1",
+      "kind": "BT",
+      "name": "Invoice number",
+      "slug": "invoiceNumber",
+      "parent": null,
+      "path": [
+        "BT-1"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 1,
+      "description": "Unique identification of the invoice in the seller's systems; no identification scheme is used.",
+      "notes": []
+    },
+    {
+      "id": "BT-2",
+      "kind": "BT",
+      "name": "Invoice issue date",
+      "slug": "issueDate",
+      "parent": null,
+      "path": [
+        "BT-2"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 2,
+      "description": "Date on which the invoice was issued.",
+      "notes": []
+    },
+    {
+      "id": "BT-3",
+      "kind": "BT",
+      "name": "Invoice type code",
+      "slug": "typeCode",
+      "parent": null,
+      "path": [
+        "BT-3"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 1001",
+      "components": [],
+      "order": 3,
+      "description": "Code for the functional type of the invoice, taken from UNTDID 1001.",
+      "notes": [
+        "Code list UNTDID 1001. Justification: EN 16931-1 Table 2 usage note for BT-3 refers to the entries of UNTDID 1001; CEN rule BR-CL-01 enforces the invoice and credit note subsets of that list."
+      ]
+    },
+    {
+      "id": "BT-5",
+      "kind": "BT",
+      "name": "Invoice currency code",
+      "slug": "currencyCode",
+      "parent": null,
+      "path": [
+        "BT-5"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 4217 alpha-3",
+      "components": [],
+      "order": 4,
+      "description": "The currency of every amount in this invoice; BT-111 is the one amount written in the accounting currency instead.",
+      "notes": [
+        "Code list ISO 4217 alpha-3. Justification: EN 16931-1 Table 2 usage note for BT-5 refers to the currency lists of the ISO 4217 maintenance agency; CEN rule BR-CL-04 enforces ISO 4217 alpha-3."
+      ]
+    },
+    {
+      "id": "BT-6",
+      "kind": "BT",
+      "name": "VAT accounting currency code",
+      "slug": "vatAccountingCurrencyCode",
+      "parent": null,
+      "path": [
+        "BT-6"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 4217 alpha-3",
+      "components": [],
+      "order": 5,
+      "description": "Currency used for VAT accounting and reporting in the seller's country.",
+      "notes": [
+        "Code list ISO 4217 alpha-3. Justification: EN 16931-1 Table 2 usage note for BT-6 refers to the currency lists of the ISO 4217 maintenance agency; CEN rule BR-CL-05 enforces ISO 4217 alpha-3."
+      ]
+    },
+    {
+      "id": "BT-7",
+      "kind": "BT",
+      "name": "Value added tax point date",
+      "slug": "taxPointDate",
+      "parent": null,
+      "path": [
+        "BT-7"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 6,
+      "description": "Date on which VAT becomes chargeable for seller and buyer (tax point date).",
+      "notes": []
+    },
+    {
+      "id": "BT-8",
+      "kind": "BT",
+      "name": "Value added tax point date code",
+      "slug": "taxPointDateCode",
+      "parent": null,
+      "path": [
+        "BT-8"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 2005",
+      "components": [],
+      "order": 7,
+      "description": "Code saying which event fixes the VAT tax point date.",
+      "notes": [
+        "Code list UNTDID 2005. Justification: EN 16931-1 Table 2 usage note for BT-8 names three entries of UNTDID 2005; CEN rule BR-CL-06 restricts the UBL binding to the values 3, 35 and 432. The CII artefacts phrase the same rule as a restriction of UNTDID 2475."
+      ]
+    },
+    {
+      "id": "BT-9",
+      "kind": "BT",
+      "name": "Payment due date",
+      "slug": "paymentDueDate",
+      "parent": null,
+      "path": [
+        "BT-9"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 8,
+      "description": "Date by which payment is due.",
+      "notes": []
+    },
+    {
+      "id": "BT-10",
+      "kind": "BT",
+      "name": "Buyer reference",
+      "slug": "buyerReference",
+      "parent": null,
+      "path": [
+        "BT-10"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 9,
+      "description": "Reference supplied by the buyer that lets the buyer route the invoice internally.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-11",
+      "kind": "BT",
+      "name": "Project reference",
+      "slug": "projectReference",
+      "parent": null,
+      "path": [
+        "BT-11"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 10,
+      "description": "Reference to the project the invoice relates to.",
+      "notes": []
+    },
+    {
+      "id": "BT-12",
+      "kind": "BT",
+      "name": "Contract reference",
+      "slug": "contractReference",
+      "parent": null,
+      "path": [
+        "BT-12"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 11,
+      "description": "Reference to the contract the invoice relates to.",
+      "notes": []
+    },
+    {
+      "id": "BT-13",
+      "kind": "BT",
+      "name": "Purchase order reference",
+      "slug": "purchaseOrderReference",
+      "parent": null,
+      "path": [
+        "BT-13"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 12,
+      "description": "Reference to the buyer's purchase order.",
+      "notes": []
+    },
+    {
+      "id": "BT-14",
+      "kind": "BT",
+      "name": "Sales order reference",
+      "slug": "salesOrderReference",
+      "parent": null,
+      "path": [
+        "BT-14"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 13,
+      "description": "Reference to the seller's sales order.",
+      "notes": []
+    },
+    {
+      "id": "BT-15",
+      "kind": "BT",
+      "name": "Receiving advice reference",
+      "slug": "receivingAdviceReference",
+      "parent": null,
+      "path": [
+        "BT-15"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 14,
+      "description": "Reference to the receiving advice for the delivered goods or services.",
+      "notes": []
+    },
+    {
+      "id": "BT-16",
+      "kind": "BT",
+      "name": "Despatch advice reference",
+      "slug": "despatchAdviceReference",
+      "parent": null,
+      "path": [
+        "BT-16"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 15,
+      "description": "Reference to the despatch advice for the delivered goods or services.",
+      "notes": []
+    },
+    {
+      "id": "BT-17",
+      "kind": "BT",
+      "name": "Tender or lot reference",
+      "slug": "tenderOrLotReference",
+      "parent": null,
+      "path": [
+        "BT-17"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 16,
+      "description": "Names the tender, or the lot within it, that the contract behind this invoice goes back to.",
+      "notes": []
+    },
+    {
+      "id": "BT-18",
+      "kind": "BT",
+      "name": "Invoiced object identifier",
+      "slug": "invoicedObjectIdentifier",
+      "parent": null,
+      "path": [
+        "BT-18"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-18-1",
+          "role": "scheme",
+          "name": "Invoiced object identifier identification scheme identifier",
+          "schemeList": "UNTDID 1153",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 17,
+      "description": "Identifier of an object the invoice is based on, assigned by the seller (e.g. a subscription, meter point or vehicle).",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-18 is taken from a restriction of UNTDID 1153; rule BR-CL-07 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-19",
+      "kind": "BT",
+      "name": "Buyer accounting reference",
+      "slug": "buyerAccountingReference",
+      "parent": null,
+      "path": [
+        "BT-19"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 18,
+      "description": "Textual reference telling the buyer which ledger account to book the invoice to.",
+      "notes": []
+    },
+    {
+      "id": "BT-20",
+      "kind": "BT",
+      "name": "Payment terms",
+      "slug": "paymentTerms",
+      "parent": null,
+      "path": [
+        "BT-20"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 19,
+      "description": "Textual description of the payment terms, such as an early-payment discount or a penalty.",
+      "notes": []
+    },
+    {
+      "id": "BG-1",
+      "kind": "BG",
+      "name": "INVOICE NOTE",
+      "slug": "notes",
+      "parent": null,
+      "path": [
+        "BG-1"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 20,
+      "description": "Group carrying free-text notes about the invoice as a whole, with an optional subject code.",
+      "notes": []
+    },
+    {
+      "id": "BT-21",
+      "kind": "BT",
+      "name": "Invoice note subject code",
+      "slug": "subjectCode",
+      "parent": "BG-1",
+      "path": [
+        "BG-1",
+        "BT-21"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 4451",
+      "components": [],
+      "order": 21,
+      "description": "Code identifying the subject of the accompanying invoice note, from UNTDID 4451.",
+      "notes": [
+        "The semantic data type was corrected from Text to Code by EN 16931-1:2017+A1:2019/AC:2020, clause 3 (DE9); the uncorrected print of Table 2 still shows Text.",
+        "Code list UNTDID 4451. Justification: EN 16931-1 Table 2 usage note for BT-21 requires an entry of UNTDID 4451; CEN rule BR-CL-08 enforces a restriction of that list."
+      ]
+    },
+    {
+      "id": "BT-22",
+      "kind": "BT",
+      "name": "Invoice note",
+      "slug": "note",
+      "parent": "BG-1",
+      "path": [
+        "BG-1",
+        "BT-22"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 22,
+      "description": "A free text remark about the whole document rather than about one line of it.",
+      "notes": []
+    },
+    {
+      "id": "BG-2",
+      "kind": "BG",
+      "name": "PROCESS CONTROL",
+      "slug": "processControl",
+      "parent": null,
+      "path": [
+        "BG-2"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 23,
+      "description": "Group carrying the identifiers that control how the invoice is processed.",
+      "notes": []
+    },
+    {
+      "id": "BT-23",
+      "kind": "BT",
+      "name": "Business process type",
+      "slug": "businessProcessType",
+      "parent": "BG-2",
+      "path": [
+        "BG-2",
+        "BT-23"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 24,
+      "description": "Names the business process this invoice takes part in.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-24",
+      "kind": "BT",
+      "name": "Specification identifier",
+      "slug": "specificationIdentifier",
+      "parent": "BG-2",
+      "path": [
+        "BG-2",
+        "BT-24"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 25,
+      "description": "Identifier of the specification (and its rule set) that the invoice instance conforms to.",
+      "notes": []
+    },
+    {
+      "id": "BG-3",
+      "kind": "BG",
+      "name": "PRECEDING INVOICE REFERENCE",
+      "slug": "precedingInvoiceReferences",
+      "parent": null,
+      "path": [
+        "BG-3"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 26,
+      "description": "Group referencing an invoice that precedes this one, used mainly in corrections and credit notes.",
+      "notes": []
+    },
+    {
+      "id": "BT-25",
+      "kind": "BT",
+      "name": "Preceding Invoice reference",
+      "slug": "reference",
+      "parent": "BG-3",
+      "path": [
+        "BG-3",
+        "BT-25"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 27,
+      "description": "Identification of the preceding invoice that is being corrected or referred to.",
+      "notes": []
+    },
+    {
+      "id": "BT-26",
+      "kind": "BT",
+      "name": "Preceding Invoice issue date",
+      "slug": "issueDate",
+      "parent": "BG-3",
+      "path": [
+        "BG-3",
+        "BT-26"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 28,
+      "description": "Issue date of the preceding invoice; required when the preceding invoice number alone is ambiguous.",
+      "notes": []
+    },
+    {
+      "id": "BG-4",
+      "kind": "BG",
+      "name": "SELLER",
+      "slug": "seller",
+      "parent": null,
+      "path": [
+        "BG-4"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 29,
+      "description": "Group carrying the information about the seller.",
+      "notes": []
+    },
+    {
+      "id": "BT-27",
+      "kind": "BT",
+      "name": "Seller name",
+      "slug": "name",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-27"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 30,
+      "description": "Full name of the seller as registered in the national register of legal entities.",
+      "notes": []
+    },
+    {
+      "id": "BT-28",
+      "kind": "BT",
+      "name": "Seller trading name",
+      "slug": "tradingName",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-28"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 31,
+      "description": "Name the seller is known by, where different from the registered seller name.",
+      "notes": []
+    },
+    {
+      "id": "BT-29",
+      "kind": "BT",
+      "name": "Seller identifier",
+      "slug": "identifiers",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-29"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": "n",
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-29-1",
+          "role": "scheme",
+          "name": "Seller identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 32,
+      "description": "Identification of the seller; may carry an identification scheme identifier.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-29 is taken from the ISO 6523 ICD list; rule BR-CL-10 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-30",
+      "kind": "BT",
+      "name": "Seller legal registration identifier",
+      "slug": "legalRegistrationIdentifier",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-30"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-30-1",
+          "role": "scheme",
+          "name": "Seller legal registration identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 33,
+      "description": "Identifier issued to the seller by an official registrar of legal entities.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-30 is taken from the ISO 6523 ICD list; rule BR-CL-11 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-31",
+      "kind": "BT",
+      "name": "Seller VAT identifier",
+      "slug": "vatIdentifier",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-31"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 34,
+      "description": "VAT identifier assigned to the seller.",
+      "notes": []
+    },
+    {
+      "id": "BT-32",
+      "kind": "BT",
+      "name": "Seller tax registration identifier",
+      "slug": "taxRegistrationIdentifier",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-32"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 35,
+      "description": "Local identification of the seller assigned by its tax authority or a certifier, other than the VAT identifier.",
+      "notes": []
+    },
+    {
+      "id": "BT-33",
+      "kind": "BT",
+      "name": "Seller additional legal information",
+      "slug": "additionalLegalInformation",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-33"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 36,
+      "description": "Additional legal information about the seller that is relevant for the buyer.",
+      "notes": []
+    },
+    {
+      "id": "BT-34",
+      "kind": "BT",
+      "name": "Seller electronic address",
+      "slug": "electronicAddress",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BT-34"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-34-1",
+          "role": "scheme",
+          "name": "Seller electronic address identification scheme identifier",
+          "schemeList": "CEF EAS",
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "order": 37,
+      "description": "Electronic address of the seller, with a mandatory scheme identifier saying which address scheme is used.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality.",
+        "The identification scheme of BT-34 is taken from the CEF EAS code list; rule BR-CL-25 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BG-5",
+      "kind": "BG",
+      "name": "SELLER POSTAL ADDRESS",
+      "slug": "postalAddress",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BG-5"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 38,
+      "description": "Group carrying the seller's postal address.",
+      "notes": []
+    },
+    {
+      "id": "BT-35",
+      "kind": "BT",
+      "name": "Seller address line 1",
+      "slug": "addressLine1",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-35"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 39,
+      "description": "First line of the seller's address, usually street name and number or post office box.",
+      "notes": []
+    },
+    {
+      "id": "BT-36",
+      "kind": "BT",
+      "name": "Seller address line 2",
+      "slug": "addressLine2",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-36"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 40,
+      "description": "Second line of the seller's address, carrying further address detail.",
+      "notes": []
+    },
+    {
+      "id": "BT-162",
+      "kind": "BT",
+      "name": "Seller address line 3",
+      "slug": "addressLine3",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-162"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 41,
+      "description": "Third line of the seller's address, carrying further address detail.",
+      "notes": []
+    },
+    {
+      "id": "BT-37",
+      "kind": "BT",
+      "name": "Seller city",
+      "slug": "city",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-37"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 42,
+      "description": "Town or city of the seller's address.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-38",
+      "kind": "BT",
+      "name": "Seller post code",
+      "slug": "postCode",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-38"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 43,
+      "description": "Postal code of the seller's address.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-39",
+      "kind": "BT",
+      "name": "Seller country subdivision",
+      "slug": "countrySubdivision",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-39"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 44,
+      "description": "Country subdivision (region, state, province) of the seller's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-40",
+      "kind": "BT",
+      "name": "Seller country code",
+      "slug": "countryCode",
+      "parent": "BG-5",
+      "path": [
+        "BG-4",
+        "BG-5",
+        "BT-40"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 3166-1 alpha-2",
+      "components": [],
+      "order": 45,
+      "description": "Country code of the seller's address, from ISO 3166-1 alpha-2.",
+      "notes": [
+        "Code list ISO 3166-1 alpha-2. Justification: EN 16931-1 Table 2 usage note refers to the EN ISO 3166-1 maintenance agency; CEN rule BR-CL-14 enforces ISO 3166-1 alpha-2 country codes."
+      ]
+    },
+    {
+      "id": "BG-6",
+      "kind": "BG",
+      "name": "SELLER CONTACT",
+      "slug": "contact",
+      "parent": "BG-4",
+      "path": [
+        "BG-4",
+        "BG-6"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 46,
+      "description": "Group carrying the seller's contact details.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-41",
+      "kind": "BT",
+      "name": "Seller contact point",
+      "slug": "name",
+      "parent": "BG-6",
+      "path": [
+        "BG-4",
+        "BG-6",
+        "BT-41"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 47,
+      "description": "Name of the contact point or department at the seller.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-42",
+      "kind": "BT",
+      "name": "Seller contact telephone number",
+      "slug": "telephone",
+      "parent": "BG-6",
+      "path": [
+        "BG-4",
+        "BG-6",
+        "BT-42"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 48,
+      "description": "Telephone number of the seller's contact point.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-43",
+      "kind": "BT",
+      "name": "Seller contact email address",
+      "slug": "email",
+      "parent": "BG-6",
+      "path": [
+        "BG-4",
+        "BG-6",
+        "BT-43"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 49,
+      "description": "Email address of the seller's contact point.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BG-7",
+      "kind": "BG",
+      "name": "BUYER",
+      "slug": "buyer",
+      "parent": null,
+      "path": [
+        "BG-7"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 50,
+      "description": "Group carrying the information about the buyer.",
+      "notes": []
+    },
+    {
+      "id": "BT-44",
+      "kind": "BT",
+      "name": "Buyer name",
+      "slug": "name",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BT-44"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 51,
+      "description": "Full name of the buyer as it appears in the buyer's own records.",
+      "notes": []
+    },
+    {
+      "id": "BT-45",
+      "kind": "BT",
+      "name": "Buyer trading name",
+      "slug": "tradingName",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BT-45"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 52,
+      "description": "Name the buyer is known by, where different from the buyer name.",
+      "notes": []
+    },
+    {
+      "id": "BT-46",
+      "kind": "BT",
+      "name": "Buyer identifier",
+      "slug": "identifier",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BT-46"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-46-1",
+          "role": "scheme",
+          "name": "Buyer identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 53,
+      "description": "Identification of the buyer; may carry an identification scheme identifier.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-46 is taken from the ISO 6523 ICD list; rule BR-CL-10 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-47",
+      "kind": "BT",
+      "name": "Buyer legal registration identifier",
+      "slug": "legalRegistrationIdentifier",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BT-47"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-47-1",
+          "role": "scheme",
+          "name": "Buyer legal registration identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 54,
+      "description": "Identifier issued to the buyer by an official registrar of legal entities.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-47 is taken from the ISO 6523 ICD list; rule BR-CL-11 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-48",
+      "kind": "BT",
+      "name": "Buyer VAT identifier",
+      "slug": "vatIdentifier",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BT-48"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 55,
+      "description": "VAT identifier assigned to the buyer.",
+      "notes": []
+    },
+    {
+      "id": "BT-49",
+      "kind": "BT",
+      "name": "Buyer electronic address",
+      "slug": "electronicAddress",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BT-49"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-49-1",
+          "role": "scheme",
+          "name": "Buyer electronic address identification scheme identifier",
+          "schemeList": "CEF EAS",
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "order": 56,
+      "description": "Electronic address of the buyer, with a mandatory scheme identifier saying which address scheme is used.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality.",
+        "The identification scheme of BT-49 is taken from the CEF EAS code list; rule BR-CL-25 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BG-8",
+      "kind": "BG",
+      "name": "BUYER POSTAL ADDRESS",
+      "slug": "postalAddress",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BG-8"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 57,
+      "description": "Group carrying the buyer's postal address.",
+      "notes": []
+    },
+    {
+      "id": "BT-50",
+      "kind": "BT",
+      "name": "Buyer address line 1",
+      "slug": "addressLine1",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-50"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 58,
+      "description": "First line of the buyer's address, usually street name and number or post office box.",
+      "notes": []
+    },
+    {
+      "id": "BT-51",
+      "kind": "BT",
+      "name": "Buyer address line 2",
+      "slug": "addressLine2",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-51"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 59,
+      "description": "Second line of the buyer's address, carrying further address detail.",
+      "notes": []
+    },
+    {
+      "id": "BT-163",
+      "kind": "BT",
+      "name": "Buyer address line 3",
+      "slug": "addressLine3",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-163"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 60,
+      "description": "Third line of the buyer's address, carrying further address detail.",
+      "notes": []
+    },
+    {
+      "id": "BT-52",
+      "kind": "BT",
+      "name": "Buyer city",
+      "slug": "city",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-52"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 61,
+      "description": "Town or city of the buyer's address.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-53",
+      "kind": "BT",
+      "name": "Buyer post code",
+      "slug": "postCode",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-53"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 62,
+      "description": "Postal code of the buyer's address.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-54",
+      "kind": "BT",
+      "name": "Buyer country subdivision",
+      "slug": "countrySubdivision",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-54"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 63,
+      "description": "Country subdivision (region, state, province) of the buyer's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-55",
+      "kind": "BT",
+      "name": "Buyer country code",
+      "slug": "countryCode",
+      "parent": "BG-8",
+      "path": [
+        "BG-7",
+        "BG-8",
+        "BT-55"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 3166-1 alpha-2",
+      "components": [],
+      "order": 64,
+      "description": "Country code of the buyer's address, from ISO 3166-1 alpha-2.",
+      "notes": [
+        "Code list ISO 3166-1 alpha-2. Justification: EN 16931-1 Table 2 usage note refers to the EN ISO 3166-1 maintenance agency; CEN rule BR-CL-14 enforces ISO 3166-1 alpha-2 country codes."
+      ]
+    },
+    {
+      "id": "BG-9",
+      "kind": "BG",
+      "name": "BUYER CONTACT",
+      "slug": "contact",
+      "parent": "BG-7",
+      "path": [
+        "BG-7",
+        "BG-9"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 65,
+      "description": "Group carrying the buyer's contact details.",
+      "notes": []
+    },
+    {
+      "id": "BT-56",
+      "kind": "BT",
+      "name": "Buyer contact point",
+      "slug": "name",
+      "parent": "BG-9",
+      "path": [
+        "BG-7",
+        "BG-9",
+        "BT-56"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 66,
+      "description": "Name of the contact point or department at the buyer.",
+      "notes": []
+    },
+    {
+      "id": "BT-57",
+      "kind": "BT",
+      "name": "Buyer contact telephone number",
+      "slug": "telephone",
+      "parent": "BG-9",
+      "path": [
+        "BG-7",
+        "BG-9",
+        "BT-57"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 67,
+      "description": "Telephone number of the buyer's contact point.",
+      "notes": []
+    },
+    {
+      "id": "BT-58",
+      "kind": "BT",
+      "name": "Buyer contact email address",
+      "slug": "email",
+      "parent": "BG-9",
+      "path": [
+        "BG-7",
+        "BG-9",
+        "BT-58"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 68,
+      "description": "Email address of the buyer's contact point.",
+      "notes": []
+    },
+    {
+      "id": "BG-10",
+      "kind": "BG",
+      "name": "PAYEE",
+      "slug": "payee",
+      "parent": null,
+      "path": [
+        "BG-10"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 69,
+      "description": "Group carrying the payee, used when the party receiving payment is not the seller.",
+      "notes": []
+    },
+    {
+      "id": "BT-59",
+      "kind": "BT",
+      "name": "Payee name",
+      "slug": "name",
+      "parent": "BG-10",
+      "path": [
+        "BG-10",
+        "BT-59"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 70,
+      "description": "Name of the party that is to receive the payment.",
+      "notes": []
+    },
+    {
+      "id": "BT-60",
+      "kind": "BT",
+      "name": "Payee identifier",
+      "slug": "identifier",
+      "parent": "BG-10",
+      "path": [
+        "BG-10",
+        "BT-60"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-60-1",
+          "role": "scheme",
+          "name": "Payee identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 71,
+      "description": "Identification of the payee; may carry an identification scheme identifier.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-60 is taken from the ISO 6523 ICD list; rule BR-CL-10 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-61",
+      "kind": "BT",
+      "name": "Payee legal registration identifier",
+      "slug": "legalRegistrationIdentifier",
+      "parent": "BG-10",
+      "path": [
+        "BG-10",
+        "BT-61"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-61-1",
+          "role": "scheme",
+          "name": "Payee legal registration identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 72,
+      "description": "Identifier issued to the payee by an official registrar of legal entities.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-61 is taken from the ISO 6523 ICD list; rule BR-CL-11 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BG-11",
+      "kind": "BG",
+      "name": "SELLER TAX REPRESENTATIVE PARTY",
+      "slug": "sellerTaxRepresentative",
+      "parent": null,
+      "path": [
+        "BG-11"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 73,
+      "description": "Group carrying the seller's tax representative, used when the seller has one.",
+      "notes": []
+    },
+    {
+      "id": "BT-62",
+      "kind": "BT",
+      "name": "Seller tax representative name",
+      "slug": "name",
+      "parent": "BG-11",
+      "path": [
+        "BG-11",
+        "BT-62"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 74,
+      "description": "Name of the seller's tax representative.",
+      "notes": []
+    },
+    {
+      "id": "BT-63",
+      "kind": "BT",
+      "name": "Seller tax representative VAT identifier",
+      "slug": "vatIdentifier",
+      "parent": "BG-11",
+      "path": [
+        "BG-11",
+        "BT-63"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 75,
+      "description": "The VAT identifier of the representative that BG-11 names for the seller.",
+      "notes": []
+    },
+    {
+      "id": "BG-12",
+      "kind": "BG",
+      "name": "SELLER TAX REPRESENTATIVE POSTAL ADDRESS",
+      "slug": "postalAddress",
+      "parent": "BG-11",
+      "path": [
+        "BG-11",
+        "BG-12"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 76,
+      "description": "Group carrying the postal address of the seller's tax representative.",
+      "notes": []
+    },
+    {
+      "id": "BT-64",
+      "kind": "BT",
+      "name": "Tax representative address line 1",
+      "slug": "addressLine1",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-64"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 77,
+      "description": "First line of the tax representative's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-65",
+      "kind": "BT",
+      "name": "Tax representative address line 2",
+      "slug": "addressLine2",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-65"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 78,
+      "description": "Second line of the tax representative's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-164",
+      "kind": "BT",
+      "name": "Tax representative address line 3",
+      "slug": "addressLine3",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-164"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 79,
+      "description": "Third line of the tax representative's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-66",
+      "kind": "BT",
+      "name": "Tax representative city",
+      "slug": "city",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-66"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 80,
+      "description": "Town or city of the tax representative's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-67",
+      "kind": "BT",
+      "name": "Tax representative post code",
+      "slug": "postCode",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-67"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 81,
+      "description": "Postal code of the tax representative's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-68",
+      "kind": "BT",
+      "name": "Tax representative country subdivision",
+      "slug": "countrySubdivision",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-68"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 82,
+      "description": "Country subdivision of the tax representative's address.",
+      "notes": []
+    },
+    {
+      "id": "BT-69",
+      "kind": "BT",
+      "name": "Tax representative country code",
+      "slug": "countryCode",
+      "parent": "BG-12",
+      "path": [
+        "BG-11",
+        "BG-12",
+        "BT-69"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 3166-1 alpha-2",
+      "components": [],
+      "order": 83,
+      "description": "Country code of the tax representative's address, from ISO 3166-1 alpha-2.",
+      "notes": [
+        "Code list ISO 3166-1 alpha-2. Justification: EN 16931-1 Table 2 usage note refers to the EN ISO 3166-1 maintenance agency; CEN rule BR-CL-14 enforces ISO 3166-1 alpha-2 country codes."
+      ]
+    },
+    {
+      "id": "BG-13",
+      "kind": "BG",
+      "name": "DELIVERY INFORMATION",
+      "slug": "delivery",
+      "parent": null,
+      "path": [
+        "BG-13"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 84,
+      "description": "Group saying where and when the invoiced goods or services were delivered.",
+      "notes": []
+    },
+    {
+      "id": "BT-70",
+      "kind": "BT",
+      "name": "Deliver to party name",
+      "slug": "partyName",
+      "parent": "BG-13",
+      "path": [
+        "BG-13",
+        "BT-70"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 85,
+      "description": "Name of the party the goods or services are delivered to, where different from the buyer.",
+      "notes": []
+    },
+    {
+      "id": "BT-71",
+      "kind": "BT",
+      "name": "Deliver to location identifier",
+      "slug": "locationIdentifier",
+      "parent": "BG-13",
+      "path": [
+        "BG-13",
+        "BT-71"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-71-1",
+          "role": "scheme",
+          "name": "Deliver to location identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 86,
+      "description": "Identifier of the delivery location; may carry an identification scheme identifier.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-71 is taken from the ISO 6523 ICD list; rule BR-CL-26 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-72",
+      "kind": "BT",
+      "name": "Actual delivery date",
+      "slug": "actualDeliveryDate",
+      "parent": "BG-13",
+      "path": [
+        "BG-13",
+        "BT-72"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 87,
+      "description": "Date on which the goods or services were actually delivered or completed.",
+      "notes": []
+    },
+    {
+      "id": "BG-14",
+      "kind": "BG",
+      "name": "INVOICING PERIOD",
+      "slug": "invoicingPeriod",
+      "parent": "BG-13",
+      "path": [
+        "BG-13",
+        "BG-14"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 88,
+      "description": "Group giving the period the invoice as a whole relates to.",
+      "notes": [
+        "EN 16931-1 Table 2 places INVOICING PERIOD only inside DELIVERY INFORMATION (BG-13). The KoSIT XRechnung visualization XSD declares it at the invoice root instead, so the two structures put the group in different positions; a consumer that reads both must map the position rather than assume it."
+      ]
+    },
+    {
+      "id": "BT-73",
+      "kind": "BT",
+      "name": "Invoicing period start date",
+      "slug": "startDate",
+      "parent": "BG-14",
+      "path": [
+        "BG-13",
+        "BG-14",
+        "BT-73"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 89,
+      "description": "First day of the invoicing period.",
+      "notes": []
+    },
+    {
+      "id": "BT-74",
+      "kind": "BT",
+      "name": "Invoicing period end date",
+      "slug": "endDate",
+      "parent": "BG-14",
+      "path": [
+        "BG-13",
+        "BG-14",
+        "BT-74"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 90,
+      "description": "Last day of the invoicing period.",
+      "notes": []
+    },
+    {
+      "id": "BG-15",
+      "kind": "BG",
+      "name": "DELIVER TO ADDRESS",
+      "slug": "address",
+      "parent": "BG-13",
+      "path": [
+        "BG-13",
+        "BG-15"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 91,
+      "description": "Group carrying the address the goods or services are delivered to.",
+      "notes": []
+    },
+    {
+      "id": "BT-75",
+      "kind": "BT",
+      "name": "Deliver to address line 1",
+      "slug": "addressLine1",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-75"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 92,
+      "description": "First line of the deliver-to address.",
+      "notes": []
+    },
+    {
+      "id": "BT-76",
+      "kind": "BT",
+      "name": "Deliver to address line 2",
+      "slug": "addressLine2",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-76"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 93,
+      "description": "Second line of the deliver-to address.",
+      "notes": []
+    },
+    {
+      "id": "BT-165",
+      "kind": "BT",
+      "name": "Deliver to address line 3",
+      "slug": "addressLine3",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-165"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 94,
+      "description": "Third line of the deliver-to address.",
+      "notes": []
+    },
+    {
+      "id": "BT-77",
+      "kind": "BT",
+      "name": "Deliver to city",
+      "slug": "city",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-77"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 95,
+      "description": "Town or city of the deliver-to address.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-78",
+      "kind": "BT",
+      "name": "Deliver to post code",
+      "slug": "postCode",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-78"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 96,
+      "description": "Postal code of the deliver-to address.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-79",
+      "kind": "BT",
+      "name": "Deliver to country subdivision",
+      "slug": "countrySubdivision",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-79"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 97,
+      "description": "Country subdivision of the deliver-to address.",
+      "notes": []
+    },
+    {
+      "id": "BT-80",
+      "kind": "BT",
+      "name": "Deliver to country code",
+      "slug": "countryCode",
+      "parent": "BG-15",
+      "path": [
+        "BG-13",
+        "BG-15",
+        "BT-80"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 3166-1 alpha-2",
+      "components": [],
+      "order": 98,
+      "description": "Country code of the deliver-to address, from ISO 3166-1 alpha-2.",
+      "notes": [
+        "Code list ISO 3166-1 alpha-2. Justification: EN 16931-1 Table 2 usage note refers to the EN ISO 3166-1 maintenance agency; CEN rule BR-CL-14 enforces ISO 3166-1 alpha-2 country codes."
+      ]
+    },
+    {
+      "id": "BG-16",
+      "kind": "BG",
+      "name": "PAYMENT INSTRUCTIONS",
+      "slug": "paymentInstructions",
+      "parent": null,
+      "path": [
+        "BG-16"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 99,
+      "description": "Group saying how the payment is expected to be made.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-81",
+      "kind": "BT",
+      "name": "Payment means type code",
+      "slug": "paymentMeansTypeCode",
+      "parent": "BG-16",
+      "path": [
+        "BG-16",
+        "BT-81"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 4461",
+      "components": [],
+      "order": 100,
+      "description": "Code for the means of payment expected or used, from UNTDID 4461.",
+      "notes": [
+        "Code list UNTDID 4461. Justification: Table 2 of EN 16931-1 names that list for BT-81, and CEN rule BR-CL-16 holds documents to it."
+      ]
+    },
+    {
+      "id": "BT-82",
+      "kind": "BT",
+      "name": "Payment means text",
+      "slug": "paymentMeansText",
+      "parent": "BG-16",
+      "path": [
+        "BG-16",
+        "BT-82"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 101,
+      "description": "Textual name of the payment means, complementing the payment means code.",
+      "notes": []
+    },
+    {
+      "id": "BT-83",
+      "kind": "BT",
+      "name": "Remittance information",
+      "slug": "remittanceInformation",
+      "parent": "BG-16",
+      "path": [
+        "BG-16",
+        "BT-83"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 102,
+      "description": "Reference the payee uses to reconcile the incoming payment with this invoice.",
+      "notes": []
+    },
+    {
+      "id": "BG-17",
+      "kind": "BG",
+      "name": "CREDIT TRANSFER",
+      "slug": "creditTransfers",
+      "parent": "BG-16",
+      "path": [
+        "BG-16",
+        "BG-17"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 103,
+      "description": "Group carrying the credit transfer details for the payment.",
+      "notes": []
+    },
+    {
+      "id": "BT-84",
+      "kind": "BT",
+      "name": "Payment account identifier",
+      "slug": "accountIdentifier",
+      "parent": "BG-17",
+      "path": [
+        "BG-16",
+        "BG-17",
+        "BT-84"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 104,
+      "description": "Identifier of the account the payment is to be credited to, e.g. an IBAN.",
+      "notes": []
+    },
+    {
+      "id": "BT-85",
+      "kind": "BT",
+      "name": "Payment account name",
+      "slug": "accountName",
+      "parent": "BG-17",
+      "path": [
+        "BG-16",
+        "BG-17",
+        "BT-85"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 105,
+      "description": "Name of the account holder of the payment account.",
+      "notes": []
+    },
+    {
+      "id": "BT-86",
+      "kind": "BT",
+      "name": "Payment service provider identifier",
+      "slug": "serviceProviderIdentifier",
+      "parent": "BG-17",
+      "path": [
+        "BG-16",
+        "BG-17",
+        "BT-86"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 106,
+      "description": "Identifier of the payment service provider holding the account, e.g. a BIC.",
+      "notes": []
+    },
+    {
+      "id": "BG-18",
+      "kind": "BG",
+      "name": "PAYMENT CARD INFORMATION",
+      "slug": "card",
+      "parent": "BG-16",
+      "path": [
+        "BG-16",
+        "BG-18"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 107,
+      "description": "Group carrying the payment card details used for the payment.",
+      "notes": []
+    },
+    {
+      "id": "BT-87",
+      "kind": "BT",
+      "name": "Payment card primary account number",
+      "slug": "primaryAccountNumber",
+      "parent": "BG-18",
+      "path": [
+        "BG-16",
+        "BG-18",
+        "BT-87"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 108,
+      "description": "Primary account number of the payment card; only part of the number may be shown.",
+      "notes": []
+    },
+    {
+      "id": "BT-88",
+      "kind": "BT",
+      "name": "Payment card holder name",
+      "slug": "holderName",
+      "parent": "BG-18",
+      "path": [
+        "BG-16",
+        "BG-18",
+        "BT-88"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 109,
+      "description": "Name of the payment card holder.",
+      "notes": []
+    },
+    {
+      "id": "BG-19",
+      "kind": "BG",
+      "name": "DIRECT DEBIT",
+      "slug": "directDebit",
+      "parent": "BG-16",
+      "path": [
+        "BG-16",
+        "BG-19"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 110,
+      "description": "Group carrying the direct debit details for the payment.",
+      "notes": []
+    },
+    {
+      "id": "BT-89",
+      "kind": "BT",
+      "name": "Mandate reference identifier",
+      "slug": "mandateReferenceIdentifier",
+      "parent": "BG-19",
+      "path": [
+        "BG-16",
+        "BG-19",
+        "BT-89"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 111,
+      "description": "Reference of the direct debit mandate agreed between payer and payee.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-90",
+      "kind": "BT",
+      "name": "Bank assigned creditor identifier",
+      "slug": "bankAssignedCreditorIdentifier",
+      "parent": "BG-19",
+      "path": [
+        "BG-16",
+        "BG-19",
+        "BT-90"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 112,
+      "description": "Creditor identifier assigned to the payee by its bank or by the direct debit scheme.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-91",
+      "kind": "BT",
+      "name": "Debited account identifier",
+      "slug": "debitedAccountIdentifier",
+      "parent": "BG-19",
+      "path": [
+        "BG-16",
+        "BG-19",
+        "BT-91"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 113,
+      "description": "The account that the direct debit of BG-19 takes its money from.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BG-20",
+      "kind": "BG",
+      "name": "DOCUMENT LEVEL ALLOWANCES",
+      "slug": "documentLevelAllowances",
+      "parent": null,
+      "path": [
+        "BG-20"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 114,
+      "description": "Group carrying an allowance that applies to the invoice as a whole.",
+      "notes": []
+    },
+    {
+      "id": "BT-92",
+      "kind": "BT",
+      "name": "Document level allowance amount",
+      "slug": "amount",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-92"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 115,
+      "description": "Amount of the document level allowance, without VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-93",
+      "kind": "BT",
+      "name": "Document level allowance base amount",
+      "slug": "baseAmount",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-93"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 116,
+      "description": "Base amount the document level allowance percentage is applied to.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-94",
+      "kind": "BT",
+      "name": "Document level allowance percentage",
+      "slug": "percentage",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-94"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 117,
+      "description": "Percentage applied to the base amount to derive the document level allowance amount.",
+      "notes": []
+    },
+    {
+      "id": "BT-95",
+      "kind": "BT",
+      "name": "Document level allowance VAT category code",
+      "slug": "vatCategoryCode",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-95"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 5305",
+      "components": [],
+      "order": 118,
+      "description": "VAT category code that applies to the document level allowance.",
+      "notes": [
+        "Code list UNTDID 5305. Justification: EN 16931-1 Table 2 usage note for BT-95 lists entries of UNTDID 5305; CEN rule BR-CL-17 enforces that list for document level tax categories."
+      ]
+    },
+    {
+      "id": "BT-96",
+      "kind": "BT",
+      "name": "Document level allowance VAT rate",
+      "slug": "vatRate",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-96"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 119,
+      "description": "VAT rate that applies to the document level allowance, as a percentage.",
+      "notes": []
+    },
+    {
+      "id": "BT-97",
+      "kind": "BT",
+      "name": "Document level allowance reason",
+      "slug": "reason",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-97"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 120,
+      "description": "Textual reason for the document level allowance.",
+      "notes": []
+    },
+    {
+      "id": "BT-98",
+      "kind": "BT",
+      "name": "Document level allowance reason code",
+      "slug": "reasonCode",
+      "parent": "BG-20",
+      "path": [
+        "BG-20",
+        "BT-98"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 5189",
+      "components": [],
+      "order": 121,
+      "description": "Coded reason for the document level allowance, from UNTDID 5189.",
+      "notes": [
+        "Code list UNTDID 5189. Justification: Table 2 of EN 16931-1 names that list for BT-98, and CEN rule BR-CL-19 carries the same set of codes."
+      ]
+    },
+    {
+      "id": "BG-21",
+      "kind": "BG",
+      "name": "DOCUMENT LEVEL CHARGES",
+      "slug": "documentLevelCharges",
+      "parent": null,
+      "path": [
+        "BG-21"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 122,
+      "description": "Group carrying a charge (cost or non-VAT tax) that applies to the invoice as a whole.",
+      "notes": []
+    },
+    {
+      "id": "BT-99",
+      "kind": "BT",
+      "name": "Document level charge amount",
+      "slug": "amount",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-99"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 123,
+      "description": "Amount of the document level charge, without VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-100",
+      "kind": "BT",
+      "name": "Document level charge base amount",
+      "slug": "baseAmount",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-100"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 124,
+      "description": "Base amount the document level charge percentage is applied to.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-101",
+      "kind": "BT",
+      "name": "Document level charge percentage",
+      "slug": "percentage",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-101"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 125,
+      "description": "Percentage applied to the base amount to derive the document level charge amount.",
+      "notes": []
+    },
+    {
+      "id": "BT-102",
+      "kind": "BT",
+      "name": "Document level charge VAT category code",
+      "slug": "vatCategoryCode",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-102"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 5305",
+      "components": [],
+      "order": 126,
+      "description": "VAT category code that applies to the document level charge.",
+      "notes": [
+        "Code list UNTDID 5305. Justification: EN 16931-1 Table 2 usage note for BT-102 lists entries of UNTDID 5305; CEN rule BR-CL-17 enforces that list for document level tax categories."
+      ]
+    },
+    {
+      "id": "BT-103",
+      "kind": "BT",
+      "name": "Document level charge VAT rate",
+      "slug": "vatRate",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-103"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 127,
+      "description": "VAT rate that applies to the document level charge, as a percentage.",
+      "notes": []
+    },
+    {
+      "id": "BT-104",
+      "kind": "BT",
+      "name": "Document level charge reason",
+      "slug": "reason",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-104"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 128,
+      "description": "Textual reason for the document level charge.",
+      "notes": []
+    },
+    {
+      "id": "BT-105",
+      "kind": "BT",
+      "name": "Document level charge reason code",
+      "slug": "reasonCode",
+      "parent": "BG-21",
+      "path": [
+        "BG-21",
+        "BT-105"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 7161",
+      "components": [],
+      "order": 129,
+      "description": "Coded reason for the document level charge, from UNTDID 7161.",
+      "notes": [
+        "Code list UNTDID 7161. Justification: Table 2 of EN 16931-1 names that list for BT-105, and CEN rule BR-CL-20 carries the same set of codes."
+      ]
+    },
+    {
+      "id": "BG-22",
+      "kind": "BG",
+      "name": "DOCUMENT TOTALS",
+      "slug": "documentTotals",
+      "parent": null,
+      "path": [
+        "BG-22"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 130,
+      "description": "Group carrying the monetary totals of the invoice.",
+      "notes": []
+    },
+    {
+      "id": "BT-106",
+      "kind": "BT",
+      "name": "Sum of Invoice line net amount",
+      "slug": "sumOfLineNetAmounts",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-106"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 131,
+      "description": "Total of the net amounts of all invoice lines.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-107",
+      "kind": "BT",
+      "name": "Sum of allowances on document level",
+      "slug": "sumOfAllowances",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-107"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 132,
+      "description": "Sum of all document level allowance amounts.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-108",
+      "kind": "BT",
+      "name": "Sum of charges on document level",
+      "slug": "sumOfCharges",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-108"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 133,
+      "description": "Sum of all document level charge amounts.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-109",
+      "kind": "BT",
+      "name": "Invoice total amount without VAT",
+      "slug": "totalWithoutVat",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-109"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 134,
+      "description": "Total invoice amount excluding VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-110",
+      "kind": "BT",
+      "name": "Invoice total VAT amount",
+      "slug": "totalVatAmount",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-110"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 135,
+      "description": "Total VAT amount of the invoice.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-111",
+      "kind": "BT",
+      "name": "Invoice total VAT amount in accounting currency",
+      "slug": "totalVatAmountInAccountingCurrency",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-111"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 136,
+      "description": "Total VAT amount expressed in the VAT accounting currency.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-112",
+      "kind": "BT",
+      "name": "Invoice total amount with VAT",
+      "slug": "totalWithVat",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-112"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 137,
+      "description": "Total invoice amount including VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-113",
+      "kind": "BT",
+      "name": "Paid amount",
+      "slug": "paidAmount",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-113"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 138,
+      "description": "Amount already paid in advance for this invoice.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-114",
+      "kind": "BT",
+      "name": "Rounding amount",
+      "slug": "roundingAmount",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-114"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 139,
+      "description": "Amount added to round the amount due for payment.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-115",
+      "kind": "BT",
+      "name": "Amount due for payment",
+      "slug": "amountDueForPayment",
+      "parent": "BG-22",
+      "path": [
+        "BG-22",
+        "BT-115"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 140,
+      "description": "Outstanding amount still to be paid.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BG-23",
+      "kind": "BG",
+      "name": "VAT BREAKDOWN",
+      "slug": "vatBreakdowns",
+      "parent": null,
+      "path": [
+        "BG-23"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 141,
+      "description": "Group breaking the invoice down by VAT category, rate and exemption reason.",
+      "notes": []
+    },
+    {
+      "id": "BT-116",
+      "kind": "BT",
+      "name": "VAT category taxable amount",
+      "slug": "taxableAmount",
+      "parent": "BG-23",
+      "path": [
+        "BG-23",
+        "BT-116"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 142,
+      "description": "Sum of taxable amounts subject to one VAT category and rate.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-117",
+      "kind": "BT",
+      "name": "VAT category tax amount",
+      "slug": "taxAmount",
+      "parent": "BG-23",
+      "path": [
+        "BG-23",
+        "BT-117"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 143,
+      "description": "VAT amount calculated for one VAT category and rate.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-118",
+      "kind": "BT",
+      "name": "VAT category code",
+      "slug": "vatCategoryCode",
+      "parent": "BG-23",
+      "path": [
+        "BG-23",
+        "BT-118"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 5305",
+      "components": [],
+      "order": 144,
+      "description": "Code for the VAT category of this breakdown line, from UNTDID 5305.",
+      "notes": [
+        "Code list UNTDID 5305. Justification: EN 16931-1 Table 2 usage note for BT-118 lists entries of UNTDID 5305; CEN rule BR-CL-17 enforces that list."
+      ]
+    },
+    {
+      "id": "BT-119",
+      "kind": "BT",
+      "name": "VAT category rate",
+      "slug": "vatRate",
+      "parent": "BG-23",
+      "path": [
+        "BG-23",
+        "BT-119"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 145,
+      "description": "VAT rate of this breakdown line, as a percentage.",
+      "notes": [
+        "XRechnung 3.0.2 restricts this term to 1..1; this registry records the EN 16931-1 cardinality."
+      ]
+    },
+    {
+      "id": "BT-120",
+      "kind": "BT",
+      "name": "VAT exemption reason text",
+      "slug": "exemptionReasonText",
+      "parent": "BG-23",
+      "path": [
+        "BG-23",
+        "BT-120"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 146,
+      "description": "Textual reason why the amounts in this breakdown line are exempt from VAT or not subject to it.",
+      "notes": []
+    },
+    {
+      "id": "BT-121",
+      "kind": "BT",
+      "name": "VAT exemption reason code",
+      "slug": "exemptionReasonCode",
+      "parent": "BG-23",
+      "path": [
+        "BG-23",
+        "BT-121"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "VATEX",
+      "components": [],
+      "order": 147,
+      "description": "Coded reason why the amounts in this breakdown line are exempt from VAT or not subject to it.",
+      "notes": [
+        "Code list VATEX. Justification: Table 2 of EN 16931-1 points BT-121 at a list the Connecting Europe Facility publishes and keeps, and CEN rule BR-CL-22 names that list CEF VATEX."
+      ]
+    },
+    {
+      "id": "BG-24",
+      "kind": "BG",
+      "name": "ADDITIONAL SUPPORTING DOCUMENTS",
+      "slug": "additionalSupportingDocuments",
+      "parent": null,
+      "path": [
+        "BG-24"
+      ],
+      "depth": 0,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 148,
+      "description": "Group referencing a supporting document that backs the claims made in the invoice.",
+      "notes": []
+    },
+    {
+      "id": "BT-122",
+      "kind": "BT",
+      "name": "Supporting document reference",
+      "slug": "reference",
+      "parent": "BG-24",
+      "path": [
+        "BG-24",
+        "BT-122"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 149,
+      "description": "Reference that identifies the supporting document.",
+      "notes": []
+    },
+    {
+      "id": "BT-123",
+      "kind": "BT",
+      "name": "Supporting document description",
+      "slug": "description",
+      "parent": "BG-24",
+      "path": [
+        "BG-24",
+        "BT-123"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 150,
+      "description": "Textual description of the supporting document.",
+      "notes": []
+    },
+    {
+      "id": "BT-124",
+      "kind": "BT",
+      "name": "External document location",
+      "slug": "externalLocation",
+      "parent": "BG-24",
+      "path": [
+        "BG-24",
+        "BT-124"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 151,
+      "description": "Internet address where the external supporting document can be retrieved.",
+      "notes": []
+    },
+    {
+      "id": "BT-125",
+      "kind": "BT",
+      "name": "Attached document",
+      "slug": "attachment",
+      "parent": "BG-24",
+      "path": [
+        "BG-24",
+        "BT-125"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "BinaryObject",
+      "components": [
+        {
+          "id": "BT-125-1",
+          "role": "mimeCode",
+          "name": "Attached document Mime code",
+          "min": 1,
+          "max": 1
+        },
+        {
+          "id": "BT-125-2",
+          "role": "filename",
+          "name": "Attached document Filename",
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "order": 152,
+      "description": "Supporting document embedded in the invoice as a binary object, with mime code and file name.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member."
+      ]
+    },
+    {
+      "id": "BG-25",
+      "kind": "BG",
+      "name": "INVOICE LINE",
+      "slug": "invoiceLines",
+      "parent": null,
+      "path": [
+        "BG-25"
+      ],
+      "depth": 0,
+      "min": 1,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 153,
+      "description": "Group carrying one invoice line.",
+      "notes": []
+    },
+    {
+      "id": "BT-126",
+      "kind": "BT",
+      "name": "Invoice line identifier",
+      "slug": "identifier",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-126"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 154,
+      "description": "Identifier of the invoice line, unique within the invoice.",
+      "notes": []
+    },
+    {
+      "id": "BT-127",
+      "kind": "BT",
+      "name": "Invoice line note",
+      "slug": "note",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-127"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 155,
+      "description": "Free-text note about the invoice line.",
+      "notes": []
+    },
+    {
+      "id": "BT-128",
+      "kind": "BT",
+      "name": "Invoice line object identifier",
+      "slug": "objectIdentifier",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-128"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-128-1",
+          "role": "scheme",
+          "name": "Invoice line object identifier identification scheme identifier",
+          "schemeList": "UNTDID 1153",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 156,
+      "description": "Identifier of an object the invoice line is based on, given by the seller.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-128 is taken from a restriction of UNTDID 1153; rule BR-CL-07 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-129",
+      "kind": "BT",
+      "name": "Invoiced quantity",
+      "slug": "quantity",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-129"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Quantity",
+      "components": [],
+      "order": 157,
+      "description": "Quantity of items invoiced on this line.",
+      "notes": [
+        "EN 16931-1:2017+A1:2019/AC:2020 states that the number of fraction digits of this semantic data type is not limited; Table 26 does not restrict this term.",
+        "EN 16931-1 Table 2 neither permits nor forbids a negative value for this term. The informative example A.1.6 of the standard (negative invoice line) uses one, so an implementation should be prepared for it; this is an observation about the standard’s examples, not a rule of Table 2."
+      ]
+    },
+    {
+      "id": "BT-130",
+      "kind": "BT",
+      "name": "Invoiced quantity unit of measure code",
+      "slug": "quantityUnitCode",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-130"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UN/ECE Recommendation 20 with Rec 21 extension",
+      "components": [],
+      "order": 158,
+      "description": "Unit of measure code for the invoiced quantity, from UN/ECE Recommendation 20 with the Recommendation 21 extension.",
+      "notes": [
+        "Code list UN/ECE Recommendation 20 with Rec 21 extension. Justification: EN 16931-1 Table 2 usage note for BT-130 refers to the lists of UN/ECE Recommendation 20 and UN/ECE Recommendation 21; CEN rule BR-CL-23 enforces Recommendation 20 with the Recommendation 21 extension."
+      ]
+    },
+    {
+      "id": "BT-131",
+      "kind": "BT",
+      "name": "Invoice line net amount",
+      "slug": "netAmount",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-131"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 159,
+      "description": "Net amount of the invoice line, after line allowances and charges and excluding VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-132",
+      "kind": "BT",
+      "name": "Referenced purchase order line reference",
+      "slug": "purchaseOrderLineReference",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-132"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "DocumentReference",
+      "components": [],
+      "order": 160,
+      "description": "Identifier of the purchase order line this invoice line refers to.",
+      "notes": []
+    },
+    {
+      "id": "BT-133",
+      "kind": "BT",
+      "name": "Invoice line Buyer accounting reference",
+      "slug": "buyerAccountingReference",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-133"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 161,
+      "description": "Textual reference telling the buyer which ledger account to book this invoice line to.",
+      "notes": []
+    },
+    {
+      "id": "BG-26",
+      "kind": "BG",
+      "name": "INVOICE LINE PERIOD",
+      "slug": "period",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-26"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 162,
+      "description": "Group giving the period this invoice line relates to.",
+      "notes": []
+    },
+    {
+      "id": "BT-134",
+      "kind": "BT",
+      "name": "Invoice line period start date",
+      "slug": "startDate",
+      "parent": "BG-26",
+      "path": [
+        "BG-25",
+        "BG-26",
+        "BT-134"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 163,
+      "description": "First day of the invoice line period.",
+      "notes": []
+    },
+    {
+      "id": "BT-135",
+      "kind": "BT",
+      "name": "Invoice line period end date",
+      "slug": "endDate",
+      "parent": "BG-26",
+      "path": [
+        "BG-25",
+        "BG-26",
+        "BT-135"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Date",
+      "components": [],
+      "order": 164,
+      "description": "Last day of the invoice line period.",
+      "notes": []
+    },
+    {
+      "id": "BG-27",
+      "kind": "BG",
+      "name": "INVOICE LINE ALLOWANCES",
+      "slug": "allowances",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-27"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 165,
+      "description": "Group carrying an allowance that applies to this invoice line.",
+      "notes": []
+    },
+    {
+      "id": "BT-136",
+      "kind": "BT",
+      "name": "Invoice line allowance amount",
+      "slug": "amount",
+      "parent": "BG-27",
+      "path": [
+        "BG-25",
+        "BG-27",
+        "BT-136"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 166,
+      "description": "Amount of the invoice line allowance, without VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-137",
+      "kind": "BT",
+      "name": "Invoice line allowance base amount",
+      "slug": "baseAmount",
+      "parent": "BG-27",
+      "path": [
+        "BG-25",
+        "BG-27",
+        "BT-137"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 167,
+      "description": "Base amount the invoice line allowance percentage is applied to.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-138",
+      "kind": "BT",
+      "name": "Invoice line allowance percentage",
+      "slug": "percentage",
+      "parent": "BG-27",
+      "path": [
+        "BG-25",
+        "BG-27",
+        "BT-138"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 168,
+      "description": "Percentage applied to the base amount to derive the invoice line allowance amount.",
+      "notes": []
+    },
+    {
+      "id": "BT-139",
+      "kind": "BT",
+      "name": "Invoice line allowance reason",
+      "slug": "reason",
+      "parent": "BG-27",
+      "path": [
+        "BG-25",
+        "BG-27",
+        "BT-139"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 169,
+      "description": "Textual reason for the invoice line allowance.",
+      "notes": []
+    },
+    {
+      "id": "BT-140",
+      "kind": "BT",
+      "name": "Invoice line allowance reason code",
+      "slug": "reasonCode",
+      "parent": "BG-27",
+      "path": [
+        "BG-25",
+        "BG-27",
+        "BT-140"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 5189",
+      "components": [],
+      "order": 170,
+      "description": "Coded reason for the invoice line allowance, from UNTDID 5189.",
+      "notes": [
+        "Code list UNTDID 5189. Justification: Table 2 of EN 16931-1 names that list for BT-140, and CEN rule BR-CL-19 carries the same set of codes."
+      ]
+    },
+    {
+      "id": "BG-28",
+      "kind": "BG",
+      "name": "INVOICE LINE CHARGES",
+      "slug": "charges",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-28"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 171,
+      "description": "Group carrying a charge that applies to this invoice line.",
+      "notes": []
+    },
+    {
+      "id": "BT-141",
+      "kind": "BT",
+      "name": "Invoice line charge amount",
+      "slug": "amount",
+      "parent": "BG-28",
+      "path": [
+        "BG-25",
+        "BG-28",
+        "BT-141"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 172,
+      "description": "Amount of the invoice line charge, without VAT.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-142",
+      "kind": "BT",
+      "name": "Invoice line charge base amount",
+      "slug": "baseAmount",
+      "parent": "BG-28",
+      "path": [
+        "BG-25",
+        "BG-28",
+        "BT-142"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Amount",
+      "maxDecimals": 2,
+      "components": [],
+      "order": 173,
+      "description": "Base amount the invoice line charge percentage is applied to.",
+      "notes": [
+        "EN 16931-1, 6.5.12, Table 26 allows at most two fraction digits for this amount."
+      ]
+    },
+    {
+      "id": "BT-143",
+      "kind": "BT",
+      "name": "Invoice line charge percentage",
+      "slug": "percentage",
+      "parent": "BG-28",
+      "path": [
+        "BG-25",
+        "BG-28",
+        "BT-143"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 174,
+      "description": "Percentage applied to the base amount to derive the invoice line charge amount.",
+      "notes": []
+    },
+    {
+      "id": "BT-144",
+      "kind": "BT",
+      "name": "Invoice line charge reason",
+      "slug": "reason",
+      "parent": "BG-28",
+      "path": [
+        "BG-25",
+        "BG-28",
+        "BT-144"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 175,
+      "description": "Textual reason for the invoice line charge.",
+      "notes": []
+    },
+    {
+      "id": "BT-145",
+      "kind": "BT",
+      "name": "Invoice line charge reason code",
+      "slug": "reasonCode",
+      "parent": "BG-28",
+      "path": [
+        "BG-25",
+        "BG-28",
+        "BT-145"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 7161",
+      "components": [],
+      "order": 176,
+      "description": "Coded reason for the invoice line charge, from UNTDID 7161.",
+      "notes": [
+        "Code list UNTDID 7161. Justification: Table 2 of EN 16931-1 names that list for BT-145, and CEN rule BR-CL-20 carries the same set of codes."
+      ]
+    },
+    {
+      "id": "BG-29",
+      "kind": "BG",
+      "name": "PRICE DETAILS",
+      "slug": "price",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-29"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 177,
+      "description": "Group carrying the price information for the item on this invoice line.",
+      "notes": []
+    },
+    {
+      "id": "BT-146",
+      "kind": "BT",
+      "name": "Item net price",
+      "slug": "netPrice",
+      "parent": "BG-29",
+      "path": [
+        "BG-25",
+        "BG-29",
+        "BT-146"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "UnitPriceAmount",
+      "components": [],
+      "order": 178,
+      "description": "Price of one item unit excluding VAT, after subtracting the item price discount.",
+      "notes": [
+        "EN 16931-1:2017+A1:2019/AC:2020 states that the number of fraction digits of this semantic data type is not limited; Table 26 does not restrict this term."
+      ]
+    },
+    {
+      "id": "BT-147",
+      "kind": "BT",
+      "name": "Item price discount",
+      "slug": "discount",
+      "parent": "BG-29",
+      "path": [
+        "BG-25",
+        "BG-29",
+        "BT-147"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "UnitPriceAmount",
+      "components": [],
+      "order": 179,
+      "description": "Discount subtracted from the item gross price to arrive at the item net price.",
+      "notes": [
+        "EN 16931-1:2017+A1:2019/AC:2020 states that the number of fraction digits of this semantic data type is not limited; Table 26 does not restrict this term."
+      ]
+    },
+    {
+      "id": "BT-148",
+      "kind": "BT",
+      "name": "Item gross price",
+      "slug": "grossPrice",
+      "parent": "BG-29",
+      "path": [
+        "BG-25",
+        "BG-29",
+        "BT-148"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "UnitPriceAmount",
+      "components": [],
+      "order": 180,
+      "description": "Unit price excluding VAT before the item price discount is subtracted.",
+      "notes": [
+        "EN 16931-1:2017+A1:2019/AC:2020 states that the number of fraction digits of this semantic data type is not limited; Table 26 does not restrict this term."
+      ]
+    },
+    {
+      "id": "BT-149",
+      "kind": "BT",
+      "name": "Item price base quantity",
+      "slug": "baseQuantity",
+      "parent": "BG-29",
+      "path": [
+        "BG-25",
+        "BG-29",
+        "BT-149"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Quantity",
+      "components": [],
+      "order": 181,
+      "description": "Number of item units the item price applies to.",
+      "notes": [
+        "EN 16931-1:2017+A1:2019/AC:2020 states that the number of fraction digits of this semantic data type is not limited; Table 26 does not restrict this term."
+      ]
+    },
+    {
+      "id": "BT-150",
+      "kind": "BT",
+      "name": "Item price base quantity unit of measure code",
+      "slug": "baseQuantityUnitCode",
+      "parent": "BG-29",
+      "path": [
+        "BG-25",
+        "BG-29",
+        "BT-150"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UN/ECE Recommendation 20 with Rec 21 extension",
+      "components": [],
+      "order": 182,
+      "description": "Unit of measure code for the item price base quantity; must match the invoiced quantity unit.",
+      "notes": [
+        "The KoSIT XRechnung semantic-model XSD names this element “Item price base quantity unit of measure”.",
+        "Code list UN/ECE Recommendation 20 with Rec 21 extension. Justification: EN 16931-1 Table 2 usage note for BT-150 requires the same unit code list as BT-130; CEN rule BR-CL-23 enforces Recommendation 20 with the Recommendation 21 extension."
+      ]
+    },
+    {
+      "id": "BG-30",
+      "kind": "BG",
+      "name": "LINE VAT INFORMATION",
+      "slug": "vat",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-30"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 183,
+      "description": "Group carrying the VAT information that applies to the item on this invoice line.",
+      "notes": []
+    },
+    {
+      "id": "BT-151",
+      "kind": "BT",
+      "name": "Invoiced item VAT category code",
+      "slug": "vatCategoryCode",
+      "parent": "BG-30",
+      "path": [
+        "BG-25",
+        "BG-30",
+        "BT-151"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "UNTDID 5305",
+      "components": [],
+      "order": 184,
+      "description": "VAT category code that applies to the invoiced item, from UNTDID 5305.",
+      "notes": [
+        "Code list UNTDID 5305. Justification: EN 16931-1 Table 2 usage note for BT-151 lists entries of UNTDID 5305; CEN rule BR-CL-18 enforces that list for line level tax categories."
+      ]
+    },
+    {
+      "id": "BT-152",
+      "kind": "BT",
+      "name": "Invoiced item VAT rate",
+      "slug": "vatRate",
+      "parent": "BG-30",
+      "path": [
+        "BG-25",
+        "BG-30",
+        "BT-152"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Percentage",
+      "components": [],
+      "order": 185,
+      "description": "VAT rate that applies to the invoiced item, as a percentage.",
+      "notes": []
+    },
+    {
+      "id": "BG-31",
+      "kind": "BG",
+      "name": "ITEM INFORMATION",
+      "slug": "item",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BG-31"
+      ],
+      "depth": 1,
+      "min": 1,
+      "max": 1,
+      "datatype": null,
+      "components": [],
+      "order": 186,
+      "description": "Group describing the goods or services invoiced on this line.",
+      "notes": []
+    },
+    {
+      "id": "BT-153",
+      "kind": "BT",
+      "name": "Item name",
+      "slug": "name",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-153"
+      ],
+      "depth": 2,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 187,
+      "description": "Name of the invoiced item.",
+      "notes": []
+    },
+    {
+      "id": "BT-154",
+      "kind": "BT",
+      "name": "Item description",
+      "slug": "description",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-154"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 188,
+      "description": "Textual description of the invoiced item.",
+      "notes": []
+    },
+    {
+      "id": "BT-155",
+      "kind": "BT",
+      "name": "Item Seller's identifier",
+      "slug": "sellerIdentifier",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-155"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 189,
+      "description": "Identifier the seller uses for the invoiced item.",
+      "notes": []
+    },
+    {
+      "id": "BT-156",
+      "kind": "BT",
+      "name": "Item Buyer's identifier",
+      "slug": "buyerIdentifier",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-156"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [],
+      "order": 190,
+      "description": "Identifier the buyer uses for the invoiced item.",
+      "notes": []
+    },
+    {
+      "id": "BT-157",
+      "kind": "BT",
+      "name": "Item standard identifier",
+      "slug": "standardIdentifier",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-157"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-157-1",
+          "role": "scheme",
+          "name": "Item standard identifier identification scheme identifier",
+          "schemeList": "ISO 6523 ICD",
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "order": 191,
+      "description": "Item identifier from a registered standard scheme, with a mandatory scheme identifier.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-157 is taken from the ISO 6523 ICD list; rule BR-CL-21 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-158",
+      "kind": "BT",
+      "name": "Item classification identifier",
+      "slug": "classificationIdentifiers",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-158"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": "n",
+      "datatype": "Identifier",
+      "components": [
+        {
+          "id": "BT-158-1",
+          "role": "scheme",
+          "name": "Item classification identifier identification scheme identifier",
+          "schemeList": "UNTDID 7143",
+          "min": 1,
+          "max": 1
+        },
+        {
+          "id": "BT-158-2",
+          "role": "schemeVersion",
+          "name": "Item classification identifier identification scheme version identifier",
+          "min": 0,
+          "max": 1
+        }
+      ],
+      "order": 192,
+      "description": "Item classification code from a classification scheme, with a mandatory scheme identifier and optional scheme version.",
+      "notes": [
+        "The BT-x-y style is the numbering implementers commonly use for supplementary components. It could not be verified against CEN/TS 16931-3-2 or CEN/TS 16931-3-3, which are outside the free-access licence and were not obtained for this project. EN 16931-1 Table 2 lists the components without an id, so the component id here is an informative label and 'role' is the normative-facing member.",
+        "The identification scheme of BT-158 is taken from the UNTDID 7143 list; rule BR-CL-13 of the CEN validation artefacts (EN16931-UBL-codes.sch, eInvoicing-EN16931 1.3.16) fixes it. schemeList records the name for documentation: membership of a code list is a business rule and is not checked by the structural layers."
+      ]
+    },
+    {
+      "id": "BT-159",
+      "kind": "BT",
+      "name": "Item country of origin",
+      "slug": "countryOfOrigin",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-159"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": 1,
+      "datatype": "Code",
+      "codeList": "ISO 3166-1 alpha-2",
+      "components": [],
+      "order": 193,
+      "description": "Country the item originates from, as an ISO 3166-1 alpha-2 code.",
+      "notes": [
+        "Code list ISO 3166-1 alpha-2. Justification: EN 16931-1 Table 2 usage note for BT-159 refers to the EN ISO 3166-1 maintenance agency; CEN rule BR-CL-15 enforces ISO 3166-1 alpha-2."
+      ]
+    },
+    {
+      "id": "BG-32",
+      "kind": "BG",
+      "name": "ITEM ATTRIBUTES",
+      "slug": "itemAttributes",
+      "parent": "BG-31",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BG-32"
+      ],
+      "depth": 2,
+      "min": 0,
+      "max": "n",
+      "datatype": null,
+      "components": [],
+      "order": 194,
+      "description": "Group carrying one additional attribute of the invoiced item.",
+      "notes": []
+    },
+    {
+      "id": "BT-160",
+      "kind": "BT",
+      "name": "Item attribute name",
+      "slug": "name",
+      "parent": "BG-32",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BG-32",
+        "BT-160"
+      ],
+      "depth": 3,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 195,
+      "description": "Name of the item attribute.",
+      "notes": []
+    },
+    {
+      "id": "BT-161",
+      "kind": "BT",
+      "name": "Item attribute value",
+      "slug": "value",
+      "parent": "BG-32",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BG-32",
+        "BT-161"
+      ],
+      "depth": 3,
+      "min": 1,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 196,
+      "description": "Value of the item attribute.",
+      "notes": []
+    }
+  ]
+}

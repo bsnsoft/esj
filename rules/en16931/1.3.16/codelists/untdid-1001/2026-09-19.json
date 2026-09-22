@@ -1,0 +1,258 @@
+{
+  "listId": "untdid-1001",
+  "name": "UNTDID 1001 document name code, as admitted by EN 16931",
+  "publisher": "UN/CEFACT (UNTDID), listed for EN 16931 by the European Commission",
+  "source": "https://ec.europa.eu/digital-building-blocks/sites/download/attachments/467108974/EN16931%20code%20lists%20values%20v17b%20-%20used%20from%202026-05-15.xlsx , sheet \"1001\"",
+  "retrieved": "2026-09-19",
+  "terms": "The page states no licence. It is the European Commission's publication of which codes of each list the European eInvoicing standard admits, offered for implementation of EN 16931; the workbook itself says that it lists codes and does not replace the publication of each list by its own publisher. Reuse of Commission documents is generally governed by Decision 2011/833/EU, which the page does not cite. Recorded as an uncertainty in SOURCES.md.",
+  "entries": [
+    {
+      "value": "71",
+      "name": "Request for payment"
+    },
+    {
+      "value": "80",
+      "name": "Debit note related to goods or services"
+    },
+    {
+      "value": "81",
+      "name": "Credit note related to goods or services"
+    },
+    {
+      "value": "82",
+      "name": "Metered services invoice"
+    },
+    {
+      "value": "83",
+      "name": "Credit note related to financial adjustments"
+    },
+    {
+      "value": "84",
+      "name": "Debit note related to financial adjustments"
+    },
+    {
+      "value": "102",
+      "name": "Tax notification"
+    },
+    {
+      "value": "130",
+      "name": "Invoicing data sheet"
+    },
+    {
+      "value": "202",
+      "name": "Direct payment valuation"
+    },
+    {
+      "value": "203",
+      "name": "Provisional payment valuation"
+    },
+    {
+      "value": "204",
+      "name": "Payment valuation"
+    },
+    {
+      "value": "211",
+      "name": "Interim application for payment"
+    },
+    {
+      "value": "218",
+      "name": "Final payment request based on completion of work"
+    },
+    {
+      "value": "219",
+      "name": "Payment request for completed units"
+    },
+    {
+      "value": "261",
+      "name": "Self billed credit note"
+    },
+    {
+      "value": "262",
+      "name": "Consolidated credit note - goods and services"
+    },
+    {
+      "value": "295",
+      "name": "Price variation invoice"
+    },
+    {
+      "value": "296",
+      "name": "Credit note for price variation"
+    },
+    {
+      "value": "308",
+      "name": "Delcredere credit note"
+    },
+    {
+      "value": "325",
+      "name": "Proforma invoice"
+    },
+    {
+      "value": "326",
+      "name": "Partial invoice"
+    },
+    {
+      "value": "331",
+      "name": "Commercial invoice which includes a packing list"
+    },
+    {
+      "value": "380",
+      "name": "Commercial invoice"
+    },
+    {
+      "value": "381",
+      "name": "Credit note"
+    },
+    {
+      "value": "382",
+      "name": "Commission note"
+    },
+    {
+      "value": "383",
+      "name": "Debit note"
+    },
+    {
+      "value": "384",
+      "name": "Corrected invoice"
+    },
+    {
+      "value": "385",
+      "name": "Consolidated invoice"
+    },
+    {
+      "value": "386",
+      "name": "Prepayment invoice"
+    },
+    {
+      "value": "387",
+      "name": "Hire invoice"
+    },
+    {
+      "value": "388",
+      "name": "Tax invoice"
+    },
+    {
+      "value": "389",
+      "name": "Self-billed invoice"
+    },
+    {
+      "value": "390",
+      "name": "Delcredere invoice"
+    },
+    {
+      "value": "393",
+      "name": "Factored invoice"
+    },
+    {
+      "value": "394",
+      "name": "Lease invoice"
+    },
+    {
+      "value": "395",
+      "name": "Consignment invoice"
+    },
+    {
+      "value": "396",
+      "name": "Factored credit note"
+    },
+    {
+      "value": "420",
+      "name": "Optical Character Reading (OCR) payment credit note"
+    },
+    {
+      "value": "456",
+      "name": "Debit advice"
+    },
+    {
+      "value": "457",
+      "name": "Reversal of debit"
+    },
+    {
+      "value": "458",
+      "name": "Reversal of credit"
+    },
+    {
+      "value": "471",
+      "name": "Self-billed corrective invoice, invoice type, Corrected"
+    },
+    {
+      "value": "472",
+      "name": "Factored Corrective Invoice, invoice type, Corrected"
+    },
+    {
+      "value": "473",
+      "name": "Self billed Factored corrective invoice, invoice type, Corrected"
+    },
+    {
+      "value": "500",
+      "name": "Self Prepayment invoice, invoice type, Original"
+    },
+    {
+      "value": "501",
+      "name": "Self billed factored invoice, invoice type, Original"
+    },
+    {
+      "value": "502",
+      "name": "Self billet factored Credit Note, Credit note type, Corrected"
+    },
+    {
+      "value": "503",
+      "name": "Prepayment credit note, credit note type, Corrected"
+    },
+    {
+      "value": "527",
+      "name": "Self billed debit note"
+    },
+    {
+      "value": "532",
+      "name": "Forwarder's credit note"
+    },
+    {
+      "value": "553",
+      "name": "Forwarder's invoice discrepancy report"
+    },
+    {
+      "value": "575",
+      "name": "Insurer's invoice"
+    },
+    {
+      "value": "623",
+      "name": "Forwarder's invoice"
+    },
+    {
+      "value": "633",
+      "name": "Port charges documents"
+    },
+    {
+      "value": "751",
+      "name": "Invoice information for accounting purposes"
+    },
+    {
+      "value": "780",
+      "name": "Freight invoice"
+    },
+    {
+      "value": "817",
+      "name": "Claim notification"
+    },
+    {
+      "value": "870",
+      "name": "Consular invoice"
+    },
+    {
+      "value": "875",
+      "name": "Partial construction invoice"
+    },
+    {
+      "value": "876",
+      "name": "Partial final construction invoice"
+    },
+    {
+      "value": "877",
+      "name": "Final construction invoice"
+    },
+    {
+      "value": "935",
+      "name": "Customs invoice"
+    }
+  ]
+}

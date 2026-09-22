@@ -1,0 +1,468 @@
+[
+  {
+    "id": "BR-O-02",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-31",
+      "BT-48",
+      "BT-63",
+      "BT-151"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-25/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BG-30/BT-151"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "and": [
+            {
+              "absent": "/BG-4/BT-31"
+            },
+            {
+              "absent": "/BG-11/BT-63"
+            },
+            {
+              "absent": "/BG-7/BT-48"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An invoice line (BG-25) is categorised \"O\" (not subject to VAT), and the invoice carries one of them, where it carries none: a seller VAT identifier (BT-31), a seller tax representative VAT identifier (BT-63) or a buyer VAT identifier (BT-48).",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-2"
+  },
+  {
+    "id": "BR-O-03",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-31",
+      "BT-48",
+      "BT-63",
+      "BT-95"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-20/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-95"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "and": [
+            {
+              "absent": "/BG-4/BT-31"
+            },
+            {
+              "absent": "/BG-11/BT-63"
+            },
+            {
+              "absent": "/BG-7/BT-48"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An document level allowance (BG-20) is categorised \"O\" (not subject to VAT), and the invoice carries one of them, where it carries none: a seller VAT identifier (BT-31), a seller tax representative VAT identifier (BT-63) or a buyer VAT identifier (BT-48).",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-3"
+  },
+  {
+    "id": "BR-O-04",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-31",
+      "BT-48",
+      "BT-63",
+      "BT-102"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-21/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-102"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "and": [
+            {
+              "absent": "/BG-4/BT-31"
+            },
+            {
+              "absent": "/BG-11/BT-63"
+            },
+            {
+              "absent": "/BG-7/BT-48"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An document level charge (BG-21) is categorised \"O\" (not subject to VAT), and the invoice carries one of them, where it carries none: a seller VAT identifier (BT-31), a seller tax representative VAT identifier (BT-63) or a buyer VAT identifier (BT-48).",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-4"
+  },
+  {
+    "id": "BR-O-05",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-151",
+      "BT-152"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BG-30/BT-151"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "absent": "/BG-30/BT-152"
+        }
+      }
+    },
+    "message": "The invoice line at {.} is categorised \"O\" (not subject to VAT) and states a VAT rate of {/BG-30/BT-152}; a invoice line that is not subject to VAT carries no rate.",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-5"
+  },
+  {
+    "id": "BR-O-06",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-95",
+      "BT-96"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-95"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "absent": "/BT-96"
+        }
+      }
+    },
+    "message": "The document level allowance at {.} is categorised \"O\" (not subject to VAT) and states a VAT rate of {/BT-96}; a document level allowance that is not subject to VAT carries no rate.",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-6"
+  },
+  {
+    "id": "BR-O-07",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102",
+      "BT-103"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-102"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "absent": "/BT-103"
+        }
+      }
+    },
+    "message": "The document level charge at {.} is categorised \"O\" (not subject to VAT) and states a VAT rate of {/BT-103}; a document level charge that is not subject to VAT carries no rate.",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-7"
+  },
+  {
+    "id": "BR-O-09",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-117",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-118"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "eq": [
+            {
+              "value": "/BT-117"
+            },
+            {
+              "const": "0"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"O\" (not subject to VAT) and its VAT category tax amount (BT-117) is {/BT-117}; under this category no VAT is levied and the amount is zero.",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-9"
+  },
+  {
+    "id": "BR-O-10",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-118",
+      "BT-120",
+      "BT-121"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-118"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BT-120"
+            },
+            {
+              "exists": "/BT-121"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"O\" (not subject to VAT) and states no exemption reason: neither a reason text (BT-120) nor a reason code (BT-121) is there.",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-10",
+    "note": "The statement names the meaning of the reason as well as its presence: a reason code that means this category, or the reason text of this category in any language. What is asked here is the presence of one of the two, because that is what the official validation artefacts ask and that is what the ecosystem validates against; which reason is the right one for a category is left to the rule packs that carry a controlled vocabulary for it."
+  },
+  {
+    "id": "BR-O-11",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BG-23",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "eq": [
+            {
+              "count": "/BG-23/*"
+            },
+            {
+              "const": 1
+            }
+          ]
+        }
+      }
+    },
+    "message": "A VAT breakdown is categorised \"O\" (not subject to VAT), and the invoice carries further VAT breakdown groups (BG-23); an invoice that is not subject to VAT is not subject to VAT throughout.",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-11"
+  },
+  {
+    "id": "BR-O-12",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-118",
+      "BT-151"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "all": {
+            "group": "/BG-25/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BG-30/BT-151"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "A VAT breakdown is categorised \"O\" (not subject to VAT), and an invoice line states another invoiced item VAT category code (BT-151).",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-12"
+  },
+  {
+    "id": "BR-O-13",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-95",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "all": {
+            "group": "/BG-20/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-95"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "A VAT breakdown is categorised \"O\" (not subject to VAT), and a document level allowance states another VAT category code (BT-95).",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-13"
+  },
+  {
+    "id": "BR-O-14",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-102",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "all": {
+            "group": "/BG-21/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-102"
+                },
+                {
+                  "const": "O"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "A VAT breakdown is categorised \"O\" (not subject to VAT), and a document level charge states another VAT category code (BT-102).",
+    "source": "EN 16931-1, 6.4.3.4.7, Table 12, BR-O-14"
+  }
+]

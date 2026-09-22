@@ -1,0 +1,45 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Letterhead (PDF) with the displayed gross figures",
+  "letterhead": {
+    "first":     { "file": "letterhead.pdf", "page": 1 },
+    "following": { "file": "letterhead.pdf", "page": 2 }
+  },
+  "colors": {
+    "heading": "#123a63",
+    "muted": "#5a6472",
+    "rule": "#c3cbd6",
+    "tableHeaderFill": "#eceff3",
+    "tableHeaderText": "#123a63"
+  },
+  "margins": {
+    "first":     { "top": 148, "bottom": 82, "left": 56, "right": 56 },
+    "following": { "top": 84,  "bottom": 82 }
+  },
+  "extensionTerms": [
+    {
+      "term": "BT-B2C-001",
+      "position": "line.unitPrice",
+      "type": "UnitPriceAmount",
+      "label": { "en": "Gross unit price", "de": "Einzelpreis brutto" }
+    },
+    {
+      "term": "BT-B2C-003",
+      "position": "line.vat",
+      "type": "Amount",
+      "label": { "en": "Line VAT amount", "de": "USt.-Betrag der Position" }
+    },
+    {
+      "term": "BT-B2C-002",
+      "position": "line.amount",
+      "type": "Amount",
+      "label": { "en": "Gross amount", "de": "Betrag brutto" }
+    },
+    {
+      "term": "BT-B2C-010",
+      "position": "totals",
+      "type": "Amount",
+      "label": { "en": "Gross total", "de": "Bruttogesamtbetrag" }
+    }
+  ]
+}

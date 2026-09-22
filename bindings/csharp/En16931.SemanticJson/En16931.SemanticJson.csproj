@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>En16931.SemanticJson</RootNamespace>
+    <AssemblyName>En16931.SemanticJson</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>EN16931 Semantic JSON: reader, canonicalizer, digests, structural validation and the semantic rule engine.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="$(RepositoryRoot)model/en16931/2017.json" LogicalName="model/en16931/2017.json" />
+    <!-- The later edition is separable: a distribution that does not ship it has neither the
+         registry nor the view generated from it, and this build is the same build without them. -->
+    <EmbeddedResource Include="$(RepositoryRoot)model/en16931/2026.json" LogicalName="model/en16931/2026.json"
+                      Condition="Exists('$(RepositoryRoot)model/en16931/2026.json')" />
+    <EmbeddedResource Include="$(RepositoryRoot)model/xrechnung/3.0.2.json" LogicalName="model/xrechnung/3.0.2.json" />
+    <EmbeddedResource Include="$(RepositoryRoot)model/b2c/0.1.json" LogicalName="model/b2c/0.1.json" />
+    <EmbeddedResource Include="$(RepositoryRoot)rules/en16931/1.3.16/**/*.json"
+                      LogicalName="rules/en16931/1.3.16/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

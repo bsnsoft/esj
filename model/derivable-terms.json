@@ -1,0 +1,22 @@
+{
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "policy": "Totals",
+  "policyClass": "de.bsnsoft.esj.typed.Totals",
+  "derivable": [
+    "BT-131",
+    "BG-22",
+    "BT-106",
+    "BT-107",
+    "BT-108",
+    "BT-109",
+    "BT-110",
+    "BT-112",
+    "BT-115",
+    "BG-23",
+    "BT-116",
+    "BT-117",
+    "BT-118",
+    "BT-119"
+  ]
+}

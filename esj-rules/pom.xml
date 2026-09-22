@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-rules</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Rule engine</name>
+  <description>
+    The semantic rule engine: business rules written over semantic paths rather than over
+    the XPath of a syntax, so that one rule serves a UBL invoice, a CII invoice and a
+    document that was never XML alike. A rule is declarative JSON over a closed operator
+    set, or a Java class where the language does not reach; both kinds live in one rule
+    pack and produce the same findings. The findings are a layer of their own and are
+    never presented as conformance to the ESJ format.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      A rule file and a code list snapshot are read with the streaming parser of
+      jackson-core, as every other JSON file of this repository is. Nothing else is on
+      the run time class path of this module: a rule engine that decides whether an
+      invoice is acceptable should be readable end to end.
+    -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+
+    <!--
+      The typed editor of esj-typed writes the invoices the rule cases are about, and its
+      derivation policy computes their totals. A test asserts that a document that policy
+      derived passes every rule of this pack, which is a statement about the two modules
+      together and can be made only where both are on the class path. The engine itself
+      does not use the typed view: it reads semantic paths.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-typed</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      The rule language has two descriptions that must agree: rules/rule.schema.json and
+      the compiler of this module. A test validates the same files against the schema
+      with a JSON Schema implementation and against the compiler, and asserts that the
+      two accept and refuse the same things. The implementation is therefore needed to
+      test the module and not to run it.
+    -->
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <!--
+          The first-party rule directory lives at the root of the repository, because it
+          is material of the project rather than of this module: the rule statements are
+          reviewed against the norm text, the code list snapshots carry their provenance
+          in codelists/SOURCES.md, and the language they are written in is described by
+          rules/rule.schema.json beside them. They are put on the class path below the
+          package of this module so that the engine reads them from the class path and
+          never from a file system path. Unlike packs/, the rule statements, the
+          manifests and the language are the project's own work under the licence of the
+          repository; the two directories are kept apart for that reason. The one
+          exception is rules/en16931/&lt;version&gt;/codelists/, which are dated snapshots of
+          code lists published by other bodies and are not this project's work — their
+          provenance and their unresolved terms are recorded in codelists/SOURCES.md and
+          in NOTICE.
+        -->
+        <directory>${project.basedir}/../rules</directory>
+        <targetPath>de/bsnsoft/esj/rules/packs</targetPath>
+        <excludes>
+          <exclude>**/*.md</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The schema of the rule language, so that the test which weighs the compiler
+          against it reads the same file the repository publishes.
+        -->
+        <directory>${project.basedir}/../rules</directory>
+        <targetPath>rules</targetPath>
+        <includes>
+          <include>rule.schema.json</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <!--
+          The ESJ documents of the conformance corpus and the ledger this pack is measured
+          against, so that the test which runs the pack over documents that are known to be
+          good reads the same files the repository publishes. The XML instances the
+          documents were built from belong to the importer and are not needed here.
+        -->
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <includes>
+          <include>esj/**</include>
+          <include>rules/**</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <!--
+          The examples of the repository, which the same test runs the pack over: they are
+          documents of the format rather than complete invoices, and what the pack says
+          about them is recorded beside what it says about the corpus.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <includes>
+          <include>*.esj.json</include>
+        </includes>
+        <excludes>
+          <exclude>*.canonical.esj.json</exclude>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!--
+            The linearity test builds its largest document in memory. Its default size is
+            a hundred thousand invoice lines, which fits the heap named here; the size of
+            the field report, three hundred thousand lines, is one property away and needs
+            a larger one:
+
+              mvn -pl esj-rules test -Desj.rules.linearity.maxLines=300000 -DargLine=-Xmx4g
+
+            The heap is named here rather than left to the machine so that the measurement
+            means the same thing on every machine that runs it, and it is two gibibytes so
+            that an ordinary continuous integration machine passes the build.
+          -->
+          <argLine>-Xmx2g</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

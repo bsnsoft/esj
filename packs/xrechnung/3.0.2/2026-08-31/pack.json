@@ -1,0 +1,459 @@
+{
+  "format": "esj-validation-pack",
+  "formatVersion": "1",
+  "id": "xrechnung",
+  "version": "3.0.2",
+  "release": "2026-08-31",
+  "title": "XRechnung 3.0.2 validation pack, release 2026-08-31",
+  "retrieved": "2026-09-19",
+  "baseProfiles": [
+    "urn:cen.eu:en16931:2017"
+  ],
+  "components": [
+    {
+      "name": "ubl-2.1-xsd",
+      "role": "xsd",
+      "appliesTo": {
+        "syntax": [
+          "ubl-invoice",
+          "ubl-creditnote"
+        ],
+        "profile": [
+          "*"
+        ]
+      },
+      "entry": {
+        "ubl-invoice": "xsd/ubl-2.1/maindoc/UBL-Invoice-2.1.xsd",
+        "ubl-creditnote": "xsd/ubl-2.1/maindoc/UBL-CreditNote-2.1.xsd"
+      },
+      "files": [
+        "xsd/ubl-2.1/common/CCTS_CCT_SchemaModule-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-CommonAggregateComponents-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-CommonBasicComponents-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-CommonExtensionComponents-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-CommonSignatureComponents-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-ExtensionContentDataType-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-QualifiedDataTypes-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-SignatureAggregateComponents-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-SignatureBasicComponents-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-UnqualifiedDataTypes-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-XAdESv132-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-XAdESv141-2.1.xsd",
+        "xsd/ubl-2.1/common/UBL-xmldsig-core-schema-2.1.xsd",
+        "xsd/ubl-2.1/maindoc/UBL-CreditNote-2.1.xsd",
+        "xsd/ubl-2.1/maindoc/UBL-Invoice-2.1.xsd"
+      ],
+      "license": "LicenseRef-OASIS-UBL-2.1",
+      "licenseFile": "xsd/ubl-2.1/NOTICE",
+      "source": "http://docs.oasis-open.org/ubl/os-UBL-2.1/",
+      "obtainedFrom": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip",
+      "unmodified": true
+    },
+    {
+      "name": "cii-d16b-xsd",
+      "role": "xsd",
+      "appliesTo": {
+        "syntax": [
+          "cii"
+        ],
+        "profile": [
+          "*"
+        ]
+      },
+      "entry": {
+        "cii": "xsd/cii-d16b/CrossIndustryInvoice_100pD16B.xsd"
+      },
+      "files": [
+        "xsd/cii-d16b/CrossIndustryInvoice_100pD16B.xsd",
+        "xsd/cii-d16b/CrossIndustryInvoice_QualifiedDataType_100pD16B.xsd",
+        "xsd/cii-d16b/CrossIndustryInvoice_ReusableAggregateBusinessInformationEntity_100pD16B.xsd",
+        "xsd/cii-d16b/CrossIndustryInvoice_UnqualifiedDataType_100pD16B.xsd"
+      ],
+      "license": "LicenseRef-UN-CEFACT-D16B",
+      "licenseFile": "xsd/cii-d16b/NOTICE",
+      "source": "https://unece.org/trade/uncefact/xml-schemas",
+      "obtainedFrom": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip",
+      "unmodified": true
+    },
+    {
+      "name": "en16931-ubl-schematron",
+      "role": "schematron-xslt",
+      "appliesTo": {
+        "syntax": [
+          "ubl-invoice",
+          "ubl-creditnote"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017*"
+        ]
+      },
+      "entry": {
+        "ubl-invoice": "cen/1.3.16/EN16931-UBL-validation.xslt",
+        "ubl-creditnote": "cen/1.3.16/EN16931-UBL-validation.xslt"
+      },
+      "files": [
+        "cen/1.3.16/EN16931-UBL-validation.xslt"
+      ],
+      "license": "EUPL-1.2",
+      "licenseFile": "cen/1.3.16/LICENSE",
+      "source": "https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/tag/validation-1.3.16",
+      "obtainedFrom": "https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/download/validation-1.3.16/en16931-ubl-1.3.16.zip",
+      "unmodified": true
+    },
+    {
+      "name": "en16931-cii-schematron",
+      "role": "schematron-xslt",
+      "appliesTo": {
+        "syntax": [
+          "cii"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017*"
+        ]
+      },
+      "entry": {
+        "cii": "cen/1.3.16/EN16931-CII-validation.xslt"
+      },
+      "files": [
+        "cen/1.3.16/EN16931-CII-validation.xslt"
+      ],
+      "license": "EUPL-1.2",
+      "licenseFile": "cen/1.3.16/LICENSE",
+      "source": "https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/tag/validation-1.3.16",
+      "obtainedFrom": "https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/download/validation-1.3.16/en16931-cii-1.3.16.zip",
+      "unmodified": true
+    },
+    {
+      "name": "xrechnung-ubl-schematron",
+      "role": "schematron-xslt",
+      "appliesTo": {
+        "syntax": [
+          "ubl-invoice",
+          "ubl-creditnote"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9"
+        ]
+      },
+      "entry": {
+        "ubl-invoice": "xrechnung-schematron/2.6.0/XRechnung-UBL-validation.xsl",
+        "ubl-creditnote": "xrechnung-schematron/2.6.0/XRechnung-UBL-validation.xsl"
+      },
+      "files": [
+        "xrechnung-schematron/2.6.0/XRechnung-UBL-validation.xsl"
+      ],
+      "license": "Apache-2.0",
+      "licenseFile": "xrechnung-schematron/2.6.0/LICENSE",
+      "source": "https://projekte.kosit.org/xrechnung/xrechnung-schematron",
+      "obtainedFrom": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip",
+      "unmodified": true
+    },
+    {
+      "name": "xrechnung-cii-schematron",
+      "role": "schematron-xslt",
+      "appliesTo": {
+        "syntax": [
+          "cii"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0",
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9"
+        ]
+      },
+      "entry": {
+        "cii": "xrechnung-schematron/2.6.0/XRechnung-CII-validation.xsl"
+      },
+      "files": [
+        "xrechnung-schematron/2.6.0/XRechnung-CII-validation.xsl"
+      ],
+      "license": "Apache-2.0",
+      "licenseFile": "xrechnung-schematron/2.6.0/LICENSE",
+      "source": "https://projekte.kosit.org/xrechnung/xrechnung-schematron",
+      "obtainedFrom": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip",
+      "unmodified": true
+    }
+  ],
+  "levels": [
+    {
+      "name": "xrechnung-ubl-invoice",
+      "appliesTo": {
+        "syntax": [
+          "ubl-invoice"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0"
+        ]
+      },
+      "level": {
+        "BR-CL-21": "warning",
+        "BR-CL-23": "warning",
+        "UBL-CR-646": "fatal"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-extension-ubl-invoice",
+      "appliesTo": {
+        "syntax": [
+          "ubl-invoice"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0"
+        ]
+      },
+      "level": {
+        "BR-CL-10": "information",
+        "BR-CL-11": "information",
+        "BR-CL-21": "information",
+        "BR-CL-23": "warning",
+        "BR-CL-24": "information",
+        "BR-CL-25": "information",
+        "BR-CL-26": "information",
+        "BR-CO-16": "information",
+        "UBL-CR-470": "information",
+        "UBL-CR-646": "information"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-cvd-ubl-invoice",
+      "appliesTo": {
+        "syntax": [
+          "ubl-invoice"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9"
+        ]
+      },
+      "level": {
+        "BR-CL-13": "information",
+        "BR-CL-21": "warning",
+        "BR-CL-23": "warning",
+        "UBL-CR-646": "fatal"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-ubl-creditnote",
+      "appliesTo": {
+        "syntax": [
+          "ubl-creditnote"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0"
+        ]
+      },
+      "level": {
+        "BR-CL-21": "warning",
+        "BR-CL-23": "warning"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-cvd-ubl-creditnote",
+      "appliesTo": {
+        "syntax": [
+          "ubl-creditnote"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9"
+        ]
+      },
+      "level": {
+        "BR-CL-13": "information",
+        "BR-CL-21": "warning",
+        "BR-CL-23": "warning",
+        "UBL-CR-646": "fatal"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-cii",
+      "appliesTo": {
+        "syntax": [
+          "cii"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0"
+        ]
+      },
+      "level": {
+        "BR-CL-21": "warning",
+        "BR-CL-23": "warning",
+        "CII-SR-452": "fatal",
+        "CII-SR-453": "fatal",
+        "CII-SR-454": "fatal",
+        "CII-SR-465": "fatal",
+        "CII-SR-466": "fatal",
+        "CII-SR-475": "information",
+        "CII-SR-476": "information"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-extension-cii",
+      "appliesTo": {
+        "syntax": [
+          "cii"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0"
+        ]
+      },
+      "level": {
+        "BR-CL-10": "information",
+        "BR-CL-11": "information",
+        "BR-CL-21": "information",
+        "BR-CL-23": "warning",
+        "BR-CL-24": "information",
+        "BR-CL-25": "information",
+        "BR-CL-26": "information",
+        "CII-SR-452": "fatal",
+        "CII-SR-453": "fatal",
+        "CII-SR-454": "fatal",
+        "CII-SR-465": "fatal",
+        "CII-SR-466": "fatal",
+        "CII-SR-475": "information",
+        "CII-SR-476": "information"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    },
+    {
+      "name": "xrechnung-cvd-cii",
+      "appliesTo": {
+        "syntax": [
+          "cii"
+        ],
+        "profile": [
+          "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9"
+        ]
+      },
+      "level": {
+        "BR-CL-13": "information",
+        "BR-CL-21": "warning",
+        "BR-CL-23": "warning",
+        "CII-SR-452": "fatal",
+        "CII-SR-453": "fatal",
+        "CII-SR-454": "fatal",
+        "CII-SR-465": "fatal",
+        "CII-SR-466": "fatal",
+        "CII-SR-475": "information",
+        "CII-SR-476": "information"
+      },
+      "source": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip#scenarios.xml"
+    }
+  ],
+  "files": [
+    {
+      "path": "cen/1.3.16/EN16931-CII-validation.xslt",
+      "sha256": "0b234dea2bbfee739b7761e607a992c17fab88773014ef56355b6158cfb1cc53"
+    },
+    {
+      "path": "cen/1.3.16/EN16931-UBL-validation.xslt",
+      "sha256": "39f9d282867f1a49e7708d9e29a53da89643e1ee56f10cec1ebcf1277595fcbd"
+    },
+    {
+      "path": "cen/1.3.16/LICENSE",
+      "sha256": "fc22ec1dcd8bee4636a395fb332e2308cde870fb3fdc71a2e260b919877cdef5"
+    },
+    {
+      "path": "xrechnung-schematron/2.6.0/LICENSE",
+      "sha256": "73f2898ad26e1fcb9ec4649cdf8466ea0bda47644b7c12efc10a703bdfb94a9f"
+    },
+    {
+      "path": "xrechnung-schematron/2.6.0/XRechnung-CII-validation.xsl",
+      "sha256": "ec54f662803a87f527ec606d1320bc404f1657a848af6a76f37f32905e4aac40"
+    },
+    {
+      "path": "xrechnung-schematron/2.6.0/XRechnung-UBL-validation.xsl",
+      "sha256": "e32d831668facbbd5136cc0119bf1dd6f92ac20738aa3b3f021586f5a305c738"
+    },
+    {
+      "path": "xsd/cii-d16b/CrossIndustryInvoice_100pD16B.xsd",
+      "sha256": "3baf143b90f289d62c5dfb086aa51fa183490a2d0b38a40c6b31dcae0760f2ba"
+    },
+    {
+      "path": "xsd/cii-d16b/CrossIndustryInvoice_QualifiedDataType_100pD16B.xsd",
+      "sha256": "6649215914728652e883662bec1d3eab008c215e86a59f3bb417db9723ee8c5c"
+    },
+    {
+      "path": "xsd/cii-d16b/CrossIndustryInvoice_ReusableAggregateBusinessInformationEntity_100pD16B.xsd",
+      "sha256": "1c42244298a863bcc0b5196983ff0a5d084fcabe58aea77ef82b242e7cd0ddfd"
+    },
+    {
+      "path": "xsd/cii-d16b/CrossIndustryInvoice_UnqualifiedDataType_100pD16B.xsd",
+      "sha256": "04fce6f6f28521886731294be18a4e6bb5cb3003456457d99ad5c4d3e652f497"
+    },
+    {
+      "path": "xsd/cii-d16b/NOTICE",
+      "sha256": "78e16375c69f86b807b3db5bfbac8a1be61c22951d61224d9faa3a9b2c62f2c2"
+    },
+    {
+      "path": "xsd/ubl-2.1/NOTICE",
+      "sha256": "8e844cbf09aea02acc352b5403129d066c6a4f165e88fbf1ba6abd79e3587e39"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/CCTS_CCT_SchemaModule-2.1.xsd",
+      "sha256": "dd546e4809df86b6445589f69f0d6c9df162840ae386574ddfc1da7638103e15"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-CommonAggregateComponents-2.1.xsd",
+      "sha256": "580b5af6f68f7f556bd15945ba0e819cbf561442c81694f9b9468036ebedec4d"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-CommonBasicComponents-2.1.xsd",
+      "sha256": "a3b349bf92e5cff26e303d2f05b7e00c884dcafcfd9e12755fb80289abf5e22e"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-CommonExtensionComponents-2.1.xsd",
+      "sha256": "ad7a4e490978adfbcfc5ec0bb20941cf11ac960ccf0c4de8791a7c731a8dbe87"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-CommonSignatureComponents-2.1.xsd",
+      "sha256": "4fa9e2370100040fe14c43e135ef77e2eb66b21cb8dbfc2ffb8d82ae991fe92e"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-ExtensionContentDataType-2.1.xsd",
+      "sha256": "fcee77a11870208e6377ea6311b9f2a050bca24bdad8606ea02d71e9f9e72f8d"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-QualifiedDataTypes-2.1.xsd",
+      "sha256": "7dcb156e610239c97ae70940cf4653b88e48c3595bf5f56a2204a32e2893e6cf"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-SignatureAggregateComponents-2.1.xsd",
+      "sha256": "9234c2ca48dbfa9a22a786112bb075c5922a305170920eaab1e3c04fa0b7344b"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-SignatureBasicComponents-2.1.xsd",
+      "sha256": "0fbe2d7afff0c1e11164b8ec83e13f18801021c3c87e390a9d76f9cf862f6a64"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-UnqualifiedDataTypes-2.1.xsd",
+      "sha256": "09052d406b4293e2a5f9c2bfee6df10ad4d8d5f0b36e24a6349d7f7936d89eb6"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-XAdESv132-2.1.xsd",
+      "sha256": "a4f726bcf8cc3f7d9ffa4dab99e005535a8e8b60dced1e5d94578d2e05afa96e"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-XAdESv141-2.1.xsd",
+      "sha256": "1fa4625e9cefcb7a9abb5ac1b64315547450031eece8a55bd584e4ba4b79dbc1"
+    },
+    {
+      "path": "xsd/ubl-2.1/common/UBL-xmldsig-core-schema-2.1.xsd",
+      "sha256": "101909c9f06456d61ddcc4fb982f1d40dc357b439f393b1a2eb46e42acd60809"
+    },
+    {
+      "path": "xsd/ubl-2.1/maindoc/UBL-CreditNote-2.1.xsd",
+      "sha256": "1e117b6c1ab713604b29b0d685442a81a0c78a82575445ee8c43e6050cda7454"
+    },
+    {
+      "path": "xsd/ubl-2.1/maindoc/UBL-Invoice-2.1.xsd",
+      "sha256": "3a5aacd823f0e5b8f25ae7b5191c2002d5333ba351d87de9371ed62dca2b2b0c"
+    }
+  ]
+}

@@ -1,0 +1,2192 @@
+{
+  "format": "EN16931-Semantic-JSON-cii-schema",
+  "version": "0.1",
+  "syntax": "CII",
+  "syntaxName": "UN/CEFACT Cross Industry Invoice D16B",
+  "license": "Apache-2.0",
+  "notice": "The element names, their order, their occurrence bounds and the attribute names and uses in this file are facts read from the XML Schema modules of UN/CEFACT Cross Industry Invoice D16B, schema version 100.D16B, as the validation pack of this repository carries them. No documentation, annotation or other prose of those modules is reproduced here, and nothing here is a statement of the standard beyond what an element name and a position are. This file itself is Apache-2.0.",
+  "source": {
+    "name": "UN/CEFACT Cross Industry Invoice XML Schema",
+    "schemaVersion": "100.D16B",
+    "pack": "xrechnung/3.0.2/2026-08-31",
+    "modules": [
+      "CrossIndustryInvoice_100pD16B.xsd",
+      "CrossIndustryInvoice_ReusableAggregateBusinessInformationEntity_100pD16B.xsd",
+      "CrossIndustryInvoice_QualifiedDataType_100pD16B.xsd",
+      "CrossIndustryInvoice_UnqualifiedDataType_100pD16B.xsd"
+    ]
+  },
+  "generator": "esj-bindings/src/test/java/de/bsnsoft/esj/bindings/CiiSchemaSource.java",
+  "namespaces": {
+    "qdt": "urn:un:unece:uncefact:data:standard:QualifiedDataType:100",
+    "ram": "urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100",
+    "rsm": "urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100",
+    "udt": "urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100"
+  },
+  "rootElement": "rsm:CrossIndustryInvoice",
+  "rootType": "rsm:CrossIndustryInvoiceType",
+  "counts": {
+    "types": 163,
+    "elements": 958
+  },
+  "types": {
+    "qdt:AccountingAccountTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:AccountingAmountTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:AccountingDocumentCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:AdjustmentReasonCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false}
+      ]
+    },
+    "qdt:AllowanceChargeIdentificationCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:AllowanceChargeReasonCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:AutomaticDataCaptureMethodCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:CargoCategoryCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:CargoCommodityCategoryCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:CargoOperationalCategoryCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:ChargePayingPartyRoleCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:CommunicationChannelCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:ContactTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:CountryIDType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "schemeID", "required": false},
+        {"name": "schemeAgencyID", "required": false},
+        {"name": "schemeVersionID", "required": false}
+      ]
+    },
+    "qdt:CurrencyCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:DeliveryTermsCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false}
+      ]
+    },
+    "qdt:DimensionTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:DocumentCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:DocumentStatusCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:FormattedDateTimeType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "qdt:DateTimeString", "type": "qdt:FormattedDateTimeType.DateTimeString", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "qdt:FormattedDateTimeType.DateTimeString": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "qdt:FreightChargeTariffClassCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:FreightChargeTypeIDType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "schemeID", "required": false},
+        {"name": "schemeAgencyID", "required": false},
+        {"name": "schemeVersionID", "required": false}
+      ]
+    },
+    "qdt:GoodsTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:GoodsTypeExtensionCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:LineStatusCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:LinearUnitMeasureType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "unitCode", "required": false},
+        {"name": "unitCodeListVersionID", "required": false}
+      ]
+    },
+    "qdt:LogisticsChargeCalculationBasisCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:MessageFunctionCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:PackageTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:PackagingMarkingCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:PartyRoleCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:PaymentGuaranteeMeansCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false}
+      ]
+    },
+    "qdt:PaymentMeansChannelCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:PaymentMeansCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false}
+      ]
+    },
+    "qdt:PaymentTermsEventTimeReferenceCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false}
+      ]
+    },
+    "qdt:PaymentTermsIDType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "schemeID", "required": false},
+        {"name": "schemeAgencyID", "required": false},
+        {"name": "schemeVersionID", "required": false}
+      ]
+    },
+    "qdt:PaymentTermsTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:PriceTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false}
+      ]
+    },
+    "qdt:ReferenceCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TaxCategoryCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:TaxTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "listURI", "required": false}
+      ]
+    },
+    "qdt:TimeReferenceCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TransportEquipmentCategoryCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TransportEquipmentFullnessCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TransportEquipmentSizeTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TransportMeansTypeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TransportModeCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:TransportMovementStageCodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false}
+      ]
+    },
+    "qdt:VolumeUnitMeasureType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "unitCode", "required": false},
+        {"name": "unitCodeListVersionID", "required": false}
+      ]
+    },
+    "qdt:WeightUnitMeasureType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "unitCode", "required": false},
+        {"name": "unitCodeListVersionID", "required": false}
+      ]
+    },
+    "ram:AdvancePaymentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:PaidAmount", "type": "udt:AmountType", "required": true, "repeatable": false},
+        {"name": "ram:FormattedReceivedDateTime", "type": "qdt:FormattedDateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:AppliedAllowanceChargeType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ActualAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ReasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:BasisAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:ChargeIndicator", "type": "udt:IndicatorType", "required": true, "repeatable": false},
+        {"name": "ram:CategoryAppliedTax", "type": "ram:AppliedTaxType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:AppliedTaxType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:CalculatedAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:CalculatedRate", "type": "udt:RateType", "required": false, "repeatable": false},
+        {"name": "ram:BasisAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:TaxPointDate", "type": "udt:DateType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:AvailablePeriodType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:StartDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:EndDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:BasicWorkItemType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:ReferenceID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PrimaryClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:AlternativeClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:Comment", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TotalQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:TotalQuantityClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:IndexValue", "type": "udt:ValueType", "required": false, "repeatable": false},
+        {"name": "ram:StatusCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:ReferenceFileBinaryObject", "type": "udt:BinaryObjectType", "required": false, "repeatable": true},
+        {"name": "ram:Index", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:RequestedActionCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:PriceListItemID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ActualWorkItemComplexDescription", "type": "ram:WorkItemComplexDescriptionType", "required": false, "repeatable": true},
+        {"name": "ram:TotalQuantityWorkItemQuantityAnalysis", "type": "ram:WorkItemQuantityAnalysisType", "required": false, "repeatable": true},
+        {"name": "ram:UnitCalculatedPrice", "type": "ram:CalculatedPriceType", "required": false, "repeatable": true},
+        {"name": "ram:TotalCalculatedPrice", "type": "ram:CalculatedPriceType", "required": false, "repeatable": true},
+        {"name": "ram:SubordinateBasicWorkItem", "type": "ram:BasicWorkItemType", "required": false, "repeatable": true},
+        {"name": "ram:ChangedRecordedStatus", "type": "ram:RecordedStatusType", "required": false, "repeatable": true},
+        {"name": "ram:ItemBasicWorkItem", "type": "ram:BasicWorkItemType", "required": false, "repeatable": true},
+        {"name": "ram:ReferencedSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:BranchFinancialInstitutionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LocationFinancialInstitutionAddress", "type": "ram:FinancialInstitutionAddressType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:CalculatedPriceType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:ChargeAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:RelatedAppliedAllowanceCharge", "type": "ram:AppliedAllowanceChargeType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:ContactPersonType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:GivenName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:MiddleName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:FamilyName", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:CreditorFinancialAccountType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:IBANID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AccountName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ProprietaryID", "type": "udt:IDType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:CreditorFinancialInstitutionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:BICID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CHIPSUniversalID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:NewZealandNCCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:IrishNSCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:UKSortCodeID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CHIPSParticipantID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SwissBCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:FedwireRoutingNumberID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PortugueseNCCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:RussianCentralBankID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ItalianDomesticID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AustrianBankleitzahlID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CanadianPaymentsAssociationID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SICID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:GermanBankleitzahlID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SpanishDomesticInterbankingID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SouthAfricanNCCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:HongKongBankID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AustralianBSBID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:IndianFinancialSystemID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:HellenicBankID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PolishNationalClearingID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ClearingSystemName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:JapanFinancialInstitutionCommonID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:LocationFinancialInstitutionAddress", "type": "ram:FinancialInstitutionAddressType", "required": false, "repeatable": false},
+        {"name": "ram:SubDivisionBranchFinancialInstitution", "type": "ram:BranchFinancialInstitutionType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:DebtorFinancialAccountType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:IBANID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AccountName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ProprietaryID", "type": "udt:IDType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:DebtorFinancialInstitutionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:BICID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ClearingSystemName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CHIPSUniversalID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:NewZealandNCCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:IrishNSCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:UKSortCodeID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CHIPSParticipantID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SwissBCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:FedwireRoutingNumberID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PortugueseNCCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:RussianCentralBankID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ItalianDomesticID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AustrianBankleitzahlID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CanadianPaymentsAssociationID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SICID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:GermanBankleitzahlID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SpanishDomesticInterbankingID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SouthAfricanNCCID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:HongKongBankID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AustralianBSBID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:IndianFinancialSystemID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:HellenicBankID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PolishNationalClearingID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:JapanFinancialInstitutionCommonID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:LocationFinancialInstitutionAddress", "type": "ram:FinancialInstitutionAddressType", "required": false, "repeatable": false},
+        {"name": "ram:SubDivisionBranchFinancialInstitution", "type": "ram:BranchFinancialInstitutionType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:DeliveryAdjustmentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ReasonCode", "type": "qdt:AdjustmentReasonCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Reason", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ActualAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ActualQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:DisposalInstructionsType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:MaterialID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:RecyclingDescriptionCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:RecyclingProcedure", "type": "udt:TextType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:DocumentContextParameterType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Value", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedDocumentVersion", "type": "ram:DocumentVersionType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:DocumentLineDocumentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:LineID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ParentLineID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:LineStatusCode", "type": "qdt:LineStatusCodeType", "required": false, "repeatable": false},
+        {"name": "ram:LineStatusReasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedNote", "type": "ram:NoteType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:DocumentVersionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:IssueDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ExchangedDocumentContextType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:SpecifiedTransactionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:TestIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:BusinessProcessSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": true},
+        {"name": "ram:BIMSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": true},
+        {"name": "ram:ScenarioSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicationSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": true},
+        {"name": "ram:GuidelineSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": true},
+        {"name": "ram:SubsetSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": true},
+        {"name": "ram:MessageStandardSpecifiedDocumentContextParameter", "type": "ram:DocumentContextParameterType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ExchangedDocumentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "qdt:DocumentCodeType", "required": false, "repeatable": false},
+        {"name": "ram:IssueDateTime", "type": "udt:DateTimeType", "required": true, "repeatable": false},
+        {"name": "ram:CopyIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:Purpose", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ControlRequirementIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:LanguageID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:PurposeCode", "type": "qdt:MessageFunctionCodeType", "required": false, "repeatable": false},
+        {"name": "ram:RevisionDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:VersionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:GlobalID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:RevisionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PreviousRevisionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CategoryCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedNote", "type": "ram:NoteType", "required": false, "repeatable": true},
+        {"name": "ram:EffectiveSpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false},
+        {"name": "ram:IssuerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:FinancialAdjustmentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ReasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Reason", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ActualAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ActualQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:ClaimRelatedTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceReferenceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:FinancialInstitutionAddressType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:PostcodeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:BuildingNumber", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineOne", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineTwo", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineThree", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineFour", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineFive", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:StreetName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CityName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CountrySubDivisionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CountryID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:DepartmentName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:PostOfficeBox", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CityID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CountrySubDivisionName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CountryName", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:GeographicalCoordinateType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:AltitudeMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:LatitudeMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:LongitudeMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:SystemID", "type": "udt:IDType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:GroupedWorkItemType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:PrimaryClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:AlternativeClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:Comment", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TotalQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:Index", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:RequestedActionCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:PriceListItemID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:TotalCalculatedPrice", "type": "ram:CalculatedPriceType", "required": false, "repeatable": true},
+        {"name": "ram:ItemGroupedWorkItem", "type": "ram:GroupedWorkItemType", "required": false, "repeatable": true},
+        {"name": "ram:ItemBasicWorkItem", "type": "ram:BasicWorkItemType", "required": false, "repeatable": true},
+        {"name": "ram:ChangedRecordedStatus", "type": "ram:RecordedStatusType", "required": false, "repeatable": true},
+        {"name": "ram:ActualWorkItemComplexDescription", "type": "ram:WorkItemComplexDescriptionType", "required": false, "repeatable": true},
+        {"name": "ram:ReferencedSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:HeaderTradeAgreementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:Reference", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:BuyerReference", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:SellerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:SalesAgentTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerRequisitionerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": true},
+        {"name": "ram:BuyerAssignedAccountantTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:SellerAssignedAccountantTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerTaxRepresentativeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:SellerTaxRepresentativeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ProductEndUserTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableTradeDeliveryTerms", "type": "ram:TradeDeliveryTermsType", "required": false, "repeatable": false},
+        {"name": "ram:SellerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:QuotationReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:OrderResponseReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ContractReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:DemandForecastReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:SupplyInstructionReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:PromotionalDealReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:PriceListReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:RequisitionerReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:BuyerAgentTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:PurchaseConditionsReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedProcuringProject", "type": "ram:ProcuringProjectType", "required": false, "repeatable": false},
+        {"name": "ram:UltimateCustomerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:HeaderTradeDeliveryType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:RelatedSupplyChainConsignment", "type": "ram:SupplyChainConsignmentType", "required": false, "repeatable": false},
+        {"name": "ram:ShipToTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:UltimateShipToTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ShipFromTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDespatchSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ActualPickUpSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDeliverySupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ActualReceiptSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:DespatchAdviceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ReceivingAdviceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:DeliveryNoteReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ConsumptionReportReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:PreviousDeliverySupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": true},
+        {"name": "ram:PackingListReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:HeaderTradeSettlementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:DuePayableAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:CreditorReferenceTypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:CreditorReferenceType", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:CreditorReferenceIssuerID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:CreditorReferenceID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PaymentReference", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TaxCurrencyCode", "type": "qdt:CurrencyCodeType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceCurrencyCode", "type": "qdt:CurrencyCodeType", "required": false, "repeatable": false},
+        {"name": "ram:PaymentCurrencyCode", "type": "qdt:CurrencyCodeType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceIssuerReference", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:NextInvoiceDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": true},
+        {"name": "ram:CreditReasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:CreditReason", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:InvoicerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:PayeeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:PayerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:TaxApplicableTradeCurrencyExchange", "type": "ram:TradeCurrencyExchangeType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceApplicableTradeCurrencyExchange", "type": "ram:TradeCurrencyExchangeType", "required": false, "repeatable": false},
+        {"name": "ram:PaymentApplicableTradeCurrencyExchange", "type": "ram:TradeCurrencyExchangeType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedTradeSettlementPaymentMeans", "type": "ram:TradeSettlementPaymentMeansType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true},
+        {"name": "ram:BillingSpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedTradeAllowanceCharge", "type": "ram:TradeAllowanceChargeType", "required": false, "repeatable": true},
+        {"name": "ram:SubtotalCalculatedTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedLogisticsServiceCharge", "type": "ram:LogisticsServiceChargeType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTradePaymentTerms", "type": "ram:TradePaymentTermsType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTradeSettlementHeaderMonetarySummation", "type": "ram:TradeSettlementHeaderMonetarySummationType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedFinancialAdjustment", "type": "ram:FinancialAdjustmentType", "required": false, "repeatable": true},
+        {"name": "ram:InvoiceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ProFormaInvoiceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:LetterOfCreditReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:FactoringAgreementReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:FactoringListReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:PayableSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:ReceivableSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:PurchaseSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:SalesSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTradeSettlementFinancialCard", "type": "ram:TradeSettlementFinancialCardType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedAdvancePayment", "type": "ram:AdvancePaymentType", "required": false, "repeatable": true},
+        {"name": "ram:UltimatePayeeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LegalOrganizationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:LegalClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:TradingBusinessName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:PostalTradeAddress", "type": "ram:TradeAddressType", "required": false, "repeatable": false},
+        {"name": "ram:AuthorizedLegalRegistration", "type": "ram:LegalRegistrationType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:LegalRegistrationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LineTradeAgreementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:BuyerReference", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerRequisitionerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableTradeDeliveryTerms", "type": "ram:TradeDeliveryTermsType", "required": false, "repeatable": false},
+        {"name": "ram:SellerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:QuotationReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ContractReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:DemandForecastReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:PromotionalDealReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:GrossPriceProductTradePrice", "type": "ram:TradePriceType", "required": false, "repeatable": false},
+        {"name": "ram:NetPriceProductTradePrice", "type": "ram:TradePriceType", "required": false, "repeatable": false},
+        {"name": "ram:RequisitionerReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:ItemSellerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ItemBuyerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedSpecifiedMarketplace", "type": "ram:SpecifiedMarketplaceType", "required": false, "repeatable": false},
+        {"name": "ram:UltimateCustomerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:LineTradeDeliveryType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:RequestedQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ReceivedQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:BilledQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ChargeFreeQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:PackageQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ProductUnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:PerPackageUnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:NetWeightMeasure", "type": "qdt:WeightUnitMeasureType", "required": false, "repeatable": false},
+        {"name": "ram:GrossWeightMeasure", "type": "qdt:WeightUnitMeasureType", "required": false, "repeatable": false},
+        {"name": "ram:TheoreticalWeightMeasure", "type": "qdt:WeightUnitMeasureType", "required": false, "repeatable": false},
+        {"name": "ram:DespatchedQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedDeliveryAdjustment", "type": "ram:DeliveryAdjustmentType", "required": false, "repeatable": true},
+        {"name": "ram:IncludedSupplyChainPackaging", "type": "ram:SupplyChainPackagingType", "required": false, "repeatable": true},
+        {"name": "ram:RelatedSupplyChainConsignment", "type": "ram:SupplyChainConsignmentType", "required": false, "repeatable": false},
+        {"name": "ram:ShipToTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:UltimateShipToTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ShipFromTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDespatchSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ActualPickUpSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:RequestedDeliverySupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDeliverySupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ActualReceiptSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:DespatchAdviceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ReceivingAdviceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:DeliveryNoteReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:ConsumptionReportReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:PackingListReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LineTradeSettlementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:PaymentReference", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:InvoiceIssuerReference", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:TotalAdjustmentAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:DiscountIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true},
+        {"name": "ram:BillingSpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedTradeAllowanceCharge", "type": "ram:TradeAllowanceChargeType", "required": false, "repeatable": true},
+        {"name": "ram:SubtotalCalculatedTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedLogisticsServiceCharge", "type": "ram:LogisticsServiceChargeType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTradePaymentTerms", "type": "ram:TradePaymentTermsType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTradeSettlementLineMonetarySummation", "type": "ram:TradeSettlementLineMonetarySummationType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedFinancialAdjustment", "type": "ram:FinancialAdjustmentType", "required": false, "repeatable": true},
+        {"name": "ram:InvoiceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:PayableSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:ReceivableSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:PurchaseSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:SalesSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTradeSettlementFinancialCard", "type": "ram:TradeSettlementFinancialCardType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LogisticsLocationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:PhysicalGeographicalCoordinate", "type": "ram:GeographicalCoordinateType", "required": false, "repeatable": false},
+        {"name": "ram:PostalTradeAddress", "type": "ram:TradeAddressType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LogisticsServiceChargeType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "qdt:FreightChargeTypeIDType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:PaymentArrangementCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:TariffClassCode", "type": "qdt:FreightChargeTariffClassCodeType", "required": false, "repeatable": false},
+        {"name": "ram:ChargeCategoryCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ServiceCategoryCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:DisbursementAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:AppliedAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:AllowanceCharge", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:PayingPartyRoleCode", "type": "qdt:ChargePayingPartyRoleCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationBasisCode", "type": "qdt:LogisticsChargeCalculationBasisCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationBasis", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:TransportPaymentMethodCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:PaymentPlaceLogisticsLocation", "type": "ram:LogisticsLocationType", "required": false, "repeatable": false},
+        {"name": "ram:AppliedFromLogisticsLocation", "type": "ram:LogisticsLocationType", "required": false, "repeatable": false},
+        {"name": "ram:AppliedToLogisticsLocation", "type": "ram:LogisticsLocationType", "required": false, "repeatable": false},
+        {"name": "ram:AppliedTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:LogisticsTransportEquipmentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:LoadingLengthMeasure", "type": "qdt:LinearUnitMeasureType", "required": false, "repeatable": false},
+        {"name": "ram:CategoryCode", "type": "qdt:TransportEquipmentCategoryCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CharacteristicCode", "type": "qdt:TransportEquipmentSizeTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:UsedCapacityCode", "type": "qdt:TransportEquipmentFullnessCodeType", "required": false, "repeatable": false},
+        {"name": "ram:LinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LogisticsTransportMeansType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "qdt:TransportMeansTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Type", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:OwnerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:LogisticsTransportMovementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:StageCode", "type": "qdt:TransportMovementStageCodeType", "required": false, "repeatable": false},
+        {"name": "ram:ModeCode", "type": "qdt:TransportModeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Mode", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:UsedLogisticsTransportMeans", "type": "ram:LogisticsTransportMeansType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:MaterialGoodsCharacteristicType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ProportionalConstituentPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:AbsolutePresenceWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:AbsolutePresenceVolumeMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:NoteType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:Subject", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ContentCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Content", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:SubjectCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:PackagingMarkingType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "qdt:PackagingMarkingCodeType", "required": false, "repeatable": true},
+        {"name": "ram:Content", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ContentDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:ContentAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:BarcodeTypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:ContentCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:AutomaticDataCaptureMethodTypeCode", "type": "qdt:AutomaticDataCaptureMethodCodeType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:ProcuringProjectType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ProductCharacteristicConditionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ValueMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ProductCharacteristicType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ValueMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:MeasurementMethodCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Value", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ValueCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ValueDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:ValueIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ContentTypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ValueSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableProductCharacteristicCondition", "type": "ram:ProductCharacteristicConditionType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableReferencedStandard", "type": "ram:ReferencedStandardType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ProductClassificationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:SystemID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SystemName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ClassCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ClassName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:SubClassCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ClassProductCharacteristic", "type": "ram:ProductCharacteristicType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableReferencedStandard", "type": "ram:ReferencedStandardType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:RecordedStatusType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ConditionCode", "type": "udt:CodeType", "required": true, "repeatable": false},
+        {"name": "ram:ChangerName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ChangedDateTime", "type": "udt:DateTimeType", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ReferencePriceType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ChargeAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:BasisQuantity", "type": "udt:QuantityType", "required": false, "repeatable": true},
+        {"name": "ram:NetPriceIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": true},
+        {"name": "ram:ComparisonMethodCode", "type": "udt:CodeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ReferencedDocumentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:IssuerAssignedID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:URIID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:StatusCode", "type": "qdt:DocumentStatusCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CopyIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:LineID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:DocumentCodeType", "required": false, "repeatable": false},
+        {"name": "ram:GlobalID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:RevisionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:AttachmentBinaryObject", "type": "udt:BinaryObjectType", "required": false, "repeatable": true},
+        {"name": "ram:Information", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ReferenceTypeCode", "type": "qdt:ReferenceCodeType", "required": false, "repeatable": false},
+        {"name": "ram:SectionName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:PreviousRevisionID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:FormattedIssueDateTime", "type": "qdt:FormattedDateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:EffectiveSpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false},
+        {"name": "ram:IssuerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:AttachedSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:ReferencedProductType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:GlobalID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:SellerAssignedID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerAssignedID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ManufacturerAssignedID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:IndustryAssignedID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:RelationshipTypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:UnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:ReferencedStandardType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:VersionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ElementVersionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:URIID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PartID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AgencyID", "type": "udt:IDType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:RegisteredTaxType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ExemptionReasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ExemptionReason", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:CurrencyCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Jurisdiction", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:CustomsDutyIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ReturnableAssetInstructionsType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:MaterialID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:TermsAndConditionsDescription", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TermsAndConditionsDescriptionCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:DepositValueSpecifiedAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:DepositValueValiditySpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SpatialDimensionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ValueMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:DimensionTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:WidthMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:LengthMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:HeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:DiameterMeasure", "type": "qdt:LinearUnitMeasureType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SpecificationQueryType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Content", "type": "udt:TextType", "required": true, "repeatable": false},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SpecificationResponseType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:QueryID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Content", "type": "udt:TextType", "required": true, "repeatable": false},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SpecifiedBinaryFileType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:Title", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:AuthorName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:VersionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:FileName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:URIID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:MIMECode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:EncodingCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:CharacterSetCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedBinaryObject", "type": "udt:BinaryObjectType", "required": false, "repeatable": true},
+        {"name": "ram:Access", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:SizeMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:AccessAvailabilitySpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SpecifiedMarketplaceType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:VirtualIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:WebsiteURIID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:SalesMethodCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:OrderingAvailablePeriod", "type": "ram:AvailablePeriodType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:SpecifiedPeriodType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:DurationMeasure", "type": "udt:MeasureType", "required": false, "repeatable": true},
+        {"name": "ram:InclusiveIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:StartDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:EndDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:CompleteDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:OpenIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:SeasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:SequenceNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:StartDateFlexibilityCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ContinuousIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:PurposeCode", "type": "udt:CodeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SubordinateLineTradeAgreementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:SellerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerOrderReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:GrossPriceProductTradePrice", "type": "ram:TradePriceType", "required": false, "repeatable": false},
+        {"name": "ram:NetPriceProductTradePrice", "type": "ram:TradePriceType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SubordinateLineTradeDeliveryType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:PackageQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ProductUnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:PerPackageUnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedSupplyChainPackaging", "type": "ram:SupplyChainPackagingType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:SubordinateLineTradeSettlementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ApplicableTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SubordinateTradeLineItemType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedReferencedProduct", "type": "ram:ReferencedProductType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableTradeProduct", "type": "ram:TradeProductType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedSubordinateLineTradeAgreement", "type": "ram:SubordinateLineTradeAgreementType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedSubordinateLineTradeDelivery", "type": "ram:SubordinateLineTradeDeliveryType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedSubordinateLineTradeSettlement", "type": "ram:SubordinateLineTradeSettlementType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SupplyChainConsignmentItemType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "qdt:GoodsTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:TypeExtensionCode", "type": "qdt:GoodsTypeExtensionCodeType", "required": false, "repeatable": false},
+        {"name": "ram:DeclaredValueForCustomsAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:DeclaredValueForStatisticsAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:InvoiceAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:GrossWeightMeasure", "type": "qdt:WeightUnitMeasureType", "required": false, "repeatable": false},
+        {"name": "ram:NetWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:TariffQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:NatureIdentificationTransportCargo", "type": "ram:TransportCargoType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SupplyChainConsignmentType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:GrossWeightMeasure", "type": "qdt:WeightUnitMeasureType", "required": false, "repeatable": true},
+        {"name": "ram:NetWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": true},
+        {"name": "ram:GrossVolumeMeasure", "type": "qdt:VolumeUnitMeasureType", "required": false, "repeatable": true},
+        {"name": "ram:InsurancePremiumAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:AssociatedInvoiceAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalChargeAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:DeclaredValueForCustomsAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:PackageQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ConsignorTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:ConsigneeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:CarrierTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:FreightForwarderTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:DeliveryTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:CustomsImportAgentTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:CustomsExportAgentTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:GroupingCentreTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": true},
+        {"name": "ram:TransportContractReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:AssociatedReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:IncludedSupplyChainConsignmentItem", "type": "ram:SupplyChainConsignmentItemType", "required": false, "repeatable": true},
+        {"name": "ram:UtilizedLogisticsTransportEquipment", "type": "ram:LogisticsTransportEquipmentType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedLogisticsTransportMovement", "type": "ram:LogisticsTransportMovementType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:SupplyChainEventType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:OccurrenceDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:DescriptionBinaryObject", "type": "udt:BinaryObjectType", "required": false, "repeatable": true},
+        {"name": "ram:UnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:LatestOccurrenceDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:EarliestOccurrenceDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:OccurrenceSpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false},
+        {"name": "ram:OccurrenceLogisticsLocation", "type": "ram:LogisticsLocationType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:SupplyChainPackagingType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "qdt:PackageTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Type", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ConditionCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:DisposalMethodCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:WeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": true},
+        {"name": "ram:MaximumStackabilityQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:MaximumStackabilityWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:CustomerFacingTotalUnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:LayerTotalUnitQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ContentLayerQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:LinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false},
+        {"name": "ram:MinimumLinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false},
+        {"name": "ram:MaximumLinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedPackagingMarking", "type": "ram:PackagingMarkingType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableMaterialGoodsCharacteristic", "type": "ram:MaterialGoodsCharacteristicType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableDisposalInstructions", "type": "ram:DisposalInstructionsType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableReturnableAssetInstructions", "type": "ram:ReturnableAssetInstructionsType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:SupplyChainTradeLineItemType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:DescriptionCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:AssociatedDocumentLineDocument", "type": "ram:DocumentLineDocumentType", "required": true, "repeatable": false},
+        {"name": "ram:SpecifiedTradeProduct", "type": "ram:TradeProductType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedLineTradeAgreement", "type": "ram:LineTradeAgreementType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedLineTradeDelivery", "type": "ram:LineTradeDeliveryType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedLineTradeSettlement", "type": "ram:LineTradeSettlementType", "required": true, "repeatable": false},
+        {"name": "ram:IncludedSubordinateTradeLineItem", "type": "ram:SubordinateTradeLineItemType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:SupplyChainTradeTransactionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:IncludedSupplyChainTradeLineItem", "type": "ram:SupplyChainTradeLineItemType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableHeaderTradeAgreement", "type": "ram:HeaderTradeAgreementType", "required": true, "repeatable": false},
+        {"name": "ram:ApplicableHeaderTradeDelivery", "type": "ram:HeaderTradeDeliveryType", "required": true, "repeatable": false},
+        {"name": "ram:ApplicableHeaderTradeSettlement", "type": "ram:HeaderTradeSettlementType", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TaxRegistrationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:AssociatedRegisteredTax", "type": "ram:RegisteredTaxType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeAccountingAccountType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:SetTriggerCode", "type": "qdt:AccountingDocumentCodeType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:AccountingAccountTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:AmountTypeCode", "type": "qdt:AccountingAmountTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CostReferenceDimensionPattern", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeAddressType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PostcodeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:PostOfficeBox", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:BuildingName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineOne", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineTwo", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineThree", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineFour", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:LineFive", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:StreetName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CityName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CitySubDivisionName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CountryID", "type": "qdt:CountryIDType", "required": false, "repeatable": false},
+        {"name": "ram:CountryName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:CountrySubDivisionID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:CountrySubDivisionName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:AttentionOf", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CareOf", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:BuildingNumber", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:DepartmentName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalStreetName", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeAllowanceChargeType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ChargeIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SequenceNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:BasisAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:BasisQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:PrepaidIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ActualAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:UnitBasisAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:ReasonCode", "type": "qdt:AllowanceChargeReasonCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Reason", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:AllowanceChargeIdentificationCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CategoryTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true},
+        {"name": "ram:ActualTradeCurrencyExchange", "type": "ram:TradeCurrencyExchangeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeContactType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:PersonName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:DepartmentName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:ContactTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:JobTitle", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:Responsibility", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:PersonID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:TelephoneUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:DirectTelephoneUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:MobileTelephoneUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:FaxUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:EmailURIUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:TelexUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:VOIPUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:InstantMessagingUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedNote", "type": "ram:NoteType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedContactPerson", "type": "ram:ContactPersonType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeCountrySubDivisionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeCountryType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "qdt:CountryIDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:SubordinateTradeCountrySubDivision", "type": "ram:TradeCountrySubDivisionType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeCurrencyExchangeType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:SourceCurrencyCode", "type": "qdt:CurrencyCodeType", "required": true, "repeatable": false},
+        {"name": "ram:SourceUnitBasisNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:TargetCurrencyCode", "type": "qdt:CurrencyCodeType", "required": true, "repeatable": false},
+        {"name": "ram:TargetUnitBaseNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:MarketID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ConversionRate", "type": "udt:RateType", "required": true, "repeatable": false},
+        {"name": "ram:ConversionRateDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:AssociatedReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeDeliveryTermsType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:DeliveryTypeCode", "type": "qdt:DeliveryTermsCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:RelevantTradeLocation", "type": "ram:TradeLocationType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeLocationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:CountryID", "type": "qdt:CountryIDType", "required": false, "repeatable": false},
+        {"name": "ram:CountryName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradePartyType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:GlobalID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:RoleCode", "type": "qdt:PartyRoleCodeType", "required": false, "repeatable": true},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedLegalOrganization", "type": "ram:LegalOrganizationType", "required": false, "repeatable": false},
+        {"name": "ram:DefinedTradeContact", "type": "ram:TradeContactType", "required": false, "repeatable": true},
+        {"name": "ram:PostalTradeAddress", "type": "ram:TradeAddressType", "required": false, "repeatable": false},
+        {"name": "ram:URIUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": true},
+        {"name": "ram:SpecifiedTaxRegistration", "type": "ram:TaxRegistrationType", "required": false, "repeatable": true},
+        {"name": "ram:EndPointURIUniversalCommunication", "type": "ram:UniversalCommunicationType", "required": false, "repeatable": false},
+        {"name": "ram:LogoAssociatedSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradePaymentDiscountTermsType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:BasisDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:BasisPeriodMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:BasisAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:ActualDiscountAmount", "type": "udt:AmountType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradePaymentPenaltyTermsType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:BasisDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:BasisPeriodMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:BasisAmount", "type": "udt:AmountType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:ActualPenaltyAmount", "type": "udt:AmountType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradePaymentTermsType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "qdt:PaymentTermsIDType", "required": false, "repeatable": false},
+        {"name": "ram:FromEventCode", "type": "qdt:PaymentTermsEventTimeReferenceCodeType", "required": false, "repeatable": false},
+        {"name": "ram:SettlementPeriodMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:DueDateDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:PaymentTermsTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:InstructionTypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:DirectDebitMandateID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:PartialPaymentPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:PaymentMeansID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:PartialPaymentAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableTradePaymentPenaltyTerms", "type": "ram:TradePaymentPenaltyTermsType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableTradePaymentDiscountTerms", "type": "ram:TradePaymentDiscountTermsType", "required": false, "repeatable": false},
+        {"name": "ram:PayeeTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradePriceType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "qdt:PriceTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:ChargeAmount", "type": "udt:AmountType", "required": true, "repeatable": true},
+        {"name": "ram:BasisQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:MinimumQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:MaximumQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:ChangeReason", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:OrderUnitConversionFactorNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:AppliedTradeAllowanceCharge", "type": "ram:TradeAllowanceChargeType", "required": false, "repeatable": true},
+        {"name": "ram:ValiditySpecifiedPeriod", "type": "ram:SpecifiedPeriodType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedTradeTax", "type": "ram:TradeTaxType", "required": false, "repeatable": true},
+        {"name": "ram:DeliveryTradeLocation", "type": "ram:TradeLocationType", "required": false, "repeatable": true},
+        {"name": "ram:TradeComparisonReferencePrice", "type": "ram:ReferencePriceType", "required": false, "repeatable": true},
+        {"name": "ram:AssociatedReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeProductInstanceType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:GlobalSerialID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:BatchID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:KanbanID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SupplierAssignedSerialID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:BestBeforeDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:ExpiryDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:SellByDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:SerialID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:RegistrationID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:ProductionSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:PackagingSupplyChainEvent", "type": "ram:SupplyChainEventType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableMaterialGoodsCharacteristic", "type": "ram:MaterialGoodsCharacteristicType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableProductCharacteristic", "type": "ram:ProductCharacteristicType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeProductType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:GlobalID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:SellerAssignedID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerAssignedID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ManufacturerAssignedID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TradeName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:NetWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:GrossWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:ProductGroupID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:EndItemTypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:EndItemName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:AreaDensityMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:UseDescription", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:BrandName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:SubBrandName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:DrainedNetWeightMeasure", "type": "udt:MeasureType", "required": false, "repeatable": false},
+        {"name": "ram:VariableMeasureIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ColourCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ColourDescription", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:Designation", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:FormattedCancellationAnnouncedLaunchDateTime", "type": "qdt:FormattedDateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:FormattedLatestProductDataChangeDateTime", "type": "qdt:FormattedDateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:ApplicableProductCharacteristic", "type": "ram:ProductCharacteristicType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableMaterialGoodsCharacteristic", "type": "ram:MaterialGoodsCharacteristicType", "required": false, "repeatable": true},
+        {"name": "ram:DesignatedProductClassification", "type": "ram:ProductClassificationType", "required": false, "repeatable": true},
+        {"name": "ram:IndividualTradeProductInstance", "type": "ram:TradeProductInstanceType", "required": false, "repeatable": true},
+        {"name": "ram:CertificationEvidenceReferenceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:InspectionReferenceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:OriginTradeCountry", "type": "ram:TradeCountryType", "required": false, "repeatable": false},
+        {"name": "ram:LinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false},
+        {"name": "ram:MinimumLinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false},
+        {"name": "ram:MaximumLinearSpatialDimension", "type": "ram:SpatialDimensionType", "required": false, "repeatable": false},
+        {"name": "ram:ManufacturerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:PresentationSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true},
+        {"name": "ram:MSDSReferenceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": false},
+        {"name": "ram:AdditionalReferenceReferencedDocument", "type": "ram:ReferencedDocumentType", "required": false, "repeatable": true},
+        {"name": "ram:LegalRightsOwnerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:BrandOwnerTradeParty", "type": "ram:TradePartyType", "required": false, "repeatable": false},
+        {"name": "ram:IncludedReferencedProduct", "type": "ram:ReferencedProductType", "required": false, "repeatable": true},
+        {"name": "ram:InformationNote", "type": "ram:NoteType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeSettlementFinancialCardType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:MicrochipIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:CardholderName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ExpiryDate", "type": "udt:DateType", "required": false, "repeatable": false},
+        {"name": "ram:VerificationNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:ValidFromDateTime", "type": "udt:DateTimeType", "required": false, "repeatable": false},
+        {"name": "ram:CreditLimitAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:CreditAvailableAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:InterestRatePercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:IssuingCompanyName", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeSettlementHeaderMonetarySummationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:LineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ChargeTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:AllowanceTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TaxBasisTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TaxTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:RoundingAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:GrandTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:InformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalPrepaidAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalDiscountAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalAllowanceChargeAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:DuePayableAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:RetailValueExcludingTaxInformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalDepositFeeInformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ProductValueExcludingTobaccoTaxInformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalRetailValueInformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:GrossLineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:NetLineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:NetIncludingTaxesLineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeSettlementLineMonetarySummationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:LineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ChargeTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:AllowanceTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TaxBasisTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TaxTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:GrandTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:InformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalAllowanceChargeAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TotalRetailValueInformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:GrossLineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:NetLineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:NetIncludingTaxesLineTotalAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:ProductWeightLossInformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TradeSettlementPaymentMeansType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:PaymentChannelCode", "type": "qdt:PaymentMeansChannelCodeType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "qdt:PaymentMeansCodeType", "required": false, "repeatable": false},
+        {"name": "ram:GuaranteeMethodCode", "type": "qdt:PaymentGuaranteeMeansCodeType", "required": false, "repeatable": false},
+        {"name": "ram:PaymentMethodCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:Information", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:ApplicableTradeSettlementFinancialCard", "type": "ram:TradeSettlementFinancialCardType", "required": false, "repeatable": false},
+        {"name": "ram:PayerPartyDebtorFinancialAccount", "type": "ram:DebtorFinancialAccountType", "required": false, "repeatable": false},
+        {"name": "ram:PayeePartyCreditorFinancialAccount", "type": "ram:CreditorFinancialAccountType", "required": false, "repeatable": false},
+        {"name": "ram:PayerSpecifiedDebtorFinancialInstitution", "type": "ram:DebtorFinancialInstitutionType", "required": false, "repeatable": false},
+        {"name": "ram:PayeeSpecifiedCreditorFinancialInstitution", "type": "ram:CreditorFinancialInstitutionType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:TradeTaxType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:CalculatedAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "qdt:TaxTypeCodeType", "required": false, "repeatable": false},
+        {"name": "ram:ExemptionReason", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:CalculatedRate", "type": "udt:RateType", "required": false, "repeatable": false},
+        {"name": "ram:CalculationSequenceNumeric", "type": "udt:NumericType", "required": false, "repeatable": false},
+        {"name": "ram:BasisQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:BasisAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:UnitBasisAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:LineTotalBasisAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:AllowanceChargeBasisAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:CategoryCode", "type": "qdt:TaxCategoryCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CurrencyCode", "type": "qdt:CurrencyCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Jurisdiction", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:CustomsDutyIndicator", "type": "udt:IndicatorType", "required": false, "repeatable": false},
+        {"name": "ram:ExemptionReasonCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:TaxBasisAllowanceRate", "type": "udt:RateType", "required": false, "repeatable": false},
+        {"name": "ram:TaxPointDate", "type": "udt:DateType", "required": false, "repeatable": false},
+        {"name": "ram:Type", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:InformationAmount", "type": "udt:AmountType", "required": false, "repeatable": true},
+        {"name": "ram:CategoryName", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:DueDateTypeCode", "type": "qdt:TimeReferenceCodeType", "required": false, "repeatable": false},
+        {"name": "ram:RateApplicablePercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:SpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": true},
+        {"name": "ram:ServiceSupplyTradeCountry", "type": "ram:TradeCountryType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerRepayableTaxSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": false},
+        {"name": "ram:SellerPayableTaxSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": false},
+        {"name": "ram:SellerRefundableTaxSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerDeductibleTaxSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": false},
+        {"name": "ram:BuyerNonDeductibleTaxSpecifiedTradeAccountingAccount", "type": "ram:TradeAccountingAccountType", "required": false, "repeatable": false},
+        {"name": "ram:PlaceApplicableTradeLocation", "type": "ram:TradeLocationType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:TransportCargoType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:TypeCode", "type": "qdt:CargoCategoryCodeType", "required": false, "repeatable": false},
+        {"name": "ram:Identification", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:OperationalCategoryCode", "type": "qdt:CargoOperationalCategoryCodeType", "required": false, "repeatable": false},
+        {"name": "ram:StatisticalClassificationCode", "type": "qdt:CargoCommodityCategoryCodeType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:UniversalCommunicationType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:URIID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ChannelCode", "type": "qdt:CommunicationChannelCodeType", "required": false, "repeatable": false},
+        {"name": "ram:CompleteNumber", "type": "udt:TextType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:ValuationBreakdownStatementType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:Name", "type": "udt:TextType", "required": true, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:MeasurementMethodID", "type": "udt:IDType", "required": false, "repeatable": true},
+        {"name": "ram:CreationDateTime", "type": "udt:DateTimeType", "required": true, "repeatable": false},
+        {"name": "ram:DefaultCurrencyCode", "type": "qdt:CurrencyCodeType", "required": true, "repeatable": false},
+        {"name": "ram:DefaultLanguageCode", "type": "udt:CodeType", "required": true, "repeatable": false},
+        {"name": "ram:Comment", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:RequestedActionCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:PriceListID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ItemGroupedWorkItem", "type": "ram:GroupedWorkItemType", "required": false, "repeatable": true},
+        {"name": "ram:ItemBasicWorkItem", "type": "ram:BasicWorkItemType", "required": false, "repeatable": true},
+        {"name": "ram:TotalCalculatedPrice", "type": "ram:CalculatedPriceType", "required": false, "repeatable": true},
+        {"name": "ram:ChangedRecordedStatus", "type": "ram:RecordedStatusType", "required": false, "repeatable": true},
+        {"name": "ram:CreationSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true},
+        {"name": "ram:ReaderSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true},
+        {"name": "ram:ReferencedSpecifiedBinaryFile", "type": "ram:SpecifiedBinaryFileType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:WorkItemComplexDescriptionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:Abstract", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:Content", "type": "udt:TextType", "required": false, "repeatable": true},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:RequestingSpecificationQuery", "type": "ram:SpecificationQueryType", "required": false, "repeatable": true},
+        {"name": "ram:RespondingSpecificationResponse", "type": "ram:SpecificationResponseType", "required": false, "repeatable": true},
+        {"name": "ram:SubsetWorkItemComplexDescription", "type": "ram:WorkItemComplexDescriptionType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "ram:WorkItemDimensionType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": false, "repeatable": false},
+        {"name": "ram:ValueMeasure", "type": "udt:MeasureType", "required": true, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": true, "repeatable": false},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ComponentWorkItemDimension", "type": "ram:WorkItemDimensionType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "ram:WorkItemQuantityAnalysisType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "ram:ID", "type": "udt:IDType", "required": true, "repeatable": false},
+        {"name": "ram:ActualQuantity", "type": "udt:QuantityType", "required": false, "repeatable": false},
+        {"name": "ram:Description", "type": "udt:TextType", "required": false, "repeatable": false},
+        {"name": "ram:ActualQuantityPercent", "type": "udt:PercentType", "required": false, "repeatable": false},
+        {"name": "ram:StatusCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:TypeCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:PrimaryClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:AlternativeClassificationCode", "type": "udt:CodeType", "required": false, "repeatable": true},
+        {"name": "ram:ContractualLanguageCode", "type": "udt:CodeType", "required": false, "repeatable": false},
+        {"name": "ram:ActualQuantityWorkItemDimension", "type": "ram:WorkItemDimensionType", "required": false, "repeatable": true},
+        {"name": "ram:BreakdownWorkItemQuantityAnalysis", "type": "ram:WorkItemQuantityAnalysisType", "required": false, "repeatable": true},
+        {"name": "ram:ChangedRecordedStatus", "type": "ram:RecordedStatusType", "required": false, "repeatable": true}
+      ],
+      "attributes": []
+    },
+    "rsm:CrossIndustryInvoiceType": {
+      "model": "sequence",
+      "elements": [
+        {"name": "rsm:ExchangedDocumentContext", "type": "ram:ExchangedDocumentContextType", "required": true, "repeatable": false},
+        {"name": "rsm:ExchangedDocument", "type": "ram:ExchangedDocumentType", "required": true, "repeatable": false},
+        {"name": "rsm:SupplyChainTradeTransaction", "type": "ram:SupplyChainTradeTransactionType", "required": true, "repeatable": false},
+        {"name": "rsm:ValuationBreakdownStatement", "type": "ram:ValuationBreakdownStatementType", "required": false, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "udt:AmountType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "currencyID", "required": false},
+        {"name": "currencyCodeListVersionID", "required": false}
+      ]
+    },
+    "udt:BinaryObjectType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false},
+        {"name": "mimeCode", "required": false},
+        {"name": "encodingCode", "required": false},
+        {"name": "characterSetCode", "required": false},
+        {"name": "uri", "required": false},
+        {"name": "filename", "required": false}
+      ]
+    },
+    "udt:CodeType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "listID", "required": false},
+        {"name": "listAgencyID", "required": false},
+        {"name": "listAgencyName", "required": false},
+        {"name": "listName", "required": false},
+        {"name": "listVersionID", "required": false},
+        {"name": "name", "required": false},
+        {"name": "languageID", "required": false},
+        {"name": "listURI", "required": false},
+        {"name": "listSchemeURI", "required": false}
+      ]
+    },
+    "udt:DateTimeType": {
+      "model": "choice",
+      "elements": [
+        {"name": "udt:DateTimeString", "type": "udt:DateTimeType.DateTimeString", "required": true, "repeatable": false},
+        {"name": "udt:DateTime", "type": "xsd:dateTime", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "udt:DateTimeType.DateTimeString": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "udt:DateType": {
+      "model": "choice",
+      "elements": [
+        {"name": "udt:DateString", "type": "udt:DateType.DateString", "required": true, "repeatable": false},
+        {"name": "udt:Date", "type": "xsd:date", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "udt:DateType.DateString": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "udt:IDType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "schemeID", "required": false},
+        {"name": "schemeName", "required": false},
+        {"name": "schemeAgencyID", "required": false},
+        {"name": "schemeAgencyName", "required": false},
+        {"name": "schemeVersionID", "required": false},
+        {"name": "schemeDataURI", "required": false},
+        {"name": "schemeURI", "required": false}
+      ]
+    },
+    "udt:IndicatorType": {
+      "model": "choice",
+      "elements": [
+        {"name": "udt:IndicatorString", "type": "udt:IndicatorType.IndicatorString", "required": true, "repeatable": false},
+        {"name": "udt:Indicator", "type": "xsd:boolean", "required": true, "repeatable": false}
+      ],
+      "attributes": []
+    },
+    "udt:IndicatorType.IndicatorString": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "udt:MeasureType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "unitCode", "required": false},
+        {"name": "unitCodeListVersionID", "required": false}
+      ]
+    },
+    "udt:NumericType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "udt:PercentType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "udt:QuantityType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "unitCode", "required": false},
+        {"name": "unitCodeListID", "required": false},
+        {"name": "unitCodeListAgencyID", "required": false},
+        {"name": "unitCodeListAgencyName", "required": false}
+      ]
+    },
+    "udt:RateType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    },
+    "udt:TextType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "languageID", "required": false},
+        {"name": "languageLocaleID", "required": false}
+      ]
+    },
+    "udt:ValueType": {
+      "model": "simple",
+      "elements": [],
+      "attributes": [
+        {"name": "format", "required": false}
+      ]
+    }
+  }
+}

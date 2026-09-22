@@ -1,0 +1,587 @@
+[
+  {
+    "id": "BR-CL-01",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-3"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-3"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-3"
+            },
+            "untdid-1001"
+          ]
+        }
+      }
+    },
+    "message": "The invoice type code (BT-3) at {@/BT-3} is {/BT-3}, which is not on the untdid-1001 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-3",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-04",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-5"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-5"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-5"
+            },
+            "iso-4217"
+          ]
+        }
+      }
+    },
+    "message": "The invoice currency code (BT-5) at {@/BT-5} is {/BT-5}, which is not on the iso-4217 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-5",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs. The snapshot is ISO's own list of the day it was taken and the artefacts carry a 178-code listing of their own, so the two differ in both directions: measured on 2026-09-20, the artefacts accept CNH and STD which the snapshot does not carry, and the snapshot accepts STN and XAD which the artefacts do not. An invoice in one of those four codes is therefore judged differently by the two engines. The code list directory records which day was taken and why, and the conformance ledger carries the divergence."
+  },
+  {
+    "id": "BR-CL-05",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-6"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-6"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-6"
+            },
+            "iso-4217"
+          ]
+        }
+      }
+    },
+    "message": "The VAT accounting currency code (BT-6) at {@/BT-6} is {/BT-6}, which is not on the iso-4217 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-6",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-06",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-8"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-8"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-8"
+            },
+            "untdid-2005"
+          ]
+        }
+      }
+    },
+    "message": "The value added tax point date code (BT-8) at {@/BT-8} is {/BT-8}, which is not on the untdid-2005 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-8",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs. A cross industry invoice states this code in UNTDID 2475 rather than in the restriction of UNTDID 2005 the standard names, and the binding tables translate between the two, so the value this rule sees is the code of the standard whichever syntax the invoice arrived in."
+  },
+  {
+    "id": "BR-CL-08",
+    "severity": "fatal",
+    "context": "/BG-1/*",
+    "terms": [
+      "BT-21"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-21"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-21"
+            },
+            "untdid-4451"
+          ]
+        }
+      }
+    },
+    "message": "The invoice note subject code (BT-21) at {@/BT-21} is {/BT-21}, which is not on the untdid-4451 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-21",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-14",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-40",
+      "BT-55",
+      "BT-69",
+      "BT-80"
+    ],
+    "assert": {
+      "and": [
+        {
+          "if": {
+            "condition": {
+              "exists": "/BG-4/BG-5/BT-40"
+            },
+            "then": {
+              "inList": [
+                {
+                  "value": "/BG-4/BG-5/BT-40"
+                },
+                "iso-3166-1"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "condition": {
+              "exists": "/BG-7/BG-8/BT-55"
+            },
+            "then": {
+              "inList": [
+                {
+                  "value": "/BG-7/BG-8/BT-55"
+                },
+                "iso-3166-1"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "condition": {
+              "exists": "/BG-11/BG-12/BT-69"
+            },
+            "then": {
+              "inList": [
+                {
+                  "value": "/BG-11/BG-12/BT-69"
+                },
+                "iso-3166-1"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "condition": {
+              "exists": "/BG-13/BG-15/BT-80"
+            },
+            "then": {
+              "inList": [
+                {
+                  "value": "/BG-13/BG-15/BT-80"
+                },
+                "iso-3166-1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "message": "A country code of the invoice is not on the iso-3166-1 snapshot this pack decides against: the seller country (BT-40) is {/BG-4/BG-5/BT-40}, the buyer country (BT-55) is {/BG-7/BG-8/BT-55}, the tax representative country (BT-69) is {/BG-11/BG-12/BT-69} and the deliver to country (BT-80) is {/BG-13/BG-15/BT-80}.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-40, BT-55, BT-69 and BT-80",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-15",
+    "severity": "fatal",
+    "context": "/BG-25/*/BG-31",
+    "terms": [
+      "BT-159"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-159"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-159"
+            },
+            "iso-3166-1"
+          ]
+        }
+      }
+    },
+    "message": "The item country of origin (BT-159) at {@/BT-159} is {/BT-159}, which is not on the iso-3166-1 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-159",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-16",
+    "severity": "fatal",
+    "context": "/BG-16",
+    "terms": [
+      "BT-81"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-81"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-81"
+            },
+            "untdid-4461"
+          ]
+        }
+      }
+    },
+    "message": "The payment means type code (BT-81) at {@/BT-81} is {/BT-81}, which is not on the untdid-4461 snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-81",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-17",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-95",
+      "BT-102"
+    ],
+    "assert": {
+      "and": [
+        {
+          "forEach": {
+            "group": "/BG-20/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-95"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    "untdid-5305"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "forEach": {
+            "group": "/BG-21/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-102"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    "untdid-5305"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "message": "A VAT category code of a document level allowance (BT-95) or of a document level charge (BT-102) is not on the untdid-5305 snapshot this pack decides against; the paths of this finding name where.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-95 and BT-102",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs. The artefacts split the VAT category codes over two identifiers, and they split them by the element the syntax writes rather than by the business term: this one is the category of a document level allowance and of a document level charge, which both syntaxes decide under this identifier."
+  },
+  {
+    "id": "BR-CL-18",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-118",
+      "BT-151"
+    ],
+    "assert": {
+      "and": [
+        {
+          "forEach": {
+            "group": "/BG-23/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-118"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-118"
+                    },
+                    "untdid-5305"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "forEach": {
+            "group": "/BG-25/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BG-30/BT-151"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    "untdid-5305"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "message": "A VAT category code of a VAT breakdown (BT-118) or of an invoiced item (BT-151) is not on the untdid-5305 snapshot this pack decides against; the paths of this finding name where.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-118 and BT-151",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs. The category of an invoiced item is decided under this identifier by both syntaxes. The category of a VAT breakdown is not: the CII artefact decides it here and the UBL artefact decides it as BR-CL-17, because each numbers the rule after the element its syntax writes. A rule of this engine is a statement about a business term and cannot follow both, so it follows the CII reading and conformance/rules/ledger.md records the consequence for a report compared with the UBL artefact."
+  },
+  {
+    "id": "BR-CL-19",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-98",
+      "BT-140"
+    ],
+    "assert": {
+      "and": [
+        {
+          "forEach": {
+            "group": "/BG-20/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-98"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-98"
+                    },
+                    "untdid-5189"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "forEach": {
+            "group": "/BG-25/*/BG-27/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-140"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-140"
+                    },
+                    "untdid-5189"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "message": "An allowance reason code — on document level (BT-98) or on an invoice line (BT-140) — is not on the untdid-5189 snapshot this pack decides against; the paths of this finding name where.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-98 and BT-140",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-20",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-105",
+      "BT-145"
+    ],
+    "assert": {
+      "and": [
+        {
+          "forEach": {
+            "group": "/BG-21/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-105"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-105"
+                    },
+                    "untdid-7161"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "forEach": {
+            "group": "/BG-25/*/BG-28/*",
+            "assert": {
+              "if": {
+                "condition": {
+                  "exists": "/BT-145"
+                },
+                "then": {
+                  "inList": [
+                    {
+                      "value": "/BT-145"
+                    },
+                    "untdid-7161"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "message": "A charge reason code — on document level (BT-105) or on an invoice line (BT-145) — is not on the untdid-7161 snapshot this pack decides against; the paths of this finding name where.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-105 and BT-145",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-22",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-121"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-121"
+        },
+        "then": {
+          "inList": [
+            {
+              "value": "/BT-121"
+            },
+            "vatex"
+          ]
+        }
+      }
+    },
+    "message": "The VAT exemption reason code (BT-121) at {@/BT-121} is {/BT-121}, which is not on the vatex snapshot this pack decides against.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-121",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs."
+  },
+  {
+    "id": "BR-CL-23",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-130",
+      "BT-150"
+    ],
+    "assert": {
+      "forEach": {
+        "group": "/BG-25/*",
+        "assert": {
+          "and": [
+            {
+              "if": {
+                "condition": {
+                  "exists": "/BT-130"
+                },
+                "then": {
+                  "or": [
+                    {
+                      "inList": [
+                        {
+                          "value": "/BT-130"
+                        },
+                        "unece-rec20"
+                      ]
+                    },
+                    {
+                      "inList": [
+                        {
+                          "value": "/BT-130"
+                        },
+                        "unece-rec21"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "condition": {
+                  "exists": "/BG-29/BT-150"
+                },
+                "then": {
+                  "or": [
+                    {
+                      "inList": [
+                        {
+                          "value": "/BG-29/BT-150"
+                        },
+                        "unece-rec20"
+                      ]
+                    },
+                    {
+                      "inList": [
+                        {
+                          "value": "/BG-29/BT-150"
+                        },
+                        "unece-rec21"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "message": "A unit of measure code — the invoiced quantity unit (BT-130) or the item price base quantity unit (BT-150) — is on neither the unece-rec20 nor the unece-rec21 snapshot this pack decides against; the paths of this finding name where.",
+    "source": "EN 16931-1, 6.3, Table 2, BT-130 and BT-150",
+    "note": "The identifier of this rule is the official validation artefacts' and not the standard's: clause 6.3 names the code list of each business term in the semantic model table and gives the restriction no rule identifier of its own. The identifier is kept so that a report can be compared with theirs. The standard names one list for these terms, Recommendation 20 extended by Recommendation 21; this pack carries the two as two snapshots, because they are two publications, and asks whether the code is on either."
+  }
+]

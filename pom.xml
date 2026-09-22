@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.bsnsoft.esj</groupId>
+  <artifactId>en16931-semantic-json</artifactId>
+  <version>0.9.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>EN16931 Semantic JSON</name>
+  <description>
+    A path-based JSON binding of the EN 16931-1 semantic invoice model:
+    every value is addressed by a semantic path built from business group and business
+    term identifiers, and its semantic data type comes from the term registry.
+  </description>
+  <!--
+    No url and no scm element: the project has no public home yet, and a placeholder
+    would travel into the source jar and from there into a repository.
+  -->
+  <inceptionYear>2026</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>BSNSoft Solutions GmbH</name>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Christian Bürckert</name>
+      <organization>BSNSoft Solutions GmbH</organization>
+      <roles>
+        <role>author</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>esj-core</module>
+    <module>esj-generator</module>
+    <module>esj-typed</module>
+    <module>esj-xr</module>
+    <module>esj-syntax</module>
+    <module>esj-rules</module>
+    <module>esj-invoice</module>
+    <module>esj-b2c</module>
+    <module>esj-bindings</module>
+    <module>esj-pdf</module>
+    <module>esj-render</module>
+    <module>esj-cli</module>
+  </modules>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <jackson.version>2.22.2</jackson.version>
+    <picocli.version>4.7.6</picocli.version>
+    <saxon.version>12.10</saxon.version>
+    <pdfbox.version>3.0.8</pdfbox.version>
+    <zxing.version>3.5.4</zxing.version>
+    <junit.version>5.14.4</junit.version>
+    <json-schema-validator.version>3.0.7</json-schema-validator.version>
+    <embedded-postgres.version>2.2.2</embedded-postgres.version>
+    <embedded-postgres-binaries.version>14.22.0</embedded-postgres-binaries.version>
+    <verapdf.version>1.30.2</verapdf.version>
+
+    <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
+    <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
+    <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+
+    <!--
+      The files of EN 16931-1:2026 are separable: model/en16931/2026.paths lists the
+      files a distribution leaves out when that edition is not shipped, and the profile
+      without-edition-2026 builds such a distribution. These two patterns are what that profile changes; by default
+      they match nothing, so nothing is left out. An edition is data, so leaving one
+      out is a question for the build and never a question for the code.
+    -->
+    <esj.edition-2026.exclude>en16931/no-edition-is-excluded</esj.edition-2026.exclude>
+    <esj.edition-2026.exclude-upgrade>en16931/no-mapping-is-excluded</esj.edition-2026.exclude-upgrade>
+    <esj.edition-2026.exclude-schema>no-schema-is-excluded</esj.edition-2026.exclude-schema>
+    <esj.edition-2026.exclude-sources>**/no-edition-is-excluded/**</esj.edition-2026.exclude-sources>
+    <esj.edition-2026.exclude-examples>**/no-example-is-excluded*</esj.edition-2026.exclude-examples>
+    <esj.edition-2026.exclude-fixtures>**/no-part-is-excluded*</esj.edition-2026.exclude-fixtures>
+    <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
+    <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
+    <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+    <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.saxon</groupId>
+        <artifactId>Saxon-HE</artifactId>
+        <version>${saxon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>pdfbox</artifactId>
+        <version>${pdfbox.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>info.picocli</groupId>
+        <artifactId>picocli</artifactId>
+        <version>${picocli.version}</version>
+      </dependency>
+      <!--
+        The annotation processor of picocli, at build time only. It writes the
+        reachability metadata of the command tree — every option, every parameter and
+        every converter picocli reaches by reflection — into the jar, so that the native
+        executable of dist/package.sh answers as the jar does for an option no case
+        happened to exercise. Nothing of it is on the class path at run time.
+      -->
+      <dependency>
+        <groupId>info.picocli</groupId>
+        <artifactId>picocli-codegen</artifactId>
+        <version>${picocli.version}</version>
+      </dependency>
+      <!--
+        The QR encoder of esj-render, used for the one code this project draws: the EPC QR
+        code of a credit transfer. Apache-2.0, pure Java, no native part and no transitive
+        dependency; only the core artefact, never the javase one, which would bring the
+        image classes of the platform into a module that draws vectors.
+      -->
+      <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>core</artifactId>
+        <version>${zxing.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${json-schema-validator.version}</version>
+      </dependency>
+      <!--
+        A real PostgreSQL, started from binaries of a Maven artefact, test scope only: every
+        SQL statement docs/storage.md prints is executed against it, so the page cannot show
+        a statement that does not run. No Docker, no installed server, nothing redistributed,
+        and no module depends on it outside its own tests.
+      -->
+      <dependency>
+        <groupId>io.zonky.test</groupId>
+        <artifactId>embedded-postgres</artifactId>
+        <version>${embedded-postgres.version}</version>
+      </dependency>
+      <!--
+        The server binaries the artefact above carries by default cover x86-64 on Linux,
+        macOS and Windows. These two add the 64-bit ARM builds, so the page is checked on an
+        ARM build server and on an Apple Silicon machine as well.
+      -->
+      <dependency>
+        <groupId>io.zonky.test.postgres</groupId>
+        <artifactId>embedded-postgres-binaries-linux-arm64v8</artifactId>
+        <version>${embedded-postgres-binaries.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.zonky.test.postgres</groupId>
+        <artifactId>embedded-postgres-binaries-darwin-arm64v8</artifactId>
+        <version>${embedded-postgres-binaries.version}</version>
+      </dependency>
+      <!--
+        The PDF/A oracle of esj-render, in test scope and in no published artefact. It is
+        dual-licensed GPLv3+ / MPLv2+, which is why it validates the renderings of a build
+        and travels with nothing.
+      -->
+      <dependency>
+        <groupId>org.verapdf</groupId>
+        <artifactId>validation-model-jakarta</artifactId>
+        <version>${verapdf.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <failOnWarning>true</failOnWarning>
+            <compilerArgs>
+              <arg>-Xlint:all</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <failIfNoSpecifiedTests>true</failIfNoSpecifiedTests>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${maven-dependency-plugin.version}</version>
+        </plugin>
+        <!--
+          The integration tests. A test that spawns the self-contained jar cannot run in
+          the test phase, because that jar is written one phase later; declared here so
+          that the module that has such tests only has to name the plugin.
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${maven-failsafe-plugin.version}</version>
+        </plugin>
+
+        <!--
+          Every module's jar carries the licence and the notice of the repository under
+          META-INF. Apache-2.0 section 4(d) asks a redistributor to pass on the NOTICE of
+          a work that has one, and a reader who takes the artefact out of a repository
+          never sees this tree; the producer is the one who can make that easy. The two
+          files sit at the root of the repository, one directory above every module.
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>attribution</id>
+              <phase>process-classes</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+                <resources>
+                  <resource>
+                    <directory>${project.basedir}/..</directory>
+                    <includes>
+                      <include>LICENSE</include>
+                      <include>NOTICE</include>
+                    </includes>
+                  </resource>
+                </resources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven-source-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec-maven-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+          <configuration>
+            <failOnError>true</failOnError>
+            <failOnWarnings>true</failOnWarnings>
+            <doclint>all</doclint>
+            <notimestamp>true</notimestamp>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <!--
+        Builds ESJ without the files of EN 16931-1:2026. Whether a registry of that
+        edition may be published is a question that is open at the time of writing, and
+        the answer must not decide whether the rest of the project builds: under this
+        profile the paths of model/en16931/2026.paths reach no artefact, the loader
+        reports the editions it actually carries, and everything that needs the edition
+        stands down instead of failing.
+      -->
+      <id>without-edition-2026</id>
+      <properties>
+        <esj.edition-2026.exclude>en16931/2026*</esj.edition-2026.exclude>
+        <esj.edition-2026.exclude-upgrade>en16931/upgrade-*</esj.edition-2026.exclude-upgrade>
+        <esj.edition-2026.exclude-schema>esj-en16931-2026.schema.json</esj.edition-2026.exclude-schema>
+        <esj.edition-2026.exclude-sources>**/typed/v2026/**</esj.edition-2026.exclude-sources>
+        <esj.edition-2026.exclude-examples>**/edition-2026*</esj.edition-2026.exclude-examples>
+        <esj.edition-2026.exclude-fixtures>fixtures/manifest-en16931-2026.json</esj.edition-2026.exclude-fixtures>
+      </properties>
+    </profile>
+  </profiles>
+</project>

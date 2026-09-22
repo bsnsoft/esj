@@ -1,0 +1,662 @@
+{
+  "format": "EN16931-Semantic-JSON-writer-matrix",
+  "version": "0.1",
+  "corpus": "itplr-kosit/xrechnung-testsuite v2026-08-31",
+  "pack": "xrechnung/3.0.2/2026-08-31",
+  "readBy": "esj-bindings, StreamingReader",
+  "writtenBy": "esj-bindings, CiiWriter and UblWriter",
+  "totals": {
+    "pairs": 40,
+    "ublToCiiAccepted": 40,
+    "ublToCiiRefused": 0,
+    "ciiToUblAccepted": 39,
+    "ciiToUblRefused": 1,
+    "ublToCiiEqual": 18,
+    "ublToCiiDiffering": 22,
+    "ublToCiiPaths": 78,
+    "ciiToUblEqual": 18,
+    "ciiToUblDiffering": 22,
+    "ciiToUblPaths": 80,
+    "explained": 158,
+    "unexplained": 0
+  },
+  "refusals": [
+    {
+      "direction": "ciiToUbl",
+      "rule": "cvc-complex-type.2.4.a",
+      "cause": "term-the-document-does-not-state",
+      "pairs": 1
+    }
+  ],
+  "causes": [
+    {
+      "cause": "zero-total",
+      "kind": "fixture",
+      "ublToCiiPaths": 15,
+      "ciiToUblPaths": 15
+    },
+    {
+      "cause": "item-attribute-order",
+      "kind": "fixture",
+      "ublToCiiPaths": 12,
+      "ciiToUblPaths": 12
+    },
+    {
+      "cause": "seller-identifiers",
+      "kind": "fixture",
+      "ublToCiiPaths": 9,
+      "ciiToUblPaths": 9
+    },
+    {
+      "cause": "buyer-name-and-trading-name",
+      "kind": "fixture",
+      "ublToCiiPaths": 8,
+      "ciiToUblPaths": 8
+    },
+    {
+      "cause": "price-base-quantity",
+      "kind": "fixture",
+      "ublToCiiPaths": 8,
+      "ciiToUblPaths": 8
+    },
+    {
+      "cause": "order-reference-placeholder",
+      "kind": "fixture",
+      "ublToCiiPaths": 7,
+      "ciiToUblPaths": 7
+    },
+    {
+      "cause": "payee-legal-registration",
+      "kind": "fixture",
+      "ublToCiiPaths": 6,
+      "ciiToUblPaths": 6
+    },
+    {
+      "cause": "address-city-postcode-swapped",
+      "kind": "fixture",
+      "ublToCiiPaths": 4,
+      "ciiToUblPaths": 4
+    },
+    {
+      "cause": "address-placeholder-wording",
+      "kind": "fixture",
+      "ublToCiiPaths": 2,
+      "ciiToUblPaths": 2
+    },
+    {
+      "cause": "seller-contact-point",
+      "kind": "fixture",
+      "ublToCiiPaths": 2,
+      "ciiToUblPaths": 2
+    },
+    {
+      "cause": "buyer-trading-name-only-ubl",
+      "kind": "fixture",
+      "ublToCiiPaths": 1,
+      "ciiToUblPaths": 1
+    },
+    {
+      "cause": "item-description-typo",
+      "kind": "fixture",
+      "ublToCiiPaths": 1,
+      "ciiToUblPaths": 1
+    },
+    {
+      "cause": "payment-means-text",
+      "kind": "fixture",
+      "ublToCiiPaths": 1,
+      "ciiToUblPaths": 1
+    },
+    {
+      "cause": "preceding-invoice-references",
+      "kind": "fixture",
+      "ublToCiiPaths": 0,
+      "ciiToUblPaths": 2
+    },
+    {
+      "cause": "seller-vat-identifier",
+      "kind": "fixture",
+      "ublToCiiPaths": 1,
+      "ciiToUblPaths": 1
+    },
+    {
+      "cause": "vat-exemption-reason",
+      "kind": "fixture",
+      "ublToCiiPaths": 1,
+      "ciiToUblPaths": 1
+    }
+  ],
+  "masked": [
+    {
+      "stem": "technical-cases/cius/01.01_comprehensive_test",
+      "direction": "ublToCii",
+      "paths": [
+        "/BG-3/1/BT-25",
+        "/BG-3/1/BT-26"
+      ],
+      "note": "GROUP_NOT_REPEATABLE"
+    }
+  ],
+  "pairs": [
+    {
+      "stem": "business-cases/standard/01.01a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.02a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.03a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.04a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.05a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.06a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.07a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.08a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.09a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.10a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.11a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.12a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.13a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.14a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.15a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.17a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.18a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.19a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.20a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 5
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 5
+      }
+    },
+    {
+      "stem": "business-cases/standard/01.21a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 4
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 4
+      }
+    },
+    {
+      "stem": "business-cases/standard/02.01a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/02.02a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/02.03a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/02.04a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/02.05a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/02.06a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.01a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.02a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.03a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.04a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.05a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.06a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 4
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 4
+      }
+    },
+    {
+      "stem": "business-cases/standard/03.07a-INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 5
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 5
+      }
+    },
+    {
+      "stem": "technical-cases/cius/01.01_comprehensive_test",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 9
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 11
+      }
+    },
+    {
+      "stem": "technical-cases/cius/01.02_comprehensive_test",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 6
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 6
+      }
+    },
+    {
+      "stem": "technical-cases/cius/01.03_comprehensive_test",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 7
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 7
+      }
+    },
+    {
+      "stem": "technical-cases/cius/01.04_comprehensive_test",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 7
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 7
+      }
+    },
+    {
+      "stem": "technical-cases/cius/01.05_minimal_test",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 1
+      },
+      "ciiToUbl": {
+        "accepted": false,
+        "equal": false,
+        "differingPaths": 1
+      }
+    },
+    {
+      "stem": "technical-cases/cius/01.06_minimal_test",
+      "ublToCii": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": true,
+        "differingPaths": 0
+      }
+    },
+    {
+      "stem": "technical-cases/cvd/02.01a-cvd_INVOICE",
+      "ublToCii": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 18
+      },
+      "ciiToUbl": {
+        "accepted": true,
+        "equal": false,
+        "differingPaths": 18
+      }
+    }
+  ]
+}

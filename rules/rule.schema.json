@@ -1,0 +1,670 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tag:bsnsoft.de,2026:esj/rules/0.1/rule.schema.json",
+  "$comment": "Provisional identifier. It is a tag URI (RFC 4151) because no schema is published under an https URL yet; the identifier will move to an https URL when the project publishes one.",
+  "title": "EN16931 Semantic JSON rule pack 0.1",
+  "description": "A pack of business rules written over semantic paths. The schema describes two files: a pack manifest, which says what the pack is, which code list snapshots it decides against, which Java rules it carries and which rule files belong to it; and a rule file, which is an array of rules. What it deliberately cannot check is everything that needs the term registry: whether a path names terms that exist, whether it nests them in a way the registry records, whether an asterisk stands exactly where a repeatable term is, which semantic data type a path has and therefore whether an arithmetic operator was given numbers, and whether a code list the rules name has a snapshot in the pack. The compiler of esj-rules checks all of that, refuses the pack when it fails, and rules/README.md describes the language a reader has to know to write one.",
+  "$defs": {
+    "pack": {
+      "type": "object",
+      "required": [
+        "id",
+        "version",
+        "verifiedAgainst",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "$schema": {
+          "type": "string"
+        },
+        "id": {
+          "description": "The identifier of the pack, which appears in every finding it produces.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "version": {
+          "description": "The version of the pack, which appears in every finding it produces. A new version is a new file; a released one is never edited.",
+          "type": "string",
+          "pattern": "^[0-9A-Za-z][0-9A-Za-z.-]*$"
+        },
+        "verifiedAgainst": {
+          "description": "The release of the official validation artefacts this pack's behaviour is compared against. It is a statement of what was measured, not a claim of equivalence; the ledger carries the figures.",
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "description": "What the pack contains, in English, for a person reading the file.",
+          "type": "string",
+          "minLength": 1
+        },
+        "codeLists": {
+          "description": "The snapshot each code list the rules name is decided against, by list identifier. The day is part of the file name of the snapshot, so a pack version always asks the same list the same question.",
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/listId"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/day"
+          }
+        },
+        "javaRules": {
+          "description": "The classes of the rules the rule language cannot express. Naming a class is not loading it: the caller hands the instances to the engine, which checks that exactly these arrived.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)+$"
+          }
+        },
+        "rules": {
+          "description": "The rules written in the rule language.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        },
+        "files": {
+          "description": "The rule files this pack is made of, each a path relative to the directory of the manifest and each an array of rules. A pack of two hundred rules is unreadable as one file and impossible to review as one diff, so the rules are split by family and the manifest says which files belong to it. Rules written in the manifest itself and rules in these files are one set, and an identifier that appears twice in it is refused.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^rules/[a-z0-9-]+\\.json$"
+          }
+        }
+      }
+    },
+    "ruleFile": {
+      "description": "One file of a pack: an array of rules and nothing else. Its header is the manifest that names it.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
+    },
+    "listId": {
+      "description": "The identifier a rule names a code list by.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "day": {
+      "description": "A calendar day, YYYY-MM-DD.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "termId": {
+      "description": "A business term or business group identifier, with the namespace of an extension where it has one.",
+      "type": "string",
+      "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+$"
+    },
+    "path": {
+      "description": "A path relative to the context of the rule: term identifiers, each followed by an asterisk where the registry declares the term repeatable. A rule never writes an occurrence index.",
+      "type": "string",
+      "pattern": "^(/(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+(/\\*)?)+$"
+    },
+    "context": {
+      "description": "What the rule is a statement about: a business group path pattern, or a solidus for the document. The rule is evaluated once per instance of the context.",
+      "type": "string",
+      "pattern": "^/$|^(/BG-([A-Z][A-Z0-9]*-)?[0-9]+(/\\*)?)+$"
+    },
+    "scale": {
+      "description": "A number of fraction digits.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 20
+    },
+    "rule": {
+      "type": "object",
+      "required": [
+        "id",
+        "severity",
+        "context",
+        "terms",
+        "assert",
+        "message",
+        "source"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "The identifier the standard gives the rule. It is the code of every finding the rule produces, so that a report can be compared with the report of any other tool.",
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]*$"
+        },
+        "severity": {
+          "description": "How much a finding of this rule weighs. A rule declares one of two levels; info is the engine's and says that a rule could not be decided.",
+          "enum": [
+            "fatal",
+            "warning"
+          ]
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "terms": {
+          "description": "The business terms and groups the rule reads. Documentation for a person, and the column a coverage table is built from.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/termId"
+          }
+        },
+        "assert": {
+          "description": "What must hold. A finding is produced when it is false; a rule whose assertion cannot be decided reports nothing.",
+          "$ref": "#/$defs/expression"
+        },
+        "warn": {
+          "description": "A second assertion, weighed only where the first one holds, whose failure is a warning rather than a fault. It is how a rule states a figure the official artefact of one syntax accepts and that of the other rejects: the verdict follows the wider reading and the message names the syntax whose artefact rejects the figure. Most rules carry none.",
+          "type": "object",
+          "required": [
+            "assert",
+            "message"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "assert": {
+              "description": "What must hold for the rule to say nothing at all.",
+              "$ref": "#/$defs/expression"
+            },
+            "message": {
+              "description": "What the warning says. Its placeholders and the expressions of bind are the rule's own.",
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "bind": {
+          "description": "Expressions the message may show under a name, written {$name}. They are evaluated only when the rule fails.",
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/expression"
+          }
+        },
+        "message": {
+          "description": "What the finding says, in this project's own words. {/BT-131} is the value at that path, {@/BT-131} is the path itself, {$name} is a bound expression and {.} is the instance; a literal brace is written twice. No text of the norm is reproduced.",
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "description": "The clause of the standard the rule states. A reference and never a quotation.",
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "description": "Why the rule reads the way it does where the statement of the standard admits more than one reading: a tolerance, a rounding, a place where the official validation artefacts settle something the norm leaves open. Documentation for a reader of the pack; the engine does not use it, and a rule that needs no explanation carries none.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "expression": {
+      "description": "An object with exactly one member, whose name is one of the thirty-one operators of the language.",
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "$ref": "#/$defs/path"
+            }
+          }
+        },
+        {
+          "required": [
+            "const"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "const": {
+              "type": [
+                "string",
+                "integer",
+                "boolean"
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "exists"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "exists": {
+              "$ref": "#/$defs/path"
+            }
+          }
+        },
+        {
+          "required": [
+            "absent"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "absent": {
+              "$ref": "#/$defs/path"
+            }
+          }
+        },
+        {
+          "required": [
+            "eq"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "eq": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "ne"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "ne": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "lt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "lt": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "le"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "le": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "gt"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "gt": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "ge"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "ge": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "add"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "add": {
+              "$ref": "#/$defs/several"
+            }
+          }
+        },
+        {
+          "required": [
+            "mul"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "mul": {
+              "$ref": "#/$defs/several"
+            }
+          }
+        },
+        {
+          "required": [
+            "sub"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "sub": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "div"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "div": {
+              "$ref": "#/$defs/pair"
+            }
+          }
+        },
+        {
+          "required": [
+            "sum"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "sum": {
+              "$ref": "#/$defs/aggregate"
+            }
+          }
+        },
+        {
+          "required": [
+            "min"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "min": {
+              "$ref": "#/$defs/aggregate"
+            }
+          }
+        },
+        {
+          "required": [
+            "max"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "max": {
+              "$ref": "#/$defs/aggregate"
+            }
+          }
+        },
+        {
+          "required": [
+            "count"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "count": {
+              "$ref": "#/$defs/path"
+            }
+          }
+        },
+        {
+          "required": [
+            "round"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "round": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/expression"
+                },
+                {
+                  "$ref": "#/$defs/scale"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "decimals"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "decimals": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/path"
+                },
+                {
+                  "$ref": "#/$defs/scale"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "abs"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "abs": {
+              "$ref": "#/$defs/expression"
+            }
+          }
+        },
+        {
+          "required": [
+            "inList"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "inList": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/expression"
+                },
+                {
+                  "$ref": "#/$defs/listId"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "matches"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "matches": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/expression"
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "len"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "len": {
+              "$ref": "#/$defs/expression"
+            }
+          }
+        },
+        {
+          "required": [
+            "and"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "and": {
+              "$ref": "#/$defs/several"
+            }
+          }
+        },
+        {
+          "required": [
+            "or"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "or": {
+              "$ref": "#/$defs/several"
+            }
+          }
+        },
+        {
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "not": {
+              "$ref": "#/$defs/expression"
+            }
+          }
+        },
+        {
+          "required": [
+            "if"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "if": {
+              "type": "object",
+              "required": [
+                "condition",
+                "then"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "condition": {
+                  "$ref": "#/$defs/expression"
+                },
+                "then": {
+                  "$ref": "#/$defs/expression"
+                },
+                "else": {
+                  "$ref": "#/$defs/expression"
+                }
+              }
+            }
+          }
+        },
+        {
+          "required": [
+            "forEach"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "forEach": {
+              "$ref": "#/$defs/quantifier"
+            }
+          }
+        },
+        {
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "all": {
+              "$ref": "#/$defs/quantifier"
+            }
+          }
+        },
+        {
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "any": {
+              "$ref": "#/$defs/quantifier"
+            }
+          }
+        }
+      ]
+    },
+    "pair": {
+      "description": "Exactly two operands.",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/expression"
+      }
+    },
+    "several": {
+      "description": "Two or more operands.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/expression"
+      }
+    },
+    "aggregate": {
+      "description": "A path pattern the aggregate is taken over, or a list of expressions.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/path"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/expression"
+          }
+        }
+      ]
+    },
+    "quantifier": {
+      "description": "A business group pattern and what must hold in an instance of it.",
+      "type": "object",
+      "required": [
+        "group",
+        "assert"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "group": {
+          "$ref": "#/$defs/path"
+        },
+        "assert": {
+          "$ref": "#/$defs/expression"
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/pack"
+    },
+    {
+      "$ref": "#/$defs/ruleFile"
+    }
+  ]
+}

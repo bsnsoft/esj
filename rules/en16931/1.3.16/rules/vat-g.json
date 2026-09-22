@@ -1,0 +1,323 @@
+[
+  {
+    "id": "BR-G-02",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-31",
+      "BT-63",
+      "BT-151"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-25/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BG-30/BT-151"
+                },
+                {
+                  "const": "G"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An invoice line (BG-25) is categorised \"G\" (export outside the EU), and the invoice carries none of them: a seller VAT identifier (BT-31) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-2"
+  },
+  {
+    "id": "BR-G-03",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-31",
+      "BT-63",
+      "BT-95"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-20/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-95"
+                },
+                {
+                  "const": "G"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An document level allowance (BG-20) is categorised \"G\" (export outside the EU), and the invoice carries none of them: a seller VAT identifier (BT-31) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-3"
+  },
+  {
+    "id": "BR-G-04",
+    "severity": "fatal",
+    "context": "/",
+    "terms": [
+      "BT-31",
+      "BT-63",
+      "BT-102"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-21/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-102"
+                },
+                {
+                  "const": "G"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An document level charge (BG-21) is categorised \"G\" (export outside the EU), and the invoice carries none of them: a seller VAT identifier (BT-31) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-4"
+  },
+  {
+    "id": "BR-G-05",
+    "severity": "fatal",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-151",
+      "BT-152"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BG-30/BT-151"
+            },
+            {
+              "const": "G"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BG-30/BT-152"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BG-30/BT-152"
+                },
+                {
+                  "const": "0"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice line at {.} is categorised \"G\" (export outside the EU) and states the VAT rate {/BG-30/BT-152}; under this category the rate is zero.",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-5"
+  },
+  {
+    "id": "BR-G-06",
+    "severity": "fatal",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-95",
+      "BT-96"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-95"
+            },
+            {
+              "const": "G"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BT-96"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-96"
+                },
+                {
+                  "const": "0"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The document level allowance at {.} is categorised \"G\" (export outside the EU) and states the VAT rate {/BT-96}; under this category the rate is zero.",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-6"
+  },
+  {
+    "id": "BR-G-07",
+    "severity": "fatal",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102",
+      "BT-103"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-102"
+            },
+            {
+              "const": "G"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BT-103"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-103"
+                },
+                {
+                  "const": "0"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The document level charge at {.} is categorised \"G\" (export outside the EU) and states the VAT rate {/BT-103}; under this category the rate is zero.",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-7"
+  },
+  {
+    "id": "BR-G-09",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-117",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-118"
+            },
+            {
+              "const": "G"
+            }
+          ]
+        },
+        "then": {
+          "eq": [
+            {
+              "value": "/BT-117"
+            },
+            {
+              "const": "0"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"G\" (export outside the EU) and its VAT category tax amount (BT-117) is {/BT-117}; under this category no VAT is levied and the amount is zero.",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-9"
+  },
+  {
+    "id": "BR-G-10",
+    "severity": "fatal",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-118",
+      "BT-120",
+      "BT-121"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-118"
+            },
+            {
+              "const": "G"
+            }
+          ]
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BT-120"
+            },
+            {
+              "exists": "/BT-121"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"G\" (export outside the EU) and states no exemption reason: neither a reason text (BT-120) nor a reason code (BT-121) is there.",
+    "source": "EN 16931-1, 6.4.3.4.6, Table 11, BR-G-10",
+    "note": "The statement names the meaning of the reason as well as its presence: a reason code that means this category, or the reason text of this category in any language. What is asked here is the presence of one of the two, because that is what the official validation artefacts ask and that is what the ecosystem validates against; which reason is the right one for a category is left to the rule packs that carry a controlled vocabulary for it."
+  }
+]

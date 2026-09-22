@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.bsnsoft.esj</groupId>
+    <artifactId>en16931-semantic-json</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>esj-bindings</artifactId>
+  <packaging>jar</packaging>
+
+  <name>EN16931 Semantic JSON :: Binding tables and streaming reader</name>
+  <description>
+    Reads UBL 2.1 invoices and credit notes and UN/CEFACT CII D16B invoices into ESJ
+    documents from the binding tables of model/bindings, with a streaming XML parser and
+    a memory cost that does not grow with the number of invoice lines, and writes an ESJ
+    document back out as any of the three from the same tables.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      The front door both readers enter through: XmlBytes, the encoding mode and the
+      refusal a strict reader answers with, so that a document whose bytes are not written
+      in the encoding it declares is answered the same way whichever reader was asked. The
+      report types of an import are no longer among them; they are in esj-core.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-xr</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+
+    <!--
+      The writer is checked against the official validation artefacts rather than against
+      this project's opinion of them: every document it writes goes through the syntax
+      engine, which packages the schema modules and the compiled Schematron of the pack.
+      The same modules give the tests the element order the writer's table is generated
+      from. Neither is needed to write a document, so the dependency is a test one.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-syntax</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+      </resource>
+      <resource>
+        <!--
+          The binding tables have one source, the model directory of the repository. They
+          are put on the classpath beside the classes that read them rather than copied,
+          the way esj-core carries the registry files.
+        -->
+        <directory>${project.basedir}/../model/bindings</directory>
+        <targetPath>de/bsnsoft/esj/bindings</targetPath>
+        <includes>
+          <include>ubl-invoice.json</include>
+          <include>ubl-creditnote.json</include>
+          <include>cii.json</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>${project.basedir}/src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <!--
+          The example documents of the repository, which the writer is measured on beside
+          the corpus; see examples/README.md.
+        -->
+        <directory>${project.basedir}/../examples</directory>
+        <targetPath>examples</targetPath>
+        <includes>
+          <include>*.esj.json</include>
+        </includes>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-examples}</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <!--
+          The conformance corpus, the ESJ documents the XSLT path built from it and the
+          report that compares the two readers over it; see conformance/README.md.
+        -->
+        <directory>${project.basedir}/../conformance</directory>
+        <targetPath>conformance</targetPath>
+        <excludes>
+          <exclude>scale/out/**</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+  </build>
+</project>

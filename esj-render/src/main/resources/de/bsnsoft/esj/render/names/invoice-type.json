@@ -1,0 +1,260 @@
+{
+  "displayNames": "esj-render-display-names/0.1",
+  "list": "invoice-type",
+  "english": "The names of UNTDID 1001 as the dated code list snapshot rules/en16931/1.3.16/codelists/untdid-1001/2026-09-19.json carries them, except 380, which reads Invoice here because it is the title of the page rather than a row of a code list.",
+  "german": "This project's wording, written the way a German invoice writes it. It is not a translation of any published list.",
+  "languages": [
+    "en",
+    "de"
+  ],
+  "names": {
+    "71": {
+      "en": "Request for payment",
+      "de": "Zahlungsaufforderung"
+    },
+    "80": {
+      "en": "Debit note related to goods or services",
+      "de": "Belastungsanzeige für Waren oder Leistungen"
+    },
+    "81": {
+      "en": "Credit note related to goods or services",
+      "de": "Gutschriftanzeige für Waren oder Leistungen"
+    },
+    "82": {
+      "en": "Metered services invoice",
+      "de": "Rechnung über verbrauchsabhängige Leistungen"
+    },
+    "83": {
+      "en": "Credit note related to financial adjustments",
+      "de": "Gutschriftanzeige für finanzielle Anpassungen"
+    },
+    "84": {
+      "en": "Debit note related to financial adjustments",
+      "de": "Belastungsanzeige für finanzielle Anpassungen"
+    },
+    "102": {
+      "en": "Tax notification",
+      "de": "Steueranzeige"
+    },
+    "130": {
+      "en": "Invoicing data sheet",
+      "de": "Rechnungsdatenblatt"
+    },
+    "202": {
+      "en": "Direct payment valuation",
+      "de": "Direkte Zahlungsbewertung"
+    },
+    "203": {
+      "en": "Provisional payment valuation",
+      "de": "Vorläufige Zahlungsbewertung"
+    },
+    "204": {
+      "en": "Payment valuation",
+      "de": "Zahlungsbewertung"
+    },
+    "211": {
+      "en": "Interim application for payment",
+      "de": "Zwischenrechnung"
+    },
+    "218": {
+      "en": "Final payment request based on completion of work",
+      "de": "Schlussrechnung nach Fertigstellung"
+    },
+    "219": {
+      "en": "Payment request for completed units",
+      "de": "Rechnung über fertiggestellte Einheiten"
+    },
+    "261": {
+      "en": "Self billed credit note",
+      "de": "Gutschriftanzeige im Gutschriftverfahren"
+    },
+    "262": {
+      "en": "Consolidated credit note - goods and services",
+      "de": "Sammelgutschrift für Waren und Leistungen"
+    },
+    "295": {
+      "en": "Price variation invoice",
+      "de": "Rechnung über Preisänderungen"
+    },
+    "296": {
+      "en": "Credit note for price variation",
+      "de": "Gutschrift über Preisänderungen"
+    },
+    "308": {
+      "en": "Delcredere credit note",
+      "de": "Delkredere-Gutschrift"
+    },
+    "325": {
+      "en": "Proforma invoice",
+      "de": "Proformarechnung"
+    },
+    "326": {
+      "en": "Partial invoice",
+      "de": "Teilrechnung"
+    },
+    "331": {
+      "en": "Commercial invoice which includes a packing list",
+      "de": "Handelsrechnung mit Packliste"
+    },
+    "380": {
+      "en": "Invoice",
+      "de": "Rechnung"
+    },
+    "381": {
+      "en": "Credit note",
+      "de": "Gutschrift"
+    },
+    "382": {
+      "en": "Commission note",
+      "de": "Provisionsabrechnung"
+    },
+    "383": {
+      "en": "Debit note",
+      "de": "Belastungsanzeige"
+    },
+    "384": {
+      "en": "Corrected invoice",
+      "de": "Rechnungskorrektur"
+    },
+    "385": {
+      "en": "Consolidated invoice",
+      "de": "Sammelrechnung"
+    },
+    "386": {
+      "en": "Prepayment invoice",
+      "de": "Abschlagsrechnung"
+    },
+    "387": {
+      "en": "Hire invoice",
+      "de": "Mietrechnung"
+    },
+    "388": {
+      "en": "Tax invoice",
+      "de": "Steuerrechnung"
+    },
+    "389": {
+      "en": "Self-billed invoice",
+      "de": "Gutschrift im Gutschriftverfahren"
+    },
+    "390": {
+      "en": "Delcredere invoice",
+      "de": "Delkredere-Rechnung"
+    },
+    "393": {
+      "en": "Factored invoice",
+      "de": "Factoring-Rechnung"
+    },
+    "394": {
+      "en": "Lease invoice",
+      "de": "Leasingrechnung"
+    },
+    "395": {
+      "en": "Consignment invoice",
+      "de": "Konsignationsrechnung"
+    },
+    "396": {
+      "en": "Factored credit note",
+      "de": "Factoring-Gutschrift"
+    },
+    "420": {
+      "en": "Optical Character Reading (OCR) payment credit note",
+      "de": "Gutschrift für eine beleglesbare Zahlung"
+    },
+    "456": {
+      "en": "Debit advice",
+      "de": "Belastungsavis"
+    },
+    "457": {
+      "en": "Reversal of debit",
+      "de": "Stornierung einer Belastung"
+    },
+    "458": {
+      "en": "Reversal of credit",
+      "de": "Stornierung einer Gutschrift"
+    },
+    "471": {
+      "en": "Self-billed corrective invoice, invoice type, Corrected",
+      "de": "Korrekturrechnung im Gutschriftverfahren"
+    },
+    "472": {
+      "en": "Factored Corrective Invoice, invoice type, Corrected",
+      "de": "Factoring-Korrekturrechnung"
+    },
+    "473": {
+      "en": "Self billed Factored corrective invoice, invoice type, Corrected",
+      "de": "Factoring-Korrekturrechnung im Gutschriftverfahren"
+    },
+    "500": {
+      "en": "Self Prepayment invoice, invoice type, Original",
+      "de": "Abschlagsrechnung im Gutschriftverfahren"
+    },
+    "501": {
+      "en": "Self billed factored invoice, invoice type, Original",
+      "de": "Factoring-Rechnung im Gutschriftverfahren"
+    },
+    "502": {
+      "en": "Self billet factored Credit Note, Credit note type, Corrected",
+      "de": "Factoring-Gutschrift im Gutschriftverfahren"
+    },
+    "503": {
+      "en": "Prepayment credit note, credit note type, Corrected",
+      "de": "Gutschrift zur Abschlagsrechnung"
+    },
+    "527": {
+      "en": "Self billed debit note",
+      "de": "Belastungsanzeige im Gutschriftverfahren"
+    },
+    "532": {
+      "en": "Forwarder's credit note",
+      "de": "Gutschrift des Spediteurs"
+    },
+    "553": {
+      "en": "Forwarder's invoice discrepancy report",
+      "de": "Abweichungsbericht zur Speditionsrechnung"
+    },
+    "575": {
+      "en": "Insurer's invoice",
+      "de": "Rechnung des Versicherers"
+    },
+    "623": {
+      "en": "Forwarder's invoice",
+      "de": "Speditionsrechnung"
+    },
+    "633": {
+      "en": "Port charges documents",
+      "de": "Beleg über Hafengebühren"
+    },
+    "751": {
+      "en": "Invoice information for accounting purposes",
+      "de": "Rechnungsinformation für Buchungszwecke"
+    },
+    "780": {
+      "en": "Freight invoice",
+      "de": "Frachtrechnung"
+    },
+    "817": {
+      "en": "Claim notification",
+      "de": "Schadenanzeige"
+    },
+    "870": {
+      "en": "Consular invoice",
+      "de": "Konsulatsfaktura"
+    },
+    "875": {
+      "en": "Partial construction invoice",
+      "de": "Bauabschlagsrechnung"
+    },
+    "876": {
+      "en": "Partial final construction invoice",
+      "de": "Teilschlussrechnung Bau"
+    },
+    "877": {
+      "en": "Final construction invoice",
+      "de": "Schlussrechnung Bau"
+    },
+    "935": {
+      "en": "Customs invoice",
+      "de": "Zollrechnung"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "model": "EN16931-1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+  "package": "de.bsnsoft.esj.invoice.code",
+  "pack": {
+    "id": "en16931",
+    "version": "1.3.16"
+  },
+  "constantNames": [
+    "A constant name is derived from the code or from the name the publisher gives the code, as source says, and never invented.",
+    "The source text is decomposed to its base letters, upper cased, and every run of characters outside A-Z and 0-9 becomes one underscore; leading and trailing underscores are dropped.",
+    "A name longer than 60 characters is cut at the last underscore at or before 60.",
+    "A name that is empty or starts with a digit is prefixed with C_.",
+    "A name a constant of the same enum already carries goes to the first constant in list order; every later one is suffixed with an underscore and its own code.",
+    "A code listed under constants overrides all of this. The nine VAT category codes are the only ones so named: their published names are sentences, and the domain API spells them as categories."
+  ],
+  "enums": [
+    {
+      "type": "Unit",
+      "summary": "Unit of measure of a quantity.",
+      "lists": ["unece-rec20", "unece-rec21"],
+      "registryList": "UN/ECE Recommendation 20 with Rec 21 extension",
+      "source": "name"
+    },
+    {
+      "type": "InvoiceType",
+      "summary": "Functional type of the document.",
+      "lists": ["untdid-1001"],
+      "registryList": "UNTDID 1001",
+      "source": "name"
+    },
+    {
+      "type": "PaymentMeansCode",
+      "summary": "Means by which the invoice is to be paid.",
+      "lists": ["untdid-4461"],
+      "registryList": "UNTDID 4461",
+      "source": "name"
+    },
+    {
+      "type": "VatCategory",
+      "summary": "VAT category of a line, an allowance, a charge or a breakdown.",
+      "lists": ["untdid-5305"],
+      "registryList": "UNTDID 5305",
+      "source": "name",
+      "constants": {
+        "S": "STANDARD",
+        "Z": "ZERO_RATED",
+        "E": "EXEMPT",
+        "AE": "REVERSE_CHARGE",
+        "K": "INTRA_COMMUNITY",
+        "G": "EXPORT",
+        "O": "OUTSIDE_SCOPE",
+        "L": "CANARY_ISLANDS",
+        "M": "CEUTA_AND_MELILLA"
+      }
+    },
+    {
+      "type": "AllowanceReason",
+      "summary": "Reason for an allowance, on the document or on a line.",
+      "lists": ["untdid-5189"],
+      "registryList": "UNTDID 5189",
+      "source": "name"
+    },
+    {
+      "type": "ChargeReason",
+      "summary": "Reason for a charge, on the document or on a line.",
+      "lists": ["untdid-7161"],
+      "registryList": "UNTDID 7161",
+      "source": "name"
+    },
+    {
+      "type": "CurrencyCode",
+      "summary": "Currency of the amounts of the invoice.",
+      "lists": ["iso-4217"],
+      "registryList": "ISO 4217 alpha-3",
+      "source": "code"
+    },
+    {
+      "type": "Country",
+      "summary": "Country of an address or of the origin of an item.",
+      "lists": ["iso-3166-1"],
+      "registryList": "ISO 3166-1 alpha-2",
+      "source": "code"
+    },
+    {
+      "type": "ElectronicAddressScheme",
+      "summary": "Scheme an electronic address is issued under.",
+      "lists": ["eas"],
+      "registryList": "CEF EAS",
+      "source": "name"
+    },
+    {
+      "type": "VatExemptionReason",
+      "summary": "Reason a VAT breakdown states no VAT.",
+      "lists": ["vatex"],
+      "registryList": "VATEX",
+      "source": "code"
+    }
+  ]
+}

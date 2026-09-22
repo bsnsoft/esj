@@ -1,0 +1,1038 @@
+{
+  "format": "EN16931-Semantic-JSON-upgrade",
+  "version": "0.1",
+  "model": "EN16931-1",
+  "from": {
+    "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+    "semanticModel": "EN16931-1:2017+A1:2019/AC:2020"
+  },
+  "to": {
+    "edition": "EN 16931-1:2026",
+    "semanticModel": "EN16931-1:2026"
+  },
+  "license": "Apache-2.0",
+  "notice": "This file states how the paths and the structural facts of EN 16931-1:2017+A1:2019/AC:2020 relate to those of EN 16931-1:2026. It reproduces no normative prose of either edition: identifiers, paths, cardinalities, semantic data types and component cardinalities are facts of the two models, and every reason and note in this file is the author's own wording.",
+  "generated": "2026-09-21",
+  "sourceStatement": "Generated from the two registries named in from and to, and cross-checked against both. A path that a term keeps is not listed; pathRewrites holds every path of one edition that is not a path of the other. Two of its entries are not moves in the standard's table at all: ESJ decides an index segment by the declared maximum cardinality (specification, section 5.3), so a term whose maximum rose from 1 to n changes its path although the table only relaxed a cardinality. openPoints names what an upgrade cannot decide on its own; nothing in this file authorises a tool to change a value.",
+  "pathRewrites": [
+    {
+      "term": "BT-10",
+      "change": "index-added",
+      "from": [
+        "BT-10"
+      ],
+      "to": [
+        "BT-10"
+      ],
+      "reason": "the declared maximum cardinality rose from 1 to n, so every path through this term now carries an occurrence index (specification, section 5.3)."
+    },
+    {
+      "term": "BT-20",
+      "change": "moved",
+      "from": [
+        "BT-20"
+      ],
+      "to": [
+        "BG-33",
+        "BT-20"
+      ],
+      "reason": "the payment term text moved into the new group BG-33 PAYMENT TERMS."
+    },
+    {
+      "term": "BT-46",
+      "change": "index-added",
+      "from": [
+        "BG-7",
+        "BT-46"
+      ],
+      "to": [
+        "BG-7",
+        "BT-46"
+      ],
+      "reason": "the declared maximum cardinality rose from 1 to n, so every path through this term now carries an occurrence index (specification, section 5.3)."
+    },
+    {
+      "term": "BG-26",
+      "change": "moved",
+      "from": [
+        "BG-25",
+        "BG-26"
+      ],
+      "to": [
+        "BG-25",
+        "BG-37",
+        "BG-26"
+      ],
+      "reason": "the invoice line period moved under the new group BG-37 INVOICE LINE DELIVERY INFORMATION."
+    },
+    {
+      "term": "BT-134",
+      "change": "moved",
+      "from": [
+        "BG-25",
+        "BG-26",
+        "BT-134"
+      ],
+      "to": [
+        "BG-25",
+        "BG-37",
+        "BG-26",
+        "BT-134"
+      ],
+      "reason": "carried along by BG-26."
+    },
+    {
+      "term": "BT-135",
+      "change": "moved",
+      "from": [
+        "BG-25",
+        "BG-26",
+        "BT-135"
+      ],
+      "to": [
+        "BG-25",
+        "BG-37",
+        "BG-26",
+        "BT-135"
+      ],
+      "reason": "carried along by BG-26."
+    }
+  ],
+  "cardinalityChanges": [
+    {
+      "term": "BT-10",
+      "from": "0..1",
+      "to": "0..n"
+    },
+    {
+      "term": "BT-46",
+      "from": "0..1",
+      "to": "0..n"
+    },
+    {
+      "term": "BT-117",
+      "from": "1..1",
+      "to": "0..1"
+    },
+    {
+      "term": "BT-160",
+      "from": "1..1",
+      "to": "0..1"
+    }
+  ],
+  "datatypeChanges": [
+    {
+      "term": "BT-10",
+      "from": "Text",
+      "to": "Identifier",
+      "note": "The content of the value is a string under both types, and the component the new type allows is optional, so no value changes shape."
+    }
+  ],
+  "componentChanges": [
+    {
+      "term": "BT-10",
+      "role": "scheme",
+      "change": "added",
+      "to": "0..1"
+    },
+    {
+      "term": "BT-29",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-69"
+    },
+    {
+      "term": "BT-30",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-70"
+    },
+    {
+      "term": "BT-32",
+      "role": "scheme",
+      "change": "added",
+      "to": "0..1"
+    },
+    {
+      "term": "BT-46",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-71"
+    },
+    {
+      "term": "BT-47",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-72"
+    },
+    {
+      "term": "BT-60",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-73"
+    },
+    {
+      "term": "BT-61",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-74"
+    },
+    {
+      "term": "BT-71",
+      "role": "scheme",
+      "change": "tightened",
+      "from": "0..1",
+      "to": "1..1",
+      "rule": "BR-75"
+    }
+  ],
+  "addedTerms": [
+    {
+      "term": "BT-166",
+      "kind": "BT",
+      "path": [
+        "BT-166"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Time"
+    },
+    {
+      "term": "BT-167",
+      "kind": "BT",
+      "path": [
+        "BT-167"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Amount"
+    },
+    {
+      "term": "BT-197",
+      "kind": "BT",
+      "path": [
+        "BT-197"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BG-33",
+      "kind": "BG",
+      "path": [
+        "BG-33"
+      ],
+      "cardinality": "0..n"
+    },
+    {
+      "term": "BG-35",
+      "kind": "BG",
+      "path": [
+        "BG-33",
+        "BG-35"
+      ],
+      "cardinality": "0..n"
+    },
+    {
+      "term": "BT-170",
+      "kind": "BT",
+      "path": [
+        "BG-33",
+        "BG-35",
+        "BT-170"
+      ],
+      "cardinality": "1..1",
+      "datatype": "Date",
+      "mandatoryInside": "BG-35",
+      "parentOptional": true
+    },
+    {
+      "term": "BT-171",
+      "kind": "BT",
+      "path": [
+        "BG-33",
+        "BG-35",
+        "BT-171"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Percentage"
+    },
+    {
+      "term": "BT-172",
+      "kind": "BT",
+      "path": [
+        "BG-33",
+        "BG-35",
+        "BT-172"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Amount"
+    },
+    {
+      "term": "BG-36",
+      "kind": "BG",
+      "path": [
+        "BG-33",
+        "BG-36"
+      ],
+      "cardinality": "0..n"
+    },
+    {
+      "term": "BT-181",
+      "kind": "BT",
+      "path": [
+        "BG-33",
+        "BG-36",
+        "BT-181"
+      ],
+      "cardinality": "1..1",
+      "datatype": "Date",
+      "mandatoryInside": "BG-36",
+      "parentOptional": true
+    },
+    {
+      "term": "BT-182",
+      "kind": "BT",
+      "path": [
+        "BG-33",
+        "BG-36",
+        "BT-182"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Percentage"
+    },
+    {
+      "term": "BT-183",
+      "kind": "BT",
+      "path": [
+        "BG-33",
+        "BG-36",
+        "BT-183"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Amount"
+    },
+    {
+      "term": "BT-202",
+      "kind": "BT",
+      "path": [
+        "BG-3",
+        "BT-202"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-216",
+      "kind": "BT",
+      "path": [
+        "BG-16",
+        "BG-19",
+        "BT-216"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-215",
+      "kind": "BT",
+      "path": [
+        "BG-16",
+        "BG-19",
+        "BT-215"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Identifier"
+    },
+    {
+      "term": "BT-173",
+      "kind": "BT",
+      "path": [
+        "BG-20",
+        "BT-173"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-174",
+      "kind": "BT",
+      "path": [
+        "BG-20",
+        "BT-174"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-213",
+      "kind": "BT",
+      "path": [
+        "BG-20",
+        "BT-213"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-175",
+      "kind": "BT",
+      "path": [
+        "BG-21",
+        "BT-175"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-176",
+      "kind": "BT",
+      "path": [
+        "BG-21",
+        "BT-176"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-177",
+      "kind": "BT",
+      "path": [
+        "BG-21",
+        "BT-177"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-214",
+      "kind": "BT",
+      "path": [
+        "BG-21",
+        "BT-214"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BG-34",
+      "kind": "BG",
+      "path": [
+        "BG-22",
+        "BG-34"
+      ],
+      "cardinality": "0..n"
+    },
+    {
+      "term": "BT-179",
+      "kind": "BT",
+      "path": [
+        "BG-22",
+        "BG-34",
+        "BT-179"
+      ],
+      "cardinality": "1..1",
+      "datatype": "Amount",
+      "mandatoryInside": "BG-34",
+      "parentOptional": true
+    },
+    {
+      "term": "BT-180",
+      "kind": "BT",
+      "path": [
+        "BG-22",
+        "BG-34",
+        "BT-180"
+      ],
+      "cardinality": "1..1",
+      "datatype": "Text",
+      "mandatoryInside": "BG-34",
+      "parentOptional": true
+    },
+    {
+      "term": "BT-184",
+      "kind": "BT",
+      "path": [
+        "BG-23",
+        "BT-184"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-210",
+      "kind": "BT",
+      "path": [
+        "BG-23",
+        "BT-210"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-188",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-188"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-200",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-200"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-201",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-201"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-189",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-189"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-190",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-190"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-191",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-191"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-192",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-192"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-198",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-198"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BT-199",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BT-199"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BG-39",
+      "kind": "BG",
+      "path": [
+        "BG-25",
+        "BG-39"
+      ],
+      "cardinality": "0..n"
+    },
+    {
+      "term": "BT-217",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-39",
+        "BT-217"
+      ],
+      "cardinality": "1..1",
+      "datatype": "DocumentReference",
+      "mandatoryInside": "BG-39",
+      "parentOptional": true
+    },
+    {
+      "term": "BT-218",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-39",
+        "BT-218"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Date"
+    },
+    {
+      "term": "BT-219",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-39",
+        "BT-219"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-220",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-39",
+        "BT-220"
+      ],
+      "cardinality": "0..1",
+      "datatype": "DocumentReference"
+    },
+    {
+      "term": "BG-37",
+      "kind": "BG",
+      "path": [
+        "BG-25",
+        "BG-37"
+      ],
+      "cardinality": "0..1"
+    },
+    {
+      "term": "BT-185",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BT-185"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-186",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BT-186"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Identifier"
+    },
+    {
+      "term": "BT-187",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BT-187"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Date"
+    },
+    {
+      "term": "BG-38",
+      "kind": "BG",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38"
+      ],
+      "cardinality": "0..1"
+    },
+    {
+      "term": "BT-203",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-203"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-204",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-204"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-205",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-205"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-206",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-206"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-207",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-207"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-208",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-208"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-209",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-37",
+        "BG-38",
+        "BT-209"
+      ],
+      "cardinality": "1..1",
+      "datatype": "Code",
+      "mandatoryInside": "BG-38",
+      "parentOptional": true
+    },
+    {
+      "term": "BT-193",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-28",
+        "BT-193"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-194",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-30",
+        "BT-194"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Text"
+    },
+    {
+      "term": "BT-195",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-30",
+        "BT-195"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-196",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BT-196"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-211",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BG-32",
+        "BT-211"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    },
+    {
+      "term": "BT-212",
+      "kind": "BT",
+      "path": [
+        "BG-25",
+        "BG-31",
+        "BG-32",
+        "BT-212"
+      ],
+      "cardinality": "0..1",
+      "datatype": "Code"
+    }
+  ],
+  "renamedTerms": [
+    {
+      "term": "BT-20",
+      "from": "Payment terms",
+      "to": "Payment term text",
+      "slug": "paymentTerms",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-25",
+      "from": "Preceding Invoice reference",
+      "to": "Preceding invoice reference",
+      "slug": "reference",
+      "caseOnly": true
+    },
+    {
+      "term": "BT-26",
+      "from": "Preceding Invoice issue date",
+      "to": "Preceding invoice issue date",
+      "slug": "issueDate",
+      "caseOnly": true
+    },
+    {
+      "term": "BG-21",
+      "from": "DOCUMENT LEVEL CHARGES",
+      "to": "DOCUMENT LEVEL CHARGES AND TAXES",
+      "slug": "documentLevelCharges",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-99",
+      "from": "Document level charge amount",
+      "to": "Document level charge or tax amount",
+      "slug": "amount",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-100",
+      "from": "Document level charge base amount",
+      "to": "Document level charge or tax base amount",
+      "slug": "baseAmount",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-101",
+      "from": "Document level charge percentage",
+      "to": "Document level charge or tax percentage",
+      "slug": "percentage",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-102",
+      "from": "Document level charge VAT category code",
+      "to": "Document level charge or tax VAT category code",
+      "slug": "vatCategoryCode",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-103",
+      "from": "Document level charge VAT rate",
+      "to": "Document level charge or tax VAT rate",
+      "slug": "vatRate",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-104",
+      "from": "Document level charge reason",
+      "to": "Document level charge or tax reason",
+      "slug": "reason",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-106",
+      "from": "Sum of Invoice line net amount",
+      "to": "Sum of invoice line net amount",
+      "slug": "sumOfLineNetAmounts",
+      "caseOnly": true
+    },
+    {
+      "term": "BT-108",
+      "from": "Sum of charges on document level",
+      "to": "Sum of charges and taxes on document level",
+      "slug": "sumOfCharges",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-111",
+      "from": "Invoice total VAT amount in accounting currency",
+      "to": "Invoice total VAT amount in VAT accounting currency",
+      "slug": "totalVatAmountInAccountingCurrency",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-121",
+      "from": "VAT exemption reason code",
+      "to": "VAT exemption reason and specification code",
+      "slug": "exemptionReasonCode",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-132",
+      "from": "Referenced purchase order line reference",
+      "to": "Invoice line purchase order line reference",
+      "slug": "purchaseOrderLineReference",
+      "caseOnly": false
+    },
+    {
+      "term": "BG-28",
+      "from": "INVOICE LINE CHARGES",
+      "to": "INVOICE LINE CHARGES AND TAXES",
+      "slug": "charges",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-141",
+      "from": "Invoice line charge amount",
+      "to": "Invoice line charge or tax amount",
+      "slug": "amount",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-142",
+      "from": "Invoice line charge base amount",
+      "to": "Invoice line charge or tax base amount",
+      "slug": "baseAmount",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-143",
+      "from": "Invoice line charge percentage",
+      "to": "Invoice line charge or tax percentage",
+      "slug": "percentage",
+      "caseOnly": false
+    },
+    {
+      "term": "BT-144",
+      "from": "Invoice line charge reason",
+      "to": "Invoice line charge or tax reason",
+      "slug": "reason",
+      "caseOnly": false
+    },
+    {
+      "term": "BG-32",
+      "from": "ITEM ATTRIBUTES",
+      "to": "ITEM ATTRIBUTE",
+      "slug": "itemAttributes",
+      "caseOnly": false
+    }
+  ],
+  "removedTerms": [],
+  "openPoints": [
+    {
+      "id": "scheme-component-missing",
+      "terms": [
+        "BT-29",
+        "BT-30",
+        "BT-46",
+        "BT-47",
+        "BT-60",
+        "BT-61",
+        "BT-71"
+      ],
+      "statement": "The scheme component of these identifiers is mandatory in the 2026 edition and was optional in the 2017 edition. A document that left it out is upgraded unchanged and every affected value is reported; the scheme identifier itself cannot be derived from anything the document carries.",
+      "behaviour": "report"
+    },
+    {
+      "id": "specification-identifier",
+      "terms": [
+        "BT-24"
+      ],
+      "statement": "BT-24 states which specification the invoice claims to follow. An upgrade does not know whether that claim still holds, and a CIUS identifier of the 2017 line has no counterpart in force for the 2026 edition, so the value is reported and left as it stands unless the caller names a replacement.",
+      "behaviour": "report"
+    },
+    {
+      "id": "decimal-bounds",
+      "terms": [],
+      "statement": "The 2026 edition bounds fraction digits per term, and an amount, a unit price, a quantity or a percentage written under the 2017 edition may exceed its 2026 bound. Every such value is reported with the bound it exceeds and none is rounded: rounding changes an invoice.",
+      "behaviour": "report"
+    }
+  ],
+  "reverse": {
+    "statement": "The downgrade reverses every entry of pathRewrites and refuses rather than lose content. It never moves a value into extensions: content of the core model does not become vendor content because the target edition is older.",
+    "refusals": [
+      {
+        "id": "unmapped-term",
+        "statement": "A value at a term or group the 2017 edition does not have has no address in that edition. The downgrade refuses and lists every such path; the caller may allow the drop, and then every dropped path is named in the report."
+      },
+      {
+        "id": "several-payment-terms",
+        "terms": [
+          "BG-33"
+        ],
+        "statement": "More than one BG-33 instance, or a BG-33 carrying BG-35 or BG-36, cannot be written at the 2017 root, which holds one BT-20."
+      },
+      {
+        "id": "several-occurrences",
+        "terms": [
+          "BT-10",
+          "BT-46"
+        ],
+        "statement": "More than one occurrence cannot be written where the 2017 edition declares at most one. Taking the first is a silent loss."
+      }
+    ]
+  }
+}

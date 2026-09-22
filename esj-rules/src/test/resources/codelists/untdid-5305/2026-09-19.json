@@ -1,0 +1,14 @@
+{
+  "listId": "untdid-5305",
+  "name": "Duty or tax or fee category code",
+  "publisher": "a test fixture, not a publisher",
+  "source": "written by the tests of esj-rules; it is not a snapshot of any published list",
+  "retrieved": "2026-09-19",
+  "terms": "This file exists so that the loader and the membership operator can be tested without a published list in the tree. It is deliberately incomplete and must never be mistaken for a snapshot.",
+  "entries": [
+    { "value": "S", "name": "Standard rate" },
+    { "value": "Z", "name": "Zero rated goods" },
+    { "value": "E", "name": "Exempt from tax" },
+    { "value": "AE" }
+  ]
+}

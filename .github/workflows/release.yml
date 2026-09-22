@@ -1,0 +1,77 @@
+name: Release
+
+# A tag is built, packaged and attached to its release. Nothing is published to
+# a registry from here.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+# Third-party actions are pinned to a commit, and only the job that attaches the
+# archives may write the repository.
+permissions:
+  contents: read
+
+jobs:
+  artefacts:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: linux-x64
+            runner: ubuntu-latest
+          - label: linux-arm64
+            runner: ubuntu-24.04-arm
+          - label: macos-arm64
+            runner: macos-14
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up GraalVM 25
+        uses: graalvm/setup-graalvm@0426e2e191540e8514dff98dc52a5f5146a2a276 # v1.6.6
+        with:
+          distribution: graalvm-community
+          java-version: '25'
+          cache: maven
+
+      - name: Test on the reference runtime
+        run: mvn -B verify
+
+      - name: Package
+        run: dist/package.sh jar runtime-image native zip
+
+      - name: Compare every artefact with the jar
+        run: dist/package.sh smoke
+
+      - name: Keep the archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: esj-${{ matrix.label }}
+          path: |
+            dist/out/*.zip
+            dist/out/*.zip.sha256
+          if-no-files-found: error
+
+  release:
+    name: Attach the archives to the release
+    needs: artefacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Collect the archives
+        uses: actions/download-artifact@v4
+        with:
+          path: archives
+
+      - name: Attach them
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
+        with:
+          files: |
+            archives/*/*.zip
+            archives/*/*.zip.sha256
+          fail_on_unmatched_files: true
+          generate_release_notes: true
