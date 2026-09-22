@@ -4,6 +4,16 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). Until 1.0 the format itself may
 still change; a change to it is named here under *Format*.
 
+## [0.9.1] — unreleased
+
+### Fixed
+
+- The macOS native executable of 0.9.0 could not render: its archive shipped without the shared
+  libraries of the Java runtime that a rendering loads (`Can't load library: awt`). The packaging
+  now copies them from the GraalVM that built the image where `native-image` leaves them out and
+  fails the build where any is missing; a smoke test whose cases differ from the jar fails the
+  build again instead of being lost in a pipe.
+
 ## [0.9.0] — 2026-09-22
 
 First version. What it carries is the "Works today" list of the README.
