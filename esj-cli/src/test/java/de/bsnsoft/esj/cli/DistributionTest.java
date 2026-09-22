@@ -167,8 +167,15 @@ class DistributionTest {
         assertEquals("RE-1", run.text().strip(), "the value the formula asserts");
         Matcher version = FORMULA_VERSION.matcher(formula);
         assertTrue(version.find(), "docs/homebrew/esj.rb names a version");
-        assertTrue(Cli.run("--version").text().contains(version.group(1)),
-                "esj --version carries " + version.group(1) + ", which the formula asserts");
+        // The formula installs a release, so it names the last one the changelog dates; between
+        // releases the tree is a snapshot beyond it, and before the first one it is the snapshot.
+        Matcher released = Pattern.compile("^## \\[(\\d+\\.\\d+\\.\\d+)\\] \u2014 \\d{4}-\\d{2}-\\d{2}",
+                Pattern.MULTILINE).matcher(Fixtures.text("CHANGELOG.md"));
+        String last = released.find() ? released.group(1) : null;
+        assertTrue(version.group(1).equals(last)
+                        || Cli.run("--version").text().contains(version.group(1)),
+                "the formula installs " + version.group(1) + ", which is neither the last release"
+                        + (last == null ? "" : " (" + last + ")") + " nor this build");
     }
 
     /** Returns the fenced block of a page that opens with the given fence. */

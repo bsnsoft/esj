@@ -7,7 +7,7 @@
 
   <groupId>de.bsnsoft.esj</groupId>
   <artifactId>en16931-semantic-json</artifactId>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>EN16931 Semantic JSON</name>
@@ -83,7 +83,7 @@
       moment of the build, so two builds of one commit write the same bytes. It is set
       to the date of the release being prepared (docs/releasing.md).
     -->
-    <project.build.outputTimestamp>2026-09-22T00:00:00Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-09-22T16:18:16Z</project.build.outputTimestamp>
 
     <jackson.version>2.22.2</jackson.version>
     <picocli.version>4.7.6</picocli.version>

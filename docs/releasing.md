@@ -22,8 +22,10 @@ the libraries to Maven Central. Nothing is published from a workstation.
 mvn -B versions:set -DnewVersion=0.9.0 -DgenerateBackupPoms=false
 ```
 
-Then, in the same commit: `project.build.outputTimestamp` in `pom.xml` to the release date, and
-the heading of the version in [`CHANGELOG.md`](../CHANGELOG.md) from `unreleased` to that date.
+Then, in the same commit: `project.build.outputTimestamp` in `pom.xml` to the release date, the
+heading of the version in [`CHANGELOG.md`](../CHANGELOG.md) from `unreleased` to that date, and the
+artifact version in the identifier table of [`java-api.md`](java-api.md). `MavenCoordinatesTest`
+holds every coordinate a page offers to the current version or to the last release the changelog dates.
 
 ```sh
 mvn -B clean verify

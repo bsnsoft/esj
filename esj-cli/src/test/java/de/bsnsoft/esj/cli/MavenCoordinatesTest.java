@@ -88,6 +88,16 @@ class MavenCoordinatesTest {
         assertEquals(Set.of(THE_TOOL), excluded, "the deployment leaves out the tool and nothing else");
     }
 
+    /**
+     * The version of the last release, read from the first dated heading of the changelog;
+     * {@code null} while nothing has been released.
+     */
+    private static String lastRelease(Path repository) throws IOException {
+        Pattern dated = Pattern.compile("^## \\[(\\d+\\.\\d+\\.\\d+)\\] \u2014 \\d{4}-\\d{2}-\\d{2}", Pattern.MULTILINE);
+        Matcher found = dated.matcher(read(repository.resolve("CHANGELOG.md")));
+        return found.find() ? found.group(1) : null;
+    }
+
     @Test
     void everyCoordinateOnAPageNamesAModuleAndAVersionOfThisProject() throws IOException {
         Path repository = repository();
@@ -97,6 +107,9 @@ class MavenCoordinatesTest {
         String released = snapshot.endsWith("-SNAPSHOT")
                 ? snapshot.substring(0, snapshot.length() - "-SNAPSHOT".length())
                 : snapshot;
+        // What a reader can depend on today: the version the last dated entry of the
+        // changelog names. A page that offers it is right until the next release.
+        String last = lastRelease(repository);
 
         List<String> wrong = new ArrayList<>();
         int coordinates = 0;
@@ -114,9 +127,11 @@ class MavenCoordinatesTest {
                     } else if (THE_TOOL.equals(artifact)) {
                         wrong.add(name + ": " + artifact + " is on no repository");
                     }
-                    if (version != null && !version.equals(released) && !version.equals(snapshot)) {
+                    if (version != null && !version.equals(released) && !version.equals(snapshot)
+                            && !version.equals(last)) {
                         wrong.add(name + ": " + artifact + " is offered as " + version
-                                + ", and this project is at " + snapshot);
+                                + ", and this project is at " + snapshot
+                                + (last == null ? "" : " with " + last + " released"));
                     }
                 }
             }

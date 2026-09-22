@@ -882,7 +882,7 @@ when a generated file differs.
 |---|---|---|
 | format version | the `version` member of every document, `SPEC.md` | `0.1` |
 | semantic model edition | the `semanticModel` member of every document, the `edition` member of the registry | `EN16931-1:2017+A1:2019/AC:2020`, `EN16931-1:2026` |
-| artifact version | `pom.xml` | `0.9.0` |
+| artifact version | `pom.xml` | `0.9.1-SNAPSHOT` |
 
 The **format version** is the version of `SPEC.md`, not of the semantic model. It follows
 `MAJOR.MINOR`, and until 1.0 any version may change the format in incompatible ways. A reader
