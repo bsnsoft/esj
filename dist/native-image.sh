@@ -117,6 +117,10 @@ case $(uname -s) in
     ;;
 esac
 
+# The runtime libraries beside the executable (checks.sh): copied from this
+# GraalVM where native-image left them out, and a hard check either way.
+esj_runtime_libraries "$target" "$graal" || exit 1
+
 # The executable carries parts of the Substrate VM runtime and loads Java
 # runtime libraries from beside it, all under GPLv2 with the Classpath
 # Exception (NOTICE). Their licences travel with them, as jlink lets them

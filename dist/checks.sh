@@ -86,3 +86,41 @@ esj_no_build_paths() {
   echo "checks: no path of the build machine in $(find "$esj_paths_directory" -type f \
     ! -path '*/metadata/*' -print | wc -l | tr -d ' ') files"
 }
+
+# The shared libraries of the Java runtime that the native executable loads
+# from beside itself when it renders: the AWT stack and the font engine, and the
+# Substrate VM's own two. native-image copies them from the GraalVM that builds
+# the image — the release of 2026-01 for macOS did not, and every rendering of
+# that executable failed with "Can't load library: awt" — so after a build they
+# are copied from the same GraalVM where they are missing, and their presence
+# is a hard check: an archive without them is not an artefact.
+#
+#   esj_runtime_libraries <target directory> <GraalVM home>
+esj_runtime_libraries() {
+  target=$1
+  graal=$2
+  case $(uname -s) in
+    Darwin) ext=dylib; names="awt awt_lwawt fontmanager freetype java javajpeg lcms mlib_image osxapp" ;;
+    Linux)  ext=so;    names="awt awt_headless fontmanager freetype java javajpeg lcms mlib_image" ;;
+    *) echo "checks.sh: no list of runtime libraries for $(uname -s)" >&2; return 1 ;;
+  esac
+  missing=
+  for name in $names jvm; do
+    file="lib$name.$ext"
+    if [ ! -f "$target/$file" ]; then
+      source=$graal/lib/$file
+      [ "$name" = jvm ] && source=$graal/lib/server/$file
+      if [ -f "$source" ]; then
+        cp "$source" "$target/$file"
+        echo "checks.sh: $file copied from the GraalVM that built the image"
+      else
+        missing="$missing $file"
+      fi
+    fi
+  done
+  if [ -n "$missing" ]; then
+    echo "checks.sh: runtime libraries missing beside $target/esj:$missing" >&2
+    return 1
+  fi
+  echo "checks.sh: $(ls "$target"/lib*."$ext" | wc -l | tr -d ' ') runtime libraries beside the executable"
+}

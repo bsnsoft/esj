@@ -284,14 +284,17 @@ run_smoke() {
   # are the artefact's own and not the caller's (docs/deployment.md).
   image=$out/esj-$version-$os-$arch
   native=$out/esj-$version-native-$os-$arch
+  # Each run's last lines are shown and its exit status decides: a pipe into
+  # tail once swallowed a "22 of 94 cases differ" and let a broken macOS
+  # executable ship as 0.9.0.
   if [ -x "$image/bin/esj" ]; then
     echo "-- $image/bin/esj"
-    sh "$here/smoke.sh" "$image/bin/esj" --small-heap \
-      "$image/bin/java -Xmx16m -XX:+ExitOnOutOfMemoryError -jar $image/app/esj.jar" | tail -4
+    smoke_run "$image/bin/esj" --small-heap \
+      "$image/bin/java -Xmx16m -XX:+ExitOnOutOfMemoryError -jar $image/app/esj.jar"
   fi
   if [ -x "$native/esj" ]; then
     echo "-- $native/esj"
-    sh "$here/smoke.sh" "$native/esj" --small-heap "$native/esj -Xmx16m" | tail -4
+    smoke_run "$native/esj" --small-heap "$native/esj -Xmx16m"
   fi
   # The container image, where the repository is its working directory: the cases
   # that write a file write one inside it, as the account that owns it. Its
@@ -299,9 +302,24 @@ run_smoke() {
   # passes, so the boundary check is not run against it.
   if command -v docker >/dev/null && docker image inspect "esj:$version" >/dev/null 2>&1; then
     echo "-- esj:$version"
-    sh "$here/smoke.sh" \
-      "docker run --rm -i --user $(id -u):$(id -g) -v $root:/work -w /work esj:$version" | tail -3
+    smoke_run \
+      "docker run --rm -i --user $(id -u):$(id -g) -v $root:/work -w /work esj:$version"
   fi
+}
+
+# Runs dist/smoke.sh with the given arguments, shows its last lines and fails
+# the target when the artefact differs from the jar.
+smoke_run() {
+  smoke_log=$(mktemp)
+  if sh "$here/smoke.sh" "$@" >"$smoke_log" 2>&1; then
+    tail -4 "$smoke_log"
+  else
+    tail -8 "$smoke_log"
+    rm -f "$smoke_log"
+    fail "smoke test failed for $1"
+    return 1
+  fi
+  rm -f "$smoke_log"
 }
 
 version=unknown
