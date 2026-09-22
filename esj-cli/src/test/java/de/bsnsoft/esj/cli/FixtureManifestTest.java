@@ -279,10 +279,11 @@ class FixtureManifestTest {
      * the later edition included, because that is what the pages count: each of them says
      * in the same sentence that one document and one rejected row come from the part a
      * build without that edition leaves out. Held against one such build the pages would
-     * have to carry two numbers and would state neither of them plainly.
+     * have to carry two numbers and would state neither of them plainly — so a build that
+     * carries only the default edition does not hold them at all.
      */
     @Test
-    @EnabledIf("theBindingPagesAreThere")
+    @EnabledIf("theBindingPagesCountEveryEdition")
     void theBindingPagesCountTheManifestThisBuildRuns() {
         int documents = 0;
         int invalid = 0;
@@ -361,6 +362,11 @@ class FixtureManifestTest {
     static boolean theBindingPagesAreThere() {
         return Files.exists(TREE.resolve(MANIFEST))
                 && BINDING_PAGES.stream().allMatch(Files::exists);
+    }
+
+    /** The pages count the whole manifest, so they are held to it only where the whole of it is checked in. */
+    static boolean theBindingPagesCountEveryEdition() {
+        return theBindingPagesAreThere() && Files.exists(TREE.resolve(LATER_EDITION_PART));
     }
 
     // ------------------------------------------------------------- the manifest
