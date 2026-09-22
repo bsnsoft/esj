@@ -34,7 +34,10 @@ git tag v0.9.0
 git push origin main v0.9.0
 ```
 
-The tag runs `release.yml`. Publish the draft release it fills, which runs `publish.yml`: it
+The tag runs `release.yml`, which builds the archives and publishes the GitHub release with them.
+That release fires no `release` event — GitHub raises none for a release a workflow created with
+its own token — so `publish.yml` is started by hand, on the tag, with the tag as its input
+(`gh workflow run publish.yml --ref v0.9.0 -f tag=v0.9.0`): it
 refuses a snapshot version and a tag that does not name the version of the POM, signs every
 file, and hands the reactor to the Portal as one deployment that is validated and published or
 rejected as a whole. Afterwards:
@@ -44,8 +47,8 @@ mvn -B versions:set -DnewVersion=0.9.1-SNAPSHOT -DgenerateBackupPoms=false
 git commit -am 'Back to a snapshot version'
 ```
 
-`publish.yml` can also be started by hand with the tag as its input, for a release whose
-deployment failed after the assets were attached.
+The same command repeats a deployment that failed; a version the Portal has published cannot be
+deployed again.
 
 ## Set up once
 
@@ -53,7 +56,7 @@ deployment failed after the assets were attached.
 2. The namespace `de.bsnsoft`, registered there and verified by the `TXT` record the Portal
    names, on `bsnsoft.de`. It covers every `de.bsnsoft.*` group id.
 3. A user token, generated in the Portal account, as the two repository secrets
-   `CENTRAL_USERNAME` and `CENTRAL_PASSWORD`. It is not the account password.
+   `CENTRAL_USER` and `CENTRAL_PASSWORD`. It is not the account password.
 4. An OpenPGP key pair for signing, its public key on `keys.openpgp.org` — the Portal verifies
    a signature against a public keyserver — and as repository secrets the armoured private key
    in `GPG_PRIVATE_KEY` and its passphrase in `GPG_PASSPHRASE`. The workflow imports that one
