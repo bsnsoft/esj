@@ -11,9 +11,13 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * The letter layout: what a recipient sees, and where.
@@ -103,6 +107,67 @@ class LetterLayoutTest {
         assertTrue(field.contains("Deutschland"), "and its country by name");
         assertTrue(field.startsWith("Example GmbH"),
                 "the sender stands above it, as an envelope shows it: " + field);
+    }
+
+    /**
+     * The address field is the one block of the letter the margins of a template never
+     * move. A window envelope has its hole where it has it: form B 45 mm and form A 27 mm
+     * below the top edge, 20 mm from the left, 85 by 45 mm, whatever the template says
+     * about the rest of the page. Everything else follows the margins — the title stands
+     * at the left margin the template states, which is how the case tells that the
+     * margins were read at all.
+     *
+     * @param form the form of the address field, as a template names it
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"din5008-b", "din5008-a"})
+    void theAddressFieldStaysWhereDin5008PutsItWhateverTheMargins(String form) {
+        float top = "din5008-b".equals(form) ? 45 * MM : 27 * MM;
+        RenderTemplate template = Templates.of("""
+                {"template": "esj-render-template/0.1", "layout": "letter",
+                 "letter": {"addressWindow": "%s"},
+                 "margins": {"first": {"top": 30, "left": 90, "right": 70, "bottom": 80},
+                             "following": {"top": 90, "left": 90, "right": 70,
+                                           "bottom": 80}}}""".formatted(form));
+
+        byte[] pdf = new PdfRenderer().render(invoice(), RenderOptions.defaults().with(template));
+
+        float height = Pdf.pageSize(pdf, 1)[1];
+        List<String> wrong = new ArrayList<>();
+        float recipientTop = Float.NEGATIVE_INFINITY;
+        for (Pdf.Run run : Pdf.runs(pdf, 1)) {
+            boolean sender = run.text().startsWith("Example GmbH · Musterweg 12");
+            // The seller's own country stands in the foot of the page as well, so the
+            // recipient is looked for in the upper half of it.
+            boolean recipient = List.of("Muster AG", "Beispielallee 3", "20095 Musterstadt",
+                    "Deutschland").contains(run.text()) && run.baseline() > height / 2;
+            if (!sender && !recipient) {
+                continue;
+            }
+            if (Math.abs(run.left() - 20 * MM) > 0.5f) {
+                wrong.add("'" + run.text() + "' starts " + run.left() + " points from the left");
+            }
+            if (run.lineTop() > height - top + 0.5f || run.baseline() < height - top - 45 * MM) {
+                wrong.add("'" + run.text() + "' stands outside the field, at " + run.baseline());
+            }
+            if (sender && Math.abs(run.lineTop() - (height - top)) > 0.5f) {
+                wrong.add("the sender line does not open the field: " + run.lineTop());
+            }
+            if (recipient) {
+                recipientTop = Math.max(recipientTop, run.lineTop());
+            }
+        }
+        assertEquals(List.of(), wrong, "the field is where DIN 5008 puts it");
+        assertEquals(height - top - 5 * MM, recipientTop, 0.5f,
+                "the recipient begins under the sender band of 5 mm");
+        for (Pdf.Run run : Pdf.runs(pdf, 1)) {
+            if (run.text().equals("Rechnung RE-2026-0042")) {
+                assertEquals(90f, run.left(), 0.5f,
+                        "and the title keeps the left margin the template states");
+                return;
+            }
+        }
+        throw new AssertionError("the title of the letter is on its first page");
     }
 
     /**
@@ -785,9 +850,8 @@ class LetterLayoutTest {
     void nothingOfTheLetterReachesIntoTheFootOfItsFirstPage() {
         byte[] pdf = new PdfRenderer().render(invoice(),
                 RenderOptions.defaults().with(Templates.example("letter.json")));
-        List<String> ofTheFoot = List.of("Telefon: +49 30 1234567",
-                "E-Mail-Adresse: billing@example.invalid",
-                "Register-/Registriernummer: HRB 12345");
+        List<String> ofTheFoot = List.of("+49 30 1234567", "billing@example.invalid",
+                "HRB 12345 (" + Word.FOOT_REGISTRATION.in(RenderLanguage.GERMAN) + ")");
 
         List<Pdf.Run> runs = Pdf.runs(pdf, 1);
 
@@ -923,65 +987,475 @@ class LetterLayoutTest {
         return found;
     }
 
-    // ---------------------------------------------------------------- the following pages
+    // ---------------------------------------------------------------- the type of the document
 
-    /**
-     * A page after the first keeps the rhythm of page one: the block under the compact
-     * head stands no further from it than the block under the title stands from the
-     * title, and not up against it either.
-     *
-     * <p>The head used to sit inside the top margin, as the page footer sits inside the
-     * bottom one, and the text of the page began a good centimetre under it — a page that
-     * opened with a line, a rule and a hand of white. It stands in the flow of the page
-     * now, under the margin the template states, and what follows it follows at the
-     * distance a section keeps under the rule of its own heading.
-     */
-    @Test
-    void aPageAfterTheFirstKeepsTheRhythmOfPageOne() {
-        for (String example : List.of("allowances", "multiple-lines")) {
-            SemanticDocument document = Corpus.example(example);
-            String number = document.value(SemanticPath.of("/BT-1")).orElseThrow().content();
-            for (RenderLanguage language : RenderLanguage.values()) {
-                byte[] pdf = new PdfRenderer().render(document, letter(language));
-                int pages = Pdf.pages(pdf);
-                assertTrue(pages > 1, example + " takes more than one page");
-                float underTheTitle = distanceUnder(pdf, 1, " " + number);
-                for (int page = 2; page <= pages; page++) {
-                    float underTheHead = distanceUnder(pdf, page, " " + number);
-                    assertTrue(underTheHead > 6f, example + " in " + language + ", page "
-                            + page + ": the head is parted from the text under it, and "
-                            + underTheHead + " points is not a parting");
-                    assertTrue(underTheHead <= underTheTitle, example + " in " + language
-                            + ", page " + page + ": the block under the head stands "
-                            + underTheHead + " points under it, and the block under the "
-                            + "title of page one stands " + underTheTitle + " points under"
-                            + " that, so the page after the first is the looser of the two");
-                }
-            }
-        }
+    /** The credit note of the examples: 381, with the invoice it credits in BG-3. */
+    private static SemanticDocument creditNote() {
+        return Corpus.example("credit-note");
     }
 
     /**
-     * Returns how far under the line that ends in a text — the title of page one, the
-     * compact head of a page after it — the first thing on that page stands.
+     * A credit note says so where an invoice word would say the opposite: the number and
+     * the date of the reference line are those of a credit note, and the figure the totals
+     * close with is the amount credited. The due date keeps its name, and nothing else
+     * changes.
+     *
+     * @param language the language of the rendering
      */
-    private static float distanceUnder(byte[] pdf, int page, String ending) {
-        float baseline = Float.MIN_VALUE;
-        for (Pdf.Run run : Pdf.runs(pdf, page)) {
-            if (run.text().endsWith(ending)) {
-                baseline = Math.max(baseline, run.baseline());
+    @ParameterizedTest
+    @EnumSource(RenderLanguage.class)
+    void aCreditNoteSaysSoInItsHeadDataAndItsTotals(RenderLanguage language) {
+        byte[] pdf = new PdfRenderer().render(creditNote(), letter(language));
+
+        String line = Pdf.textInArea(pdf, 1, 20 * MM, 95 * MM, 180 * MM, 45 * MM);
+        String text = Pdf.flat(pdf);
+        boolean german = language == RenderLanguage.GERMAN;
+        for (String label : german
+                ? List.of("Gutschriftsnummer", "Gutschriftsdatum", "Fälligkeitsdatum")
+                : List.of("Credit note number", "Credit note date", "Payment due date")) {
+            assertTrue(line.contains(label), "the reference line reads " + label + ": " + line);
+        }
+        for (String label : german ? List.of("Rechnungsnummer", "Rechnungsdatum")
+                : List.of("Invoice number", "Invoice issue date")) {
+            assertFalse(line.contains(label), "and not " + label + ": " + line);
+        }
+        assertTrue(text.contains(german ? "Gutschriftsbetrag 355,81 EUR"
+                        : "Amount credited 355.81 EUR"),
+                "the totals close with the amount credited: " + text);
+        assertFalse(text.contains(german ? "Fälliger Betrag" : "Amount due for payment"),
+                "and not with an amount due: " + text);
+    }
+
+    /**
+     * The invoice a document refers to stands under its title: a credit note is read
+     * against the invoice it credits, and a reader looks for that one under the title
+     * that says what the letter is, not among the terms at its end. The number and the
+     * date are the document's, the date written as the letter writes a date, and they
+     * stand on the letter once.
+     *
+     * @param language the language of the rendering
+     */
+    @ParameterizedTest
+    @EnumSource(RenderLanguage.class)
+    void theInvoiceACreditNoteCreditsStandsUnderItsTitle(RenderLanguage language) {
+        byte[] pdf = new PdfRenderer().render(creditNote(), letter(language));
+
+        boolean german = language == RenderLanguage.GERMAN;
+        String title = german ? "Gutschrift GU-2026-0004" : "Credit note GU-2026-0004";
+        String under = german ? "zur Rechnung RE-2026-0042 vom 03.02.2026"
+                : "to invoice RE-2026-0042 of 2026-02-03";
+        float titleLine = baselineOf(Pdf.runs(pdf, 1), title);
+        float underLine = baselineOf(Pdf.runs(pdf, 1), under);
+        assertTrue(underLine < titleLine && underLine > titleLine - 30f,
+                "the line stands right under the title: " + underLine + " under "
+                        + titleLine);
+        String text = Pdf.flat(pdf);
+        assertEquals(text.indexOf("RE-2026-0042"), text.lastIndexOf("RE-2026-0042"),
+                "the number of the invoice is on the letter once: " + text);
+        String closing = text.substring(text.indexOf(Word.FURTHER_DETAILS.in(language)));
+        assertFalse(closing.contains("/BG-3/"),
+                "and the closing heading no longer lists it: " + closing);
+    }
+
+    /**
+     * A credit note gets no payment code, even where the template asks for one and the
+     * document states a credit transfer account the code could carry. The code asks its
+     * reader to pay into the account beside it; the account of a credit note is where the
+     * seller pays the buyer. The payment block is printed as the document states it, and
+     * the same document as an invoice gets its code.
+     */
+    @Test
+    void aCreditNoteGetsNoPaymentCodeWhateverTheTemplateAsks() {
+        RenderTemplate asking = Templates.of("""
+                {"template": "esj-render-template/0.1", "layout": "letter",
+                 "letter": {"paymentCode": true}}""");
+        assertTrue(PaymentCode.of(creditNote()).isPresent(),
+                "the credit note states a credit transfer a code could carry");
+
+        for (RenderLanguage language : RenderLanguage.values()) {
+            byte[] pdf = new PdfRenderer().render(creditNote(),
+                    RenderOptions.in(language).with(asking));
+            String text = Pdf.flat(pdf);
+            assertFalse(text.contains(Word.PAYMENT_CODE.in(language)),
+                    "no code is drawn on a credit note: " + text);
+            assertEquals(0, symbolsDrawn(pdf), "and no symbol either");
+            assertTrue(text.contains(Word.PAYMENT.in(language))
+                            && text.contains("DE12 5001 0517 0648 4898 90"),
+                    "and the payment block stands as the document states it: " + text);
+        }
+        SemanticDocument invoice = creditNote().toBuilder()
+                .set(SemanticPath.of("/BT-3"), SemanticValue.of("380")).build();
+        byte[] control = new PdfRenderer().render(invoice, RenderOptions.defaults().with(asking));
+        assertTrue(Pdf.flat(control).contains(Word.PAYMENT_CODE.in(RenderLanguage.GERMAN)),
+                "the same document as an invoice carries the code");
+        assertEquals(1, symbolsDrawn(control), "drawn as one symbol");
+    }
+
+    /**
+     * A self-billed invoice gets no payment code either, even where the template asks for
+     * one and the document states a credit transfer the code could carry. The buyer issues
+     * it and sends it to the seller, so its reader is the party the payment goes to, and the
+     * code would ask them to pay into their own account. The payment block is printed as the
+     * document states it, and the words stay those of an invoice.
+     *
+     * <p>The example of the repository is settled by direct debit, which carries no code in
+     * any case, so the case turns it into a SEPA credit transfer into the seller's account
+     * first — the specimen a code would be drawn for, as the same document as an invoice
+     * shows.
+     */
+    @Test
+    void aSelfBilledInvoiceGetsNoPaymentCodeWhateverTheTemplateAsks() {
+        RenderTemplate asking = Templates.of("""
+                {"template": "esj-render-template/0.1", "layout": "letter",
+                 "letter": {"paymentCode": true}}""");
+        SemanticDocument document = Corpus.example("self-billed").toBuilder()
+                .set(SemanticPath.of("/BG-16/BT-81"), SemanticValue.of("58"))
+                .removeUnder(SemanticPath.group("/BG-16/BG-19"))
+                .put("/BG-16/BG-17/0/BT-84", "DE89370400440532013000")
+                .put("/BG-16/BG-17/0/BT-85", "Example GmbH")
+                .build();
+        assertEquals("389", document.value(SemanticPath.of("/BT-3")).orElseThrow().content(),
+                "the example is a self-billed invoice");
+        assertTrue(PaymentCode.of(document).isPresent(),
+                "and now states a credit transfer a code could carry");
+
+        for (RenderLanguage language : RenderLanguage.values()) {
+            byte[] pdf = new PdfRenderer().render(document,
+                    RenderOptions.in(language).with(asking));
+            String text = Pdf.flat(pdf);
+            assertFalse(text.contains(Word.PAYMENT_CODE.in(language)),
+                    "no code is drawn on a self-billed invoice: " + text);
+            assertEquals(0, symbolsDrawn(pdf), "and no symbol either");
+            assertTrue(text.contains(Word.PAYMENT.in(language))
+                            && text.contains("DE89 3704 0044 0532 0130 00"),
+                    "the payment block stands as the document states it: " + text);
+            boolean german = language == RenderLanguage.GERMAN;
+            assertTrue(text.contains(german ? "Fälliger Betrag" : "Amount due for payment"),
+                    "and the totals close with the amount due of an invoice: " + text);
+        }
+        SemanticDocument invoice = document.toBuilder()
+                .set(SemanticPath.of("/BT-3"), SemanticValue.of("380")).build();
+        byte[] control = new PdfRenderer().render(invoice, RenderOptions.defaults().with(asking));
+        assertTrue(Pdf.flat(control).contains(Word.PAYMENT_CODE.in(RenderLanguage.GERMAN)),
+                "the same document as an invoice carries the code");
+        assertEquals(1, symbolsDrawn(control), "drawn as one symbol");
+    }
+
+    /**
+     * The types that are self-billed without being a credit note are the types the table
+     * of names of this module calls self-billed, less its credit notes: a code that joined
+     * the table under that name and not the set would be a self-billed invoice with a
+     * payment code under it.
+     */
+    @Test
+    void theSelfBilledTypesAreTheOnesTheTableCallsSelfBilled() {
+        Set<String> named = new TreeSet<>();
+        for (int code = 0; code < 1000; code++) {
+            String written = String.valueOf(code);
+            DisplayNames.of(DisplayNames.CodeList.INVOICE_TYPE, written, RenderLanguage.ENGLISH)
+                    .filter(name -> name.toLowerCase(Locale.ROOT).startsWith("self"))
+                    .ifPresent(name -> named.add(written));
+        }
+        named.removeAll(LetterLayout.CREDIT_NOTES);
+        assertEquals(named, new TreeSet<>(LetterLayout.SELF_BILLED),
+                "the self-billed types of the letter are the ones the table names");
+        assertTrue(named.contains("389"), "among them the self-billed invoice: " + named);
+    }
+
+    /**
+     * Returns how many symbols a rendering draws: filled areas as wide as they are tall and
+     * larger than any mark of the layout's text, which is what the modules of a code make
+     * together — they are filled as one path.
+     */
+    private static int symbolsDrawn(byte[] pdf) {
+        int found = 0;
+        for (int page = 1; page <= Pdf.pages(pdf); page++) {
+            for (Pdf.Mark mark : Pdf.marks(pdf, page)) {
+                float width = mark.right() - mark.left();
+                float height = mark.top() - mark.bottom();
+                if (!mark.stroked() && width > 40f && Math.abs(width - height) < 1f) {
+                    found++;
+                }
             }
         }
-        assertNotEquals(Float.MIN_VALUE, baseline,
-                "page " + page + " carries a line ending in '" + ending + "'");
-        float below = 0;
-        for (Pdf.Run run : Pdf.runs(pdf, page)) {
-            if (run.top() < baseline) {
-                below = Math.max(below, run.top());
+        return found;
+    }
+
+    /**
+     * The types the letter treats as credit notes are the types the table of names of
+     * this module calls a credit note, and no others: a code that joined the table under
+     * that name and not the set would be a credit note with a payment code under it.
+     */
+    @Test
+    void theCreditNotesAreTheTypesTheTableCallsACreditNote() {
+        Set<String> named = new TreeSet<>();
+        for (int code = 0; code < 1000; code++) {
+            String written = String.valueOf(code);
+            DisplayNames.of(DisplayNames.CodeList.INVOICE_TYPE, written, RenderLanguage.ENGLISH)
+                    .filter(name -> name.toLowerCase(Locale.ROOT).contains("credit note"))
+                    .ifPresent(name -> named.add(written));
+        }
+        assertEquals(named, new TreeSet<>(LetterLayout.CREDIT_NOTES),
+                "the credit notes of the letter are the ones the table names");
+        assertTrue(named.containsAll(List.of("81", "83", "261", "262", "296", "308", "381")),
+                "which are at least the seven of the brief: " + named);
+    }
+
+    /**
+     * A corrected invoice names the invoice it corrects under its title and is otherwise
+     * an invoice: its labels are an invoice's, and its credit transfer carries a code.
+     * The corpus instance names the invoice without a date, so the line is the number
+     * alone.
+     *
+     * @param language the language of the rendering
+     */
+    @ParameterizedTest
+    @EnumSource(RenderLanguage.class)
+    void aCorrectedInvoiceNamesTheInvoiceItCorrects(RenderLanguage language) {
+        SemanticDocument document =
+                Corpus.instance("business-cases/standard/01.18a-INVOICE_ubl.xml");
+        byte[] pdf = new PdfRenderer().render(document, letter(language));
+
+        boolean german = language == RenderLanguage.GERMAN;
+        List<Pdf.Run> runs = Pdf.runs(pdf, 1);
+        float title = baselineOf(runs,
+                (german ? "Rechnungskorrektur" : "Corrected invoice") + " PRG1502112");
+        float under = baselineOf(runs, german ? "zur Rechnung PRG1502168"
+                : "to invoice PRG1502168");
+        assertTrue(under < title && under > title - 30f, "the corrected invoice is named"
+                + " under the title");
+        String line = Pdf.textInArea(pdf, 1, 20 * MM, 95 * MM, 180 * MM, 45 * MM);
+        assertTrue(line.contains(german ? "Rechnungsnummer" : "Invoice number"),
+                "a corrected invoice is an invoice: " + line);
+        assertTrue(Pdf.flat(pdf).contains(Word.PAYMENT_CODE.in(language)),
+                "and its credit transfer carries a code");
+    }
+
+    /**
+     * A self-billed invoice keeps the words of an invoice: the table of names gives it its
+     * title, and the labels of the letter stay those of an invoice. What it does not keep is
+     * the payment code, which the case above is about.
+     *
+     * @param language the language of the rendering
+     */
+    @ParameterizedTest
+    @EnumSource(RenderLanguage.class)
+    void aSelfBilledInvoiceKeepsTheWordsOfAnInvoice(RenderLanguage language) {
+        SemanticDocument document =
+                Corpus.instance("business-cases/standard/01.20a-INVOICE_ubl.xml");
+        String number = document.value(SemanticPath.of("/BT-1")).orElseThrow().content();
+        byte[] pdf = new PdfRenderer().render(document, letter(language));
+
+        boolean german = language == RenderLanguage.GERMAN;
+        String text = Pdf.flat(pdf);
+        assertTrue(text.contains((german ? "Gutschrift im Gutschriftverfahren"
+                : "Self-billed invoice") + " " + number), "the title names the type: " + text);
+        String line = Pdf.textInArea(pdf, 1, 20 * MM, 95 * MM, 180 * MM, 45 * MM);
+        assertTrue(line.contains(german ? "Rechnungsnummer" : "Invoice number"),
+                "the number is an invoice number: " + line);
+        assertTrue(text.contains(german ? "Fälliger Betrag" : "Amount due for payment"),
+                "and the totals close with the amount due: " + text);
+        assertFalse(text.contains(german ? "Gutschriftsbetrag" : "Amount credited"),
+                "not with an amount credited: " + text);
+    }
+
+    /**
+     * Up to three preceding invoices stand under the title, each with its date where the
+     * document states one; the line joins them and computes nothing.
+     *
+     * @param language the language of the rendering
+     */
+    @ParameterizedTest
+    @EnumSource(RenderLanguage.class)
+    void threePrecedingInvoicesStandUnderTheTitle(RenderLanguage language) {
+        byte[] pdf = new PdfRenderer().render(Documents.withPrecedingInvoices(3),
+                letter(language));
+
+        String text = Pdf.flat(pdf);
+        assertTrue(text.contains(language == RenderLanguage.GERMAN
+                        ? "Schlussrechnung Bau RE-2026-0815 zu den Rechnungen RE-2026-0001 vom"
+                                + " 01.01.2026, RE-2026-0002 vom 01.02.2026, RE-2026-0003"
+                        : "Final construction invoice RE-2026-0815 to invoices RE-2026-0001 of"
+                                + " 2026-01-01, RE-2026-0002 of 2026-02-01, RE-2026-0003"),
+                "the three stand under the title: " + text);
+        assertFalse(text.contains("/BG-3/"),
+                "and none of them is left to the closing heading: " + text);
+    }
+
+    /**
+     * Four or more are not a line under a title: they stay under the closing heading, each
+     * with its label and its path, and the title stands alone.
+     */
+    @Test
+    void fourPrecedingInvoicesStayUnderTheClosingHeading() {
+        byte[] pdf = new PdfRenderer().render(Documents.withPrecedingInvoices(4),
+                letter(RenderLanguage.GERMAN));
+
+        String text = Pdf.flat(pdf);
+        assertFalse(text.contains(Word.PRECEDING_INVOICES.in(RenderLanguage.GERMAN)),
+                "no line under the title names them: " + text);
+        String closing = text.substring(
+                text.indexOf(Word.FURTHER_DETAILS.in(RenderLanguage.GERMAN)));
+        for (int invoice = 0; invoice < 4; invoice++) {
+            assertTrue(closing.contains("/BG-3/" + invoice + "/BT-25"),
+                    "the closing heading lists preceding invoice " + invoice + ": " + closing);
+        }
+    }
+
+    /** Returns the baseline of the run of a page that says exactly a text. */
+    private static float baselineOf(List<Pdf.Run> runs, String text) {
+        for (Pdf.Run run : runs) {
+            if (run.text().equals(text)) {
+                return run.baseline();
             }
         }
-        assertTrue(below > 0, "and something stands under it");
-        return baseline - below;
+        throw new AssertionError("no run of the page says '" + text + "': " + runs);
+    }
+
+    // ---------------------------------------------------------------- the following pages
+
+    /**
+     * A page after the first keeps the rhythm of page one: whatever opens it — the column
+     * header of a table that goes on, the rows of the totals, the heading of a section —
+     * stands exactly as far under the rule of the compact head as the first section of
+     * page one stands under the rule of the title.
+     *
+     * <p>The white is read off the paper: from the rule to the top of the line the first
+     * block begins with, or to the top of the band its column header is set on. The head
+     * used to keep less than half of what the title keeps, and the author's printed pages
+     * showed it — a page whose first block stood up against the head. It holds on a
+     * following sheet whose template states a top margin of its own as well, because the
+     * head stands under that margin and the text under the head.
+     */
+    @Test
+    void aPageAfterTheFirstKeepsTheRhythmOfPageOne() {
+        List<RenderTemplate> papers = List.of(
+                Templates.of("""
+                        {"template": "esj-render-template/0.1", "layout": "letter"}"""),
+                Templates.of("""
+                        {"template": "esj-render-template/0.1", "layout": "letter",
+                         "margins": {"following": {"top": 120}}}"""));
+        List<String> wrong = new ArrayList<>();
+        for (String example : List.of("allowances", "multiple-lines")) {
+            SemanticDocument document = Corpus.example(example);
+            String number = document.value(SemanticPath.of("/BT-1")).orElseThrow().content();
+            for (RenderTemplate paper : papers) {
+                for (RenderLanguage language : RenderLanguage.values()) {
+                    byte[] pdf = new PdfRenderer().render(document,
+                            RenderOptions.in(language).with(paper));
+                    int pages = Pdf.pages(pdf);
+                    assertTrue(pages > 1, example + " takes more than one page");
+                    float underTheTitle = whiteUnderTheRuleUnder(pdf, 1, number);
+                    for (int page = 2; page <= pages; page++) {
+                        float underTheHead = whiteUnderTheRuleUnder(pdf, page, number);
+                        if (Math.abs(underTheHead - underTheTitle) > 0.05f) {
+                            wrong.add(example + " in " + language + ", page " + page + ": "
+                                    + underTheHead + " points under the head, and page one"
+                                    + " keeps " + underTheTitle + " under its title");
+                        }
+                    }
+                }
+            }
+        }
+        assertEquals(List.of(), wrong, "every page opens at the distance page one keeps");
+    }
+
+    /**
+     * The block of totals and the payment block are not set up against what stands above
+     * them: the totals keep a section's distance under the row that closes the table of
+     * lines, and the heading of the payment block keeps it under the amount due — on the
+     * page after the first as on the first.
+     *
+     * <p>The white is measured between the line boxes the two lines are set in, which is
+     * how the layout spaces its blocks: the line a row takes, and then the gap of a
+     * section.
+     */
+    @Test
+    void theTotalsAndThePaymentBlockKeepASectionsDistanceFromWhatStandsAboveThem() {
+        List<String> wrong = new ArrayList<>();
+        for (String example : List.of("standard-invoice", "multiple-lines", "credit-note")) {
+            for (RenderLanguage language : RenderLanguage.values()) {
+                byte[] pdf = new PdfRenderer().render(Corpus.example(example),
+                        letter(language));
+                boolean german = language == RenderLanguage.GERMAN;
+                String closing = german ? "Summe aller Positionen"
+                        : "Sum of Invoice line net amount";
+                String firstTotal = german ? "Gesamtsumme netto"
+                        : "Invoice total amount without VAT";
+                String due = example.equals("credit-note")
+                        ? Word.AMOUNT_CREDITED.in(language)
+                        : german ? "Fälliger Betrag" : "Amount due for payment";
+                for (int page = 1; page <= Pdf.pages(pdf); page++) {
+                    List<Pdf.Run> runs = Pdf.runs(pdf, page);
+                    check(wrong, example + " in " + language + ", page " + page + ", totals",
+                            find(runs, closing), find(runs, firstTotal));
+                    check(wrong, example + " in " + language + ", page " + page + ", payment",
+                            find(runs, due), find(runs, Word.PAYMENT.in(language)));
+                }
+            }
+        }
+        assertEquals(List.of(), wrong, "each block keeps a section's distance from the one"
+                + " above it");
+    }
+
+    /** Records where the line under another stands closer to it than a section's gap. */
+    private static void check(List<String> wrong, String where, Pdf.Run above, Pdf.Run under) {
+        if (above == null || under == null) {
+            return;
+        }
+        float bottom = above.baseline() - (Sheet.lineHeight(above.size()) - above.size());
+        float white = bottom - under.lineTop();
+        if (white < InvoiceLayout.SECTION_GAP - 0.05f) {
+            wrong.add(where + ": " + white + " points of white");
+        }
+    }
+
+    /** Returns the run of a page that says exactly a text, or {@code null}. */
+    private static Pdf.Run find(List<Pdf.Run> runs, String text) {
+        for (Pdf.Run run : runs) {
+            if (run.text().equals(text)) {
+                return run;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the white between the rule under the line that ends in the number of the
+     * document — the title of page one, the compact head of a page after it — and the
+     * first block under that rule: the top of the line that block begins with, or the top
+     * of the band it is set on.
+     */
+    private static float whiteUnderTheRuleUnder(byte[] pdf, int page, String number) {
+        float line = Float.NEGATIVE_INFINITY;
+        List<Pdf.Run> runs = Pdf.runs(pdf, page);
+        for (Pdf.Run run : runs) {
+            if (run.text().endsWith(" " + number)) {
+                line = Math.max(line, run.baseline());
+            }
+        }
+        assertTrue(line > 0, "page " + page + " carries a line ending in '" + number + "'");
+        List<Pdf.Mark> marks = Pdf.marks(pdf, page);
+        float rule = Float.NEGATIVE_INFINITY;
+        for (Pdf.Mark mark : marks) {
+            if (mark.stroked() && mark.top() < line && mark.right() - mark.left() > 100f) {
+                rule = Math.max(rule, mark.top());
+            }
+        }
+        assertTrue(rule > 0, "page " + page + " rules the line off from the text under it");
+        float first = Float.NEGATIVE_INFINITY;
+        for (Pdf.Run run : runs) {
+            if (run.lineTop() < rule - 0.01f) {
+                first = Math.max(first, run.lineTop());
+            }
+        }
+        for (Pdf.Mark mark : marks) {
+            if (!mark.stroked() && mark.top() < rule - 0.01f) {
+                first = Math.max(first, mark.top());
+            }
+        }
+        assertTrue(first > 0, "and something stands under the rule of page " + page);
+        return rule - first;
     }
 
     /**
@@ -1019,18 +1493,76 @@ class LetterLayoutTest {
     // ---------------------------------------------------------------- the foot of page one
 
     /**
-     * The foot of the first page writes its values compactly: an identification scheme is
-     * the code it is, and a value that says what it is carries no label in front of it.
+     * The foot of the first page writes its values compactly: the value first, an
+     * identification scheme behind it as the code it is, and no label in front of a value
+     * that says what it is.
      *
      * <p>Three columns of a letter foot are the narrowest text on the page, and the labels
-     * of the register are written for a block of definitions. <i>Kennung:
-     * 4399901000018 (Schema der Kennung: 0088)</i> took two lines of a column for one
-     * fact. The closing heading, which has the width of the page for it, keeps the full
+     * of the register are written for a block of definitions: <i>Seller legal registration
+     * identifier: HRB 12345</i> took most of a column for one fact, and <i>Kennung:
+     * 4399901000018 (Schema der Kennung: 0088)</i> took two lines of it. An identifier the
+     * document states without a scheme carries the word of the letter for it behind the
+     * value. The closing heading, which has the width of the page for it, keeps the full
      * labels — and this case says both.
+     *
+     * @param language the language of the rendering
+     */
+    @ParameterizedTest
+    @EnumSource(RenderLanguage.class)
+    void theFootOfTheFirstPageWritesItsValuesCompactly(RenderLanguage language) {
+        byte[] pdf = new PdfRenderer().render(invoice(),
+                RenderOptions.in(language).with(Templates.example("letter.json")));
+
+        List<String> foot = new ArrayList<>();
+        for (Pdf.Run run : Pdf.runs(pdf, 1)) {
+            if (run.baseline() < 120f && run.baseline() > 60f) {
+                foot.add(run.text());
+            }
+        }
+        assertTrue(foot.contains("Accounts receivable"),
+                "the contact point heads its column without a label: " + foot);
+        assertTrue(foot.contains("+49 30 1234567"),
+                "a telephone number stands in the foot without a label: " + foot);
+        assertTrue(foot.contains("billing@example.invalid"),
+                "and so does an e-mail address: " + foot);
+        assertTrue(foot.contains("invoices@example.invalid (EM)"),
+                "an electronic address carries its scheme as the code it is: " + foot);
+        assertTrue(foot.contains("4399901000018 (0088)"),
+                "and so does an identifier, the value first: " + foot);
+        assertTrue(foot.contains("HRB 12345 (" + Word.FOOT_REGISTRATION.in(language) + ")"),
+                "a register number without a scheme carries the word for it: " + foot);
+        List<String> labels = language == RenderLanguage.GERMAN
+                ? List.of("Name:", "Kennung:", "Register-/Registriernummer:",
+                        "Schema der Kennung", "Weitere rechtliche Informationen")
+                : List.of("Seller contact point", "Seller identifier",
+                        "Seller legal registration identifier", "Scheme identifier",
+                        "Seller additional legal information");
+        for (String line : foot) {
+            for (String label : labels) {
+                assertFalse(line.contains(label),
+                        "no line of the foot carries a label of the register: " + line);
+            }
+        }
+        if (language == RenderLanguage.GERMAN) {
+            assertTrue(Pdf.flat(Pdf.textOfPage(pdf, 2))
+                            .contains("Kennung (/BG-7/BT-46) 4399902000024 "
+                                    + "(Schema der Kennung: 0088)"),
+                    "the closing heading keeps the full labels");
+        }
+    }
+
+    /**
+     * A seller identifier stated without a scheme carries the word for it behind the
+     * value, and so does the VAT identifier where the head data does not carry it — the
+     * foot never writes a value a reader cannot place.
      */
     @Test
-    void theFootOfTheFirstPageWritesItsValuesCompactly() {
-        byte[] pdf = new PdfRenderer().render(invoice(),
+    void anIdentifierWithoutASchemeCarriesTheWordForIt() {
+        SemanticDocument document = invoice().toBuilder()
+                .removeUnder(SemanticPath.of("/BG-4/BT-29"))
+                .put("/BG-4/BT-29/0", "LIEF-4711").build();
+
+        byte[] pdf = new PdfRenderer().render(document,
                 RenderOptions.defaults().with(Templates.example("letter.json")));
 
         List<String> foot = new ArrayList<>();
@@ -1039,24 +1571,9 @@ class LetterLayoutTest {
                 foot.add(run.text());
             }
         }
-        assertTrue(foot.contains("+49 30 1234567"),
-                "a telephone number stands in the foot without a label: " + foot);
-        assertTrue(foot.contains("billing@example.invalid"),
-                "and so does an e-mail address: " + foot);
-        assertTrue(foot.contains("invoices@example.invalid (EM)"),
-                "an electronic address carries its scheme as the code it is: " + foot);
-        assertTrue(foot.contains("Kennung: 4399901000018 (0088)"),
-                "and so does an identifier: " + foot);
-        for (String line : foot) {
-            assertFalse(line.contains("Schema der Kennung"),
-                    "no line of the foot spells a component out: " + line);
-            assertFalse(line.startsWith("Weitere rechtliche Informationen"),
-                    "and the legal information the sender wrote is plain text: " + line);
-        }
-        assertTrue(Pdf.flat(Pdf.textOfPage(pdf, 2))
-                        .contains("Kennung (/BG-7/BT-46) 4399902000024 "
-                                + "(Schema der Kennung: 0088)"),
-                "the closing heading keeps the full labels");
+        assertTrue(foot.contains("LIEF-4711 ("
+                        + Word.FOOT_IDENTIFIER.in(RenderLanguage.GERMAN) + ")"),
+                "the identifier says what it is behind its value: " + foot);
     }
 
     /** The fold and punch marks are printed only where the template asks for them. */

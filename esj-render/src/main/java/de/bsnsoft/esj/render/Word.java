@@ -131,6 +131,36 @@ enum Word {
     /** What it calls the seller's tax registration identifier BT-32. */
     TAX_NUMBER("Tax number", "Steuernummer"),
 
+    /** What the head data of a credit note calls its number, BT-1. */
+    CREDIT_NOTE_NUMBER("Credit note number", "Gutschriftsnummer"),
+
+    /** What the head data of a credit note calls its issue date, BT-2. */
+    CREDIT_NOTE_DATE("Credit note date", "Gutschriftsdatum"),
+
+    /** What the totals of a credit note call the figure they close with, BT-115. */
+    AMOUNT_CREDITED("Amount credited", "Gutschriftsbetrag"),
+
+    /** Introduces the one preceding invoice (BG-3) the line under the title names. */
+    PRECEDING_INVOICE("to invoice", "zur Rechnung"),
+
+    /** Introduces the two or three preceding invoices that line names. */
+    PRECEDING_INVOICES("to invoices", "zu den Rechnungen"),
+
+    /** Joins the number of a preceding invoice and its issue date in that line. */
+    PRECEDING_OF("of", "vom"),
+
+    /**
+     * What the foot of the letter writes behind the seller's legal registration
+     * identifier BT-30 where the document states no scheme for it.
+     */
+    FOOT_REGISTRATION("Registration number", "Registernummer"),
+
+    /**
+     * What the foot writes behind a seller identifier BT-29 where the document states no
+     * scheme for it.
+     */
+    FOOT_IDENTIFIER("Identifier", "Kennung"),
+
     /** What the payment block of the letter calls the payment terms BT-20. */
     PAYMENT_TERMS("Payment terms", "Zahlungsbedingungen"),
 

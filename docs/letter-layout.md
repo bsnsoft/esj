@@ -11,22 +11,22 @@ the letter a business sends. `RenderOptions.layout(Layout.LETTER)`, template mem
 |---|---|
 | address field | the buyer of BG-7 with the address of BG-8, under a sender line taken from BG-4 |
 | reference line, under it | BT-1, BT-2, the delivery date BT-72 or the invoicing period of BG-14, BT-9, the references BT-10 to BT-14 and BT-46 the document carries, and the seller's VAT identifier BT-31 and tax registration identifier BT-32 — small labels over their values, in equal columns across the text width. `"information": "block"` puts the same fields in a block beside the address field instead |
-| title | the name of the document type behind BT-3, with the invoice number |
+| title | the name of the document type behind BT-3, with the invoice number ([below](#document-types)); under it, for every type, the preceding invoices of BG-3 with their dates where the document names one to three: *zur Rechnung RE-2026-0042 vom 03.02.2026*, *to invoices A of …, B of …*. Four or more stay under *Further details* |
 | notes | the notes of BG-1, as paragraphs |
 | lines | a table: position, item with what hangs under it, quantity with the name of its unit, net unit price, VAT rate, net amount. A hairline closes every row. The sum of the lines BT-106 closes the table, after its last row and on that page only: its figure in the net amount column, its label to the left of it |
 | allowances, charges | the document ones of BG-20 and BG-21, each a table |
 | totals | a narrow block against the right edge: the sums of BG-22 that follow BT-106, with the VAT breakdown of BG-23 inside them, the amount due last and in bold |
 | payment | the terms of BT-20, the means of BG-16 by name, then each account whole (IBAN in groups of four, BIC, holder), the mandate and the card data, and at the right of them the payment code ([below](#the-payment-code)) |
-| foot of the first page | the seller's business details in columns, in the band that page reserves for them before it is filled, written compactly — an identification scheme as the code it is, no label in front of a value that says what it is; what the reference line already carries is not repeated there, and a template may send them to the closing heading instead |
+| foot of the first page | the seller's business details in columns, in the band that page reserves for them before it is filled, written compactly — the value first, an identifier followed by the code of its scheme or, where the document states none, by a short word (`HRB 12345 (Registernummer)`), and no label in front of a value that says what it is; what the reference line already carries is not repeated there, and a template may send them to the closing heading instead |
 | **Further details** | everything the letter has no place of its own for, with its label and its semantic path, and one line per code written under a name |
-| every page after the first | a compact head with the title and the invoice number, under the top margin and over the text, at the distance the title of page one keeps to the block under it; the footer counts the pages, so the number stands once; the table repeats its column header |
+| every page after the first | a compact head with the title and the invoice number, under the top margin and over the text; whatever opens the page stands as far under the rule of the head as the first section of page one under the rule of the title; the footer counts the pages, so the number stands once; the table repeats its column header |
 
 ## Geometry
 
 The distances a window envelope and a two-hole punch are built to, which DIN 5008 gives for a
-business letter. Millimetres from the top left corner of the paper, on A4 and on US Letter
-alike — the envelope is what they are for, not the paper. The renderer holds them as points,
-1 mm = 72/25.4 pt.
+business letter. Millimetres from the top left corner of the paper, on A4 and on US Letter alike
+— the envelope is what they are for, not the paper. The renderer holds them as points, 1 mm =
+72/25.4 pt.
 
 | Block | Where |
 |---|---|
@@ -52,10 +52,9 @@ that prints along an edge keeps the text clear of it by stating a margin, and sa
 
 ## Codes under their names
 
-Where a reader does not read the code, the letter writes the name — `H87` becomes `piece` —
-and lists the code once under *Further details*, as `Unit H87 = piece`. So the page never
-hides what the document says. A code no table names is printed as the code, and the generic
-layout uses none of this.
+Where a reader does not read the code, the letter writes the name — `H87` becomes `piece` — and
+lists the code once under *Further details*, as `Unit H87 = piece`. So the page never hides what
+the document says. A code no table names is printed as the code; the generic layout uses none.
 
 Beside a quantity the unit is written the way a quantity is read: the name of more than one
 where the quantity is not one (`3 days`, `3 Tage`), and without the qualifier a code list puts
@@ -71,21 +70,19 @@ the code list except where the table below says otherwise.
 | `vat-category` | UNTDID 5305 | the same | the same |
 | `country` | ISO 3166-1 alpha-2, BT-40, BT-55 and the other addresses | the Unicode CLDR, read once out of the locale data of a Java runtime and checked in | the same |
 
-The tables are checked-in data under
-`esj-render/src/main/resources/de/bsnsoft/esj/render/names/`, with their sources in
-[`sources.md`](sources.md#display-names-of-codes) and the licences in `NOTICE`. Nothing is read
-from the locale data of the machine while rendering, which is what keeps a rendering the same
-bytes everywhere ([`rendering.md`](rendering.md#determinism-of-the-pdf-rendering)).
+The tables are checked-in data under `esj-render/src/main/resources/de/bsnsoft/esj/render/names/`,
+with their sources in [`sources.md`](sources.md#display-names-of-codes) and the licences in
+`NOTICE`. Nothing is read from the locale data of the machine while rendering, which is what keeps
+a rendering the same bytes everywhere ([`rendering.md`](rendering.md#determinism-of-the-pdf-rendering)).
 
 ## The payment code
 
 Where the invoice states a credit transfer, the payment block carries the QR code a payer's
 banking application reads to fill the transfer in: the EPC QR code of the guideline EPC069-12 of
 the European Payments Council, known in Germany as the *GiroCode*, drawn as squares rather than
-placed as a picture
-([`design-decisions.md`](design-decisions.md#one-printed-code-and-it-is-drawn)). It is on in the letter layout and never
-drawn in the generic one; `"paymentCode": false` leaves it out, and `esj render
---no-payment-code` wins over the template ([`cli.md`](cli.md#render)).
+placed as a picture ([`design-decisions.md`](design-decisions.md#one-printed-code-and-it-is-drawn)).
+It is on in the letter layout and never drawn in the generic one; `"paymentCode": false` leaves it
+out, and `esj render --no-payment-code` wins over the template ([`cli.md`](cli.md#render)).
 
 It carries values the block prints beside it and computes nothing: the account identifier BT-84
 and the BIC BT-86 of the first credit transfer account, the beneficiary (the account name BT-85,
@@ -97,6 +94,20 @@ its bound. Three elements the payload can do without, and *Further details* says
 a beneficiary over 70 characters is written to that length, a remittance information over 140
 gives way to the invoice number, a BT-86 that is not a BIC by ISO 9362 is left out. Where the
 document states more than one account or instruction, the caption names the one it pays into.
+A credit note or a self-billed invoice gets none ([below](#document-types)).
+
+## Document types
+
+BT-3 gives the letter its title. For the types the table of names calls a credit note — 81, 83,
+261, 262, 296, 308, 381, 396, 420, 502, 503, 532 — it gives three words as well: the reference
+line calls BT-1 and BT-2 the number and the date of a credit note, and the totals close with the
+*amount credited* (BT-115); BT-9 keeps its name. The payment code asks its reader to pay, so a
+letter whose reader does not pay gets none, whatever the template asks: a credit note, where the
+seller pays the buyer, and a self-billed invoice — 389, 471, 473, 500, 501, 527 — which the buyer
+issues and the seller reads; it keeps the title and the words of an invoice. The payment block
+stands as the document states it. Every other type — a corrected invoice (384), a partial or a
+construction invoice (326, 386, 875–877) — is the letter of an invoice under the title that
+names it.
 
 ## The content rule
 
@@ -141,10 +152,8 @@ The reference line takes the width the margins leave it, in as many columns as f
 with the full text width, fewer where a margin keeps the text off a printed edge — and runs on
 into further rows. A value wider than its column takes two columns or is wrapped inside its own
 cell, never over the cell beside it. Why it is the default, and why the foot is a distance the
-template hands over, is in
-[`design-decisions.md`](design-decisions.md#two-layouts-one-content-rule).
+template hands over, is in [`design-decisions.md`](design-decisions.md#two-layouts-one-content-rule).
 
 Everything else a template says — letterhead, logo, colours, fonts, margins, the places for the
-terms of a model extension — works as it does in the generic layout, and
-[`templates.md`](templates.md) is the reference. `examples/templates/letter.json` is the
-example the README renders.
+terms of a model extension — works as it does in the generic layout, and [`templates.md`](templates.md)
+is the reference. `examples/templates/letter.json` is the example the README renders.

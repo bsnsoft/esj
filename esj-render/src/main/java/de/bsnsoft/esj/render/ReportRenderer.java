@@ -232,19 +232,29 @@ public final class ReportRenderer {
         ReportLayout report = new ReportLayout(outcome, options, sheet);
         report.draw();
         if (!wanted(document, options)) {
-            sheet.finish(report.footer(), ReportWord.PAGE_OF.in(options.language()));
+            finish(report, sheet, options);
             return;
         }
         ReportInvoice invoice = refusal(document).map(ReportInvoice::refused)
                 .orElseGet(ReportInvoice::none);
         report.invoiceSection(invoice);
         if (invoice.refusal().isPresent()) {
-            sheet.finish(report.footer(), ReportWord.PAGE_OF.in(options.language()));
+            finish(report, sheet, options);
             return;
         }
         sheet.newPage();
         new PdfLayout(document, registry, options.language(), sheet, null).drawContent();
-        sheet.finish(report.footer(), ReportWord.PAGE_OF.in(options.language()));
+        finish(report, sheet, options);
+    }
+
+    /**
+     * Closes the sheet with the footer of the report on every page, the name of the input
+     * held to the room the page count leaves it: the pages are all drawn by now, so the
+     * count is known and so is how wide it is.
+     */
+    private static void finish(ReportLayout report, Sheet sheet, ReportOptions options) {
+        String pageOf = ReportWord.PAGE_OF.in(options.language());
+        sheet.finish(report.footer(sheet.footerRoom(pageOf)), pageOf);
     }
 
     /**

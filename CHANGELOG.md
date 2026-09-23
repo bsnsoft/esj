@@ -6,6 +6,25 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.2] — unreleased
 
+### Changed
+
+- Letter layout: a page after the first begins as far under the rule of its compact head as the
+  first section of page one begins under the rule of the title, whatever opens the page.
+- Letter layout: the seller's details in the foot of page one are written value first — an
+  identifier followed by the code of its scheme, or by a short word where the document states
+  none (`HRB 12345 (Registernummer)`), and the contact point without a label.
+- Letter layout: the preceding invoices of BG-3 stand under the title, up to three, with their
+  dates; a credit note (the types the display names call one) labels its number, its date and
+  its closing amount as a credit note's; neither a credit note nor a self-billed invoice carries
+  an EPC QR code, since its reader is not the one who pays ([`docs/letter-layout.md`](docs/letter-layout.md#document-types)).
+
+### Fixed
+
+- A row of a table that fits on a page no longer sends the lines hanging under it to the next
+  page under a carry-over line: the room for that line is asked for only where the lines go over.
+- The footer of the PDF validation report no longer runs into the page count for a long input
+  path: the path is shortened in its middle, keeping its beginning and its file name.
+
 ## [0.9.1] — 2026-09-22
 
 ### Fixed

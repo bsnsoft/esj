@@ -78,10 +78,102 @@ final class ReportLayout {
         provenance();
     }
 
-    /** Returns what the footer of every page of this file carries on the left. */
-    String footer() {
-        return ReportWord.TITLE.in(language) + " — "
-                + ReportContent.plain(outcome.identity().input());
+    /**
+     * Returns what the footer of every page of this file carries on the left: the name of
+     * the report and the input it is about, the input shortened to the room the footer
+     * leaves it beside the page count.
+     *
+     * <p>A caller names the input by a path, and a path is as long as a directory tree is
+     * deep: one of a hundred and thirty characters ran into the page count. So a path too
+     * long for the room is shortened in its middle, an ellipsis standing for what was left
+     * out. The beginning of the path stays, and so does its file name, which is what a
+     * reader knows a file by; only a file name wider than the room itself is shortened in
+     * its middle as well. The identity block of the report names the input whole, and so
+     * does the HTML form.
+     *
+     * @param room how wide the text may be, as {@link Sheet#footerRoom(String)} says
+     * @return the text
+     */
+    String footer(float room) {
+        Fonts.Face face = sheet.fonts().regular();
+        String name = face.showable(ReportWord.TITLE.in(language) + " — ");
+        String input = face.showable(ReportContent.plain(outcome.identity().input()));
+        return name + shortened(input, room - face.width(name, Sheet.FOOTER_SIZE), face);
+    }
+
+    /**
+     * Returns a path shortened in its middle to a width, with an ellipsis where the middle
+     * was: its file name whole where the room holds that and at least one character of the
+     * beginning, and otherwise as much of its end as of its beginning.
+     *
+     * @param path the path, already in the characters the face can show
+     * @param room how wide it may be, in points
+     * @param face the face the footer is set in
+     * @return the path, or the path shortened
+     */
+    private static String shortened(String path, float room, Fonts.Face face) {
+        float size = Sheet.FOOTER_SIZE;
+        if (face.width(path, size) <= room) {
+            return path;
+        }
+        String ellipsis = face.showable("…");
+        float left = room - face.width(ellipsis, size);
+        int[] points = path.codePoints().toArray();
+        if (left <= 0 || points.length == 0) {
+            return ellipsis;
+        }
+        float[] widths = new float[points.length];
+        for (int i = 0; i < points.length; i++) {
+            widths[i] = face.width(new String(points, i, 1), size);
+        }
+        float tailRoom = left / 2f;
+        int separator = lastSeparator(points);
+        if (separator > 0) {
+            float name = 0;
+            for (int i = separator; i < points.length; i++) {
+                name += widths[i];
+            }
+            if (name + widths[0] <= left) {
+                // A little over the sum, so that adding the widths up again from the other
+                // end cannot lose the separator to the last digit of a float.
+                tailRoom = Math.max(tailRoom, name + 0.01f);
+            }
+        }
+        int tail = points.length;
+        float used = 0;
+        while (tail > 0 && used + widths[tail - 1] <= tailRoom) {
+            used += widths[--tail];
+        }
+        int head = 0;
+        float taken = 0;
+        while (head < tail && taken + widths[head] <= left - used) {
+            taken += widths[head++];
+        }
+        String written = new String(points, 0, head) + ellipsis
+                + new String(points, tail, points.length - tail);
+        // The widths were added up one character at a time and the text is measured whole,
+        // so the two may differ in the last digit of a float; a character more comes off
+        // where they do.
+        while (face.width(written, size) > room && (head > 0 || tail < points.length)) {
+            if (head > 0) {
+                head--;
+            } else {
+                tail++;
+            }
+            written = new String(points, 0, head) + ellipsis
+                    + new String(points, tail, points.length - tail);
+        }
+        return written;
+    }
+
+    /** Returns where the last directory separator of a path stands, or -1 for none. */
+    private static int lastSeparator(int[] points) {
+        for (int i = points.length - 1; i >= 0; i--) {
+            if (points[i] == '/' || points[i] == '\\') {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**

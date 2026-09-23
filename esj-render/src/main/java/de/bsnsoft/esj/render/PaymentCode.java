@@ -162,6 +162,10 @@ final class PaymentCode {
      * number BT-1 where the document states none — or where BT-83 is longer than the
      * payload carries.
      *
+     * <p>The type of the document is not read. Whether a page asks its reader to pay is a
+     * decision of the layout that draws the page, and the letter layout draws no code where
+     * its reader is not the one who pays: on a credit note, and on a self-billed invoice.
+     *
      * @param document the document
      * @return the code, or nothing where the document does not meet the guideline
      */

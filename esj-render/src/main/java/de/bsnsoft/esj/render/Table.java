@@ -776,13 +776,16 @@ final class Table {
         float height = Sheet.lineHeight(DETAIL_SIZE);
         // One hanging line is one run of text, whatever width it was broken to: a
         // description wrapped over three lines has to come back out of the file as one
-        // run, and a page break between the second and the third would part it. The line
-        // that names the row on a page that has just begun is part of what is asked for,
-        // so the three do not move to a page the introduction then pushes them off.
-        float block = lines.size() * height + height;
+        // run, and a page break between the second and the third would part it. Where it
+        // goes over, the line that names the row on the page that has just begun is part
+        // of what is asked for, so the three do not move to a page the introduction then
+        // pushes them off. Where it fits under its row on this page, that line is not
+        // written and is not asked for: a row block the table moved whole is never parted
+        // by the room an introduction it does not need would have taken.
+        float own = lines.size() * height;
         float tail = after > 0 && 2 * height + after <= sheet.nextPageHeight() ? after : 0f;
-        if (block + tail <= sheet.nextPageHeight()) {
-            sheet.require(block + tail);
+        if (!sheet.fits(own + tail) && own + height + tail <= sheet.nextPageHeight()) {
+            sheet.require(own + height + tail);
         }
         for (int line = 0; line < lines.size(); line++) {
             float below = line == lines.size() - 1 ? tail : 0f;
