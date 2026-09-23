@@ -76,6 +76,8 @@ The pack is `rules/en16931/1.3.16` as data: 189 rules in the JSON rule language 
 the names the manifest declares. Findings of the pack are a layer of their own and never ESJ
 conformance (`SPEC.md` section 9.4). `Evaluate` refuses a document of an edition other than the
 one the pack was compiled against, because a path is an address relative to an edition.
+`RulePacks.Read` reads a pack of the rule language from a stream — one whose rules stand in that
+one file, such as a pack a caller wrote — and `RuleEngine.Compile` compiles it the same way.
 
 ## What is covered
 
@@ -112,6 +114,7 @@ $ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/cs
 digests, the canonical bytes, the findings and the rule identifiers of every case of the
 manifest. The same cases run as xunit tests, one test per case, which is what `dotnet test`
 reports, so a case that the reference implementation writes into the manifest fails here until
-this binding answers it too.
+this binding answers it too. The job `bindings` of the CI runs `dotnet test` and the runner on
+every push.
 
 Author: Christian Bürckert.

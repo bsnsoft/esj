@@ -31,6 +31,59 @@ jobs:
       - name: Build and test
         run: mvn -B verify
 
+  # The format has three implementations, and one fixture manifest holds them
+  # together (conformance/fixtures). The TypeScript and the C# binding run their
+  # own tests here, and the language-neutral runner puts every case of the
+  # manifest to each of them, beside the Java build rather than after it. No
+  # secret is read, nothing is cached, and the npm install runs no package
+  # scripts.
+  bindings:
+    name: TypeScript and C# bindings
+    runs-on: ubuntu-latest
+    # The runner waits on a pipe for every answer, so a binding that hangs would
+    # otherwise hold the job for the six hours a job may run.
+    timeout-minutes: 30
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # engines.node of the package, >=22.18: the version it requires.
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: bindings/typescript/package.json
+          package-manager-cache: false
+
+      - name: Install the TypeScript binding
+        working-directory: bindings/typescript
+        run: npm ci --ignore-scripts
+
+      - name: Test the TypeScript binding
+        working-directory: bindings/typescript
+        run: npm test
+
+      # python3 ../../conformance/fixtures/run.py --binding node tools/fixture-binding.ts
+      - name: Run the fixture manifest over the TypeScript binding
+        working-directory: bindings/typescript
+        run: npm run fixtures
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Test the C# binding
+        run: dotnet test bindings/csharp/En16931.SemanticJson.sln
+
+      # --no-build: the test run above built the project, and a build would print
+      # to the standard output the runner reads its answers from.
+      - name: Run the fixture manifest over the C# binding
+        run: >-
+          python3 conformance/fixtures/run.py --binding
+          dotnet run --no-build --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
+
   generated:
     name: Generated sources are up to date
     runs-on: ubuntu-latest

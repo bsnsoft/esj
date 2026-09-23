@@ -39,6 +39,39 @@ public class BigDecimalTests
         Assert.False(BigDecimal.Parse("1").TryDivide(BigDecimal.Zero, 34, out _));
     }
 
+    /// <summary>
+    /// A quotient that terminates is exact however far beyond the working precision it ends,
+    /// because the fraction in its lowest terms decides it, not a precision to divide at.
+    /// </summary>
+    [Theory]
+    [InlineData("0.00000000000000000000000000000000001", "1", "0.00000000000000000000000000000000001")]
+    [InlineData("0.000000000000000000000000000000001", "8", "0.000000000000000000000000000000000125")]
+    [InlineData("1", "1125899906842624", "0.00000000000000088817841970012523233890533447265625")]
+    [InlineData("0.3", "1.2", "0.25")]
+    [InlineData("100", "0.25", "400")]
+    [InlineData("-0.3", "1.2", "-0.25")]
+    public void ATerminatingQuotientIsExact(string dividend, string divisor, string expected)
+    {
+        Assert.True(BigDecimal.Parse(dividend).TryDivide(BigDecimal.Parse(divisor), 34, out BigDecimal quotient));
+        Assert.Equal(expected, quotient.ToCanonicalString());
+    }
+
+    /// <summary>
+    /// A quotient that does not terminate has 34 fraction digits, counted from the point, and
+    /// the last of them is rounded half away from zero.
+    /// </summary>
+    [Theory]
+    [InlineData("2", "3", "0.6666666666666666666666666666666667")]
+    [InlineData("-2", "3", "-0.6666666666666666666666666666666667")]
+    [InlineData("1", "7", "0.1428571428571428571428571428571429")]
+    [InlineData("10", "3", "3.3333333333333333333333333333333333")]
+    [InlineData("1", "3000", "0.0003333333333333333333333333333333")]
+    public void ANonTerminatingQuotientIsRoundedAtTheWorkingPrecision(string dividend, string divisor, string expected)
+    {
+        Assert.True(BigDecimal.Parse(dividend).TryDivide(BigDecimal.Parse(divisor), 34, out BigDecimal quotient));
+        Assert.Equal(expected, quotient.ToCanonicalString());
+    }
+
     /// <summary>Rounding is half up, away from zero, which is what the standard asks for.</summary>
     [Theory]
     [InlineData("2.345", 2, "2.35")]

@@ -187,9 +187,11 @@ prove them; the HTML and PDF/A-3b renderings, the latter as a business letter or
 layout; the constrained builder, the domain API, the B2C extension and the validation report; the
 command line tool, packaged as a native executable, a Java 25 runtime image, a release zip and a
 container image ([`docs/install.md`](docs/install.md)). Where a build carries its registry, EN
-16931-1:2026 stands beside the default 2017 edition, with `esj upgrade` between the two
-([`docs/editions.md`](docs/editions.md)). Beside the Java library, a TypeScript and a C#
-implementation of the format, measured by the shared fixture manifest. Changes:
+16931-1:2026 stands beside the default 2017 edition: its registry, typed view, structural
+validation and `esj upgrade` between the two exist; its business rule pack and a UBL or CII
+binding of its new terms do not, so a 2026 document validates `INDETERMINATE` at best and is not
+written to XML ([`docs/editions.md`](docs/editions.md)). Beside the Java library, a TypeScript
+and a C# implementation of the format, measured by the shared fixture manifest. Changes:
 [`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.md`](SECURITY.md).
 
 ## Documentation

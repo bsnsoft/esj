@@ -21,8 +21,11 @@ import de.bsnsoft.esj.model.Cardinality;
 import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
+import de.bsnsoft.esj.rules.RuleDefinition;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
+import de.bsnsoft.esj.rules.RulePack;
+import de.bsnsoft.esj.rules.RulePacks;
 import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931;
 import de.bsnsoft.esj.validate.Finding;
@@ -30,6 +33,7 @@ import de.bsnsoft.esj.validate.FindingCode;
 import de.bsnsoft.esj.validate.StructuralValidator;
 import de.bsnsoft.esj.validate.ValidationLayer;
 import de.bsnsoft.esj.xr.XrImporter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -70,10 +74,13 @@ import org.junit.jupiter.api.condition.EnabledIf;
  * a finding code has changed. That path writes into the working tree, relative to this
  * module's directory, and is the one place in this module that knows a path outside it.
  *
- * <p>The candidate strings of the value grammars are the one part of the manifest that is
- * not derived from anything: they are written down below, and what the manifest records
- * about them — that each is accepted or rejected, and with which finding code — is measured
- * here. A candidate whose outcome changes changes the manifest.
+ * <p>Two parts of the manifest are not derived from anything. The candidate strings of the
+ * value grammars are written down below, and what the manifest records about them — that
+ * each is accepted or rejected, and with which finding code — is measured here; a candidate
+ * whose outcome changes changes the manifest. The quotients of the arithmetic section are
+ * written in their pack, {@code conformance/fixtures/arithmetic/pack.json}, and this test
+ * holds the reference implementation to every one of them before it records what the pack
+ * reports.
  */
 class FixtureManifestTest {
 
@@ -142,6 +149,20 @@ class FixtureManifestTest {
 
     /** The rule pack, compiled once: it is evaluated over every mutation of the corpus. */
     private static final RuleEngine ENGINE = En16931.engine(COMBINED);
+
+    /**
+     * The pack of the rule language whose rules pin its arithmetic, as the repository files it.
+     * Its quotients are written by hand in the pack, beside a note on what each one pins.
+     */
+    private static final String ARITHMETIC_PACK = DIRECTORY + "arithmetic/pack.json";
+
+    /**
+     * The rules of that pack that report nothing: the two about a division by zero, whose
+     * quotient is absent. Every other rule of it asserts that a quotient is not the value
+     * worked out by hand for it, and reports exactly where this implementation computes that
+     * value.
+     */
+    private static final Set<String> ARITHMETIC_SILENT = Set.of("DIV-BY-ZERO-EQ", "DIV-BY-ZERO-NE");
 
     private final EsjReader reader = EsjReader.strict();
 
@@ -406,6 +427,8 @@ class FixtureManifestTest {
                 .put("directory", "rules/" + En16931.PACK_ID + "/" + En16931.VERSION)
                 .put("casesFile", CASES)
                 .put("cases", Oracle.all().size()));
+
+        manifest.put("arithmetic", arithmetic());
         return manifest;
     }
 
@@ -463,8 +486,8 @@ class FixtureManifestTest {
             assertEquals(mutated.values(), rebuilt.values(),
                     mutation.id() + ": the changes rebuild the document the reader built");
 
-            List<String> reported = reported(rebuilt, false);
-            List<String> warnings = reported(rebuilt, true);
+            List<String> reported = reported(ENGINE, rebuilt, false);
+            List<String> warnings = reported(ENGINE, rebuilt, true);
             assertEquals(mutation.expectedNative(), reported,
                     mutation.id() + ": the pack over the rebuilt document");
             assertEquals(mutation.expectedWarnings(), warnings,
@@ -483,6 +506,36 @@ class FixtureManifestTest {
     }
 
     // ------------------------------------------------------------- the sections
+
+    /**
+     * The arithmetic of the rule language: a pack whose rules pin the division of
+     * {@code rules/README.md}, the document it is run over, and what it reports there.
+     *
+     * <p>The quotients are the one part of this section that is written by hand, in the pack,
+     * and what the manifest records about them is measured here. A rule of the pack that is
+     * not about a division by zero asserts that a quotient is not the value worked out for it,
+     * so it is reported exactly where this implementation divides as the language says; the
+     * assertion below holds the reference to every one of them, and a quotient it computed
+     * differently leaves the build red rather than a manifest that expects the wrong digits.
+     */
+    private Manifest.Object arithmetic() {
+        RulePack pack = RulePacks.read(new ByteArrayInputStream(Fixtures.bytes(ARITHMETIC_PACK)),
+                ARITHMETIC_PACK);
+        RuleEngine engine = RuleEngine.compile(pack, COMBINED);
+        SemanticDocument base = reader.read(Fixtures.bytes(GRAMMAR_BASE));
+        List<String> reported = reported(engine, base, false);
+        List<String> warnings = reported(engine, base, true);
+        List<String> worked = pack.rules().stream().map(RuleDefinition::id)
+                .filter(id -> !ARITHMETIC_SILENT.contains(id)).sorted().toList();
+        assertEquals(worked, reported,
+                "every quotient of " + ARITHMETIC_PACK + " is the one worked out by hand");
+        return Manifest.object()
+                .put("pack", ARITHMETIC_PACK)
+                .put("base", GRAMMAR_BASE)
+                .put("expect", Manifest.object()
+                        .put("rules", Manifest.of(reported))
+                        .put("warnings", Manifest.of(warnings)));
+    }
 
     /**
      * The registries a binding loads before it runs the core manifest: the registry of the
@@ -817,10 +870,11 @@ class FixtureManifestTest {
         return builder.build();
     }
 
-    /** The rule identifiers the pack reports over a document: all of them, or the warnings. */
-    private static List<String> reported(SemanticDocument document, boolean warningsOnly) {
+    /** The rule identifiers a pack reports over a document: all of them, or the warnings. */
+    private static List<String> reported(RuleEngine engine, SemanticDocument document,
+                                         boolean warningsOnly) {
         Set<String> codes = new TreeSet<>();
-        for (RuleFinding finding : ENGINE.evaluate(document)) {
+        for (RuleFinding finding : engine.evaluate(document)) {
             if (!warningsOnly || finding.severity() == RuleSeverity.WARNING) {
                 codes.add(finding.code());
             }
@@ -903,6 +957,7 @@ class FixtureManifestTest {
         files.add(DIRECTORY + "canonical-order/indices.esj.json");
         files.add(DIRECTORY + "canonical-order/indices.canonical.esj.json");
         files.add(DIRECTORY + CASES);
+        files.add(ARITHMETIC_PACK);
         files.add(DIRECTORY + "manifest.schema.json");
         files.add(GRAMMAR_BASE);
         files.add(CORE_REGISTRY);

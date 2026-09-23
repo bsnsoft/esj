@@ -119,8 +119,9 @@ npm run fixtures
 
 starts `tools/fixture-binding.ts` and answers the six requests of
 `conformance/fixtures/run.py` over a pipe: the digests, the canonical bytes, the findings and
-the rule identifiers of every case of the manifest, 761 of them where the part of the later
+the rule identifiers of every case of the manifest, 769 of them where the part of the later
 edition is present. `npm test` runs the same manifest in process, so a case that the reference
-implementation writes into the manifest fails here until this binding answers it too.
+implementation writes into the manifest fails here until this binding answers it too. The job
+`bindings` of the CI runs `npm ci`, `npm test` and the runner on every push.
 
 Author: Christian Bürckert.

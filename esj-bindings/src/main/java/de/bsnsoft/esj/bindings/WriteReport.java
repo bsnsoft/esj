@@ -1,7 +1,12 @@
 package de.bsnsoft.esj.bindings;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * What became of a semantic document on the way into an XML syntax: how many of its values
@@ -14,9 +19,15 @@ import java.util.Objects;
  * honest thing a converter can do is to say exactly what did not travel. A report with no
  * notes says that everything did.
  *
+ * <p>One kind of value is neither written nor dropped: a value of a term whose registry
+ * declares that its terms belong to no transport syntax. It stays in the semantic document by
+ * design, a {@link WriteNote.Kind#TERM_BY_DESIGN} note names it with that registry, and
+ * {@link #byDesign()} gathers those notes by registry.
+ *
  * @param syntax  the syntax the document was written in
  * @param written how many values of the document reached it
- * @param dropped how many did not
+ * @param dropped how many did not and should have, leaving out the values that stay in the
+ *                semantic document by design
  * @param notes   one note per value that did not, and per part of the document that has no
  *                place in the syntax, in the canonical path order of the values
  */
@@ -27,7 +38,8 @@ public record WriteReport(BindingSyntax syntax, int written, int dropped, List<W
      *
      * @param syntax  the syntax the document was written in
      * @param written how many values of the document reached it
-     * @param dropped how many did not
+     * @param dropped how many did not and should have, leaving out the values that stay in
+     *                the semantic document by design
      * @param notes   one note per value that did not, and per part of the document that has no
      *                place in the syntax, in the canonical path order of the values
      * @throws IllegalArgumentException if a count is negative
@@ -49,7 +61,8 @@ public record WriteReport(BindingSyntax syntax, int written, int dropped, List<W
      * incomplete. It says that the syntax required an element no business term of the
      * document states and that the binding table said what is written there, which is a
      * fact about the syntax: nothing of the document was lost and the result is a document
-     * that syntax accepts.
+     * that syntax accepts. Nor does a note of {@link WriteNote.Kind#TERM_BY_DESIGN}, whose
+     * value was never meant to reach a syntax.
      *
      * @return {@code true} if no value was dropped and nothing fell short
      */
@@ -63,8 +76,10 @@ public record WriteReport(BindingSyntax syntax, int written, int dropped, List<W
      * <p>It is the weaker of the two questions: a report may carry notes and still be
      * faithful, because {@link WriteNote.Kind#ELEMENT_NOT_STATED} and
      * {@link WriteNote.Kind#TERM_NOT_STATED} say the syntax asks for something the
-     * document does not state, which is a property of the syntax and not a loss, and
-     * {@link WriteNote.Kind#VALUE_NOT_CONVERTED} leaves the value in the document.
+     * document does not state, which is a property of the syntax and not a loss,
+     * {@link WriteNote.Kind#VALUE_NOT_CONVERTED} leaves the value in the document, and
+     * {@link WriteNote.Kind#TERM_BY_DESIGN} names a value its registry keeps out of every
+     * syntax.
      *
      * <p>Faithful is not the same as usable in place of the document. A caller who is
      * about to run the validation artefacts of the syntax over the result — as
@@ -85,6 +100,49 @@ public record WriteReport(BindingSyntax syntax, int written, int dropped, List<W
      */
     public List<WriteNote> losses() {
         return notes.stream().filter(note -> note.kind().isLoss()).toList();
+    }
+
+    /**
+     * Returns the terms whose values stayed in the semantic document by design, by the
+     * registry that declares them untransported.
+     *
+     * <p>It is the {@link WriteNote.Kind#TERM_BY_DESIGN} notes gathered: a document that
+     * uses one term of an extension at every invoice line has one note per line and one term
+     * here.
+     *
+     * @return the term identifiers, without repetition and in the canonical path order of
+     *         the values they stood at, by the edition of the declaring registry in the order
+     *         the registries were first met; empty where no value was left behind by design
+     */
+    public Map<String, List<String>> byDesign() {
+        Map<String, Set<String>> gathered = new LinkedHashMap<>();
+        for (WriteNote note : notes(WriteNote.Kind.TERM_BY_DESIGN)) {
+            gathered.computeIfAbsent(note.registry(), registry -> new LinkedHashSet<>())
+                    .add(term(note.path()));
+        }
+        Map<String, List<String>> terms = new LinkedHashMap<>();
+        gathered.forEach((registry, ids) -> terms.put(registry, List.copyOf(ids)));
+        return Collections.unmodifiableMap(terms);
+    }
+
+    /**
+     * Returns the term a value path names: its last step that is not an occurrence index.
+     *
+     * <p>A repeatable term carries its index as the last step ({@code /BG-4/BT-29/0}), and a
+     * term identifier is never a number, so the steps that consist of digits alone are
+     * passed over.
+     */
+    private static String term(String path) {
+        int end = path.length();
+        while (end > 0) {
+            int start = path.lastIndexOf('/', end - 1) + 1;
+            String step = path.substring(start, end);
+            if (!step.isEmpty() && !step.chars().allMatch(c -> c >= '0' && c <= '9')) {
+                return step;
+            }
+            end = start - 1;
+        }
+        return path;
     }
 
     /**

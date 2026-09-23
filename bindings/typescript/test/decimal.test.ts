@@ -38,6 +38,33 @@ test('a division that terminates is exact, and one that does not names its preci
   assert.equal(Decimal.ofInteger(1).divide(Decimal.ZERO), undefined);
 });
 
+/** Divides two canonical decimals and writes the quotient canonically. */
+function quotient(dividend: string, divisor: string): string | undefined {
+  return Decimal.of(dividend).divide(Decimal.of(divisor))?.toString();
+}
+
+test('a quotient that terminates is exact however far beyond the working precision it ends', () => {
+  const tiny = '0.' + '0'.repeat(34) + '1';
+  assert.equal(quotient(tiny, '1'), tiny);
+  assert.equal(quotient('0.' + '0'.repeat(32) + '1', '8'), '0.' + '0'.repeat(33) + '125');
+  assert.equal(quotient('1', '1125899906842624'),
+    '0.00000000000000088817841970012523233890533447265625');
+  assert.equal(quotient('0.3', '1.2'), '0.25');
+  assert.equal(quotient('100', '0.25'), '400');
+  assert.equal(quotient('-0.3', '1.2'), '-0.25');
+  assert.equal(quotient('7', '-7'), '-1');
+  assert.equal(quotient('0', '3'), '0');
+});
+
+test('a quotient that does not terminate has 34 fraction digits, half away from zero', () => {
+  assert.equal(quotient('2', '3'), '0.6666666666666666666666666666666667');
+  assert.equal(quotient('-2', '3'), '-0.6666666666666666666666666666666667');
+  assert.equal(quotient('2', '-3'), '-0.6666666666666666666666666666666667');
+  assert.equal(quotient('1', '7'), '0.1428571428571428571428571428571429');
+  assert.equal(quotient('10', '3'), '3.3333333333333333333333333333333333');
+  assert.equal(quotient('1', '3000'), '0.0003333333333333333333333333333333');
+});
+
 test('rounding is half away from zero, and nothing else rounds', () => {
   assert.equal(Decimal.of('2.345').round(2).toString(), '2.35');
   assert.equal(Decimal.of('2.344').round(2).toString(), '2.34');

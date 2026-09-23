@@ -137,6 +137,11 @@ $ esj validate --extension b2c examples/b2c-gross.esj.json
     4 terms of ESJ-B2C 0.1 stay in the ESJ document by design: BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003
 ...
 VALID
+$ esj convert --to cii --extension b2c --fail-on-loss --out invoice.cii.xml \
+    examples/b2c-gross.esj.json
+info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document by design: BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003
+$ echo $?
+0
 $ esj render examples/b2c-gross.esj.json --extension b2c \
     --template examples/templates/gross.json --out invoice.pdf
 ```
@@ -147,13 +152,16 @@ reason is `extension-registry-missing` and the verdict is `INDETERMINATE`.
 
 `model/b2c/0.1.json` declares `"transport": "none"`: these terms are bound by no transport syntax by
 design, so the XML written from such a document is the whole invoice. `validate` runs the official
-artefacts over it, counts the row and names the terms left behind ([validation.md](validation.md#verdict-and-exit-code)).
+artefacts over it, counts the row and names the terms left behind ([validation.md](validation.md#verdict-and-exit-code));
+`convert` names them on one `info:` line, counts them as no loss, and `--fail-on-loss` lets the
+conversion through ([cli.md](cli.md#writing-ubl-and-cii)). In Java the writer knows the declaration
+when it is handed the registry: `WriterOptions.builder().extensions(List.of(Registry.b2cExtension()))`.
 
 ## In a syntax and in a rendering
 
-The extension travels in ESJ; a UBL or CII export leaves the four terms behind and names them. A
-hybrid PDF loses nothing: the ESJ document it carries beside the invoice XML holds them, and the
-container still agrees with itself ([pdf-output.md](pdf-output.md#the-esj-document-beside-the-invoice)).
+The extension travels in ESJ; a UBL or CII export leaves the four terms behind by design and names
+them. A hybrid PDF loses nothing: the ESJ document it carries beside the invoice XML holds them, and
+the container still agrees with itself ([pdf-output.md](pdf-output.md#the-esj-document-beside-the-invoice)).
 The baseline PDF rendering prints the figures marked `(B2C)` and never inside a core totals row; the
 baseline HTML rendering, built from the XR representation, has no element for them and names every
 one in its report; a branded template gives them places of their own

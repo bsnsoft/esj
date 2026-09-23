@@ -42,6 +42,17 @@ standard input, reading one JSON object per line back. Six requests exist:
     {"op": "rules", "document": { ... }}
         -> {"rules": ["BR-CO-10"], "warnings": []}
 
+    A rules request is answered with the pack the binding carries, unless it names another:
+
+    {"op": "rules", "pack": "conformance/fixtures/arithmetic/pack.json",
+     "file": "examples/minimal.esj.json"}
+        -> {"rules": ["DIV-EXACT-35", ...], "warnings": []}
+
+    The pack is a file of the rule language, relative to the repository root, whose rules
+    are all written in the language: none written in code, and no code list snapshot. The
+    binding compiles it against the registry of the document's edition and answers what
+    that pack reports.
+
 A validate answers with every finding of layers L1 to L3, errors and information alike,
 whether the reader refused the document or a validator reported on it; the order does not
 matter, and a finding that is not an error is ignored here. A document of an edition the
@@ -107,6 +118,9 @@ def missing(files, repository):
         if rules:
             names.append("conformance/fixtures/" + rules["casesFile"])
             names.append(rules["directory"])
+        arithmetic = manifest.get("arithmetic")
+        if arithmetic:
+            names.extend([arithmetic["pack"], arithmetic["base"]])
     return [name for name in names if not (repository / name).exists()]
 
 
@@ -196,6 +210,34 @@ def errors(answer):
                   and not finding["code"].endswith("EDITION-UNKNOWN"))
 
 
+def outcome(rule, reported):
+    """Whether a rule is among the identifiers a pack reported, in words."""
+    return "reported" if rule in reported else "silent"
+
+
+def arithmetic(binding, files, repository, report, carried):
+    """The arithmetic of the rule language, one check per rule of the pack that pins it.
+
+    Every rule is checked on its own, so that a failure names the quotient that is wrong:
+    the note of that rule in the pack says what it pins. An answer that is no report at all,
+    such as an error, fails every rule of the pack.
+    """
+    for manifest in files:
+        section = manifest.get("arithmetic")
+        if not section:
+            continue
+        if load(repository / section["base"])["semanticModel"] not in carried:
+            continue
+        answer = binding.ask({"op": "rules", "pack": section["pack"], "file": section["base"]})
+        reported = answer.get("rules")
+        for rule in load(repository / section["pack"])["rules"]:
+            report.check(rule["id"] + " of " + section["pack"],
+                         outcome(rule["id"], section["expect"]["rules"]),
+                         outcome(rule["id"], reported) if reported is not None else answer)
+        report.check(section["pack"] + " warnings", section["expect"]["warnings"],
+                     answer.get("warnings"))
+
+
 def run(binding, files, repository, report):
     carried = set(binding.ask({"op": "editions"})["semanticModels"])
     for manifest, document in documents(files, repository):
@@ -268,6 +310,8 @@ def run(binding, files, repository, report):
                      {"rules": answer.get("rules", []),
                       "warnings": answer.get("warnings", [])})
 
+    arithmetic(binding, files, repository, report, carried)
+
 
 def split(argv):
     """The runner's own arguments and the binding command, split at --binding.
@@ -304,13 +348,16 @@ def main():
 
     if not arguments.binding:
         for manifest in files:
-            print("%s: %d documents, %d rejected, %d grammars, %d canonical order, %d rule cases"
+            section = manifest.get("arithmetic")
+            print("%s: %d documents, %d rejected, %d grammars, %d canonical order, %d rule cases,"
+                  " %d arithmetic rules"
                   % (manifest["part"],
                      len(manifest.get("documents", [])),
                      len(manifest.get("invalid", [])),
                      len(manifest.get("grammars", [])),
                      len(manifest.get("canonicalOrder", [])),
-                     manifest.get("rules", {}).get("cases", 0)))
+                     manifest.get("rules", {}).get("cases", 0),
+                     len(load(repository / section["pack"])["rules"]) if section else 0))
         print("every file the manifest names is in " + str(repository))
         return 0
 

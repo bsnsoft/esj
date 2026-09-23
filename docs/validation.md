@@ -355,7 +355,7 @@ inside the attachment on that row instead of leaving at exit 7.
 | 5 | an internal error, a defect of the tool | report it; the document is unjudged |
 | 6 | the output could not be written in full: a full disk, or a `--report` the run could not deliver | the bytes received are not the bytes produced; repeat the run, and give an undelivered report more time or another destination — the verdict printed above it stands |
 | 7 | a configured resource or time limit was reached; no verdict at all | **retry or raise the limit; do not reject** |
-| 8 | the conversion cannot be completed as constrained (reserved) | |
+| 8 | the conversion cannot be completed as constrained: `esj convert --fail-on-loss` found part of the document the target syntax has no place for | nothing was written; keep the ESJ document, or convert without the option and accept what the warnings name |
 | 9 | nothing fatal, and part of the check did not run or did not complete | read `reasons`; supply what is missing, or accept the reduced check deliberately |
 
 **7 is never invalidity.** A document the tool gave up on is not a document the tool rejected,

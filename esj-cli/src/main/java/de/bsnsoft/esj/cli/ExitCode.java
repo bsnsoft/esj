@@ -26,7 +26,8 @@ package de.bsnsoft.esj.cli;
  *   <tr><td>7</td><td>a resource or time limit of this run was reached; no verdict on the
  *                     document</td></tr>
  *   <tr><td>8</td><td>the conversion cannot be completed under the constraints asked
- *                     for</td></tr>
+ *                     for: {@code esj convert --fail-on-loss} found part of the document
+ *                     the target syntax has no place for, and nothing was written</td></tr>
  *   <tr><td>9</td><td>nothing fatal was found and a component of the complete check did
  *                     not run or did not complete: no verdict, and the report names which
  *                     and why</td></tr>
@@ -151,11 +152,16 @@ public final class ExitCode {
     /**
      * The conversion cannot be completed under the constraints that were asked for.
      *
-     * <p>Reserved in this version. It is the code a strict conversion into a syntax
-     * that cannot carry every value of the source will use, and it is listed here so
-     * that it is never given to anything else. It is 8 rather than 3 because 3 is what
-     * the virtual machine aborts with on a heap exhaustion, and a reserved code that
-     * collides with a crash is a code no caller can read.
+     * <p>It is the code of a strict conversion into a syntax that cannot carry the whole
+     * source: {@code esj convert --to cii|ubl --fail-on-loss} leaves with it where the
+     * writer's report holds a loss — a value, a component or a part of the document the
+     * target syntax has no place for — and writes nothing, neither to {@code --out} nor to
+     * the standard output. The input was read and understood and is not thereby invalid;
+     * the target syntax is what cannot carry it. A value written by convention and a term
+     * whose registry keeps it out of every syntax are not losses and do not reach this
+     * code. It was reserved for this case before it was used, and it is 8 rather than 3
+     * because 3 is what the virtual machine aborts with on a heap exhaustion, and a code
+     * that collides with a crash is a code no caller can read.
      */
     public static final int CONSTRAINED = 8;
 
@@ -175,9 +181,8 @@ public final class ExitCode {
      * writes itself against this code; a caller that expects the whole check treats it as
      * a run to repeat with what it was missing.
      *
-     * <p>It is 9 because 6 is the output failure, 7 is the limit and 8 is reserved for a
-     * constrained conversion, and a code that carries two meanings is a code nobody can
-     * branch on.
+     * <p>It is 9 because 6 is the output failure, 7 is the limit and 8 is the constrained
+     * conversion, and a code that carries two meanings is a code nobody can branch on.
      */
     public static final int INDETERMINATE = 9;
 

@@ -53,7 +53,16 @@ import picocli.CommandLine.Parameters;
  * <p>The other direction is said as well. A syntax may require an element that no business
  * term of this document states, the binding table says what this project writes there, and
  * every such value becomes an information line of its own: nothing was lost, the exit code
- * stays 0, and the caller learns what is in the file beyond what the invoice said.
+ * stays 0, and the caller learns what is in the file beyond what the invoice said. A term
+ * whose registry declares that its terms belong to no transport syntax is an information
+ * line too, one per registry: the value stays in the ESJ document by design and is no loss.
+ *
+ * <p>Losses are warned about and the exit code stays 0, because a person converting a
+ * document wants the file and the list. A program that must not lose a value passes
+ * {@code --fail-on-loss}: where the writer's report holds a loss, nothing is written — not
+ * to {@code --out} and not to the standard output — and the run leaves with
+ * {@link ExitCode#CONSTRAINED}. A value written by convention, a term left behind by design
+ * and an information note are not losses and do not refuse the conversion.
  */
 @Command(name = "convert",
         description = "Read a UBL, CII or ESJ document, or a PDF carrying one of them, and"
@@ -96,6 +105,13 @@ final class ConvertCommand implements Callable<Integer> {
                     + " --to esj.")
     private String ublDocument;
 
+    @Option(order = 37, names = "--fail-on-loss",
+            description = "Write nothing and leave with exit code 8 where the target syntax"
+                    + " has no place for part of the document. A value written by convention"
+                    + " and a term its registry keeps out of every syntax are not losses. It"
+                    + " has no meaning with --to esj.")
+    private boolean failOnLoss;
+
     @Option(order = 40, names = "--out", paramLabel = "<file>",
             description = "Write the converted document to this file instead of to the"
                     + " standard output. An existing file is replaced.")
@@ -135,20 +151,31 @@ final class ConvertCommand implements Callable<Integer> {
                     + " serializations and says nothing about an XML syntax; leave it out"
                     + " with --to " + target.token());
         }
+        if (target == Target.ESJ && failOnLoss) {
+            throw CliException.input("--fail-on-loss refuses a conversion into a syntax that"
+                    + " cannot carry the whole document, and the ESJ form carries all of it;"
+                    + " leave it out with --to esj");
+        }
 
         Input input = Input.read(file, console);
-        Loaded loaded = Loaded.read(input, Options.from(from), Options.extension(extension),
-                console);
+        Extensions extensions = Options.extension(extension);
+        Loaded loaded = Loaded.read(input, Options.from(from), extensions, console);
         if (!json) {
             loaded.reportNotes(console);
         }
         SemanticDocument semantic = loaded.require(console);
 
-        WriteResult result = target == Target.ESJ ? null : write(target, semantic, document);
+        WriteResult result = target == Target.ESJ ? null
+                : write(target, semantic, document, extensions);
         byte[] converted = result == null ? form.writer().toBytes(semantic) : result.xml();
         WriteReport report = result == null ? null : result.report();
+        // A loss refuses the conversion only where the caller asked for that, and then
+        // nothing leaves the process: not the file, and not the standard output.
+        boolean refused = failOnLoss && report != null && !report.isFaithful();
 
-        deliver(converted);
+        if (!refused) {
+            deliver(converted);
+        }
         if (json) {
             Json.write(console, generator -> {
                 generator.writeStartObject();
@@ -157,18 +184,24 @@ final class ConvertCommand implements Callable<Integer> {
                 generator.writeStringField("importer",
                         loaded.importer().map(Importer::token).orElse("none"));
                 generator.writeStringField("to", target.token());
-                generator.writeStringField("wrote", report == null
+                generator.writeStringField("wrote", refused ? "nothing" : report == null
                         ? target.description(form) : written(report));
-                generator.writeStringField("out", out);
-                generator.writeNumberField("bytes", converted.length);
+                generator.writeStringField("out", refused ? null : out);
+                generator.writeNumberField("bytes", refused ? 0 : converted.length);
                 generator.writeNumberField("values", semantic.values().size());
                 Reports.conversionJson(generator, report);
                 generator.writeEndObject();
             });
         } else if (report != null) {
             conventions(report);
+            byDesign(report);
             levelShift(loaded, report, semantic);
             warn(report);
+        }
+        if (refused) {
+            throw CliException.constrained("nothing was written: part of the document has no"
+                    + " place in " + target.description(form) + ", and --fail-on-loss refuses"
+                    + " such a conversion");
         }
         console.verbose("converted " + input.name() + " (" + loaded.syntax().label() + ", "
                 + semantic.values().size() + " values) to "
@@ -191,13 +224,19 @@ final class ConvertCommand implements Callable<Integer> {
         };
     }
 
-    /** Writes the document in the target syntax, within the bounds of this run. */
+    /**
+     * Writes the document in the target syntax, within the bounds of this run, with the
+     * extension registries it loaded, so that the report of the writer can tell a term
+     * untransported by design from a loss.
+     */
     private WriteResult write(Target target,
                               SemanticDocument document,
-                              UblWriter.DocumentType type) {
+                              UblWriter.DocumentType type,
+                              Extensions extensions) {
         WriterOptions options = WriterOptions.builder()
                 .maxOutputBytes(console.options().bounds().maxOutputBytes())
                 .document(type)
+                .extensions(extensions.registries())
                 .build();
         try {
             return target == Target.CII ? CiiWriter.writeWithReport(document, options)
@@ -278,6 +317,21 @@ final class ConvertCommand implements Callable<Integer> {
      */
     private void conventions(WriteReport report) {
         collapse(report.notes(WriteNote.Kind.CONVENTION_APPLIED), console::information);
+    }
+
+    /**
+     * Says on the error stream which terms stayed in the ESJ document because their
+     * registry keeps them out of every transport syntax.
+     *
+     * <p>One line per declaring registry, naming its terms, in the words {@code esj validate}
+     * uses beside the row of the written syntax. It is an information line rather than a
+     * warning: the value was never meant to travel, the written file is the whole invoice,
+     * and the exit code stays where it was — with {@code --fail-on-loss} as well.
+     */
+    private void byDesign(WriteReport report) {
+        for (WrittenCheck.ByDesign entry : Transport.entries(report)) {
+            console.information(WrittenCheck.stayed(entry));
+        }
     }
 
     /**

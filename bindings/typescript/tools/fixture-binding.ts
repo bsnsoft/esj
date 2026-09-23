@@ -3,8 +3,9 @@
  *
  * It reads one JSON request per line from the standard input and answers one JSON object per
  * line: which editions this build carries, the digests and the canonical form of a document,
- * the findings of layers L1 to L3, and the rule identifiers the pack reports. The manifest is
- * the contract; this file is only the pipe.
+ * the findings of layers L1 to L3, and the rule identifiers the pack reports — the pack this
+ * build carries, or one of the rule language a request names. The manifest is the contract;
+ * this file is only the pipe.
  *
  *     python3 conformance/fixtures/run.py --binding node tools/fixture-binding.ts
  */
@@ -19,7 +20,8 @@ import { readDocumentOrThrow } from '../src/reader.ts';
 import { validate } from '../src/validate.ts';
 import { Structure } from '../src/structure.ts';
 import type { Registry } from '../src/registry.ts';
-import type { RuleEngine } from '../src/rules/engine.ts';
+import { compile, type RuleEngine } from '../src/rules/engine.ts';
+import type { RulePackFile } from '../src/rules/pack.ts';
 import { registries, ruleEngine } from '../src/node/data.ts';
 
 const ROOT = path.resolve(fileURLToPath(new URL('../../..', import.meta.url)));
@@ -37,11 +39,7 @@ function documentOf(request: Record<string, unknown>): ReturnType<typeof readDoc
   return readDocumentOrThrow(JSON.stringify(request.document));
 }
 
-function engineFor(semanticModel: string): RuleEngine | undefined {
-  const known = ENGINES.get(semanticModel);
-  if (known !== undefined) {
-    return known;
-  }
+function structureFor(semanticModel: string): Structure | undefined {
   const core = REGISTRIES.find(
     (registry) => !registry.isExtension() && registry.semanticModel === semanticModel);
   if (core === undefined) {
@@ -49,8 +47,28 @@ function engineFor(semanticModel: string): RuleEngine | undefined {
   }
   const extensions = REGISTRIES.filter((registry) => registry.isExtension()
     && registry.imports.some((imported) => imported.edition === core.edition));
-  const engine = ruleEngine(new Structure(core, extensions));
-  ENGINES.set(semanticModel, engine);
+  return new Structure(core, extensions);
+}
+
+/**
+ * Returns the engine a rules request is answered with: the pack this build carries, or the
+ * pack of the rule language the request names by its path in the repository, compiled against
+ * the edition of the document.
+ */
+function engineFor(semanticModel: string, pack: unknown): RuleEngine | undefined {
+  const key = (typeof pack === 'string' ? pack : '') + '|' + semanticModel;
+  const known = ENGINES.get(key);
+  if (known !== undefined) {
+    return known;
+  }
+  const structure = structureFor(semanticModel);
+  if (structure === undefined) {
+    return undefined;
+  }
+  const engine = typeof pack === 'string'
+    ? compile(JSON.parse(readFileSync(path.join(ROOT, pack), 'utf8')) as RulePackFile, structure)
+    : ruleEngine(structure);
+  ENGINES.set(key, engine);
   return engine;
 }
 
@@ -85,7 +103,7 @@ async function answer(request: Record<string, unknown>): Promise<unknown> {
     }
     case 'rules': {
       const document = documentOf(request);
-      const engine = engineFor(document.semanticModel);
+      const engine = engineFor(document.semanticModel, request.pack);
       if (engine === undefined) {
         return {
           error: 'no rule pack of this build states rules about ' + document.semanticModel,

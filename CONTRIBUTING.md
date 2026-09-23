@@ -21,7 +21,8 @@ mvn -B -Pgenerate -pl esj-generator -am process-classes
 ```
 
 and check that the working tree is unchanged. `.github/workflows/ci.yml` runs both and fails
-when a generated file differs.
+when a generated file differs; its job `bindings` runs the TypeScript and C# bindings against the
+fixture manifest ([A binding in another language](#a-binding-in-another-language)).
 
 ## What is generated
 
@@ -251,8 +252,9 @@ for does not compile.
 pass, written in no programming language — the registries to load, conformant documents with their
 two digests, their canonical byte length and what their model layers report, documents that have
 to be rejected with the finding code and the path of each, documents in the wrong member order
-with their canonical bytes, the accept and reject tables of the value grammars, and every rule
-case as a base document plus the changes that break it.
+with their canonical bytes, the accept and reject tables of the value grammars, every rule case as
+a base document plus the changes that break it, and a pack of the rule language that pins its
+division.
 [`conformance/fixtures/README.md`](conformance/fixtures/README.md) is its format and the six
 requests a binding answers over a pipe.
 
@@ -272,6 +274,12 @@ passes through binary floating point, and it is measured by the manifest rather 
 implementation's output. Two exist, `bindings/typescript` and `bindings/csharp`
 ([`docs/bindings-ts.md`](docs/bindings-ts.md), [`docs/bindings-csharp.md`](docs/bindings-csharp.md)),
 each with its own test command and its snippets held to a test like every other page's.
+
+The CI holds the three implementations together on every push and pull request: the job
+`bindings` of `.github/workflows/ci.yml` runs `npm ci` and `npm test` in `bindings/typescript`,
+`dotnet test` on `bindings/csharp`, and the runner over each binding, beside the Java build. A
+case the reference implementation writes into the manifest fails there until both bindings
+answer it.
 
 ## Changing the README and the pages under docs/
 

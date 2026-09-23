@@ -662,9 +662,10 @@ byte[] xml = ubl.xml();
 WriteReport report = ubl.report();
 ```
 
-`write(document)` returns the bytes alone. `WriterOptions` decides whether the output is
-indented and `maxOutputBytes`, which the command line sets with `--max-output-bytes`; the
-output is UTF-8 and deterministic.
+`write(document)` returns the bytes alone and discards the report; a caller who has to know
+whether a value was left behind uses `writeWithReport`. `WriterOptions` decides whether the
+output is indented and `maxOutputBytes`, which the command line sets with `--max-output-bytes`;
+the output is UTF-8 and deterministic.
 
 UBL is two document types where the semantic model has one. `WriterOptions.document()` chooses:
 `AUTO`, the default, writes a credit note where BT-3 is one of the codes the artefacts admit on
@@ -676,7 +677,11 @@ semantic path or the element and the reason: a term of an extension the syntax b
 cover, a group the schema admits fewer of than the document carries, the `extensions` member, an
 element the syntax requires that the document does not state, and a character XML 1.0 has no
 place for — a text value may hold any Unicode scalar value (`SPEC.md` 12.6), so the writer
-leaves it out, writes the rest and reports `CHARACTER_NOT_REPRESENTABLE`.
+leaves it out, writes the rest and reports `CHARACTER_NOT_REPRESENTABLE`. A term whose registry
+declares that its terms belong to no syntax, the B2C extension's, is not a loss where the writer
+is handed that registry with `WriterOptions.builder().extensions(...)`: its note is
+`TERM_BY_DESIGN` with the registry, it counts neither as written nor as dropped, and
+`report.byDesign()` gathers the terms by registry.
 
 ```java
 List<String> lost = new ArrayList<>();

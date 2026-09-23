@@ -18,8 +18,11 @@ import java.util.Objects;
  *                 the document as a whole
  * @param message  a description in English, which does not reproduce the content of the
  *                 document beyond what a term identifier gives away
+ * @param registry the registry a {@link Kind#TERM_BY_DESIGN} note is about, as it names
+ *                 itself in the {@code edition} member of its file, for example
+ *                 {@code ESJ-B2C 0.1}; the empty string for every other kind
  */
-public record WriteNote(WriteNote.Kind kind, String path, String message) {
+public record WriteNote(WriteNote.Kind kind, String path, String message, String registry) {
 
     /** The kinds of observation a writer records. */
     public enum Kind {
@@ -38,6 +41,22 @@ public record WriteNote(WriteNote.Kind kind, String path, String message) {
          * the syntax it would go.
          */
         TERM_UNKNOWN,
+
+        /**
+         * The term belongs to an extension registry that declares its terms untransported
+         * ({@code "transport": "none"}, specification, section 10), so no syntax has a place
+         * for the value by design and it stays in the semantic document.
+         *
+         * <p>It is not a loss. The B2C extension of this release is the case: a gross-priced
+         * invoice travels in UBL and in CII as the net values of the core terms with the
+         * difference in BT-114, and its terms record what the customer was shown, which a
+         * syntax has nothing to say about. The value is counted neither as written nor as
+         * dropped, and {@link WriteNote#registry()} names the registry that made the
+         * declaration. A writer knows the registries {@link WriterOptions#extensions()}
+         * hands it and no others: a term of any other registry the binding table does not
+         * know stays {@link #TERM_UNKNOWN}.
+         */
+        TERM_BY_DESIGN,
 
         /**
          * The syntax admits fewer instances of a business group than the document carries,
@@ -176,14 +195,15 @@ public record WriteNote(WriteNote.Kind kind, String path, String message) {
          * not reach the syntax.
          *
          * <p>Most of them do, and a caller who needs the two documents to say the same
-         * thing has to stop where one of them is made. Five do not.
+         * thing has to stop where one of them is made. Six do not.
          * {@link #ELEMENT_NOT_STATED}, {@link #TERM_NOT_STATED} and
          * {@link #CONVENTION_APPLIED} are statements about the syntax rather than about
          * the document: it asks for something no business term of the document fills, and
          * nothing of the document was lost by it. {@link #VALUE_NOT_CONVERTED} says that a
          * value was written as it stands rather than in the form the binding asks for, and
          * {@link #VALUE_READS_AS_CONVENTION} that a value reads back as nothing; the value
-         * is in the written document in both cases.
+         * is in the written document in both cases. {@link #TERM_BY_DESIGN} names a value
+         * that was never meant to travel, because the registry of its term says so.
          *
          * @return {@code true} where a value, a component or a part of the document did
          *         not travel
@@ -191,7 +211,7 @@ public record WriteNote(WriteNote.Kind kind, String path, String message) {
         public boolean isLoss() {
             return switch (this) {
                 case ELEMENT_NOT_STATED, TERM_NOT_STATED, CONVENTION_APPLIED,
-                        VALUE_NOT_CONVERTED, VALUE_READS_AS_CONVENTION -> false;
+                        VALUE_NOT_CONVERTED, VALUE_READS_AS_CONVENTION, TERM_BY_DESIGN -> false;
                 default -> true;
             };
         }
@@ -200,32 +220,61 @@ public record WriteNote(WriteNote.Kind kind, String path, String message) {
          * Tells whether a note of this kind says that the written document falls short of
          * the semantic document or of the schema of its own syntax.
          *
-         * <p>All of them do but {@link #CONVENTION_APPLIED}, which says that the syntax
-         * asked for something and the binding table said what to write there. A document
-         * written with conventions and nothing else is complete: it says everything the
-         * semantic document says and its own syntax accepts it.
+         * <p>All of them do but two. {@link #CONVENTION_APPLIED} says that the syntax asked
+         * for something and the binding table said what to write there, and
+         * {@link #TERM_BY_DESIGN} that a value belongs to no syntax by the declaration of
+         * its registry. A document written with those notes and no others is complete: it
+         * says everything the semantic document gives a syntax to say, and its own syntax
+         * accepts it.
          *
          * @return {@code true} where something fell short
          */
         public boolean isShortfall() {
-            return this != CONVENTION_APPLIED;
+            return this != CONVENTION_APPLIED && this != TERM_BY_DESIGN;
         }
     }
 
     /**
-     * Checks that the parts of the note are present.
+     * Checks that the parts of the note are present, and that a registry is named exactly
+     * where the note is about the declaration of one.
      *
      * @param kind     what kind of observation this is
      * @param path     the semantic path concerned, or the empty string where the note is about
      *                 the document as a whole
      * @param message  a description in English, which does not reproduce the content of the
      *                 document beyond what a term identifier gives away
-     * @throws NullPointerException if a part is {@code null}
+     * @param registry the registry a {@link Kind#TERM_BY_DESIGN} note is about, the empty
+     *                 string for every other kind
+     * @throws IllegalArgumentException if a {@link Kind#TERM_BY_DESIGN} note names no
+     *                                  registry or a note of another kind names one
+     * @throws NullPointerException     if a part is {@code null}
      */
     public WriteNote {
         Objects.requireNonNull(kind, "kind");
         Objects.requireNonNull(path, "path");
         Objects.requireNonNull(message, "message");
+        Objects.requireNonNull(registry, "registry");
+        if (registry.isEmpty() == (kind == Kind.TERM_BY_DESIGN)) {
+            throw new IllegalArgumentException(kind == Kind.TERM_BY_DESIGN
+                    ? "a note about a term untransported by design names its registry"
+                    : "only a note about a term untransported by design names a registry");
+        }
+    }
+
+    /**
+     * Creates a note that is not about the declaration of a registry, which is every kind
+     * but {@link Kind#TERM_BY_DESIGN}.
+     *
+     * @param kind    what kind of observation this is
+     * @param path    the semantic path concerned, or the empty string where the note is about
+     *                the document as a whole
+     * @param message a description in English, which does not reproduce the content of the
+     *                document beyond what a term identifier gives away
+     * @throws IllegalArgumentException if {@code kind} is {@link Kind#TERM_BY_DESIGN}
+     * @throws NullPointerException     if a part is {@code null}
+     */
+    public WriteNote(WriteNote.Kind kind, String path, String message) {
+        this(kind, path, message, "");
     }
 
     /**

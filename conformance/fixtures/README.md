@@ -16,6 +16,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | `manifest.schema.json` | the schema of a manifest file, parts included |
 | `manifest-en16931-2026.json` | the part of the later edition, absent from a distribution that does not ship it |
 | `cases-en16931-1.3.16.json` | the rule cases: 448 mutations of the corpus as base document plus changes |
+| `arithmetic/pack.json` | a pack of the rule language whose rules pin division, each quotient worked out by hand |
 | `canonical-order/` | documents whose members are written in the wrong order, with their canonical bytes |
 | `run.py` | the runner, and the request protocol a binding answers |
 
@@ -29,6 +30,17 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | `canonicalOrder` | a document whose members are in the wrong order | the canonical bytes, byte for byte |
 | `grammars` | a value substituted into a base document at one path | the finding code reported about that path, or none |
 | `rules` | a base document plus changes | the rule identifiers the pack reports, and which of them decide no verdict |
+| `arithmetic` | the pack `arithmetic/pack.json` over one document | the rule identifiers that pack reports, compared rule by rule |
+
+The `arithmetic` section pins what `rules/README.md` says about division: a quotient that
+terminates is exact however many fraction digits it needs, one that does not is computed to 34
+fraction digits, half up, and a division by zero is absent. Each rule of its pack asserts that a
+quotient is *not* the value worked out by hand for it, so an implementation that divides as the
+language says reports every one of them; a rule it leaves silent names a quotient it computed
+differently or not at all, and the note of that rule says what it pins. The two rules about a
+division by zero stay silent, because the quotient they read is absent. A `rules` request that
+names a pack (`run.py` documents it) is how the runner hands a binding this pack instead of its
+own.
 
 A `documents` entry names the registries it was measured with, core registry first. A binding
 that carries fewer of them measures other terms than the manifest records: an extension term
@@ -62,8 +74,10 @@ rendering.
 
 `FixtureManifestTest` in `esj-cli` builds these files from the reference implementation on
 every build and compares them with what is checked in, byte for byte. A manifest cannot
-therefore record an expectation the implementation does not meet. After the corpus, a
-registry or a finding code has changed, regenerate them:
+therefore record an expectation the implementation does not meet. The quotients of
+`arithmetic/pack.json` are written by hand, and the same test holds the reference
+implementation to every one of them before it records what the pack reports. After the corpus,
+a registry or a finding code has changed, regenerate them:
 
 ```sh
 mvn -B -pl esj-cli -am test -Desj.fixtures.rewrite=true

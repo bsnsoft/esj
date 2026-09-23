@@ -11,9 +11,30 @@ still change; a change to it is named here under *Format*.
 - The container image is published with every release at `ghcr.io/bsnsoft/esj`, for linux/amd64
   and linux/arm64, tagged with the version and `latest`
   ([`docs/install.md`](docs/install.md#container-image)).
+- `esj convert --to cii|ubl --fail-on-loss`: where the target syntax has no place for part of the
+  document, nothing is written — neither to `--out` nor to the standard output — and the run
+  leaves with exit code 8. The exit code table did not grow: 8 was reserved for exactly this
+  case and is now used, and every printing of the table says so. A value written by convention
+  and a term left behind by design are not losses. Without the option a loss is warned about and
+  the exit code stays 0 ([`docs/cli.md`](docs/cli.md#writing-ubl-and-cii)).
+- The CI runs the TypeScript and C# bindings on every push, in the job `bindings`: `npm ci` and
+  `npm test`, `dotnet test`, and the fixture runner over each binding.
+- The fixture manifest pins division in the rule language for every implementation: the section
+  `arithmetic` runs the pack `conformance/fixtures/arithmetic/pack.json`, whose quotients are
+  worked out by hand, and a `rules` request of the runner may name that pack. The C# binding
+  reads a pack from a stream with `RulePacks.Read`.
 
 ### Changed
 
+- The writer's report tells a term left behind by design from a loss. Handed the extension
+  registries of a document (`WriterOptions.builder().extensions(...)`, and `esj convert` and
+  `esj validate` hand it the ones `--extension` loads), the writer notes a value of a term whose
+  registry declares `"transport": "none"` — the B2C extension's — as `TERM_BY_DESIGN` with the
+  registry in `WriteNote.registry()`, and counts it neither as written nor as dropped;
+  `WriteReport.byDesign()` gathers those terms by registry. `esj convert --extension b2c` names
+  them on one information line instead of warning that ten values were not written, and the
+  JSON report carries the registry beside each such note. `esj validate` reaches the same rows
+  and exit codes as before.
 - The letter layout is the default of `esj render` and of `PdfRenderer`
   (`RenderOptions.DEFAULT_LAYOUT`), for a template that names none as well; `--layout generic`,
   `Layout.GENERIC` or `"layout": "generic"` ask for the generic layout, in which the PDF
@@ -30,6 +51,10 @@ still change; a change to it is named here under *Format*.
 
 ### Fixed
 
+- Division in the TypeScript binding is exact where the quotient terminates, as `rules/README.md`
+  says: `Decimal.divide` computed every quotient to 34 fraction digits and stripped the zeros, so
+  a terminating quotient that needs more digits was rounded — `1E-35 / 1` came out as `0`. The
+  Java and C# implementations were measured and already divided exactly.
 - A row of a table that fits on a page no longer sends the lines hanging under it to the next
   page under a carry-over line: the room for that line is asked for only where the lines go over.
 - The footer of the PDF validation report no longer runs into the page count for a long input

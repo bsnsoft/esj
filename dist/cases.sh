@@ -40,6 +40,8 @@ convert-to-ubl convert --to ubl $EXAMPLES/standard-invoice.esj.json
 convert-to-ubl-creditnote convert --to ubl --ubl-document creditnote $EXAMPLES/credit-note.esj.json
 convert-to-ubl-convention convert --to ubl $EXAMPLES/charges.esj.json
 convert-level-shift convert --to cii --extension xrechnung conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml
+convert-fail-on-loss convert --to cii --extension xrechnung --fail-on-loss conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml
+convert-fail-on-loss-b2c convert --to cii --extension b2c --fail-on-loss $EXAMPLES/b2c-gross.esj.json
 convert-pdf convert $PDF
 convert-xslt convert --importer xslt $CORPUS/01.01a-INVOICE_ubl.xml
 convert-stdin-esj convert --from esj -

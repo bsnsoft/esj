@@ -108,7 +108,7 @@ One process reads **one document** and writes **one result**.
 | 5 | an internal error |
 | 6 | the output could not be written in full: a full disk, or a `--report` the run could not deliver |
 | 7 | a resource or time limit of this run was reached; no verdict on the document |
-| 8 | the conversion cannot be completed as constrained (reserved) |
+| 8 | the conversion cannot be completed as constrained: `esj convert --fail-on-loss` found part of the document the target syntax has no place for, and nothing was written |
 | 9 | nothing fatal was found and a component of the complete check did not run or did not complete: no verdict, and the report names which and why |
 
 **Code 0 is a claim about coverage.** `esj validate` returns it only where the complete check
@@ -124,8 +124,10 @@ or that was killed after thirty seconds, is not thereby an invalid invoice: no v
 reached, and the answers are more resources, a larger profile or another reader. The same
 holds for `3` and for a code the table does not list: `3` for a JVM that aborted on a heap
 exhaustion, `137` for a process killed with `SIGKILL`, `143` for `SIGTERM`. `3` is in the
-table only so that nobody reads it as a verdict; the tool itself never returns it, and the
-reserved code for a conversion that cannot be completed as constrained is `8`.
+table only so that nobody reads it as a verdict; the tool itself never returns it. `8` is a
+conversion that cannot be completed as constrained: a caller that must not lose a value passes
+`esj convert --fail-on-loss`, and where the target syntax has no place for part of the document
+nothing is written and the run leaves with `8`.
 
 - **`--output json`** is the machine-readable form of the validation report. Its shape is
   documented field by field in [`cli.md`](cli.md), *validate*: `layers.l1`, `layers.l2` and

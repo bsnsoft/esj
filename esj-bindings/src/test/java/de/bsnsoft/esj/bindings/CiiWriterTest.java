@@ -10,8 +10,10 @@ import de.bsnsoft.esj.ExtensionValue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.json.EsjReader;
+import de.bsnsoft.esj.model.Registry;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -286,7 +288,9 @@ class CiiWriterTest {
     /**
      * {@code examples/b2c-gross.esj.json} carries the four terms of {@code model/b2c/0.1.json}.
      * No binding table of this release covers that registry, so the writer names every one of
-     * the ten paths and writes the core invoice around them.
+     * the ten paths and writes the core invoice around them. A writer that was not handed the
+     * registry does not know that it declares its terms untransported, so to it they are
+     * terms nothing says where to put.
      */
     @Test
     void reportsEveryTermOfTheB2cExampleTheBindingTablesDoNotCover() {
@@ -303,6 +307,84 @@ class CiiWriterTest {
         assertEquals(10, result.report().dropped());
         assertContains(new String(result.xml(), StandardCharsets.UTF_8),
                 "<ram:LineTotalAmount>84.03</ram:LineTotalAmount>");
+    }
+
+    /**
+     * Handed the B2C registry, the writer knows what the registry declares: its terms belong
+     * to no transport syntax. The ten values stay in the semantic document by design, each
+     * named with the registry, none counted as dropped, and the report is complete — the
+     * cross industry invoice is the whole invoice of the core terms.
+     */
+    @Test
+    void namesTheTermsOfAnUntransportedRegistryAsLeftBehindByDesign() {
+        SemanticDocument document = EsjReader.strict().read(Examples.bytes("b2c-gross"));
+        WriterOptions options = WriterOptions.builder()
+                .extensions(List.of(Registry.b2cExtension())).build();
+
+        WriteResult result = CiiWriter.writeWithReport(document, options);
+        WriteReport report = result.report();
+
+        assertEquals(List.of(), report.notes(WriteNote.Kind.TERM_UNKNOWN));
+        List<WriteNote> byDesign = report.notes(WriteNote.Kind.TERM_BY_DESIGN);
+        assertEquals(10, byDesign.size());
+        assertTrue(byDesign.stream().allMatch(note -> note.registry().equals("ESJ-B2C 0.1")),
+                byDesign.toString());
+        assertContains(byDesign.get(0).message(), "BT-B2C-010 is a term of ESJ-B2C 0.1");
+        assertEquals(0, report.dropped());
+        assertTrue(report.isComplete(), report.toString());
+        assertTrue(report.isFaithful(), report.toString());
+        assertEquals(Map.of("ESJ-B2C 0.1",
+                        List.of("BT-B2C-010", "BT-B2C-001", "BT-B2C-002", "BT-B2C-003")),
+                report.byDesign());
+        assertArrayEquals(CiiWriter.write(document), result.xml(),
+                "the registry changes the report and not a byte of the document");
+    }
+
+    /**
+     * A registry that declares nothing about transport changes nothing: the XRechnung
+     * extension is bound by a syntax, so a term the table has no entry for is unknown to the
+     * writer whatever registries it was handed, and a loss.
+     */
+    @Test
+    void aRegistryThatDeclaresNothingLeavesALossALoss() {
+        WriterOptions options = WriterOptions.builder()
+                .extensions(List.of(Registry.xrechnungExtension())).build();
+
+        WriteResult result = CiiWriter.writeWithReport(SemanticDocument.builder()
+                .put("/BT-XYZ-1", "something").build(), options);
+
+        assertEquals(1, result.report().notes(WriteNote.Kind.TERM_UNKNOWN).size());
+        assertEquals(1, result.report().dropped());
+        assertFalse(result.report().isFaithful());
+        assertEquals(Map.of(), result.report().byDesign());
+    }
+
+    /**
+     * A repeatable term carries its occurrence index as the last step of its path, and the
+     * report names the term, once, rather than the index.
+     */
+    @Test
+    void gathersTheTermsLeftBehindByDesignWithoutTheirOccurrenceIndex() {
+        WriteReport report = new WriteReport(BindingSyntax.CII, 0, 0, List.of(
+                new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BG-25/0/BT-X-1/0", "a", "X 1"),
+                new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BG-25/0/BT-X-1/1", "b", "X 1"),
+                new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BG-25/1/BT-X-2", "c", "X 1"),
+                new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BT-Y-1/3", "d", "Y 1")));
+
+        assertEquals(Map.of("X 1", List.of("BT-X-1", "BT-X-2"), "Y 1", List.of("BT-Y-1")),
+                report.byDesign());
+        assertEquals(List.of("X 1", "Y 1"), List.copyOf(report.byDesign().keySet()),
+                "the registries in the order they were first met");
+    }
+
+    @Test
+    void aNoteNamesARegistryExactlyWhereItIsAboutTheDeclarationOfOne() {
+        assertThrows(IllegalArgumentException.class, () -> new WriteNote(
+                WriteNote.Kind.TERM_BY_DESIGN, "/BT-B2C-010", "left behind"));
+        assertThrows(IllegalArgumentException.class, () -> new WriteNote(
+                WriteNote.Kind.TERM_UNKNOWN, "/BT-B2C-010", "unknown", "ESJ-B2C 0.1"));
+        assertFalse(WriteNote.Kind.TERM_BY_DESIGN.isLoss());
+        assertFalse(WriteNote.Kind.TERM_BY_DESIGN.isShortfall());
     }
 
     @Test
@@ -494,6 +576,10 @@ class CiiWriterTest {
         assertEquals(WriterOptions.DEFAULT_MAX_OUTPUT_BYTES, options.maxOutputBytes());
         assertTrue(options.toBuilder().maxOutputBytes(1024).build().maxOutputBytes() == 1024);
         assertFalse(options.toBuilder().build().indent());
+        WriterOptions handed = options.toBuilder()
+                .extensions(List.of(Registry.b2cExtension())).build();
+        assertEquals(List.of(Registry.b2cExtension()), handed.toBuilder().build().extensions());
+        assertEquals(List.of(), WriterOptions.defaults().extensions());
     }
 
     @Test
@@ -501,8 +587,10 @@ class CiiWriterTest {
         assertEquals("WriterOptions[indent=true, maxOutputBytes="
                 + WriterOptions.DEFAULT_MAX_OUTPUT_BYTES + ", document=AUTO,"
                 + " taxRegistrationScheme="
-                + WriterOptions.DEFAULT_TAX_REGISTRATION_SCHEME + "]",
+                + WriterOptions.DEFAULT_TAX_REGISTRATION_SCHEME + ", extensions=[]]",
                 WriterOptions.defaults().toString());
+        assertContains(WriterOptions.builder().extensions(List.of(Registry.b2cExtension()))
+                .build().toString(), "extensions=[ESJ-B2C 0.1]");
         WriteResult result = CiiWriter.writeWithReport(
                 SemanticDocument.builder().put("/BT-1", "RE-1").build(),
                 WriterOptions.defaults());
