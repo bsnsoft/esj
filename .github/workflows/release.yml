@@ -28,7 +28,7 @@ jobs:
             runner: macos-14
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Two JDKs, as on the packager's machine: GraalVM builds the native
       # executable and nothing else; the reference run and the runtime image
