@@ -39,13 +39,16 @@ enum Bound {
     /**
      * The largest PDF a run opens, in bytes of the file.
      *
-     * <p>Two bounds of the container follow it and have no switch of their own: what one
-     * container may decode in total, and how many objects its object streams may declare
-     * together. Both are raised by raising this one, so both are answered here.
+     * <p>Three bounds of the container follow it and have no switch of their own: what one
+     * container may decode in total, how many objects its object streams may declare
+     * together, and how many objects the reader walks on its pages to find the files they
+     * refer to, which is the same number. All three are raised by raising this one, so all
+     * three are answered here.
      */
     PDF_BYTES("--max-pdf-bytes", true, "reader opens a PDF of at most",
             "bytes this reader decodes while it opens a PDF",
-            "objects together for this reader"),
+            "objects together for this reader",
+            "objects this reader walks on the pages of a PDF"),
 
     /** How many attachments of one PDF are enumerated at all. */
     ATTACHMENTS("--max-attachments", false, "attachments this reader enumerates"),

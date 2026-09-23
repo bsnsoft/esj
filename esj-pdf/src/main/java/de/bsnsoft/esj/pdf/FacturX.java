@@ -245,6 +245,7 @@ public final class FacturX {
         try (PdfContainer container = PdfContainer.open(pdf, options.limits())) {
             requirePdfa3(container, pdf, options);
             requireNoInvoiceYet(container);
+            requireOneFilePerName(container);
             byte[] packet = container.xmpPacket().orElseThrow(() -> new EmbedRefusedException(
                     "this file carries no XMP packet, and a hybrid invoice says in its"
                             + " metadata that it carries an invoice; a PDF/A file carries"
@@ -415,6 +416,27 @@ public final class FacturX {
                     + " them " + candidates.get(0) + "; a container declares one invoice,"
                     + " and embedding a second would leave the choice to whoever reads the"
                     + " file");
+        }
+    }
+
+    /**
+     * Checks that the name tree of the input lists no two files under one name.
+     *
+     * <p>The tree is written back as one node that maps each name to one file, so a tree
+     * that lists two files under one name would come out with one of them gone, and the
+     * file would lose an attachment it came in with without anybody having asked for
+     * that. It is refused instead, as a tree with children is.
+     */
+    private static void requireOneFilePerName(PdfContainer container) {
+        for (InvoiceAttachments.DuplicateName duplicate
+                : InvoiceAttachments.locate(container).duplicateNames()) {
+            if (duplicate.source() == InvoiceAttachments.DuplicateName.Source.NAME_TREE_KEY) {
+                throw new EmbedRefusedException("the embedded files name tree of this file"
+                        + " lists " + duplicate.attachments().size() + " different files"
+                        + " under the name " + Messages.quoted(duplicate.name()) + ", and"
+                        + " this module writes the tree as one node that maps a name to one"
+                        + " file; rewriting it would drop one of them");
+            }
         }
     }
 

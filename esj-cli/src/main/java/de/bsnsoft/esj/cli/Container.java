@@ -65,6 +65,7 @@ final class Container {
     static final String LABEL = "PDF (hybrid invoice container)";
 
     private final List<LocatedAttachment> attachments;
+    private final List<InvoiceAttachments.DuplicateName> duplicates;
     private final List<ContainerFinding> findings;
     private final Optional<FacturXMetadata> facturX;
     private final Optional<PdfaIdentification> pdfa;
@@ -73,6 +74,7 @@ final class Container {
     private final Supplement supplement;
 
     private Container(List<LocatedAttachment> attachments,
+                      List<InvoiceAttachments.DuplicateName> duplicates,
                       List<ContainerFinding> findings,
                       Optional<FacturXMetadata> facturX,
                       Optional<PdfaIdentification> pdfa,
@@ -80,6 +82,7 @@ final class Container {
                       Esj esj,
                       Supplement supplement) {
         this.attachments = List.copyOf(attachments);
+        this.duplicates = List.copyOf(duplicates);
         this.findings = List.copyOf(findings);
         this.facturX = facturX;
         this.pdfa = pdfa;
@@ -273,8 +276,9 @@ final class Container {
             List<ContainerFinding> checks = ContainerChecks.run(container, located,
                     supplement == Supplement.OPTIONAL && esj != null
                             ? esj.attachment() : null);
-            return new Container(located.all(), checks, container.facturX(),
-                    container.pdfaIdentification(), invoice, esj, supplement);
+            return new Container(located.all(), located.duplicateNames(), checks,
+                    container.facturX(), container.pdfaIdentification(), invoice, esj,
+                    supplement);
         } catch (PdfException e) {
             throw refuse(e, input, bounds);
         }
@@ -450,8 +454,38 @@ final class Container {
             text.append("\n  ").append(located.all().indexOf(candidate) + 1)
                     .append("  ").append(describe(candidate));
         }
+        for (InvoiceAttachments.DuplicateName duplicate : located.duplicateNames()) {
+            text.append("\n  ").append(sharedName(duplicate))
+                    .append(positions(located.all(), duplicate.attachments()))
+                    .append(", so that name cannot say which of them is meant");
+        }
         text.append("\n  use --attachment <name>, or --attachment-index <position> where"
                 + " two attachments carry one name");
+        return text.toString();
+    }
+
+    /**
+     * Returns what gives several attachments one name, as the beginning of a sentence
+     * that goes on with their positions.
+     */
+    private static String sharedName(InvoiceAttachments.DuplicateName duplicate) {
+        return duplicate.source() == InvoiceAttachments.DuplicateName.Source.NAME_TREE_KEY
+                ? "the embedded files name tree lists under one name, "
+                        + ValueText.quoted(duplicate.name()) + ", the attachments at positions "
+                : "one file specification, " + ValueText.quoted(duplicate.name())
+                        + ", holds the attachments at positions ";
+    }
+
+    /** Returns the positions of some attachments in the enumeration, as "1 and 2". */
+    private static String positions(List<LocatedAttachment> all,
+                                    List<LocatedAttachment> some) {
+        StringBuilder text = new StringBuilder();
+        for (int i = 0; i < some.size(); i++) {
+            if (i > 0) {
+                text.append(i == some.size() - 1 ? " and " : ", ");
+            }
+            text.append(all.indexOf(some.get(i)) + 1);
+        }
         return text.toString();
     }
 
@@ -553,7 +587,8 @@ final class Container {
     Container with(ContainerFinding finding) {
         List<ContainerFinding> all = new ArrayList<>(findings);
         all.add(finding);
-        return new Container(attachments, all, facturX, pdfa, invoice, esj, supplement);
+        return new Container(attachments, duplicates, all, facturX, pdfa, invoice, esj,
+                supplement);
     }
 
     /**
@@ -564,8 +599,8 @@ final class Container {
      * @return a container carrying it
      */
     private Container withEsj(Esj replaced) {
-        return new Container(attachments, findings, facturX, pdfa, invoice, replaced,
-                supplement);
+        return new Container(attachments, duplicates, findings, facturX, pdfa, invoice,
+                replaced, supplement);
     }
 
     /**
@@ -746,8 +781,38 @@ final class Container {
      * @return the line, with everything the document chose escaped
      */
     static String describe(LocatedAttachment attachment) {
+        return named(attachment) + outsideTheTree(attachment.file());
+    }
+
+    /** Returns an attachment's name, what its bytes are and the size it declares. */
+    private static String named(LocatedAttachment attachment) {
         return ValueText.quoted(attachment.name()) + " (" + attachment.kind().describe()
                 + ", " + size(attachment.file()) + ")";
+    }
+
+    /**
+     * Says where an attachment the embedded files name tree does not list is referred to
+     * from, and says nothing for one it lists.
+     *
+     * <p>A hybrid invoice lists its invoice in the tree, and so does every file this tool
+     * writes, so the ordinary line is unchanged; an attachment a page refers to, or only an
+     * associated files array, is not where a reader of the tree looks, and a line that did
+     * not say so would describe it as if it were.
+     *
+     * @param file the attachment
+     * @return the suffix, empty for an attachment the tree lists
+     */
+    static String outsideTheTree(EmbeddedFile file) {
+        if (file.inNameTree()) {
+            return "";
+        }
+        List<String> places = file.references().stream()
+                .map(EmbeddedFile.Reference::describe)
+                .distinct()
+                .toList();
+        int shown = Math.min(3, places.size());
+        return ", not in the name tree: " + String.join(", ", places.subList(0, shown))
+                + (places.size() > shown ? " and " + (places.size() - shown) + " more" : "");
     }
 
     /**
@@ -775,14 +840,49 @@ final class Container {
      */
     static String detail(LocatedAttachment attachment) {
         EmbeddedFile file = attachment.file();
-        return describe(attachment)
+        return named(attachment)
                 + ", " + file.declaredMediaType()
                         .map(type -> "media type " + ValueText.quoted(type))
                         .orElse("no media type declared")
                 + ", " + file.associatedRelationship()
                         .map(value -> "AFRelationship " + ValueText.quoted(value))
                         .orElse("no AFRelationship")
-                + (file.associated() ? ", in /AF" : ", not in /AF");
+                + (file.associated() ? ", in /AF" : ", not in /AF")
+                + outsideTheTree(file);
+    }
+
+    /**
+     * Returns every attachment of the container as one numbered line with everything the
+     * container says about it, as {@code esj extract --list} and {@code esj inspect} print
+     * them.
+     *
+     * <p>An attachment the embedded files name tree lists under a key it lists another
+     * attachment under says so on its line: the key is the name a reader looks it up by,
+     * and a listing that showed two lines of one name without saying that the tree gives
+     * that name to both would leave its reader to find out which one a reader is handed.
+     *
+     * @return the lines, indented, one per attachment
+     */
+    List<String> listing() {
+        List<String> lines = new ArrayList<>();
+        for (int i = 0; i < attachments.size(); i++) {
+            LocatedAttachment attachment = attachments.get(i);
+            StringBuilder line = new StringBuilder("  ").append(i + 1).append("  ")
+                    .append(detail(attachment));
+            for (InvoiceAttachments.DuplicateName duplicate : duplicates) {
+                if (!duplicate.attachments().contains(attachment)) {
+                    continue;
+                }
+                line.append(", one of ").append(duplicate.attachments().size())
+                        .append(duplicate.source()
+                                == InvoiceAttachments.DuplicateName.Source.NAME_TREE_KEY
+                                ? " files the name tree lists under "
+                                : " files the file specification holds that is named ")
+                        .append(ValueText.quoted(duplicate.name()));
+            }
+            lines.add(line.toString());
+        }
+        return lines;
     }
 
     /**

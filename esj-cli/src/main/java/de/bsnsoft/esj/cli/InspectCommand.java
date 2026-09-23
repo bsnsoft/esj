@@ -5,7 +5,6 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.pdf.FacturXProfile;
-import de.bsnsoft.esj.pdf.LocatedAttachment;
 import de.bsnsoft.esj.pdf.PdfaIdentification;
 import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.PackException;
@@ -241,10 +240,7 @@ final class InspectCommand implements Callable<Integer> {
                 .orElse("none declared"));
         line("Factur-X profile", profile.orElse(ABSENT));
         line("Attachments", String.valueOf(pdf.attachments().size()));
-        int ordinal = 1;
-        for (LocatedAttachment attachment : pdf.attachments()) {
-            console.line("  " + ordinal++ + "  " + Container.detail(attachment));
-        }
+        pdf.listing().forEach(console::line);
     }
 
     /**

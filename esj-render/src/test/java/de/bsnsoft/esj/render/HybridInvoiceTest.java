@@ -14,6 +14,7 @@ import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.json.EsjWriter;
+import de.bsnsoft.esj.pdf.ContainerChecks;
 import de.bsnsoft.esj.pdf.ContainerFinding;
 import de.bsnsoft.esj.pdf.EmbedOptions;
 import de.bsnsoft.esj.pdf.EmbedResult;
@@ -25,6 +26,7 @@ import de.bsnsoft.esj.pdf.HybridFlavour;
 import de.bsnsoft.esj.pdf.PdfContainer;
 import de.bsnsoft.esj.pdf.EmbeddedFile;
 import de.bsnsoft.esj.pdf.PdfImportResult;
+import de.bsnsoft.esj.pdf.InvoiceAttachments;
 import de.bsnsoft.esj.pdf.PdfInvoiceImporter;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.io.ByteArrayInputStream;
@@ -111,6 +113,31 @@ class HybridInvoiceTest {
         assertPdfa(instance, hybrid);
         assertReadsBack(instance, document, hybrid);
         assertEsjAttachment(instance, document, hybrid);
+        assertEveryFileOnceUnderOneName(instance, hybrid);
+    }
+
+    /**
+     * What this project writes gives every file one name and lists every file in the name
+     * tree: the reader that walks every place a file can be referred from — the tree, the
+     * associated files arrays, the pages — finds one candidate, no name that leads to two
+     * files and nothing outside the tree, so the container checks have nothing to say about
+     * the embedded files.
+     */
+    private static void assertEveryFileOnceUnderOneName(String what, byte[] hybrid) {
+        try (PdfContainer container = PdfContainer.open(hybrid)) {
+            InvoiceAttachments located = InvoiceAttachments.locate(container);
+            assertEquals(List.of(), located.duplicateNames(), what + ": names of two files");
+            assertEquals(1, located.candidates().size(), what + ": the one invoice");
+            assertTrue(located.all().stream().allMatch(file -> file.file().inNameTree()),
+                    what + ": every file is in the name tree");
+            List<String> embedded = ContainerChecks.run(container, located).stream()
+                    .filter(finding -> finding.category()
+                            == ContainerFinding.Category.PDF_EMBEDDED
+                            || finding.severity() == ContainerFinding.Severity.ERROR)
+                    .map(finding -> finding.code() + ": " + finding.message())
+                    .toList();
+            assertEquals(List.of(), embedded, what + ": findings about the embedded files");
+        }
     }
 
     /**

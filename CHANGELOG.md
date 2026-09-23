@@ -34,6 +34,9 @@ still change; a change to it is named here under *Format*.
   page under a carry-over line: the room for that line is asked for only where the lines go over.
 - The footer of the PDF validation report no longer runs into the page count for a long input
   path: the path is shortened in its middle, keeping its beginning and its file name.
+- A hybrid PDF with two embedded files under one name is refused instead of validated on the one
+  a map kept: both are listed, the name is reported (`PDF-EMBEDDED-DUPLICATE-NAME`), and files a
+  page refers to count as attachments too ([`docs/pdf-input.md`](docs/pdf-input.md#where-the-invoice-may-lie-and-what-counts-as-one)).
 
 ## [0.9.1] — 2026-09-22
 

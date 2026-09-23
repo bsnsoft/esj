@@ -15,8 +15,9 @@ import java.util.Set;
  *
  * <p>These are structural checks and their scope is stated rather than implied. What is
  * checked is the object structure of the file, the catalog's associated files array, the
- * embedded file dictionary, the XMP packet and its Factur-X extension schema, and whether
- * what those three say about the attachment agrees with the attachment. What is <em>not</em>
+ * embedded file dictionary, the names and places the file refers to its embedded files
+ * from, the XMP packet and its Factur-X extension schema, and whether what those say about
+ * the attachment agrees with the attachment. What is <em>not</em>
  * checked is PDF/A conformance: a file that declares PDF/A-3B is reported as declaring it,
  * and validating that declaration means checking fonts, colour spaces and transparency,
  * which is a different tool's work and is not done here.
@@ -136,6 +137,8 @@ public final class ContainerChecks {
                 : Optional.empty();
         invoice.ifPresent(attachment -> associatedFile(attachment, findings));
         xmp(container, invoice, findings);
+        duplicateNames(located, findings);
+        outsideTheTree(located, findings);
         several(located, findings);
         severalEsjDocuments(located, findings);
         labelledButNotAnEsjDocument(located, findings);
@@ -143,6 +146,124 @@ public final class ContainerChecks {
             embedded(attachment, findings, attachment == boundNotReported);
         }
         return List.copyOf(findings);
+    }
+
+    /**
+     * Says that the embedded files name tree lists two different files under one name.
+     *
+     * <p>A name tree maps a key to one file, and a reader looks a file up by its key. A
+     * tree that lists two files under one key is read differently by different readers: a
+     * reader that loads it into a map keeps one entry and loses the other without a
+     * trace, and a reader that walks it takes the first. A consumer that validates with
+     * one reader and books with another may therefore book a file nobody validated. That
+     * is a defect of the container whichever of the files is the invoice and whether or
+     * not a caller named one, so it is an error: {@link InvoiceAttachments#single()} has
+     * already refused to choose where one of the files could be the invoice, and where a
+     * caller chose by position this finding keeps the container from passing.
+     *
+     * <p>Every entry is named with its position, which is what {@code --attachment-index}
+     * takes, the object number of its stream and the size it declares, because the name
+     * is the one thing that does not tell them apart.
+     */
+    private static void duplicateNames(InvoiceAttachments located,
+                                       List<ContainerFinding> findings) {
+        for (InvoiceAttachments.DuplicateName duplicate : located.duplicateNames()) {
+            List<LocatedAttachment> sharing = duplicate.attachments();
+            StringBuilder text = new StringBuilder();
+            if (duplicate.source() == InvoiceAttachments.DuplicateName.Source.NAME_TREE_KEY) {
+                text.append("the embedded files name tree lists ").append(sharing.size())
+                        .append(" different files under the name ")
+                        .append(Messages.quoted(duplicate.name()))
+                        .append(", so a reader that looks the name up is handed one of them"
+                                + " and which one depends on the reader:");
+            } else {
+                text.append("the file specification ")
+                        .append(Messages.quoted(duplicate.name()))
+                        .append(duplicate.objectNumber().isPresent()
+                                ? " (object " + duplicate.objectNumber().getAsLong() + ")"
+                                : "")
+                        .append(" holds ").append(sharing.size())
+                        .append(" different files under the entries ")
+                        .append(String.join(", ", duplicate.entries().stream()
+                                .map(entry -> "/" + entry).toList()))
+                        .append(" of its embedded file dictionary, so a reader that follows"
+                                + " it is handed one of them and which one depends on the"
+                                + " reader:");
+            }
+            for (LocatedAttachment attachment : sharing) {
+                text.append(' ').append(located.all().indexOf(attachment) + 1).append(' ')
+                        .append(identified(attachment));
+            }
+            findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
+                    "PDF-EMBEDDED-DUPLICATE-NAME", ContainerFinding.Severity.ERROR,
+                    text.toString()));
+        }
+    }
+
+    /**
+     * Says that an attachment that could be the invoice is not listed in the embedded
+     * files name tree.
+     *
+     * <p>The tree is where a reader of a hybrid invoice looks the invoice up, and a hybrid
+     * invoice lists its invoice there. An attachment a page refers to, or only the
+     * associated files array, is still an attachment of the file — a viewer shows it and a
+     * reader that collects attachments collects it — and it is counted and read like any
+     * other; this finding is what keeps its place from going unsaid. It is a warning: a
+     * reader that looks in the tree and finds nothing has not been told something false,
+     * and a second invoice outside the tree is already a second candidate that
+     * {@link InvoiceAttachments#single()} refuses to choose from.
+     */
+    private static void outsideTheTree(InvoiceAttachments located,
+                                       List<ContainerFinding> findings) {
+        for (LocatedAttachment attachment : located.candidates()) {
+            EmbeddedFile file = attachment.file();
+            if (file.inNameTree()) {
+                continue;
+            }
+            findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
+                    "PDF-EMBEDDED-NOT-IN-TREE", ContainerFinding.Severity.WARNING,
+                    "the attachment " + (located.all().indexOf(attachment) + 1) + " "
+                            + identified(attachment) + " could be the invoice and the"
+                            + " embedded files name tree does not list it; it is referred to"
+                            + " from " + places(file) + " only, so a reader that looks for"
+                            + " the invoice in the tree does not see it"));
+        }
+    }
+
+    /**
+     * Returns the places that refer to an attachment in words, at most three of them and
+     * the count of the rest.
+     *
+     * @param file the attachment
+     * @return the places, such as {@code a file attachment annotation on page 1}
+     */
+    static String places(EmbeddedFile file) {
+        List<String> described = file.references().stream()
+                .map(EmbeddedFile.Reference::describe)
+                .distinct()
+                .toList();
+        int shown = Math.min(3, described.size());
+        String text = String.join(", ", described.subList(0, shown));
+        return described.size() > shown
+                ? text + " and " + (described.size() - shown) + " more"
+                : text;
+    }
+
+    /**
+     * Returns an attachment as a finding names it where its name does not tell it apart:
+     * its name, what its bytes are, the object number of its stream and the size it
+     * declares.
+     */
+    private static String identified(LocatedAttachment attachment) {
+        EmbeddedFile file = attachment.file();
+        return Messages.quoted(file.name()) + " (" + attachment.kind().describe()
+                + (file.objectNumber().isPresent()
+                        ? ", object " + file.objectNumber().getAsLong()
+                        : ", no embedded file stream")
+                + (file.declaredSize().isPresent()
+                        ? ", " + file.declaredSize().getAsLong() + " bytes declared"
+                        : ", no size declared")
+                + ")";
     }
 
     /**

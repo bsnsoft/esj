@@ -16,6 +16,9 @@ package de.bsnsoft.esj.pdf;
  *       have to lose or gain features this module does not touch;</li>
  *   <li>the file already carries an attachment that could be the electronic invoice, so
  *       embedding a second one would produce a container a reader has to choose from;</li>
+ *   <li>the embedded files name tree has children, or lists two files under one name:
+ *       the tree is written back as one node that maps a name to one file, so a file it
+ *       carried could be lost;</li>
  *   <li>the XMP packet is not one the Factur-X extension schema can be merged into;</li>
  *   <li>the invoice does not carry the specification identifier of the profile the caller
  *       asked for, so the container and the invoice would say two different things.</li>
