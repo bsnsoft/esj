@@ -72,10 +72,10 @@ often and of what type are facts of one registry per edition ([`model/README.md`
 
 ## Quick start
 
-`brew install bsnsoft/tap/esj` on macOS and Linux, or an archive of the
-[release](https://github.com/bsnsoft/esj/releases): a native executable needing no Java, a Java 25
-runtime image, or the jar ([`docs/install.md`](docs/install.md)). From source, three lines build
-the same executable:
+`brew install bsnsoft/tap/esj` on macOS and Linux, `docker pull ghcr.io/bsnsoft/esj` from 0.9.2,
+or an archive of the [release](https://github.com/bsnsoft/esj/releases): a native executable
+needing no Java, a Java 25 runtime image, or the jar ([`docs/install.md`](docs/install.md)). From
+source, three lines build the same executable:
 
 ```sh
 mvn -B verify                                 # the self-contained jar, on JDK 17, 21 or 25

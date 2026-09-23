@@ -3,8 +3,9 @@
 *Part of [EN16931 Semantic JSON](../README.md).*
 
 `brew install bsnsoft/tap/esj` installs the native executable on macOS (Apple silicon) and Linux;
-every artefact below is attached to the [release](https://github.com/bsnsoft/esj/releases) with
-its SHA-256. Four artefacts, one tool: each of them answers exactly as the self-contained jar does, which
+the archives below are attached to the [release](https://github.com/bsnsoft/esj/releases) with
+their SHA-256, and from 0.9.2 on the container image is published at `ghcr.io/bsnsoft/esj`. Four
+artefacts, one tool: each of them answers exactly as the self-contained jar does, which
 `dist/smoke.sh` checks by running every command of the tool with both and comparing what they
 write, the verdict they reach and the code they leave with.
 
@@ -13,7 +14,7 @@ write, the verdict they reach and the code they leave with.
 | **Native executable** (recommended) | nothing | 68 MB | **0.12 s** | 110 MiB |
 | Runtime image | nothing | 119 MB | 0.50 s | 203 MiB |
 | Self-contained jar | a JRE 17 or newer | 13 MB | 1.41 s | 296 MiB |
-| Container image | a container runtime | 575 MB | 1.04 s | — |
+| Container image | a container runtime | 579 MB | 1.04 s | — |
 
 Measured on the machine and with the method of
 [`deployment-measurements.md`](deployment-measurements.md#start-up), at a one-minute load
@@ -74,16 +75,24 @@ options of the process boundary, and the same `ESJ_JAVA_OPTS`, as the one in a c
 ## Container image
 
 ```console
-$ dist/package.sh docker
+$ docker pull ghcr.io/bsnsoft/esj:latest
 $ docker run --rm -i --memory 1g --network none -v "$PWD:/work:ro" -w /work \
-      esj:latest validate invoice.xml
+      ghcr.io/bsnsoft/esj:latest validate invoice.xml
 ```
 
-The image is published nowhere, so it is built: `dist/package.sh docker` tags it `esj:<version>`
-and `esj:latest`. Java 25, an unprivileged account, the ahead-of-time cache, and `ESJ_MAX_HEAP`
-for the ceiling (512 MiB by default). [`dist/compose.yaml`](../dist/compose.yaml) is the same
-thing as a service: one container run per document, a memory limit above the heap, a read-only
-mount and no network.
+Every release from 0.9.2 on publishes the image at `ghcr.io/bsnsoft/esj`, for linux/amd64 and
+linux/arm64. `latest` follows the newest release; a deployment pins the version it was tested
+with, `ghcr.io/bsnsoft/esj:<version>`. Java 25, an unprivileged account, the ahead-of-time cache
+recorded on the architecture it runs on, and `ESJ_MAX_HEAP` for the ceiling (512 MiB by default).
+
+```console
+$ dist/package.sh docker              # the image of a checkout: esj:<version> and esj:latest
+```
+
+The same image, built from the checkout the script runs in and for the platform of the Docker
+host; `ESJ_IMAGE` gives it another name. [`dist/compose.yaml`](../dist/compose.yaml) runs it as a
+service: one container run per document, a memory limit above the heap, a read-only mount and no
+network.
 
 ## Homebrew
 
@@ -104,7 +113,7 @@ $ dist/package.sh native smoke        # one of them, and the comparison with the
 | `runtime-image` | a runtime image with the cache | JDK 25 (`ESJ_JDK25_HOME`) |
 | `native` | the executable of this machine | GraalVM 25 (`ESJ_GRAALVM_HOME`; `dist/graalvm.sh <dir>` fetches the pinned build the releases use) |
 | `linux-native` | the Linux executable | Docker |
-| `docker` | the container image | Docker |
+| `docker` | the container image, for the platform of the Docker host | Docker |
 | `zip` | the archives of a release | `zip` |
 | `smoke` | nothing; compares every artefact with the jar | — |
 
@@ -141,6 +150,6 @@ the subset, and `dist/package.sh smoke` runs it against every artefact that has 
 
 Beside each archive a `.sha256` file with its checksum, written by `dist/package.sh zip`. A
 tag builds all three on Linux (x64 and arm64) and macOS (arm64) and attaches them, with their
-checksums, to its release; nothing is published to a registry. A Windows artefact is not
-built: `jpackage` and `native-image` produce one from the same jar on a Windows runner, and no
-one has run it.
+checksums, to its release; from 0.9.2 on it also pushes the container image, for linux/amd64
+and linux/arm64, to `ghcr.io/bsnsoft/esj`. A Windows artefact is not built: `jpackage` and
+`native-image` produce one from the same jar on a Windows runner, and no one has run it.

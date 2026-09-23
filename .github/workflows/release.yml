@@ -1,14 +1,16 @@
 name: Release
 
-# A tag is built, packaged and attached to its release. Nothing is published to
-# a registry from here.
+# A tag is built, packaged and attached to its release, and its container image
+# is pushed to the GitHub container registry as ghcr.io/bsnsoft/esj. The
+# libraries go to Maven Central from publish.yml.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
 
-# Third-party actions are pinned to a commit, and only the job that attaches the
-# archives may write the repository.
+# Third-party actions are pinned to a commit. Only the job that attaches the
+# archives may write the repository, and only the two jobs that push the
+# container image may write packages.
 permissions:
   contents: read
 
@@ -82,3 +84,117 @@ jobs:
             archives/*/*.zip.sha256
           fail_on_unmatched_files: true
           generate_release_notes: true
+
+  # The container image of dist/Dockerfile, built on each Linux runner for that
+  # runner's own processor: the training run inside the Dockerfile runs at native
+  # speed and records the ahead-of-time cache on the architecture it serves. It
+  # runs beside the release job, once the tests of this commit have passed.
+  image:
+    name: Container image ${{ matrix.platform }}
+    needs: artefacts
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    env:
+      ESJ_IMAGE: ghcr.io/bsnsoft/esj
+      ESJ_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 25 (reference runtime)
+        uses: actions/setup-java@v6
+        with:
+          distribution: corretto
+          java-version: '25'
+          cache: maven
+
+      # Without the tests: they ran on this commit in the artefacts job.
+      - name: Build the jar
+        run: mvn -B -q -DskipTests package -pl esj-cli -am
+
+      - name: Build the image
+        run: dist/package.sh docker
+
+      # The image is the one artefact built here, so it is what the smoke test
+      # compares with the jar; a case that differs fails the job.
+      - name: Compare the image with the jar
+        run: dist/package.sh smoke
+
+      - name: Say that nothing is pushed
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: echo "::notice::$GITHUB_REF is not a v* tag; the image was built and compared with the jar, and nothing is pushed"
+
+      - name: Log in to the GitHub container registry
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # One tag per platform, named after it, so that the manifest job finds the
+      # two images by name and needs no output of this matrix. The image carries
+      # the version of the jar, which has to be the one the tag names.
+      - name: Push the image of this platform
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          built=$(java -jar esj-cli/target/esj.jar --version | awk 'NR == 1 { print $2 }')
+          if [ "$built" != "$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not name the version of the jar, $built"
+            exit 1
+          fi
+          tag=$ESJ_IMAGE:$version-$(echo "$ESJ_PLATFORM" | tr / -)
+          docker tag "$ESJ_IMAGE:$version" "$tag"
+          docker push "$tag"
+
+  # The tags a reader pulls: one manifest list over the two images, as the
+  # version and as latest. It is made only when both platforms were pushed.
+  manifest:
+    name: Multi-platform image
+    needs: image
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    env:
+      ESJ_IMAGE: ghcr.io/bsnsoft/esj
+    steps:
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Join the two platforms under the version and latest
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          docker buildx imagetools create \
+            --tag "$ESJ_IMAGE:$version" --tag "$ESJ_IMAGE:latest" \
+            "$ESJ_IMAGE:$version-linux-amd64" "$ESJ_IMAGE:$version-linux-arm64"
+
+      - name: Check that both tags list both platforms
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          for tag in "$version" latest; do
+            docker buildx imagetools inspect "$ESJ_IMAGE:$tag"
+            platforms=$(docker buildx imagetools inspect --raw "$ESJ_IMAGE:$tag" |
+              jq -r '.manifests[].platform | "\(.os)/\(.architecture)"')
+            for platform in linux/amd64 linux/arm64; do
+              if ! echo "$platforms" | grep -qx "$platform"; then
+                echo "::error::$ESJ_IMAGE:$tag does not list $platform"
+                exit 1
+              fi
+            done
+          done

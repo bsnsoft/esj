@@ -6,6 +6,12 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.2] — unreleased
 
+### Added
+
+- The container image is published with every release at `ghcr.io/bsnsoft/esj`, for linux/amd64
+  and linux/arm64, tagged with the version and `latest`
+  ([`docs/install.md`](docs/install.md#container-image)).
+
 ## [0.9.1] — 2026-09-22
 
 ### Fixed

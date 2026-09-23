@@ -216,7 +216,8 @@
           with blocks it quotes from the README, docs/getting-started.md, docs/java-api.md,
           docs/b2c.md, docs/storage.md, docs/bindings-ts.md and docs/bindings-csharp.md,
           which that test compares them with so that an answer cannot outlive the API it
-          shows.
+          shows. The image docs/install.md and the README tell a reader to pull is held
+          against the one .github/workflows/release.yml pushes.
         -->
         <directory>${project.basedir}/..</directory>
         <includes>
@@ -236,6 +237,7 @@
           <include>docs/bindings-csharp.md</include>
           <include>docs/homebrew/esj.rb</include>
           <include>CHANGELOG.md</include>
+          <include>.github/workflows/release.yml</include>
         </includes>
       </testResource>
     </testResources>

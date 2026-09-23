@@ -59,6 +59,14 @@ class DistributionTest {
     /** An image tag printed on {@code docs/install.md}. */
     private static final Pattern TAG_ON_PAGE = Pattern.compile("esj:[0-9A-Za-z.<>+_-]+");
 
+    /** The image the release workflow pushes, as each of its jobs names it. */
+    private static final Pattern PUSHED_IMAGE =
+            Pattern.compile("^ +ESJ_IMAGE: (\\S+)$", Pattern.MULTILINE);
+
+    /** An image of the GitHub container registry, wherever a page names one. */
+    private static final Pattern REGISTRY_IMAGE =
+            Pattern.compile("ghcr\\.io/[a-z0-9-]+/[a-z0-9._-]*[a-z0-9]");
+
     /** The fence of the install path of the README. */
     private static final String SHELL = "```sh";
 
@@ -85,10 +93,10 @@ class DistributionTest {
      * <p>The console blocks of that page are the one set of transcripts no test runs — they
      * name release archives and files that exist only after a packaging run. What can be
      * held against the scripts is what they name: an archive or a directory the page tells
-     * the reader to unzip, and the tag of an image the page tells them to run. A tag that
-     * carries a version is one nobody can run without knowing which version was built, so
-     * the page prints {@code esj:latest}, and the section that runs it names the target
-     * that builds it.
+     * the reader to unzip, and the tag of an image the page tells them to run. A tag with a
+     * version number in it is stale after the next release, so the page prints
+     * {@code latest} and {@code <version>}, the two tags the packaging writes and a release
+     * publishes, and it names the target that builds the image of a checkout.
      */
     @Test
     void everyArtefactAndTagPrintedOnTheInstallPageIsOneThePackagingWrites() {
@@ -108,13 +116,47 @@ class DistributionTest {
         Matcher tags = TAG_ON_PAGE.matcher(page);
         while (tags.find()) {
             assertTrue(List.of("esj:latest", "esj:<version>").contains(tags.group()),
-                    "docs/install.md prints " + tags.group() + "; the tag a reader can run"
-                            + " without knowing the version is esj:latest");
+                    "docs/install.md prints " + tags.group() + "; the tags a reader can use"
+                            + " without knowing the version are latest and <version>");
         }
-        assertTrue(script.contains("-t esj:latest"), "dist/package.sh tags the image esj:latest");
+        assertTrue(script.contains("image_name=${ESJ_IMAGE:-esj}")
+                        && script.contains("-t \"$image_name:latest\""),
+                "dist/package.sh names the image esj unless ESJ_IMAGE names another, and tags"
+                        + " it latest");
         assertTrue(page.contains("$ dist/package.sh docker"),
-                "docs/install.md names the target that builds the container image before it"
-                        + " prints a run of it");
+                "docs/install.md names the target that builds the container image of a checkout");
+    }
+
+    /**
+     * The image the install page and the README tell a reader to pull is the one the release
+     * pushes.
+     *
+     * <p>The release workflow names that image in {@code ESJ_IMAGE}, once for the job that
+     * pushes each platform and once for the job that joins them. A page that names another
+     * one sends the reader to a package that does not exist, and no run of the tool would
+     * notice.
+     */
+    @Test
+    void theImageThePagesPullIsTheOneTheReleasePushes() {
+        Set<String> pushed = new TreeSet<>();
+        Matcher named = PUSHED_IMAGE.matcher(Fixtures.text(".github/workflows/release.yml"));
+        while (named.find()) {
+            pushed.add(named.group(1));
+        }
+        assertEquals(1, pushed.size(), "the jobs of release.yml push one image: " + pushed);
+        String image = pushed.iterator().next();
+        assertTrue(Fixtures.text("docs/install.md").contains("$ docker pull " + image + ":latest"),
+                "docs/install.md pulls " + image + ":latest");
+        for (String page : List.of("docs/install.md", "README.md")) {
+            Matcher found = REGISTRY_IMAGE.matcher(Fixtures.text(page));
+            int images = 0;
+            while (found.find()) {
+                images++;
+                assertEquals(image, found.group(),
+                        page + " names an image the release does not push");
+            }
+            assertTrue(images > 0, page + " names the image a release publishes");
+        }
     }
 
     /**
