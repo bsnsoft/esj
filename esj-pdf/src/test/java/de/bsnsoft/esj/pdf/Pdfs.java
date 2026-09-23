@@ -14,6 +14,7 @@ import java.util.zip.Deflater;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -654,8 +655,39 @@ final class Pdfs {
         private String userPassword;
         private boolean nestedNameTree;
         private boolean nameTreeKeysAreNames;
+        private List<String> keys;
+        private int[] leaves;
 
         private Builder() {
+        }
+
+        /**
+         * Keys the entries of the name tree as the caller spells them, one key per
+         * attachment in the order they were attached, a key given twice included.
+         *
+         * <p>The entries are written into the {@code /Names} array one after the other
+         * rather than through the map the library offers, which is the one way to write a
+         * tree that lists two files under one key: a map has one value per key.
+         *
+         * @param keys the keys, as many as there are attachments
+         * @return this builder
+         */
+        Builder keys(String... keys) {
+            this.keys = List.of(keys);
+            return this;
+        }
+
+        /**
+         * Splits the entries of the name tree across child nodes of an empty root, the
+         * first {@code sizes[0]} entries into the first child and so on, so that a key can
+         * be listed once in one node and once in another.
+         *
+         * @param sizes how many entries each child holds
+         * @return this builder
+         */
+        Builder leaves(int... sizes) {
+            this.leaves = sizes.clone();
+            return this;
         }
 
         Builder attach(Attachment attachment) {
@@ -804,6 +836,10 @@ final class Pdfs {
                     associated.add(specification.getCOSObject());
                 }
             }
+            if (keys != null || leaves != null) {
+                writeRaw(document, new ArrayList<>(tree.values()), associated);
+                return;
+            }
             PDEmbeddedFilesNameTreeNode node = new PDEmbeddedFilesNameTreeNode();
             node.setNames(tree);
             if (nestedNameTree) {
@@ -819,6 +855,55 @@ final class Pdfs {
                 document.getDocumentCatalog().getCOSObject()
                         .setItem(COSName.getPDFName("AF"), associated);
             }
+        }
+
+        /**
+         * Writes the name tree entry by entry, with the keys the caller gave and in the
+         * nodes the caller asked for, and the associated files array beside it.
+         */
+        private void writeRaw(PDDocument document,
+                              List<PDComplexFileSpecification> specifications,
+                              COSArray associated) {
+            List<String> written = keys != null ? keys
+                    : attachments.stream().map(Attachment::name).toList();
+            if (written.size() != specifications.size()) {
+                throw new IllegalStateException("one key per attachment");
+            }
+            COSDictionary root = new COSDictionary();
+            if (leaves == null) {
+                root.setItem(COSName.NAMES, entries(written, specifications, 0,
+                        specifications.size()));
+            } else {
+                COSArray kids = new COSArray();
+                int from = 0;
+                for (int size : leaves) {
+                    COSDictionary leaf = new COSDictionary();
+                    leaf.setItem(COSName.NAMES, entries(written, specifications, from,
+                            from + size));
+                    kids.add(leaf);
+                    from += size;
+                }
+                root.setItem(COSName.KIDS, kids);
+            }
+            COSDictionary names = new COSDictionary();
+            names.setItem(COSName.EMBEDDED_FILES, root);
+            document.getDocumentCatalog().getCOSObject().setItem(COSName.NAMES, names);
+            if (associated.size() > 0) {
+                document.getDocumentCatalog().getCOSObject()
+                        .setItem(COSName.getPDFName("AF"), associated);
+            }
+        }
+
+        private static COSArray entries(List<String> keys,
+                                        List<PDComplexFileSpecification> specifications,
+                                        int from,
+                                        int to) {
+            COSArray array = new COSArray();
+            for (int i = from; i < to; i++) {
+                array.add(new COSString(keys.get(i)));
+                array.add(specifications.get(i).getCOSObject());
+            }
+            return array;
         }
     }
 }

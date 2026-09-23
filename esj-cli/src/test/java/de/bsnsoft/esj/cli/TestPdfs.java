@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -23,6 +25,8 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecifica
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachment;
 
 /**
  * Builds the hybrid invoices the tests of this module hand to the tool.
@@ -299,8 +303,48 @@ final class TestPdfs {
         private final List<Attachment> attachments = new ArrayList<>();
         private String xmp;
         private String userPassword;
+        private List<String> keys;
+        private int[] leaves;
+        private final List<Attachment> annotations = new ArrayList<>();
+        private final List<Attachment> onThePage = new ArrayList<>();
 
         private Builder() {
+        }
+
+        /**
+         * Puts an attachment into a file attachment annotation of the first page, and
+         * nowhere else: neither the name tree nor the document's associated files array
+         * refers to it.
+         */
+        Builder annotate(Attachment attachment) {
+            annotations.add(attachment);
+            return this;
+        }
+
+        /**
+         * Puts an attachment into the associated files array of the first page, and
+         * nowhere else.
+         */
+        Builder associateWithThePage(Attachment attachment) {
+            onThePage.add(attachment);
+            return this;
+        }
+
+        /**
+         * Keys the entries of the name tree as the caller spells them, one key per
+         * attachment, a key given twice included; the entries are written into the array
+         * one after the other, because a map, which is what the library offers, has one
+         * value per key.
+         */
+        Builder keys(String... keys) {
+            this.keys = List.of(keys);
+            return this;
+        }
+
+        /** Splits the entries of the name tree across children of an empty root. */
+        Builder leaves(int... sizes) {
+            this.leaves = sizes.clone();
+            return this;
         }
 
         Builder attach(Attachment attachment) {
@@ -345,6 +389,7 @@ final class TestPdfs {
             try (PDDocument document = new PDDocument()) {
                 document.addPage(new PDPage(PDRectangle.A4));
                 write(document);
+                page(document);
                 if (xmp != null) {
                     PDMetadata metadata = new PDMetadata(document);
                     metadata.importXMPMetadata(xmp.getBytes(StandardCharsets.UTF_8));
@@ -360,6 +405,50 @@ final class TestPdfs {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
+        }
+
+        /** Writes what the first page refers to: its annotations and its associated files. */
+        private void page(PDDocument document) throws IOException {
+            PDPage page = document.getPage(0);
+            if (!annotations.isEmpty()) {
+                List<PDAnnotation> written = new ArrayList<>();
+                for (Attachment attachment : annotations) {
+                    PDAnnotationFileAttachment annotation = new PDAnnotationFileAttachment();
+                    annotation.setFile(specification(document, attachment));
+                    annotation.setRectangle(new PDRectangle(20, 20, 16, 16));
+                    written.add(annotation);
+                }
+                page.setAnnotations(written);
+            }
+            if (!onThePage.isEmpty()) {
+                COSArray array = new COSArray();
+                for (Attachment attachment : onThePage) {
+                    array.add(specification(document, attachment).getCOSObject());
+                }
+                page.getCOSObject().setItem(COSName.getPDFName("AF"), array);
+            }
+        }
+
+        /** Returns the file specification of an attachment, embedding its stream. */
+        private static PDComplexFileSpecification specification(PDDocument document,
+                                                                Attachment attachment)
+                throws IOException {
+            PDEmbeddedFile stream = stream(document, attachment);
+            if (attachment.mediaType() != null) {
+                stream.setSubtype(attachment.mediaType());
+            }
+            stream.setSize(attachment.declaredSize() == null
+                    ? attachment.content().length : attachment.declaredSize());
+            PDComplexFileSpecification specification = new PDComplexFileSpecification();
+            specification.setFile(attachment.name());
+            specification.setFileUnicode(attachment.name());
+            specification.setEmbeddedFile(stream);
+            specification.setEmbeddedFileUnicode(stream);
+            if (attachment.relationship() != null) {
+                specification.getCOSObject().setItem(COSName.getPDFName("AFRelationship"),
+                        COSName.getPDFName(attachment.relationship()));
+            }
+            return specification;
         }
 
         private void write(PDDocument document) throws IOException {
@@ -392,14 +481,55 @@ final class TestPdfs {
                     associated.add(specification.getCOSObject());
                 }
             }
-            PDEmbeddedFilesNameTreeNode node = new PDEmbeddedFilesNameTreeNode();
-            node.setNames(tree);
-            PDDocumentNameDictionary names =
-                    new PDDocumentNameDictionary(document.getDocumentCatalog());
-            names.setEmbeddedFiles(node);
-            document.getDocumentCatalog().setNames(names);
+            if (keys != null || leaves != null) {
+                raw(document, new ArrayList<>(tree.values()));
+            } else {
+                PDEmbeddedFilesNameTreeNode node = new PDEmbeddedFilesNameTreeNode();
+                node.setNames(tree);
+                PDDocumentNameDictionary names =
+                        new PDDocumentNameDictionary(document.getDocumentCatalog());
+                names.setEmbeddedFiles(node);
+                document.getDocumentCatalog().setNames(names);
+            }
             document.getDocumentCatalog().getCOSObject()
                     .setItem(COSName.getPDFName("AF"), associated);
+        }
+
+        /** Writes the name tree entry by entry, with the keys and the nodes asked for. */
+        private void raw(PDDocument document, List<PDComplexFileSpecification> specifications) {
+            List<String> written = keys != null ? keys
+                    : attachments.stream().map(Attachment::name).toList();
+            COSDictionary root = new COSDictionary();
+            if (leaves == null) {
+                root.setItem(COSName.NAMES, entries(written, specifications, 0,
+                        specifications.size()));
+            } else {
+                COSArray kids = new COSArray();
+                int from = 0;
+                for (int size : leaves) {
+                    COSDictionary leaf = new COSDictionary();
+                    leaf.setItem(COSName.NAMES, entries(written, specifications, from,
+                            from + size));
+                    kids.add(leaf);
+                    from += size;
+                }
+                root.setItem(COSName.KIDS, kids);
+            }
+            COSDictionary names = new COSDictionary();
+            names.setItem(COSName.EMBEDDED_FILES, root);
+            document.getDocumentCatalog().getCOSObject().setItem(COSName.NAMES, names);
+        }
+
+        private static COSArray entries(List<String> keys,
+                                        List<PDComplexFileSpecification> specifications,
+                                        int from,
+                                        int to) {
+            COSArray array = new COSArray();
+            for (int i = from; i < to; i++) {
+                array.add(new COSString(keys.get(i)));
+                array.add(specifications.get(i).getCOSObject());
+            }
+            return array;
         }
     }
 }

@@ -1,6 +1,5 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.pdf.LocatedAttachment;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -83,10 +82,7 @@ final class ExtractCommand implements Callable<Integer> {
         Container container = Container.list(input, console);
         console.line("Input:        " + input.name());
         console.line("Attachments:  " + container.attachments().size());
-        int ordinal = 1;
-        for (LocatedAttachment attachment : container.attachments()) {
-            console.line("  " + ordinal++ + "  " + Container.detail(attachment));
-        }
+        container.listing().forEach(console::line);
         return ExitCode.SUCCESS;
     }
 

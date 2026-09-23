@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -15,6 +16,10 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
  * bytes of the attachment itself (see {@link InvoiceAttachments}), and a claim that
  * disagrees with them is a finding rather than an instruction.
  *
+ * <p>An attachment is one embedded file stream, however many places of the file refer to
+ * it: two entries that name the same stream are one attachment, and two entries that name
+ * two streams are two attachments whatever they are called (see {@link PdfContainer}).
+ *
  * <p>The content is decoded on demand and never beyond the bound this container runs. A
  * caller that only wants to know what an attachment is asks {@link #head(int)}, which
  * decodes a window and no more.
@@ -26,6 +31,9 @@ public final class EmbeddedFile {
     private final long declaredSize;
     private final String associatedRelationship;
     private final boolean associated;
+    private final List<String> nameTreeKeys;
+    private final List<Reference> references;
+    private final long objectNumber;
     private final PDEmbeddedFile stream;
     private final PdfContainer container;
 
@@ -36,6 +44,9 @@ public final class EmbeddedFile {
                  long declaredSize,
                  String associatedRelationship,
                  boolean associated,
+                 List<String> nameTreeKeys,
+                 List<Reference> references,
+                 long objectNumber,
                  PDEmbeddedFile stream,
                  PdfContainer container) {
         this.name = Objects.requireNonNull(name, "name");
@@ -43,8 +54,105 @@ public final class EmbeddedFile {
         this.declaredSize = declaredSize;
         this.associatedRelationship = associatedRelationship;
         this.associated = associated;
+        this.nameTreeKeys = List.copyOf(Objects.requireNonNull(nameTreeKeys, "nameTreeKeys"));
+        this.references = List.copyOf(Objects.requireNonNull(references, "references"));
+        this.objectNumber = objectNumber;
         this.stream = stream;
         this.container = Objects.requireNonNull(container, "container");
+    }
+
+    /**
+     * A kind of place in a PDF that refers to an embedded file.
+     *
+     * <p>A file specification may be referred to from any of them, and a reader of a hybrid
+     * invoice may look in any of them: the name tree is where a reader looks a file up by
+     * its name, the associated files arrays are where the file says what a file is to the
+     * document or to a page, and an annotation is where a viewer shows a file on a page.
+     */
+    public enum Place {
+
+        /** An entry of the embedded files name tree of the document. */
+        NAME_TREE("the embedded files name tree"),
+
+        /** The associated files array of the document catalog. */
+        DOCUMENT_ASSOCIATED_FILES("the associated files array of the document"),
+
+        /** The associated files array of a page. */
+        PAGE_ASSOCIATED_FILES("the associated files array of a page"),
+
+        /** A file attachment annotation of a page, through its file specification. */
+        FILE_ATTACHMENT_ANNOTATION("a file attachment annotation"),
+
+        /** The associated files array of an annotation of a page. */
+        ANNOTATION_ASSOCIATED_FILES("the associated files array of an annotation");
+
+        private final String description;
+
+        Place(String description) {
+            this.description = description;
+        }
+
+        /**
+         * Returns the place in words, for a message.
+         *
+         * @return the description, such as {@code the embedded files name tree}
+         */
+        public String describe() {
+            return description;
+        }
+
+        /**
+         * Tells whether a place of this kind belongs to a page rather than to the
+         * document.
+         *
+         * @return {@code true} for the places on a page
+         */
+        public boolean onAPage() {
+            return this == PAGE_ASSOCIATED_FILES || this == FILE_ATTACHMENT_ANNOTATION
+                    || this == ANNOTATION_ASSOCIATED_FILES;
+        }
+    }
+
+    /**
+     * One place of the file that refers to an attachment.
+     *
+     * @param place what the place is
+     * @param page  the page the place belongs to, counted from one in the order of the
+     *              page tree, or {@code 0} for a place of the document
+     * @param entry the entry of the file specification's embedded file dictionary the
+     *              stream stands under — {@code F}, {@code UF}, {@code DOS}, {@code Mac} or
+     *              {@code Unix} — or empty where the file specification embeds nothing
+     */
+    public record Reference(Place place, int page, String entry) {
+
+        /**
+         * Checks the members.
+         *
+         * @param place what the place is
+         * @param page  the page the place belongs to, or {@code 0}
+         * @param entry the entry of the embedded file dictionary, or empty
+         * @throws NullPointerException     if {@code place} or {@code entry} is {@code null}
+         * @throws IllegalArgumentException if the page does not fit the place
+         */
+        public Reference {
+            Objects.requireNonNull(place, "place");
+            Objects.requireNonNull(entry, "entry");
+            if (place.onAPage() != (page > 0)) {
+                throw new IllegalArgumentException("a place on a page has a page number"
+                        + " and a place of the document has none");
+            }
+        }
+
+        /**
+         * Returns the place in words, for a message.
+         *
+         * @return the description, such as {@code a file attachment annotation on page 2}
+         */
+        public String describe() {
+            return place == Place.PAGE_ASSOCIATED_FILES
+                    ? "the associated files array of page " + page
+                    : place.describe() + (page > 0 ? " on page " + page : "");
+        }
     }
 
     /**
@@ -86,6 +194,10 @@ public final class EmbeddedFile {
      * Returns the {@code /AFRelationship} of the file specification: what the container
      * says this attachment is to the document it is attached to.
      *
+     * <p>Where several file specifications embed this attachment's stream, it is the one
+     * the catalog's {@code /AF} array lists, and the one met first where the array lists
+     * none of them.
+     *
      * @return the relationship as written, or an empty optional where there is none
      */
     public Optional<String> associatedRelationship() {
@@ -93,7 +205,8 @@ public final class EmbeddedFile {
     }
 
     /**
-     * Tells whether the catalog's {@code /AF} array refers to this attachment.
+     * Tells whether the catalog's {@code /AF} array refers to this attachment, through any
+     * of the file specifications that embed its stream.
      *
      * <p>A hybrid invoice has to say that the XML belongs to the document as a whole, and
      * that is what the array is for. An attachment that is only in the embedded files
@@ -104,6 +217,59 @@ public final class EmbeddedFile {
      */
     public boolean associated() {
         return associated;
+    }
+
+    /**
+     * Returns the keys under which the embedded files name tree lists this attachment, in
+     * the order a walk of the tree meets them.
+     *
+     * <p>The key is the name a reader that looks an attachment up in the tree looks it up
+     * by, and it need not be the name the file specification gives ({@link #name()}). A
+     * tree that lists two attachments under one key is a tree whose readers do not agree
+     * on what that name means: a reader that loads the tree into a map keeps one of the
+     * two, a reader that walks it takes the first. Both are listed here, and
+     * {@link ContainerChecks} reports the key.
+     *
+     * @return the keys, empty where the tree does not list this attachment at all
+     */
+    public List<String> nameTreeKeys() {
+        return nameTreeKeys;
+    }
+
+    /**
+     * Returns every place of the file that refers to this attachment, in the order the
+     * places were enumerated: the name tree, the associated files array of the document,
+     * then page by page the associated files array of the page and its annotations.
+     *
+     * @return the places, one entry per distinct place, never empty
+     */
+    public List<Reference> references() {
+        return references;
+    }
+
+    /**
+     * Tells whether the embedded files name tree lists this attachment.
+     *
+     * <p>The tree is where a reader that looks a file up by its name looks, and a hybrid
+     * invoice lists its invoice there. An attachment the tree does not list is referred to
+     * from somewhere else only, and a reader that looks for the invoice in the tree does
+     * not see it.
+     *
+     * @return {@code true} if the tree lists it under at least one key
+     */
+    public boolean inNameTree() {
+        return !nameTreeKeys.isEmpty();
+    }
+
+    /**
+     * Returns the object number of the embedded file stream, which is what tells two
+     * attachments apart that say the same thing about themselves.
+     *
+     * @return the object number, or an empty value where the attachment embeds no stream
+     *         or its stream is no numbered object of the file
+     */
+    public OptionalLong objectNumber() {
+        return objectNumber < 0 ? OptionalLong.empty() : OptionalLong.of(objectNumber);
     }
 
     /**

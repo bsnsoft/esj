@@ -116,6 +116,7 @@ command line. `EmbedRefusedException` says which of these it was:
 | the input already carries an attachment that could be the invoice | a container declares one invoice, and a second would leave the choice to whoever reads the file |
 | the input's packet already declares the Factur-X or ZUGFeRD properties, or a PDF/A extension schema of its own | a second set of the same properties gives the file two answers to every question |
 | the input's embedded files name tree has children | the tree is written as one node, and rewriting a tree this module has not walked whole could lose an attachment |
+| the input's embedded files name tree lists two files under one name | the tree is written as one node that maps a name to one file, so one of the two would be dropped |
 | the input's packet ends its RDF with something other than the literal `</rdf:RDF>` | the properties are inserted as text, and a packet this module cannot find the end of is one it must not rewrite |
 | the document's BT-24 is not the profile the options name | the container and the invoice would tell two consumers two different things |
 

@@ -2,9 +2,15 @@ package de.bsnsoft.esj.pdf;
 
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalLong;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,13 +46,67 @@ public final class InvoiceAttachments {
     private final List<LocatedAttachment> all;
     private final List<LocatedAttachment> invoices;
     private final List<LocatedAttachment> candidates;
+    private final List<DuplicateName> duplicates;
 
     private InvoiceAttachments(List<LocatedAttachment> all,
                                List<LocatedAttachment> invoices,
-                               List<LocatedAttachment> candidates) {
+                               List<LocatedAttachment> candidates,
+                               List<DuplicateName> duplicates) {
         this.all = List.copyOf(all);
         this.invoices = List.copyOf(invoices);
         this.candidates = List.copyOf(candidates);
+        this.duplicates = List.copyOf(duplicates);
+    }
+
+    /**
+     * A name the file gives more than one attachment, so that a reader that follows the
+     * name is handed one of them and which one depends on the reader.
+     *
+     * <p>There are two ways a file does that. The embedded files name tree lists two files
+     * under one key: a reader that loads the tree into a map keeps one of them, a reader
+     * that walks it takes the first. Or a file specification holds two streams under the
+     * entries of its embedded file dictionary: most readers take {@code /F}, some prefer
+     * {@code /UF}.
+     *
+     * @param source       which of the two it is
+     * @param name         the key, or the name the file specification gives
+     * @param objectNumber the object number of the file specification, for the second
+     *                     way; empty for a key, or for a specification written inline
+     * @param attachments  the attachments the name leads to, in the order they were
+     *                     enumerated
+     * @param entries      for the second way, the entry of the embedded file dictionary
+     *                     each attachment stands under, in the same order; empty for a key
+     */
+    public record DuplicateName(Source source, String name, OptionalLong objectNumber,
+                                List<LocatedAttachment> attachments, List<String> entries) {
+
+        /**
+         * Checks the members and copies the lists.
+         *
+         * @param source       which of the two it is
+         * @param name         the key, or the name the file specification gives
+         * @param objectNumber the object number of the file specification, or empty
+         * @param attachments  the attachments the name leads to, at least two
+         * @param entries      the entries of the embedded file dictionary, or empty
+         * @throws NullPointerException if a member is {@code null}
+         */
+        public DuplicateName {
+            Objects.requireNonNull(source, "source");
+            Objects.requireNonNull(name, "name");
+            Objects.requireNonNull(objectNumber, "objectNumber");
+            attachments = List.copyOf(Objects.requireNonNull(attachments, "attachments"));
+            entries = List.copyOf(Objects.requireNonNull(entries, "entries"));
+        }
+
+        /** What gives the attachments one name. */
+        public enum Source {
+
+            /** A key of the embedded files name tree, which lists each of them. */
+            NAME_TREE_KEY,
+
+            /** A file specification, whose embedded file dictionary holds each of them. */
+            FILE_SPECIFICATION
+        }
     }
 
     /**
@@ -69,14 +129,94 @@ public final class InvoiceAttachments {
                 invoices.add(located);
             }
         }
-        List<LocatedAttachment> candidates = new ArrayList<>();
+        List<DuplicateName> duplicates = duplicates(container, all);
         boolean oneInvoice = invoices.size() == 1;
+        Set<LocatedAttachment> chosen = Collections.newSetFromMap(new IdentityHashMap<>());
         for (LocatedAttachment located : all) {
             if (candidate(located, oneInvoice)) {
+                chosen.add(located);
+            }
+        }
+        sharingAName(duplicates, chosen);
+        List<LocatedAttachment> candidates = new ArrayList<>();
+        for (LocatedAttachment located : all) {
+            if (chosen.contains(located)) {
                 candidates.add(located);
             }
         }
-        return new InvoiceAttachments(all, invoices, candidates);
+        return new InvoiceAttachments(all, invoices, candidates, duplicates);
+    }
+
+    /**
+     * Adds to the candidates every attachment that shares a name with a candidate, until
+     * no name adds one more.
+     *
+     * <p>Whatever such an attachment holds, it is what a reader that follows the name may
+     * be handed instead of the candidate: the name does not say which file the container
+     * means. That is the question {@link #single()} refuses to answer on its own, whether
+     * the other file spells an invoice, spells nothing this reader recognizes, or hides
+     * its root element behind a long prolog.
+     */
+    private static void sharingAName(List<DuplicateName> duplicates,
+                                     Set<LocatedAttachment> candidates) {
+        boolean grown = true;
+        while (grown) {
+            grown = false;
+            for (DuplicateName duplicate : duplicates) {
+                if (duplicate.attachments().stream().anyMatch(candidates::contains)) {
+                    for (LocatedAttachment attachment : duplicate.attachments()) {
+                        grown |= candidates.add(attachment);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the names the container gives more than one attachment: the keys of the
+     * name tree first, in the order they were met, then the file specifications that hold
+     * more than one stream.
+     */
+    private static List<DuplicateName> duplicates(PdfContainer container,
+                                                  List<LocatedAttachment> all) {
+        Map<EmbeddedFile, LocatedAttachment> byFile = new IdentityHashMap<>();
+        Map<String, List<LocatedAttachment>> byKey = new LinkedHashMap<>();
+        for (LocatedAttachment attachment : all) {
+            byFile.put(attachment.file(), attachment);
+            for (String key : attachment.file().nameTreeKeys()) {
+                byKey.computeIfAbsent(key, k -> new ArrayList<>()).add(attachment);
+            }
+        }
+        List<DuplicateName> duplicates = new ArrayList<>();
+        byKey.forEach((key, sharing) -> {
+            if (sharing.size() > 1) {
+                duplicates.add(new DuplicateName(DuplicateName.Source.NAME_TREE_KEY, key,
+                        OptionalLong.empty(), sharing, List.of()));
+            }
+        });
+        for (PdfContainer.SeveralFiles several : container.severalFiles()) {
+            duplicates.add(new DuplicateName(DuplicateName.Source.FILE_SPECIFICATION,
+                    several.name(),
+                    several.objectNumber() < 0 ? OptionalLong.empty()
+                            : OptionalLong.of(several.objectNumber()),
+                    several.files().stream().map(byFile::get).toList(),
+                    several.entries()));
+        }
+        return duplicates;
+    }
+
+    /**
+     * Returns the names the container gives more than one attachment, each with the
+     * attachments it leads to.
+     *
+     * <p>A name that leads to two files is a name whose readers do not agree on what it
+     * means, and every such name is reported by {@link ContainerChecks}: the file does not
+     * say which of the two it means.
+     *
+     * @return the names, the keys of the name tree first, possibly none
+     */
+    public List<DuplicateName> duplicateNames() {
+        return duplicates;
     }
 
     /**
@@ -207,22 +347,48 @@ public final class InvoiceAttachments {
     /**
      * Returns the attachment of a given name.
      *
-     * <p>A name is a string in a file specification and nothing in a PDF makes it unique,
-     * so a container written to confuse a reader carries two attachments of one name and
-     * lets the reader pick. This method does not pick: where the name matches more than
-     * one attachment it refuses, exactly as {@link #single()} refuses, and a caller that
-     * has to tell them apart asks {@link #at(int)} with the position it printed.
+     * <p>A name is a string in a file specification or a key of the name tree, and nothing
+     * in a PDF makes either unique, so a container written to confuse a reader carries two
+     * attachments of one name and lets the reader pick. This method does not pick: where
+     * the name matches more than one attachment — by the name its file specification gives
+     * it or by a key the name tree lists it under — it refuses, exactly as
+     * {@link #single()} refuses, and a caller that has to tell them apart asks
+     * {@link #at(int)} with the position it printed. The one attachment a name matches is
+     * refused as well where it shares a name with another attachment
+     * ({@link #duplicateNames()}): a reader that follows that name may be handed the other
+     * one, so the name does not say which of the two the caller means either.
      *
      * @param name the name as the container spells it
      * @return the attachment, or an empty optional where no attachment has that name
-     * @throws AmbiguousInvoiceAttachmentException if more than one attachment has it
+     * @throws AmbiguousInvoiceAttachmentException if more than one attachment has it, or
+     *                                             the one that has it shares a name with
+     *                                             another
      * @throws NullPointerException                if {@code name} is {@code null}
      */
     public Optional<LocatedAttachment> named(String name) {
         Objects.requireNonNull(name, "name");
         List<LocatedAttachment> matching = all.stream()
-                .filter(located -> located.name().equals(name))
+                .filter(located -> located.name().equals(name)
+                        || located.file().nameTreeKeys().contains(name))
                 .toList();
+        if (matching.size() == 1) {
+            LocatedAttachment one = matching.get(0);
+            for (DuplicateName duplicate : duplicates) {
+                if (duplicate.attachments().contains(one)) {
+                    throw new AmbiguousInvoiceAttachmentException("this PDF carries "
+                            + duplicate.attachments().size() + " attachments "
+                            + (duplicate.source() == DuplicateName.Source.NAME_TREE_KEY
+                                    ? "its embedded files name tree lists under the name "
+                                    : "under the file specification named ")
+                            + Messages.quoted(duplicate.name()) + ", and the name "
+                            + Messages.quoted(name) + " does not say which of them is meant: "
+                            + duplicate.attachments().stream()
+                                    .map(LocatedAttachment::toString)
+                                    .collect(Collectors.joining(", ")),
+                            duplicate.attachments());
+                }
+            }
+        }
         if (matching.size() > 1) {
             throw new AmbiguousInvoiceAttachmentException("this PDF carries "
                     + matching.size() + " attachments named " + Messages.quoted(name)

@@ -710,6 +710,10 @@ structured invoice, and that is what is reported, with exit code 2.
 | several that could be the invoice, and none named | refused, with the list and the two switches that name one | 2 |
 | several that could be the invoice, one named | read, with `PDF-EMBEDDED-SEVERAL` naming the others | 0, 1, 7 or 9 |
 | two attachments of one name, named with `--attachment` | refused; `--attachment-index <position>` names one | 2 |
+| a name that leads to two files — a key the name tree lists twice, or a file specification holding two streams — and one of them could be the invoice, none named | refused like several candidates, both listed with the name they share | 2 |
+| the same, one named with `--attachment-index` | read, with `PDF-EMBEDDED-DUPLICATE-NAME` (an error): `Container: INVALID` | 1 or 7 |
+| a name that leads to two files, neither of which could be the invoice (two ESJ documents, two enclosures) | the invoice is read, with `PDF-EMBEDDED-DUPLICATE-NAME` (an error): `Container: INVALID` | 1 or 7 |
+| an invoice a page refers to — a file attachment annotation, the associated files array of the page or of an annotation — beside the one the name tree lists | counted among the candidates, its place named, with `PDF-EMBEDDED-NOT-IN-TREE` | 2 |
 | `--attachment` and `--attachment-index` naming two different attachments | refused | 2 |
 | an XML attachment whose root element is beyond the window, declared `/Alternative`, `/Data`, `/Source` or nothing | counted among the candidates, with `PDF-EMBEDDED-UNDETERMINED` | 2 |
 | the same, declared `/Supplement` or `/Unspecified`, beside exactly one invoice | left alone, with `PDF-EMBEDDED-UNDETERMINED` | 0, 1, 7 or 9 |
@@ -725,8 +729,12 @@ structured invoice, and that is what is reported, with exit code 2.
 
 `--attachment <name>` names the attachment that is meant, on every command — `esj diff` applies
 it to both of its inputs. Nothing in a PDF makes a name unique, so `--attachment` refuses a name
-that two attachments carry; `--attachment-index <position>` names one by the position the listing prints,
-counted from one, and is the one selector the file cannot influence. Given both, the position
+that two attachments carry — the name a file specification gives, or a key under which the name
+tree lists two files — and `extract --list` ends the line of such an attachment with `one of 2 files
+the name tree lists under "…"`; `--attachment-index <position>` names one by the position the listing prints,
+counted from one, and is the one selector the file cannot influence. A file a page refers to rather
+than the name tree is listed with its place, `not in the name tree: a file attachment annotation on
+page 1` ([`pdf-input.md`](pdf-input.md#where-the-invoice-may-lie-and-what-counts-as-one)). Given both, the position
 selects and the name is checked against it. Where several attachments could be the invoice and
 the caller named one, `PDF-EMBEDDED-SEVERAL` names the others at warning level, and the
 `Embedded invoice:` line, `container.attachmentIndex` and `"selected": true` say which one the
@@ -1231,7 +1239,8 @@ objects in compressed streams that the library decodes while it opens the file, 
 measures each as the library reaches it against one budget for the file; spending it leaves with
 exit code 7 and no verdict. The budget is raised where the attachment bounds of a run are larger
 than the file bound, and in the same proportion it bounds how many objects the object streams may
-declare together. Two refusals behind no switch complete it: a structural stream whose filter
+declare together and how many objects the reader walks on the pages to find the files they refer
+to. Two refusals behind no switch complete it: a structural stream whose filter
 chain this reader does not run, and a `/Predictor` row wider than a mebibyte
 ([`pdf-input.md`](pdf-input.md)).
 

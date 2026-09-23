@@ -17,8 +17,32 @@ So a PDF falls into one of three cases:
 | Case | What happens |
 |---|---|
 | it carries one attachment whose bytes are an electronic invoice | the invoice is read and the container is reported beside it |
-| it carries several, or one invoice and one attachment that was not classified, and nothing says which | nothing is chosen: the candidates are listed and the caller is asked |
+| it carries several, one invoice and one attachment that was not classified, or two files under one name, and nothing says which | nothing is chosen: the candidates are listed and the caller is asked |
 | it carries none | that is the answer |
+
+## Where the invoice may lie, and what counts as one
+
+An embedded file can be referred to from five places, and a reader of a hybrid invoice may take
+its invoice from any of them, so all five are enumerated: the embedded files name tree, walked
+entry by entry through `/Names` and `/Kids` rather than loaded into a map; the associated files
+array of the document; and, page by page in the order of the page tree, the associated files
+array of the page, the file specification of every file attachment annotation and the associated
+files array of every annotation. Every stream under `/F`, `/UF`, `/DOS`, `/Mac` and `/Unix` of a
+file specification is read, not only the first. **One attachment is one embedded file stream**:
+a stream two places refer to is one attachment and one candidate, however many places and file
+specifications name it; a stream only one place refers to is an attachment all the same, listed
+with its place, and one the name tree does not list is said to lie outside it
+(`PDF-EMBEDDED-NOT-IN-TREE`, where it could be the invoice). **A name that leads to two files —
+a key the name tree lists twice, in one node or across two, or a file specification whose
+entries hold two different streams — makes the container unsound** (`PDF-EMBEDDED-DUPLICATE-NAME`,
+an error that names every entry by position, name, object number and size): a reader that loads
+the tree into a map keeps one entry, a reader that walks it takes the first, most readers take
+`/F` and some `/UF`, so the name does not say which file the container means. Every attachment
+that shares such a name with one that could be the invoice is counted among the candidates, so
+nothing is chosen without the caller, and `--attachment` refuses the name. Not looked at: the
+associated files of a form XObject or a structure element, rich media assets, related files
+arrays (`/RF`) and the targets of embedded go-to actions — no hybrid invoice specification puts
+the invoice there.
 
 ## What decides what an attachment is
 
@@ -99,7 +123,9 @@ answer is that nothing was established rather than that the file carries no invo
 attachment with a selector reads it on its own responsibility.
 
 Nothing in a PDF makes an attachment name unique, so `InvoiceAttachments.named(String)`
-raises the same exception where the name matches more than one. `at(int)` is the selector that always works: the
+raises the same exception where the name matches more than one — by the name a file
+specification gives or by a key the name tree lists — and where the one attachment it matches
+shares a name with another (`duplicateNames()`). `at(int)` is the selector that always works: the
 position in the order `all()` returns, counted from one, which is this module's own
 numbering and not the file's.
 
@@ -135,7 +161,7 @@ report and not its last word; the cause tokens are the ones
 | `PDF-STRUCTURE` | `PDF-STRUCTURE-XREF`, `PDF-STRUCTURE-EOF`, `PDF-STRUCTURE-PDFA` | the object structure of the file, and what the file declares itself to be |
 | `PDF-AF` | `PDF-AF-ABSENT`, `PDF-AF-RELATIONSHIP` | whether the catalog's `/AF` array says that the invoice attachment is what the document is about, and in what relationship |
 | `PDF-XMP` | `PDF-XMP-ABSENT`, `PDF-XMP-SCHEMA`, `PDF-XMP-DOCUMENT-TYPE`, `PDF-XMP-VERSION`, `PDF-XMP-FILENAME`, `PDF-XMP-CONFORMANCE`, `PDF-XMP-CONFORMANCE-MISMATCH` | the Factur-X extension schema of the XMP packet, and whether what it says about the attachment and the profile agrees with the attachment and the invoice |
-| `PDF-EMBEDDED` | `PDF-EMBEDDED-MIME`, `PDF-EMBEDDED-SIZE`, `PDF-EMBEDDED-NAME`, `PDF-EMBEDDED-TRUNCATED`, `PDF-EMBEDDED-UNDETERMINED`, `PDF-EMBEDDED-UNREADABLE`, `PDF-EMBEDDED-SEVERAL`, `PDF-EMBEDDED-SEVERAL-ESJ`, `PDF-EMBEDDED-ESJ-LABEL` | the embedded file dictionary: the declared media type, the declared size, the name against the content, an attachment whose root element lay beyond the window, one whose stream this reader does not decode, a container that carries more than one attachment that could be the invoice, one that carries more than one ESJ document, and one carrying an attachment that wears the name of the ESJ document without being one |
+| `PDF-EMBEDDED` | `PDF-EMBEDDED-MIME`, `PDF-EMBEDDED-SIZE`, `PDF-EMBEDDED-NAME`, `PDF-EMBEDDED-TRUNCATED`, `PDF-EMBEDDED-UNDETERMINED`, `PDF-EMBEDDED-UNREADABLE`, `PDF-EMBEDDED-SEVERAL`, `PDF-EMBEDDED-SEVERAL-ESJ`, `PDF-EMBEDDED-ESJ-LABEL`, `PDF-EMBEDDED-DUPLICATE-NAME`, `PDF-EMBEDDED-NOT-IN-TREE` | the embedded file dictionary: the declared media type, the declared size, the name against the content, an attachment whose root element lay beyond the window, one whose stream this reader does not decode, a container that carries more than one attachment that could be the invoice, one that carries more than one ESJ document, one carrying an attachment that wears the name of the ESJ document without being one, a name that leads to two files (an error), and an attachment that could be the invoice and lies outside the name tree |
 | `PDF-ESJ` | `PDF-ESJ-DISAGREES`, `PDF-ESJ-UNSOUND`, `PDF-ESJ-UNREADABLE`, `PDF-ESJ-UNCHECKED` | the ESJ document beside the invoice: whether it can be read (layer L1), whether it is a document of the semantic model it names (layer L2), whether it and the invoice are two accounts of one invoice, and the cases where nothing was compared — the invoice this run read is in no syntax this version has a binding table for, or `esj inspect` met a bound inside the attachment |
 
 **PDF/A conformance is validated only where [`--verapdf`](cli.md#validating-the-pdfa-claim)
@@ -151,10 +177,11 @@ reaches a terminal.
 
 A PDF is a larger attack surface than an XML document, and the module is written for that.
 
-* PDFBox is used for the object structure, the catalog name trees, the `/AF` array, the
-  embedded file streams and the XMP packet, and for nothing else. **No page is rendered,
-  no font is loaded, no form or annotation action is processed, and no JavaScript is
-  executed** — PDFBox executes none.
+* PDFBox is used for the object structure, the catalog name trees, the `/AF` arrays, the
+  page tree and the annotation dictionaries as far as they refer to embedded files, the
+  embedded file streams and the XMP packet, and for nothing else. **No page is rendered, no
+  content stream is read, no font is loaded, no form or annotation action is processed, and
+  no JavaScript is executed** — PDFBox executes none.
 * The stream cache is memory only. Nothing is written to a temporary directory: a library
   does not get to put somebody's invoice on a disk.
 * Nothing that leaves the file is fetched. A file specification that names a file without
@@ -183,17 +210,19 @@ agreed to spend, which is not the same as calling it invalid (SPEC section 3.1).
 | Bound | Default | Measured in |
 |---|---|---|
 | the PDF itself | 64 MiB | bytes of the file, checked before anything is parsed |
-| attachments enumerated | 64 | entries of the name tree and the `/AF` array |
+| attachments enumerated | 64 | embedded file streams, from every place above; the entries of the name tree, its nodes that list no file and the entries of the document's `/AF` array are held to the same number, and the tree to 32 levels |
 | one decoded attachment | 4 MiB | bytes after the stream filters have run |
 | all decoded attachments together | 16 MiB | the same |
 | the XMP packet | 1 MiB | bytes |
 | everything one container decodes | 64 MiB | bytes after the stream filters have run, counting the streams the library decodes to find the objects of the file and the streams this reader decodes out of it |
 | objects the object streams declare | 250 000 | the `/N` entry of each object stream, added up over the container |
+| objects walked on the pages | 250 000 | page-tree nodes, pages, annotations and the entries of their `/AF` arrays, while the attachments are enumerated |
 | one predicted row | 1 MiB | the row length a `/Predictor` stage declares, which is fixed and raised by no switch; a stage declaring values this format does not define is malformed rather than large (exit code 2) |
 
-The last two have no switch of their own. The bound on objects follows `--max-pdf-bytes`,
-because a file can only declare the objects it has the bytes to declare; the bound on a
-predicted row is fixed, and a refusal by it says so.
+The last three have no switch of their own. The two bounds on objects follow `--max-pdf-bytes`,
+because a file can only declare the objects it has the bytes to declare, and the walk of the
+pages visits objects of the file; the bound on a predicted row is fixed, and a refusal by it
+says so.
 
 The bound on one attachment is the bound the XML readers already read within. Decoding
 stops **at** the bound rather than after it: a small Flate stream that inflates without end
@@ -373,6 +402,8 @@ published sources rather than assumed:
 | that question is answered from the trailer, and a trailer rebuilt after an unusable `startxref` carries `/Encrypt` only when a catalog and an info dictionary were both found; the fallback drops it, and it dereferences the objects of the file body only — an object compressed into an object stream that nothing refers to is registered and never parsed | `BruteForceParser.rebuildTrailer(…)`, `bfSearchForTrailer(…)`, `searchForTrailerItems(…)`, `bfSearchForObjStreams(…)` |
 | every indirect reference of a parse is resolved through one method of the parser, so an object can be examined there before anything else sees it | `COSParser.dereferenceCOSObject(COSObject)` |
 | an object that lives inside an object stream is handed out through one other method, so the objects that route does not see can be examined there | `COSParser.parseObjectStreamObject(long, COSObjectKey)` |
+| a node of a name tree is loaded into a map, so a key the node lists twice keeps its last entry and loses the first without a trace; this reader therefore walks the `/Names` and `/Kids` arrays itself | `PDNameTreeNode.getNames()` |
+| the page iterator enqueues the whole tree by recursion before it hands out the first page; this reader walks the tree itself, iteratively and within its bound | `PDPageTree.PageIterator` |
 
 They belong to one release line and a new one is a reason to read them again; the version is
 pinned in the parent `pom.xml`.
