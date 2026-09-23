@@ -38,7 +38,7 @@ jobs:
         run: echo "ESJ_GRAALVM_HOME=$(sh dist/graalvm.sh "$RUNNER_TEMP/graalvm")" >> "$GITHUB_ENV"
 
       - name: Set up JDK 25 (reference runtime, runtime image)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: corretto
           java-version: '25'
