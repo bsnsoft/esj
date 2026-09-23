@@ -12,8 +12,11 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /**
- * What the layout of the PDF rendering does with a document it has no complete reading
- * for, and what it does when the paper runs out in the middle of something.
+ * What the generic layout of the PDF rendering does with a document it has no complete
+ * reading for, and what it does when the paper runs out in the middle of something.
+ *
+ * <p>Every rendering here names that layout, because it is not the one a caller gets
+ * without asking; {@code LetterLayoutTest} asks the same of the letter.
  *
  * <p>The coverage tests render documents that carry everything, and a document that
  * carries everything never asks these questions. A price group without its price, a page
@@ -48,7 +51,7 @@ class PdfLayoutTest {
         SemanticDocument document =
                 Documents.withPartialPriceDetails(null, "5", "KGM");
 
-        byte[] pdf = new PdfRenderer().render(document, RenderOptions.in(RenderLanguage.ENGLISH));
+        byte[] pdf = new PdfRenderer().render(document, generic(RenderLanguage.ENGLISH));
 
         assertTrue(Pdf.shows(pdf, "Item price base quantity: 5"),
                 "the base quantity hangs under the row of its line");
@@ -62,12 +65,12 @@ class PdfLayoutTest {
         SemanticDocument with = Documents.withPartialPriceDetails("100.00", null, "KGM");
         SemanticDocument without = Documents.withPartialPriceDetails("100.00", null, null);
 
-        byte[] pdf = new PdfRenderer().render(with, RenderOptions.in(RenderLanguage.ENGLISH));
+        byte[] pdf = new PdfRenderer().render(with, generic(RenderLanguage.ENGLISH));
 
         assertTrue(Pdf.shows(pdf, "Item price base quantity unit of measure code: KGM"),
                 "the unit of the price base quantity is printed");
         assertFalse(Arrays.equals(pdf, new PdfRenderer().render(without,
-                        RenderOptions.in(RenderLanguage.ENGLISH))),
+                        generic(RenderLanguage.ENGLISH))),
                 "a document that states one more value renders to something else");
     }
 
@@ -76,7 +79,7 @@ class PdfLayoutTest {
     void aCompletePriceGroupStillReadsAsOneCell() {
         SemanticDocument document = Documents.withPartialPriceDetails("100.00", "5", "KGM");
 
-        byte[] pdf = new PdfRenderer().render(document, RenderOptions.in(RenderLanguage.ENGLISH));
+        byte[] pdf = new PdfRenderer().render(document, generic(RenderLanguage.ENGLISH));
 
         assertTrue(Pdf.shows(pdf, "100.00 per 5 KGM"),
                 "the price, the quantity it is for and its unit are one cell");
@@ -91,7 +94,8 @@ class PdfLayoutTest {
      */
     @Test
     void theGermanTotalsSayWhichFigureCarriesVat() {
-        String text = Pdf.flat(new PdfRenderer().render(Corpus.example("standard-invoice")));
+        String text = Pdf.flat(new PdfRenderer().render(Corpus.example("standard-invoice"),
+                generic(RenderLanguage.GERMAN)));
 
         assertTrue(text.contains("Gesamtsumme netto"), "the total without VAT says netto");
         assertTrue(text.contains("Gesamtsumme brutto"), "and the one with VAT says brutto");
@@ -113,7 +117,7 @@ class PdfLayoutTest {
                 .build();
 
         String text = Pdf.flat(new PdfRenderer().render(document,
-                RenderOptions.in(RenderLanguage.ENGLISH)));
+                generic(RenderLanguage.ENGLISH)));
 
         assertTrue(text.contains("(CHF) 41.00"),
                 "the row of BT-111 names the accounting currency: " + text);
@@ -129,7 +133,7 @@ class PdfLayoutTest {
             for (RenderLanguage language : RenderLanguage.values()) {
                 for (PageSize size : PageSize.values()) {
                     byte[] pdf = new PdfRenderer().render(document,
-                            RenderOptions.in(language).on(size));
+                            generic(language).on(size));
                     assertNoPageEndsWithAHeading(pdf, example, language, size);
                 }
             }
@@ -144,7 +148,8 @@ class PdfLayoutTest {
     @Test
     void theDetailsOfALineBeginOnThePageOfItsRow() {
         int lines = 80;
-        byte[] pdf = new PdfRenderer().render(Documents.withDetailedLines(lines));
+        byte[] pdf = new PdfRenderer().render(Documents.withDetailedLines(lines),
+                generic(RenderLanguage.GERMAN));
 
         int pages = Pdf.pages(pdf);
         assertTrue(pages > 2, "eighty lines take more than two pages, not " + pages);
@@ -172,7 +177,7 @@ class PdfLayoutTest {
             for (RenderLanguage language : RenderLanguage.values()) {
                 for (PageSize size : PageSize.values()) {
                     byte[] pdf = new PdfRenderer().render(document,
-                            RenderOptions.in(language).on(size));
+                            generic(language).on(size));
                     assertNoPageEndsWithAHeading(pdf, instance, language, size);
                 }
             }
@@ -189,7 +194,7 @@ class PdfLayoutTest {
     void detailsThatRunOntoTheNextPageSayWhichRowTheyBelongTo() {
         for (RenderLanguage language : RenderLanguage.values()) {
             byte[] pdf = new PdfRenderer().render(Documents.withALineDescribedAtLength(3000),
-                    RenderOptions.in(language));
+                    generic(language));
 
             int pages = Pdf.pages(pdf);
             assertTrue(pages > 2, "a description of three thousand words takes more than two "
@@ -218,7 +223,7 @@ class PdfLayoutTest {
     void aRowCutAtAPageBreakSaysWhichRowItIs() {
         for (RenderLanguage language : RenderLanguage.values()) {
             byte[] pdf = new PdfRenderer().render(Documents.withALineNamedAtLength(400),
-                    RenderOptions.in(language));
+                    generic(language));
 
             int pages = Pdf.pages(pdf);
             assertTrue(pages > 1, "an item name of four hundred words takes more than one "
@@ -234,6 +239,11 @@ class PdfLayoutTest {
                 }
             }
         }
+    }
+
+    /** Returns the options of the generic layout in a language, which this test is about. */
+    private static RenderOptions generic(RenderLanguage language) {
+        return RenderOptions.in(language).layout(Layout.GENERIC);
     }
 
     private static void assertNoPageEndsWithAHeading(byte[] pdf, String example,

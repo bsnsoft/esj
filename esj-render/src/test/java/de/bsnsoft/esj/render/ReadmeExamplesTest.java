@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.render;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -138,18 +139,19 @@ class ReadmeExamplesTest {
         byte[] a4 = pdf.render(document);
         byte[] usLetter = pdf.render(document,
                 RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER));
-        byte[] businessLetter = pdf.render(document,
-                RenderOptions.defaults().layout(Layout.LETTER));
+        byte[] generic = pdf.render(document,
+                RenderOptions.defaults().layout(Layout.GENERIC));
 
         assertNotEquals(german, english, "the two languages are two renderings");
         assertEquals(german, result.html(), "the default options are the German ones");
         assertEquals(List.of(), notLeftBehind, "that example reached the stylesheet whole");
         assertEquals(PageSize.A4.width(), Pdf.pageSize(a4, 1)[0], 0.01f,
                 "the default is A4");
+        assertArrayEquals(pdf.render(document, RenderOptions.defaults().layout(Layout.LETTER)),
+                a4, "and the letter layout");
         assertEquals(PageSize.LETTER.width(), Pdf.pageSize(usLetter, 1)[0], 0.01f,
                 "and the snippet asked for Letter");
-        assertTrue(Pdf.flat(businessLetter).contains(
-                        Word.FURTHER_DETAILS.in(RenderLanguage.GERMAN)),
-                "and the last one is the letter layout");
+        assertTrue(Pdf.flat(generic).contains(Word.SELLER.in(RenderLanguage.GERMAN) + " "),
+                "and the last one is the generic layout, with its block of parties");
     }
 }

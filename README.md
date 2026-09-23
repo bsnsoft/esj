@@ -56,9 +56,9 @@ often and of what type are facts of one registry per edition ([`model/README.md`
 - A rendering to read: one self-contained HTML page or a PDF/A-3b file, plain or branded from a
   template, with the invoice as Factur-X / ZUGFeRD 2.x and, beside it, the ESJ document of the
   same invoice, checked against the XML ([`docs/pdf-output.md`](docs/pdf-output.md)).
-- Or that PDF as a letter on the sender's letterhead: the address field where DIN 5008 puts it,
-  the reference line across the text area, and the EPC QR code in the payment block
-  ([`docs/letter-layout.md`](docs/letter-layout.md)).
+- That PDF as a letter, the default, on the sender's letterhead where a template brings one: the
+  address field where DIN 5008 puts it, the reference line across the text area, and the EPC QR
+  code in the payment block ([`docs/letter-layout.md`](docs/letter-layout.md)).
 - A command line tool for every runtime that is not Java, packaged for machines without one, and
   a process boundary for untrusted input ([`docs/deployment.md`](docs/deployment.md)).
 - An invoice written in the words of the domain: enums, profile defaults and derived totals,
@@ -183,8 +183,8 @@ cannot be asked at all about 2, and leaves 0 unaccounted for; each difference is
 Works today: the format, the schema and the registry of 196 terms; reading, writing,
 canonicalizing, hashing and the structural layers L1 to L3; import from UBL 2.1, CII D16B and
 hybrid PDFs; both validation engines; the CII and UBL writers, as far as the round trips above
-prove them; the HTML and PDF/A-3b renderings, the latter in the generic layout or as a business
-letter; the constrained builder, the domain API, the B2C extension and the validation report; the
+prove them; the HTML and PDF/A-3b renderings, the latter as a business letter or in the generic
+layout; the constrained builder, the domain API, the B2C extension and the validation report; the
 command line tool, packaged as a native executable, a Java 25 runtime image, a release zip and a
 container image ([`docs/install.md`](docs/install.md)). Where a build carries its registry, EN
 16931-1:2026 stands beside the default 2017 edition, with `esj upgrade` between the two

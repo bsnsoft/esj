@@ -218,11 +218,14 @@ class BrandedRenderingTest {
      * page, 84 on the ones after it, 82 below, which is what {@code letterhead.json}
      * states. They are given to a template without artwork, because the letterhead of
      * that file draws glyphs of its own inside those margins by design and a text
-     * stripper cannot tell them from the invoice.
+     * stripper cannot tell them from the invoice; and in the layout that file names, the
+     * generic one, because the address field of the letter stands where a window envelope
+     * needs it whatever the margins say.
      */
     @Test
     void theTextStaysInsideTheMarginsOfThePdfLetterheadToo() {
         RenderTemplate template = Templates.of("{\"template\": \"esj-render-template/0.1\","
+                + " \"layout\": \"generic\","
                 + " \"margins\": {\"first\": {\"top\": 148, \"bottom\": 82,"
                 + " \"left\": 56, \"right\": 56},"
                 + " \"following\": {\"top\": 84, \"bottom\": 82}}}");

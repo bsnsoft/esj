@@ -223,9 +223,11 @@ public final class ReportRenderer {
      *
      * <p>The invoice is drawn by {@link PdfLayout} on the same sheet, which is what makes
      * the file one document, and it starts on a page of its own so that the report does not
-     * end halfway down a page of the invoice. The footer is written once over the whole
-     * file and names the report rather than the invoice number the invoice alone would put
-     * there: what a reader is holding is a report, and its pages are numbered as one.
+     * end halfway down a page of the invoice. That is the generic layout, the one
+     * {@link ReportOptions#rendering()} names, whatever {@link RenderOptions#DEFAULT_LAYOUT}
+     * is: a report is not a letter. The footer is written once over the whole file and
+     * names the report rather than the invoice number the invoice alone would put there:
+     * what a reader is holding is a report, and its pages are numbered as one.
      */
     private void pages(ValidationOutcome outcome, SemanticDocument document,
                        ReportOptions options, Sheet sheet) {

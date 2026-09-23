@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -280,20 +281,33 @@ class RenderTemplateTest {
         assertEquals("Einzelpreis brutto", price.label(RenderLanguage.GERMAN));
     }
 
+    /**
+     * A template that says nothing about the layout names none: the choice is left to the
+     * caller and then to {@link RenderOptions#DEFAULT_LAYOUT}, and the letter it is drawn as
+     * is the one of the defaults.
+     */
     @Test
-    void aTemplateSaysNothingAboutTheLayoutAndMeansTheGenericOne() {
-        RenderTemplate template = Templates.example("letterhead.json");
+    void aTemplateThatSaysNothingAboutTheLayoutLeavesItToTheDefault() {
+        RenderTemplate template = Templates.of(MINIMAL);
 
-        assertEquals(Layout.GENERIC, template.layout(), "the layout it means");
+        assertEquals(Optional.empty(), template.layout(), "the template names no layout");
         assertEquals(LetterOptions.defaults(), template.letter(),
-                "and the letter it would be if a caller asked for one");
+                "and the letter it is drawn as is the default one");
+    }
+
+    /** The example letterhead was set for the generic layout, and says so. */
+    @Test
+    void theExampleLetterheadNamesTheGenericLayout() {
+        assertEquals(Optional.of(Layout.GENERIC), Templates.example("letterhead.json").layout(),
+                "the layout its margins were set for");
     }
 
     @Test
     void aTemplateChoosesTheLayoutAndTheLetterItWants() {
         RenderTemplate template = Templates.example("letter.json");
 
-        assertEquals(Layout.LETTER, template.layout(), "the layout of the example letter");
+        assertEquals(Optional.of(Layout.LETTER), template.layout(),
+                "the layout of the example letter");
         assertEquals(new LetterOptions(LetterOptions.Window.DIN_5008_B, true, true,
                         LetterOptions.SellerDetails.FOOTER,
                         LetterOptions.Information.LINE, 0f, true),

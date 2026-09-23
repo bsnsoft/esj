@@ -50,9 +50,10 @@ class PdfDeterminismTest {
     @MethodSource("instances")
     void renderingAnInstanceTwiceGivesTheSameBytes(String instance) {
         SemanticDocument document = Corpus.instance(instance);
+        RenderOptions options = RenderOptions.defaults().layout(Layout.GENERIC);
 
-        assertArrayEquals(new PdfRenderer().render(document),
-                new PdfRenderer().render(document),
+        assertArrayEquals(new PdfRenderer().render(document, options),
+                new PdfRenderer().render(document, options),
                 instance + " renders to the same bytes twice");
     }
 
@@ -110,15 +111,22 @@ class PdfDeterminismTest {
         }
     }
 
+    /**
+     * The two renderings of the generic layout, which name it: the letter is what a caller
+     * gets without asking, and these files are the generic layout on both papers and in
+     * both languages.
+     */
     @Test
     void theRenderingOfMinimalIsTheOneCheckedIn() {
-        assertGolden("minimal-de-a4.pdf", Corpus.example("minimal"), RenderOptions.defaults());
+        assertGolden("minimal-de-a4.pdf", Corpus.example("minimal"),
+                RenderOptions.defaults().layout(Layout.GENERIC));
     }
 
     @Test
     void theRenderingOfTheStandardInvoiceIsTheOneCheckedIn() {
         assertGolden("standard-invoice-en-letter.pdf", Corpus.example("standard-invoice"),
-                RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER));
+                RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER)
+                        .layout(Layout.GENERIC));
     }
 
     /**
@@ -189,10 +197,11 @@ class PdfDeterminismTest {
             for (String tag : new String[] {"ar-EG", "ne-NP", "tr-TR"}) {
                 Locale.setDefault(Locale.forLanguageTag(tag));
                 assertGolden("minimal-de-a4.pdf", Corpus.example("minimal"),
-                        RenderOptions.defaults());
+                        RenderOptions.defaults().layout(Layout.GENERIC));
                 assertGolden("standard-invoice-en-letter.pdf",
                         Corpus.example("standard-invoice"),
-                        RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER));
+                        RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER)
+                                .layout(Layout.GENERIC));
                 assertGolden("standard-invoice-letter-de-a4.pdf",
                         Corpus.example("standard-invoice"),
                         RenderOptions.defaults().with(Templates.example("letter.json")));

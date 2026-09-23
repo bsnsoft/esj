@@ -109,9 +109,15 @@ public record ReportOptions(RenderLanguage language, boolean includeInvoice,
     /**
      * Returns the options a rendering of the invoice inside this report is made with.
      *
+     * <p>They name the generic layout rather than leave it to
+     * {@link RenderOptions#DEFAULT_LAYOUT}: a report is a proof about the document, and the
+     * shape of the semantic model is the picture of one, where the letter is what a business
+     * posts. The HTML form frames the vendored visualization, which has no layout of this
+     * module's, so it is the PDF form this is said for.
+     *
      * @return the render options
      */
     RenderOptions rendering() {
-        return RenderOptions.in(language).on(pageSize);
+        return RenderOptions.in(language).on(pageSize).layout(Layout.GENERIC);
     }
 }

@@ -168,7 +168,7 @@ esj embed pages.pdf invoice.esj.json --out invoice.pdf   # XML und ESJ angehäng
 
 **Wie kommt ein GiroCode auf die Rechnung?**
 ```sh
-esj render invoice.esj.json --layout letter --out invoice.pdf   # im Zahlungsblock, wo die Rechnung eine Überweisung nennt
+esj render invoice.esj.json --out invoice.pdf   # das Brief-Layout setzt ihn in den Zahlungsblock, wo die Rechnung eine Überweisung nennt
 ```
 
 **Wie zeige ich einem Verbraucher die Bruttopreise (B2C)?**

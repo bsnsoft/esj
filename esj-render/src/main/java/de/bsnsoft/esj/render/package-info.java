@@ -9,18 +9,19 @@
  * invoice in Germany before recognizes it.
  *
  * <p>{@link de.bsnsoft.esj.render.PdfRenderer} writes a PDF, and that one is
- * this project's own layout: PDFBox draws text and lines, and the sections above it are the
- * shape of the semantic model rather than a template. Whatever the layout has no section of
- * its own for is printed under a last heading with its label and its semantic path, so that
- * no value of a document is quietly missing. Liberation Sans is vendored beside the code
- * under the SIL Open Font License, and a subset of it is embedded in every file.
+ * laid out by this project: PDFBox draws text and lines, by default as the letter a business
+ * sends and on request in the shape of the semantic model, and neither is a template.
+ * Whatever a layout has no place of its own for is printed under a last heading with its
+ * label and its semantic path, so that no value of a document is quietly missing. Liberation
+ * Sans is vendored beside the code under the SIL Open Font License, and a subset of it is
+ * embedded in every file.
  *
- * <p>Nothing in this package knows what an invoice looks like beyond the order of those
- * sections. What the HTML side knows is how to put the document in front of a stylesheet
- * without letting that stylesheet reach the file system or the network: the three files it
- * imports, the two localization files it reads and the three files it inlines are answered
- * out of the classpath of this module, and no other reference is answered at all. What the
- * PDF side knows is a page, a cursor and a table.
+ * <p>Nothing in this package knows what an invoice looks like beyond those two layouts.
+ * What the HTML side knows is how to put the document in front of a stylesheet without
+ * letting that stylesheet reach the file system or the network: the three files it imports,
+ * the two localization files it reads and the three files it inlines are answered out of the
+ * classpath of this module, and no other reference is answered at all. What the PDF side
+ * knows is a page, a cursor and a table.
  *
  * <p>Both renderings are net, as the semantic model is, and derive nothing. Gross figures for
  * a consumer belong to an extension of the model and to a renderer that was asked for them;

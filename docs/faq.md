@@ -168,7 +168,7 @@ esj embed pages.pdf invoice.esj.json --out invoice.pdf   # XML and ESJ attached;
 
 **How does a GiroCode get onto the invoice?**
 ```sh
-esj render invoice.esj.json --layout letter --out invoice.pdf   # in the payment block, where the invoice states a credit transfer
+esj render invoice.esj.json --out invoice.pdf   # the letter layout puts it in the payment block, where the invoice states a credit transfer
 ```
 
 **How do I show a consumer the gross prices (B2C)?**

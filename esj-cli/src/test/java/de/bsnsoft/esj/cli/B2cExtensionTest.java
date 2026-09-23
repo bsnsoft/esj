@@ -288,7 +288,8 @@ class B2cExtensionTest {
      */
     @Test
     void marksTheTermsWithTheirNamespaceInTheGenericLayout() {
-        Cli.Run run = Cli.run("render", example(), "--extension", "b2c", "--out", "-");
+        Cli.Run run = Cli.run("render", example(), "--extension", "b2c", "--layout", "generic",
+                "--out", "-");
 
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         String text = flat(run.out());

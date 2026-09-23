@@ -1,6 +1,7 @@
 {
   "template": "esj-render-template/0.1",
   "name": "Letterhead (PDF)",
+  "layout": "generic",
   "letterhead": {
     "first":     { "file": "letterhead.pdf", "page": 1 },
     "following": { "file": "letterhead.pdf", "page": 2 }

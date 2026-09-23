@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -21,20 +22,23 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
  * Renders an ESJ document as a PDF, laid out by this project with PDFBox.
  *
  * <p>Where {@link HtmlRenderer} hands the document to somebody else's stylesheet, this
- * renderer draws the page itself: one generic layout for every document of the model,
- * driven by the term registry rather than by a template. There is no FOP in it, no
- * HTML-to-PDF engine and no browser — a PDF this project writes, with its fonts embedded,
- * so that the result is the same everywhere.
+ * renderer draws the page itself, in one of the two {@link Layout}s of this module: the
+ * letter a business sends, which is the default, or the generic layout, the shape of the
+ * semantic model. Both are driven by the term registry rather than by a template. There is
+ * no FOP in it, no HTML-to-PDF engine and no browser — a PDF this project writes, with its
+ * fonts embedded, so that the result is the same everywhere.
  *
  * <h2>What is on the page</h2>
  *
- * <p>The parties and the identification of the document, the notes and the delivery, the
- * invoice lines as a table, the allowances and charges of the document, the VAT breakdown
- * per category, the totals, and then the payment instructions, the payee, the tax
- * representative and the supporting documents. Under a final heading stands everything the
- * layout above has no place of its own for, with its label and its semantic path, so that
- * a value of the document is never quietly missing: that every value of every document of
- * the conformance corpus is in its rendering is a test of this module.
+ * <p>In the generic layout: the parties and the identification of the document, the notes
+ * and the delivery, the invoice lines as a table, the allowances and charges of the
+ * document, the VAT breakdown per category, the totals, and then the payment instructions,
+ * the payee, the tax representative and the supporting documents. The letter puts the same
+ * values where a business letter has them, and {@code docs/letter-layout.md} says where. In
+ * either, under a final heading stands everything the layout has no place of its own for,
+ * with its label and its semantic path, so that a value of the document is never quietly
+ * missing: that every value of every document of the conformance corpus is in its
+ * rendering is a test of this module.
  *
  * <p>An attachment (BT-125) is the one exception, and a stated one: its file name, its
  * media type and its size in bytes are printed, its content is not. A few hundred kilobytes
@@ -134,7 +138,8 @@ public final class PdfRenderer {
     }
 
     /**
-     * Renders a document in German on A4.
+     * Renders a document in German on A4, in the letter layout of
+     * {@link RenderOptions#DEFAULT_LAYOUT}.
      *
      * @param document the document to render
      * @return the PDF
@@ -184,8 +189,9 @@ public final class PdfRenderer {
             pdf.setDocumentInformation(information);
             Pdfa.declare(pdf, information);
             RenderTemplate template = options.template().orElse(null);
-            Layout layout = options.layout().orElseGet(
-                    () -> template == null ? Layout.GENERIC : template.layout());
+            Layout layout = options.layout()
+                    .or(() -> template == null ? Optional.empty() : template.layout())
+                    .orElse(RenderOptions.DEFAULT_LAYOUT);
             LetterOptions base = template == null
                     ? LetterOptions.defaults() : template.letter();
             LetterOptions letter = options.paymentCode()

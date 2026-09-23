@@ -54,36 +54,55 @@ class LetterLayoutTest {
     // ---------------------------------------------------------------- which layout runs
 
     /**
-     * The generic layout is the default and stays it. A caller that asks for nothing gets
-     * the rendering it got before this layout existed, which is the one the golden files
-     * of this module carry.
+     * The letter is the default. A caller that names no layout gets the letter a business
+     * sends, and so does a caller whose template names none; the generic layout, the shape
+     * of the semantic model, is asked for by name.
      */
     @Test
-    void theGenericLayoutIsWhatACallerGetsWithoutAsking() {
+    void theLetterIsWhatACallerGetsWithoutAsking() {
+        byte[] letter = new PdfRenderer().render(invoice(),
+                RenderOptions.defaults().layout(Layout.LETTER));
+        RenderTemplate silent = Templates.of("{\"template\": \"esj-render-template/0.1\"}");
+
+        assertEquals(Layout.LETTER, RenderOptions.DEFAULT_LAYOUT, "the default is the letter");
+        assertArrayEquals(letter, new PdfRenderer().render(invoice()),
+                "no layout named is the letter layout");
         assertArrayEquals(
                 new PdfRenderer().render(invoice(),
-                        RenderOptions.defaults().layout(Layout.GENERIC)),
-                new PdfRenderer().render(invoice()),
-                "no layout named is the generic layout");
-        assertNotEquals(Layout.GENERIC, Layout.LETTER, "and the two are two");
+                        RenderOptions.defaults().with(silent).layout(Layout.LETTER)),
+                new PdfRenderer().render(invoice(), RenderOptions.defaults().with(silent)),
+                "and a template that names no layout leaves it at the letter");
+        assertNotEquals(Corpus.sha256(letter), Corpus.sha256(new PdfRenderer().render(invoice(),
+                        RenderOptions.defaults().layout(Layout.GENERIC))),
+                "the generic layout is another rendering");
     }
 
     /** A template may choose the layout, and the caller's own choice wins over it. */
     @Test
     void theTemplateChoosesTheLayoutAndTheCallerOverrulesIt() {
-        RenderTemplate template = Templates.example("letter.json");
+        RenderTemplate letter = Templates.example("letter.json");
+        RenderTemplate generic = Templates.example("letterhead.json");
 
-        String fromTemplate = Pdf.flat(new PdfRenderer().render(invoice(),
-                RenderOptions.defaults().with(template)));
+        String fromLetter = Pdf.flat(new PdfRenderer().render(invoice(),
+                RenderOptions.defaults().with(letter)));
         String overruled = Pdf.flat(new PdfRenderer().render(invoice(),
-                RenderOptions.defaults().with(template).layout(Layout.GENERIC)));
+                RenderOptions.defaults().with(letter).layout(Layout.GENERIC)));
+        String fromGeneric = Pdf.flat(new PdfRenderer().render(invoice(),
+                RenderOptions.defaults().with(generic)));
+        String overruledToALetter = Pdf.flat(new PdfRenderer().render(invoice(),
+                RenderOptions.defaults().with(generic).layout(Layout.LETTER)));
 
-        assertTrue(fromTemplate.contains(Word.FURTHER_DETAILS.in(RenderLanguage.GERMAN)),
+        assertTrue(fromLetter.contains(Word.FURTHER_DETAILS.in(RenderLanguage.GERMAN)),
                 "the template asked for the letter layout and got it");
-        assertFalse(fromTemplate.contains(Word.SELLER.in(RenderLanguage.GERMAN) + " "),
+        assertFalse(fromLetter.contains(Word.SELLER.in(RenderLanguage.GERMAN) + " "),
                 "which has no block of parties");
         assertTrue(overruled.contains(Word.SELLER.in(RenderLanguage.GERMAN)),
                 "and a caller that names the generic layout gets that one: " + overruled);
+        assertTrue(fromGeneric.contains(Word.SELLER.in(RenderLanguage.GERMAN) + " "),
+                "a template that names the generic layout gets it over the default: "
+                        + fromGeneric);
+        assertFalse(overruledToALetter.contains(Word.SELLER.in(RenderLanguage.GERMAN) + " "),
+                "and a caller that names the letter gets the letter on it");
     }
 
     // ---------------------------------------------------------------- the head of the letter

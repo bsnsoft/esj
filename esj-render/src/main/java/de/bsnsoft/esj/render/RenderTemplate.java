@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -217,9 +218,13 @@ public final class RenderTemplate {
         byte[] read(String reference);
     }
 
-    /** Returns the layout this template asks for. */
-    Layout layout() {
-        return layout;
+    /**
+     * Returns the layout this template asks for, empty where it names none: the choice is
+     * then the caller's and, where the caller makes none either,
+     * {@link RenderOptions#DEFAULT_LAYOUT}.
+     */
+    Optional<Layout> layout() {
+        return Optional.ofNullable(layout);
     }
 
     /** Returns what this template decided about the letter itself. */
@@ -365,11 +370,11 @@ public final class RenderTemplate {
                 TemplateJson.number(page, "right", where));
     }
 
-    /** Returns the layout a template asks for, the generic one where it says nothing. */
+    /** Returns the layout a template asks for, or {@code null} where it says nothing. */
     private static Layout layout(Object tree) {
         String written = TemplateJson.text(tree, "layout", "the render template");
         if (written == null) {
-            return Layout.GENERIC;
+            return null;
         }
         for (Layout layout : Layout.values()) {
             if (layout.name().toLowerCase(java.util.Locale.ROOT).equals(written)) {

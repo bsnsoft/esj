@@ -28,11 +28,12 @@ import org.junit.jupiter.params.provider.MethodSource;
  * misuse: it is the rounding amount of the standard, and it is labelled as that rather
  * than as a difference the renderer needed to make its own arithmetic come out.
  *
- * <p>Every case runs on the generic layout and on each example template, because the
- * branded layout is the one that adds a column beside the net figures and a row among the
- * totals: a change to the layout that moved a placed figure into a core row, or that let a
- * gross figure stand beside a line the document says nothing gross about, has to fail
- * here and not in somebody's rendering.
+ * <p>Every case runs on the generic layout, named as such because the letter is what a
+ * caller gets without asking, and on each example template, because the branded layout is
+ * the one that adds a column beside the net figures and a row among the totals: a change
+ * to the layout that moved a placed figure into a core row, or that let a gross figure
+ * stand beside a line the document says nothing gross about, has to fail here and not in
+ * somebody's rendering.
  *
  * <p>An extension is the other half of the rule. Its values are printed — a value of the
  * document is on a page — under the name its own registry gives them and in the place
@@ -83,7 +84,8 @@ class PdfNetRuleTest {
         /** Returns the options this case renders with. */
         RenderOptions options() {
             RenderOptions options = RenderOptions.in(language);
-            return template == null ? options : options.with(Templates.example(template));
+            return template == null ? options.layout(Layout.GENERIC)
+                    : options.with(Templates.example(template));
         }
 
         @Override
@@ -147,7 +149,7 @@ class PdfNetRuleTest {
     @Test
     void aValueInsideAnExtensionGroupNamesTheNamespaceOfTheGroup() {
         String text = Pdf.flat(new PdfRenderer().render(Documents.withSubLines(),
-                RenderOptions.in(RenderLanguage.ENGLISH)));
+                RenderOptions.in(RenderLanguage.ENGLISH).layout(Layout.GENERIC)));
 
         assertTrue(text.contains("Sub invoice line (DEX) 1 · Invoice line net amount:"),
                 "a value under a group of the XRechnung extension carries its namespace: "
@@ -190,7 +192,7 @@ class PdfNetRuleTest {
         String figure = Formats.decimal(GROSS_UNIT_PRICE, 2, language);
 
         String text = Pdf.flat(new PdfRenderer(registry)
-                .render(document, RenderOptions.in(language)));
+                .render(document, RenderOptions.in(language).layout(Layout.GENERIC)));
 
         assertTrue(text.contains("Gross unit price (B2C): " + figure),
                 "the extension term is printed under its own name and its namespace: " + text);
