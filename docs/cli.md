@@ -629,8 +629,9 @@ and keeps code 1, because code 0 says the caller received everything it asked fo
 carries the invoice in a sandboxed `iframe` written with `srcdoc`, which keeps the vendored KoSIT
 style sheet and script off the report around it ([`rendering.md`](rendering.md)); printing it
 cuts the invoice off at the frame, and the PDF form sets the invoice after the report as pages of
-the same file instead. Attachments of the invoice travel inside either file. What it commits to,
-row by row: [`validation.md`](validation.md#the-report).
+the same file instead, in the generic layout: a report is a proof, not a letter. Attachments of
+the invoice travel inside either file. What it commits to, row by row:
+[`validation.md`](validation.md#the-report).
 
 The file is bounded: at most 200 findings per block — the heaviest first, so a cut never hides
 an error behind warnings — and 2000 characters of any one text, each with the remainder counted.
@@ -905,7 +906,7 @@ input is any of the three syntaxes or a PDF carrying one of them.
 | `--html` | one self-contained HTML page instead of a PDF |
 | `--lang de\|en` | language of the labels, the date picture and the decimal separator, not of the invoice. Default `de` |
 | `--page A4\|LETTER` | the paper the PDF is laid out for; the HTML page has none. Default `A4` |
-| `--layout generic\|letter` | the page layout of the PDF ([`rendering.md`](rendering.md#two-layouts)); without it the template decides, and a template that says nothing means `generic`. PDF only |
+| `--layout generic\|letter` | the page layout of the PDF ([`rendering.md`](rendering.md#two-layouts)); without it the template decides, and where it says nothing, or there is none, the PDF is the letter. PDF only |
 | `--template <file>` | a branded template: letterhead, logo, colours, fonts, margins, and the places it gives to terms of a model extension ([`templates.md`](templates.md)). PDF only |
 | `--no-payment-code` | leave out the EPC QR code the letter layout draws where the invoice states a credit transfer ([`letter-layout.md`](letter-layout.md#the-payment-code)). Letter layout only |
 | `--embed cii` | attach the invoice to the PDF as a cross industry invoice, so that one command writes the hybrid file ([`embed`](#embed)). PDF only |
@@ -919,10 +920,14 @@ $ echo $?
 0
 ```
 
+That PDF is the invoice as the letter a business sends ([`letter-layout.md`](letter-layout.md)).
+`--layout generic` draws the shape of the semantic model instead, and a template may name either
+layout, as `letterhead.json` names the generic one:
+
 ```console
+$ esj render examples/standard-invoice.esj.json --layout generic --out generic.pdf
 $ esj render examples/standard-invoice.esj.json \
              --template examples/templates/letterhead.json --out branded.pdf
-$ esj render examples/standard-invoice.esj.json --layout letter --out letter.pdf
 $ echo $?
 0
 ```

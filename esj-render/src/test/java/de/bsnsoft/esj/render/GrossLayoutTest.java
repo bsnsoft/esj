@@ -177,9 +177,10 @@ class GrossLayoutTest {
     }
 
     /**
-     * Without a template the same document is the generic net rendering: the extension
-     * values are printed as values of an extension, under their own term and marked with
-     * its namespace, and no column of the layout is theirs.
+     * Without a template the same document is the plain net rendering, the letter a caller
+     * gets without asking: the extension values are printed as values of an extension,
+     * under their own term and marked with its namespace, and no column of the layout is
+     * theirs.
      */
     @Test
     void withoutATemplateTheExtensionIsJustAValue() {

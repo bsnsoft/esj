@@ -14,6 +14,10 @@ Four templates for `esj render --template`, and the artwork they stand on. The f
 | `band-first.png`, `band-following.png` | the same letterhead as images, one point per pixel; an image carries no text, so they carry the hairline alone |
 | `mark.png` | the logo |
 
+The first three name the generic layout, the shape of the semantic model, in their `"layout"`
+member. A template that names none is drawn in the letter layout, the default, and
+`letter.json` names it all the same.
+
 ```console
 esj render invoice.xml --template examples/templates/letterhead.json --out invoice.pdf
 esj render invoice.xml --template examples/templates/letter.json --out letter.pdf

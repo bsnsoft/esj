@@ -226,6 +226,27 @@ class ReportRendererTest {
                 "and the invoice is in the same file");
     }
 
+    /**
+     * The invoice of a report is drawn in the generic layout, and not in the letter a
+     * rendering is drawn in without asking: a report is a proof about the document, and the
+     * shape of the semantic model is the picture of one. The options the invoice is rendered
+     * with name that layout, and its pages carry the block of parties the letter has none of.
+     */
+    @Test
+    void theInvoiceOfAReportIsDrawnInTheGenericLayout() {
+        String parties = Word.SELLER.in(RenderLanguage.GERMAN) + " ";
+        String alone = Pdf.flat(renderer.pdf(Outcomes.valid(), Outcomes.instance(),
+                ReportOptions.defaults().withInvoice(false)));
+        String whole = Pdf.flat(renderer.pdf(Outcomes.valid(), Outcomes.instance(),
+                ReportOptions.defaults()));
+
+        assertEquals(Optional.of(Layout.GENERIC), ReportOptions.defaults().rendering().layout(),
+                "the invoice of a report is rendered with the generic layout named");
+        assertFalse(alone.contains(parties), "the report itself has no block of parties");
+        assertTrue(whole.contains(parties),
+                "and the invoice after it is the generic layout, which has one");
+    }
+
     /** The moment on the page is the caller's string, printed as it was given. */
     @Test
     void theMomentIsPrintedExactlyAsTheCallerWroteIt() {

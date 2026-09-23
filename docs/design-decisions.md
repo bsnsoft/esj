@@ -330,7 +330,9 @@ The generic one is the shape of the semantic model — every term under its own 
 as the code it is — which is what a proof wants and what the report of a validation is built
 on. The letter is the shape of the document a business posts, and the reason it exists is that
 the generic page is right and unusable as an invoice: a recipient is looking for the amount due,
-not for a term called BT-115.
+not for a term called BT-115. That is also why the letter is the default of `esj render` and of
+`PdfRenderer`, and why the report names the generic layout rather than taking whatever the
+default is.
 
 Two layouts could have meant two truths, so they share one rule: **every term occurrence of the
 document reaches a page in either.** What the letter has no place of its own for stands under a

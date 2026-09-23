@@ -101,14 +101,20 @@ class PaymentCodeRenderingTest {
 
     // ---------------------------------------------------------------- where it is drawn
 
-    /** The letter draws it; the generic layout, which is the shape of the model, does not. */
+    /**
+     * The letter draws it, and so does a rendering that names no layout, because the letter
+     * is the default; the generic layout, which is the shape of the model, does not.
+     */
     @Test
     void theLetterDrawsItAndTheGenericLayoutNever() {
-        assertEquals(List.of(), Pdf.codes(new PdfRenderer().render(invoice())),
+        assertEquals(List.of(), Pdf.codes(new PdfRenderer().render(invoice(),
+                        RenderOptions.defaults().layout(Layout.GENERIC))),
                 "the generic layout draws none");
         assertEquals(1, Pdf.codes(new PdfRenderer().render(invoice(),
                         RenderOptions.defaults().layout(Layout.LETTER))).size(),
                 "the letter draws exactly one");
+        assertEquals(1, Pdf.codes(new PdfRenderer().render(invoice())).size(),
+                "and so does the rendering a caller gets without asking");
     }
 
     /** It stands in the payment block, beside the account data and not under the totals. */

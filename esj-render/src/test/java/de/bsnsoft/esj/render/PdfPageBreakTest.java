@@ -15,8 +15,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * An invoice of three hundred lines, and what the layout does when the paper runs out.
@@ -29,7 +30,8 @@ import org.junit.jupiter.api.io.TempDir;
  * <p>What is checked is what a reader of page seven needs: that the table of lines
  * continues there, that its header is above the rows on that page as it was on the first,
  * that the page says which invoice it belongs to and which page of how many it is, and
- * that not one of the three hundred lines fell out between two pages.
+ * that not one of the three hundred lines fell out between two pages. Both layouts are
+ * asked, because both draw the lines with the same table.
  *
  * <p>The test is skipped where no {@code python3} is on the path; the generator has no
  * dependencies beyond it, and a build without a Python is not a broken build.
@@ -48,13 +50,14 @@ class PdfPageBreakTest {
     @TempDir
     private Path directory;
 
-    @Test
-    void anInvoiceOfThreeHundredLinesRunsOverPagesWithItsHeaderRepeated() {
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void anInvoiceOfThreeHundredLinesRunsOverPagesWithItsHeaderRepeated(Layout layout) {
         assumeTrue(python(), "python3 is on the path");
         SemanticDocument document = generated();
         assertEquals(LINES, lineCount(document), "the generated invoice has " + LINES + " lines");
 
-        byte[] pdf = new PdfRenderer().render(document);
+        byte[] pdf = new PdfRenderer().render(document, RenderOptions.defaults().layout(layout));
 
         int pages = Pdf.pages(pdf);
         assertTrue(pages > 5, "three hundred lines take more than five pages, not " + pages);
@@ -78,12 +81,14 @@ class PdfPageBreakTest {
         assertTrue(withHeader.contains(2), "the second page of the table carries it too");
     }
 
-    @Test
-    void notOneOfThoseLinesIsLost() {
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void notOneOfThoseLinesIsLost(Layout layout) {
         assumeTrue(python(), "python3 is on the path");
         SemanticDocument document = generated();
 
-        String text = Pdf.flat(new PdfRenderer().render(document));
+        String text = Pdf.flat(new PdfRenderer().render(document,
+                RenderOptions.defaults().layout(layout)));
 
         List<String> missing = new ArrayList<>();
         for (int line = 0; line < LINES; line++) {
@@ -96,12 +101,15 @@ class PdfPageBreakTest {
         assertEquals(List.of(), missing, "every line identifier is on a page");
     }
 
-    @Test
-    void andItRendersToTheSameBytesTwice() {
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void andItRendersToTheSameBytesTwice(Layout layout) {
         assumeTrue(python(), "python3 is on the path");
         SemanticDocument document = generated();
+        RenderOptions options = RenderOptions.defaults().layout(layout);
 
-        assertArrayEquals(new PdfRenderer().render(document), new PdfRenderer().render(document),
+        assertArrayEquals(new PdfRenderer().render(document, options),
+                new PdfRenderer().render(document, options),
                 "an invoice of three hundred lines renders to the same bytes twice");
     }
 

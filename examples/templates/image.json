@@ -1,6 +1,7 @@
 {
   "template": "esj-render-template/0.1",
   "name": "Letterhead (image) with a mark",
+  "layout": "generic",
   "letterhead": {
     "first":     { "file": "band-first.png" },
     "following": { "file": "band-following.png" }

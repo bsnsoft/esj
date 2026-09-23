@@ -10,7 +10,9 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -59,14 +61,17 @@ class RenderCommandTest {
     /**
      * The bytes of a rendering are a function of the document, the language and the paper,
      * and the command line adds nothing of its own to them. The file compared against here
-     * is the same rendering {@code esj-render} checks in, so a difference between the two is
-     * either a change to the renderer, which that module's own golden test sees first, or
-     * something this command did to the document on the way.
+     * is the same rendering {@code esj-render} checks in, the generic layout named as it is
+     * there, so a difference between the two is either a change to the renderer, which that
+     * module's own golden test sees first, or something this command did to the document on
+     * the way.
      */
     @Test
     void thePdfIsTheOneCheckedIn() {
-        Cli.Run first = Cli.run("render", example("minimal"), "--out", "-");
-        Cli.Run second = Cli.run("render", example("minimal"), "--out", "-");
+        Cli.Run first = Cli.run("render", example("minimal"), "--layout", "generic",
+                "--out", "-");
+        Cli.Run second = Cli.run("render", example("minimal"), "--layout", "generic",
+                "--out", "-");
 
         assertArrayEquals(Fixtures.bytes("golden/render-minimal-de-a4.pdf"), first.out(),
                 "the rendering is the one checked in, byte for byte; if the change was"
@@ -235,21 +240,38 @@ class RenderCommandTest {
     }
 
     /**
-     * {@code --layout letter} draws the invoice as a business letter. The two layouts show
-     * the same document and are two different files; the generic one stays the default.
+     * {@code --layout} reaches the renderer: the two layouts show the same document and are
+     * two different files.
      */
     @Test
     void theLayoutReachesTheRendering() {
-        Cli.Run generic = Cli.run("render", example("standard-invoice"), "--out", "-");
+        Cli.Run generic = Cli.run("render", example("standard-invoice"), "--layout", "generic",
+                "--out", "-");
         Cli.Run letter = Cli.run("render", example("standard-invoice"), "--layout", "letter",
                 "--out", "-");
-        Cli.Run named = Cli.run("render", example("standard-invoice"), "--layout", "generic",
-                "--out", "-");
 
+        assertEquals(ExitCode.SUCCESS, generic.exitCode(), generic.err());
         assertEquals(ExitCode.SUCCESS, letter.exitCode(), letter.err());
         assertFalse(Arrays.equals(generic.out(), letter.out()),
                 "the two layouts are two renderings");
-        assertArrayEquals(generic.out(), named.out(), "and the generic one is the default");
+    }
+
+    /**
+     * Without {@code --layout} the PDF is the letter, the layout the library draws where
+     * nobody names one: the same bytes as {@code --layout letter}, on either paper and in
+     * either language.
+     */
+    @Test
+    void theLetterIsTheLayoutWithoutTheOption() {
+        for (String[] options : new String[][] {{}, {"--page", "LETTER", "--lang", "en"}}) {
+            Cli.Run unnamed = Cli.run(render(example("standard-invoice"), options));
+            Cli.Run letter = Cli.run(render(example("standard-invoice"), options,
+                    "--layout", "letter"));
+
+            assertEquals(ExitCode.SUCCESS, unnamed.exitCode(), unnamed.err());
+            assertArrayEquals(letter.out(), unnamed.out(),
+                    "no layout named is the letter layout: " + Arrays.toString(options));
+        }
     }
 
     @Test
@@ -267,13 +289,13 @@ class RenderCommandTest {
      */
     @Test
     void thePaymentCodeIsLeftOutWhereTheCommandLineSaysSo() {
-        Cli.Run letter = Cli.run("render", example("standard-invoice"), "--layout", "letter",
+        Cli.Run letter = Cli.run("render", example("standard-invoice"), "--out", "-");
+        Cli.Run without = Cli.run("render", example("standard-invoice"),
+                "--no-payment-code", "--out", "-");
+        Cli.Run generic = Cli.run("render", example("standard-invoice"), "--layout", "generic",
                 "--out", "-");
-        Cli.Run without = Cli.run("render", example("standard-invoice"), "--layout", "letter",
-                "--no-payment-code", "--out", "-");
-        Cli.Run generic = Cli.run("render", example("standard-invoice"), "--out", "-");
         Cli.Run genericWithout = Cli.run("render", example("standard-invoice"),
-                "--no-payment-code", "--out", "-");
+                "--layout", "generic", "--no-payment-code", "--out", "-");
 
         assertEquals(ExitCode.SUCCESS, without.exitCode(), without.err());
         assertFalse(Arrays.equals(letter.out(), without.out()),
@@ -357,6 +379,15 @@ class RenderCommandTest {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /** Returns the arguments of a render run to the standard output: a file, then options. */
+    private static String[] render(String file, String[] options, String... more) {
+        List<String> arguments = new ArrayList<>(List.of("render", file));
+        arguments.addAll(List.of(options));
+        arguments.addAll(List.of(more));
+        arguments.addAll(List.of("--out", "-"));
+        return arguments.toArray(String[]::new);
     }
 
     /** Writes an example of the repository into the temporary directory and names it. */

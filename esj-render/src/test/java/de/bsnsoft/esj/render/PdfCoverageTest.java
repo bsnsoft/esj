@@ -19,7 +19,11 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * What of a document reaches its PDF.
+ * What of a document reaches its PDF in the generic layout.
+ *
+ * <p>The layout is named in every rendering here, because it is not the one a caller gets
+ * without asking: that is the letter, and {@code LetterCoverageTest} makes the same claim
+ * for it.
  *
  * <p>The claim this test makes is the one a user of the renderer needs: every value the
  * document carries is printed, and so is every supplementary component beside it. It is
@@ -132,7 +136,7 @@ class PdfCoverageTest {
     void subInvoiceLinesAreShownUnderTheirLine() {
         SemanticDocument document = Documents.withSubLines();
 
-        String text = Pdf.flat(new PdfRenderer().render(document));
+        String text = Pdf.flat(new PdfRenderer().render(document, generic(RenderLanguage.GERMAN)));
 
         int line = text.indexOf("Assembly, complete");
         int breakdown = text.indexOf(Word.VAT_BREAKDOWN.in(RenderLanguage.GERMAN));
@@ -156,7 +160,7 @@ class PdfCoverageTest {
                 Corpus.instance("business-cases/standard/01.15a-INVOICE_ubl.xml");
         SemanticValue attachment = document.value(SemanticPath.of("/BG-24/0/BT-125")).orElseThrow();
 
-        byte[] pdf = new PdfRenderer().render(document);
+        byte[] pdf = new PdfRenderer().render(document, generic(RenderLanguage.GERMAN));
         String text = Pdf.flat(pdf);
 
         assertTrue(attachment.content().length() > 100_000,
@@ -179,7 +183,7 @@ class PdfCoverageTest {
 
     private void assertEverythingIsShown(Registry registry, SemanticDocument document,
                                          RenderLanguage language, String what) {
-        byte[] pdf = new PdfRenderer(registry).render(document, RenderOptions.in(language));
+        byte[] pdf = new PdfRenderer(registry).render(document, generic(language));
         String text = Pdf.text(pdf);
         List<String> missing = new ArrayList<>();
         for (Map.Entry<SemanticPath, SemanticValue> entry : document.values().entrySet()) {
@@ -198,6 +202,11 @@ class PdfCoverageTest {
         }
         assertEquals(List.of(), missing,
                 what + " in " + language + ": every value is in the rendering");
+    }
+
+    /** Returns the options of the generic layout in a language, which this test is about. */
+    private static RenderOptions generic(RenderLanguage language) {
+        return RenderOptions.in(language).layout(Layout.GENERIC);
     }
 
     private static List<String> components(SemanticValue value) {

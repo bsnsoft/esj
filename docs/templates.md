@@ -23,11 +23,11 @@ EN 16931-1 stay the net ones ([`rendering.md`](rendering.md)).
 |---|---|
 | `template` | `"esj-render-template/0.1"`, the marker this version reads |
 | `name` | what the template calls itself; it appears nowhere on the page |
-| `layout` | `"generic"` or `"letter"`, the page layout ([`letter-layout.md`](letter-layout.md)). Default `generic`; a layout the caller names wins |
+| `layout` | `"generic"` or `"letter"`, the page layout ([`letter-layout.md`](letter-layout.md)). Default `letter`; a layout the caller names wins |
 | `letter` | what the letter layout leaves to the sender, [below](#the-letter); the generic layout ignores it |
 | `letterhead.first`, `letterhead.following` | `{"file": …, "page": n}`: one page of a PDF, or a PNG or JPEG stretched over the page. Only `first` given: the same sheet on every page |
 | `logo` | `{"file": …, "x": …, "y": …, "width": …, "height": …, "pages": "first"⎮"all"}`, in points, `x` from the left edge and `y` below the top edge |
-| `colors` | `text`, `muted`, `rule`, `heading`, `tableHeaderFill`, `tableHeaderText`, each `#rrggbb` in sRGB; one left out keeps the grey of the generic layout |
+| `colors` | `text`, `muted`, `rule`, `heading`, `tableHeaderFill`, `tableHeaderText`, each `#rrggbb` in sRGB; one left out keeps the grey of a rendering without a template |
 | `fonts` | `{"regular": …, "bold": …}`, TrueType; both weights or neither |
 | `margins.first`, `margins.following` | `top`, `bottom`, `left`, `right` in points, put over the margins of the layout; `bottom` is at least 25, which is what holds the page footer |
 | `extensionTerms` | the places the layout gives to terms of a model extension |
@@ -57,11 +57,11 @@ the closing heading instead ([`letter-layout.md`](letter-layout.md#geometry)).
 
 ## The letter
 
-`"layout": "letter"` draws the invoice as a business letter and `"letter"` is what that layout
-leaves to the sender — the address field, whether the head data stands in the reference line
-(the default) or in the block beside the address field and how far down the printed head of
-the letterhead reaches, the fold and punch marks, whether the seller's details stand along
-the foot, and whether the payment block carries the EPC QR code of a credit transfer.
+The letter layout is the default, and `"layout": "letter"` names it in so many words; `"letter"`
+is what that layout leaves to the sender — the address field, whether the head data stands in
+the reference line (the default) or in the block beside the address field and how far down the
+printed head of the letterhead reaches, the fold and punch marks, whether the seller's details
+stand along the foot, and whether the payment block carries the EPC QR code of a credit transfer.
 [`letter-layout.md`](letter-layout.md#what-the-template-decides) is the reference;
 `examples/templates/letter.json` is the example.
 
@@ -122,7 +122,7 @@ has a place for:
   registry does know the term, the registry decides the type. The terms
   `examples/templates/gross.json` places are those of the B2C extension ([b2c.md](b2c.md)),
   which `esj render --extension b2c` loads.
-- BT-114 is the invoice rounding amount of EN 16931-1 in a branded rendering as in a generic
+- BT-114 is the invoice rounding amount of EN 16931-1 in a branded rendering as in an unbranded
   one. Nothing of the template writes into a core term, and nothing derives a gross figure the
   document does not carry.
 

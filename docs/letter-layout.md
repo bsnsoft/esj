@@ -1,9 +1,10 @@
 # The letter layout
 
-The second of the two PDF layouts ([`rendering.md`](rendering.md#two-layouts)): the invoice as
-the letter a business sends. `RenderOptions.layout(Layout.LETTER)`, template member
-`"layout": "letter"`, `esj render --layout letter` ([`cli.md`](cli.md#render)). The default is
-`Layout.GENERIC`, and a layout the caller names wins over the one a template names.
+The default of the two PDF layouts ([`rendering.md`](rendering.md#two-layouts)): the invoice as
+the letter a business sends. `esj render` and `PdfRenderer.render(document)` draw it where
+neither the caller nor a template names a layout; `--layout generic`, `Layout.GENERIC` or the
+template member `"layout": "generic"` ask for the other one ([`cli.md`](cli.md#render)), and a
+layout the caller names wins over the one a template names.
 
 ## What it places where
 

@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.verapdf.core.EncryptedPdfException;
 import org.verapdf.core.ModelParsingException;
@@ -96,7 +97,8 @@ class PdfaTest {
     @ParameterizedTest
     @MethodSource("instances")
     void everyRenderingOfTheCorpusIsPdfA3b(String instance) {
-        assertPdfa(instance, new PdfRenderer().render(Corpus.instance(instance)));
+        assertPdfa(instance, new PdfRenderer().render(Corpus.instance(instance),
+                RenderOptions.defaults().layout(Layout.GENERIC)));
     }
 
     @ParameterizedTest
@@ -107,7 +109,7 @@ class PdfaTest {
             for (PageSize size : PageSize.values()) {
                 assertPdfa(example + " in " + language + " on " + size,
                         new PdfRenderer().render(document,
-                                RenderOptions.in(language).on(size)));
+                                RenderOptions.in(language).on(size).layout(Layout.GENERIC)));
             }
         }
     }
@@ -115,20 +117,27 @@ class PdfaTest {
     /**
      * The built documents, which is where the cases a real invoice does not have live: a
      * value at every term of the model, a document that breaks over several pages, and one
-     * that carries no invoice number and therefore no title.
+     * that carries no invoice number and therefore no title. In both layouts.
+     *
+     * @param layout the layout
      */
-    @Test
-    void theBuiltDocumentsArePdfA3bToo() {
-        assertPdfa("every term", new PdfRenderer().render(Documents.everyTerm()));
-        assertPdfa("sub invoice lines", new PdfRenderer().render(Documents.withSubLines()));
-        assertPdfa("many pages", new PdfRenderer().render(Documents.withDetailedLines(60)));
-        assertPdfa("no invoice number", new PdfRenderer().render(withoutInvoiceNumber()));
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void theBuiltDocumentsArePdfA3bToo(Layout layout) {
+        RenderOptions options = RenderOptions.defaults().layout(layout);
+        assertPdfa("every term", new PdfRenderer().render(Documents.everyTerm(), options));
+        assertPdfa("sub invoice lines",
+                new PdfRenderer().render(Documents.withSubLines(), options));
+        assertPdfa("many pages",
+                new PdfRenderer().render(Documents.withDetailedLines(60), options));
+        assertPdfa("no invoice number",
+                new PdfRenderer().render(withoutInvoiceNumber(), options));
     }
 
     /**
-     * Every letter is an archival file too. The layout is the other one and the claim is
-     * the same claim, so the oracle is asked about every instance of the corpus in that
-     * layout as well as in the generic one.
+     * Every letter is an archival file too. It is the layout a caller gets without asking
+     * and the claim is the same claim, so the oracle is asked about every instance of the
+     * corpus in that layout as well as in the generic one.
      */
     @ParameterizedTest
     @MethodSource("instances")

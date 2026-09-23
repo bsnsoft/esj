@@ -734,19 +734,19 @@ PdfRenderer pdf = new PdfRenderer();
 byte[] a4 = pdf.render(document);
 byte[] usLetter = pdf.render(document,
         RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER));
-byte[] businessLetter = pdf.render(document, RenderOptions.defaults().layout(Layout.LETTER));
+byte[] generic = pdf.render(document, RenderOptions.defaults().layout(Layout.GENERIC));
 ```
 
 The HTML rendering is the document written as the XR representation and handed to
 `xrechnung-html.xsl` of the KoSIT visualization; its report is `XrExporter`'s and the
 `extensions` subtree never reaches it. The PDF is drawn with PDFBox as PDF/A-3b, in one of two
-layouts: `Layout.GENERIC`, the shape of the semantic model, or `Layout.LETTER`, a business
-letter. `RenderOptions.with(template)` brings a letterhead, a logo, colours, fonts, margins,
-places for the terms of a model extension and a layout of its own, which an explicit
-`layout(…)` overrules ([`templates.md`](templates.md)); `withMaxPages(int)` bounds a rendering
-at 2 000 pages and throws `RenderLimitException` beyond it. Two runs give the same bytes, an
-edition the registry does not describe is refused with `IllegalArgumentException`, and
-[`rendering.md`](rendering.md) is what each shows.
+layouts: `Layout.LETTER`, a business letter and the default (`RenderOptions.DEFAULT_LAYOUT`), or
+`Layout.GENERIC`, the shape of the semantic model. `RenderOptions.with(template)` brings a
+letterhead, a logo, colours, fonts, margins, places for the terms of a model extension and a
+layout of its own, which an explicit `layout(…)` overrules ([`templates.md`](templates.md));
+`withMaxPages(int)` bounds a rendering at 2 000 pages and throws `RenderLimitException` beyond
+it. Two runs give the same bytes, an edition the registry does not describe is refused with
+`IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
 
 ## Validating against the official artefacts
 

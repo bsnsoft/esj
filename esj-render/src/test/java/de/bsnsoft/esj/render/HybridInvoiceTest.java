@@ -74,10 +74,11 @@ class HybridInvoiceTest {
     private static final String DECLARATION = "PDF-STRUCTURE-PDFA";
 
     /**
-     * The file {@code --no-esj} writes over {@code examples/standard-invoice.esj.json}, by
-     * its digest: the hybrid invoice as this project wrote it before the ESJ attachment
-     * existed. It changes when the rendering, the invoice or the container changes, which
-     * is when somebody should look.
+     * The file {@code --no-esj} writes over the generic rendering of
+     * {@code examples/standard-invoice.esj.json}, by its digest: the hybrid invoice as this
+     * project wrote it before the ESJ attachment existed, when that layout was the default.
+     * It changes when the rendering, the invoice or the container changes, which is when
+     * somebody should look.
      */
     private static final String WITHOUT_ESJ =
             "b53cbb53128a0043a50997f08b4f1148f00672ec6bfa40191ed0a044c3bc1ef3";
@@ -184,7 +185,8 @@ class HybridInvoiceTest {
     @Test
     void theSwitchWritesTheFileThisProjectWroteBefore() {
         SemanticDocument document = Corpus.example("standard-invoice");
-        byte[] rendering = new PdfRenderer().render(document);
+        byte[] rendering = new PdfRenderer().render(document,
+                RenderOptions.defaults().layout(Layout.GENERIC));
 
         byte[] without = FacturX.embed(rendering, document,
                 EmbedOptions.of(FacturXProfile.EN_16931).withEsj(false));

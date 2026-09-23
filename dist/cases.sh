@@ -102,10 +102,10 @@ render-page render --page LETTER --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-template render --template $EXAMPLES/templates/letterhead.json --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-embed render --template $EXAMPLES/templates/letterhead.json --embed cii --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-template-b2c render --extension b2c --template $EXAMPLES/templates/gross.json --out @OUT $EXAMPLES/b2c-gross.esj.json
-render-layout-letter render --layout letter --out @OUT $EXAMPLES/standard-invoice.esj.json
+render-layout-generic render --layout generic --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-template-letter render --template $EXAMPLES/templates/letter.json --out @OUT $EXAMPLES/standard-invoice.esj.json
-render-no-payment-code render --layout letter --no-payment-code --out @OUT $EXAMPLES/standard-invoice.esj.json
-render-layout-letter-pages render --layout letter --out @OUT $EXAMPLES/multiple-lines.esj.json
+render-no-payment-code render --no-payment-code --out @OUT $EXAMPLES/standard-invoice.esj.json
+render-letter-pages render --out @OUT $EXAMPLES/multiple-lines.esj.json
 validate-hybrid validate @FROM:render-embed
 inspect-hybrid inspect @FROM:render-embed
 embed-rendering embed @FROM:render-pdf $EXAMPLES/standard-invoice.esj.json --out @OUT

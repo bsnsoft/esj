@@ -47,7 +47,8 @@ class TableRowsTest {
     @MethodSource("templates")
     void theLinesHangingUnderARowAreOnThePageOfThatRow(String template) {
         SemanticDocument document = Corpus.example("standard-invoice");
-        RenderOptions options = template.isEmpty() ? RenderOptions.defaults()
+        RenderOptions options = template.isEmpty()
+                ? RenderOptions.defaults().layout(Layout.GENERIC)
                 : RenderOptions.defaults().with(Templates.example(template));
 
         byte[] pdf = new PdfRenderer().render(document, options);
@@ -75,10 +76,14 @@ class TableRowsTest {
      * Eighty lines, each with a line hanging under it, over several pages: not one of the
      * eighty is parted from its own text. The identifier of a line and the word in the line
      * under it are different words, so a page can be asked which of the two it carries.
+     *
+     * @param layout the layout, both of which draw the same table
      */
-    @Test
-    void noRowOfALongInvoiceIsPartedFromItsOwnDetails() {
-        byte[] pdf = new PdfRenderer().render(Documents.withDetailedLines(80));
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void noRowOfALongInvoiceIsPartedFromItsOwnDetails(Layout layout) {
+        byte[] pdf = new PdfRenderer().render(Documents.withDetailedLines(80),
+                RenderOptions.defaults().layout(layout));
 
         int pages = Pdf.pages(pdf);
         assertTrue(pages > 2, "eighty detailed lines take more than two pages, not " + pages);
@@ -98,12 +103,15 @@ class TableRowsTest {
      * A block taller than an empty page body is cut, because no page would hold it whole.
      * The cut falls at a line boundary and the page that carries the rest is opened by the
      * identifier of the row, which is what a reader needs to know whose text this is.
+     *
+     * @param layout the layout, both of which draw the same table
      */
-    @Test
-    void aBlockTallerThanAPageIsStillCut() {
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void aBlockTallerThanAPageIsStillCut(Layout layout) {
         for (RenderLanguage language : RenderLanguage.values()) {
             byte[] pdf = new PdfRenderer().render(Documents.withALineDescribedAtLength(3000),
-                    RenderOptions.in(language));
+                    RenderOptions.in(language).layout(layout));
 
             int pages = Pdf.pages(pdf);
             assertTrue(pages > 2, "a description of three thousand words takes more than two "
@@ -117,10 +125,14 @@ class TableRowsTest {
      * A row whose own cell is taller than a page is cut as well, and the same applies where
      * the table is the first thing on the page: the heading and the column header are not
      * left alone at the foot of a page for a block that could never be moved.
+     *
+     * @param layout the layout, both of which draw the same table
      */
-    @Test
-    void aRowTallerThanAPageDoesNotStrandItsHeading() {
-        byte[] pdf = new PdfRenderer().render(Documents.withALineNamedAtLength(3000));
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void aRowTallerThanAPageDoesNotStrandItsHeading(Layout layout) {
+        byte[] pdf = new PdfRenderer().render(Documents.withALineNamedAtLength(3000),
+                RenderOptions.defaults().layout(layout));
 
         int pages = Pdf.pages(pdf);
         assertTrue(pages > 2, "an item name of three thousand words takes more than two "

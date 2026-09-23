@@ -3,7 +3,7 @@
   "$id": "tag:bsnsoft.de,2026:esj/schema/0.1/render-template.schema.json",
   "$comment": "Provisional identifier. It is a tag URI (RFC 4151) because no schema is published under an https URL yet; the identifier will move to an https URL when the project publishes one.",
   "title": "ESJ render template 0.1",
-  "description": "A branded PDF rendering: a letterhead, a logo, a colour scheme, fonts, page margins, and the places the layout gives to terms of a model extension. A template carries no layout: the sections, the tables and the order of the invoice are the ones of the generic rendering of esj-render, and every value of the document reaches a page either way. Files are named relative to the template and stay in its directory. docs/templates.md is what each member does.",
+  "description": "A branded PDF rendering: a letterhead, a logo, a colour scheme, fonts, page margins, and the places the layout gives to terms of a model extension. A template carries no layout of its own: the sections, the tables and the order of the invoice are the ones of the layout of esj-render it names, the letter unless it names the generic one, and every value of the document reaches a page either way. Files are named relative to the template and stay in its directory. docs/templates.md is what each member does.",
 
   "type": "object",
   "required": ["template"],
@@ -19,7 +19,7 @@
       "maxLength": 200
     },
     "layout": {
-      "description": "Which of the two page layouts the rendering is drawn in: the registry-driven generic layout, which is the shape of the semantic model, or the letter layout, which is the shape of a business letter. Every term occurrence of the document reaches a page in either. An explicit choice by the caller wins over this. Default: generic.",
+      "description": "Which of the two page layouts the rendering is drawn in: the letter layout, which is the shape of a business letter, or the registry-driven generic layout, which is the shape of the semantic model. Every term occurrence of the document reaches a page in either. An explicit choice by the caller wins over this. Default: letter.",
       "enum": ["generic", "letter"]
     },
     "letter": {
@@ -94,7 +94,7 @@
       }
     },
     "colors": {
-      "description": "The six colours the layout draws in, each written as #rrggbb in sRGB. A colour the template leaves out keeps the grey the generic rendering uses.",
+      "description": "The six colours the layout draws in, each written as #rrggbb in sRGB. A colour the template leaves out keeps the grey a rendering without a template uses.",
       "type": "object",
       "additionalProperties": false,
       "properties": {

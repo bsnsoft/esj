@@ -24,9 +24,9 @@ import org.junit.jupiter.api.io.TempDir;
  * cannot tell what is missing.
  *
  * <p>So: the structural layers select the registry of the document's own edition and
- * measure it; the generic PDF rendering is driven by that same registry and draws every
- * value; the rule pack, the binding tables and the vendored stylesheets are written for
- * one edition and say so; and {@code get}, {@code list}, {@code diff} and
+ * measure it; the PDF rendering, in either layout, is driven by that same registry and
+ * draws every value; the rule pack, the binding tables and the vendored stylesheets are
+ * written for one edition and say so; and {@code get}, {@code list}, {@code diff} and
  * {@code canonicalize} are edition-blind by construction and work unchanged.
  *
  * <p>Every test that needs the 2026 edition is skipped where this build carries no

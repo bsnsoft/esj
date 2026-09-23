@@ -140,7 +140,7 @@ than at a file.
 
 ```text
   SemanticDocument
-        │  PdfLayout            sections, tables, labels; the registry decides the types
+        │  LetterLayout         the letter, by default; PdfLayout for the sections of the model
         ▼
   Sheet (PDFBox)                pages, cursor, wrapping, page breaks, footers
         │  Liberation Sans      vendored, SIL OFL 1.1, subset and embedded
@@ -155,7 +155,8 @@ than at a file.
 ### Two layouts
 
 `RenderOptions.layout(Layout)`, template member `"layout"`, `esj render --layout`. Default
-`generic`; a layout the caller names wins over one the template names.
+`letter` (`RenderOptions.DEFAULT_LAYOUT`); a layout the caller names wins over one the template
+names. The validation report draws the invoice it carries in the generic layout.
 
 | | `Layout.GENERIC` | `Layout.LETTER` |
 |---|---|---|
@@ -280,11 +281,11 @@ The same document, language, page size and template give the same bytes. The pro
 creator are fixed strings, the file and its XMP packet carry no date of any kind, its `/ID` is
 a digest of the file itself rather than a number from the clock — which is the job ISO 32000-1,
 14.4 gives it, and what lets an archive tell two renderings of one invoice number apart — and
-the embedded font subsets are a function of the text. Two renderings of the two examples are
-checked into
+the embedded font subsets are a function of the text. Four renderings of the two examples, two
+in each layout, are checked into
 `esj-render/src/test/resources/golden/` and compared byte for byte on every build, which is
 what catches a clock, a locale or an iteration order that a later change might let in. The
-default locale of the machine is checked explicitly rather than left to the build: the two
+default locale of the machine is checked explicitly rather than left to the build: the four
 golden files are rendered again under `ar-EG`, `ne-NP` and `tr-TR` and have to come out the
 same, because a build whose own locale happens to be the right one would never notice a number
 written with the digits of another script.
@@ -336,11 +337,13 @@ document; `esj embed` is that step over a PDF from elsewhere ([`pdf-output.md`](
 
 The destination is `--out` and has no default — `-` is the standard output, for a pipeline —
 `--lang de|en` is the language of this page, `--page A4|LETTER` the paper of the PDF and
-`--layout generic|letter` its layout, neither of which the HTML page has. [`cli.md`](cli.md#render) is the reference: the options,
+`--layout generic|letter` its layout, the letter where neither the command line nor the template
+names one; the HTML page has neither. [`cli.md`](cli.md#render) is the reference: the options,
 what the command writes about values that did not reach an HTML page, and the exit codes.
 
-`esj validate --report` puts either rendering inside the file it writes, with what the rendering
-left behind printed beside it ([`cli.md`](cli.md#the-report)). Every page of the PDF report names
+`esj validate --report` puts either rendering inside the file it writes — the PDF one in the
+generic layout, because a report is a proof and not a letter — with what the rendering left behind
+printed beside it ([`cli.md`](cli.md#the-report)). Every page of the PDF report names
 the input in its footer; a path too long for the room left of the page count is shortened in its
 middle — the beginning and the file name stay, an ellipsis stands for the rest — and the report
 names it whole among the identity of the run.

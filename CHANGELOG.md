@@ -14,6 +14,10 @@ still change; a change to it is named here under *Format*.
 
 ### Changed
 
+- The letter layout is the default of `esj render` and of `PdfRenderer`
+  (`RenderOptions.DEFAULT_LAYOUT`), for a template that names none as well; `--layout generic`,
+  `Layout.GENERIC` or `"layout": "generic"` ask for the generic layout, in which the PDF
+  validation report still draws the invoice it carries.
 - Letter layout: a page after the first begins as far under the rule of its compact head as the
   first section of page one begins under the rule of the title, whatever opens the page.
 - Letter layout: the seller's details in the foot of page one are written value first — an

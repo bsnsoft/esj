@@ -34,10 +34,11 @@ import picocli.CommandLine.Spec;
  * {@code esj render}: write a document as something a person reads.
  *
  * <p>The command reads any input the other commands read and hands the document to
- * {@code esj-render}: a PDF laid out by this project, or, with {@code --html}, one
- * self-contained HTML page produced by the vendored KoSIT XRechnung visualization. Both are
- * net renderings of the EN 16931 core and derive nothing; {@code docs/rendering.md} says what
- * each of them shows.
+ * {@code esj-render}: a PDF laid out by this project — the letter layout unless
+ * {@code --layout generic} or the template says otherwise, as for a caller of the library —
+ * or, with {@code --html}, one self-contained HTML page produced by the vendored KoSIT
+ * XRechnung visualization. Both are net renderings of the EN 16931 core and derive nothing;
+ * {@code docs/rendering.md} says what each of them shows.
  *
  * <p>The rendering goes to {@code --out} and never to the standard output by default, because
  * a PDF written into a terminal that nobody redirected is a lost minute for its user and a
@@ -110,13 +111,13 @@ final class RenderCommand implements Callable<Integer> {
     private String page;
 
     @Option(order = 45, names = "--layout", paramLabel = "<generic|letter>",
-            description = "The page layout of the PDF: the generic layout, which is the"
+            description = "The page layout of the PDF: the letter layout, which is the"
+                    + " shape of a business letter, or the generic layout, which is the"
                     + " shape of the semantic model and shows every term under its own"
-                    + " label, or the letter layout, which is the shape of a business"
-                    + " letter. Every term occurrence of the document reaches a page in"
-                    + " either. Without this the template decides, and a template that"
-                    + " says nothing means generic. The HTML page has no layout of this"
-                    + " tool's and says so. See docs/rendering.md.")
+                    + " label. Every term occurrence of the document reaches a page in"
+                    + " either. Without this the template decides, and where it says"
+                    + " nothing, or there is none, the PDF is the letter. The HTML page has"
+                    + " no layout of this tool's and says so. See docs/rendering.md.")
     private String layout;
 
     @Option(order = 50, names = "--template", paramLabel = "<file>",

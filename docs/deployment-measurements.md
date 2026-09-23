@@ -358,7 +358,8 @@ image where a document is large enough for the just-in-time compiler to earn its
 `esj render` is the one command whose cost is in what it writes: a PDF is assembled whole in
 memory, so the cost follows the pages, and one value of a megabyte in a narrow column is close
 to three hundred of them. Each cell is *wall clock in seconds / peak resident set in MiB*, one
-run at a load average between 2.6 and 15: read the times as an order of magnitude.
+run at a load average between 2.6 and 15: read the times as an order of magnitude. The PDF was
+drawn in the generic layout, the default of `esj render` before 0.9.2.
 
 | Document | Rendering | `-Xmx256m` | `-Xmx512m` | `-Xmx1g` | `-Xmx2g` |
 |---|---|---|---|---|---|

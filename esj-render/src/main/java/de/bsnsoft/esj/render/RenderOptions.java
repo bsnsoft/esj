@@ -12,12 +12,13 @@ import java.util.Optional;
  * ignores it. The page bound is what a rendering may cost.
  *
  * <p>The {@link Layout} is the one switch that moves values on the page, and it has two
- * settings, both of which show every term occurrence of the document: the registry-driven
- * generic layout, which is the default, and the letter layout. It is left empty here where
+ * settings, both of which show every term occurrence of the document: the letter layout,
+ * which is the default, and the registry-driven generic layout. It is left empty here where
  * the caller did not choose, so that a {@link RenderTemplate} may choose instead and an
- * explicit choice of the caller still wins over the template. The HTML rendering is the
- * layout of the KoSIT XRechnung visualization and this module is the user of it, not its
- * author, so the HTML rendering has neither this switch nor a template.
+ * explicit choice of the caller still wins over the template; where neither chooses,
+ * {@link #DEFAULT_LAYOUT} does. The HTML rendering is the layout of the KoSIT XRechnung
+ * visualization and this module is the user of it, not its author, so the HTML rendering
+ * has neither this switch nor a template.
  *
  * <p>The payment code is the second: the letter layout draws the EPC QR code of a credit
  * transfer the document states, and a caller that wants none says so here. It is left empty
@@ -30,10 +31,10 @@ import java.util.Optional;
  *
  * @param language the language the labels, the dates and the decimals are written in
  * @param pageSize the paper a PDF rendering is laid out for
- * @param template the branded template, empty for the generic rendering
+ * @param template the branded template, empty for an unbranded rendering
  * @param maxPages how many pages a PDF rendering may have before it is refused
  * @param layout   the page layout the caller chose, empty to leave the choice to the
- *                 template and, where that is silent, to {@link Layout#GENERIC}
+ *                 template and, where that is silent, to {@link #DEFAULT_LAYOUT}
  * @param paymentCode whether the letter layout draws the EPC QR code of a credit transfer
  *                    the document states, empty to leave the choice to the template and,
  *                    where that is silent, to drawing it
@@ -55,14 +56,22 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
     public static final int DEFAULT_MAX_PAGES = 2_000;
 
     /**
+     * The layout a PDF rendering is drawn in where neither the caller nor the template
+     * names one: the letter, which is what an invoice rendered for its recipient is. A
+     * caller that wants the shape of the semantic model names {@link Layout#GENERIC}, as
+     * the validation report does for the invoice it carries.
+     */
+    public static final Layout DEFAULT_LAYOUT = Layout.LETTER;
+
+    /**
      * Checks the members.
      *
      * @param language the language the labels, the dates and the decimals are written in
      * @param pageSize the paper a PDF rendering is laid out for
-     * @param template the branded template, empty for the generic rendering
+     * @param template the branded template, empty for an unbranded rendering
      * @param maxPages how many pages a PDF rendering may have before it is refused
      * @param layout   the page layout the caller chose, empty to leave the choice to the
-     *                 template
+     *                 template and then to {@link #DEFAULT_LAYOUT}
      * @param paymentCode whether the letter layout draws the EPC QR code, empty to leave
      *                    the choice to the template
      * @throws NullPointerException     if an argument is {@code null}
@@ -83,7 +92,8 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
     /**
      * Returns the options of a rendering in German on A4 — the language the localization
      * of the visualization is authored in, and the paper an invoice is printed on where
-     * that localization is read.
+     * that localization is read. They name no layout, so a PDF rendering is drawn in the
+     * one a template names and otherwise in {@link #DEFAULT_LAYOUT}.
      *
      * @return the default options
      */
