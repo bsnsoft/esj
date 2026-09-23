@@ -19,14 +19,23 @@
 #   native          a native executable built with GraalVM, for this operating
 #                   system and processor
 #   linux-native    the same executable for linux/arm64, built in Docker
-#   docker          the container image of dist/Dockerfile
+#   docker          the container image of dist/Dockerfile, for the platform of
+#                   the Docker host, tagged <name>:<version> and <name>:latest
 #   zip             the release archives of whatever has been built, each
 #                   with its checksum beside it
-#   smoke           dist/smoke.sh against every artefact that has been built
+#   smoke           dist/smoke.sh against every artefact that has been built,
+#                   and a failure when none has
 #
 # The reference build is JDK 25: $ESJ_JDK25_HOME or the JDK the script runs on.
 # GraalVM for the native image is $ESJ_GRAALVM_HOME, or a GraalVM found beside
 # it; nothing on this machine is switched over to it, and no default is changed.
+#
+# The container image is named $ESJ_IMAGE, esj by default; the release workflow
+# names it ghcr.io/bsnsoft/esj. It is built for the platform the Docker daemon
+# runs on, so that the training run in the Dockerfile runs natively and records
+# the ahead-of-time cache on the processor it is for. $ESJ_PLATFORM names
+# another platform, linux/amd64 on an arm64 host for example: a cross-build
+# under emulation, which the host has to be set up for and which is slow.
 #
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
@@ -96,6 +105,8 @@ case $(uname -m) in
 esac
 
 jar=$root/esj-cli/target/esj.jar
+# The name of the container image (see the header).
+image_name=${ESJ_IMAGE:-esj}
 
 build_jar() {
   say "self-contained jar"
@@ -223,19 +234,24 @@ build_linux_native() {
 }
 
 build_docker() {
-  say "container image"
+  say "container image ($image_name)"
   command -v docker >/dev/null || { fail "no docker on this host"; return 0; }
+  # The platform the daemon runs on, unless one is named (see the header).
+  platform=${ESJ_PLATFORM:-$(docker version --format '{{.Server.Os}}/{{.Server.Arch}}')} ||
+    { fail "the Docker daemon does not answer"; return 0; }
   # The version and the build date of the base image would otherwise be read as
   # this image's own, so both are set here; the revision when there is one, with
   # the marker that says the tree it was built from carried changes that commit
   # does not have.
   revision=$(esj_revision "$root")
-  ( cd "$root" && docker build --platform linux/arm64 -f dist/Dockerfile \
+  ( cd "$root" && docker build --platform "$platform" -f dist/Dockerfile \
       --build-arg "ESJ_VERSION=$version" \
       --build-arg "ESJ_CREATED=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
       --build-arg "ESJ_REVISION=$revision" \
-      -t "esj:$version" -t esj:latest . ) || { fail "the image did not build"; return 0; }
-  docker image inspect "esj:$version" --format 'esj:{{index .RepoTags 0}} {{.Size}} bytes'
+      -t "$image_name:$version" -t "$image_name:latest" . ) ||
+    { fail "the image did not build"; return 0; }
+  docker image inspect "$image_name:$version" \
+    --format "$image_name:$version {{.Os}}/{{.Architecture}}, {{.Size}} bytes"
 }
 
 # The checksum of a release archive, beside it, named relative to it so that the
@@ -287,24 +303,35 @@ run_smoke() {
   # Each run's last lines are shown and its exit status decides: a pipe into
   # tail once swallowed a "22 of 94 cases differ" and let a broken macOS
   # executable ship as 0.9.0.
+  compared=
   if [ -x "$image/bin/esj" ]; then
     echo "-- $image/bin/esj"
     smoke_run "$image/bin/esj" --small-heap \
       "$image/bin/java -Xmx16m -XX:+ExitOnOutOfMemoryError -jar $image/app/esj.jar"
+    compared=yes
   fi
   if [ -x "$native/esj" ]; then
     echo "-- $native/esj"
     smoke_run "$native/esj" --small-heap "$native/esj -Xmx16m"
+    compared=yes
   fi
   # The container image, where the repository is its working directory: the cases
   # that write a file write one inside it, as the account that owns it. Its
   # ceiling is ESJ_MAX_HEAP, which cannot go below the -Xms the entry point
-  # passes, so the boundary check is not run against it.
-  if command -v docker >/dev/null && docker image inspect "esj:$version" >/dev/null 2>&1; then
-    echo "-- esj:$version"
-    smoke_run \
-      "docker run --rm -i --user $(id -u):$(id -g) -v $root:/work -w /work esj:$version"
+  # passes, so the boundary check is not run against it. It is never pulled, so
+  # that what is compared is the image built here, and it runs on the platform
+  # it was built for, named, because after a cross-build that is not the host's
+  # and Docker would say so on the error stream of every case.
+  if command -v docker >/dev/null && docker image inspect "$image_name:$version" >/dev/null 2>&1; then
+    platform=$(docker image inspect "$image_name:$version" --format '{{.Os}}/{{.Architecture}}')
+    echo "-- $image_name:$version ($platform)"
+    container="docker run --rm -i --pull never --platform $platform --user $(id -u):$(id -g)"
+    smoke_run "$container -v $root:/work -w /work $image_name:$version"
+    compared=yes
   fi
+  # A comparison with nothing to compare is not a pass: the release job that
+  # builds only the container image fails here when there is no image.
+  [ -n "$compared" ] || fail "no packaged artefact of esj $version to compare with the jar"
 }
 
 # Runs dist/smoke.sh with the given arguments, shows its last lines and fails

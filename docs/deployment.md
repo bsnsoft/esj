@@ -11,8 +11,10 @@ The Java library is for applications that own their input.
 Run a **packaged artefact**, not a jar on whatever virtual machine the host carries: the native
 executable is the cheapest process of the four and needs no Java, and it, the runtime image and
 the container image carry the heap ceiling and the abort of this contract by themselves
-([`install.md`](install.md)). Nothing here is a conformance statement: limits are policy of the
-reading party (`SPEC.md`, sections 3.1 and 12.2), and so is every recommendation below.
+([`install.md`](install.md)). The image pulled from `ghcr.io/bsnsoft/esj` is that container
+image, with the same entry point and the same defaults. Nothing here is a conformance statement:
+limits are policy of the reading party (`SPEC.md`, sections 3.1 and 12.2), and so is every
+recommendation below.
 
 ## The model
 
