@@ -167,11 +167,6 @@ public static class RulePacks
         string directory = ResourceDirectory(id, version);
         JsonElement manifest = Read(directory + "pack.json");
         List<RuleDefinition> rules = new();
-        if (manifest.TryGetProperty("rules", out JsonElement written))
-        {
-            rules.AddRange(written.EnumerateArray().Select(ReadRule));
-        }
-
         if (manifest.TryGetProperty("files", out JsonElement files))
         {
             foreach (JsonElement file in files.EnumerateArray())
@@ -180,6 +175,60 @@ public static class RulePacks
             }
         }
 
+        return Pack(manifest, rules);
+    }
+
+    /// <summary>Reads a pack whose rules all stand in one file, such as a pack a caller wrote.</summary>
+    /// <remarks>
+    /// It is the counterpart of <see cref="Bundled"/> for a pack that does not travel in this
+    /// build, and it reads what the rule language says a pack is. A pack that names rule files
+    /// beside its manifest is refused: this stream is all there is to read, and a pack
+    /// compiled without the rules of those files would check less than it claims.
+    /// </remarks>
+    /// <param name="input">the pack file, UTF-8; the caller closes it</param>
+    /// <param name="what">what is being read, for the message of a failure</param>
+    /// <returns>the pack</returns>
+    /// <exception cref="RulePackException">if the bytes are not a pack of the rule language, or
+    /// the pack names rule files</exception>
+    public static RulePack Read(Stream input, string what)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(what);
+        JsonElement manifest;
+        try
+        {
+            using JsonDocument json = JsonDocument.Parse(input);
+            manifest = json.RootElement.Clone();
+        }
+        catch (JsonException malformed)
+        {
+            throw new RulePackException(what + " is not a JSON document: " + malformed.Message, malformed);
+        }
+
+        if (manifest.ValueKind != JsonValueKind.Object)
+        {
+            throw new RulePackException(what + " is not a rule pack: a pack is a JSON object");
+        }
+
+        if (manifest.TryGetProperty("files", out JsonElement _))
+        {
+            throw new RulePackException(what + " names rule files beside it, and a pack read from"
+                + " one stream carries its rules in that stream");
+        }
+
+        return Pack(manifest, Enumerable.Empty<RuleDefinition>());
+    }
+
+    /// <summary>Builds a pack from its manifest and the rules of the files it names.</summary>
+    private static RulePack Pack(JsonElement manifest, IEnumerable<RuleDefinition> fromFiles)
+    {
+        List<RuleDefinition> rules = new();
+        if (manifest.TryGetProperty("rules", out JsonElement written))
+        {
+            rules.AddRange(written.EnumerateArray().Select(ReadRule));
+        }
+
+        rules.AddRange(fromFiles);
         Dictionary<string, string> codeLists = new(StringComparer.Ordinal);
         if (manifest.TryGetProperty("codeLists", out JsonElement named))
         {

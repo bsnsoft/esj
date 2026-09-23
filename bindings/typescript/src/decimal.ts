@@ -92,9 +92,14 @@ export class Decimal {
   /**
    * Returns this number divided by the other.
    *
-   * An exact quotient is returned exactly; one whose decimal expansion does not terminate
-   * is computed to {@link DIVISION_SCALE} fraction digits, half away from zero. Division by
-   * zero has no answer and is `undefined`, which the rule engine reads as an absent value.
+   * A quotient whose decimal expansion terminates is returned exactly, however many
+   * fraction digits it needs; one whose expansion does not terminate is computed to
+   * {@link DIVISION_SCALE} fraction digits, half away from zero (`rules/README.md`,
+   * Decimals). Which of the two a quotient is, is read off the fraction in its lowest terms
+   * rather than found by dividing and looking: it terminates exactly where the denominator
+   * has no prime factor but 2 and 5, and it then needs as many fraction digits as the
+   * larger of the two exponents, shifted by the scales of the operands. Division by zero has
+   * no answer and is `undefined`, which the rule engine reads as an absent value.
    *
    * @param other the divisor
    * @return the quotient, or `undefined` where the divisor is zero
@@ -103,12 +108,37 @@ export class Decimal {
     if (other.unscaled === 0n) {
       return undefined;
     }
-    const scale = DIVISION_SCALE;
     // this / other = (this.unscaled / other.unscaled) * 10^(other.scale - this.scale)
-    const shift = scale + other.scale - this.scale;
-    const numerator = shift >= 0 ? this.unscaled * pow10(shift) : this.unscaled;
-    const denominator = shift >= 0 ? other.unscaled : other.unscaled * pow10(-shift);
-    return Decimal.at(roundedQuotient(numerator, denominator), scale).stripped();
+    const negative = other.unscaled < 0n;
+    let numerator = negative ? -this.unscaled : this.unscaled;
+    let denominator = negative ? -other.unscaled : other.unscaled;
+    const common = greatestCommonDivisor(numerator < 0n ? -numerator : numerator, denominator);
+    numerator /= common;
+    denominator /= common;
+    let twos = 0;
+    while (denominator % 2n === 0n) {
+      denominator /= 2n;
+      twos++;
+    }
+    let fives = 0;
+    while (denominator % 5n === 0n) {
+      denominator /= 5n;
+      fives++;
+    }
+    if (denominator !== 1n) {
+      const shift = DIVISION_SCALE + other.scale - this.scale;
+      const dividend = shift >= 0 ? this.unscaled * pow10(shift) : this.unscaled;
+      const divisor = shift >= 0 ? other.unscaled : other.unscaled * pow10(-shift);
+      return Decimal.at(roundedQuotient(dividend, divisor), DIVISION_SCALE).stripped();
+    }
+    // numerator / (2^twos * 5^fives) is numerator * 2^(digits - twos) * 5^(digits - fives)
+    // over 10^digits, which is an integer over a power of ten: the exact quotient.
+    const digits = Math.max(twos, fives);
+    const unscaled = numerator * 2n ** BigInt(digits - twos) * 5n ** BigInt(digits - fives);
+    const scale = digits + this.scale - other.scale;
+    return (scale >= 0
+      ? Decimal.at(unscaled, scale)
+      : Decimal.at(unscaled * pow10(-scale), 0)).stripped();
   }
 
   /** Returns this number without its sign. */
@@ -193,6 +223,16 @@ export class Decimal {
     const text = digits.slice(0, point) + '.' + digits.slice(point);
     return negative ? '-' + text : text;
   }
+}
+
+/** Returns the greatest common divisor of two integers that are not negative. */
+function greatestCommonDivisor(left: bigint, right: bigint): bigint {
+  let a = left;
+  let b = right;
+  while (b !== 0n) {
+    [a, b] = [b, a % b];
+  }
+  return a;
 }
 
 /** Divides two integers and rounds the quotient half away from zero. */

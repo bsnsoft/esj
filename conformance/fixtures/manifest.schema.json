@@ -66,6 +66,10 @@
       "description": "Where the rule pack and its cases are.",
       "$ref": "#/$defs/rules"
     },
+    "arithmetic": {
+      "description": "A pack of the rule language whose rules pin its arithmetic, the document it is run over, and what it reports there.",
+      "$ref": "#/$defs/arithmetic"
+    },
     "pack": { "type": "string" },
     "directory": { "type": "string" },
     "cases": {
@@ -277,22 +281,39 @@
             "oneOf": [{ "required": ["value"] }, { "required": ["remove"] }]
           }
         },
-        "expect": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["rules", "warnings"],
-          "properties": {
-            "rules": {
-              "description": "Every rule identifier the pack reports, sorted.",
-              "type": "array",
-              "items": { "type": "string" }
-            },
-            "warnings": {
-              "description": "The subset whose findings decide no verdict.",
-              "type": "array",
-              "items": { "type": "string" }
-            }
-          }
+        "expect": { "$ref": "#/$defs/expect" }
+      }
+    },
+    "arithmetic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pack", "base", "expect"],
+      "properties": {
+        "pack": {
+          "description": "The pack, relative to the repository root. Its rules are written in the rule language alone: no rule written in code, no code list snapshot.",
+          "type": "string"
+        },
+        "base": {
+          "description": "The document the pack is run over. No rule of the pack reads a business term of it; it names the edition the pack is compiled against.",
+          "type": "string"
+        },
+        "expect": { "$ref": "#/$defs/expect" }
+      }
+    },
+    "expect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rules", "warnings"],
+      "properties": {
+        "rules": {
+          "description": "Every rule identifier the pack reports, sorted.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "warnings": {
+          "description": "The subset whose findings decide no verdict.",
+          "type": "array",
+          "items": { "type": "string" }
         }
       }
     }

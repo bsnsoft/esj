@@ -925,6 +925,9 @@ final class Reports {
                 generator.writeStringField("kind", note.kind().name());
                 generator.writeStringField("path", note.path());
                 generator.writeStringField("message", note.message());
+                if (!note.registry().isEmpty()) {
+                    generator.writeStringField("registry", note.registry());
+                }
                 generator.writeEndObject();
             }
         }

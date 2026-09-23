@@ -6,6 +6,8 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Component;
+import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.model.Term;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -70,7 +72,10 @@ import java.util.regex.Pattern;
  * member, which holds data that has no business term at all, and an element the schema
  * requires and no business term names are the cases this release meets. A character the
  * semantic model admits and XML 1.0 does not is the same case one level down: it is left
- * out and named, and {@link XmlCharacters} says why that rather than a refusal.
+ * out and named, and {@link XmlCharacters} says why that rather than a refusal. A term of an
+ * extension registry that declares its terms untransported is named as well, apart from all
+ * of these: no syntax has a place for it by design, so it is no loss
+ * ({@link WriteNote.Kind#TERM_BY_DESIGN}).
  *
  * <p>The output is UTF-8, deterministic — two runs over the same document produce the same
  * bytes — and, unless {@link WriterOptions#indent()} says otherwise, one element to a line.
@@ -162,6 +167,12 @@ final class SyntaxWriter {
         private final BindingTable table;
         private final SchemaTable schema;
         private final List<WriteNote> notes = new ArrayList<>();
+
+        /**
+         * The terms of the extension registries of the options that declare their terms
+         * untransported, each with the edition of the registry that declared it.
+         */
+        private final Map<String, String> untransported = new HashMap<>();
         private final List<Reference> references = new ArrayList<>();
 
         /** The elements a code is written in front of the content of, in the order met. */
@@ -215,6 +226,13 @@ final class SyntaxWriter {
             this.options = options;
             this.table = BindingTable.of(syntax);
             this.schema = SchemaTable.of(syntax);
+            for (Registry registry : options.extensions()) {
+                if (registry.withoutTransport()) {
+                    for (Term term : registry.terms()) {
+                        untransported.putIfAbsent(term.id(), registry.edition());
+                    }
+                }
+            }
         }
 
         private WriteResult write() {
@@ -662,11 +680,27 @@ final class SyntaxWriter {
             }
         }
 
-        /** Writes one value of the document, or records why it was not written. */
+        /**
+         * Writes one value of the document, or records why it was not written.
+         *
+         * <p>A term the binding table has no entry for is either one a registry declared
+         * untransported, which is left behind by design and counted neither way, or one
+         * nothing says where to put, which is a loss. The declaration is only asked where the
+         * table is silent: a table that binds a term is the stronger statement.
+         */
         private void place(SemanticPath path, SemanticValue value) {
             String termId = path.term();
             BindingTable.Entry entry = table.entry(termId);
             if (entry == null) {
+                String registry = untransported.get(termId);
+                if (registry != null) {
+                    notes.add(new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, path.toString(),
+                            termId + " is a term of " + registry + ", which declares that its"
+                                    + " terms have no binding in any transport syntax, so the"
+                                    + " value stays in the semantic document by design",
+                            registry));
+                    return;
+                }
                 drop(WriteNote.Kind.TERM_UNKNOWN, path, "the binding table of this syntax"
                         + " carries no entry for " + termId);
                 return;

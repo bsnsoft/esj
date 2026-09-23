@@ -9,14 +9,16 @@ package de.bsnsoft.esj.cli;
  * wraps another exception, that exception is the cause and is printed only under
  * {@code --debug}.
  *
- * <p>Four of them are told apart by their exit code, and the third is the one a caller
+ * <p>Five of them are told apart by their exit code, and the third is the one a caller
  * must not confuse with the others: {@link #input} is an input the tool could not read,
  * {@link #unsupported} a request this version does not serve, and {@link #limit} a bound
  * of this run that was reached — a document the tool says nothing about, because the
  * limits are the reading party's policy and no part of conformance (specification,
  * sections 3.1 and 12.2). A message of the third kind names the bound and the switch that
  * raises it; {@link Bounds#refusal(String, String)} writes it. {@link #output} is the
- * fourth: the work was done and the result did not reach its destination.
+ * fourth: the work was done and the result did not reach its destination. {@link
+ * #constrained} is the fifth: the input was read and understood, and the target syntax
+ * cannot carry all of it under a constraint the caller set.
  */
 final class CliException extends RuntimeException {
 
@@ -72,6 +74,22 @@ final class CliException extends RuntimeException {
      */
     static CliException output(String message, Throwable cause) {
         return new CliException(ExitCode.OUTPUT, message, cause);
+    }
+
+    /**
+     * Returns a conversion that cannot be completed under the constraints the caller asked
+     * for: {@link ExitCode#CONSTRAINED}.
+     *
+     * <p>{@code esj convert --fail-on-loss} is the case: the document was read and
+     * understood, the target syntax has no place for part of it, and the caller said that a
+     * result which leaves something behind is no result. Nothing is said about the invoice
+     * by it.
+     *
+     * @param message what could not be carried, and which constraint refused it
+     * @return the exception to throw
+     */
+    static CliException constrained(String message) {
+        return new CliException(ExitCode.CONSTRAINED, message, null);
     }
 
     /** Returns a request the tool understands and does not serve in this version. */

@@ -61,6 +61,9 @@ public final class UblWriter {
      * Writes a document with the default options, which choose the document type from
      * BT-3.
      *
+     * <p>The report of what did not reach the syntax is discarded; a caller who has to
+     * know whether a value was left behind uses {@link #writeWithReport}.
+     *
      * @param document the semantic document
      * @return the UBL document, encoded in UTF-8
      * @throws BindingEditionException if the document names an edition of the semantic
@@ -76,6 +79,9 @@ public final class UblWriter {
 
     /**
      * Writes a document.
+     *
+     * <p>The report of what did not reach the syntax is discarded; a caller who has to
+     * know whether a value was left behind uses {@link #writeWithReport}.
      *
      * @param document the semantic document
      * @param options  which document to write, what this run may do and how it shapes its

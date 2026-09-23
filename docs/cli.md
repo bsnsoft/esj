@@ -138,6 +138,32 @@ binding table says what is written there. Every such value is an `info:` line of
 error stream, collapsed the same way; nothing was lost, so it is not a warning and the exit code
 stays 0. [`bindings.md`](bindings.md) names the three of this release.
 
+A term whose registry declares that its terms belong to no transport syntax is no loss either: the
+B2C extension records the figures a customer was shown, and the invoice travels as the net values
+of the core terms ([`b2c.md`](b2c.md)). With the registry loaded, one `info:` line per registry
+names the terms that stay in the ESJ document:
+
+```console
+$ esj convert --to cii --extension b2c --out b2c.cii.xml examples/b2c-gross.esj.json
+info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document by design: BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003
+```
+
+A loss is warned about and the exit code stays 0, because a person converting a document wants
+the file and the list. **An automated caller that must not lose a value passes `--fail-on-loss`.**
+Where the writer leaves part of the document behind — a value, a supplementary component, the
+`extensions` member or a character XML cannot hold — nothing is written, neither to `--out` nor
+to the standard output, and the run leaves with exit code 8. A value written by convention and a
+term left behind by design are not losses and do not stop the conversion:
+
+```console
+$ esj convert --to cii --extension xrechnung --fail-on-loss --out extension.cii.xml \
+    conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml
+...
+error: nothing was written: part of the document has no place in a cross industry invoice, and --fail-on-loss refuses such a conversion
+$ echo $?
+8
+```
+
 `--output json` carries the same list as data. The report goes to the standard output, so the
 invoice needs somewhere else to go and `--out` becomes required:
 
@@ -159,12 +185,17 @@ $ esj convert --to cii --out invoice.cii.xml --output json \
 }
 ```
 
+A note about a term left behind by design names its registry in a `registry` member. A
+conversion `--fail-on-loss` refused reports `"wrote": "nothing"`, `"out": null` and `"bytes": 0`
+beside the list of what it would have lost, and leaves with 8.
+
 [`cii-roundtrip.md`](../conformance/writers/cii-roundtrip.md) and
 [`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md) measure the two writers.
 
 | Option | What it does |
 |---|---|
 | `--to cii\|ubl` | write a cross industry invoice, or an OASIS UBL 2.1 Invoice or Credit Note |
+| `--fail-on-loss` | write nothing and leave with exit code 8 where the target syntax has no place for part of the document |
 | `--ubl-document invoice\|creditnote\|auto` | which UBL document to write; `auto` is the default and takes it from the invoice type code BT-3, and the run says which it wrote |
 
 ```console
@@ -1303,7 +1334,7 @@ The exit codes are the interface a script is written against; their meanings do 
 | 5 | an internal error |
 | 6 | the output could not be written in full: a full disk, or a `--report` the run could not deliver |
 | 7 | a resource or time limit of this run was reached; no verdict on the document |
-| 8 | the conversion cannot be completed as constrained (reserved) |
+| 8 | the conversion cannot be completed as constrained: `esj convert --fail-on-loss` found part of the document the target syntax has no place for, and nothing was written |
 | 9 | nothing fatal was found and a component of the complete check did not run or did not complete: no verdict, and the report names which and why |
 
 **Code 0 is a claim about coverage as well as about findings.** A command that reaches a verdict

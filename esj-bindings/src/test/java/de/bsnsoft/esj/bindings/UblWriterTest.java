@@ -11,9 +11,11 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.json.EsjReader;
+import de.bsnsoft.esj.model.Registry;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +39,25 @@ class UblWriterTest {
     private static final Pattern ADMITTED = Pattern.compile(
             "cbc:(Invoice|CreditNote)TypeCode and \\(\\(not\\(contains\\(normalize-space\\(\\.\\),"
                     + " ' '\\)\\) and contains\\(' ([0-9 ]+) '");
+
+    /**
+     * The UBL writer is the same engine as the cross industry one and tells a term of an
+     * untransported registry apart from a loss the same way: handed the B2C registry, it
+     * leaves the ten values of the example behind by design and drops nothing.
+     */
+    @Test
+    void leavesTheTermsOfAnUntransportedRegistryBehindByDesign() {
+        SemanticDocument document = EsjReader.strict().read(Examples.bytes("b2c-gross"));
+
+        WriteReport report = UblWriter.writeWithReport(document, WriterOptions.builder()
+                .extensions(List.of(Registry.b2cExtension())).build()).report();
+
+        assertEquals(0, report.dropped());
+        assertTrue(report.isComplete(), report.toString());
+        assertEquals(Map.of("ESJ-B2C 0.1",
+                        List.of("BT-B2C-010", "BT-B2C-001", "BT-B2C-002", "BT-B2C-003")),
+                report.byDesign());
+    }
 
     @Test
     void writesTheDocumentElementAndTheNamespacesOfTheSyntax() {

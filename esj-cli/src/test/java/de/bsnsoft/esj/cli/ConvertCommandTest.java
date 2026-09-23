@@ -36,6 +36,16 @@ class ConvertCommandTest {
     private static final String EXTENSION = "conformance/kosit/business-cases/extension/"
             + "04.01a-INVOICE_ubl.xml";
 
+    /** The consumer invoice of the repository, which carries the four terms of the B2C registry. */
+    private static final String B2C = "examples/b2c-gross.esj.json";
+
+    /** The example UBL can only write with a value of a convention: a card network. */
+    private static final String CHARGES = "examples/charges.esj.json";
+
+    /** The line a conversion refused by {@code --fail-on-loss} ends with. */
+    private static final String REFUSED = "error: nothing was written: part of the document has"
+            + " no place in ";
+
     /** The line of the standard invoice example a seller tax registration is added after. */
     private static final String SELLER_VAT_IDENTIFIER = "\"/BG-4/BT-31\": \"DE123456789\",";
 
@@ -397,6 +407,137 @@ class ConvertCommandTest {
         assertTrue(run.text().contains("\"complete\": true"),
                 "a document that needed only a convention is complete: " + run.text());
         assertEquals("", run.err(), "the report is the output, so nothing is said twice");
+    }
+
+    /**
+     * Terms whose registry keeps them out of every transport syntax are no loss.
+     *
+     * <p>The B2C registry declares {@code "transport": "none"}, and a run that loads it hands
+     * the writer the declaration: the ten values of the example stay in the ESJ document, the
+     * run names the four terms on one information line naming the registry, and nothing
+     * warns. Without the registry the run knows nothing about those terms, and the writer
+     * reports them as values it has no place for, as before.
+     */
+    @Test
+    void namesTheTermsLeftBehindByDesignOnOneInformationLine() {
+        Path written = directory.resolve("b2c.cii.xml");
+
+        Cli.Run run = Cli.run("convert", "--to", "cii", "--extension", "b2c",
+                "--out", written.toString(), Fixtures.file(directory, B2C));
+
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertEquals("info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document by design:"
+                + " BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003\n", run.err());
+        assertTrue(read(written).contains("rsm:CrossIndustryInvoice"), "the file was written");
+
+        Cli.Run unloaded = Cli.run("convert", "--to", "cii", Fixtures.file(directory, B2C));
+        assertTrue(unloaded.err().contains("warning: 10 values of the document have no place"
+                + " in this syntax and were not written"), unloaded.err());
+    }
+
+    /** The JSON form names the registry of every note about a term left behind by design. */
+    @Test
+    void carriesTheRegistryOfATermLeftBehindByDesignAsData() {
+        Cli.Run run = Cli.run("convert", "--to", "ubl", "--extension", "b2c", "--output", "json",
+                "--out", directory.resolve("b2c.ubl.xml").toString(),
+                Fixtures.file(directory, B2C));
+
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertTrue(run.text().contains("\"complete\": true"), run.text());
+        assertTrue(run.text().contains("\"dropped\": 0"), run.text());
+        assertTrue(run.text().contains("\"kind\": \"TERM_BY_DESIGN\""), run.text());
+        assertTrue(run.text().contains("\"registry\": \"ESJ-B2C 0.1\""), run.text());
+    }
+
+    /**
+     * {@code --fail-on-loss} with a document the target syntax cannot carry whole: the sub
+     * invoice lines of the XRechnung extension have no place in a cross industry invoice, so
+     * nothing is written — not the file, not the standard output — and the run leaves with the
+     * code of a conversion that cannot be completed as constrained. The warning still says
+     * what would have been lost.
+     */
+    @Test
+    void writesNothingAndLeavesWithCodeEightWhereAValueWouldBeLost() {
+        Path target = directory.resolve("extension.cii.xml");
+
+        Cli.Run run = Cli.run("convert", "--to", "cii", "--extension", "xrechnung",
+                "--fail-on-loss", "--out", target.toString(), Fixtures.file(directory, EXTENSION));
+
+        assertEquals(ExitCode.CONSTRAINED, run.exitCode(), run.err());
+        assertEquals(8, run.exitCode(), "the code is part of the published table");
+        assertFalse(Files.exists(target), "nothing was written to --out");
+        assertTrue(run.err().contains("warning: 130 values of the document have no place"),
+                run.err());
+        assertTrue(run.err().endsWith(REFUSED + "a cross industry invoice, and --fail-on-loss"
+                + " refuses such a conversion\n"), run.err());
+
+        Cli.Run toOutput = Cli.run("convert", "--to", "ubl", "--fail-on-loss",
+                Fixtures.file(directory, B2C));
+        assertEquals(ExitCode.CONSTRAINED, toOutput.exitCode(), toOutput.err());
+        assertEquals(0, toOutput.out().length, "nothing was written to the standard output");
+        assertTrue(toOutput.err().contains(REFUSED + "a UBL document"), toOutput.err());
+    }
+
+    /** The JSON form of a refused conversion says that nothing was written, and what would have been lost. */
+    @Test
+    void reportsARefusedConversionAsDataUnderOutputJson() {
+        Path target = directory.resolve("extension.cii.xml");
+
+        Cli.Run run = Cli.run("convert", "--to", "cii", "--extension", "xrechnung",
+                "--fail-on-loss", "--output", "json", "--out", target.toString(),
+                Fixtures.file(directory, EXTENSION));
+
+        assertEquals(ExitCode.CONSTRAINED, run.exitCode(), run.err());
+        assertFalse(Files.exists(target), "nothing was written to --out");
+        assertTrue(run.text().contains("\"wrote\": \"nothing\""), run.text());
+        assertTrue(run.text().contains("\"out\": null"), run.text());
+        assertTrue(run.text().contains("\"bytes\": 0"), run.text());
+        assertTrue(run.text().contains("\"complete\": false"), run.text());
+        assertTrue(run.text().contains("\"kind\": \"TERM_NOT_BOUND\""), run.text());
+        assertTrue(run.err().startsWith(REFUSED), run.err());
+    }
+
+    /**
+     * A value written by convention is no loss: UBL requires the network of a payment card,
+     * no business term states it, and the binding table says what is written there. The
+     * document is complete, so {@code --fail-on-loss} lets it through.
+     */
+    @Test
+    void writesADocumentThatNeedsOnlyAConventionUnderFailOnLoss() {
+        Path written = directory.resolve("charges.ubl.xml");
+
+        Cli.Run run = Cli.run("convert", "--to", "ubl", "--fail-on-loss",
+                "--out", written.toString(), Fixtures.file(directory, CHARGES));
+
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertTrue(run.err().startsWith("info: CONVENTION_APPLIED: "), run.err());
+        assertTrue(read(written).contains("<cbc:NetworkID>NA</cbc:NetworkID>"), read(written));
+    }
+
+    /**
+     * A term left behind by design is no loss either: the B2C example converts under
+     * {@code --fail-on-loss} with the registry loaded, and says so on its information line.
+     */
+    @Test
+    void writesTheB2cExampleUnderFailOnLoss() {
+        Path written = directory.resolve("b2c.cii.xml");
+
+        Cli.Run run = Cli.run("convert", "--to", "cii", "--extension", "b2c", "--fail-on-loss",
+                "--out", written.toString(), Fixtures.file(directory, B2C));
+
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertTrue(run.err().contains("info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document"
+                + " by design"), run.err());
+        assertTrue(read(written).contains("rsm:CrossIndustryInvoice"), "the file was written");
+    }
+
+    /** The ESJ form carries the whole document, so the option has nothing to refuse there. */
+    @Test
+    void refusesFailOnLossForTheEsjForm() {
+        Cli.Run run = Cli.run("convert", "--fail-on-loss", Fixtures.file(directory, MINIMAL));
+
+        assertEquals(ExitCode.INPUT, run.exitCode());
+        assertTrue(run.err().contains("leave it out with --to esj"), run.err());
     }
 
     /**

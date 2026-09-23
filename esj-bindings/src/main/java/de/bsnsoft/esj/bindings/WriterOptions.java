@@ -1,5 +1,9 @@
 package de.bsnsoft.esj.bindings;
 
+import de.bsnsoft.esj.model.Registry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,6 +20,11 @@ import java.util.Objects;
  * UBL asks which tax a registration belongs to and the semantic model says only that BT-32
  * is not the value added tax, so the writer states a code and the caller may state another
  * one.
+ *
+ * <p>One more is a fact rather than a setting, handed over because only the caller knows it:
+ * the <em>extension registries</em> the terms of the document come from. A registry may
+ * declare that its terms belong to no transport syntax, and a writer that knows the registry
+ * reports a value of such a term as left behind by design rather than as a loss.
  *
  * <p>Instances are immutable. {@link #defaults()} is the one a caller who has no opinion
  * gets, and it is the one the tests of this module measure.
@@ -55,15 +64,18 @@ public final class WriterOptions {
     private final long maxOutputBytes;
     private final UblWriter.DocumentType document;
     private final String taxRegistrationScheme;
+    private final List<Registry> extensions;
 
     private WriterOptions(boolean indent,
                           long maxOutputBytes,
                           UblWriter.DocumentType document,
-                          String taxRegistrationScheme) {
+                          String taxRegistrationScheme,
+                          List<Registry> extensions) {
         this.indent = indent;
         this.maxOutputBytes = maxOutputBytes;
         this.document = document;
         this.taxRegistrationScheme = taxRegistrationScheme;
+        this.extensions = List.copyOf(extensions);
     }
 
     /**
@@ -92,7 +104,8 @@ public final class WriterOptions {
      */
     public Builder toBuilder() {
         return new Builder().indent(indent).maxOutputBytes(maxOutputBytes)
-                .document(document).taxRegistrationScheme(taxRegistrationScheme);
+                .document(document).taxRegistrationScheme(taxRegistrationScheme)
+                .extensions(extensions);
     }
 
     /**
@@ -133,6 +146,23 @@ public final class WriterOptions {
     }
 
     /**
+     * Returns the extension registries the terms of the document may come from.
+     *
+     * <p>The writer asks each of them {@link Registry#withoutTransport()}. A value of a term
+     * that a registry declaring {@code "transport": "none"} defines has no place in any
+     * syntax by design, and the report names it as {@link WriteNote.Kind#TERM_BY_DESIGN}
+     * with that registry, counted neither as written nor as dropped. A registry that
+     * declares nothing changes nothing: its terms are written where the binding table has a
+     * place for them and are losses where it has none, as the terms of a registry the writer
+     * was not handed are.
+     *
+     * @return the registries, none by default
+     */
+    public List<Registry> extensions() {
+        return extensions;
+    }
+
+    /**
      * Returns the value this run writes for one convention of a binding table: the value
      * of the table, unless the convention names a setting of these options.
      *
@@ -160,9 +190,13 @@ public final class WriterOptions {
      */
     @Override
     public String toString() {
+        List<String> editions = new ArrayList<>();
+        for (Registry registry : extensions) {
+            editions.add(registry.edition());
+        }
         return "WriterOptions[indent=" + indent + ", maxOutputBytes=" + maxOutputBytes
                 + ", document=" + document + ", taxRegistrationScheme="
-                + taxRegistrationScheme + "]";
+                + taxRegistrationScheme + ", extensions=" + editions + "]";
     }
 
     private static final class Defaults {
@@ -181,6 +215,7 @@ public final class WriterOptions {
         private long maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES;
         private UblWriter.DocumentType document = UblWriter.DocumentType.AUTO;
         private String taxRegistrationScheme = DEFAULT_TAX_REGISTRATION_SCHEME;
+        private List<Registry> extensions = List.of();
 
         private Builder() {
         }
@@ -254,13 +289,31 @@ public final class WriterOptions {
         }
 
         /**
+         * Sets the extension registries the terms of the document may come from, replacing
+         * any set before.
+         *
+         * <p>Hand over the extension registries themselves, as {@code Registry.b2cExtension()}
+         * returns one, and not a registry combined with them: the declaration that terms do
+         * not travel belongs to the file that defines them, and a combination declares
+         * nothing of its own.
+         *
+         * @param value the registries
+         * @return this builder
+         * @throws NullPointerException if {@code value} is or holds {@code null}
+         */
+        public Builder extensions(Collection<Registry> value) {
+            this.extensions = List.copyOf(Objects.requireNonNull(value, "extensions"));
+            return this;
+        }
+
+        /**
          * Builds the options.
          *
          * @return the options
          */
         public WriterOptions build() {
             return new WriterOptions(indent, maxOutputBytes, document,
-                    taxRegistrationScheme);
+                    taxRegistrationScheme, extensions);
         }
     }
 }

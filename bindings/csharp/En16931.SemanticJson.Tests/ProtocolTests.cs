@@ -88,6 +88,21 @@ public class ProtocolTests
         Assert.Equal(rules.OrderBy(rule => rule, StringComparer.Ordinal), rules);
     }
 
+    /// <summary>
+    /// A rules request that names a pack of the rule language is answered with that pack: the
+    /// arithmetic pack of the manifest reports what the manifest records.
+    /// </summary>
+    [Fact]
+    public void ItAnswersARulesRequestWithThePackItNames()
+    {
+        JsonElement section = Fixtures.Manifests[0].GetProperty("arithmetic");
+        JsonElement answer = Ask("{\"op\": \"rules\", \"pack\": \"" + section.GetProperty("pack").GetString()
+            + "\", \"file\": \"" + section.GetProperty("base").GetString() + "\"}");
+        Assert.Equal(
+            section.GetProperty("expect").GetProperty("rules").EnumerateArray().Select(rule => rule.GetString()!),
+            answer.GetProperty("rules").EnumerateArray().Select(rule => rule.GetString()!));
+    }
+
     /// <summary>The harness answers a stream of requests, one line each.</summary>
     [Fact]
     public void ItAnswersOneLinePerRequest()

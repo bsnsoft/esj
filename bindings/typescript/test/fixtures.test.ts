@@ -10,7 +10,8 @@ import { validate } from '../src/validate.ts';
 import { Structure } from '../src/structure.ts';
 import type { SemanticDocument } from '../src/document.ts';
 import type { Registry } from '../src/registry.ts';
-import type { RuleEngine } from '../src/rules/engine.ts';
+import { compile, type RuleEngine } from '../src/rules/engine.ts';
+import type { RulePackFile } from '../src/rules/pack.ts';
 import { registries, ruleEngine } from '../src/node/data.ts';
 
 /**
@@ -18,8 +19,9 @@ import { registries, ruleEngine } from '../src/node/data.ts';
  *
  * The manifest is written in no programming language: documents with the digests they have to
  * produce, documents that have to be rejected and the finding code for each, the value
- * grammars as accept and reject tables, and every mutation of the conformance corpus as a base
- * document and the changes that break it. It is generated from the reference implementation
+ * grammars as accept and reject tables, every mutation of the conformance corpus as a base
+ * document and the changes that break it, and a pack of the rule language that pins its
+ * division. It is generated from the reference implementation
  * and compared with what is checked in on every build of it, so it cannot record an
  * expectation that implementation does not meet — which is what makes it a contract rather
  * than a second opinion.
@@ -54,6 +56,7 @@ interface Manifest {
     accept: string[]; reject: string[];
   }>;
   rules?: { pack: string; version: string; casesFile: string; cases: number };
+  arithmetic?: { pack: string; base: string; expect: { rules: string[]; warnings: string[] } };
 }
 
 interface Case {
@@ -332,4 +335,33 @@ test('the rule pack reports on every mutation what the manifest expects', () => 
     }
   }
   assert.ok(run > 400, 'the mutations of the corpus were run: ' + run);
+});
+
+/**
+ * The arithmetic of the rule language: a pack whose rules pin division as `rules/README.md`
+ * states it — exact where the quotient terminates, 34 fraction digits half up where it does
+ * not, absent where the divisor is zero. Each of its rules is a case of its own here, so that a
+ * failure names the quotient that is wrong, and the note of that rule in the pack says what it
+ * pins.
+ */
+test('the arithmetic pack reports what the manifest expects, rule by rule', () => {
+  let run = 0;
+  for (const manifest of MANIFESTS) {
+    const section = manifest.arithmetic;
+    if (section === undefined) {
+      continue;
+    }
+    const pack = read<RulePackFile>(path.join(ROOT, section.pack));
+    const document = documentOf(section.base);
+    const findings = compile(pack, structureFor(document.semanticModel)!).evaluate(document);
+    const reported = new Set(findings.map((finding) => finding.rule));
+    for (const rule of pack.rules ?? []) {
+      assert.equal(reported.has(rule.id), section.expect.rules.includes(rule.id),
+        rule.id + ': ' + (rule.note ?? rule.message));
+      run++;
+    }
+    assert.deepEqual(findings.filter((finding) => finding.severity === 'warning')
+      .map((finding) => finding.rule), section.expect.warnings);
+  }
+  assert.ok(run >= 10, 'the rules of the arithmetic pack were run: ' + run);
 });

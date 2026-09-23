@@ -22,13 +22,16 @@ namespace En16931.SemanticJson.Fixtures;
 /// Six requests exist — <c>editions</c>, <c>digest</c>, <c>canonicalize</c>, <c>validate</c>,
 /// and <c>rules</c> — and the runner's own documentation states what each answers. A document
 /// is named by a path relative to the repository root, or passed inline; an inline document is
-/// written back to bytes and read like any other, because layer L1 is decided by bytes.
+/// written back to bytes and read like any other, because layer L1 is decided by bytes. A
+/// <c>rules</c> request is answered with the pack this binding carries, unless it names a pack
+/// of the rule language by its path in the repository.
 /// </remarks>
 public sealed class Protocol
 {
     private readonly string _repository;
     private readonly Lazy<RuleEngine> _pack;
     private readonly Lazy<IReadOnlyList<Registry>> _registries;
+    private readonly Dictionary<string, RuleEngine> _named = new(StringComparer.Ordinal);
 
     /// <summary>Answers requests about the fixtures of one checkout.</summary>
     /// <param name="repository">the root of the checkout</param>
@@ -56,7 +59,7 @@ public sealed class Protocol
             "digest" => Digest(Bytes(asked)),
             "canonicalize" => Canonicalize(Bytes(asked)),
             "validate" => Validate(Bytes(asked)),
-            "rules" => Rules(Bytes(asked)),
+            "rules" => Rules(Bytes(asked), asked),
             _ => throw new ArgumentException("no request of this protocol is called " + operation, nameof(request)),
         };
     }
@@ -158,9 +161,13 @@ public sealed class Protocol
         });
     }
 
-    private string Rules(byte[] bytes)
+    private string Rules(byte[] bytes, JsonElement asked)
     {
-        IReadOnlyList<RuleFinding> findings = _pack.Value.Evaluate(EsjReader.Strict().Read(bytes));
+        SemanticDocument document = EsjReader.Strict().Read(bytes);
+        RuleEngine engine = asked.TryGetProperty("pack", out JsonElement named)
+            ? Named(named.GetString()!, document.SemanticModel)
+            : _pack.Value;
+        IReadOnlyList<RuleFinding> findings = engine.Evaluate(document);
         return Write(writer =>
         {
             Codes(writer, "rules", findings.Select(finding => finding.Code));
@@ -168,6 +175,26 @@ public sealed class Protocol
                 .Where(finding => finding.Severity == RuleSeverity.Warning)
                 .Select(finding => finding.Code));
         });
+    }
+
+    /// <summary>
+    /// Returns the engine of a pack of the rule language a rules request names by its path in
+    /// the repository, compiled against the registry of the edition the document names.
+    /// </summary>
+    private RuleEngine Named(string file, string semanticModel)
+    {
+        string key = file + "|" + semanticModel;
+        if (!_named.TryGetValue(key, out RuleEngine? engine))
+        {
+            Registry registry = _registries.Value.FirstOrDefault(known => known.Describes(semanticModel))
+                ?? throw new ArgumentException(
+                    "this binding carries no registry of " + semanticModel, nameof(semanticModel));
+            using FileStream input = File.OpenRead(Path.Combine(_repository, file));
+            engine = RuleEngine.Compile(RulePacks.Read(input, file), registry);
+            _named[key] = engine;
+        }
+
+        return engine;
     }
 
     private static void Codes(Utf8JsonWriter writer, string member, IEnumerable<string> codes)

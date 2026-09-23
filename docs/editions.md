@@ -28,7 +28,7 @@ artefacts, XRechnung 3.0.2 and Peppol BIS 3 are written for it.
 | `validate` | L1 to L3 run against that registry; the business rules run where a pack is written for that edition | model layers not evaluated, verdict `INDETERMINATE` |
 | `render` | works; the PDF layout is driven by that registry | refuses, exit 4 |
 | `render --html` | refuses, exit 4 | refuses, exit 4 |
-| `convert --to cii` | refuses, exit 4 | refuses, exit 4 |
+| `convert --to cii`, `convert --to ubl` | refuses, exit 4 | refuses, exit 4 |
 | `upgrade` | writes the document as another edition | refuses, exit 4 |
 
 `diff` compares two documents whichever editions they name, and notes on the standard error
@@ -42,7 +42,7 @@ Three components are written for one edition and say so rather than being extend
 
 | Component | Written for | Why |
 |---|---|---|
-| The binding tables and the CII writer | 2017 | no public authoritative mapping of the terms a later edition adds; [`bindings.md`](bindings.md) |
+| The binding tables and the CII and UBL writers | 2017 | no public authoritative mapping of the terms a later edition adds; [`bindings.md`](bindings.md) |
 | The vendored XRechnung visualization (`--html`) | 2017 | the stylesheets have nowhere to put a term of a later edition |
 | The rule pack `en16931/1.3.16` | 2017 | the rules of the standard are renumbered, added to and withdrawn between editions |
 

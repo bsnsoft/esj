@@ -141,6 +141,45 @@ class OperatorTest {
                         + " {\"value\": \"/BG-22/BT-113\"}]}, 2]}, {\"const\": \"33.33\"}]}"));
     }
 
+    /**
+     * A quotient that terminates is exact however many fraction digits it needs, and only one
+     * that does not terminate is cut at the working precision: {@code rules/README.md},
+     * Decimals. The manifest of {@code conformance/fixtures} holds every implementation to the
+     * same quotients.
+     */
+    @Test
+    void aQuotientThatTerminatesIsExactBeyondTheWorkingPrecision() {
+        String tiny = "0." + "0".repeat(34) + "1";
+
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot(tiny, "1", tiny)));
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("0." + "0".repeat(32) + "1", "8",
+                "0." + "0".repeat(33) + "125")));
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("1", "1125899906842624",
+                "0.00000000000000088817841970012523233890533447265625")));
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("0.3", "1.2", "0.25")));
+    }
+
+    @Test
+    void aQuotientThatDoesNotTerminateHasThirtyFourFractionDigitsHalfUp() {
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("2", "3",
+                "0.6666666666666666666666666666666667")));
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("-2", "3",
+                "-0.6666666666666666666666666666666667")));
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("10", "3",
+                "3.3333333333333333333333333333333333")));
+        assertTrue(Packs.fails(MINIMAL, quotientIsNot("1", "3000",
+                "0.0003333333333333333333333333333333")));
+    }
+
+    /**
+     * Writes the assertion that a quotient is not a value, which fails exactly where the
+     * engine computes that value: an absent quotient would leave it undecided and silent.
+     */
+    private static String quotientIsNot(String dividend, String divisor, String value) {
+        return "{\"ne\": [{\"div\": [{\"const\": \"" + dividend + "\"}, {\"const\": \"" + divisor
+                + "\"}]}, {\"const\": \"" + value + "\"}]}";
+    }
+
     @Test
     void roundIsHalfUp() {
         SemanticDocument document = Documents.minimal().put("/BG-22/BT-113", "0.125").build();

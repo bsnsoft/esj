@@ -69,7 +69,9 @@ import picocli.CommandLine.Spec;
             "  6  the output could not be written in full",
             "  7  a resource or time limit of this run was reached; no verdict on the",
             "     document",
-            "  8  the conversion cannot be completed as constrained (reserved)",
+            "  8  the conversion cannot be completed as constrained: esj convert",
+            "     --fail-on-loss found part of the document the target syntax has no",
+            "     place for, and nothing was written",
             "  9  nothing fatal was found and a component of the complete check did not",
             "     run or did not complete: no verdict, and the report names which and why"},
         sortOptions = false)

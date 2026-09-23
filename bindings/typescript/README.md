@@ -103,10 +103,10 @@ in process: 98 conformant documents with their two digests, their canonical byte
 registries they were measured with and the 46 cardinality findings two of them draw;
 45 rows for the documents that have to be rejected, each with its finding code and the path it
 names; the canonical bytes of two scrambled documents; the accept and reject tables of the value
-grammars; and 448 mutations of the conformance corpus against the rule pack. One document and
-one rejected row of those counts come from the part of the manifest that carries the later
-edition, which a build without that edition leaves out. The language-neutral runner answers the
-same manifest over a pipe.
+grammars; 448 mutations of the conformance corpus against the rule pack; and the rules of the
+pack that pins division. One document and one rejected row of those counts come from the part of
+the manifest that carries the later edition, which a build without that edition leaves out. The
+language-neutral runner answers the same manifest over a pipe.
 
 `data/` holds copies of `model/` and `rules/` taken by `scripts/sync-data.mjs` before every
 build and every test run. Nothing there is edited, and it is not checked in: a binding that

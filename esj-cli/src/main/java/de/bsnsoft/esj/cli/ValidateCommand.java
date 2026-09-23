@@ -627,7 +627,8 @@ final class ValidateCommand implements Callable<Integer> {
      * verdict at all, so it keeps {@link ExitCode#LIMIT}, which is the one exit code of
      * this tool that means a limit and nothing about the invoice.
      *
-     * <p>The first of the four has one exception, and {@link Transport} decides it: a term
+     * <p>The first of the four has one exception, which the writer names in its report,
+     * handed the extension registries of this run, and {@link Transport} reads: a term
      * whose registry declares {@code "transport": "none"} was never meant to reach a
      * syntax, so the XML written without it is the whole invoice and the artefacts answer
      * for the invoice. The row then runs and names those terms beside its result.
@@ -639,7 +640,7 @@ final class ValidateCommand implements Callable<Integer> {
                                    Deadline deadline) {
         WriteResult result;
         try {
-            result = write(document);
+            result = write(document, extensions);
         } catch (BindingEditionException e) {
             // A binding table is written against one edition, so a document of another has
             // no XML form this build can produce and the artefacts have nothing to read.
@@ -655,7 +656,7 @@ final class ValidateCommand implements Callable<Integer> {
         }
         WriteReport wrote = result.report();
         String written = WrittenCheck.target(wrote.syntax());
-        Optional<List<WrittenCheck.ByDesign>> byDesign = Transport.byDesign(wrote, extensions);
+        Optional<List<WrittenCheck.ByDesign>> byDesign = Transport.byDesign(wrote);
         if (byDesign.isEmpty()) {
             return WrittenCheck.notRun(written, Coverage.Cause.TERM_NOT_IN_SYNTAX,
                     WrittenCheck.incomplete(wrote));
@@ -715,10 +716,11 @@ final class ValidateCommand implements Callable<Integer> {
      *                               caller reports as a row that did not run rather than as
      *                               the end of the command
      */
-    private WriteResult write(SemanticDocument document) {
+    private WriteResult write(SemanticDocument document, Extensions extensions) {
         String target = Options.via(via);
         WriterOptions options = WriterOptions.builder()
                 .maxOutputBytes(console.options().bounds().maxOutputBytes())
+                .extensions(extensions.registries())
                 .build();
         try {
             return Options.VIA_UBL.equals(target)

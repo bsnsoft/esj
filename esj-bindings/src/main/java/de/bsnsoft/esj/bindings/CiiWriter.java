@@ -24,6 +24,9 @@ public final class CiiWriter {
     /**
      * Writes a document with the default options.
      *
+     * <p>The report of what did not reach the syntax is discarded; a caller who has to
+     * know whether a value was left behind uses {@link #writeWithReport}.
+     *
      * @param document the semantic document
      * @return the cross industry invoice, encoded in UTF-8
      * @throws BindingEditionException if the document names an edition of the semantic
@@ -39,6 +42,9 @@ public final class CiiWriter {
 
     /**
      * Writes a document.
+     *
+     * <p>The report of what did not reach the syntax is discarded; a caller who has to
+     * know whether a value was left behind uses {@link #writeWithReport}.
      *
      * @param document the semantic document
      * @param options  what this run may do and how it shapes its output
