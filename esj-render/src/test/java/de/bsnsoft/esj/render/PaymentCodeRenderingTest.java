@@ -228,6 +228,8 @@ class PaymentCodeRenderingTest {
                                 + Word.ACCOUNT_IBAN.in(language)),
                         "and the block numbers the accounts the same way: " + flat);
             }
+            assertFalse(flat.contains(Word.ACCOUNT_IBAN.in(language) + " (BT-84)"),
+                    "no row is told apart by the identifier of its term alone: " + flat);
             assertTrue(payload(document).contains("DE89370400440532013000"),
                     "and the code carries the account of the instruction it names");
         }

@@ -528,6 +528,81 @@ class ReportRendererTest {
                 "the title of the page is the name of the input and is cut with it");
     }
 
+    /**
+     * The footer of every page of the PDF form names the input, and a path too long for the
+     * footer is shortened in its middle instead of being written over the page count at
+     * the right.
+     *
+     * <p>A caller names the input by a path, and a path is as long as a directory tree is
+     * deep: one of a hundred and thirty characters was written over <i>Seite 1 von 3</i>.
+     * The beginning of the path stays and so does the file name, an ellipsis stands for the
+     * middle, and every page carries the same footer. The identity block of the report and
+     * the HTML form name the path whole; a short one is written as it is.
+     */
+    @Test
+    void aLongInputPathIsShortenedInTheFooterAndNeverReachesThePageCount() {
+        String file = "/rechnung-RE-2026-0042_ubl.xml";
+        StringBuilder directory = new StringBuilder("/srv/eingang");
+        for (int level = 1; directory.length() < 200 - file.length(); level++) {
+            directory.append("/ablage-ebene-").append(level);
+        }
+        String path = directory.substring(0, 200 - file.length()) + file;
+        assertEquals(200, path.length(), "the path of the case is 200 characters long");
+        ValidationOutcome outcome = withInput(Outcomes.valid(), path);
+
+        byte[] pdf = renderer.pdf(outcome, Outcomes.instance(), ReportOptions.defaults());
+
+        int pages = Pdf.pages(pdf);
+        assertTrue(pages > 1, "the report and the invoice take more than one page");
+        List<String> footers = new ArrayList<>();
+        for (int page = 1; page <= pages; page++) {
+            Pdf.Run footer = null;
+            Pdf.Run count = null;
+            for (Pdf.Run run : Pdf.runs(pdf, page)) {
+                if (run.text().startsWith("Prüfbericht — ")) {
+                    footer = run;
+                } else if (run.text().equals("Seite " + page + " von " + pages)) {
+                    count = run;
+                }
+            }
+            assertTrue(footer != null && count != null,
+                    "page " + page + " carries the footer and the page count");
+            assertTrue(footer.right() + Sheet.FOOTER_GAP - 0.5f <= count.left(),
+                    "page " + page + ": the footer ends at " + footer.right()
+                            + " and the page count begins at " + count.left());
+            assertEquals(count.baseline(), footer.baseline(), 0.1f,
+                    "and the two stand on one line of page " + page);
+            footers.add(footer.text());
+        }
+        String footer = footers.get(0);
+        assertTrue(footer.startsWith("Prüfbericht — /srv/eingang/ablage-ebene-1"),
+                "the path keeps its beginning: " + footer);
+        assertTrue(footer.endsWith(file), "and its file name: " + footer);
+        assertTrue(footer.contains("\u2026"), "an ellipsis stands for the middle: " + footer);
+        assertEquals(List.of(footer), footers.stream().distinct().toList(),
+                "and every page carries the same footer");
+        assertTrue(Pdf.shows(pdf, path), "the identity block names the path whole");
+        assertTrue(renderer.html(outcome, Outcomes.instance(), ReportOptions.defaults())
+                .contains(path), "and so does the HTML form");
+
+        byte[] shortPath = renderer.pdf(Outcomes.valid(), null, ReportOptions.defaults());
+        assertTrue(Pdf.flat(shortPath).contains("Prüfbericht — "
+                        + Outcomes.valid().identity().input() + " Seite 1 von 1"),
+                "a path that fits is written as it is: " + Pdf.flat(shortPath));
+    }
+
+    /** Returns a run's outcome under another name of its input. */
+    private static ValidationOutcome withInput(ValidationOutcome outcome, String input) {
+        ValidationOutcome.Identity identity = outcome.identity();
+        return new ValidationOutcome(
+                new ValidationOutcome.Identity(input, identity.syntax(), identity.reader(),
+                        identity.semanticModel(), identity.profile(), identity.inputSha256(),
+                        identity.semanticDigest(), identity.documentDigest(),
+                        identity.sourceSha256(), identity.packs(), identity.tool()),
+                outcome.blocks(), outcome.verdict(), outcome.detail(), outcome.subjects(),
+                outcome.provenance());
+    }
+
     /** One run, and the document it is about. */
     private record Run(String name, ValidationOutcome outcome, SemanticDocument document) {
     }

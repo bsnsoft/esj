@@ -315,6 +315,12 @@ most of a page would empty the page before it; a row taller than a page is cut a
 boundary, at the same line in every column. Either way the next page repeats the identifier of
 the row, greyed, as `L000000011 (continued)`.
 
+**A column header breaks between words and never inside one**, in both layouts, since they share
+the table: where one word of a header is wider than its column, the columns with width to spare
+give it up, and where the widest words of all headers side by side are wider than the table, the
+header row alone is set smaller, down to 6.6 points. Only a table of more columns than the paper
+holds at that size breaks a word.
+
 ## From the command line
 
 `esj render` is both renderers without writing Java, over any input the other commands read:
@@ -334,7 +340,10 @@ The destination is `--out` and has no default — `-` is the standard output, fo
 what the command writes about values that did not reach an HTML page, and the exit codes.
 
 `esj validate --report` puts either rendering inside the file it writes, with what the rendering
-left behind printed beside it ([`cli.md`](cli.md#the-report)).
+left behind printed beside it ([`cli.md`](cli.md#the-report)). Every page of the PDF report names
+the input in its footer; a path too long for the room left of the page count is shortened in its
+middle — the beginning and the file name stay, an ellipsis stands for the rest — and the report
+names it whole among the identity of the run.
 
 ## Attribution
 

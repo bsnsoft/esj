@@ -27,6 +27,13 @@ import java.util.regex.Pattern;
  * out of {@link DisplayNames}, and the code itself is listed once under the closing
  * heading, so the page never hides what the document says.
  *
+ * <p>The type of the document gives the letter its title, with the invoices it refers to
+ * under it, and a credit note is called one where an invoice word would say the opposite —
+ * its number, its date, the amount it closes with ({@link #CREDIT_NOTES}). A letter whose
+ * reader is not the party that pays — a credit note, a self-billed invoice
+ * ({@link #SELF_BILLED}) — carries no payment code. Nothing else of the letter depends on
+ * the type.
+ *
  * <p>Everything the letter has no place of its own for stands under that closing heading
  * with its label and its semantic path, exactly as in the generic layout. Nothing is
  * derived: no carried-forward sum, no computed gross figure, no sentence that combines two
@@ -145,11 +152,10 @@ final class LetterLayout extends InvoiceLayout {
      * The white a page after the first keeps above everything it carries.
      *
      * <p>The compact head stands under it and the text of the page under the head
-     * ({@link Sheet#headOnFollowingPages()}), so a template that states a top margin for
-     * its following sheet keeps both of them off what that sheet prints. Twenty
-     * millimetres is what a business letter gives a following page, and the head and the
-     * text together then begin where the text of a following page began when the head
-     * stood inside the margin.
+     * ({@link Sheet#headOnFollowingPages(float)}), so a template that states a top margin
+     * for its following sheet keeps both of them off what that sheet prints. Twenty
+     * millimetres is what a business letter gives a following page; the head, its rule
+     * and the air under the rule take nine more, and the text begins under them.
      */
     static final float FOLLOWING_TOP = 20f * Sheet.MM;
 
@@ -189,6 +195,39 @@ final class LetterLayout extends InvoiceLayout {
     /** The qualifier a code list puts behind a name to tell it from another one. */
     private static final Pattern BRACKETED =
             Pattern.compile("\\s*[\\[(][^\\])]*[\\])]\\s*$");
+
+    /**
+     * The document types of UNTDID 1001 whose name is a credit note.
+     *
+     * <p>A credit note is the seller owing the buyer, and the letter says so in the three
+     * places where a word of an invoice would say the opposite: the number and the date in
+     * the reference line are those of a credit note, the figure the totals close with is
+     * the amount credited, and no payment code asks the reader to pay
+     * ({@link #readerPays()}). Everything else of the letter reads the same, and the title
+     * names the type as it does for every type. The set is the codes the table of names of
+     * this module calls a credit note, and a test holds the two together.
+     */
+    static final Set<String> CREDIT_NOTES = Set.of("81", "83", "261", "262", "296", "308",
+            "381", "396", "420", "502", "503", "532");
+
+    /**
+     * The document types of UNTDID 1001 that are self-billed and not a credit note.
+     *
+     * <p>The buyer issues a self-billed invoice on the seller's behalf and sends it to the
+     * seller, so the one who reads it is the party the payment goes to, and a payment code
+     * under it would ask them to pay into their own account ({@link #readerPays()}). In
+     * every other respect it is the letter of an invoice: its number is an invoice number
+     * and its totals close with the amount due. The set is the codes the table of names of
+     * this module calls self-billed, less the two credit notes among them, and a test holds
+     * the two together.
+     */
+    static final Set<String> SELF_BILLED = Set.of("389", "471", "473", "500", "501", "527");
+
+    /**
+     * The most preceding invoices the line under the title names. A document that refers
+     * to more is a statement a line does not hold, and they stay under the closing heading.
+     */
+    private static final int MOST_PRECEDING = 3;
 
     private final LetterOptions letter;
 
@@ -259,9 +298,13 @@ final class LetterLayout extends InvoiceLayout {
         reserve();
         // Every page after the first is opened under the compact head, so the room for it
         // is kept before one is opened. A letter whose document states neither a type nor
-        // a number has no head to write and keeps nothing.
+        // a number has no head to write and keeps nothing. Under the rule of the head the
+        // page keeps the air page one keeps under the rule of its title before the first
+        // section — the rule's own height, then a section's gap — so whatever opens a page
+        // after the first stands where the first section of the letter stands under its
+        // title.
         if (!documentTitle().isEmpty()) {
-            sheet.headOnFollowingPages();
+            sheet.headOnFollowingPages(SECTION_GAP);
         }
         // The head data is taken before anything is drawn, because the foot of the first
         // page prints what is left of the seller and two of these fields — the VAT
@@ -750,8 +793,15 @@ final class LetterLayout extends InvoiceLayout {
         SemanticPath delivery = SemanticPath.group("/BG-13");
         SemanticPath period = child(delivery, "BG-14");
         List<Field> fields = new ArrayList<>();
-        add(fields, SemanticPath.of("/BT-1"));
-        add(fields, SemanticPath.of("/BT-2"));
+        // The number and the date of a credit note are called what they are. The due date
+        // keeps its name: it is the date the document states, whoever owes whom.
+        if (creditNote()) {
+            add(fields, SemanticPath.of("/BT-1"), Word.CREDIT_NOTE_NUMBER);
+            add(fields, SemanticPath.of("/BT-2"), Word.CREDIT_NOTE_DATE);
+        } else {
+            add(fields, SemanticPath.of("/BT-1"));
+            add(fields, SemanticPath.of("/BT-2"));
+        }
         add(fields, path(delivery, "BT-72"));
         add(fields, path(period, "BT-73"));
         add(fields, path(period, "BT-74"));
@@ -959,7 +1009,8 @@ final class LetterLayout extends InvoiceLayout {
 
     /**
      * Writes the title of the letter: what kind of document this is, by name, and the
-     * number it carries.
+     * number it carries — and under it, where the document refers to earlier invoices,
+     * which ones.
      */
     private void title() {
         SemanticPath type = SemanticPath.of("/BT-3");
@@ -972,8 +1023,56 @@ final class LetterLayout extends InvoiceLayout {
         sheet.down(2f);
         sheet.block(title, sheet.left(), sheet.width(), sheet.fonts().bold(), TITLE_SIZE,
                 palette.heading());
+        String preceding = precedingInvoices();
+        if (!preceding.isEmpty()) {
+            sheet.down(1f);
+            sheet.block(preceding, sheet.left(), sheet.width(), sheet.fonts().regular(),
+                    NOTE_SIZE, palette.text());
+        }
         sheet.down(3f);
         sheet.rule();
+    }
+
+    /**
+     * Returns the line under the title that names the invoices this document refers to
+     * (BG-3), and marks their numbers and dates placed: <i>zur Rechnung RE-2026-0042 vom
+     * 03.02.2026</i>, <i>to invoices A of …, B of …</i>.
+     *
+     * <p>A credit note, a corrected invoice or a final invoice is read against the invoice
+     * it refers to, and a reader looks for that one under the title that says what the
+     * letter is, not among the terms at its end. The line joins values with words and
+     * computes nothing: the number and the date are the document's, written as the letter
+     * writes a date, and a reference without a date is the number alone.
+     *
+     * <p>More than {@link #MOST_PRECEDING} of them, or one without its number, is not a
+     * line under a title, and the values stay where every value without a place of its own
+     * stands: under the closing heading, each with its label and its path.
+     *
+     * @return the line, or the empty string where the title names none
+     */
+    private String precedingInvoices() {
+        List<SemanticPath> preceding = instances(SemanticPath.root(), "BG-3");
+        if (preceding.isEmpty() || preceding.size() > MOST_PRECEDING) {
+            return "";
+        }
+        List<String> named = new ArrayList<>(preceding.size());
+        for (SemanticPath invoice : preceding) {
+            String number = read(path(invoice, "BT-25"));
+            if (number.isEmpty()) {
+                return "";
+            }
+            String date = read(path(invoice, "BT-26"));
+            named.add(date.isEmpty() ? number
+                    : number + " " + Word.PRECEDING_OF.in(language) + " " + date);
+        }
+        for (SemanticPath invoice : preceding) {
+            for (String term : new String[] {"BT-25", "BT-26"}) {
+                SemanticPath path = path(invoice, term);
+                place(path, read(path));
+            }
+        }
+        Word words = preceding.size() == 1 ? Word.PRECEDING_INVOICE : Word.PRECEDING_INVOICES;
+        return words.in(language) + " " + String.join(", ", named);
     }
 
     /** Writes the notes of the invoice as paragraphs above the table. */
@@ -1055,6 +1154,10 @@ final class LetterLayout extends InvoiceLayout {
      * localization of the visualization, which keeps them apart by the table each of them
      * stands in; a block that lists them under one another cannot, so the word for it is
      * written behind the label whenever the language has one.
+     *
+     * <p>The amount a credit note closes with is not an amount the reader is asked to pay
+     * but the one credited to them, and the row says so. It is BT-115 either way, and
+     * nothing about the figure changes.
      */
     private void row(List<Row> rows, SemanticPath totals, String term, boolean due) {
         SemanticPath path = path(totals, term);
@@ -1062,9 +1165,38 @@ final class LetterLayout extends InvoiceLayout {
         if (value.isEmpty()) {
             return;
         }
-        String name = labels.netOrGross(term).map(word -> label(path) + " " + word)
-                .orElseGet(() -> label(path));
+        String name = "BT-115".equals(term) && creditNote()
+                ? Word.AMOUNT_CREDITED.in(language)
+                : labels.netOrGross(term).map(word -> label(path) + " " + word)
+                        .orElseGet(() -> label(path));
         rows.add(new Row(name, amount(value, currencyOf(term)), due, false));
+    }
+
+    /**
+     * Tells whether the document is a credit note by its type, BT-3.
+     *
+     * @return whether the type code is one of {@link #CREDIT_NOTES}
+     */
+    private boolean creditNote() {
+        return CREDIT_NOTES.contains(content(SemanticPath.of("/BT-3")));
+    }
+
+    /**
+     * Tells whether the one who reads this letter is the one who pays what it states.
+     *
+     * <p>It is what a payment code needs, because the code asks its reader to pay into the
+     * account beside it. A letter of an invoice is read by the buyer, who pays. A credit note
+     * is the seller owing the buyer, and a self-billed invoice is read by the seller, who is
+     * paid; neither is a letter whose reader should be handed a code. A document that names
+     * no type is taken as the invoice it most likely is. The self-billed credit notes, 261
+     * and 502, stay with the credit notes: the letter is addressed to the buyer whoever
+     * issued it, and a code is drawn only where it is clear that its reader pays.
+     *
+     * @return whether the reader pays, by the type code BT-3
+     */
+    private boolean readerPays() {
+        String type = content(SemanticPath.of("/BT-3"));
+        return !CREDIT_NOTES.contains(type) && !SELF_BILLED.contains(type);
     }
 
     /**
@@ -1410,9 +1542,17 @@ final class LetterLayout extends InvoiceLayout {
      * closing heading says so: what the code carries is then a little less than what the
      * letter prints, and a reader who compares the two is told why rather than left to
      * wonder.
+     *
+     * <p>A letter whose reader does not pay gets none, whatever the template asks and
+     * whatever account the document states ({@link #readerPays()}). The code asks its reader
+     * to transfer the amount to the account beside it: under a credit note that is the buyer
+     * asked to pay what they are owed, and under a self-billed invoice the seller asked to
+     * pay into their own account. The payment block itself is printed as the document
+     * states it. {@link PaymentCode#of(SemanticDocument)} does not know what a document type
+     * is and does not need to: what a letter asks its reader to do is the letter's decision.
      */
     private PaymentCode paymentCode() {
-        if (!letter.paymentCode()) {
+        if (!letter.paymentCode() || !readerPays()) {
             return null;
         }
         PaymentCode code = PaymentCode.of(document).orElse(null);
@@ -1613,17 +1753,24 @@ final class LetterLayout extends InvoiceLayout {
             who.add(named);
         }
         List<String> reach = new ArrayList<>();
-        labelled(reach, path(contact, "BT-41"));
-        // A telephone number, an e-mail address and an electronic address say what they
-        // are, and a label in front of one is a word taking the width of the value.
-        for (String term : new String[] {"BT-42", "BT-43"}) {
+        // The contact point, a telephone number, an e-mail address and an electronic
+        // address say what they are where they stand — under one another, in the column
+        // beside the sender's address — and a label in front of one is a word taking the
+        // width of the value. The contact point heads the column, which is where a letter
+        // names the person or the office to ask.
+        for (String term : new String[] {"BT-41", "BT-42", "BT-43"}) {
             unlabelled(reach, path(contact, term));
         }
         unlabelled(reach, path(seller, "BT-34"));
         List<String> registers = new ArrayList<>();
-        for (String term : new String[] {"BT-29", "BT-30", "BT-31", "BT-32"}) {
-            labelled(registers, path(seller, term));
+        identifier(registers, path(seller, "BT-30"), Word.FOOT_REGISTRATION);
+        for (SemanticPath identifier : sellerIdentifiers(seller)) {
+            identifier(registers, identifier, Word.FOOT_IDENTIFIER);
         }
+        // The head data takes these two before the foot is collected, so they reach the
+        // foot only where it did not: in the words the head would have used.
+        identifier(registers, path(seller, "BT-31"), Word.VAT_IDENTIFIER);
+        identifier(registers, path(seller, "BT-32"), Word.TAX_NUMBER);
         // What the sender has to state by law is a sentence they wrote themselves, and a
         // label in front of it would be this layout introducing it.
         unlabelled(registers, path(seller, "BT-33"));
@@ -1640,13 +1787,28 @@ final class LetterLayout extends InvoiceLayout {
     }
 
     /**
-     * Adds everything else the seller states to the last column of the foot, under its
-     * label and in the short form the foot writes.
+     * Returns the seller identifiers the document states, in its canonical order.
      *
-     * <p>A seller identifier is one of them: the standard lets a seller state several, so
-     * the document carries them under an index and the foot cannot ask for them by name.
-     * They are written here, in the canonical order of the document, with whatever else of
-     * the seller no block of the letter had a place for.
+     * <p>The standard lets a seller state several, so the document carries them under an
+     * index and the foot cannot ask for them by one path.
+     *
+     * @param seller the seller group
+     * @return the paths of the identifiers
+     */
+    private List<SemanticPath> sellerIdentifiers(SemanticPath seller) {
+        List<SemanticPath> found = new ArrayList<>();
+        for (SemanticPath path : document.values().keySet()) {
+            if (path.startsWith(seller) && "BT-29".equals(path.term())) {
+                found.add(path);
+            }
+        }
+        return found;
+    }
+
+    /**
+     * Adds everything else the seller states to the last column of the foot, under its
+     * label and in the short form the foot writes: whatever of the seller no block of the
+     * letter had a place for, in the canonical order of the document.
      *
      * @param column the column of the foot
      * @param seller the seller group
@@ -1669,24 +1831,42 @@ final class LetterLayout extends InvoiceLayout {
     }
 
     /**
-     * Adds the value at a path to a column under its label, and marks it placed.
+     * Adds the value at a path to a column with nothing in front of it, and marks it
+     * placed. It is for the values of a letter foot that say what they are: a contact
+     * point, a telephone number, an electronic address, the line of legal information a
+     * sender writes there.
+     */
+    private void unlabelled(List<String> column, SemanticPath path) {
+        footLine(column, path, "");
+    }
+
+    /**
+     * Adds an identifier to a column of the foot, the value first and behind it what kind
+     * of identifier it is: the code of the scheme the document states it in —
+     * {@code 4399901000018 (0088)} — or, where the document states none, the word of this
+     * layout for it — {@code HRB 12345 (Registernummer)}.
      *
      * <p>A value the head of the letter already carries is left out: the VAT identifier
      * and the tax number stand in the reference line, or in the information block where
      * the template asked for that one, and a foot that repeated them would print the same
      * fact twice on one page.
+     *
+     * @param column the column of the foot
+     * @param path   the path of the identifier
+     * @param word   what the identifier is, for one stated without a scheme
      */
-    private void labelled(List<String> column, SemanticPath path) {
-        footLine(column, path, label(path) + ": ");
-    }
-
-    /**
-     * Adds the value at a path to a column with nothing in front of it, and marks it
-     * placed. It is for the values of a letter foot that say what they are: a telephone
-     * number, an electronic address, the line of legal information a sender writes there.
-     */
-    private void unlabelled(List<String> column, SemanticPath path) {
-        footLine(column, path, "");
+    private void identifier(List<String> column, SemanticPath path, Word word) {
+        Optional<SemanticValue> value = document.value(path);
+        if (value.isEmpty() || placed.contains(path)) {
+            return;
+        }
+        String shown = shown(path, value.get());
+        if (shown.isEmpty()) {
+            return;
+        }
+        String scheme = value.get().scheme();
+        place(path, shown);
+        column.add(shown + " (" + (scheme == null ? word.in(language) : scheme) + ")");
     }
 
     /**
@@ -1696,9 +1876,10 @@ final class LetterLayout extends InvoiceLayout {
      * <p>Three columns of a letter foot are the narrowest text on the page, and the labels
      * of the register are written for a block of definitions rather than for them. So the
      * value comes first and an identification scheme is written as the code it is —
-     * {@code 4399901234567 (GLN)} — where the details section spells the component out
-     * under its own name. Nothing is dropped either way: the code is on the page, and what
-     * the register calls the scheme stands in the section that has the width for it.
+     * {@code invoices@example.invalid (EM)} — where the details section spells the
+     * component out under its own name. Nothing is dropped either way: the code is on the
+     * page, and what the register calls the scheme stands in the section that has the
+     * width for it.
      *
      * @param column the column of the foot
      * @param path   the path of the value

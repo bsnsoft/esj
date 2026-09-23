@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * The gross layout a consumer expects, and the rule it is built to keep.
@@ -231,15 +231,17 @@ class GrossLayoutTest {
      * whatever it names it. Two widths are asked, because it is the same question twice —
      * the full text width of A4, where eight columns stand beside each other, and a text
      * width of 375 points, which is what a letterhead printed along both edges leaves and
-     * what used to break the words of the layout\'s own headers as well.
+     * what used to break the words of the layout\'s own headers as well. Both layouts are
+     * asked, because the two draw their tables with the same table.
      *
-     * @param side the left and right margin of the page, in points
+     * @param side   the left and right margin of the page, in points
+     * @param layout the layout, as a template names it
      */
     @ParameterizedTest
-    @ValueSource(ints = {56, 110})
-    void noWordOfAColumnHeaderIsSplit(int side) {
+    @CsvSource({"56, generic", "110, generic", "56, letter", "110, letter"})
+    void noWordOfAColumnHeaderIsSplit(int side, String layout) {
         RenderTemplate template = Templates.of("""
-                {"template": "esj-render-template/0.1",
+                {"template": "esj-render-template/0.1", "layout": "%s",
                  "margins": {"first": {"left": %d, "right": %d},
                              "following": {"left": %d, "right": %d}},
                  "extensionTerms": [
@@ -248,7 +250,7 @@ class GrossLayoutTest {
                     "label": {"en": "Gross unit price", "de": "Bruttoeinzelpreis"}},
                    {"term": "BT-B2C-002", "position": "line.amount", "type": "Amount",
                     "label": {"en": "Gross line amount", "de": "Bruttobetrag der Position"}}
-                 ]}""".formatted(side, side, side, side));
+                 ]}""".formatted(layout, side, side, side, side));
 
         byte[] pdf = new PdfRenderer(Templates.withB2c()).render(
                 Documents.grossB2cInvoice(), RenderOptions.defaults().with(template));
@@ -257,7 +259,8 @@ class GrossLayoutTest {
         for (String word : List.of("Nr.", "Bezeichnung", "Menge", "Einzelpreis", "netto",
                 "USt.", "Nettobetrag", "Bruttoeinzelpreis", "Bruttobetrag", "angezeigt")) {
             assertTrue(header.contains(word), "'" + word + "' stands whole in the header of"
-                    + " a table set in " + (595 - 2 * side) + " points: " + header);
+                    + " a table set in " + (595 - 2 * side) + " points in the " + layout
+                    + " layout: " + header);
         }
     }
 

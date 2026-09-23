@@ -277,8 +277,8 @@ class TableRowsTest {
      * @param to      the last one
      */
     @ParameterizedTest
-    @CsvSource({"1500, true, 50, 61", "1000, true, 86, 107", "1500, false, 50, 59",
-                "1500, false, 160, 169"})
+    @CsvSource({"1500, true, 50, 69", "1000, true, 50, 70", "1000, true, 86, 107",
+                "1500, false, 50, 59", "1500, false, 160, 169"})
     void theEndOfTheTableGoesWithTheTextThatFlowsOverAPage(int words, boolean hanging,
                                                            int from, int to) {
         SemanticDocument document = hanging ? Documents.withALineDescribedAtLength(words)
@@ -301,6 +301,46 @@ class TableRowsTest {
             }
         }
         assertEquals(List.of(), wrong, "the sum of the lines hangs on the table");
+    }
+
+    /**
+     * A row block the table moved to a page whole stays whole on it: the lines hanging
+     * under the row stand under it, and the next page does not open with them under the
+     * name of a row it does not carry.
+     *
+     * <p>A hanging line asked for room for the line that names its row on a page that has
+     * just begun — and asked for it on the page the row stood on as well, where that line
+     * is never written. The block of the row had been measured without it, so a row that
+     * fit with a line of room to spare kept its cells on one page and sent its period to
+     * the next under <i>6 (Fortsetzung)</i>, which is what the sixth line of
+     * {@code examples/multiple-lines} did at the foot of page one. The bottom margin is swept
+     * so that every row of the example meets the foot of a page, in both layouts.
+     *
+     * @param layout the layout
+     */
+    @ParameterizedTest
+    @EnumSource(Layout.class)
+    void aRowBlockThatFitsIsNeverPartedFromTheLinesUnderIt(Layout layout) {
+        SemanticDocument document = Corpus.example("multiple-lines");
+        String carried = "(" + Word.CONTINUED.in(RenderLanguage.GERMAN) + ")";
+        List<String> wrong = new ArrayList<>();
+        for (int bottom = 40; bottom <= 240; bottom += 2) {
+            RenderTemplate template = Templates.of("""
+                    {"template": "esj-render-template/0.1", "layout": "%s",
+                     "margins": {"first": {"bottom": %d}}}"""
+                    .formatted(layout == Layout.LETTER ? "letter" : "generic", bottom));
+
+            byte[] pdf = new PdfRenderer().render(document,
+                    RenderOptions.defaults().with(template));
+
+            String text = Pdf.flat(pdf);
+            if (text.contains(carried)) {
+                wrong.add("a bottom margin of " + bottom + " points parts a row: "
+                        + text.substring(Math.max(0, text.indexOf(carried) - 40),
+                                text.indexOf(carried) + carried.length()));
+            }
+        }
+        assertEquals(List.of(), wrong, "every row of the example stands whole on a page");
     }
 
     /**

@@ -43,15 +43,11 @@ final class Sheet implements AutoCloseable {
     /** The air between that head and the rule under it, as the title of page one keeps. */
     private static final float HEAD_RULE_GAP = 3f;
 
-    /**
-     * The air under that rule, before the text of the page begins.
-     *
-     * <p>It is the air a section heading leaves under its own rule, so that whatever
-     * begins a page after the first — the repeated header of a table, the heading of a
-     * section — stands at the distance from the rule above it that it stands at on page
-     * one.
-     */
-    private static final float HEAD_GAP_BELOW = 4f;
+    /** The type size of the page footer: the identity on the left, the page count right. */
+    static final float FOOTER_SIZE = 7.5f;
+
+    /** The least air between the identity in the page footer and the page count beside it. */
+    static final float FOOTER_GAP = 12f;
 
     private final PDDocument document;
     private final PageSize size;
@@ -207,23 +203,40 @@ final class Sheet implements AutoCloseable {
      * would be written over whatever the paper prints there. The text of the page begins
      * under the head, which is what keeps the two apart.
      *
+     * <p>How much air stands under the rule of the head is the layout's to say, because it
+     * is the distance its own first page keeps: the first block of a page after the first
+     * stands as far under the rule of the head as the first block of page one stands under
+     * the rule of the title, whatever that block is — the repeated header of a table, the
+     * heading of a section, the rows of a block that went over whole.
+     *
      * <p>It is reserved before the second page is opened, because a page that is already
      * filled cannot give the room back. {@link #finish(String, String, String)} writes the
      * head into it.
      *
-     * @throws IllegalStateException if the sheet has opened a second page already
+     * @param air how far under the rule of the head the text of the page begins, in points
+     * @throws IllegalStateException    if the sheet has opened a second page already
+     * @throws IllegalArgumentException if the air is negative
      */
-    void headOnFollowingPages() {
+    void headOnFollowingPages(float air) {
         if (pages.size() > 1) {
             throw new IllegalStateException(
                     "the head of the pages after the first is reserved before they are opened");
         }
-        head = headHeight();
+        if (air < 0) {
+            throw new IllegalArgumentException("the air under the head is not negative");
+        }
+        head = headHeight(air);
     }
 
-    /** Returns how much of the top of a page a compact head and its rule take. */
-    static float headHeight() {
-        return lineHeight(HEAD_SIZE) + HEAD_RULE_GAP + RULE_HEIGHT + HEAD_GAP_BELOW;
+    /**
+     * Returns how much of the top of a page a compact head, its rule and the air under it
+     * take.
+     *
+     * @param air the air under the rule
+     * @return the height, in points
+     */
+    static float headHeight(float air) {
+        return lineHeight(HEAD_SIZE) + HEAD_RULE_GAP + RULE_HEIGHT + air;
     }
 
     /**
@@ -606,6 +619,29 @@ final class Sheet implements AutoCloseable {
     }
 
     /**
+     * Returns how wide the text on the left of the page footer may be, so that it ends
+     * before the page count on the right of every page of this sheet.
+     *
+     * <p>A caller whose footer text comes from outside asks this before
+     * {@link #finish(String, String)} — the name of the input a validation report is about
+     * is as long as a path is — and the answer holds for every page, so a footer shortened
+     * to it is the same text on every page: the widest page count is the one of the last
+     * page, since the digits of the embedded faces are all of one width, and the text is as
+     * narrow as the narrower of the two kinds of page.
+     *
+     * @param pageOf how the page number reads, as {@link #finish(String, String)} takes it
+     * @return the width, in points, and zero where the page count leaves nothing
+     */
+    float footerRoom(String pageOf) {
+        Fonts.Face face = fonts.regular();
+        String widest = face.showable(
+                String.format(Locale.ROOT, pageOf, pages.size(), pages.size()));
+        float text = Math.min(size.width() - first.left() - first.right(),
+                size.width() - following.left() - following.right());
+        return Math.max(0f, text - face.width(widest, FOOTER_SIZE) - FOOTER_GAP);
+    }
+
+    /**
      * Closes the content of the sheet and writes the footer of every page: what the
      * caller gives on the left, and the page number of the page count on the right. The
      * count is why this happens at the end.
@@ -643,7 +679,7 @@ final class Sheet implements AutoCloseable {
                     + " kept for it, and this sheet kept none");
         }
         close();
-        float size = 7.5f;
+        float size = FOOTER_SIZE;
         Fonts.Face face = fonts.regular();
         String left = face.showable(identity);
         for (int i = 0; i < pages.size(); i++) {

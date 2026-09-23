@@ -8,6 +8,8 @@ import com.google.zxing.LuminanceSource;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -18,7 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -172,8 +178,20 @@ final class Pdf {
      * @param top      the top of its glyphs, in points above the bottom edge
      * @param left     its left edge, in points from the left edge of the paper
      * @param right    its right edge, in points from the left edge of the paper
+     * @param size     the type size it is set in, in points
      */
-    record Run(String text, float baseline, float top, float left, float right) {
+    record Run(String text, float baseline, float top, float left, float right, float size) {
+
+        /**
+         * Returns the top of the line this run was set on, in points above the bottom edge:
+         * the layouts of this module set a line of a size at a top by putting its baseline
+         * that size below it, so this is where the block the run begins stands.
+         *
+         * @return the top of the line
+         */
+        float lineTop() {
+            return baseline + size;
+        }
     }
 
     /** A text stripper that keeps the runs of a page with their place on the paper. */
@@ -196,6 +214,7 @@ final class Pdf {
             float top = 0;
             float left = Float.MAX_VALUE;
             float right = 0;
+            float size = 0;
             for (TextPosition position : positions) {
                 if (position.getUnicode().isBlank()) {
                     continue;
@@ -205,10 +224,146 @@ final class Pdf {
                 top = Math.max(top, y + position.getHeight());
                 left = Math.min(left, position.getX());
                 right = Math.max(right, position.getX() + position.getWidth());
+                // The size the text was set in by its operator, which is the size in
+                // points on a page drawn without a scaling matrix; the size in points PDFBox
+                // works out from the matrix is rounded to a whole point.
+                size = Math.max(size, position.getFontSize());
             }
             if (top > 0) {
-                found.add(new Run(flat(text), baseline, top, left, right));
+                found.add(new Run(flat(text), baseline, top, left, right, size));
             }
+        }
+    }
+
+    /**
+     * Returns what a page draws that is not text: every rule it strokes and every area it
+     * fills, each with the box it takes on the paper.
+     *
+     * <p>The text of a page says what stands on it and {@link #runs(byte[], int)} where; the
+     * rules and the filled areas say where one block of a page ends and the next begins — the
+     * rule under a title, the grey band of a column header, the modules of a code. A test of
+     * the rhythm of a page measures the white between them, and has to read them off the
+     * paper for the same reason it reads the text off it.
+     *
+     * @param pdf  the rendering
+     * @param page the page, counted from one
+     * @return the marks, in the order the content streams draw them
+     */
+    static List<Mark> marks(byte[] pdf, int page) {
+        try (PDDocument document = Loader.loadPDF(pdf)) {
+            PDPage sheet = document.getPage(page - 1);
+            Marks marks = new Marks(sheet);
+            marks.processPage(sheet);
+            return marks.found();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * One thing a page draws that is not text: a stroked rule or a filled area, with the
+     * box it takes in points from the lower left corner of the paper. A rule is a line, so
+     * its box is as tall as the line is — nothing.
+     *
+     * @param stroked whether it is a stroke rather than a fill
+     * @param left    its left edge
+     * @param right   its right edge
+     * @param bottom  its lower edge
+     * @param top     its upper edge
+     */
+    record Mark(boolean stroked, float left, float right, float bottom, float top) {
+    }
+
+    /** Collects the paths a page strokes and fills, with the box of each. */
+    private static final class Marks extends PDFGraphicsStreamEngine {
+
+        private final List<Mark> found = new ArrayList<>();
+        private final GeneralPath path = new GeneralPath();
+
+        private Marks(PDPage page) {
+            super(page);
+        }
+
+        List<Mark> found() {
+            return List.copyOf(found);
+        }
+
+        @Override
+        public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) {
+            path.moveTo(p0.getX(), p0.getY());
+            path.lineTo(p1.getX(), p1.getY());
+            path.lineTo(p2.getX(), p2.getY());
+            path.lineTo(p3.getX(), p3.getY());
+            path.closePath();
+        }
+
+        @Override
+        public void drawImage(PDImage image) {
+            // The layouts of this module draw no picture of their own.
+        }
+
+        @Override
+        public void clip(int windingRule) {
+            // A clip draws nothing.
+        }
+
+        @Override
+        public void moveTo(float x, float y) {
+            path.moveTo(x, y);
+        }
+
+        @Override
+        public void lineTo(float x, float y) {
+            path.lineTo(x, y);
+        }
+
+        @Override
+        public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+            path.curveTo(x1, y1, x2, y2, x3, y3);
+        }
+
+        @Override
+        public Point2D getCurrentPoint() {
+            return path.getCurrentPoint();
+        }
+
+        @Override
+        public void closePath() {
+            path.closePath();
+        }
+
+        @Override
+        public void endPath() {
+            path.reset();
+        }
+
+        @Override
+        public void strokePath() {
+            add(true);
+        }
+
+        @Override
+        public void fillPath(int windingRule) {
+            add(false);
+        }
+
+        @Override
+        public void fillAndStrokePath(int windingRule) {
+            add(false);
+        }
+
+        @Override
+        public void shadingFill(COSName shadingName) {
+            // A shading is no rule and no block of the layout.
+        }
+
+        private void add(boolean stroked) {
+            if (path.getCurrentPoint() != null) {
+                Rectangle2D box = path.getBounds2D();
+                found.add(new Mark(stroked, (float) box.getMinX(), (float) box.getMaxX(),
+                        (float) box.getMinY(), (float) box.getMaxY()));
+            }
+            path.reset();
         }
     }
 

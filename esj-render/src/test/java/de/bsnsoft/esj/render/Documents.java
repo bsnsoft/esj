@@ -520,6 +520,36 @@ final class Documents {
     }
 
     /**
+     * Builds a final construction invoice that refers to a number of preceding invoices
+     * (BG-3), each with its issue date except the third, which is stated without one — so
+     * that a line naming them writes both forms.
+     *
+     * @param invoices how many preceding invoices the document names
+     * @return the document
+     */
+    static SemanticDocument withPrecedingInvoices(int invoices) {
+        SemanticDocument.Builder builder = skeleton()
+                .set(SemanticPath.of("/BT-3"), SemanticValue.of("877"))
+                .put("/BG-25/0/BT-126", "1")
+                .put("/BG-25/0/BT-129", "1")
+                .put("/BG-25/0/BT-130", "C62")
+                .put("/BG-25/0/BT-131", "100.00")
+                .put("/BG-25/0/BG-29/BT-146", "100.00")
+                .put("/BG-25/0/BG-30/BT-151", "S")
+                .put("/BG-25/0/BG-30/BT-152", "19")
+                .put("/BG-25/0/BG-31/BT-153", "Item");
+        for (int invoice = 0; invoice < invoices; invoice++) {
+            builder.put("/BG-3/" + invoice + "/BT-25", "RE-2026-000" + (invoice + 1));
+            if (invoice != 2) {
+                builder.put("/BG-3/" + invoice + "/BT-26",
+                        "2026-0" + (invoice + 1) + "-01");
+            }
+        }
+        totals(builder, "100.00", "19.00", "119.00", "19");
+        return builder.build();
+    }
+
+    /**
      * Builds an invoice that states several accounts of one credit transfer, each with a
      * holder whose name is too long for the width beside the payment code.
      *
