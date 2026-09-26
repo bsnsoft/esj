@@ -221,8 +221,11 @@ public final class XmlFrontDoor {
         processor.setConfigurationProperty(Feature.DTD_VALIDATION, false);
         processor.setConfigurationProperty(Feature.DTD_VALIDATION_RECOVERABLE, false);
         processor.setConfigurationProperty(Feature.XINCLUDE, false);
-        // "none" and not the empty string: Saxon reads an empty value as "leave the
-        // setting alone", so the empty string would leave every protocol allowed.
+        // The value is the list of URI schemes that may be dereferenced, and "none" names
+        // one that no URL handler serves: file, http, https, jar, classpath and data are
+        // refused, by Saxon 13.0 as by 12.10. It is not the empty string, which 13.0 reads
+        // as "allow nothing" but 12.10 read as "allow everything"; nor "#none", which 12.10
+        // read as "nothing" and 13.0 reads as a scheme like any other.
         processor.setConfigurationProperty(Feature.ALLOWED_PROTOCOLS, "none");
         processor.setConfigurationProperty(Feature.DISABLE_XSL_EVALUATE, true);
         return processor;

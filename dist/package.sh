@@ -22,7 +22,8 @@
 #   docker          the container image of dist/Dockerfile, for the platform of
 #                   the Docker host, tagged <name>:<version> and <name>:latest
 #   zip             the release archives of whatever has been built, each
-#                   with its checksum beside it
+#                   with its checksum beside it; the platform-independent one,
+#                   esj-<version>.zip, carries fixed times, modes and order
 #   smoke           dist/smoke.sh against every artefact that has been built,
 #                   and a failure when none has
 #
@@ -263,21 +264,46 @@ checksum() {
     else shasum -a 256 "$(basename -- "$file")"; fi ) > "$file.sha256"
 }
 
+# The time every entry of the platform-independent archive carries, in UTC and in
+# the form touch -t takes: project.build.outputTimestamp of the POM, the time the
+# build gives the entries it writes into the jar. Fails for a value in another form.
+archive_time() {
+  stamp=$(sed -n 's:.*<project\.build\.outputTimestamp>\(.*\)</project\.build\.outputTimestamp>.*:\1:p' \
+    "$root/pom.xml" | head -1)
+  case $stamp in
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z)
+      echo "$stamp" | sed 's/^\(....\)-\(..\)-\(..\)T\(..\):\(..\):\(..\)Z$/\1\2\3\4\5.\6/' ;;
+    *) return 1 ;;
+  esac
+}
+
 build_zip() {
   say "release archives"
   archive=$out/esj-$version.zip
   staging=$out/staging-esj-$version
+  entry_time=$(archive_time) || {
+    fail "project.build.outputTimestamp in pom.xml is not a UTC time such as 2026-09-22T00:00:00Z"
+    return 0
+  }
   replace "$archive"
   replace "$staging"
   mkdir -p "$staging/esj-$version/lib" "$staging/esj-$version/bin" "$staging/esj-$version/docs"
   cp "$jar" "$staging/esj-$version/lib/esj.jar"
   install_launcher "$staging/esj-$version/bin/esj" jar
-  chmod +x "$staging/esj-$version/bin/esj"
   cp "$root/LICENSE" "$root/NOTICE" "$root/README.md" "$staging/esj-$version/"
   for page in install.md cli.md deployment.md validation.md pdf-input.md rendering.md; do
     cp "$root/docs/$page" "$staging/esj-$version/docs/$page"
   done
-  ( cd "$staging" && zip -qr "$archive" "esj-$version" )
+  # Nothing of the build but its files: fixed modes, the time of
+  # project.build.outputTimestamp on every entry, the entries in one order, and
+  # none of the extra fields in which zip records the owner of a file and its
+  # times, so that the clock, the time zone and the umask of a build leave no
+  # trace in the bytes.
+  find "$staging/esj-$version" -type d -exec chmod 755 {} +
+  find "$staging/esj-$version" -type f -exec chmod 644 {} +
+  chmod 755 "$staging/esj-$version/bin/esj"
+  TZ=UTC0 find "$staging/esj-$version" -exec touch -t "$entry_time" {} +
+  ( cd "$staging" && find "esj-$version" | LC_ALL=C sort | TZ=UTC0 zip -q -X -@ "$archive" )
   rm -rf "$staging"
   checksum "$archive"
   echo "$archive ($(du -h "$archive" | awk '{print $1}'))"

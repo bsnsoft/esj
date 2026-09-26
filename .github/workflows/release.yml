@@ -55,6 +55,17 @@ jobs:
       - name: Compare every artefact with the jar
         run: dist/package.sh smoke
 
+      # esj-<version>.zip, the jar with its launcher and its documentation, is the
+      # same archive for every platform, and every job builds one from its own jar;
+      # the linux-x64 job delivers it. Uploaded by all three under one name, the
+      # release took the archive of one job and the checksum of another (0.9.1).
+      - name: Leave the platform-independent archive to linux-x64
+        if: matrix.label != 'linux-x64'
+        run: |
+          version=$(java -jar esj-cli/target/esj.jar --version | awk 'NR == 1 { print $2 }')
+          mkdir "$RUNNER_TEMP/not-delivered"
+          mv "dist/out/esj-$version.zip" "dist/out/esj-$version.zip.sha256" "$RUNNER_TEMP/not-delivered/"
+
       - name: Keep the archives
         uses: actions/upload-artifact@v7
         with:
@@ -76,12 +87,66 @@ jobs:
         with:
           path: archives
 
+      # Nothing is attached before every checksum has been checked against the
+      # archive beside it, in what each job delivered and in what is attached, and
+      # before every name is known to come from one job, or to carry the same bytes
+      # from each job that delivered it. A failure here leaves the release untouched.
+      - name: Check every archive against its checksum
+        run: |
+          set -eu
+          # Each archive has its checksum beside it, and each checksum is one line in
+          # the form dist/package.sh writes, naming the archive beside it; then the
+          # check a reader makes.
+          check() {
+            ( cd "$1"
+              ls ./*.zip > /dev/null 2>&1 || { echo "::error::$1 holds no archive"; exit 1; }
+              for archive in *.zip; do
+                [ -f "$archive.sha256" ] || { echo "::error::$1: $archive has no checksum"; exit 1; }
+              done
+              for sum in *.sha256; do
+                archive=${sum%.sha256}
+                [ -f "$archive" ] || { echo "::error::$1: $sum has no archive beside it"; exit 1; }
+                if [ "$(wc -l < "$sum")" -ne 1 ] ||
+                    [ "$(sed 's/^[0-9a-f]\{64\}  //' "$sum")" != "$archive" ]; then
+                  echo "::error::$1: $sum is not the one line that names $archive"
+                  exit 1
+                fi
+              done
+              sha256sum --strict --check -- *.sha256 )
+          }
+          for job in archives/*/; do
+            check "$job"
+          done
+          # One file per name: a name that several jobs delivered is taken once, and
+          # only when they delivered the same bytes.
+          mkdir assets
+          for file in archives/*/*; do
+            name=${file##*/}
+            if [ ! -e "assets/$name" ]; then
+              cp "$file" "assets/$name"
+            elif cmp -s "$file" "assets/$name"; then
+              echo "$name: the same bytes from more than one job"
+            else
+              echo "::error::$name comes from more than one job, with different contents"
+              exit 1
+            fi
+          done
+          check assets
+          # On a tag, the platform-independent archive of the version it names is there.
+          case $GITHUB_REF in
+            refs/tags/v*)
+              if [ ! -f "assets/esj-${GITHUB_REF_NAME#v}.zip" ]; then
+                echo "::error::no esj-${GITHUB_REF_NAME#v}.zip among the archives of $GITHUB_REF_NAME"
+                exit 1
+              fi ;;
+          esac
+
       - name: Attach them
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: |
-            archives/*/*.zip
-            archives/*/*.zip.sha256
+            assets/*.zip
+            assets/*.zip.sha256
           fail_on_unmatched_files: true
           generate_release_notes: true
 

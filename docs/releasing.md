@@ -52,6 +52,13 @@ git commit -am 'Back to a snapshot version'
 The same command repeats a deployment that failed; a version the Portal has published cannot be
 deployed again.
 
+Each of the three packaging jobs of `release.yml` delivers the archives of its platform, and the
+`linux-x64` job also the platform-independent `esj-<version>.zip`; the other two build one as
+well and leave it out of their upload. Before anything is attached, the release job checks every
+`.sha256` against the archive beside it: a checksum that does not match, a name two jobs
+delivered with different contents, or, on a tag, no `esj-<version>.zip` of the version the tag
+names stops the release.
+
 Beside the archives, on one Linux runner per processor, `release.yml` builds the container image
 natively, compares it with the jar and pushes it as `<version>-linux-amd64` and
 `<version>-linux-arm64`; once both are there, it joins them under `<version>` and `latest` and

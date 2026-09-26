@@ -156,9 +156,10 @@ class XmlHardeningTest {
 
     /**
      * The transformation dereferences no protocol, and this asks the processor the module
-     * actually uses rather than a copy of it. The setting behind this is one Saxon reads
-     * leniently — an empty value leaves every protocol allowed — so a stylesheet that
-     * reads a file is the only evidence that says which of the two was configured.
+     * actually uses rather than a copy of it. The setting behind this is one whose values
+     * Saxon has read differently from release to release — an empty value allowed every
+     * protocol in 12.10 and allows none in 13.0 — so a stylesheet that reads a file is the
+     * only evidence that says what the configured value does.
      */
     @Test
     void dereferencesNoProtocolFromAStylesheet() throws Exception {
