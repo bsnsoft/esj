@@ -163,9 +163,13 @@ final class KositHtml {
      * Answers an {@code unparsed-text()}. The three files the stylesheet inlines are the
      * whole of what it may read this way. Package-private for the same reason as
      * {@link #resolveResource(ResourceRequest)}.
+     *
+     * <p>{@code fallback} asks for a character XML does not permit to be replaced by
+     * U+FFFD rather than reported. The three files carry no such character, which
+     * {@code ResolverTest} holds them to, so the reader is the same either way.
      */
-    static Reader resolveText(URI uri, String encoding, Configuration configuration)
-            throws XPathException {
+    static Reader resolveText(URI uri, String encoding, Configuration configuration,
+            boolean fallback) throws XPathException {
         String name = relative(uri == null ? null : uri.toString());
         if (name == null || !TEXTS.contains(name)) {
             throw new XPathException("this renderer inlines only the files it ships, and "

@@ -2,7 +2,11 @@ package de.bsnsoft.esj.render;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URI;
 import net.sf.saxon.lib.ResourceRequest;
 import net.sf.saxon.trans.XPathException;
@@ -56,8 +60,35 @@ class ResolverTest {
     @ParameterizedTest
     @ValueSource(strings = {"xrechnung-viewer.css", "xrechnung-viewer.js", "FileSaver-v2.0.5.js"})
     void theInlinedFilesAreAnswered(String name) throws XPathException {
-        assertNotNull(KositHtml.resolveText(URI.create(KositHtml.reference(name)), "UTF-8", null),
+        assertNotNull(
+                KositHtml.resolveText(URI.create(KositHtml.reference(name)), "UTF-8", null, false),
                 name + " is a file the stylesheet inlines");
+    }
+
+    /**
+     * {@code unparsed-text()} may be asked to replace a character XML does not permit
+     * instead of reporting it, and the resolver answers that request with the same reader
+     * as any other. That is right only while the files carry no such character.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"xrechnung-viewer.css", "xrechnung-viewer.js", "FileSaver-v2.0.5.js"})
+    void theInlinedFilesCarryOnlyCharactersXmlPermits(String name)
+            throws XPathException, IOException {
+        StringWriter text = new StringWriter();
+        try (Reader in = KositHtml.resolveText(
+                URI.create(KositHtml.reference(name)), "UTF-8", null, true)) {
+            in.transferTo(text);
+        }
+        text.toString().codePoints().forEach(c -> assertTrue(xmlPermits(c),
+                name + " carries U+" + Integer.toHexString(c) + ", which XML does not permit"));
+    }
+
+    /** The Char production of XML 1.0, which {@code unparsed-text()} holds its result to. */
+    private static boolean xmlPermits(int c) {
+        return c == 0x9 || c == 0xA || c == 0xD
+                || (c >= 0x20 && c <= 0xD7FF)
+                || (c >= 0xE000 && c <= 0xFFFD)
+                || (c >= 0x10000 && c <= 0x10FFFF);
     }
 
     @ParameterizedTest
@@ -68,7 +99,7 @@ class ResolverTest {
             "esj-kosit-html:/kosit/l10n/de.xml"})
     void everyOtherTextIsRefused(String reference) {
         assertThrows(XPathException.class,
-                () -> KositHtml.resolveText(URI.create(reference), "UTF-8", null),
+                () -> KositHtml.resolveText(URI.create(reference), "UTF-8", null, false),
                 reference + " is not a file this module inlines");
     }
 

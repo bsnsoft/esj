@@ -48,6 +48,12 @@ still change; a change to it is named here under *Format*.
   dates; a credit note (the types the display names call one) labels its number, its date and
   its closing amount as a credit note's; neither a credit note nor a self-billed invoice carries
   an EPC QR code, since its reader is not the one who pays ([`docs/letter-layout.md`](docs/letter-layout.md#document-types)).
+- The libraries underneath moved on: Saxon-HE 13.0 runs the validation artefacts and the
+  stylesheets, where 12.10 did, the tests run on JUnit 6, and the PostgreSQL that
+  [`docs/storage.md`](docs/storage.md) is executed against is release 18 on every platform the
+  build runs on, pinned through the bill of materials of its binaries rather than left to the
+  default of the artefact that starts it. Nothing observable changed: the ledgers, the fixture
+  manifest and the checked-in renderings hold as they are.
 
 ### Fixed
 
@@ -62,6 +68,13 @@ still change; a change to it is named here under *Format*.
 - A hybrid PDF with two embedded files under one name is refused instead of validated on the one
   a map kept: both are listed, the name is reported (`PDF-EMBEDDED-DUPLICATE-NAME`), and files a
   page refers to count as attachments too ([`docs/pdf-input.md`](docs/pdf-input.md#where-the-invoice-may-lie-and-what-counts-as-one)).
+- The output intent of a rendering carries the vendored sRGB profile byte for byte on every
+  runtime. PDFBox was handed the profile as a stream, read it into a `java.awt.color.ICC_Profile`
+  and embedded what that object gave back, and on a runtime whose colour management
+  re-serializes a profile it was handed — the Ubuntu build of OpenJDK 21, for one — the header
+  of the embedded profile named that engine as the preferred CMM, so the file was no longer the
+  ICC's and the rendering no longer the checked-in one. The stream is now filled from the file
+  itself; the checked-in renderings are unchanged.
 
 ## [0.9.1] — 2026-09-22
 
