@@ -75,6 +75,15 @@ still change; a change to it is named here under *Format*.
   of the embedded profile named that engine as the preferred CMM, so the file was no longer the
   ICC's and the rendering no longer the checked-in one. The stream is now filled from the file
   itself; the checked-in renderings are unchanged.
+- The checksum beside the platform-independent archive of a release, `esj-<version>.zip.sha256`,
+  is the checksum of that archive. Each of the three packaging jobs of the release workflow
+  uploaded the archive and its checksum under the same two names, and the release kept whichever
+  copy of each came last — for 0.9.1 the archive of one job and the checksum of another, which
+  does not match it; the six platform archives match theirs. The `linux-x64` job alone delivers
+  it now, its entries carry fixed times, modes and order, so that the clock, the time zone and the
+  umask of a build leave no trace in its bytes, and nothing is attached before every checksum has
+  been checked against the archive beside it, no name comes from two jobs with different
+  contents, and a tag finds the archive of the version it names.
 
 ## [0.9.1] — 2026-09-22
 
