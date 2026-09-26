@@ -6,9 +6,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 
 /**
@@ -78,6 +81,12 @@ final class Pdfa {
     /** The bytes of that profile, read once and embedded in every rendering. */
     private static final byte[] PROFILE_BYTES = profileBytes();
 
+    /**
+     * The number of components of that profile, which the stream carrying it has to state.
+     * It is an RGB profile, which {@code VendoredProfileTest} holds it to, so three.
+     */
+    private static final int PROFILE_COMPONENTS = 3;
+
     private Pdfa() {
         throw new AssertionError("no instances");
     }
@@ -137,8 +146,7 @@ final class Pdfa {
     static void declare(PDDocument pdf, PDDocumentInformation information) {
         pdf.setVersion(PDF_VERSION);
         try {
-            PDOutputIntent intent =
-                    new PDOutputIntent(pdf, new ByteArrayInputStream(PROFILE_BYTES));
+            PDOutputIntent intent = outputIntent(pdf);
             intent.setInfo(OUTPUT_CONDITION);
             intent.setOutputCondition(OUTPUT_CONDITION);
             intent.setOutputConditionIdentifier(OUTPUT_CONDITION);
@@ -152,6 +160,29 @@ final class Pdfa {
         } catch (IOException e) {
             throw new RenderException("the PDF/A declaration could not be written", e);
         }
+    }
+
+    /**
+     * Returns the output intent of a document, with the vendored profile as its destination
+     * profile, byte for byte.
+     *
+     * <p>PDFBox builds the same dictionary from an input stream of the profile, but on the
+     * way it reads the profile into a {@code java.awt.color.ICC_Profile} and embeds what that
+     * object gives back, and what it gives back is up to the colour management of the
+     * runtime: a build whose engine re-serializes a profile it was handed writes its own name
+     * into the header as the preferred CMM, and the stream is no longer the ICC's file. So
+     * the stream is filled from the bytes here, in the shape PDFBox gives it — Flate-encoded,
+     * with {@code N} stating the components — and no runtime gets to touch the profile.
+     */
+    private static PDOutputIntent outputIntent(PDDocument pdf) throws IOException {
+        COSDictionary dictionary = new COSDictionary();
+        dictionary.setItem(COSName.TYPE, COSName.OUTPUT_INTENT);
+        dictionary.setItem(COSName.S, COSName.GTS_PDFA1);
+        PDStream profile = new PDStream(pdf, new ByteArrayInputStream(PROFILE_BYTES),
+                COSName.FLATE_DECODE);
+        profile.getCOSObject().setInt(COSName.N, PROFILE_COMPONENTS);
+        dictionary.setItem(COSName.DEST_OUTPUT_PROFILE, profile);
+        return new PDOutputIntent(dictionary);
     }
 
     /**

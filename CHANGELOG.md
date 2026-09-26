@@ -62,6 +62,13 @@ still change; a change to it is named here under *Format*.
 - A hybrid PDF with two embedded files under one name is refused instead of validated on the one
   a map kept: both are listed, the name is reported (`PDF-EMBEDDED-DUPLICATE-NAME`), and files a
   page refers to count as attachments too ([`docs/pdf-input.md`](docs/pdf-input.md#where-the-invoice-may-lie-and-what-counts-as-one)).
+- The output intent of a rendering carries the vendored sRGB profile byte for byte on every
+  runtime. PDFBox was handed the profile as a stream, read it into a `java.awt.color.ICC_Profile`
+  and embedded what that object gave back, and on a runtime whose colour management
+  re-serializes a profile it was handed — the Ubuntu build of OpenJDK 21, for one — the header
+  of the embedded profile named that engine as the preferred CMM, so the file was no longer the
+  ICC's and the rendering no longer the checked-in one. The stream is now filled from the file
+  itself; the checked-in renderings are unchanged.
 
 ## [0.9.1] — 2026-09-22
 
