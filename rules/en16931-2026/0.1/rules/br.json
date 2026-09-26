@@ -1,0 +1,461 @@
+[
+  {
+    "id": "BR-30",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-37/BG-26",
+    "terms": [
+      "BT-134",
+      "BT-135"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-134"
+            },
+            {
+              "exists": "/BT-135"
+            }
+          ]
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BT-135"
+            },
+            {
+              "value": "/BT-134"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice line period at {.} ends at {/BT-135} and starts at {/BT-134}; a period does not end before it starts.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-30",
+    "note": "The statement is the one the 2017 edition makes; this edition addresses it differently, because the path of a term it names is not a path of that edition. The rule is written out here rather than taken over from the pack of that edition for exactly that reason."
+  },
+  {
+    "id": "BR-36",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-99"
+    ],
+    "assert": {
+      "exists": "/BT-99"
+    },
+    "message": "The document level charge or tax amount (BT-99) is missing: nothing stands at {@/BT-99}.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-36",
+    "note": "The 2017 edition asked the same of a group that carried charges alone; the group of this edition carries non-VAT taxes as well and the term is named after both."
+  },
+  {
+    "id": "BR-37",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102"
+    ],
+    "assert": {
+      "exists": "/BT-102"
+    },
+    "message": "The document level charge or tax VAT category code (BT-102) is missing: nothing stands at {@/BT-102}.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-37",
+    "note": "Against the 2017 edition the statement is the same and the group it is about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-38",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-104",
+      "BT-105"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-104"
+        },
+        {
+          "exists": "/BT-105"
+        }
+      ]
+    },
+    "message": "The document level charge or tax at {.} states no reason: neither a reason text (BT-104) nor a charge reason code (BT-105) is there.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-38",
+    "note": "Against the 2017 edition the two terms are the same and the group they are about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-43",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-141"
+    ],
+    "assert": {
+      "exists": "/BT-141"
+    },
+    "message": "The invoice line charge or tax amount (BT-141) is missing: nothing stands at {@/BT-141}.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-43",
+    "note": "Against the 2017 edition the statement is the same and the group it is about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-44",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-144",
+      "BT-145",
+      "BT-193"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-144"
+        },
+        {
+          "exists": "/BT-145"
+        },
+        {
+          "exists": "/BT-193"
+        }
+      ]
+    },
+    "message": "The invoice line charge or tax at {.} states no reason: neither a reason text (BT-144) nor a charge reason code (BT-145) nor a non-VAT tax type code (BT-193) is there.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-44",
+    "note": "The 2017 edition admitted the reason text and the charge reason code; this edition admits the line-level non-VAT tax type code (BT-193) as a third way of saying what the charge or tax is."
+  },
+  {
+    "id": "BR-46",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-117",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "not": {
+            "or": [
+              {
+                "eq": [
+                  {
+                    "value": "/BT-118"
+                  },
+                  {
+                    "const": "D"
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "value": "/BT-118"
+                  },
+                  {
+                    "const": "F"
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "value": "/BT-118"
+                  },
+                  {
+                    "const": "I"
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "value": "/BT-118"
+                  },
+                  {
+                    "const": "J"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "then": {
+          "exists": "/BT-117"
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"{/BT-118}\" and states no VAT category tax amount (BT-117).",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-46",
+    "note": "The 2017 edition asked for the tax amount in every breakdown; this edition excepts the margin scheme categories, which are the four codes clause 6.4.3.4.13 names. They are written into the rule rather than looked up, because they are a set the edition states and not a published list."
+  },
+  {
+    "id": "BR-50",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-16",
+    "terms": [
+      "BT-81",
+      "BT-84"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "or": [
+            {
+              "eq": [
+                {
+                  "value": "/BT-81"
+                },
+                {
+                  "const": "30"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-81"
+                },
+                {
+                  "const": "58"
+                }
+              ]
+            }
+          ]
+        },
+        "then": {
+          "any": {
+            "group": "/BG-17/*",
+            "assert": {
+              "exists": "/BT-84"
+            }
+          }
+        }
+      }
+    },
+    "message": "The payment means type code (BT-81) at {@/BT-81} is {/BT-81}, a credit transfer, and no credit transfer (BG-17) states a payment account identifier (BT-84).",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-50",
+    "note": "The 2017 edition asked for the identifier wherever the credit transfer group was present; this edition asks for it wherever the payment means is a credit transfer, which UNTDID 4461 codes as 30 and a SEPA credit transfer as 58. Codes that BR-61 also names are then reported by both rules."
+  },
+  {
+    "id": "BR-53",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-6",
+      "BT-111"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-6"
+        },
+        "then": {
+          "exists": "/BG-22/BT-111"
+        }
+      }
+    },
+    "message": "The invoice names a VAT accounting currency (BT-6) of {/BT-6} and states no invoice total VAT amount in that currency (BT-111).",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-53",
+    "note": "Against the 2017 edition the two terms and the condition are the same; the term BT-111 is named after the VAT accounting currency in this edition."
+  },
+  {
+    "id": "BR-54",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-31/BG-32/*",
+    "terms": [
+      "BT-160",
+      "BT-211",
+      "BT-161"
+    ],
+    "assert": {
+      "and": [
+        {
+          "or": [
+            {
+              "exists": "/BT-160"
+            },
+            {
+              "exists": "/BT-211"
+            }
+          ]
+        },
+        {
+          "exists": "/BT-161"
+        }
+      ]
+    },
+    "message": "The item attribute at {.} is incomplete: an attribute carries a name (BT-160) or an attribute code (BT-211), and a value (BT-161).",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-54",
+    "note": "The 2017 edition asked for the name and the value; this edition admits the new attribute code (BT-211) in place of the name."
+  },
+  {
+    "id": "BR-67",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-131",
+      "BT-129",
+      "BT-136",
+      "BT-141",
+      "BT-146",
+      "BT-149"
+    ],
+    "undecided": {
+      "when": {
+        "and": [
+          {
+            "lt": [
+              {
+                "value": "/BT-131"
+              },
+              {
+                "const": 0
+              }
+            ]
+          },
+          {
+            "ge": [
+              {
+                "value": "/BT-129"
+              },
+              {
+                "const": 0
+              }
+            ]
+          },
+          {
+            "eq": [
+              {
+                "value": "/BG-29/BT-149"
+              },
+              {
+                "const": 0
+              }
+            ]
+          }
+        ]
+      },
+      "message": "the invoice line at {.} states a negative net amount (BT-131) and the item price base quantity (BT-149) {/BG-29/BT-149}, so it has no priced quantity to weigh its allowances against"
+    },
+    "assert": {
+      "if": {
+        "condition": {
+          "lt": [
+            {
+              "value": "/BT-131"
+            },
+            {
+              "const": 0
+            }
+          ]
+        },
+        "then": {
+          "or": [
+            {
+              "lt": [
+                {
+                  "value": "/BT-129"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            },
+            {
+              "gt": [
+                {
+                  "sum": "/BG-27/*/BT-136"
+                },
+                {
+                  "add": [
+                    {
+                      "sum": "/BG-28/*/BT-141"
+                    },
+                    {
+                      "div": [
+                        {
+                          "mul": [
+                            {
+                              "value": "/BG-29/BT-146"
+                            },
+                            {
+                              "value": "/BT-129"
+                            }
+                          ]
+                        },
+                        {
+                          "if": {
+                            "condition": {
+                              "exists": "/BG-29/BT-149"
+                            },
+                            "then": {
+                              "value": "/BG-29/BT-149"
+                            },
+                            "else": {
+                              "const": 1
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice line at {.} states the negative net amount (BT-131) {/BT-131} with the quantity (BT-129) {/BT-129}: a negative line amount is either an invoice for a negative quantity or a line whose allowances (BT-136) outweigh its charges (BT-141) and its priced quantity.",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-67",
+    "note": "The price base quantity (BT-149) divides the product of the net price and the quantity; a line that states none is priced per one unit, which is what the edition says an absent base quantity means. A base quantity of zero, which the edition admits, leaves a line with a negative net amount and a quantity that is not negative undecided: the rule reports that it was not decided for that line rather than holding."
+  },
+  {
+    "id": "BR-76",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-84",
+      "BT-118"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "K"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "exists": "/BG-16/BG-17/*/BT-84"
+        }
+      }
+    },
+    "message": "A VAT breakdown is categorised \"K\" (intra-community supply), and the invoice states no payment account identifier (BT-84).",
+    "source": "EN 16931-1:2026, 6.4.1, Table 3, BR-76",
+    "note": "The edition states the condition as an intra-community transaction, and the statement of the invoice that it is one is the category of its VAT breakdown."
+  }
+]

@@ -58,10 +58,11 @@ export {
 
 export { RuleContext, RuleEngine, Undecided, compile } from './rules/engine.ts';
 export type { NativeRule, RuleFinding, RuleValue } from './rules/engine.ts';
-export { CodeList, RulePackError, ruleIdOfDeclared } from './rules/pack.ts';
+export { CodeList, RULE_ORACLES, RulePackError, ruleIdOfDeclared } from './rules/pack.ts';
 export type {
-  CodeListEntry, CodeListFile, Expression, RuleDefinition, RuleFile, RulePackFile, RuleSeverity,
-  RuleWarning,
+  CodeListEntry, CodeListFile, Expression, JavaRuleReference, RuleDefinition, RuleFile,
+  RuleOracle, RulePackFile, RuleSeverity, RuleShare, RuleUndecided, RuleWarning,
+  SnapshotReference,
 } from './rules/pack.ts';
 export { en16931NativeRules } from './rules/native.ts';
 

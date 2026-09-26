@@ -4,13 +4,19 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
+import de.bsnsoft.esj.rules.RuleOracle;
+import de.bsnsoft.esj.rules.RulePack;
 import de.bsnsoft.esj.rules.RulePackException;
+import de.bsnsoft.esj.rules.RulePackSource;
+import de.bsnsoft.esj.rules.RulePackSources;
 import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931;
 import de.bsnsoft.esj.syntax.ProfileLevels;
 import de.bsnsoft.esj.syntax.Severity;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,16 +45,25 @@ import java.util.concurrent.ConcurrentMap;
  * {@code native} and the pack identifier on every one, and it is never presented as conformance
  * to the ESJ format, which layers L1 to L3 of the specification, section 9.4 define alone.
  *
+ * <p>A pack of an edition no official artefact release covers says so on every line that
+ * names it: the row carries the sentence that its rules are not corroborated by an official
+ * artefact, whether the pack ran or was left out, so that a finding of it is never read as
+ * the answer of an artefact.
+ *
  * @param found  what the engine found, empty where it did not run
  * @param reason why it did not run, empty where it did
+ * @param pack   the pack that ran, or the one the document's edition would have run
  */
-record RuleCheck(Optional<Found> found, Optional<String> reason) {
+record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) {
 
-    /** The pack this build carries, as it is written in a report. */
+    /** The pack of the default edition, as it is written in a report. */
     static final String PACK = En16931.PACK_ID + "/" + En16931.VERSION;
 
     /** The label of the row this check fills in the semantic block. */
     static final String LABEL = "EN 16931 business rules (native, pack " + PACK + ")";
+
+    /** What the row of a pack no official artefact covers adds to the name of the pack. */
+    static final String UNCORROBORATED = "not corroborated by an official artefact";
 
     /** The caller asked for the structural layers alone. */
     static final String BY_OPTION = "skipped (--rules none)";
@@ -103,8 +118,13 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
      */
     static final String NO_PACK_FOR_EDITION = "not run (no pack for this edition)";
 
-    /** The engines of this process, one per registry, compiled on first use. */
-    private static final ConcurrentMap<Extensions, RuleEngine> ENGINES =
+    /**
+     * The engines of this process, one per registry, compiled on first use.
+     *
+     * <p>The key is the edition the pack is written for and the extension registries that
+     * are loaded, which is exactly what decides which paths a pack resolves to.
+     */
+    private static final ConcurrentMap<EngineKey, RuleEngine> ENGINES =
             new ConcurrentHashMap<>();
 
     /**
@@ -112,10 +132,12 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
      *
      * @param found  what the engine found, empty where it did not run
      * @param reason why it did not run, empty where it did
+     * @param pack   the pack that ran, or the one the document's edition would have run
      */
     RuleCheck {
         Objects.requireNonNull(found, "found");
         Objects.requireNonNull(reason, "reason");
+        Objects.requireNonNull(pack, "pack");
         if (found.isPresent() == reason.isPresent()) {
             throw new IllegalArgumentException(
                     "a rule check has either findings or a reason it has none");
@@ -129,11 +151,79 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
      * @return the check
      */
     static RuleCheck notRun(String reason) {
-        return new RuleCheck(Optional.empty(), Optional.of(reason));
+        return new RuleCheck(Optional.empty(), Optional.of(reason), PackName.STANDING);
     }
 
     /**
-     * Runs the pack this build carries over a document.
+     * Returns a check that did not run over a document, naming the pack its edition has.
+     *
+     * <p>A row that says the rules were left out names the pack that would have run. For a
+     * document of an edition whose pack is another than the default one, naming the default
+     * pack would be a statement about rules that never applied to it.
+     *
+     * @param reason    why not, in English, for the report
+     * @param document  the document the pack was not run over
+     * @param extension the extension registries this run loads
+     * @return the check
+     */
+    static RuleCheck notRun(String reason, SemanticDocument document, Extensions extension) {
+        return new RuleCheck(Optional.empty(), Optional.of(reason),
+                Editions.forDocument(document, extension)
+                        .flatMap(registry -> RulePackSources.forEdition(registry.edition()))
+                        .map(source -> PackName.of(source.pack()))
+                        .orElse(PackName.STANDING));
+    }
+
+    /**
+     * Writes the rule packs this build carries, each with its edition and what stands
+     * behind its rules, for {@code esj --list-packs}.
+     *
+     * <p>The oracles are counted from the manifest rather than stated, so the listing says
+     * of a pack no more than the pack says of itself. Which pack runs is not a choice of the
+     * caller: {@code --rules en16931} runs the one of the edition a document names.
+     *
+     * @param console where the lines go
+     * @throws CliException if a pack this build carries cannot be read
+     */
+    static void list(Console console) {
+        console.line("Rule packs, run natively over the semantic document; --rules "
+                + Options.EN16931 + " runs the one of the edition a document names:");
+        for (RulePackSource source : RulePackSources.all()) {
+            RulePack pack;
+            try {
+                pack = source.pack();
+            } catch (RulePackException e) {
+                throw CliException.input("rule pack of " + source.edition() + ": "
+                        + e.getMessage(), e);
+            }
+            PackName name = PackName.of(pack);
+            console.line(name.name());
+            console.line("  " + pack.edition() + "; " + pack.verifiedAgainst()
+                    .map(release -> "measured against the " + release)
+                    .orElse(UNCORROBORATED));
+            Map<RuleOracle, Integer> oracles = new EnumMap<>(RuleOracle.class);
+            pack.rules().forEach(rule -> oracles.merge(rule.oracle(), 1, Integer::sum));
+            pack.javaRules().forEach(rule -> oracles.merge(rule.oracle(), 1, Integer::sum));
+            int all = oracles.values().stream().mapToInt(Integer::intValue).sum();
+            List<String> counts = new ArrayList<>();
+            oracles.forEach((oracle, count) -> counts.add(count + " " + oracle.token()));
+            console.line("  " + all + " rules by oracle: " + String.join(", ", counts));
+        }
+    }
+
+    /**
+     * Returns the label of the row this check fills in the semantic block.
+     *
+     * @return the label, naming the pack and, where no official artefact stands behind it,
+     *         saying so
+     */
+    String label() {
+        return "EN 16931 business rules (native, pack " + pack.name()
+                + (pack.corroborated() ? "" : ", " + UNCORROBORATED) + ")";
+    }
+
+    /**
+     * Runs the pack of the document's edition over it.
      *
      * <p>The engine is compiled once per process and per registry rather than once per
      * document. Compiling is where a pack is refused — the paths are resolved, the operators
@@ -149,10 +239,11 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
      * it is written this way because {@code RulePacks.read} is public API and a pack may
      * arrive from a directory a caller was handed.
      *
-     * <p>A document of another edition than the one the pack was written against is not
-     * run over at all, and {@link #NO_PACK_FOR_EDITION} says so. The edition is a fact of
-     * the document and the pack is a fact of this build; neither is a defect of the
-     * invoice, so the row of the check is a gap and the verdict is the third state.
+     * <p>The pack is chosen by the edition the document names, among the packs this build
+     * carries. A document of an edition this build carries no pack for is not run over at
+     * all, and {@link #NO_PACK_FOR_EDITION} says so. The edition is a fact of the document
+     * and the packs are a fact of this build; neither is a defect of the invoice, so the row
+     * of the check is a gap and the verdict is the third state.
      *
      * @param document  the document to check; it is not changed
      * @param extension the extension registries this run loads, which decide the registry the
@@ -168,22 +259,27 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
         Objects.requireNonNull(document, "document");
         Objects.requireNonNull(extension, "extension");
         Objects.requireNonNull(levels, "levels");
-        if (!Validation.registry(extension).describes(document.semanticModel())) {
+        Registry registry = Editions.forDocument(document, extension).orElse(null);
+        if (registry == null) {
+            return notRun(NO_PACK_FOR_EDITION);
+        }
+        RulePackSource source = RulePackSources.forEdition(registry.edition()).orElse(null);
+        if (source == null) {
             return notRun(NO_PACK_FOR_EDITION);
         }
         RuleEngine engine;
         try {
-            engine = ENGINES.computeIfAbsent(extension,
-                    loaded -> En16931.engine(Validation.registry(loaded)));
+            engine = ENGINES.computeIfAbsent(new EngineKey(registry.edition(), extension),
+                    key -> source.engine(registry));
         } catch (RulePackException e) {
-            throw CliException.input("--rules " + En16931.PACK_ID + ": " + e.getMessage(), e);
+            throw CliException.input("--rules " + source.pack().id() + ": " + e.getMessage(), e);
         }
         List<Levelled> findings = new ArrayList<>();
         for (RuleFinding finding : engine.evaluate(document)) {
             findings.add(Levelled.of(finding, levels));
         }
         return new RuleCheck(Optional.of(new Found(engine.pack().id(), engine.pack().version(),
-                List.copyOf(findings))), Optional.empty());
+                List.copyOf(findings))), Optional.empty(), PackName.of(engine.pack()));
     }
 
     /** Tells whether the engine ran at all. */
@@ -210,11 +306,58 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
     }
 
     /**
+     * The pack a row names, and whether an official artefact release stands behind it.
+     *
+     * @param name         the pack, written {@code id/version}
+     * @param edition      the edition of the semantic model its rules are written for
+     * @param corroborated whether the pack names a release of the official artefacts it was
+     *                     measured against; {@code false} for a pack of an edition no
+     *                     release covers
+     */
+    record PackName(String name, String edition, boolean corroborated) {
+
+        /** The pack of the default edition, which the artefacts of release 1.3.16 cover. */
+        static final PackName STANDING = new PackName(PACK, En16931.EDITION, true);
+
+        /**
+         * Refuses a missing member.
+         *
+         * @param name         the pack, written {@code id/version}
+         * @param edition      the edition of the semantic model its rules are written for
+         * @param corroborated whether an artefact release stands behind the pack
+         */
+        PackName {
+            Objects.requireNonNull(name, "name");
+            Objects.requireNonNull(edition, "edition");
+        }
+
+        /**
+         * Returns the name of a pack as its manifest writes it.
+         *
+         * @param pack the manifest
+         * @return the name
+         */
+        static PackName of(RulePack pack) {
+            return new PackName(pack.id() + "/" + pack.version(), pack.edition(),
+                    pack.verifiedAgainst().isPresent());
+        }
+    }
+
+    /**
+     * What an engine of this process is compiled for.
+     *
+     * @param edition    the edition of the registry the pack is compiled against
+     * @param extensions the extension registries folded into that registry
+     */
+    private record EngineKey(String edition, Extensions extensions) {
+    }
+
+    /**
      * What the engine found over one document.
      *
      * @param packId      the identifier of the pack that was run
-     * @param packVersion its version, which is the release of the artefacts it was verified
-     *                    against
+     * @param packVersion its version, which for the pack of the default edition is the release
+     *                    of the artefacts it was verified against
      * @param findings    what the rules had to say, in the order the engine reports them
      */
     record Found(String packId, String packVersion, List<Levelled> findings) {
@@ -223,8 +366,8 @@ record RuleCheck(Optional<Found> found, Optional<String> reason) {
          * Copies the findings.
          *
          * @param packId      the identifier of the pack that was run
-         * @param packVersion its version, which is the release of the artefacts it was verified
-         *                    against
+         * @param packVersion its version, which for the pack of the default edition is the
+         *                    release of the artefacts it was verified against
          * @param findings    what the rules had to say, in the order the engine reports them
          */
         Found {

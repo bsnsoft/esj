@@ -244,6 +244,13 @@ enum ReportWord {
     ROW_RULES("EN 16931 business rules (native, pack %1$s)",
             "EN-16931-Geschäftsregeln (nativ, Paket %1$s)"),
 
+    /** The same row for a pack of an edition no official artefact release covers. */
+    ROW_RULES_UNCORROBORATED(
+            "EN 16931 business rules (native, pack %1$s, not corroborated by an official"
+                    + " artefact)",
+            "EN-16931-Geschäftsregeln (nativ, Paket %1$s, durch kein offizielles Artefakt"
+                    + " bestätigt)"),
+
     /** One finding of a row that weighs nothing for the verdict. */
     NOTE("%1$s note", "%1$s Hinweis"),
 
@@ -433,6 +440,7 @@ enum ReportWord {
             case ROW_MODEL_L2 -> ROW_MODEL_L2;
             case ROW_CARDINALITY_L3 -> ROW_CARDINALITY_L3;
             case ROW_RULES -> ROW_RULES;
+            case ROW_RULES_UNCORROBORATED -> ROW_RULES_UNCORROBORATED;
             case NOTE -> NOTE;
             case NOTES -> NOTES;
             case PDFA_DECLARED -> PDFA_DECLARED;

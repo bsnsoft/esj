@@ -8,6 +8,39 @@ still change; a change to it is named here under *Format*.
 
 ### Added
 
+- The business rule pack of EN 16931-1:2026, `rules/en16931-2026/0.1`: 252 rules, of which 199
+  are those of clause 6.4 (194 implemented, 5 not decidable, each with its reason), the fraction
+  digit rules of Table 28 and the code list rules. No official validation artefact is published
+  for the edition, so every rule names in `oracle` what stands behind it — `downgrade` for the
+  rules the edition leaves unchanged, measured against the Schematron of release 1.3.16 over the
+  document written back with `esj upgrade`, `cases` for the rules it changed or adds — and a
+  document of that edition validates `INVALID` or `INDETERMINATE`, never `VALID`, with the new
+  cause `no-artefacts-for-edition` ([`conformance/rules-2026/coverage.md`](conformance/rules-2026/coverage.md),
+  [`ledger.md`](conformance/rules-2026/ledger.md)). The pack is separable with the edition.
+- `derive()` for the typed view of EN 16931-1:2026: `…typed.v2026.Totals.of(minorUnits)` writes
+  the line net amounts, one VAT breakdown per category, rate, exemption reason and goods/services
+  code, and the totals, with the third party charges (BG-34) added into the amount due.
+  Each amount is rounded once, half up, to the minor unit of its currency; `MinorUnits` of
+  `esj-core` holds those numbers and `En16931V2026.minorUnits()` reads them from the pack's
+  currency snapshot. A currency the snapshot gives no minor unit is refused, never guessed; a
+  rule of the pack that asks for one reports that it was not decided. The
+  pack writes out `BR-CO-10`, `-11`, `-12` and `-15`, which round to the same minor unit.
+- The rule language has three more operators — `minorUnit`, `unit` and `atRoot` — and the scale
+  of `round` and of `decimals` may be an expression; `decimals` applies to every numeric term.
+  A rule may name in `undecided` a case a document may state and the rule has no answer for;
+  there it reports that it was not decided, at `info`, instead of holding silently — the 2026
+  pack does so for a price base quantity of zero in `BR-CO-32` and `BR-67`.
+  A pack manifest names its `edition`, which the engine checks against the registry, may take
+  rules of another pack over by identifier (`shares`) and read a code list snapshot of another
+  pack (`{"day", "from"}`). The TypeScript and C# bindings read all of it and run the 2026 pack;
+  the fixture manifest carries its cases in the part of that edition.
+- `esj validate` runs the pack of the edition a document names. The row, the JSON report
+  (`rules.pack.edition`, `rules.pack.corroborated`) and the report file name the pack and, for
+  the 2026 one, say it is not corroborated by an official artefact. `esj --list-packs` lists
+  the rule packs with their edition and the count of rules per oracle. `esj upgrade --to 2026`
+  evaluates a decimal bound over the minor unit of the currency a value is written in — BT-5,
+  BT-6 for BT-111, BT-184 in a VAT breakdown — against the currency snapshot of that pack
+  (`UpgradeOptions.minorUnits`) and reports a value beyond it, unrounded.
 - The container image is published with every release at `ghcr.io/bsnsoft/esj`, for linux/amd64
   and linux/arm64, tagged with the version and `latest`
   ([`docs/install.md`](docs/install.md#container-image)).
@@ -26,6 +59,11 @@ still change; a change to it is named here under *Format*.
 
 ### Changed
 
+- Every rule of a pack, and every entry of `javaRules`, which is now an object `{class, oracle}`,
+  names its `oracle`; the rules of `en16931/1.3.16` say `artefact`. `verifiedAgainst` is optional.
+  A pack manifest written for 0.9.x — without `edition`, with a rule that names no `oracle`, or
+  with a `javaRules` entry written as a string — is refused by `RulePacks.read`.
+  `no-pack-for-edition` now means only that this build carries no pack for the edition.
 - The writer's report tells a term left behind by design from a loss. Handed the extension
   registries of a document (`WriterOptions.builder().extensions(...)`, and `esj convert` and
   `esj validate` hand it the ones `--extension` loads), the writer notes a value of a term whose

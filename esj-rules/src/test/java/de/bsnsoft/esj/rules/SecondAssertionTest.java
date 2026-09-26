@@ -29,10 +29,11 @@ class SecondAssertionTest {
 
     private static final String TEMPLATE = """
             {"id": "test", "version": "1",
+             "edition": "EN 16931-1:2017+A1:2019/AC:2020",
              "verifiedAgainst": "nothing; this pack is a test fixture",
              "description": "A rule with a second assertion.",
              "rules": [
-               {"id": "BR-CO-10", "severity": "fatal", "context": "/",
+               {"id": "BR-CO-10", "severity": "fatal", "oracle": "cases", "context": "/",
                 "terms": ["BT-106", "BT-131"],
                 "assert": {"le": [{"value": "/BG-22/BT-106"}, {"const": 200}]},
                 "warn": SECOND,

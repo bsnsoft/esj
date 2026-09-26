@@ -646,7 +646,7 @@ final class Reports {
      */
     private static void rules(Console console, Validation.Report report) {
         RuleCheck check = report.ruleCheck();
-        console.line("  " + RuleCheck.LABEL + ": " + status(check));
+        console.line("  " + check.label() + ": " + status(check));
         listed(console, check.findings(), levelled -> {
             RuleFinding finding = levelled.finding();
             return finding.code() + " [" + level(levelled) + "]" + paths(finding) + ": "
@@ -1013,6 +1013,8 @@ final class Reports {
         generator.writeObjectFieldStart("pack");
         generator.writeStringField("id", ran.packId());
         generator.writeStringField("version", ran.packVersion());
+        generator.writeStringField("edition", check.pack().edition());
+        generator.writeBooleanField("corroborated", check.pack().corroborated());
         generator.writeEndObject();
         generator.writeArrayFieldStart("findings");
         for (RuleCheck.Levelled levelled : ran.findings()) {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using En16931.SemanticJson.Json;
 using En16931.SemanticJson.Rules;
@@ -19,6 +20,7 @@ public class RuleCaseTests
 {
     private static readonly Lazy<RuleEngine> Pack = new(() => En16931Pack.Engine(Registries.Core2017));
     private static readonly ConcurrentDictionary<string, SemanticDocument> Bases = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, RuleEngine> Engines = new(StringComparer.Ordinal);
 
     /// <summary>The rule cases of the manifest.</summary>
     public static IEnumerable<object[]> Cases() => Manifest.Rows(Manifest.RuleCases.Keys);
@@ -48,8 +50,11 @@ public class RuleCaseTests
     public void CaseReportsTheRulesTheManifestRecords(string id)
     {
         RuleCase expected = Manifest.RuleCases[id];
-        SemanticDocument document = Apply(Base(expected.Base), expected.Changes);
-        IReadOnlyList<RuleFinding> findings = Pack.Value.Evaluate(document);
+        SemanticDocument start = expected.Carried is JsonElement carried
+            ? EsjReader.Strict().Read(Encoding.UTF8.GetBytes(carried.GetRawText()))
+            : Base(expected.Base);
+        SemanticDocument document = Apply(start, expected.Changes);
+        IReadOnlyList<RuleFinding> findings = EngineFor(document.SemanticModel).Evaluate(document);
 
         Assert.Equal(expected.Rules, Reported(findings, all: true));
         Assert.Equal(expected.Warnings, Reported(findings, all: false));
@@ -62,6 +67,27 @@ public class RuleCaseTests
             .Distinct(StringComparer.Ordinal)
             .OrderBy(code => code, StringComparer.Ordinal)
             .ToList();
+
+    /// <summary>
+    /// Returns the pack this build carries for the edition a document names: the pack of the
+    /// default edition over the registry the manifest measures that edition with, or the pack
+    /// of another edition over the registry of it.
+    /// </summary>
+    private static RuleEngine EngineFor(string semanticModel)
+    {
+        if (Pack.Value.Registry.Describes(semanticModel))
+        {
+            return Pack.Value;
+        }
+
+        return Engines.GetOrAdd(semanticModel, edition =>
+        {
+            Model.Registry registry = Registries.Measuring(edition);
+            IRulePackSource source = RulePackSources.ForEdition(registry.Edition)
+                ?? throw new InvalidOperationException("no rule pack of this build states rules about " + edition);
+            return source.Engine(registry);
+        });
+    }
 
     private static SemanticDocument Base(string name) =>
         Bases.GetOrAdd(name, file => EsjReader.Strict().Read(Fixtures.Bytes(file)));

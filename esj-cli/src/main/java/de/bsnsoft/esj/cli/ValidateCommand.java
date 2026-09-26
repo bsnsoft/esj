@@ -644,10 +644,12 @@ final class ValidateCommand implements Callable<Integer> {
         } catch (BindingEditionException e) {
             // A binding table is written against one edition, so a document of another has
             // no XML form this build can produce and the artefacts have nothing to read.
-            // It is a property of this build, like the rule pack of another edition, and
-            // the document keeps every answer the layers before this row gave it.
-            return WrittenCheck.notRun(Options.via(via), Coverage.Cause.NO_PACK_FOR_EDITION,
-                    "not run (no binding table for this edition)");
+            // For the 2026 edition that is not a gap of this build: no syntax binding of
+            // the terms it adds is published, and no artefact release is written against
+            // it either. The document keeps every answer the layers before this row gave
+            // it, and the run ends in the third state with the cause that says so.
+            return WrittenCheck.notRun(Options.via(via), Coverage.Cause.NO_ARTEFACTS_FOR_EDITION,
+                    "not run (no syntax binding is published for this edition)");
         } catch (BindingLimitException e) {
             return WrittenCheck.notRun(Options.via(via), Coverage.Cause.WRITTEN_OVER_BOUND,
                     "not run (" + console.options().bounds()

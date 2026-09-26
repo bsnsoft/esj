@@ -124,6 +124,13 @@ test('the README counts the manifest as this build runs it', () => {
       parts.push(JSON.parse(readFileSync(file, 'utf8')) as Part);
     }
   }
+  if (parts.length < 1 + (root.parts ?? []).length) {
+    // A build without the later edition runs fewer cases than the README counts, and the
+    // README says which ones it leaves out; the full build holds the figures.
+    assert.ok(README.includes('build without that edition leaves out'),
+      'the README names what a build without the later edition leaves out');
+    return;
+  }
   const documents = parts.reduce((sum, part) => sum + (part.documents ?? []).length, 0);
   const invalid = parts.reduce((sum, part) => sum + (part.invalid ?? []).length, 0);
   assert.ok(README.includes(documents + ' conformant documents'),

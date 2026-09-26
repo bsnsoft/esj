@@ -84,6 +84,11 @@ jobs:
           python3 conformance/fixtures/run.py --binding
           dotnet run --no-build --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
 
+      # The later edition is separable (model/en16931/2026.paths): both bindings run
+      # again over a copy of the tree without its files.
+      - name: Run both bindings without the later edition
+        run: bin/without-edition-2026.sh --bindings
+
   generated:
     name: Generated sources are up to date
     runs-on: ubuntu-latest

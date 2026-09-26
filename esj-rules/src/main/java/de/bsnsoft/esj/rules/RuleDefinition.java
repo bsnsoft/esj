@@ -19,10 +19,15 @@ import java.util.Optional;
  * {@code message} is what the finding says, with the values the rule saw put into it.
  * {@code source} is the clause of the standard the statement comes from, and it is a
  * reference and never a quotation: the norm text is not reproduced in this repository.
- * {@code note}, which most rules leave out, says why the rule reads the way it does where
+ * {@code oracle} says what stands behind the rule: an official validation artefact, the
+ * artefact of an earlier edition over the document written down to it, or hand-computed
+ * cases alone. {@code note}, which most rules leave out, says why the rule reads the way it does where
  * the statement admits more than one reading. {@code warn}, which most rules leave out as
  * well, is a second assertion with its own message: it is weighed only where the first one
- * holds and its failure is a warning rather than a fault.
+ * holds and its failure is a warning rather than a fault. {@code undecided}, which most rules
+ * leave out too, names a case the document may state and the rule has no answer for, such as
+ * a division by a quantity of zero: where it holds, the rule reports that it was not decided
+ * and weighs nothing else.
  *
  * <p>The expression and the message bindings are held but not exposed. A caller has no use
  * for an uncompiled expression tree, and the compiled form belongs to
@@ -32,6 +37,7 @@ public final class RuleDefinition {
 
     private final String id;
     private final RuleSeverity severity;
+    private final RuleOracle oracle;
     private final String context;
     private final List<String> terms;
     private final Json assertion;
@@ -40,6 +46,7 @@ public final class RuleDefinition {
     private final String source;
     private final String note;
     private final Warning warning;
+    private final NotDecided notDecided;
 
     /**
      * The second assertion of a rule: a statement that is weighed only where the first one
@@ -51,11 +58,24 @@ public final class RuleDefinition {
     record Warning(Json assertion, String message) {
     }
 
-    RuleDefinition(String id, RuleSeverity severity, String context, List<String> terms,
-                   Json assertion, Map<String, Json> bindings, String message, String source,
-                   String note, Warning warning) {
+    /**
+     * The case in which a rule is not decided: a condition that is weighed before the
+     * assertion, and the reason the finding gives where it holds.
+     *
+     * @param condition the condition, as the rule file writes it
+     * @param message   the template of the reason, which the finding carries after
+     *                  {@code not decided: }
+     */
+    record NotDecided(Json condition, String message) {
+    }
+
+    RuleDefinition(String id, RuleSeverity severity, RuleOracle oracle, String context,
+                   List<String> terms, Json assertion, Map<String, Json> bindings,
+                   String message, String source, String note, Warning warning,
+                   NotDecided notDecided) {
         this.id = Objects.requireNonNull(id, "id");
         this.severity = Objects.requireNonNull(severity, "severity");
+        this.oracle = Objects.requireNonNull(oracle, "oracle");
         this.context = Objects.requireNonNull(context, "context");
         this.terms = List.copyOf(terms);
         this.assertion = Objects.requireNonNull(assertion, "assertion");
@@ -64,6 +84,7 @@ public final class RuleDefinition {
         this.source = Objects.requireNonNull(source, "source");
         this.note = note;
         this.warning = warning;
+        this.notDecided = notDecided;
     }
 
     /**
@@ -82,6 +103,16 @@ public final class RuleDefinition {
      */
     public RuleSeverity severity() {
         return severity;
+    }
+
+    /**
+     * Returns what stands behind the rule: the evidence that it says what the edition it is
+     * written for says.
+     *
+     * @return the oracle
+     */
+    public RuleOracle oracle() {
+        return oracle;
     }
 
     /**
@@ -146,6 +177,19 @@ public final class RuleDefinition {
         return RuleCategory.of(id);
     }
 
+    /**
+     * Returns the same rule with another oracle, which is what a pack that takes a rule
+     * over from another pack does with it: the statement is the same and the evidence for
+     * it is not.
+     *
+     * @param other the oracle of the pack that takes it over
+     * @return the rule with that oracle
+     */
+    RuleDefinition withOracle(RuleOracle other) {
+        return new RuleDefinition(id, severity, other, context, terms, assertion, bindings,
+                message, source, note, warning, notDecided);
+    }
+
     Json assertion() {
         return assertion;
     }
@@ -157,6 +201,15 @@ public final class RuleDefinition {
      */
     Optional<Warning> warning() {
         return Optional.ofNullable(warning);
+    }
+
+    /**
+     * Returns the case in which the rule is not decided, where it names one.
+     *
+     * @return the case, or an empty optional
+     */
+    Optional<NotDecided> notDecided() {
+        return Optional.ofNullable(notDecided);
     }
 
     Map<String, Json> bindings() {

@@ -134,6 +134,7 @@ class Edition2026PathsTest {
             "examples/README.md",
             "examples/invalid/README.md",
             "docs/editions.md",
+            "rules/README.md",
             "docs/sources.md",
             "docs/design-decisions.md",
             "docs/java-api.md",

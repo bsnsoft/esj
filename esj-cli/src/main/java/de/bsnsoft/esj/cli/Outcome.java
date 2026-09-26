@@ -675,8 +675,9 @@ final class Outcome {
 
     /** Returns the row of the native rule engine, named with the pack that decided it. */
     private static Row rules(RuleCheck check) {
-        Text label = Text.of(Phrase.ROW_RULES, RuleCheck.PACK);
         Optional<RuleCheck.Found> found = check.found();
+        Text label = Text.of(check.pack().corroborated()
+                ? Phrase.ROW_RULES : Phrase.ROW_RULES_UNCORROBORATED, check.pack().name());
         if (found.isEmpty()) {
             return Row.skipped(label, Text.words(bare(check.reason().orElseThrow())));
         }

@@ -22,13 +22,17 @@ namespace En16931.SemanticJson.Rules;
 public sealed class RuleEngine
 {
     private readonly List<CompiledRule> _rules;
+    private readonly Dictionary<string, RuleOracle> _oracles;
 
-    private RuleEngine(RulePack pack, Registry registry, CodeLists codeLists, List<CompiledRule> rules)
+    private RuleEngine(
+        RulePack pack, Registry registry, CodeLists codeLists, List<CompiledRule> rules,
+        Dictionary<string, RuleOracle> oracles)
     {
         Pack = pack;
         Registry = registry;
         CodeLists = codeLists;
         _rules = rules;
+        _oracles = oracles;
     }
 
     /// <summary>Returns the pack this engine was compiled from.</summary>
@@ -64,8 +68,10 @@ public sealed class RuleEngine
         ArgumentNullException.ThrowIfNull(registry);
         ArgumentNullException.ThrowIfNull(codeLists);
         ArgumentNullException.ThrowIfNull(nativeRules);
+        CheckEdition(pack, registry);
         CheckSnapshots(pack, codeLists);
         CheckNativeRules(pack, nativeRules);
+        Dictionary<string, RuleOracle> oracles = new(StringComparer.Ordinal);
 
         HashSet<string> rootValueKeys = new(StringComparer.Ordinal);
         HashSet<string> rootGroupKeys = new(StringComparer.Ordinal);
@@ -74,18 +80,31 @@ public sealed class RuleEngine
         foreach (RuleDefinition definition in pack.Rules)
         {
             Add(byId, Language(definition, compiler, registry), pack);
+            oracles[definition.Id] = definition.Oracle;
         }
 
         foreach (string name in pack.NativeRules)
         {
-            Add(byId, Native(nativeRules.Require(SimpleName(name)), compiler, registry, name), pack);
+            CompiledRule rule = Native(nativeRules.Require(SimpleName(name)), compiler, registry, name);
+            Add(byId, rule, pack);
+            oracles[rule.Id] = pack.OracleOfNative(name);
         }
 
         List<CompiledRule> ordered = byId.Values
             .OrderBy(rule => rule.Id, StringComparer.Ordinal)
             .ToList();
-        return new RuleEngine(pack, registry, codeLists, ordered);
+        return new RuleEngine(pack, registry, codeLists, ordered, oracles);
     }
+
+    /// <summary>
+    /// Returns what stands behind a rule of this engine: an official validation artefact, the
+    /// artefact of an earlier edition over the document written down to it, or hand-computed
+    /// cases alone.
+    /// </summary>
+    /// <param name="ruleId">the identifier of the rule</param>
+    /// <returns>the oracle, or <c>null</c> where this engine has no such rule</returns>
+    public RuleOracle? OracleOf(string ruleId) =>
+        _oracles.TryGetValue(ruleId, out RuleOracle oracle) ? oracle : null;
 
     /// <summary>Returns the identifiers of the rules of this engine, sorted.</summary>
     /// <returns>the identifiers</returns>
@@ -174,6 +193,21 @@ public sealed class RuleEngine
         new(rule.Id, RuleFinding.CategoryOf(rule.Id), severity, message, paths,
             Pack.Id, Pack.Version, RuleFinding.NativeEngine);
 
+    /// <summary>
+    /// Refuses a pack that is not written for the edition of the registry it is compiled
+    /// against, as the <c>edition</c> member of its manifest states it: a rule of one edition
+    /// is not a statement about a document of another.
+    /// </summary>
+    private static void CheckEdition(RulePack pack, Registry registry)
+    {
+        if (!string.Equals(pack.Edition, registry.Edition, StringComparison.Ordinal))
+        {
+            throw new RulePackException("the pack " + pack.Name + " is written for " + pack.Edition
+                + " and was compiled against the registry of " + registry.Edition
+                + "; a rule of one edition is not a statement about a document of another");
+        }
+    }
+
     private static void CheckSnapshots(RulePack pack, CodeLists codeLists)
     {
         foreach (string listId in pack.CodeLists.Keys)
@@ -238,11 +272,23 @@ public sealed class RuleEngine
             ? null
             : MessageTemplate.Compile(
                 definition.Warning.Message, compiler, scope, bindings, where + ", warn message");
+        Expression? undecidedWhen = definition.Undecided is null
+            ? null
+            : Assertion(definition.Undecided.Condition, compiler, scope, where + ", undecided");
+        MessageTemplate? undecidedMessage = definition.Undecided is null
+            ? null
+            : MessageTemplate.Compile(
+                definition.Undecided.Message, compiler, scope, bindings, where + ", undecided message");
 
         return new CompiledRule(
             definition.Id, definition.Severity, context, definition.Terms, definition.Source,
             (evaluation, basePath) =>
             {
+                if (undecidedWhen is not null && IsTrue(undecidedWhen, evaluation, basePath))
+                {
+                    throw new UndecidedException(undecidedMessage!.Expand(evaluation, basePath));
+                }
+
                 if (!Holds(assertion, evaluation, basePath))
                 {
                     return new Outcome(definition.Severity, message.Expand(evaluation, basePath));
@@ -309,6 +355,13 @@ public sealed class RuleEngine
     {
         RuleValue truth = expression(evaluation, basePath);
         return truth.IsAbsent || truth.Truth == true;
+    }
+
+    /// <summary>Tells whether a condition is true, which it is not where it cannot be decided.</summary>
+    private static bool IsTrue(Expression expression, Evaluation evaluation, SemanticPath basePath)
+    {
+        RuleValue truth = expression(evaluation, basePath);
+        return !truth.IsAbsent && truth.Truth == true;
     }
 
     private static Scope ScopeOf(PathPattern? context) => context is null

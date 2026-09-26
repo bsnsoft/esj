@@ -54,8 +54,8 @@ class RulePackReaderTest {
 
     @Test
     void theSameJavaRuleTwiceIsRefused() {
-        String pack = "{\"id\": \"test\", \"version\": \"1\", \"verifiedAgainst\": \"nothing\","
-                + " \"description\": \"x\", \"javaRules\": [\"a.B\", \"a.B\"], \"rules\": []}";
+        String pack = "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\", \"verifiedAgainst\": \"nothing\","
+                + " \"description\": \"x\", \"javaRules\": [{\"class\": \"a.B\", \"oracle\": \"cases\"}, {\"class\": \"a.B\", \"oracle\": \"cases\"}], \"rules\": []}";
 
         assertTrue(refuse(pack).getMessage().contains("twice"));
     }
@@ -70,7 +70,7 @@ class RulePackReaderTest {
 
     @Test
     void aPackWithNeitherRulesNorRuleFilesIsRefused() {
-        String pack = "{\"id\": \"test\", \"version\": \"1\", \"verifiedAgainst\": \"nothing\","
+        String pack = "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\", \"verifiedAgainst\": \"nothing\","
                 + " \"description\": \"x\"}";
 
         assertTrue(refuse(pack).getMessage().contains("has no rules member and names no rule file"));
@@ -78,7 +78,7 @@ class RulePackReaderTest {
 
     @Test
     void aRuleFileWithAPathTheFormatDoesNotAdmitIsRefused() {
-        String pack = "{\"id\": \"test\", \"version\": \"1\", \"verifiedAgainst\": \"nothing\","
+        String pack = "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\", \"verifiedAgainst\": \"nothing\","
                 + " \"description\": \"x\", \"files\": [\"../elsewhere.json\"]}";
 
         assertTrue(refuse(pack).getMessage().contains("which is not a path of the form"));
@@ -86,7 +86,7 @@ class RulePackReaderTest {
 
     @Test
     void aRuleFileNamedTwiceIsRefused() {
-        String pack = "{\"id\": \"test\", \"version\": \"1\", \"verifiedAgainst\": \"nothing\","
+        String pack = "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\", \"verifiedAgainst\": \"nothing\","
                 + " \"description\": \"x\", \"files\": [\"rules/br.json\", \"rules/br.json\"]}";
 
         assertTrue(refuse(pack).getMessage().contains("names the rule file rules/br.json twice"));

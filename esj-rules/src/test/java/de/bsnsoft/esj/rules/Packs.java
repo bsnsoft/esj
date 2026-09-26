@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 /** Rule packs the tests of this module write inline. */
 final class Packs {
@@ -22,7 +23,7 @@ final class Packs {
      * @return the pack file
      */
     static String file(String... rules) {
-        return "{\"id\": \"test\", \"version\": \"1\","
+        return "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\","
                 + " \"verifiedAgainst\": \"nothing; this pack is a test fixture\","
                 + " \"description\": \"A pack the tests write.\","
                 + " \"rules\": [" + String.join(",", rules) + "]}";
@@ -48,7 +49,7 @@ final class Packs {
      * @return the rule
      */
     static String rule(String id, String context, String assertion) {
-        return "{\"id\": \"" + id + "\", \"severity\": \"fatal\", \"context\": \"" + context + "\","
+        return "{\"id\": \"" + id + "\", \"severity\": \"fatal\", \"oracle\": \"cases\", \"context\": \"" + context + "\","
                 + " \"terms\": [\"BT-1\"], \"assert\": " + assertion + ","
                 + " \"message\": \"" + id + " does not hold.\","
                 + " \"source\": \"EN 16931-1, 6.4\"}";
@@ -122,5 +123,29 @@ final class Packs {
      */
     static boolean fails(SemanticDocument document, String context, String assertion) {
         return !run(document, context, assertion).isEmpty();
+    }
+
+    /**
+     * A currency list with the minor units the tests of the scale operators ask for.
+     *
+     * @return the snapshots, with {@code iso-4217} in them
+     */
+    static CodeLists currencies() {
+        return CodeLists.of(List.of(new CodeList("iso-4217", "Currency codes", "a test fixture",
+                "a test fixture", "2026-09-21",
+                Map.of("EUR", "Euro", "JPY", "Yen"), Map.of("EUR", 2, "JPY", 0))));
+    }
+
+    /**
+     * Tells whether the one rule of a pack fired on a document, with snapshots in hand.
+     *
+     * @param document  the document
+     * @param assertion the assertion of the one rule
+     * @param lists     the code list snapshots the rule may ask about
+     * @return whether a finding was produced
+     */
+    static boolean fails(SemanticDocument document, String assertion, CodeLists lists) {
+        return !RuleEngine.compile(read(file(rule("BR-TEST", assertion))), REGISTRY, lists,
+                JavaRules.none()).evaluate(document).isEmpty();
     }
 }

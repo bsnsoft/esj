@@ -18,10 +18,11 @@ namespace En16931.SemanticJson.Rules;
 public sealed class CodeList
 {
     private readonly Dictionary<string, string> _entries;
+    private readonly Dictionary<string, int> _minorUnits;
 
     internal CodeList(
         string listId, string name, string publisher, string source, string retrieved,
-        Dictionary<string, string> entries)
+        Dictionary<string, string> entries, Dictionary<string, int> minorUnits)
     {
         ListId = listId;
         Name = name;
@@ -29,7 +30,24 @@ public sealed class CodeList
         Source = source;
         Retrieved = retrieved;
         _entries = entries;
+        _minorUnits = minorUnits;
     }
+
+    /// <summary>Tells whether the publisher gives a number of fraction digits for any code.</summary>
+    public bool PublishesMinorUnits => _minorUnits.Count > 0;
+
+    /// <summary>
+    /// Returns the number of fraction digits the publisher gives a code, or <c>null</c>.
+    /// </summary>
+    /// <remarks>
+    /// One list of the repository publishes such a number: the currency list, whose minor unit
+    /// says how many fraction digits an amount in that currency carries. A code the list does
+    /// not have, or a list that publishes none, gets no answer rather than a guess.
+    /// </remarks>
+    /// <param name="code">the code as the document spells it</param>
+    /// <returns>the number of fraction digits, or <c>null</c></returns>
+    public int? MinorUnit(string code) =>
+        _minorUnits.TryGetValue(code, out int digits) ? digits : null;
 
     /// <summary>Returns the identifier a rule names the list by.</summary>
     public string ListId { get; }
@@ -110,7 +128,11 @@ public sealed class CodeLists
         List<CodeList> lists = new();
         foreach (KeyValuePair<string, string> named in pack.CodeLists)
         {
-            string resource = RulePacks.ResourceDirectory(pack.Id, pack.Version)
+            string from = pack.CodeListSources.TryGetValue(named.Key, out string? other)
+                ? other
+                : pack.Name;
+            int solidus = from.IndexOf('/', StringComparison.Ordinal);
+            string resource = RulePacks.ResourceDirectory(from[..solidus], from[(solidus + 1)..])
                 + "codelists/" + named.Key + "/" + named.Value + ".json";
             using Stream stream = RulePacks.Open(resource);
             lists.Add(Read(stream, named.Key + " of " + named.Value));
@@ -129,9 +151,31 @@ public sealed class CodeLists
         using JsonDocument json = JsonDocument.Parse(input);
         JsonElement root = json.RootElement;
         Dictionary<string, string> entries = new(StringComparer.Ordinal);
+        Dictionary<string, int> minorUnits = new(StringComparer.Ordinal);
         foreach (JsonElement entry in root.GetProperty("entries").EnumerateArray())
         {
+            foreach (JsonProperty member in entry.EnumerateObject())
+            {
+                if (member.Name is not ("value" or "name" or "minorUnit"))
+                {
+                    throw new RulePackException("an entry of the code list snapshot " + what
+                        + " carries the member " + member.Name + ", which this format does not define");
+                }
+            }
+
             string value = entry.GetProperty("value").GetString()!;
+            if (entry.TryGetProperty("minorUnit", out JsonElement digits))
+            {
+                if (digits.ValueKind != JsonValueKind.Number || !digits.TryGetInt32(out int unit)
+                    || unit < 0 || unit > 6)
+                {
+                    throw new RulePackException("the minor unit of " + value + " in " + what
+                        + " is not a whole number between 0 and 6");
+                }
+
+                minorUnits[value] = unit;
+            }
+
             string name = entry.TryGetProperty("name", out JsonElement written)
                 ? written.GetString() ?? string.Empty
                 : string.Empty;
@@ -148,7 +192,8 @@ public sealed class CodeLists
             root.GetProperty("publisher").GetString()!,
             root.GetProperty("source").GetString()!,
             root.GetProperty("retrieved").GetString()!,
-            entries);
+            entries,
+            minorUnits);
     }
 
     /// <summary>Returns the identifiers of the snapshots this set holds.</summary>

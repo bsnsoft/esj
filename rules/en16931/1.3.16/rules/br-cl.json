@@ -2,6 +2,7 @@
   {
     "id": "BR-CL-01",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-3"
@@ -28,6 +29,7 @@
   {
     "id": "BR-CL-04",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-5"
@@ -54,6 +56,7 @@
   {
     "id": "BR-CL-05",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-6"
@@ -80,6 +83,7 @@
   {
     "id": "BR-CL-06",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-8"
@@ -106,6 +110,7 @@
   {
     "id": "BR-CL-08",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-1/*",
     "terms": [
       "BT-21"
@@ -132,6 +137,7 @@
   {
     "id": "BR-CL-14",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-40",
@@ -210,6 +216,7 @@
   {
     "id": "BR-CL-15",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-31",
     "terms": [
       "BT-159"
@@ -236,6 +243,7 @@
   {
     "id": "BR-CL-16",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-16",
     "terms": [
       "BT-81"
@@ -262,6 +270,7 @@
   {
     "id": "BR-CL-17",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-95",
@@ -318,6 +327,7 @@
   {
     "id": "BR-CL-18",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-118",
@@ -374,6 +384,7 @@
   {
     "id": "BR-CL-19",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-98",
@@ -430,6 +441,7 @@
   {
     "id": "BR-CL-20",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-105",
@@ -486,6 +498,7 @@
   {
     "id": "BR-CL-22",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-121"
@@ -512,6 +525,7 @@
   {
     "id": "BR-CL-23",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-130",

@@ -29,7 +29,7 @@ class QuotingAndRefusalTest {
         String long_ = "x".repeat(5_000);
         SemanticDocument document = Documents.set(Documents.minimal(), "/BT-1", long_).build();
 
-        String pack = Packs.file("{\"id\": \"BR-TEST\", \"severity\": \"fatal\","
+        String pack = Packs.file("{\"id\": \"BR-TEST\", \"severity\": \"fatal\", \"oracle\": \"cases\","
                 + " \"context\": \"/\", \"terms\": [\"BT-1\"],"
                 + " \"assert\": {\"eq\": [{\"value\": \"/BT-1\"}, {\"const\": \"nothing\"}]},"
                 + " \"message\": \"The invoice number (BT-1) is {/BT-1}.\","

@@ -59,7 +59,9 @@ engine.evaluate(document);                         // rule, severity, context, m
 written in `src/rules/native.ts` under the same identifiers. The pack names them and does not
 load them; `compile` refuses a pack whose declared set and the rules handed to it differ, and
 `evaluate` refuses a document of an edition other than the one the pack was compiled against,
-because a path is an address relative to an edition.
+because a path is an address relative to an edition. `ruleEngine` compiles the pack written for
+the edition of the structure: for the later edition `rules/en16931-2026/0.1/`, whose rules the
+language cannot express are `src/rules/native-2026.ts`, left out with that edition.
 
 ## What is here
 
@@ -103,9 +105,10 @@ in process: 98 conformant documents with their two digests, their canonical byte
 registries they were measured with and the 46 cardinality findings two of them draw;
 45 rows for the documents that have to be rejected, each with its finding code and the path it
 names; the canonical bytes of two scrambled documents; the accept and reject tables of the value
-grammars; 448 mutations of the conformance corpus against the rule pack; and the rules of the
-pack that pins division. One document and one rejected row of those counts come from the part of
-the manifest that carries the later edition, which a build without that edition leaves out. The
+grammars; 448 mutations of the conformance corpus against the rule pack, and 314 cases of the
+later edition's pack; and the rules of the pack that pins division. One document, one rejected
+row and the 314 cases come from the part of the manifest that carries the later edition, which a
+build without that edition leaves out. The
 language-neutral runner answers the same manifest over a pipe.
 
 `data/` holds copies of `model/` and `rules/` taken by `scripts/sync-data.mjs` before every

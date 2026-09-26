@@ -84,7 +84,12 @@ class RuleSchemaTest {
                                 + " {\"ge\": [{\"abs\": {\"sub\": [{\"value\": \"/BG-22/BT-112\"},"
                                 + " {\"value\": \"/BG-22/BT-109\"}]}}, {\"const\": \"0\"}]},"
                                 + " {\"any\": {\"group\": \"/BG-23/*\","
-                                + " \"assert\": {\"exists\": \"/BT-118\"}}}]}")));
+                                + " \"assert\": {\"exists\": \"/BT-118\"}}}]}")),
+                Packs.file(Packs.rule("BR-TEST", "/BG-25/*", "{\"exists\": \"/BT-131\"}")
+                        .replace("\"message\":", "\"undecided\": {\"when\": {\"eq\":"
+                                + " [{\"value\": \"/BT-129\"}, {\"const\": \"0\"}]},"
+                                + " \"message\": \"the quantity at {@/BT-129} is zero\"},"
+                                + " \"message\":")));
     }
 
     /** Rule files that are not: both descriptions refuse them. */
@@ -106,7 +111,14 @@ class RuleSchemaTest {
                 Packs.file(Packs.rule("BR-TEST", "{\"exists\": \"/BT-1\"}")
                         .replace(", \"terms\": [\"BT-1\"]", "")),
                 Packs.file(Packs.rule("BR-TEST", "{\"exists\": \"/BT-1\"}")
-                        .replace("\"id\": \"BR-TEST\"", "\"id\": \"br-test\"")));
+                        .replace("\"id\": \"BR-TEST\"", "\"id\": \"br-test\"")),
+                Packs.file(Packs.rule("BR-TEST", "{\"exists\": \"/BT-1\"}")
+                        .replace("\"message\":", "\"undecided\": {\"message\": \"why\"},"
+                                + " \"message\":")),
+                Packs.file(Packs.rule("BR-TEST", "{\"exists\": \"/BT-1\"}")
+                        .replace("\"message\":", "\"undecided\": {\"when\": {\"exists\":"
+                                + " \"/BT-9\"}, \"message\": \"why\", \"severity\": \"info\"},"
+                                + " \"message\":")));
     }
 
     /**

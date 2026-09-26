@@ -16,6 +16,11 @@ import java.util.Set;
  * The code list snapshots one pack was compiled with, keyed by the identifier a rule names
  * a list by.
  *
+ * <p>A snapshot may lie in another pack. Where the edition of one pack names the same
+ * published list as the edition of another, the manifest says which pack the file is read
+ * from, and both packs decide membership against the same bytes rather than against two
+ * copies that have to be kept equal by hand.
+ *
  * <p>Which snapshot that is, is decided by the pack manifest and by nothing else: a rule
  * writes {@code {"inList": [ {"value": "/BT-5"}, "iso-4217" ]}} and the manifest says that
  * {@code iso-4217} in this pack means the file of one particular day. Two runs of the same
@@ -31,6 +36,13 @@ public final class CodeLists {
 
     /** Where a bundled pack keeps its snapshots, below the resource directory of a pack. */
     private static final String CODELISTS = "codelists/";
+
+    /**
+     * The members one entry of a snapshot may carry. {@code minorUnit} is the number of
+     * fraction digits the publisher of a currency list gives a currency, and no other list
+     * of this repository publishes such a number.
+     */
+    private static final Set<String> ENTRY_MEMBERS = Set.of("value", "name", "minorUnit");
 
     private final Map<String, CodeList> byId;
 
@@ -80,13 +92,16 @@ public final class CodeLists {
         Objects.requireNonNull(pack, "pack");
         List<CodeList> lists = new ArrayList<>();
         for (Map.Entry<String, String> named : pack.codeLists().entrySet()) {
-            String resource = RulePacks.resourceDirectory(pack.id(), pack.version())
+            String from = pack.codeListSources().getOrDefault(named.getKey(), pack.name());
+            int solidus = from.indexOf('/');
+            String resource = RulePacks.resourceDirectory(from.substring(0, solidus),
+                    from.substring(solidus + 1))
                     + CODELISTS + named.getKey() + "/" + named.getValue() + ".json";
             try (InputStream in = CodeLists.class.getResourceAsStream(resource)) {
                 if (in == null) {
-                    throw new RulePackException("the pack " + pack.id() + " " + pack.version()
+                    throw new RulePackException("the pack " + pack.name()
                             + " names the snapshot " + named.getKey() + " of " + named.getValue()
-                            + ", which is not in this build");
+                            + " in the pack " + from + ", which is not in this build");
                 }
                 lists.add(read(in, named.getKey() + " of " + named.getValue()));
             } catch (IOException e) {
@@ -108,7 +123,8 @@ public final class CodeLists {
     public static CodeList read(InputStream in, String what) {
         Json json = Json.read(in, "the code list snapshot " + what);
         Map<String, Json> members = json.asObject("the code list snapshot " + what);
-        Set<String> known = Set.of("listId", "name", "publisher", "source", "retrieved", "terms", "entries");
+        Set<String> known = Set.of("listId", "name", "publisher", "source", "retrieved", "terms",
+                "entries");
         for (String member : members.keySet()) {
             if (!known.contains(member)) {
                 throw new RulePackException("the code list snapshot " + what
@@ -116,8 +132,16 @@ public final class CodeLists {
             }
         }
         Map<String, String> entries = new LinkedHashMap<>();
+        Map<String, Integer> minorUnits = new LinkedHashMap<>();
         for (Json entry : required(members, "entries", what).asArray("entries of " + what)) {
             Map<String, Json> fields = entry.asObject("an entry of " + what);
+            for (String member : fields.keySet()) {
+                if (!ENTRY_MEMBERS.contains(member)) {
+                    throw new RulePackException("an entry of the code list snapshot " + what
+                            + " carries the member " + member
+                            + ", which this format does not define");
+                }
+            }
             String value = required(fields, "value", what).asString("the value of an entry of " + what);
             String name = fields.containsKey("name")
                     ? fields.get("name").asString("the name of an entry of " + what)
@@ -126,6 +150,10 @@ public final class CodeLists {
                 throw new RulePackException("the code list snapshot " + what
                         + " carries the code " + value + " twice");
             }
+            if (fields.containsKey("minorUnit")) {
+                minorUnits.put(value, fields.get("minorUnit")
+                        .asInt("the minor unit of " + value + " in " + what, 0, 6));
+            }
         }
         return new CodeList(
                 required(members, "listId", what).asString("listId of " + what),
@@ -133,7 +161,7 @@ public final class CodeLists {
                 required(members, "publisher", what).asString("publisher of " + what),
                 required(members, "source", what).asString("source of " + what),
                 required(members, "retrieved", what).asString("retrieved of " + what),
-                entries);
+                entries, minorUnits);
     }
 
     private static Json required(Map<String, Json> members, String name, String what) {

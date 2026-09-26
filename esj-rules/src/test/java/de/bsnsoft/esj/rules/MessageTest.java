@@ -22,7 +22,7 @@ class MessageTest {
     }
 
     private static String rule(String assertion, String message, String bind) {
-        return "{\"id\": \"BR-TEST\", \"severity\": \"fatal\", \"context\": \"/\","
+        return "{\"id\": \"BR-TEST\", \"severity\": \"fatal\", \"oracle\": \"cases\", \"context\": \"/\","
                 + " \"terms\": [\"BT-106\"], \"assert\": " + assertion + ","
                 + (bind.isEmpty() ? "" : " \"bind\": " + bind + ",")
                 + " \"message\": \"" + message + "\","
@@ -65,7 +65,7 @@ class MessageTest {
         Documents.line(builder, 1, "1", "50");
 
         List<RuleFinding> findings = Packs.engine(Packs.file(
-                "{\"id\": \"BR-TEST\", \"severity\": \"fatal\", \"context\": \"/BG-25/*\","
+                "{\"id\": \"BR-TEST\", \"severity\": \"fatal\", \"oracle\": \"cases\", \"context\": \"/BG-25/*\","
                         + " \"terms\": [\"BT-131\"], \"assert\": {\"const\": false},"
                         + " \"message\": \"The line at {.} is wrong.\","
                         + " \"source\": \"EN 16931-1, 6.4\"}")).evaluate(builder.build());

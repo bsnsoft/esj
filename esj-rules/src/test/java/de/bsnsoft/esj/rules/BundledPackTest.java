@@ -41,7 +41,7 @@ class BundledPackTest {
         assertEquals(PACK_ID, pack.id());
         assertEquals(VERSION, pack.version());
         assertEquals("en16931/1.3.16", pack.name());
-        assertTrue(pack.verifiedAgainst().contains("1.3.16"));
+        assertTrue(pack.verifiedAgainst().orElseThrow().contains("1.3.16"));
     }
 
     @Test

@@ -5,6 +5,8 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.json.EsjWriter;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.rules.RulePackSource;
+import de.bsnsoft.esj.rules.RulePackSources;
 import de.bsnsoft.esj.upgrade.EditionUpgrade;
 import de.bsnsoft.esj.upgrade.UpgradeNote;
 import de.bsnsoft.esj.upgrade.UpgradeOptions;
@@ -183,6 +185,9 @@ final class UpgradeCommand implements Callable<Integer> {
         for (Registry registry : Options.extension(extension).registries()) {
             options.extension(registry);
         }
+        RulePackSources.forEdition(Registry.forEdition(to).edition())
+                .flatMap(RulePackSource::currencyMinorUnits)
+                .ifPresent(options::minorUnits);
         return EditionUpgrade.apply(document, to, options.build());
     }
 

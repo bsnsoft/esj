@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tag:bsnsoft.de,2026:esj/conformance/fixtures/manifest.schema.json",
   "title": "ESJ fixture manifest",
-  "description": "A file of the fixture manifest: the core manifest, one part of it, or the rule case file the core manifest names in rules.casesFile. The core manifest and a part have the same shape; a part carries the fixtures of one edition and is left out of a distribution that does not ship that edition. A rule case file carries its pack, the directory of that pack and the cases, and names no part.",
+  "description": "A file of the fixture manifest: the core manifest, one part of it, or the rule case file the core manifest names in rules.casesFile. The core manifest and a part have the same shape; a part carries the fixtures of one edition and is left out of a distribution that does not ship that edition. A rule case file carries its pack, the directory of that pack, the cases and, where the cases start from documents it carries itself, those documents; it names no part.",
   "type": "object",
   "additionalProperties": false,
   "required": ["format", "version"],
@@ -12,11 +12,11 @@
   },
   "then": {
     "required": ["pack", "directory", "cases"],
-    "propertyNames": { "enum": ["format", "version", "pack", "directory", "cases"] }
+    "propertyNames": { "enum": ["format", "version", "pack", "directory", "bases", "cases"] }
   },
   "else": {
     "required": ["part"],
-    "propertyNames": { "not": { "enum": ["pack", "directory", "cases"] } }
+    "propertyNames": { "not": { "enum": ["pack", "directory", "bases", "cases"] } }
   },
   "properties": {
     "format": {
@@ -89,6 +89,11 @@
     "directory": {
       "description": "In a rule case file, the directory of that pack, relative to the repository root.",
       "type": "string"
+    },
+    "bases": {
+      "description": "In a rule case file, documents the cases start from, carried in the file rather than named by path, by the name a case gives in baseDocument.",
+      "type": "object",
+      "additionalProperties": { "type": "object" }
     },
     "cases": {
       "description": "In a rule case file, the cases themselves.",
@@ -274,7 +279,8 @@
     "case": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "rule", "base", "changes", "expect"],
+      "required": ["id", "rule", "changes", "expect"],
+      "oneOf": [{ "required": ["base"] }, { "required": ["baseDocument"] }],
       "properties": {
         "id": { "type": "string" },
         "rule": {
@@ -283,6 +289,10 @@
         },
         "base": {
           "description": "The conformant document the changes are applied to.",
+          "type": "string"
+        },
+        "baseDocument": {
+          "description": "The name of a document of the file's bases the changes are applied to.",
           "type": "string"
         },
         "changes": {

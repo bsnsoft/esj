@@ -1,0 +1,4606 @@
+{
+  "pack": "en16931-2026/0.1",
+  "note": "At least one case per rule this pack writes out rather than takes over from the pack of the 2017 edition: a document of the conformance corpus, upgraded to this edition, that the rule is silent on, and the same document with one thing changed, that it speaks on. expect is what the pack reports about the second that it does not report about the first, onHolds what it reports about the first, and gone what the change takes away. No official validation artefact covers this edition, so a case shows that the engine decides what the rule was written to say and never that what was written is what the standard means.",
+  "documents": {
+    "standard": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "A standard rated invoice of the conformance corpus, upgraded to this edition, with the identification scheme this edition asks for on the seller identifier.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        }
+      ]
+    },
+    "zero": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to the zero rate.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "0"
+        }
+      ]
+    },
+    "exempt": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to exempt from VAT, with the exemption reason the category asks for.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "E"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "E"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "0"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "value": "Exempt"
+        }
+      ]
+    },
+    "reverse": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to reverse charge, with the buyer VAT identifier and the exemption reason the category asks for.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "0"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "value": "Exempt"
+        },
+        {
+          "path": "/BG-7/BT-48",
+          "value": "DE987654321"
+        }
+      ]
+    },
+    "intra": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to intra-community supply, with the buyer VAT identifier, the deliver to country, the delivery date and the exemption reason the category asks for.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "K"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "K"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "0"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "value": "Exempt"
+        },
+        {
+          "path": "/BG-7/BT-48",
+          "value": "DE987654321"
+        },
+        {
+          "path": "/BG-13/BG-15/BT-80",
+          "value": "FR"
+        },
+        {
+          "path": "/BG-13/BT-72",
+          "value": "2018-04-13"
+        }
+      ]
+    },
+    "export": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to an export outside the Union.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "G"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "G"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "0"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "value": "Exempt"
+        }
+      ]
+    },
+    "not-subject": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to not subject to VAT, which states no VAT rate.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "O"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "O"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "delete": true
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "delete": true
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "value": "Exempt"
+        }
+      ]
+    },
+    "canary": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to the Canary Islands general indirect tax at seven per cent.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "L"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "279.04"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "L"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "279.04"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "4265.38"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "4265.38"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "7"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "7"
+        }
+      ]
+    },
+    "ceuta": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to the tax on production, services and importation of Ceuta and Melilla at seven per cent.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "M"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "279.04"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "M"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "279.04"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "4265.38"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "4265.38"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "7"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "7"
+        }
+      ]
+    },
+    "national": {
+      "source": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
+      "note": "The same invoice rewritten to a national or margin scheme category.",
+      "prepare": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "N"
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "N"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "0"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-22/BT-115",
+          "value": "3986.34"
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "0"
+        }
+      ]
+    }
+  },
+  "cannotBeExercised": [
+    {
+      "rule": "BR-CO-20",
+      "why": "A business group of an ESJ document exists exactly when it carries a value, and the invoice line period carries no business term other than the two dates this rule asks for: a period with neither of them is not an empty group but no group at all. The rule is in the pack because an invoice read from a syntax that can write the empty element is measured by it; no document of this format can make it speak."
+    }
+  ],
+  "cases": [
+    {
+      "rule": "BR-30",
+      "document": "standard",
+      "what": "an invoice line period does not end before it starts",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-134",
+          "value": "2018-04-01"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-135",
+          "value": "2018-04-30"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-135",
+          "value": "2018-03-01"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-30"
+      ]
+    },
+    {
+      "rule": "BR-36",
+      "document": "standard",
+      "what": "a document level charge or tax states an amount",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-36"
+      ],
+      "gone": [
+        "BR-S-08"
+      ]
+    },
+    {
+      "rule": "BR-37",
+      "document": "standard",
+      "what": "a document level charge or tax states a VAT category code",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-102",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-37"
+      ],
+      "gone": [
+        "BR-S-08"
+      ]
+    },
+    {
+      "rule": "BR-38",
+      "document": "standard",
+      "what": "a document level charge or tax states a reason or a reason code",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-104",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-38",
+        "BR-CO-22"
+      ]
+    },
+    {
+      "rule": "BR-43",
+      "document": "standard",
+      "what": "an invoice line charge or tax states an amount",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-43"
+      ],
+      "gone": [
+        "BR-CO-32"
+      ]
+    },
+    {
+      "rule": "BR-44",
+      "document": "standard",
+      "what": "an invoice line charge or tax states a reason or a reason code",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-44",
+        "BR-CO-24"
+      ]
+    },
+    {
+      "rule": "BR-46",
+      "document": "standard",
+      "what": "a VAT breakdown outside the margin schemes states a tax amount",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-46",
+        "BR-CO-14"
+      ]
+    },
+    {
+      "rule": "BR-50",
+      "document": "standard",
+      "what": "a SEPA credit transfer states a payment account identifier",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-16/BG-17/0",
+          "deleteUnder": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-50",
+        "BR-61"
+      ]
+    },
+    {
+      "rule": "BR-53",
+      "document": "standard",
+      "what": "a VAT accounting currency obliges the total VAT amount in it",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "USD"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-111",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-53"
+      ]
+    },
+    {
+      "rule": "BR-54",
+      "document": "standard",
+      "what": "an item attribute carries a name or an attribute code and a value",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-160",
+          "value": "Colour"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-161",
+          "value": "red"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-160",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-54"
+      ]
+    },
+    {
+      "rule": "BR-67",
+      "document": "standard",
+      "what": "a negative line net amount needs a negative quantity or allowances",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "-30"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "30"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-67",
+        "BR-CO-32"
+      ]
+    },
+    {
+      "rule": "BR-67",
+      "document": "standard",
+      "what": "a line that states no price base quantity is priced per one unit",
+      "holds": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "-30"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "30"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-67",
+        "BR-CO-32"
+      ]
+    },
+    {
+      "rule": "BR-67",
+      "document": "standard",
+      "what": "a base quantity of zero leaves a line with a negative net amount and a quantity that is not negative not decided",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "-30"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "30"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-CO-32",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-67"
+      ]
+    },
+    {
+      "rule": "BR-68",
+      "document": "exempt",
+      "what": "one exemption reason and specification code carries one reason text",
+      "holds": [
+        {
+          "path": "/BG-23/0/BT-121",
+          "value": "VATEX-EU-132"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "value": "Exempt"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-195",
+          "value": "VATEX-EU-132"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Exempt"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-68",
+        "BR-CO-18",
+        "BR-E-01",
+        "BR-E-08"
+      ]
+    },
+    {
+      "rule": "BR-69",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-69"
+      ]
+    },
+    {
+      "rule": "BR-70",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-4/BT-30",
+          "value": "HRB 1234",
+          "scheme": "0198"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-30",
+          "value": "HRB 1234"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-70"
+      ]
+    },
+    {
+      "rule": "BR-71",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-7/BT-46/0",
+          "value": "54321",
+          "scheme": "0088"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-7/BT-46/0",
+          "value": "54321"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-71"
+      ]
+    },
+    {
+      "rule": "BR-72",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-7/BT-47",
+          "value": "HRB 4321",
+          "scheme": "0198"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-7/BT-47",
+          "value": "HRB 4321"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-72"
+      ]
+    },
+    {
+      "rule": "BR-73",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-10/BT-60",
+          "value": "P-1",
+          "scheme": "0088"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-10/BT-60",
+          "value": "P-1"
+        }
+      ],
+      "onHolds": [
+        "BR-17"
+      ],
+      "expect": [
+        "BR-73"
+      ]
+    },
+    {
+      "rule": "BR-74",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-10/BT-61",
+          "value": "HRB 9",
+          "scheme": "0198"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-10/BT-61",
+          "value": "HRB 9"
+        }
+      ],
+      "onHolds": [
+        "BR-17"
+      ],
+      "expect": [
+        "BR-74"
+      ]
+    },
+    {
+      "rule": "BR-75",
+      "document": "standard",
+      "what": "the identifier carries the identification scheme it was issued under",
+      "holds": [
+        {
+          "path": "/BG-13/BT-71",
+          "value": "L-1",
+          "scheme": "0088"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-13/BT-71",
+          "value": "L-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-75"
+      ]
+    },
+    {
+      "rule": "BR-76",
+      "document": "intra",
+      "what": "an intra-community invoice states a payment account identifier",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-16/BG-17/0/BT-84",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-50",
+        "BR-61",
+        "BR-76"
+      ]
+    },
+    {
+      "rule": "BR-CO-09",
+      "document": "standard",
+      "what": "a VAT identifier begins with a country code the list knows",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "value": "QQ123456789"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-09"
+      ]
+    },
+    {
+      "rule": "BR-CO-13",
+      "document": "standard",
+      "what": "the total without VAT is the line sum less allowances plus charges",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-109",
+          "value": "3900.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-13",
+        "BR-CO-15"
+      ]
+    },
+    {
+      "rule": "BR-CO-14",
+      "document": "standard",
+      "what": "the total VAT amount is the sum of the category tax amounts",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "700.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-CO-15"
+      ]
+    },
+    {
+      "rule": "BR-CO-14",
+      "document": "standard",
+      "what": "a VAT breakdown in the accounting currency does not count towards the total VAT amount",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "757.42"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-CO-15"
+      ]
+    },
+    {
+      "rule": "BR-CO-16",
+      "document": "standard",
+      "what": "the amount due is the total with VAT less what was paid",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-115",
+          "value": "4000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-16"
+      ]
+    },
+    {
+      "rule": "BR-CO-18",
+      "document": "standard",
+      "what": "a line whose category has no VAT breakdown at all",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0",
+          "deleteUnder": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-CO-18",
+        "BR-S-01"
+      ]
+    },
+    {
+      "rule": "BR-CO-18",
+      "document": "standard",
+      "what": "a line at a rate no VAT breakdown of its category states",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "7"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-S-08"
+      ]
+    },
+    {
+      "rule": "BR-CO-22",
+      "document": "standard",
+      "what": "a document level charge or tax states a reason, a reason code or a non-VAT tax code",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-104",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-38",
+        "BR-CO-22"
+      ]
+    },
+    {
+      "rule": "BR-CO-24",
+      "document": "standard",
+      "what": "an invoice line charge or tax states a reason, a reason code or a tax type code",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-44",
+        "BR-CO-24"
+      ]
+    },
+    {
+      "rule": "BR-CO-25",
+      "document": "standard",
+      "what": "a positive amount due needs a payment due date or a payment term text",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BT-9",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-25"
+      ]
+    },
+    {
+      "rule": "BR-CO-28",
+      "document": "standard",
+      "what": "the reference stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BT-13",
+          "value": "REF-1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-188",
+          "value": "REF-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-28"
+      ]
+    },
+    {
+      "rule": "BR-CO-29",
+      "document": "standard",
+      "what": "the reference stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BT-16",
+          "value": "REF-1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-189",
+          "value": "REF-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-29"
+      ]
+    },
+    {
+      "rule": "BR-CO-30",
+      "document": "standard",
+      "what": "the reference stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BT-15",
+          "value": "REF-1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-191",
+          "value": "REF-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-30"
+      ]
+    },
+    {
+      "rule": "BR-CO-45",
+      "document": "standard",
+      "what": "the reference stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BT-197",
+          "value": "REF-1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-198",
+          "value": "REF-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-45"
+      ]
+    },
+    {
+      "rule": "BR-CO-46",
+      "document": "standard",
+      "what": "the reference stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BT-14",
+          "value": "REF-1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-200",
+          "value": "REF-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-46"
+      ]
+    },
+    {
+      "rule": "BR-CO-47",
+      "document": "standard",
+      "what": "the reference stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BG-3/0/BT-25",
+          "value": "REF-1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-39/0/BT-217",
+          "value": "REF-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-47"
+      ]
+    },
+    {
+      "rule": "BR-CO-31",
+      "document": "standard",
+      "what": "the item price base quantity is not negative",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-31",
+        "BR-CO-32"
+      ]
+    },
+    {
+      "rule": "BR-CO-32",
+      "document": "standard",
+      "what": "the line net amount is the priced quantity with the line charges less its allowances",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-CO-32",
+        "BR-S-08"
+      ]
+    },
+    {
+      "rule": "BR-CO-32",
+      "document": "standard",
+      "what": "a line that states no price base quantity is priced per one unit",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "999"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-CO-32",
+        "BR-S-08"
+      ]
+    },
+    {
+      "rule": "BR-CO-32",
+      "document": "standard",
+      "what": "the price is multiplied by the quantity before the one division by the base quantity",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "3"
+        },
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "0.015"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "0.03"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "0.04"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-CO-32"
+      ]
+    },
+    {
+      "rule": "BR-CO-32",
+      "document": "standard",
+      "what": "a base quantity of zero leaves the line not decided",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "0"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-32"
+      ]
+    },
+    {
+      "rule": "BR-CO-33",
+      "document": "standard",
+      "what": "the total of a credit note is not negative",
+      "holds": [
+        {
+          "path": "/BT-3",
+          "value": "381"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-112",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-15",
+        "BR-CO-16",
+        "BR-CO-33"
+      ]
+    },
+    {
+      "rule": "BR-CO-34",
+      "document": "standard",
+      "what": "a document level charge states a reason code or a non-VAT tax code, not both",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-105",
+          "value": "AAA"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-177",
+          "value": "CAR"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-CO-34"
+      ]
+    },
+    {
+      "rule": "BR-CO-35",
+      "document": "standard",
+      "what": "an invoice line charge states a reason code or a tax type code, not both",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-145",
+          "value": "AAA"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-193",
+          "value": "CAR"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-CO-35"
+      ]
+    },
+    {
+      "rule": "BR-CO-36",
+      "document": "standard",
+      "what": "ten per cent of a total with VAT of 4743,75 is an early payment discount of 474,38",
+      "holds": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-170",
+          "value": "2018-04-20"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "10"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "474.38"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "400"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-36"
+      ]
+    },
+    {
+      "rule": "BR-CO-38",
+      "document": "standard",
+      "what": "ten per cent of a base of 100 is an allowance of 10",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "10"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "S"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "19"
+        },
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "100"
+        },
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "10"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-CO-38"
+      ]
+    },
+    {
+      "rule": "BR-CO-39",
+      "document": "standard",
+      "what": "ten per cent of a base of 100 is a charge of 10",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "10"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "100"
+        },
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "10"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-CO-39"
+      ]
+    },
+    {
+      "rule": "BR-CO-40",
+      "document": "standard",
+      "what": "delivery information stands at one level and not at both",
+      "holds": [
+        {
+          "path": "/BG-13/BT-72",
+          "value": "2018-04-13"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-134",
+          "value": "2018-04-01"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-40"
+      ]
+    },
+    {
+      "rule": "BR-CO-48",
+      "document": "zero",
+      "what": "a total VAT amount of zero is zero in the accounting currency too",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "USD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "1.234567"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-111",
+          "value": "5"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-48"
+      ]
+    },
+    {
+      "rule": "BR-CO-48",
+      "document": "standard",
+      "what": "the converted total is rounded to an accounting currency without fraction digits before it is compared",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "JPY"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.01"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "8"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-111",
+          "value": "9"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-48"
+      ]
+    },
+    {
+      "rule": "BR-CO-49",
+      "document": "standard",
+      "what": "the taxable amount of a VAT breakdown in the accounting currency is the converted one",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1197.902"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-49"
+      ]
+    },
+    {
+      "rule": "BR-CO-50",
+      "document": "standard",
+      "what": "the tax amount of a VAT breakdown in the accounting currency is the converted one",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "229.223"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-50"
+      ]
+    },
+    {
+      "rule": "BR-CO-51",
+      "document": "standard",
+      "what": "the item price base quantity is measured in the unit the quantity is invoiced in",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-150",
+          "value": "XPP"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-150",
+          "value": "KGM"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-51"
+      ]
+    },
+    {
+      "rule": "BR-DEC-30",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BT-167",
+          "value": "12.123456"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BT-167",
+          "value": "12.1234568"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-30"
+      ]
+    },
+    {
+      "rule": "BR-DEC-31",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-31"
+      ]
+    },
+    {
+      "rule": "BR-DEC-32",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-32"
+      ]
+    },
+    {
+      "rule": "BR-DEC-33",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-182",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-182",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-33"
+      ]
+    },
+    {
+      "rule": "BR-DEC-34",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-183",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-183",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-34"
+      ]
+    },
+    {
+      "rule": "BR-DEC-01",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-32",
+        "BR-33",
+        "BR-CO-11",
+        "BR-CO-21"
+      ],
+      "expect": [
+        "BR-DEC-01"
+      ]
+    },
+    {
+      "rule": "BR-DEC-02",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-31",
+        "BR-32",
+        "BR-33",
+        "BR-CO-11",
+        "BR-CO-21"
+      ],
+      "expect": [
+        "BR-DEC-02"
+      ]
+    },
+    {
+      "rule": "BR-DEC-35",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-31",
+        "BR-32",
+        "BR-33",
+        "BR-CO-11",
+        "BR-CO-21"
+      ],
+      "expect": [
+        "BR-DEC-35"
+      ]
+    },
+    {
+      "rule": "BR-DEC-36",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-31",
+        "BR-32",
+        "BR-33",
+        "BR-CO-11",
+        "BR-CO-21"
+      ],
+      "expect": [
+        "BR-DEC-36"
+      ]
+    },
+    {
+      "rule": "BR-DEC-05",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-37",
+        "BR-38",
+        "BR-CO-12",
+        "BR-CO-22"
+      ],
+      "expect": [
+        "BR-DEC-05"
+      ]
+    },
+    {
+      "rule": "BR-DEC-06",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-36",
+        "BR-37",
+        "BR-38",
+        "BR-CO-12",
+        "BR-CO-22"
+      ],
+      "expect": [
+        "BR-DEC-06"
+      ]
+    },
+    {
+      "rule": "BR-DEC-37",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-36",
+        "BR-37",
+        "BR-38",
+        "BR-CO-12",
+        "BR-CO-22"
+      ],
+      "expect": [
+        "BR-DEC-37"
+      ]
+    },
+    {
+      "rule": "BR-DEC-38",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-36",
+        "BR-37",
+        "BR-38",
+        "BR-CO-12",
+        "BR-CO-22"
+      ],
+      "expect": [
+        "BR-DEC-38"
+      ]
+    },
+    {
+      "rule": "BR-DEC-09",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-106",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-106",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-10"
+      ],
+      "expect": [
+        "BR-DEC-09"
+      ]
+    },
+    {
+      "rule": "BR-DEC-10",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-107",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-107",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11",
+        "BR-CO-13"
+      ],
+      "expect": [
+        "BR-DEC-10"
+      ]
+    },
+    {
+      "rule": "BR-DEC-11",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-108",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-108",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-CO-13"
+      ],
+      "expect": [
+        "BR-DEC-11"
+      ]
+    },
+    {
+      "rule": "BR-DEC-12",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-109",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-109",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-13",
+        "BR-CO-15"
+      ],
+      "expect": [
+        "BR-DEC-12"
+      ]
+    },
+    {
+      "rule": "BR-DEC-12",
+      "document": "standard",
+      "what": "a currency the snapshot lists without a minor unit leaves the rule not decided",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BT-5",
+          "value": "XAU"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-CO-15",
+        "BR-CO-16",
+        "BR-CO-32",
+        "BR-DEC-09",
+        "BR-DEC-12",
+        "BR-DEC-13",
+        "BR-DEC-14",
+        "BR-DEC-18",
+        "BR-DEC-19",
+        "BR-DEC-20",
+        "BR-DEC-23",
+        "BR-DEC-44",
+        "BR-S-09"
+      ]
+    },
+    {
+      "rule": "BR-DEC-13",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-14",
+        "BR-CO-15"
+      ],
+      "expect": [
+        "BR-DEC-13"
+      ]
+    },
+    {
+      "rule": "BR-DEC-15",
+      "document": "standard",
+      "what": "the total in the accounting currency carries the fraction digits of that currency, and one more than that",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "12.345"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-111",
+          "value": "12.3456"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-15"
+      ]
+    },
+    {
+      "rule": "BR-DEC-15",
+      "document": "standard",
+      "what": "an accounting currency without fraction digits admits none",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "JPY"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "1812"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-111",
+          "value": "1811.88"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-15"
+      ]
+    },
+    {
+      "rule": "BR-DEC-14",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-112",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-112",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-15",
+        "BR-CO-16"
+      ],
+      "expect": [
+        "BR-DEC-14"
+      ]
+    },
+    {
+      "rule": "BR-DEC-16",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-113",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-113",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-16"
+      ],
+      "expect": [
+        "BR-DEC-16"
+      ]
+    },
+    {
+      "rule": "BR-DEC-17",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-114",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-114",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-16"
+      ],
+      "expect": [
+        "BR-DEC-17"
+      ]
+    },
+    {
+      "rule": "BR-DEC-18",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BT-115",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BT-115",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-16"
+      ],
+      "expect": [
+        "BR-DEC-18"
+      ]
+    },
+    {
+      "rule": "BR-DEC-39",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-22/BG-34/0/BT-179",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-22/BG-34/0/BT-179",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-16"
+      ],
+      "expect": [
+        "BR-DEC-39"
+      ]
+    },
+    {
+      "rule": "BR-DEC-19",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-S-08",
+        "BR-S-09"
+      ],
+      "expect": [
+        "BR-DEC-19"
+      ]
+    },
+    {
+      "rule": "BR-DEC-19",
+      "document": "standard",
+      "what": "a VAT breakdown in the accounting currency carries the fraction digits of that currency",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.9021"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-19"
+      ]
+    },
+    {
+      "rule": "BR-DEC-20",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-14",
+        "BR-S-09"
+      ],
+      "expect": [
+        "BR-DEC-20"
+      ]
+    },
+    {
+      "rule": "BR-DEC-20",
+      "document": "standard",
+      "what": "a VAT breakdown in the accounting currency carries the fraction digits of that currency",
+      "holds": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.2231"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-20"
+      ]
+    },
+    {
+      "rule": "BR-DEC-40",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-18",
+        "BR-S-08",
+        "BR-S-09"
+      ],
+      "expect": [
+        "BR-DEC-40"
+      ]
+    },
+    {
+      "rule": "BR-DEC-41",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "12.1234"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "12.12348"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-DEC-41"
+      ]
+    },
+    {
+      "rule": "BR-DEC-23",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-10",
+        "BR-CO-13",
+        "BR-CO-32",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-DEC-23"
+      ]
+    },
+    {
+      "rule": "BR-DEC-24",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-136",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-136",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-42",
+        "BR-CO-23",
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-DEC-24"
+      ]
+    },
+    {
+      "rule": "BR-DEC-25",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-137",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-137",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-41",
+        "BR-42",
+        "BR-CO-23"
+      ],
+      "expect": [
+        "BR-DEC-25"
+      ]
+    },
+    {
+      "rule": "BR-DEC-42",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-138",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-138",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-41",
+        "BR-42",
+        "BR-CO-23"
+      ],
+      "expect": [
+        "BR-DEC-42"
+      ]
+    },
+    {
+      "rule": "BR-DEC-27",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-44",
+        "BR-CO-24",
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-DEC-27"
+      ]
+    },
+    {
+      "rule": "BR-DEC-28",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-142",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-142",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-43",
+        "BR-44",
+        "BR-CO-24"
+      ],
+      "expect": [
+        "BR-DEC-28"
+      ]
+    },
+    {
+      "rule": "BR-DEC-43",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-143",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-143",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-43",
+        "BR-44",
+        "BR-CO-24"
+      ],
+      "expect": [
+        "BR-DEC-43"
+      ]
+    },
+    {
+      "rule": "BR-DEC-44",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "12.1234"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "12.12348"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-DEC-44"
+      ]
+    },
+    {
+      "rule": "BR-DEC-45",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-147",
+          "value": "12.1234"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-147",
+          "value": "12.12348"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-45"
+      ]
+    },
+    {
+      "rule": "BR-DEC-46",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-148",
+          "value": "12.1234"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-148",
+          "value": "12.12348"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-DEC-46"
+      ]
+    },
+    {
+      "rule": "BR-DEC-47",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-32"
+      ],
+      "expect": [
+        "BR-DEC-47"
+      ]
+    },
+    {
+      "rule": "BR-DEC-48",
+      "document": "standard",
+      "what": "the value carries the fraction digits this edition admits, and one more than that",
+      "holds": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "12.12"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "12.128"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-18",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-DEC-48"
+      ]
+    },
+    {
+      "rule": "BR-S-01",
+      "document": "zero",
+      "what": "a line of the category needs a VAT breakdown of that category",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "S"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "19"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-S-01"
+      ]
+    },
+    {
+      "rule": "BR-Z-01",
+      "document": "standard",
+      "what": "a line of the category needs a VAT breakdown of that category",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "0"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-Z-01"
+      ]
+    },
+    {
+      "rule": "BR-IG-01",
+      "document": "zero",
+      "what": "a line of the category needs a VAT breakdown of that category",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "L"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "7"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-IG-01"
+      ]
+    },
+    {
+      "rule": "BR-IP-01",
+      "document": "zero",
+      "what": "a line of the category needs a VAT breakdown of that category",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "M"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "7"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-IP-01"
+      ]
+    },
+    {
+      "rule": "BR-S-04",
+      "document": "standard",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-S-02",
+        "BR-S-04"
+      ]
+    },
+    {
+      "rule": "BR-Z-04",
+      "document": "zero",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-Z-08"
+      ],
+      "expect": [
+        "BR-Z-02",
+        "BR-Z-04"
+      ]
+    },
+    {
+      "rule": "BR-E-04",
+      "document": "exempt",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "E"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-E-08"
+      ],
+      "expect": [
+        "BR-E-02",
+        "BR-E-04"
+      ]
+    },
+    {
+      "rule": "BR-AE-04",
+      "document": "reverse",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-AE-08",
+        "BR-CO-12"
+      ],
+      "expect": [
+        "BR-AE-02",
+        "BR-AE-04"
+      ]
+    },
+    {
+      "rule": "BR-IC-04",
+      "document": "intra",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "K"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-IC-08"
+      ],
+      "expect": [
+        "BR-IC-02",
+        "BR-IC-04"
+      ]
+    },
+    {
+      "rule": "BR-G-04",
+      "document": "export",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "G"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-G-08"
+      ],
+      "expect": [
+        "BR-G-02",
+        "BR-G-04"
+      ]
+    },
+    {
+      "rule": "BR-IG-02",
+      "document": "canary",
+      "what": "a line of the category obliges a seller tax identifier",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IG-02"
+      ]
+    },
+    {
+      "rule": "BR-IG-03",
+      "document": "canary",
+      "what": "a document level allowance of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "L"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11",
+        "BR-IG-08"
+      ],
+      "expect": [
+        "BR-IG-02",
+        "BR-IG-03"
+      ]
+    },
+    {
+      "rule": "BR-IG-04",
+      "document": "canary",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-IG-08"
+      ],
+      "expect": [
+        "BR-IG-02",
+        "BR-IG-04"
+      ]
+    },
+    {
+      "rule": "BR-IP-02",
+      "document": "ceuta",
+      "what": "a line of the category obliges a seller tax identifier",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IP-02"
+      ]
+    },
+    {
+      "rule": "BR-IP-03",
+      "document": "ceuta",
+      "what": "a document level allowance of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "M"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11",
+        "BR-IP-08"
+      ],
+      "expect": [
+        "BR-IP-02",
+        "BR-IP-03"
+      ]
+    },
+    {
+      "rule": "BR-IP-04",
+      "document": "ceuta",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "M"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-IP-08"
+      ],
+      "expect": [
+        "BR-IP-02",
+        "BR-IP-04"
+      ]
+    },
+    {
+      "rule": "BR-S-07",
+      "document": "standard",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-S-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-S-07"
+      ],
+      "gone": [
+        "BR-S-08"
+      ]
+    },
+    {
+      "rule": "BR-Z-07",
+      "document": "zero",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-Z-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-Z-07"
+      ]
+    },
+    {
+      "rule": "BR-E-07",
+      "document": "exempt",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "E"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-E-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-E-07"
+      ]
+    },
+    {
+      "rule": "BR-AE-07",
+      "document": "reverse",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "onHolds": [
+        "BR-AE-08",
+        "BR-CO-12"
+      ],
+      "expect": [
+        "BR-AE-07",
+        "BR-CO-18"
+      ]
+    },
+    {
+      "rule": "BR-IC-07",
+      "document": "intra",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "K"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-IC-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-IC-07"
+      ]
+    },
+    {
+      "rule": "BR-G-07",
+      "document": "export",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "G"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-G-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-G-07"
+      ]
+    },
+    {
+      "rule": "BR-O-07",
+      "document": "not-subject",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "O"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-O-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-O-07"
+      ]
+    },
+    {
+      "rule": "BR-IG-05",
+      "document": "canary",
+      "what": "the VAT rate of a line of the category",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-IG-05"
+      ]
+    },
+    {
+      "rule": "BR-IG-06",
+      "document": "canary",
+      "what": "the VAT rate of a document level allowance of the category",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "L"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11",
+        "BR-IG-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-IG-06"
+      ]
+    },
+    {
+      "rule": "BR-IG-07",
+      "document": "canary",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-IG-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-IG-07"
+      ]
+    },
+    {
+      "rule": "BR-IP-05",
+      "document": "ceuta",
+      "what": "the VAT rate of a line of the category",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-IP-05"
+      ]
+    },
+    {
+      "rule": "BR-IP-06",
+      "document": "ceuta",
+      "what": "the VAT rate of a document level allowance of the category",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "M"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11",
+        "BR-IP-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-IP-06"
+      ]
+    },
+    {
+      "rule": "BR-IP-07",
+      "document": "ceuta",
+      "what": "the VAT rate of a document level charge or tax of the category",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "M"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "-1"
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12",
+        "BR-IP-08"
+      ],
+      "expect": [
+        "BR-CO-18",
+        "BR-IP-07"
+      ]
+    },
+    {
+      "rule": "BR-S-08",
+      "document": "standard",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-S-08",
+        "BR-S-09"
+      ]
+    },
+    {
+      "rule": "BR-Z-08",
+      "document": "zero",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-Z-08"
+      ]
+    },
+    {
+      "rule": "BR-E-08",
+      "document": "exempt",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-E-08"
+      ]
+    },
+    {
+      "rule": "BR-AE-08",
+      "document": "reverse",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-AE-08"
+      ]
+    },
+    {
+      "rule": "BR-IC-08",
+      "document": "intra",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IC-08"
+      ]
+    },
+    {
+      "rule": "BR-G-08",
+      "document": "export",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-G-08"
+      ]
+    },
+    {
+      "rule": "BR-O-08",
+      "document": "not-subject",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-O-08"
+      ]
+    },
+    {
+      "rule": "BR-IG-08",
+      "document": "canary",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IG-08",
+        "BR-IG-09"
+      ]
+    },
+    {
+      "rule": "BR-IP-08",
+      "document": "ceuta",
+      "what": "the taxable amount of the breakdown is what the parts under it come to",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IP-08",
+        "BR-IP-09"
+      ]
+    },
+    {
+      "rule": "BR-S-09",
+      "document": "standard",
+      "what": "the tax amount of the breakdown is the taxable amount at the rate",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.34"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-S-09"
+      ]
+    },
+    {
+      "rule": "BR-S-09",
+      "document": "standard",
+      "what": "a tax amount of the opposite sign to the taxable amount",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "-757.41"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-S-09"
+      ]
+    },
+    {
+      "rule": "BR-IG-09",
+      "document": "canary",
+      "what": "the tax amount of the breakdown is the taxable amount at the rate",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.34"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-IG-09"
+      ]
+    },
+    {
+      "rule": "BR-IP-09",
+      "document": "ceuta",
+      "what": "the tax amount of the breakdown is the taxable amount at the rate",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.34"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-14",
+        "BR-IP-09"
+      ]
+    },
+    {
+      "rule": "BR-E-10",
+      "document": "exempt",
+      "what": "the breakdown states an exemption reason",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-E-10"
+      ]
+    },
+    {
+      "rule": "BR-AE-10",
+      "document": "reverse",
+      "what": "the breakdown states an exemption reason",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-AE-10"
+      ]
+    },
+    {
+      "rule": "BR-IC-10",
+      "document": "intra",
+      "what": "the breakdown states an exemption reason",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IC-10"
+      ]
+    },
+    {
+      "rule": "BR-IC-11",
+      "document": "intra",
+      "what": "an invoice line delivery date stands for the header one",
+      "holds": [
+        {
+          "path": "/BG-13",
+          "deleteUnder": true
+        },
+        {
+          "path": "/BG-25/0/BG-37/BT-187",
+          "value": "2018-04-13"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-38/BT-209",
+          "value": "FR"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-37/BT-187",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IC-11"
+      ]
+    },
+    {
+      "rule": "BR-IC-11",
+      "document": "intra",
+      "what": "the header delivery date",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-13/BT-72",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IC-11"
+      ]
+    },
+    {
+      "rule": "BR-G-10",
+      "document": "export",
+      "what": "the breakdown states an exemption reason",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-G-10"
+      ]
+    },
+    {
+      "rule": "BR-O-10",
+      "document": "not-subject",
+      "what": "the breakdown states an exemption reason",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-O-10"
+      ]
+    },
+    {
+      "rule": "BR-N-02",
+      "document": "national",
+      "what": "a line of the category obliges a seller tax identifier",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-N-02"
+      ]
+    },
+    {
+      "rule": "BR-N-03",
+      "document": "national",
+      "what": "a document level allowance of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "N"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-11"
+      ],
+      "expect": [
+        "BR-N-02",
+        "BR-N-03"
+      ]
+    },
+    {
+      "rule": "BR-N-04",
+      "document": "national",
+      "what": "a document level charge or tax of the category obliges a seller tax identifier",
+      "holds": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "N"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        }
+      ],
+      "speaks": [
+        {
+          "path": "/BG-4/BT-31",
+          "delete": true
+        }
+      ],
+      "onHolds": [
+        "BR-CO-12"
+      ],
+      "expect": [
+        "BR-N-02",
+        "BR-N-04"
+      ]
+    },
+    {
+      "rule": "BR-E-01",
+      "document": "exempt",
+      "what": "a line that states an exemption reason needs a breakdown that states the same one",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-E-01",
+        "BR-E-08"
+      ]
+    },
+    {
+      "rule": "BR-AE-01",
+      "document": "reverse",
+      "what": "a line that states an exemption reason needs a breakdown that states the same one",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-AE-01",
+        "BR-AE-08",
+        "BR-CO-18"
+      ]
+    },
+    {
+      "rule": "BR-IC-01",
+      "document": "intra",
+      "what": "a line that states an exemption reason needs a breakdown that states the same one",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-IC-01",
+        "BR-IC-08"
+      ]
+    },
+    {
+      "rule": "BR-G-01",
+      "document": "export",
+      "what": "a line that states an exemption reason needs a breakdown that states the same one",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-G-01",
+        "BR-G-08"
+      ]
+    },
+    {
+      "rule": "BR-O-01",
+      "document": "not-subject",
+      "what": "a line that states an exemption reason needs a breakdown that states the same one",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-CO-18",
+        "BR-O-01",
+        "BR-O-08"
+      ]
+    },
+    {
+      "rule": "BR-IC-12",
+      "document": "intra",
+      "what": "an intra-community invoice states a deliver to country code",
+      "holds": [],
+      "speaks": [
+        {
+          "path": "/BG-13/BG-15/BT-80",
+          "delete": true
+        }
+      ],
+      "onHolds": [],
+      "expect": [
+        "BR-IC-12"
+      ]
+    }
+  ]
+}

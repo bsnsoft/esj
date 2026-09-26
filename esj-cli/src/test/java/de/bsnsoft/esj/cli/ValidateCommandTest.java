@@ -672,7 +672,7 @@ class ValidateCommandTest {
                         "l2", "checked", "ok", "findings",
                         "l3", "checked", "ok", "findings",
                         "rules", "checked", "ok", "reason", "pack", "id", "version",
-                        "findings",
+                        "edition", "corroborated", "findings",
                         "notChecked", "reasons",
                         "warnings", "information", "verdict"),
                 memberNames(run.out()),

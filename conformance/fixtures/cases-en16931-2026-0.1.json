@@ -1,0 +1,7372 @@
+{
+  "format": "EN16931-Semantic-JSON-Fixtures-Rules",
+  "version": "1",
+  "pack": "en16931-2026/0.1",
+  "directory": "rules/en16931-2026/0.1",
+  "bases": {
+    "standard": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "757.41",
+        "/BG-22/BT-112": "4743.75",
+        "/BG-22/BT-115": "4743.75",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "757.41",
+        "/BG-23/0/BT-118": "S",
+        "/BG-23/0/BT-119": "19",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "S",
+        "/BG-25/0/BG-30/BT-152": "19",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "zero": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "Z",
+        "/BG-23/0/BT-119": "0",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "Z",
+        "/BG-25/0/BG-30/BT-152": "0",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "exempt": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "E",
+        "/BG-23/0/BT-119": "0",
+        "/BG-23/0/BT-120": "Exempt",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "E",
+        "/BG-25/0/BG-30/BT-152": "0",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "reverse": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-48": "DE987654321",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "AE",
+        "/BG-23/0/BT-119": "0",
+        "/BG-23/0/BT-120": "Exempt",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "AE",
+        "/BG-25/0/BG-30/BT-152": "0",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "intra": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-48": "DE987654321",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-13/BT-72": "2018-04-13",
+        "/BG-13/BG-15/BT-80": "FR",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "K",
+        "/BG-23/0/BT-119": "0",
+        "/BG-23/0/BT-120": "Exempt",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "K",
+        "/BG-25/0/BG-30/BT-152": "0",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "export": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "G",
+        "/BG-23/0/BT-119": "0",
+        "/BG-23/0/BT-120": "Exempt",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "G",
+        "/BG-25/0/BG-30/BT-152": "0",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "not-subject": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "O",
+        "/BG-23/0/BT-120": "Exempt",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "O",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "canary": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "279.04",
+        "/BG-22/BT-112": "4265.38",
+        "/BG-22/BT-115": "4265.38",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "279.04",
+        "/BG-23/0/BT-118": "L",
+        "/BG-23/0/BT-119": "7",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "L",
+        "/BG-25/0/BG-30/BT-152": "7",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "ceuta": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "279.04",
+        "/BG-22/BT-112": "4265.38",
+        "/BG-22/BT-115": "4265.38",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "279.04",
+        "/BG-23/0/BT-118": "M",
+        "/BG-23/0/BT-119": "7",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "M",
+        "/BG-25/0/BG-30/BT-152": "7",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    },
+    "national": {
+      "format": "EN16931-Semantic-JSON",
+      "version": "0.1",
+      "semanticModel": "EN16931-1:2026",
+      "values": {
+        "/BT-1": "1234567",
+        "/BT-2": "2018-04-13",
+        "/BT-3": "380",
+        "/BT-5": "EUR",
+        "/BT-9": "2018-04-13",
+        "/BT-10/0": "90000000-03083-72",
+        "/BG-2/BT-23": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
+        "/BG-2/BT-24": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
+        "/BG-4/BT-27": "[Seller name]",
+        "/BG-4/BT-29/0": {
+          "value": "9876543217894897438",
+          "scheme": "0088"
+        },
+        "/BG-4/BT-31": "ATU123456789",
+        "/BG-4/BT-34": {
+          "value": "rechnungsausgang@test.com",
+          "scheme": "EM"
+        },
+        "/BG-4/BG-5/BT-37": "[Seller city]",
+        "/BG-4/BG-5/BT-38": "12345",
+        "/BG-4/BG-5/BT-40": "DE",
+        "/BG-4/BG-6/BT-41": "Tim Tester",
+        "/BG-4/BG-6/BT-42": "012 3456789",
+        "/BG-4/BG-6/BT-43": "tim.tester@test.com",
+        "/BG-7/BT-44": "[Buyer name]",
+        "/BG-7/BT-49": {
+          "value": "rechnungseingang@test.de",
+          "scheme": "EM"
+        },
+        "/BG-7/BG-8/BT-52": "[Buyer city]",
+        "/BG-7/BG-8/BT-53": "98765",
+        "/BG-7/BG-8/BT-55": "DE",
+        "/BG-16/BT-81": "58",
+        "/BG-16/BG-17/0/BT-84": "DE79000000001234567890",
+        "/BG-22/BT-106": "3986.34",
+        "/BG-22/BT-109": "3986.34",
+        "/BG-22/BT-110": "0",
+        "/BG-22/BT-112": "3986.34",
+        "/BG-22/BT-115": "3986.34",
+        "/BG-23/0/BT-116": "3986.34",
+        "/BG-23/0/BT-117": "0",
+        "/BG-23/0/BT-118": "N",
+        "/BG-23/0/BT-119": "0",
+        "/BG-25/0/BT-126": "1",
+        "/BG-25/0/BT-129": "30",
+        "/BG-25/0/BT-130": "XPP",
+        "/BG-25/0/BT-131": "3986.34",
+        "/BG-25/0/BG-29/BT-146": "132.878",
+        "/BG-25/0/BG-30/BT-151": "N",
+        "/BG-25/0/BG-30/BT-152": "0",
+        "/BG-25/0/BG-31/BT-153": "Beratung"
+      },
+      "source": {
+        "syntax": "UBL",
+        "sha256": "9132e4eeff1ceae27cf97031adf2d5984eb89ed0fcb3fb55f6cd1c6827b54f0a"
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "br-30-holds",
+      "rule": "BR-30",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-134",
+          "value": "2018-04-01"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-135",
+          "value": "2018-04-30"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-30-speaks",
+      "rule": "BR-30",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-134",
+          "value": "2018-04-01"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-135",
+          "value": "2018-03-01"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-30"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-36-holds",
+      "rule": "BR-36",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-36-speaks",
+      "rule": "BR-36",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-CO-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-37-holds",
+      "rule": "BR-37",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-37-speaks",
+      "rule": "BR-37",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-37",
+          "BR-CO-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-38-holds",
+      "rule": "BR-38",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-38-speaks",
+      "rule": "BR-38",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-43-holds",
+      "rule": "BR-43",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-43-speaks",
+      "rule": "BR-43",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-43"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-44-holds",
+      "rule": "BR-44",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-44-speaks",
+      "rule": "BR-44",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-44",
+          "BR-CO-24",
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-46-holds",
+      "rule": "BR-46",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-46-speaks",
+      "rule": "BR-46",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-46",
+          "BR-CO-14"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-50-holds",
+      "rule": "BR-50",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-50-speaks",
+      "rule": "BR-50",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-16/BG-17/0/BT-84",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-50",
+          "BR-61"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-53-holds",
+      "rule": "BR-53",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "USD"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "0"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-53-speaks",
+      "rule": "BR-53",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "USD"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-53"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-54-holds",
+      "rule": "BR-54",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-160",
+          "value": "Colour"
+        },
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-161",
+          "value": "red"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-54-speaks",
+      "rule": "BR-54",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-31/BG-32/0/BT-161",
+          "value": "red"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-54"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-67-holds",
+      "rule": "BR-67",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "-30"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-67-speaks",
+      "rule": "BR-67",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-67",
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-67-2-holds",
+      "rule": "BR-67",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "-30"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-67-2-speaks",
+      "rule": "BR-67",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-67",
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-67-3-holds",
+      "rule": "BR-67",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "-30"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "0"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-67-3-speaks",
+      "rule": "BR-67",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "-3986.34"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "0"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-67",
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-68-holds",
+      "rule": "BR-68",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-121",
+          "value": "VATEX-EU-132"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Exempt"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-195",
+          "value": "VATEX-EU-132"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-68-speaks",
+      "rule": "BR-68",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-121",
+          "value": "VATEX-EU-132"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-195",
+          "value": "VATEX-EU-132"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-68",
+          "BR-CO-18",
+          "BR-E-01",
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-69-holds",
+      "rule": "BR-69",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-69-speaks",
+      "rule": "BR-69",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": "9876543217894897438"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-69"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-70-holds",
+      "rule": "BR-70",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-4/BT-30",
+          "value": {
+            "value": "HRB 1234",
+            "scheme": "0198"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-70-speaks",
+      "rule": "BR-70",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-4/BT-30",
+          "value": "HRB 1234"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-70"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-71-holds",
+      "rule": "BR-71",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-7/BT-46/0",
+          "value": {
+            "value": "54321",
+            "scheme": "0088"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-71-speaks",
+      "rule": "BR-71",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-7/BT-46/0",
+          "value": "54321"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-71"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-72-holds",
+      "rule": "BR-72",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-7/BT-47",
+          "value": {
+            "value": "HRB 4321",
+            "scheme": "0198"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-72-speaks",
+      "rule": "BR-72",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-7/BT-47",
+          "value": "HRB 4321"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-72"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-73-holds",
+      "rule": "BR-73",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-10/BT-60",
+          "value": {
+            "value": "P-1",
+            "scheme": "0088"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-17"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-73-speaks",
+      "rule": "BR-73",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-10/BT-60",
+          "value": "P-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-17",
+          "BR-73"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-74-holds",
+      "rule": "BR-74",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-10/BT-61",
+          "value": {
+            "value": "HRB 9",
+            "scheme": "0198"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-17"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-74-speaks",
+      "rule": "BR-74",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-10/BT-61",
+          "value": "HRB 9"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-17",
+          "BR-74"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-75-holds",
+      "rule": "BR-75",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-13/BT-71",
+          "value": {
+            "value": "L-1",
+            "scheme": "0088"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-75-speaks",
+      "rule": "BR-75",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-13/BT-71",
+          "value": "L-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-75"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-76-holds",
+      "rule": "BR-76",
+      "baseDocument": "intra",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-76-speaks",
+      "rule": "BR-76",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-16/BG-17/0/BT-84",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-50",
+          "BR-61",
+          "BR-76"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-09-holds",
+      "rule": "BR-CO-09",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-09-speaks",
+      "rule": "BR-CO-09",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "value": "QQ123456789"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-13-holds",
+      "rule": "BR-CO-13",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-13-speaks",
+      "rule": "BR-CO-13",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-109",
+          "value": "3900.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-13",
+          "BR-CO-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-14-holds",
+      "rule": "BR-CO-14",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-14-speaks",
+      "rule": "BR-CO-14",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "700.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-CO-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-14-2-holds",
+      "rule": "BR-CO-14",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-14-2-speaks",
+      "rule": "BR-CO-14",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-110",
+          "value": "757.42"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-CO-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-16-holds",
+      "rule": "BR-CO-16",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-16-speaks",
+      "rule": "BR-CO-16",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-115",
+          "value": "4000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-18-holds",
+      "rule": "BR-CO-18",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-18-speaks",
+      "rule": "BR-CO-18",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "remove": true
+        },
+        {
+          "path": "/BG-23/0/BT-117",
+          "remove": true
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "remove": true
+        },
+        {
+          "path": "/BG-23/0/BT-119",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-CO-18",
+          "BR-S-01"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-18-2-holds",
+      "rule": "BR-CO-18",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-18-2-speaks",
+      "rule": "BR-CO-18",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "7"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-22-holds",
+      "rule": "BR-CO-22",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-22-speaks",
+      "rule": "BR-CO-22",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-24-holds",
+      "rule": "BR-CO-24",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-24-speaks",
+      "rule": "BR-CO-24",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-44",
+          "BR-CO-24",
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-25-holds",
+      "rule": "BR-CO-25",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-25-speaks",
+      "rule": "BR-CO-25",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-9",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-25"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-28-holds",
+      "rule": "BR-CO-28",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-13",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-28-speaks",
+      "rule": "BR-CO-28",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-13",
+          "value": "REF-1"
+        },
+        {
+          "path": "/BG-25/0/BT-188",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-28"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-29-holds",
+      "rule": "BR-CO-29",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-16",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-29-speaks",
+      "rule": "BR-CO-29",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-16",
+          "value": "REF-1"
+        },
+        {
+          "path": "/BG-25/0/BT-189",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-29"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-30-holds",
+      "rule": "BR-CO-30",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-15",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-30-speaks",
+      "rule": "BR-CO-30",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-15",
+          "value": "REF-1"
+        },
+        {
+          "path": "/BG-25/0/BT-191",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-30"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-45-holds",
+      "rule": "BR-CO-45",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-197",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-45-speaks",
+      "rule": "BR-CO-45",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-197",
+          "value": "REF-1"
+        },
+        {
+          "path": "/BG-25/0/BT-198",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-45"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-46-holds",
+      "rule": "BR-CO-46",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-14",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-46-speaks",
+      "rule": "BR-CO-46",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-14",
+          "value": "REF-1"
+        },
+        {
+          "path": "/BG-25/0/BT-200",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-46"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-47-holds",
+      "rule": "BR-CO-47",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-3/0/BT-25",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-47-speaks",
+      "rule": "BR-CO-47",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-3/0/BT-25",
+          "value": "REF-1"
+        },
+        {
+          "path": "/BG-25/0/BG-39/0/BT-217",
+          "value": "REF-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-47"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-31-holds",
+      "rule": "BR-CO-31",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-31-speaks",
+      "rule": "BR-CO-31",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-31",
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-holds",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-speaks",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "3000.12"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-2-holds",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-2-speaks",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "999"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-3-holds",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "0.015"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "0.03"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "3"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-3-speaks",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "0.015"
+        },
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "0.04"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "3"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-4-holds",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-32-4-speaks",
+      "rule": "BR-CO-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "0"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-33-holds",
+      "rule": "BR-CO-33",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-3",
+          "value": "381"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-33-speaks",
+      "rule": "BR-CO-33",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-3",
+          "value": "381"
+        },
+        {
+          "path": "/BG-22/BT-112",
+          "value": "-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-15",
+          "BR-CO-16",
+          "BR-CO-33"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-34-holds",
+      "rule": "BR-CO-34",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-105",
+          "value": "AAA"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-34-speaks",
+      "rule": "BR-CO-34",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-21/0/BT-105",
+          "value": "AAA"
+        },
+        {
+          "path": "/BG-21/0/BT-177",
+          "value": "CAR"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-34",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-35-holds",
+      "rule": "BR-CO-35",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-145",
+          "value": "AAA"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-35-speaks",
+      "rule": "BR-CO-35",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "5"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-144",
+          "value": "Handling"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-145",
+          "value": "AAA"
+        },
+        {
+          "path": "/BG-25/0/BG-28/0/BT-193",
+          "value": "CAR"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32",
+          "BR-CO-35"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-36-holds",
+      "rule": "BR-CO-36",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-170",
+          "value": "2018-04-20"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "10"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "474.38"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-36-speaks",
+      "rule": "BR-CO-36",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-170",
+          "value": "2018-04-20"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "10"
+        },
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "400"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-36"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-38-holds",
+      "rule": "BR-CO-38",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "10"
+        },
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "100"
+        },
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "10"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "S"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "19"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-38-speaks",
+      "rule": "BR-CO-38",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "100"
+        },
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "10"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "S"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "19"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-CO-38",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-39-holds",
+      "rule": "BR-CO-39",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "10"
+        },
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "100"
+        },
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "10"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-39-speaks",
+      "rule": "BR-CO-39",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "100"
+        },
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "10"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-39",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-40-holds",
+      "rule": "BR-CO-40",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-13/BT-72",
+          "value": "2018-04-13"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-40-speaks",
+      "rule": "BR-CO-40",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-13/BT-72",
+          "value": "2018-04-13"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-26/BT-134",
+          "value": "2018-04-01"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-40"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-48-holds",
+      "rule": "BR-CO-48",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "USD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "1.234567"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "0"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-48-speaks",
+      "rule": "BR-CO-48",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "USD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "1.234567"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "5"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-48"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-48-2-holds",
+      "rule": "BR-CO-48",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "JPY"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.01"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "8"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-48-2-speaks",
+      "rule": "BR-CO-48",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "JPY"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.01"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "9"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-48"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-49-holds",
+      "rule": "BR-CO-49",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-49-speaks",
+      "rule": "BR-CO-49",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1197.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-49"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-50-holds",
+      "rule": "BR-CO-50",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-50-speaks",
+      "rule": "BR-CO-50",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "229.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-50"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-51-holds",
+      "rule": "BR-CO-51",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-150",
+          "value": "XPP"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-51-speaks",
+      "rule": "BR-CO-51",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/0/BG-29/BT-150",
+          "value": "KGM"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-51"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-30-holds",
+      "rule": "BR-DEC-30",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-167",
+          "value": "12.123456"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-30-speaks",
+      "rule": "BR-DEC-30",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-167",
+          "value": "12.1234568"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-30"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-31-holds",
+      "rule": "BR-DEC-31",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-31-speaks",
+      "rule": "BR-DEC-31",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-171",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-31"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-32-holds",
+      "rule": "BR-DEC-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-32-speaks",
+      "rule": "BR-DEC-32",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-35/0/BT-172",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-33-holds",
+      "rule": "BR-DEC-33",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-182",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-33-speaks",
+      "rule": "BR-DEC-33",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-182",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-33"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-34-holds",
+      "rule": "BR-DEC-34",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-183",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-34-speaks",
+      "rule": "BR-DEC-34",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-33/0/BG-36/0/BT-183",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-34"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-01-holds",
+      "rule": "BR-DEC-01",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-01-speaks",
+      "rule": "BR-DEC-01",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21",
+          "BR-DEC-01"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-02-holds",
+      "rule": "BR-DEC-02",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-31",
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-02-speaks",
+      "rule": "BR-DEC-02",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-93",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-31",
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21",
+          "BR-DEC-02"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-35-holds",
+      "rule": "BR-DEC-35",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-31",
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-35-speaks",
+      "rule": "BR-DEC-35",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-94",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-31",
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21",
+          "BR-DEC-35"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-36-holds",
+      "rule": "BR-DEC-36",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-31",
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-36-speaks",
+      "rule": "BR-DEC-36",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-31",
+          "BR-32",
+          "BR-33",
+          "BR-CO-11",
+          "BR-CO-21",
+          "BR-DEC-36"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-05-holds",
+      "rule": "BR-DEC-05",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-05-speaks",
+      "rule": "BR-DEC-05",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22",
+          "BR-DEC-05"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-06-holds",
+      "rule": "BR-DEC-06",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-06-speaks",
+      "rule": "BR-DEC-06",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-100",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22",
+          "BR-DEC-06"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-37-holds",
+      "rule": "BR-DEC-37",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-37-speaks",
+      "rule": "BR-DEC-37",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-101",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22",
+          "BR-DEC-37"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-38-holds",
+      "rule": "BR-DEC-38",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-38-speaks",
+      "rule": "BR-DEC-38",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-36",
+          "BR-37",
+          "BR-38",
+          "BR-CO-12",
+          "BR-CO-22",
+          "BR-DEC-38"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-09-holds",
+      "rule": "BR-DEC-09",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-106",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-09-speaks",
+      "rule": "BR-DEC-09",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-106",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-DEC-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-10-holds",
+      "rule": "BR-DEC-10",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-107",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-CO-13"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-10-speaks",
+      "rule": "BR-DEC-10",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-107",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-CO-13",
+          "BR-DEC-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-11-holds",
+      "rule": "BR-DEC-11",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-108",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-13"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-11-speaks",
+      "rule": "BR-DEC-11",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-108",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-13",
+          "BR-DEC-11"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-12-holds",
+      "rule": "BR-DEC-12",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-109",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-13",
+          "BR-CO-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-12-speaks",
+      "rule": "BR-DEC-12",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-109",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-13",
+          "BR-CO-15",
+          "BR-DEC-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-12-2-holds",
+      "rule": "BR-DEC-12",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-12-2-speaks",
+      "rule": "BR-DEC-12",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-5",
+          "value": "XAU"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-15",
+          "BR-CO-16",
+          "BR-CO-32",
+          "BR-DEC-09",
+          "BR-DEC-12",
+          "BR-DEC-13",
+          "BR-DEC-14",
+          "BR-DEC-18",
+          "BR-DEC-19",
+          "BR-DEC-20",
+          "BR-DEC-23",
+          "BR-DEC-44",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-13-holds",
+      "rule": "BR-DEC-13",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-CO-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-13-speaks",
+      "rule": "BR-DEC-13",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-110",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-CO-15",
+          "BR-DEC-13"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-15-holds",
+      "rule": "BR-DEC-15",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "12.345"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-15-speaks",
+      "rule": "BR-DEC-15",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "12.3456"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-15-2-holds",
+      "rule": "BR-DEC-15",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "JPY"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "1812"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-15-2-speaks",
+      "rule": "BR-DEC-15",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "JPY"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "1811.88"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-15"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-14-holds",
+      "rule": "BR-DEC-14",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-112",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-15",
+          "BR-CO-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-14-speaks",
+      "rule": "BR-DEC-14",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-112",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-15",
+          "BR-CO-16",
+          "BR-DEC-14"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-16-holds",
+      "rule": "BR-DEC-16",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-113",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-16-speaks",
+      "rule": "BR-DEC-16",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-113",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16",
+          "BR-DEC-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-17-holds",
+      "rule": "BR-DEC-17",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-114",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-17-speaks",
+      "rule": "BR-DEC-17",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-114",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16",
+          "BR-DEC-17"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-18-holds",
+      "rule": "BR-DEC-18",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-115",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-18-speaks",
+      "rule": "BR-DEC-18",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BT-115",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16",
+          "BR-DEC-18"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-39-holds",
+      "rule": "BR-DEC-39",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BG-34/0/BT-179",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-39-speaks",
+      "rule": "BR-DEC-39",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-22/BG-34/0/BT-179",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-16",
+          "BR-DEC-39"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-19-holds",
+      "rule": "BR-DEC-19",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-S-08",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-19-speaks",
+      "rule": "BR-DEC-19",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-19",
+          "BR-S-08",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-19-2-holds",
+      "rule": "BR-DEC-19",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-19-2-speaks",
+      "rule": "BR-DEC-19",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.9021"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-19"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-20-holds",
+      "rule": "BR-DEC-20",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-20-speaks",
+      "rule": "BR-DEC-20",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-DEC-20",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-20-2-holds",
+      "rule": "BR-DEC-20",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-20-2-speaks",
+      "rule": "BR-DEC-20",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BT-6",
+          "value": "KWD"
+        },
+        {
+          "path": "/BT-167",
+          "value": "0.3"
+        },
+        {
+          "path": "/BG-22/BT-111",
+          "value": "227.223"
+        },
+        {
+          "path": "/BG-23/1/BT-116",
+          "value": "1195.902"
+        },
+        {
+          "path": "/BG-23/1/BT-117",
+          "value": "227.2231"
+        },
+        {
+          "path": "/BG-23/1/BT-118",
+          "value": "S"
+        },
+        {
+          "path": "/BG-23/1/BT-119",
+          "value": "19"
+        },
+        {
+          "path": "/BG-23/1/BT-184",
+          "value": "KWD"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-20"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-40-holds",
+      "rule": "BR-DEC-40",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-S-08",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-40-speaks",
+      "rule": "BR-DEC-40",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-119",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-DEC-40",
+          "BR-S-08",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-41-holds",
+      "rule": "BR-DEC-41",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "12.1234"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-41-speaks",
+      "rule": "BR-DEC-41",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-129",
+          "value": "12.12348"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32",
+          "BR-DEC-41"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-23-holds",
+      "rule": "BR-DEC-23",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-23-speaks",
+      "rule": "BR-DEC-23",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BT-131",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-10",
+          "BR-CO-13",
+          "BR-CO-32",
+          "BR-DEC-23",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-24-holds",
+      "rule": "BR-DEC-24",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-136",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-42",
+          "BR-CO-23",
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-24-speaks",
+      "rule": "BR-DEC-24",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-136",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-42",
+          "BR-CO-23",
+          "BR-CO-32",
+          "BR-DEC-24"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-25-holds",
+      "rule": "BR-DEC-25",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-137",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-41",
+          "BR-42",
+          "BR-CO-23"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-25-speaks",
+      "rule": "BR-DEC-25",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-137",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-41",
+          "BR-42",
+          "BR-CO-23",
+          "BR-DEC-25"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-42-holds",
+      "rule": "BR-DEC-42",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-138",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-41",
+          "BR-42",
+          "BR-CO-23"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-42-speaks",
+      "rule": "BR-DEC-42",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-27/0/BT-138",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-41",
+          "BR-42",
+          "BR-CO-23",
+          "BR-DEC-42"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-27-holds",
+      "rule": "BR-DEC-27",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-44",
+          "BR-CO-24",
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-27-speaks",
+      "rule": "BR-DEC-27",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-141",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-44",
+          "BR-CO-24",
+          "BR-CO-32",
+          "BR-DEC-27"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-28-holds",
+      "rule": "BR-DEC-28",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-142",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-43",
+          "BR-44",
+          "BR-CO-24"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-28-speaks",
+      "rule": "BR-DEC-28",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-142",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-43",
+          "BR-44",
+          "BR-CO-24",
+          "BR-DEC-28"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-43-holds",
+      "rule": "BR-DEC-43",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-143",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-43",
+          "BR-44",
+          "BR-CO-24"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-43-speaks",
+      "rule": "BR-DEC-43",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-28/0/BT-143",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-43",
+          "BR-44",
+          "BR-CO-24",
+          "BR-DEC-43"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-44-holds",
+      "rule": "BR-DEC-44",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "12.1234"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-44-speaks",
+      "rule": "BR-DEC-44",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-146",
+          "value": "12.12348"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32",
+          "BR-DEC-44"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-45-holds",
+      "rule": "BR-DEC-45",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-147",
+          "value": "12.1234"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-45-speaks",
+      "rule": "BR-DEC-45",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-147",
+          "value": "12.12348"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-45"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-46-holds",
+      "rule": "BR-DEC-46",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-148",
+          "value": "12.1234"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-46-speaks",
+      "rule": "BR-DEC-46",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-148",
+          "value": "12.12348"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-DEC-46"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-47-holds",
+      "rule": "BR-DEC-47",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-47-speaks",
+      "rule": "BR-DEC-47",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-29/BT-149",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-32",
+          "BR-DEC-47"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-48-holds",
+      "rule": "BR-DEC-48",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "12.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-dec-48-speaks",
+      "rule": "BR-DEC-48",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "12.128"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-DEC-48",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-01-holds",
+      "rule": "BR-S-01",
+      "baseDocument": "zero",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-01-speaks",
+      "rule": "BR-S-01",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "S"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "19"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-S-01"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-01-holds",
+      "rule": "BR-Z-01",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-01-speaks",
+      "rule": "BR-Z-01",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-Z-01"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-01-holds",
+      "rule": "BR-IG-01",
+      "baseDocument": "zero",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-01-speaks",
+      "rule": "BR-IG-01",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "L"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "7"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-IG-01"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-01-holds",
+      "rule": "BR-IP-01",
+      "baseDocument": "zero",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-01-speaks",
+      "rule": "BR-IP-01",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-25/1/BT-126",
+          "value": "2"
+        },
+        {
+          "path": "/BG-25/1/BT-129",
+          "value": "1"
+        },
+        {
+          "path": "/BG-25/1/BT-130",
+          "value": "C62"
+        },
+        {
+          "path": "/BG-25/1/BT-131",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-29/BT-146",
+          "value": "0"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-151",
+          "value": "M"
+        },
+        {
+          "path": "/BG-25/1/BG-30/BT-152",
+          "value": "7"
+        },
+        {
+          "path": "/BG-25/1/BG-31/BT-153",
+          "value": "Second item"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-IP-01"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-04-holds",
+      "rule": "BR-S-04",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-04-speaks",
+      "rule": "BR-S-04",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-02",
+          "BR-S-04",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-04-holds",
+      "rule": "BR-Z-04",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-Z-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-04-speaks",
+      "rule": "BR-Z-04",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-Z-02",
+          "BR-Z-04",
+          "BR-Z-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-04-holds",
+      "rule": "BR-E-04",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "E"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-04-speaks",
+      "rule": "BR-E-04",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "E"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-E-02",
+          "BR-E-04",
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-04-holds",
+      "rule": "BR-AE-04",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-08",
+          "BR-CO-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-04-speaks",
+      "rule": "BR-AE-04",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-02",
+          "BR-AE-04",
+          "BR-AE-08",
+          "BR-CO-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-04-holds",
+      "rule": "BR-IC-04",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "K"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IC-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-04-speaks",
+      "rule": "BR-IC-04",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "K"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IC-02",
+          "BR-IC-04",
+          "BR-IC-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-04-holds",
+      "rule": "BR-G-04",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "G"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-G-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-04-speaks",
+      "rule": "BR-G-04",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "G"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-G-02",
+          "BR-G-04",
+          "BR-G-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-02-holds",
+      "rule": "BR-IG-02",
+      "baseDocument": "canary",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-02-speaks",
+      "rule": "BR-IG-02",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IG-02"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-03-holds",
+      "rule": "BR-IG-03",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "L"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-03-speaks",
+      "rule": "BR-IG-03",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "L"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-IG-02",
+          "BR-IG-03",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-04-holds",
+      "rule": "BR-IG-04",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-04-speaks",
+      "rule": "BR-IG-04",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IG-02",
+          "BR-IG-04",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-02-holds",
+      "rule": "BR-IP-02",
+      "baseDocument": "ceuta",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-02-speaks",
+      "rule": "BR-IP-02",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IP-02"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-03-holds",
+      "rule": "BR-IP-03",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "M"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-03-speaks",
+      "rule": "BR-IP-03",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "M"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-IP-02",
+          "BR-IP-03",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-04-holds",
+      "rule": "BR-IP-04",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "M"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-04-speaks",
+      "rule": "BR-IP-04",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "M"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IP-02",
+          "BR-IP-04",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-07-holds",
+      "rule": "BR-S-07",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-S-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-07-speaks",
+      "rule": "BR-S-07",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "S"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-S-07"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-07-holds",
+      "rule": "BR-Z-07",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-Z-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-07-speaks",
+      "rule": "BR-Z-07",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "Z"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-Z-07",
+          "BR-Z-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-07-holds",
+      "rule": "BR-E-07",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "E"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-07-speaks",
+      "rule": "BR-E-07",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "E"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-E-07",
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-07-holds",
+      "rule": "BR-AE-07",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-08",
+          "BR-CO-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-07-speaks",
+      "rule": "BR-AE-07",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "AE"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-07",
+          "BR-AE-08",
+          "BR-CO-12",
+          "BR-CO-18"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-07-holds",
+      "rule": "BR-IC-07",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "K"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IC-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-07-speaks",
+      "rule": "BR-IC-07",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "K"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-IC-07",
+          "BR-IC-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-07-holds",
+      "rule": "BR-G-07",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "G"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-G-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-07-speaks",
+      "rule": "BR-G-07",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "G"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-G-07",
+          "BR-G-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-07-holds",
+      "rule": "BR-O-07",
+      "baseDocument": "not-subject",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "O"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-O-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-07-speaks",
+      "rule": "BR-O-07",
+      "baseDocument": "not-subject",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "O"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "19"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-O-07",
+          "BR-O-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-05-holds",
+      "rule": "BR-IG-05",
+      "baseDocument": "canary",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-05-speaks",
+      "rule": "BR-IG-05",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-IG-05"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-06-holds",
+      "rule": "BR-IG-06",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "L"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-06-speaks",
+      "rule": "BR-IG-06",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "L"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "-1"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-CO-18",
+          "BR-IG-06",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-07-holds",
+      "rule": "BR-IG-07",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-07-speaks",
+      "rule": "BR-IG-07",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "-1"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-IG-07",
+          "BR-IG-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-05-holds",
+      "rule": "BR-IP-05",
+      "baseDocument": "ceuta",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-05-speaks",
+      "rule": "BR-IP-05",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-152",
+          "value": "-1"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-IP-05"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-06-holds",
+      "rule": "BR-IP-06",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "M"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "7"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-06-speaks",
+      "rule": "BR-IP-06",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "M"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "-1"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-CO-18",
+          "BR-IP-06",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-07-holds",
+      "rule": "BR-IP-07",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "M"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "7"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-07-speaks",
+      "rule": "BR-IP-07",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "M"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "-1"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-CO-18",
+          "BR-IP-07",
+          "BR-IP-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-08-holds",
+      "rule": "BR-S-08",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-08-speaks",
+      "rule": "BR-S-08",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-S-08",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-08-holds",
+      "rule": "BR-Z-08",
+      "baseDocument": "zero",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-z-08-speaks",
+      "rule": "BR-Z-08",
+      "baseDocument": "zero",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-Z-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-08-holds",
+      "rule": "BR-E-08",
+      "baseDocument": "exempt",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-08-speaks",
+      "rule": "BR-E-08",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-08-holds",
+      "rule": "BR-AE-08",
+      "baseDocument": "reverse",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-08-speaks",
+      "rule": "BR-AE-08",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-08-holds",
+      "rule": "BR-IC-08",
+      "baseDocument": "intra",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-08-speaks",
+      "rule": "BR-IC-08",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IC-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-08-holds",
+      "rule": "BR-G-08",
+      "baseDocument": "export",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-08-speaks",
+      "rule": "BR-G-08",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-G-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-08-holds",
+      "rule": "BR-O-08",
+      "baseDocument": "not-subject",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-08-speaks",
+      "rule": "BR-O-08",
+      "baseDocument": "not-subject",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-O-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-08-holds",
+      "rule": "BR-IG-08",
+      "baseDocument": "canary",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-08-speaks",
+      "rule": "BR-IG-08",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IG-08",
+          "BR-IG-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-08-holds",
+      "rule": "BR-IP-08",
+      "baseDocument": "ceuta",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-08-speaks",
+      "rule": "BR-IP-08",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-116",
+          "value": "3000.12"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IP-08",
+          "BR-IP-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-09-holds",
+      "rule": "BR-S-09",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-09-speaks",
+      "rule": "BR-S-09",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.34"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-09-2-holds",
+      "rule": "BR-S-09",
+      "baseDocument": "standard",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-s-09-2-speaks",
+      "rule": "BR-S-09",
+      "baseDocument": "standard",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "-757.41"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-S-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-09-holds",
+      "rule": "BR-IG-09",
+      "baseDocument": "canary",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ig-09-speaks",
+      "rule": "BR-IG-09",
+      "baseDocument": "canary",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.34"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-IG-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-09-holds",
+      "rule": "BR-IP-09",
+      "baseDocument": "ceuta",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ip-09-speaks",
+      "rule": "BR-IP-09",
+      "baseDocument": "ceuta",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-117",
+          "value": "12.34"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-14",
+          "BR-IP-09"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-10-holds",
+      "rule": "BR-E-10",
+      "baseDocument": "exempt",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-10-speaks",
+      "rule": "BR-E-10",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-E-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-10-holds",
+      "rule": "BR-AE-10",
+      "baseDocument": "reverse",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-10-speaks",
+      "rule": "BR-AE-10",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-10-holds",
+      "rule": "BR-IC-10",
+      "baseDocument": "intra",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-10-speaks",
+      "rule": "BR-IC-10",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IC-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-11-holds",
+      "rule": "BR-IC-11",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-13/BT-72",
+          "remove": true
+        },
+        {
+          "path": "/BG-13/BG-15/BT-80",
+          "remove": true
+        },
+        {
+          "path": "/BG-25/0/BG-37/BT-187",
+          "value": "2018-04-13"
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-38/BT-209",
+          "value": "FR"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-11-speaks",
+      "rule": "BR-IC-11",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-13/BT-72",
+          "remove": true
+        },
+        {
+          "path": "/BG-13/BG-15/BT-80",
+          "remove": true
+        },
+        {
+          "path": "/BG-25/0/BG-37/BG-38/BT-209",
+          "value": "FR"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IC-11"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-11-2-holds",
+      "rule": "BR-IC-11",
+      "baseDocument": "intra",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-11-2-speaks",
+      "rule": "BR-IC-11",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-13/BT-72",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IC-11"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-10-holds",
+      "rule": "BR-G-10",
+      "baseDocument": "export",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-10-speaks",
+      "rule": "BR-G-10",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-G-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-10-holds",
+      "rule": "BR-O-10",
+      "baseDocument": "not-subject",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-10-speaks",
+      "rule": "BR-O-10",
+      "baseDocument": "not-subject",
+      "changes": [
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-O-10"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-n-02-holds",
+      "rule": "BR-N-02",
+      "baseDocument": "national",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-n-02-speaks",
+      "rule": "BR-N-02",
+      "baseDocument": "national",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-N-02"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-n-03-holds",
+      "rule": "BR-N-03",
+      "baseDocument": "national",
+      "changes": [
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "N"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "0"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-n-03-speaks",
+      "rule": "BR-N-03",
+      "baseDocument": "national",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-20/0/BT-92",
+          "value": "5"
+        },
+        {
+          "path": "/BG-20/0/BT-95",
+          "value": "N"
+        },
+        {
+          "path": "/BG-20/0/BT-96",
+          "value": "0"
+        },
+        {
+          "path": "/BG-20/0/BT-97",
+          "value": "Discount"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-11",
+          "BR-N-02",
+          "BR-N-03"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-n-04-holds",
+      "rule": "BR-N-04",
+      "baseDocument": "national",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "N"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-n-04-speaks",
+      "rule": "BR-N-04",
+      "baseDocument": "national",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "remove": true
+        },
+        {
+          "path": "/BG-21/0/BT-99",
+          "value": "5"
+        },
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "N"
+        },
+        {
+          "path": "/BG-21/0/BT-103",
+          "value": "0"
+        },
+        {
+          "path": "/BG-21/0/BT-104",
+          "value": "Handling"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-12",
+          "BR-N-02",
+          "BR-N-04"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-01-holds",
+      "rule": "BR-E-01",
+      "baseDocument": "exempt",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-e-01-speaks",
+      "rule": "BR-E-01",
+      "baseDocument": "exempt",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-E-01",
+          "BR-E-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-01-holds",
+      "rule": "BR-AE-01",
+      "baseDocument": "reverse",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ae-01-speaks",
+      "rule": "BR-AE-01",
+      "baseDocument": "reverse",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-AE-01",
+          "BR-AE-08",
+          "BR-CO-18"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-01-holds",
+      "rule": "BR-IC-01",
+      "baseDocument": "intra",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-01-speaks",
+      "rule": "BR-IC-01",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-IC-01",
+          "BR-IC-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-01-holds",
+      "rule": "BR-G-01",
+      "baseDocument": "export",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-g-01-speaks",
+      "rule": "BR-G-01",
+      "baseDocument": "export",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-G-01",
+          "BR-G-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-01-holds",
+      "rule": "BR-O-01",
+      "baseDocument": "not-subject",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-o-01-speaks",
+      "rule": "BR-O-01",
+      "baseDocument": "not-subject",
+      "changes": [
+        {
+          "path": "/BG-25/0/BG-30/BT-194",
+          "value": "Another reason"
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-CO-18",
+          "BR-O-01",
+          "BR-O-08"
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-12-holds",
+      "rule": "BR-IC-12",
+      "baseDocument": "intra",
+      "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-ic-12-speaks",
+      "rule": "BR-IC-12",
+      "baseDocument": "intra",
+      "changes": [
+        {
+          "path": "/BG-13/BG-15/BT-80",
+          "remove": true
+        }
+      ],
+      "expect": {
+        "rules": [
+          "BR-IC-12"
+        ],
+        "warnings": []
+      }
+    }
+  ]
+}

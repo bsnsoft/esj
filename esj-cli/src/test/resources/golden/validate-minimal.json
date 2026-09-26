@@ -158,7 +158,9 @@
     "reason": null,
     "pack": {
       "id": "en16931",
-      "version": "1.3.16"
+      "version": "1.3.16",
+      "edition": "EN 16931-1:2017+A1:2019/AC:2020",
+      "corroborated": true
     },
     "findings": [
       {

@@ -94,7 +94,7 @@ class CodeListTest {
 
     @Test
     void aManifestThatNamesASnapshotNobodyLoadedDoesNotCompile() {
-        String pack = "{\"id\": \"test\", \"version\": \"1\", \"verifiedAgainst\": \"nothing\","
+        String pack = "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\", \"verifiedAgainst\": \"nothing\","
                 + " \"description\": \"x\", \"codeLists\": {\"iso-4217\": \"2026-09-19\"},"
                 + " \"rules\": []}";
 

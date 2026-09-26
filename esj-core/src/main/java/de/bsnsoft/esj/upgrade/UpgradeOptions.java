@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.upgrade;
 
 import de.bsnsoft.esj.SemanticPath;
+import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,6 +33,7 @@ public final class UpgradeOptions {
     private final boolean partial;
     private final String sourceDigest;
     private final List<Registry> extensions;
+    private final MinorUnits minorUnits;
 
     private UpgradeOptions(Builder builder) {
         this.specification = builder.specification;
@@ -40,6 +42,7 @@ public final class UpgradeOptions {
         this.partial = builder.partial;
         this.sourceDigest = builder.sourceDigest;
         this.extensions = List.copyOf(builder.extensions);
+        this.minorUnits = builder.minorUnits;
     }
 
     /**
@@ -117,6 +120,17 @@ public final class UpgradeOptions {
     }
 
     /**
+     * Returns the minor units a fraction digit bound that follows the currency is evaluated
+     * with.
+     *
+     * @return the minor units the caller handed over, empty where the run leaves such a
+     *         bound unevaluated
+     */
+    public Optional<MinorUnits> minorUnits() {
+        return Optional.ofNullable(minorUnits);
+    }
+
+    /**
      * Tells whether a path is one the caller allows the run to drop.
      *
      * @param path the path of a value of the source document
@@ -140,6 +154,7 @@ public final class UpgradeOptions {
         private boolean partial;
         private String sourceDigest;
         private final List<Registry> extensions = new ArrayList<>();
+        private MinorUnits minorUnits;
 
         private Builder() {
         }
@@ -229,6 +244,22 @@ public final class UpgradeOptions {
          */
         public Builder extension(Registry registry) {
             this.extensions.add(Objects.requireNonNull(registry, "registry"));
+            return this;
+        }
+
+        /**
+         * Hands over the minor units a bound that follows the currency in use is evaluated
+         * with. A registry may bound the fraction digits of a term by the minor unit of the
+         * currency rather than by a constant; which minor unit a currency has is a fact of a
+         * dated snapshot a rule pack carries, and the run evaluates such a bound only with
+         * one in hand. Nothing is rounded either way.
+         *
+         * @param units the minor units, with the snapshot they were read from as their source
+         * @return this builder
+         * @throws NullPointerException if {@code units} is {@code null}
+         */
+        public Builder minorUnits(MinorUnits units) {
+            this.minorUnits = Objects.requireNonNull(units, "units");
             return this;
         }
 

@@ -42,7 +42,8 @@ standard input, reading one JSON object per line back. Six requests exist:
     {"op": "rules", "document": { ... }}
         -> {"rules": ["BR-CO-10"], "warnings": []}
 
-    A rules request is answered with the pack the binding carries, unless it names another:
+    A rules request is answered with the pack the binding carries for the edition the
+    document names, unless it names another:
 
     {"op": "rules", "pack": "conformance/fixtures/arithmetic/pack.json",
      "file": "examples/minimal.esj.json"}
@@ -140,12 +141,26 @@ def invalid(manifest):
 
 
 def cases(files, repository):
-    """The rule cases, read from the file the manifest points at."""
+    """The rule cases of every manifest file, each with the document it starts from.
+
+    A case names its base document by path, or, where the file carries the documents its
+    cases start from, by the name it has among the file's bases.
+    """
+    found = []
+    bases = {}
     for manifest in files:
         rules = manifest.get("rules")
-        if rules:
-            return load(HERE / rules["casesFile"])["cases"]
-    return []
+        if not rules:
+            continue
+        loaded = load(HERE / rules["casesFile"])
+        carried = loaded.get("bases", {})
+        for case in loaded["cases"]:
+            if "baseDocument" in case:
+                found.append((case, carried[case["baseDocument"]]))
+            else:
+                base = bases.setdefault(case["base"], load(repository / case["base"]))
+                found.append((case, base))
+    return found
 
 
 def apply(base, changes):
@@ -299,9 +314,7 @@ def run(binding, files, repository, report):
                              [grammar["code"]], [code for path, code in errors(answer)
                                                  if path == grammar["path"]])
 
-    bases = {}
-    for case in cases(files, repository):
-        base = bases.setdefault(case["base"], load(repository / case["base"]))
+    for case, base in cases(files, repository):
         if base["semanticModel"] not in carried:
             continue
         answer = binding.ask({"op": "rules",

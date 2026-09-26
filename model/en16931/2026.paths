@@ -4,8 +4,9 @@
 #
 # It is not a list of everywhere the edition is mentioned. Prose that states facts of it —
 # NOTICE, README.md, SPEC.md with the time grammar, CHANGELOG.md, model/README.md,
-# examples/README.md, examples/invalid/README.md, docs/editions.md, docs/sources.md,
-# docs/design-decisions.md and docs/java-api.md — is not separable and is not listed: the
+# examples/README.md, examples/invalid/README.md, docs/editions.md, rules/README.md,
+# docs/sources.md, docs/design-decisions.md and docs/java-api.md — is not separable and is
+# not listed: the
 # open question is whether a registry built from that edition may be published, not whether
 # an identifier, a count or a grammar may be written down. NOTICE is among them because it
 # states this project's legal position rather than shipping a fact of the model, and the
@@ -26,8 +27,13 @@
 # by one of them: Edition2026PathsTest of esj-generator checks the list against the
 # repository in both directions. It reads every file of the tree that is not binary,
 # whatever its name, and a file carries the edition when it names that edition or when it
-# names a business term or group the 2026 registry adds over the 2017 one. A later phase
-# that adds the rule pack of this edition adds its path here.
+# names a business term or group the 2026 registry adds over the 2017 one.
+#
+# The rule pack of the edition is separable in the same way. Its directory, its coverage
+# and its measurements are data; the rules of it that the rule language cannot express are
+# a package of Java sources; and the service declaration is what keeps the rest of the code
+# from naming any of them, so that a build without the edition finds one rule pack fewer
+# rather than failing to compile.
 
 model/en16931/2026.json
 model/en16931/upgrade-2017-2026.json
@@ -40,3 +46,12 @@ examples/invalid/edition-2026-time-without-offset.esj.json
 conformance/editions
 conformance/fixtures/manifest-en16931-2026.json
 bindings/csharp/En16931.SemanticJson/Typed/Invoice2026.cs
+rules/en16931-2026
+conformance/rules-2026
+esj-rules/src/main/java/de/bsnsoft/esj/rules/en16931/v2026
+esj-rules/src/test/java/de/bsnsoft/esj/rules/en16931/v2026
+esj-cli/src/test/java/de/bsnsoft/esj/cli/v2026
+esj-rules/src/main/resources/META-INF/services/de.bsnsoft.esj.rules.RulePackSource
+conformance/fixtures/cases-en16931-2026-0.1.json
+bindings/typescript/src/rules/native-2026.ts
+bindings/csharp/En16931.SemanticJson/Rules/En16931V2026

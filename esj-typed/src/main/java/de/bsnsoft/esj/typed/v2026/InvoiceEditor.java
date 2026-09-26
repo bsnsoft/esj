@@ -6,6 +6,8 @@ package de.bsnsoft.esj.typed.v2026;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
+import de.bsnsoft.esj.typed.DerivationException;
+import de.bsnsoft.esj.typed.DerivationReport;
 import de.bsnsoft.esj.typed.EditorList;
 import de.bsnsoft.esj.typed.Identifier;
 import de.bsnsoft.esj.typed.IdentifierList;
@@ -15,6 +17,7 @@ import de.bsnsoft.esj.typed.runtime.Writers;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetTime;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -53,6 +56,26 @@ public interface InvoiceEditor {
      *     editor of the same document, in canonical path order
      */
     SemanticDocument document();
+
+    /**
+     * Derives the amounts this invoice adds up to and writes them into it: the invoice line net
+     * amounts, the VAT breakdown and the document totals, computed from the prices, quantities,
+     * allowances and charges the invoice carries.
+     *
+     * <p>The derivation is a policy of this SDK and not part of the format: it happens here, where
+     * a caller asks for it, and never inside {@code document()}. What it computes, where it rounds
+     * and where it refuses is written down in {@link Totals}.
+     *
+     * @param policy the derivation policy, for instance {@code Totals.of(minorUnits)}, with the
+     *     minor units of the currency list snapshot the rule pack of the edition carries
+     * @return what the policy wrote and where it rounded
+     * @throws DerivationException if the invoice does not state what the policy needs, or
+     *     contradicts it
+     * @throws NullPointerException if {@code policy} is {@code null}
+     */
+    default DerivationReport derive(Totals policy) {
+        return Objects.requireNonNull(policy, "policy").apply(builder());
+    }
 
     /**
      * BT-1 Invoice number. Unique identification of the invoice in the seller's systems; no

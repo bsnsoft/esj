@@ -721,16 +721,21 @@ class GenerateTest {
     }
 
     /**
-     * The derivation policies are hand-written against the view of one edition, so the
-     * hook that reaches them is emitted for that view and for no other. The arithmetic of
-     * the standard is stated per edition, and a policy that computed a 2026 invoice by the
-     * rules of 2017 would be wrong without saying so.
+     * The derivation policies are hand-written per edition, each beside the view of its
+     * edition, and the hook of each view reaches the policy of its own package. The
+     * arithmetic of the standard is stated per edition, and a policy that computed a 2026
+     * invoice by the rules of 2017 would be wrong without saying so.
      */
     @Test
     @EnabledIf("carriesEdition2026")
-    void onlyTheViewTheDerivationPoliciesWereWrittenForReachesThem() throws IOException {
-        assertTrue(read(PACKAGE.resolve("InvoiceEditor.java")).contains("derive(Totals policy)"));
-        assertFalse(read(PACKAGE_DIRECTORY_2026.resolve("InvoiceEditor.java")).contains("derive("));
+    void eachViewReachesTheDerivationPolicyOfItsOwnEdition() throws IOException {
+        String defaultEditor = read(PACKAGE.resolve("InvoiceEditor.java"));
+        String editor2026 = read(PACKAGE_DIRECTORY_2026.resolve("InvoiceEditor.java"));
+        assertTrue(defaultEditor.contains("derive(Totals policy)"));
+        assertTrue(editor2026.contains("derive(Totals policy)"));
+        assertFalse(editor2026.contains("import de.bsnsoft.esj.typed.Totals;"),
+                "the 2026 view names the Totals of its own package");
+        assertTrue(editor2026.contains("Totals.of(minorUnits)"));
     }
 
     static boolean carriesEdition2026() {

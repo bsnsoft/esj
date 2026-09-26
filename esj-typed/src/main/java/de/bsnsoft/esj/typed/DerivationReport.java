@@ -48,12 +48,12 @@ public record DerivationReport(List<Derived> values, List<Removed> removals) {
     /**
      * Returns the values the policy arrived at by rounding.
      *
-     * <p>EN 16931-1, 6.5.13 rounds on the final result and not on an intermediate one, so a
-     * derivation rounds at the amounts the 2017 edition of the standard fixes to two
-     * fraction digits — the bound is that edition's and {@link Totals} computes no other —
-     * and nowhere else. These are those amounts, of which the exact result had more than two fraction
-     * digits and was therefore cut half up; an amount that came out exact is not listed here
-     * although it passed the same step.
+     * <p>EN 16931-1 rounds on the final result and not on an intermediate one, so a
+     * derivation rounds at the amounts that are products or quotients, to the fraction digits
+     * the edition of its policy gives them — two in the edition of {@link Totals}, the minor
+     * unit of the currency in a later one — and nowhere else. These are those amounts, of
+     * which the exact result had more fraction digits than that and was therefore cut half
+     * up; an amount that came out exact is not listed here although it passed the same step.
      *
      * @return the rounded values, in the order they were written
      */
@@ -129,8 +129,8 @@ public record DerivationReport(List<Derived> values, List<Removed> removals) {
      * @param path     where it was written
      * @param term     the identifier of the business term, for instance {@code BT-112}
      * @param value    the amount that was written
-     * @param rounded  whether the exact result carried more than two fraction digits and
-     *                 was rounded half up to get here
+     * @param rounded  whether the exact result carried more fraction digits than the amount
+     *                 carries and was rounded half up to get here
      * @param replaced whether the document already carried a different value at this path,
      *                 which this one took the place of
      * @param how      how the value was arrived at, as one English phrase naming the terms
@@ -145,8 +145,8 @@ public record DerivationReport(List<Derived> values, List<Removed> removals) {
          * @param path    where it was written
          * @param term    the identifier of the business term, for instance {@code BT-112}
          * @param value   the amount that was written
-         * @param rounded  whether the exact result carried more than two fraction digits and
-         *                 was rounded half up to get here
+         * @param rounded  whether the exact result carried more fraction digits than the
+         *                 amount carries and was rounded half up to get here
          * @param replaced whether the document already carried a different value at this path
          * @param how      how the value was arrived at, as one English phrase naming the terms
          *                 it came from
@@ -162,8 +162,18 @@ public record DerivationReport(List<Derived> values, List<Removed> removals) {
         @Override
         public String toString() {
             return path + " = " + value.toPlainString() + " (" + how
-                    + (rounded ? ", rounded half up to two decimals" : "")
+                    + (rounded ? ", rounded half up to " + decimals(value.scale()) : "")
                     + (replaced ? ", replacing the value the invoice stated" : "") + ")";
+        }
+
+        private static String decimals(int scale) {
+            return switch (scale) {
+                case 0 -> "a whole amount";
+                case 1 -> "one decimal";
+                case 2 -> "two decimals";
+                case 3 -> "three decimals";
+                default -> scale + " decimals";
+            };
         }
     }
 

@@ -23,7 +23,8 @@ namespace En16931.SemanticJson.Fixtures;
 /// and <c>rules</c> — and the runner's own documentation states what each answers. A document
 /// is named by a path relative to the repository root, or passed inline; an inline document is
 /// written back to bytes and read like any other, because layer L1 is decided by bytes. A
-/// <c>rules</c> request is answered with the pack this binding carries, unless it names a pack
+/// <c>rules</c> request is answered with the pack this binding carries for the edition of the
+/// document, unless it names a pack
 /// of the rule language by its path in the repository.
 /// </remarks>
 public sealed class Protocol
@@ -166,7 +167,7 @@ public sealed class Protocol
         SemanticDocument document = EsjReader.Strict().Read(bytes);
         RuleEngine engine = asked.TryGetProperty("pack", out JsonElement named)
             ? Named(named.GetString()!, document.SemanticModel)
-            : _pack.Value;
+            : Carried(document.SemanticModel);
         IReadOnlyList<RuleFinding> findings = engine.Evaluate(document);
         return Write(writer =>
         {
@@ -175,6 +176,34 @@ public sealed class Protocol
                 .Where(finding => finding.Severity == RuleSeverity.Warning)
                 .Select(finding => finding.Code));
         });
+    }
+
+    /// <summary>
+    /// Returns the engine of the pack this build carries for the edition a document names: the
+    /// pack of the default edition over the registry combined with the extension, or the pack
+    /// of another edition over the registry of that edition.
+    /// </summary>
+    private RuleEngine Carried(string semanticModel)
+    {
+        if (_pack.Value.Registry.Describes(semanticModel))
+        {
+            return _pack.Value;
+        }
+
+        string key = "|" + semanticModel;
+        if (!_named.TryGetValue(key, out RuleEngine? engine))
+        {
+            Registry registry = _registries.Value.FirstOrDefault(known => known.Describes(semanticModel))
+                ?? throw new ArgumentException(
+                    "this binding carries no registry of " + semanticModel, nameof(semanticModel));
+            IRulePackSource source = RulePackSources.ForEdition(registry.Edition)
+                ?? throw new ArgumentException(
+                    "no rule pack of this build states rules about " + semanticModel, nameof(semanticModel));
+            engine = source.Engine(registry);
+            _named[key] = engine;
+        }
+
+        return engine;
     }
 
     /// <summary>

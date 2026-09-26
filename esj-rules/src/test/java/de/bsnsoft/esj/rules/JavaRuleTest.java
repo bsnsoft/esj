@@ -21,10 +21,11 @@ class JavaRuleTest {
 
     private static final String LANGUAGE_PACK = """
             {"id": "test", "version": "1",
+             "edition": "EN 16931-1:2017+A1:2019/AC:2020",
              "verifiedAgainst": "nothing; this pack is a test fixture",
              "description": "BR-CO-10 in the rule language.",
              "rules": [
-               {"id": "BR-CO-10", "severity": "fatal", "context": "/",
+               {"id": "BR-CO-10", "severity": "fatal", "oracle": "cases", "context": "/",
                 "terms": ["BT-106", "BT-131"],
                 "assert": {"eq": [{"value": "/BG-22/BT-106"}, {"sum": "/BG-25/*/BT-131"}]},
                 "bind": {"never": {"sum": "/BG-25/*/BT-131"}},
@@ -34,9 +35,11 @@ class JavaRuleTest {
 
     private static final String JAVA_PACK = """
             {"id": "test", "version": "1",
+             "edition": "EN 16931-1:2017+A1:2019/AC:2020",
              "verifiedAgainst": "nothing; this pack is a test fixture",
              "description": "BR-CO-10 in Java.",
-             "javaRules": ["de.bsnsoft.esj.rules.SumOfLineNetAmounts"],
+             "javaRules": [{"class": "de.bsnsoft.esj.rules.SumOfLineNetAmounts",
+                            "oracle": "cases"}],
              "rules": []}
             """;
 
@@ -146,9 +149,10 @@ class JavaRuleTest {
                 return java.util.Optional.empty();
             }
         };
-        String pack = "{\"id\": \"test\", \"version\": \"1\","
+        String pack = "{\"id\": \"test\", \"version\": \"1\", \"edition\": \"EN 16931-1:2017+A1:2019/AC:2020\","
                 + " \"verifiedAgainst\": \"nothing\", \"description\": \"x\","
-                + " \"javaRules\": [\"" + invented.getClass().getName() + "\"], \"rules\": []}";
+                + " \"javaRules\": [{\"class\": \"" + invented.getClass().getName()
+                + "\", \"oracle\": \"cases\"}], \"rules\": []}";
         RuleEngine engine = RuleEngine.compile(read(pack), Packs.REGISTRY, CodeLists.empty(),
                 JavaRules.of(invented));
 

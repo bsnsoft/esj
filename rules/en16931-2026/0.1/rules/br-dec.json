@@ -1,0 +1,1009 @@
+[
+  {
+    "id": "BR-DEC-30",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-167"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-167",
+        6
+      ]
+    },
+    "message": "The vat accounting currency exchange rate (BT-167) at {@/BT-167} is {/BT-167}, which needs more fraction digits than this edition admits: at most 6 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-167",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-31",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-33/*/BG-35/*",
+    "terms": [
+      "BT-171"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-171",
+        2
+      ]
+    },
+    "message": "The discount percentage (BT-171) at {@/BT-171} is {/BT-171}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-171",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-32",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-33/*/BG-35/*",
+    "terms": [
+      "BT-172"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-172",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The discount amount (BT-172) at {@/BT-172} is {/BT-172}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-172",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-33",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-33/*/BG-36/*",
+    "terms": [
+      "BT-182"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-182",
+        2
+      ]
+    },
+    "message": "The penalty yearly interest percentage (BT-182) at {@/BT-182} is {/BT-182}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-182",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-34",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-33/*/BG-36/*",
+    "terms": [
+      "BT-183"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-183",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The penalty amount (BT-183) at {@/BT-183} is {/BT-183}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-183",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-01",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-92"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-92",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The document level allowance amount (BT-92) at {@/BT-92} is {/BT-92}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-92",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-02",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-93"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-93",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The document level allowance base amount (BT-93) at {@/BT-93} is {/BT-93}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-93",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-35",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-94"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-94",
+        2
+      ]
+    },
+    "message": "The document level allowance percentage (BT-94) at {@/BT-94} is {/BT-94}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-94",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-36",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-96"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-96",
+        2
+      ]
+    },
+    "message": "The document level allowance vat rate (BT-96) at {@/BT-96} is {/BT-96}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-96",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-05",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-99"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-99",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The document level charge or tax amount (BT-99) at {@/BT-99} is {/BT-99}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-99",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-06",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-100"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-100",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The document level charge or tax base amount (BT-100) at {@/BT-100} is {/BT-100}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-100",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-37",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-101"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-101",
+        2
+      ]
+    },
+    "message": "The document level charge or tax percentage (BT-101) at {@/BT-101} is {/BT-101}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-101",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-38",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-103"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-103",
+        2
+      ]
+    },
+    "message": "The document level charge or tax vat rate (BT-103) at {@/BT-103} is {/BT-103}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-103",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-09",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-106"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-106",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The sum of invoice line net amount (BT-106) at {@/BT-106} is {/BT-106}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-106",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-10",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-107"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-107",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The sum of allowances on document level (BT-107) at {@/BT-107} is {/BT-107}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-107",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-11",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-108"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-108",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The sum of charges and taxes on document level (BT-108) at {@/BT-108} is {/BT-108}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-108",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-12",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-109"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-109",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice total amount without vat (BT-109) at {@/BT-109} is {/BT-109}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-109",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-13",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-110"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-110",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice total vat amount (BT-110) at {@/BT-110} is {/BT-110}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-110",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-15",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-111",
+      "BT-6"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-111",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-6"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice total vat amount in vat accounting currency (BT-111) at {@/BT-111} is {/BT-111}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the VAT accounting currency (BT-6).",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-111",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros. The amount is written in the VAT accounting currency (BT-6), so the minor unit is that currency's; where the invoice names none, there is nothing to count against. An invoice that states BT-111 and names no BT-6 is therefore bounded by no rule of this edition: BR-53 asks for the total where the currency is named, and no rule asks for the currency where the total is stated."
+  },
+  {
+    "id": "BR-DEC-14",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-112"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-112",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice total amount with vat (BT-112) at {@/BT-112} is {/BT-112}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-112",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-16",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-113"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-113",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The paid amount (BT-113) at {@/BT-113} is {/BT-113}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-113",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-17",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-114"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-114",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The rounding amount (BT-114) at {@/BT-114} is {/BT-114}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-114",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-18",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22",
+    "terms": [
+      "BT-115"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-115",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The amount due for payment (BT-115) at {@/BT-115} is {/BT-115}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-115",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-39",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-22/BG-34/*",
+    "terms": [
+      "BT-179"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-179",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The charge amount collected on behalf of a third party (BT-179) at {@/BT-179} is {/BT-179}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-179",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-19",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-116",
+      "BT-184"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-116",
+        {
+          "minorUnit": [
+            {
+              "if": {
+                "condition": {
+                  "exists": "/BT-184"
+                },
+                "then": {
+                  "value": "/BT-184"
+                },
+                "else": {
+                  "atRoot": {
+                    "value": "/BT-5"
+                  }
+                }
+              }
+            },
+            "iso-4217"
+          ]
+        }
+      ]
+    },
+    "message": "The vat category taxable amount (BT-116) at {@/BT-116} is {/BT-116}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the currency of the breakdown (BT-184), or of the invoice currency where it names none.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-116",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros. A VAT breakdown states its amounts in the currency it names (BT-184), which is the invoice currency where it names none."
+  },
+  {
+    "id": "BR-DEC-20",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-117",
+      "BT-184"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-117",
+        {
+          "minorUnit": [
+            {
+              "if": {
+                "condition": {
+                  "exists": "/BT-184"
+                },
+                "then": {
+                  "value": "/BT-184"
+                },
+                "else": {
+                  "atRoot": {
+                    "value": "/BT-5"
+                  }
+                }
+              }
+            },
+            "iso-4217"
+          ]
+        }
+      ]
+    },
+    "message": "The vat category tax amount (BT-117) at {@/BT-117} is {/BT-117}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the currency of the breakdown (BT-184), or of the invoice currency where it names none.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-117",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros. A VAT breakdown states its amounts in the currency it names (BT-184), which is the invoice currency where it names none."
+  },
+  {
+    "id": "BR-DEC-40",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-119"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-119",
+        2
+      ]
+    },
+    "message": "The vat category rate (BT-119) at {@/BT-119} is {/BT-119}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-119",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-41",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-129"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-129",
+        4
+      ]
+    },
+    "message": "The invoiced quantity (BT-129) at {@/BT-129} is {/BT-129}, which needs more fraction digits than this edition admits: at most 4 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-129",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-23",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-131"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-131",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice line net amount (BT-131) at {@/BT-131} is {/BT-131}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-131",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-24",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-136"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-136",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice line allowance amount (BT-136) at {@/BT-136} is {/BT-136}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-136",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-25",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-137"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-137",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice line allowance base amount (BT-137) at {@/BT-137} is {/BT-137}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-137",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-42",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-27/*",
+    "terms": [
+      "BT-138"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-138",
+        2
+      ]
+    },
+    "message": "The invoice line allowance percentage (BT-138) at {@/BT-138} is {/BT-138}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-138",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-27",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-141"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-141",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice line charge or tax amount (BT-141) at {@/BT-141} is {/BT-141}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-141",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-28",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-142"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-142",
+        {
+          "atRoot": {
+            "minorUnit": [
+              {
+                "value": "/BT-5"
+              },
+              "iso-4217"
+            ]
+          }
+        }
+      ]
+    },
+    "message": "The invoice line charge or tax base amount (BT-142) at {@/BT-142} is {/BT-142}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-142",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-43",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-143"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-143",
+        2
+      ]
+    },
+    "message": "The invoice line charge or tax percentage (BT-143) at {@/BT-143} is {/BT-143}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-143",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-44",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-146"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-146",
+        {
+          "add": [
+            {
+              "atRoot": {
+                "minorUnit": [
+                  {
+                    "value": "/BT-5"
+                  },
+                  "iso-4217"
+                ]
+              }
+            },
+            {
+              "const": 2
+            }
+          ]
+        }
+      ]
+    },
+    "message": "The item net price (BT-146) at {@/BT-146} is {/BT-146}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency and two more.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-146",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-45",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-147"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-147",
+        {
+          "add": [
+            {
+              "atRoot": {
+                "minorUnit": [
+                  {
+                    "value": "/BT-5"
+                  },
+                  "iso-4217"
+                ]
+              }
+            },
+            {
+              "const": 2
+            }
+          ]
+        }
+      ]
+    },
+    "message": "The item price discount (BT-147) at {@/BT-147} is {/BT-147}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency and two more.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-147",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-46",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-148"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-148",
+        {
+          "add": [
+            {
+              "atRoot": {
+                "minorUnit": [
+                  {
+                    "value": "/BT-5"
+                  },
+                  "iso-4217"
+                ]
+              }
+            },
+            {
+              "const": 2
+            }
+          ]
+        }
+      ]
+    },
+    "message": "The item gross price (BT-148) at {@/BT-148} is {/BT-148}, which needs more fraction digits than this edition admits: as many fraction digits as the minor unit of the invoice currency and two more.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-148",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-47",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-149"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-149",
+        2
+      ]
+    },
+    "message": "The item price base quantity (BT-149) at {@/BT-149} is {/BT-149}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-149",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  },
+  {
+    "id": "BR-DEC-48",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-30",
+    "terms": [
+      "BT-152"
+    ],
+    "assert": {
+      "decimals": [
+        "/BT-152",
+        2
+      ]
+    },
+    "message": "The invoiced item vat rate (BT-152) at {@/BT-152} is {/BT-152}, which needs more fraction digits than this edition admits: at most 2 fraction digits.",
+    "source": "EN 16931-1:2026, 6.5.13, Table 28, BT-152",
+    "note": "The identifier of this family is not the standard's: clause 6.5.13 states the allowed number of fraction digits per business term in a table and gives no rule identifier, and the validation artefacts of the 2017 edition number one rule per row. A term that has a row in both editions keeps the number those artefacts gave it so that two reports can be compared; a row this edition adds is numbered from 30 upwards, which no release of the artefacts used. What is counted is the fraction digits the number needs, because a decimal of this format carries no trailing fraction zeros."
+  }
+]

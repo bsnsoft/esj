@@ -8,6 +8,7 @@
  * idea of the model.
  */
 
+import { existsSync } from 'node:fs';
 import { cp, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -16,13 +17,17 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..', '..');
 const data = path.resolve(here, '..', 'data');
 
-/** The directories of the repository this package carries a copy of. */
+/**
+ * The directories of the repository this package carries a copy of. A directory a
+ * distribution leaves out — the rule pack of an edition it does not ship — is not copied.
+ */
 const DIRECTORIES = [
   'model/en16931',
   'model/xrechnung',
   'model/b2c',
   'rules/en16931',
-];
+  'rules/en16931-2026',
+].filter((directory) => existsSync(path.join(root, directory)));
 
 await mkdir(data, { recursive: true });
 for (const directory of DIRECTORIES) {

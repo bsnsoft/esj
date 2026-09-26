@@ -14,11 +14,33 @@ export type Expression = Record<string, unknown>;
 /** How much a rule weighs; `info` is the engine's and says that a rule was not decided. */
 export type RuleSeverity = 'fatal' | 'warning' | 'info';
 
+/**
+ * What stands behind a rule: an official validation artefact of the edition it is written for
+ * (`artefact`), the artefact of an earlier edition over the document written down to that
+ * edition (`downgrade`), or hand-computed cases alone (`cases`).
+ */
+export type RuleOracle = 'artefact' | 'downgrade' | 'cases';
+
+/** The oracles a pack may declare, in the order `rules/README.md` names them. */
+export const RULE_ORACLES: readonly RuleOracle[] = ['artefact', 'downgrade', 'cases'];
+
 /** The second assertion of a rule, weighed only where the first one holds. */
 export interface RuleWarning {
   /** What is noted where it does not hold. */
   readonly assert: Expression;
   /** What the warning says. */
+  readonly message: string;
+}
+
+/**
+ * The case in which a rule is not decided: a figure the document may state and the rule has no
+ * answer for. Weighed before the assertion; where it is true the rule reports that it was not
+ * decided, with the reason, and weighs nothing else.
+ */
+export interface RuleUndecided {
+  /** The case, a truth value; a condition that cannot be decided is not true. */
+  readonly when: Expression;
+  /** Why the rule is not decided in that case. */
   readonly message: string;
 }
 
@@ -28,6 +50,8 @@ export interface RuleDefinition {
   readonly id: string;
   /** `fatal` or `warning`. */
   readonly severity: 'fatal' | 'warning';
+  /** What stands behind the rule. */
+  readonly oracle: RuleOracle;
   /** What the rule is a statement about: `/`, or a business group pattern. */
   readonly context: string;
   /** The business terms and groups the rule reads; documentation. */
@@ -36,6 +60,8 @@ export interface RuleDefinition {
   readonly assert: Expression;
   /** A second assertion whose failure is a warning and decides no verdict. */
   readonly warn?: RuleWarning;
+  /** The case in which the rule is not decided. */
+  readonly undecided?: RuleUndecided;
   /** Expressions the message may show under a name. */
   readonly bind?: Record<string, Expression>;
   /** What the finding says. */
@@ -55,6 +81,8 @@ export interface CodeListEntry {
   readonly value: string;
   /** What the code means, where the publisher gives a name. */
   readonly name?: string;
+  /** The number of fraction digits the publisher gives the code, for a currency list. */
+  readonly minorUnit?: number;
 }
 
 /** A dated snapshot of one code list. */
@@ -71,18 +99,52 @@ export interface CodeListFile {
   readonly entries: readonly CodeListEntry[];
 }
 
+/**
+ * A code list snapshot that lies in another pack: the day, and the pack it is read from,
+ * written `id/version`.
+ */
+export interface SnapshotReference {
+  readonly day: string;
+  readonly from: string;
+}
+
+/** A rule the language cannot express, named by the class of the reference implementation. */
+export interface JavaRuleReference {
+  /** The class, whose simple name spells the rule identifier. */
+  readonly class: string;
+  /** What stands behind the rule. */
+  readonly oracle: RuleOracle;
+}
+
+/**
+ * Named rules of another pack's rule file, taken over by identifier rather than copied. Each
+ * takes the oracle of the share in place of the one it carries in its own pack.
+ */
+export interface RuleShare {
+  readonly pack: string;
+  readonly version: string;
+  readonly file: string;
+  readonly oracle: RuleOracle;
+  readonly rules: readonly string[];
+}
+
 /** A rule pack manifest, with the rules of every file it names read into it. */
 export interface RulePackFile {
   /** The pack, which appears in every finding it produces. */
   readonly id: string;
   /** The version, which is never edited once released. */
   readonly version: string;
+  /** The edition of the semantic model the rules are addresses in, as its registry spells it. */
+  readonly edition: string;
   /** The release of the official artefacts this pack's behaviour was measured against. */
   readonly verifiedAgainst?: string;
   /** What the pack is. */
   readonly description?: string;
-  /** Which day's snapshot of each code list the pack decides membership against. */
-  readonly codeLists?: Record<string, string>;
+  /**
+   * Which day's snapshot of each code list the pack decides membership against, or where a
+   * snapshot lies in another pack, that pack and the day.
+   */
+  readonly codeLists?: Record<string, string | SnapshotReference>;
   /**
    * The rules the language cannot express, named by the class of the reference
    * implementation.
@@ -91,9 +153,11 @@ export interface RulePackFile {
    * implementation passes its own rules in and the compiler checks that exactly the declared
    * identifiers arrived.
    */
-  readonly javaRules?: readonly string[];
+  readonly javaRules?: readonly JavaRuleReference[];
   /** The rule files the pack is made of, each a path relative to the manifest. */
   readonly files?: readonly string[];
+  /** Rules of other packs this one takes over; the loader reads them into {@link rules}. */
+  readonly shares?: readonly RuleShare[];
   /** The rules written in this language. */
   readonly rules?: readonly RuleDefinition[];
   /** The code list snapshots, by list identifier; filled by the loader. */
@@ -107,14 +171,33 @@ export class CodeList {
 
   private readonly codes: Set<string>;
 
+  private readonly minorUnits: Map<string, number>;
+
   constructor(file: CodeListFile) {
     this.id = file.listId;
     this.codes = new Set(file.entries.map((entry) => entry.value));
+    this.minorUnits = new Map(file.entries
+      .filter((entry) => entry.minorUnit !== undefined)
+      .map((entry) => [entry.value, entry.minorUnit!]));
   }
 
   /** Tells whether the snapshot carries that code. */
   contains(code: string): boolean {
     return this.codes.has(code);
+  }
+
+  /**
+   * Returns the number of fraction digits the publisher gives a code, or `undefined` where the
+   * list publishes none for it. One list of the repository publishes such a number: the
+   * currency list, whose minor unit says how many fraction digits an amount carries.
+   */
+  minorUnit(code: string): number | undefined {
+    return this.minorUnits.get(code);
+  }
+
+  /** Tells whether the list publishes a number of fraction digits for any code. */
+  get publishesMinorUnits(): boolean {
+    return this.minorUnits.size > 0;
   }
 
   /** How many codes the snapshot carries. */

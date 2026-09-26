@@ -12,7 +12,12 @@
 # the list, so nothing of the checkout is ever removed. The copy goes into a fresh
 # directory from mktemp and is left behind for inspection.
 #
-#   bin/without-edition-2026.sh
+#   bin/without-edition-2026.sh              the Maven build, then both bindings
+#   bin/without-edition-2026.sh --bindings   the two bindings alone, as the CI runs it
+#
+# The bindings run where their toolchain is on the PATH: the TypeScript binding with
+# npm, the C# binding with dotnet, each with its tests and the fixture runner. Without
+# --bindings a missing toolchain is reported and passed over; with it, it is an error.
 #
 # Exit code 0 means the build was green without the edition. Anything else is the
 # exit code of the step that failed.
@@ -20,6 +25,16 @@
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
 set -eu
+
+mode=all
+case "${1:-}" in
+  --bindings) mode=bindings ;;
+  "") ;;
+  *)
+    echo "usage: $0 [--bindings]" >&2
+    exit 2
+    ;;
+esac
 
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 root=$(CDPATH='' cd -- "$here/.." && pwd)
@@ -61,7 +76,33 @@ for file in $(git -C "$root" ls-files --cached --others --exclude-standard); do
 done
 
 echo "$copied files copied, $skipped left out"
-echo "building in $copy"
 cd -- "$copy"
-mvn -B -P without-edition-2026 clean verify
+if [ "$mode" = all ]; then
+  echo "building in $copy"
+  mvn -B -P without-edition-2026 clean verify
+fi
+
+# Says that a binding's toolchain is missing, which fails the run only where the
+# bindings are all it was asked for.
+missing() {
+  echo "$1 is not on the PATH: the $2 binding was not run without the edition" >&2
+  if [ "$mode" = bindings ]; then
+    exit 1
+  fi
+}
+
+if command -v npm >/dev/null 2>&1; then
+  echo "running the TypeScript binding in $copy"
+  (cd bindings/typescript && npm ci --ignore-scripts && npm test && npm run fixtures)
+else
+  missing npm TypeScript
+fi
+if command -v dotnet >/dev/null 2>&1; then
+  echo "running the C# binding in $copy"
+  dotnet test bindings/csharp/En16931.SemanticJson.sln
+  python3 conformance/fixtures/run.py --binding \
+    dotnet run --no-build --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
+else
+  missing dotnet C#
+fi
 echo "green without EN 16931-1:2026; the copy is $copy"

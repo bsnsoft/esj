@@ -392,6 +392,13 @@ Code list snapshots (rules/en16931/1.3.16/codelists/)
       EN 16931-1 admits for an attachment are carried, each looked up in that
       registry.
 
+  The pack rules/en16931-2026/0.1/ reads those snapshots and carries two of its
+  own, taken on 2026-09-21 from the same publications: the ISO 4217 table with the
+  minor unit the publisher gives each currency, and the Commission's listing of the
+  VAT category codes with the one code the 2026 edition adds, under the short name
+  that edition's code table gives it. Its codelists/SOURCES.md records them in the
+  same way.
+
   The same codes and publisher names travel a second time in the generated enums of
   esj-invoice (de.bsnsoft.esj.invoice.code), which are emitted from these
   snapshot files and carry nothing that is not in them.

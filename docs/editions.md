@@ -25,7 +25,7 @@ artefacts, XRechnung 3.0.2 and Peppol BIS 3 are written for it.
 | `convert --to esj`, `canonicalize`, `list`, `diff` | works; these are edition-blind | works |
 | `get` | works; a path that addresses nothing is explained against that edition | works, without the explanation |
 | `inspect` | works; the `Semantic model` line names the edition | works, and the line says no registry is carried |
-| `validate` | L1 to L3 run against that registry; the business rules run where a pack is written for that edition | model layers not evaluated, verdict `INDETERMINATE` |
+| `validate` | L1 to L3 run against that registry; the business rules run where a pack is written for that edition (`esj --list-packs`) | model layers not evaluated, verdict `INDETERMINATE` |
 | `render` | works; the PDF layout is driven by that registry | refuses, exit 4 |
 | `render --html` | refuses, exit 4 | refuses, exit 4 |
 | `convert --to cii`, `convert --to ubl` | refuses, exit 4 | refuses, exit 4 |
@@ -44,7 +44,7 @@ Three components are written for one edition and say so rather than being extend
 |---|---|---|
 | The binding tables and the CII and UBL writers | 2017 | no public authoritative mapping of the terms a later edition adds; [`bindings.md`](bindings.md) |
 | The vendored XRechnung visualization (`--html`) | 2017 | the stylesheets have nowhere to put a term of a later edition |
-| The rule pack `en16931/1.3.16` | 2017 | the rules of the standard are renumbered, added to and withdrawn between editions |
+| The rule pack `en16931/1.3.16` | 2017 | the rules of the standard are renumbered, added to and withdrawn between editions; the pack `en16931-2026/0.1` is the one of the later edition |
 
 The PDF rendering is this project's own layout and is driven by whatever registry the document's
 edition brings: designed sections for the groups it knows, and a final heading under which every
@@ -79,7 +79,11 @@ mapping between the two.
 Nothing is repaired, rounded or invented. A component the target edition requires and the
 document has not, a value whose decimals exceed what the target edition allows, a specification
 identifier in BT-24 that names a specification of the other edition: each is reported as an open
-point and none is silently changed. Downwards, a value the target edition has no address for
+point and none is silently changed. A bound the edition states over the minor unit of the
+currency is evaluated in the currency the value is written in — the invoice currency (BT-5),
+the VAT accounting currency (BT-6) for BT-111, the currency a VAT breakdown names (BT-184) for
+its amounts — against the ISO 4217 snapshot of the rule pack of that edition; a build without
+the pack reports it as not evaluated. Downwards, a value the target edition has no address for
 makes the run refuse until the caller names its path with `--drop`. A path whose occurrence
 index the document's own edition does not give it makes the run refuse as well: writing the
 address the target edition wants would repair an invalid document on the way, and `validate`
@@ -95,10 +99,11 @@ The registry of the 2026 edition carries the facts an implementation needs, in t
 words and without the standard's text; no official validation artefact and no public syntax
 binding exist for that edition yet, and whether the licence agreement between the European
 Commission and CEN extends to it has not been published (`NOTICE`). The files that carry facts
-of that edition are therefore separable from the rest, for a build that wants none of them. `model/en16931/2026.paths` lists
-every one of them — the registry, the generated schema, the generated typed view, the upgrade
-mapping, the examples, the fixtures, the manifest part of `conformance/fixtures/` and the
-generated view of the C# binding — and the Maven profile leaves them out:
+of that edition are therefore separable from the rest. `model/en16931/2026.paths` lists every one
+of them — the registry, the generated schema, the generated typed view, the upgrade
+mapping, the examples, the fixtures, the rule pack with its rules in Java, TypeScript and C# and
+its measurements, the manifest part of `conformance/fixtures/` and the generated view of the C#
+binding — and the Maven profile leaves them out:
 
 ```text
 mvn -B -P without-edition-2026 verify
@@ -109,9 +114,9 @@ bin/without-edition-2026.sh
 ```
 
 The script copies the tree without the listed files and runs `mvn -B -P without-edition-2026
-clean verify` over the copy, which is what keeps the claim checked rather than asserted for the
-Java build. It runs no binding of its own: the TypeScript and C# test commands are not part of
-it. The machinery is not in the list and is not separable: the reader, the registry loader,
+clean verify` over the copy, then the tests and the fixture runner of both bindings where npm
+and dotnet are on the PATH; `--bindings` runs the bindings alone, as the CI does on every push.
+The machinery is not in the list and is not separable: the reader, the registry loader,
 the generator, the upgrade engine and the command line work with whatever registries are
 present, and an edition is data they load rather than code they contain.
 
@@ -126,15 +131,20 @@ Per layer, for a build that carries the registry of that edition:
 | Reader, canonicalizer, digests | nothing was added: these layers read no registry | complete |
 | Structural validation L1 to L3 | measured against the registry of the edition the document names | complete |
 | Typed view, editing | `…typed.v2026`, generated from that registry | complete |
-| Constrained builder, `derive()` | `…typed.build` is generated for the default edition alone, and no profile overlay is written for another | not in this version |
+| Totals, `derive()` | `…typed.v2026.Totals.of(En16931V2026.minorUnits())`: each amount rounded once, to the minor unit of its currency in the pack's snapshot; an unknown currency is refused | complete |
+| Constrained builder | `…typed.build` is generated for the default edition alone, and no profile overlay is written for another | not in this version |
 | Domain API (`esj-invoice`) | built on that builder, with enums and profile defaults that are facts of the default edition | not in this version |
 | `upgrade`, both directions | the mapping as data, with the open points reported | complete |
 | Rendering to PDF | driven by the registry: designed sections for the groups it knows, a generic one for the rest | partial by design |
-| Business rules | no pack is written for the edition, so `validate` reports `no-pack-for-edition` and reaches no verdict | not in this version |
+| Business rules | the pack `en16931-2026/0.1`: 252 rules, of which 199 are those of clause 6.4, 194 of them implemented, with the fraction digit rules of Table 28 and the code list rules beside them. 108 rules the edition leaves unchanged have the oracle `downgrade`: over 447 mutations written back to 2017, 100 are named alike by the official Schematron 1.3.16, 7 differ exactly as in the default pack, 1 is exercised by none, 0 are open. 144 changed or new rules have `cases`: hand-computed cases only | implemented; not corroborated by an official artefact |
+| The official artefacts over a written syntax | no artefact release is written against the edition and no syntax binding of the terms it adds is published, so `validate` reports `no-artefacts-for-edition` and reaches no verdict | not available |
 | UBL, CII, the HTML page | refused, exit 4: no public authoritative mapping of the terms the edition adds | not available |
 
-Where a build carries that registry, ESJ can represent, read, canonicalize,
-hash, structurally validate, type-safely edit and upgrade a document of EN 16931-1:2026. It
-cannot convert one to UBL or to CII, and no official validation artefact exists for the rules of
-that edition — so no implementation of them can be measured against one, this project's
-included.
+Where a build carries that registry, ESJ can represent, read, canonicalize, hash, structurally
+validate, type-safely edit, derive the totals of, upgrade and check the business rules of a
+document of EN 16931-1:2026. It cannot convert one to UBL or to CII, and **no official validation
+artefact exists for the rules of that edition**, so no implementation of them can be measured
+against one, this project's included: a document of the edition reaches `INVALID` where a rule
+faults it and `INDETERMINATE` otherwise, never `VALID`. Each rule says what stands behind it,
+[`conformance/rules-2026/coverage.md`](../conformance/rules-2026/coverage.md) counts the kinds,
+and [`ledger.md`](../conformance/rules-2026/ledger.md) is what each kind was measured by.

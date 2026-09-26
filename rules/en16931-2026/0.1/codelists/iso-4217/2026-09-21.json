@@ -1,0 +1,887 @@
+{
+  "listId": "iso-4217",
+  "name": "ISO 4217 alpha-3 currency codes",
+  "publisher": "ISO, maintenance agency SIX Group",
+  "source": "https://www.six-group.com/dam/download/financial-information/data-center/iso-currrency/lists/list-one.xml",
+  "retrieved": "2026-09-21",
+  "terms": "The page offers the list for download without stating a licence; SIX publishes it as the ISO 4217 maintenance agency. Recorded as an uncertainty in SOURCES.md. This snapshot carries the minor unit column beside the code, which the 2026 edition of EN 16931-1 ties the fraction digits of every amount to; a code the publisher gives no minor unit, such as a fund or a precious metal, carries none here either.",
+  "entries": [
+    {
+      "value": "AFN",
+      "name": "Afghani",
+      "minorUnit": 2
+    },
+    {
+      "value": "EUR",
+      "name": "Euro",
+      "minorUnit": 2
+    },
+    {
+      "value": "ALL",
+      "name": "Lek",
+      "minorUnit": 2
+    },
+    {
+      "value": "DZD",
+      "name": "Algerian Dinar",
+      "minorUnit": 2
+    },
+    {
+      "value": "USD",
+      "name": "US Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "AOA",
+      "name": "Kwanza",
+      "minorUnit": 2
+    },
+    {
+      "value": "XCD",
+      "name": "East Caribbean Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "XAD",
+      "name": "Arab Accounting Dinar",
+      "minorUnit": 2
+    },
+    {
+      "value": "ARS",
+      "name": "Argentine Peso",
+      "minorUnit": 2
+    },
+    {
+      "value": "AMD",
+      "name": "Armenian Dram",
+      "minorUnit": 2
+    },
+    {
+      "value": "AWG",
+      "name": "Aruban Florin",
+      "minorUnit": 2
+    },
+    {
+      "value": "AUD",
+      "name": "Australian Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "AZN",
+      "name": "Azerbaijan Manat",
+      "minorUnit": 2
+    },
+    {
+      "value": "BSD",
+      "name": "Bahamian Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "BHD",
+      "name": "Bahraini Dinar",
+      "minorUnit": 3
+    },
+    {
+      "value": "BDT",
+      "name": "Taka",
+      "minorUnit": 2
+    },
+    {
+      "value": "BBD",
+      "name": "Barbados Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "BYN",
+      "name": "Belarusian Ruble",
+      "minorUnit": 2
+    },
+    {
+      "value": "BZD",
+      "name": "Belize Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "XOF",
+      "name": "CFA Franc BCEAO",
+      "minorUnit": 0
+    },
+    {
+      "value": "BMD",
+      "name": "Bermudian Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "INR",
+      "name": "Indian Rupee",
+      "minorUnit": 2
+    },
+    {
+      "value": "BTN",
+      "name": "Ngultrum",
+      "minorUnit": 2
+    },
+    {
+      "value": "BOB",
+      "name": "Boliviano",
+      "minorUnit": 2
+    },
+    {
+      "value": "BOV",
+      "name": "Mvdol",
+      "minorUnit": 2
+    },
+    {
+      "value": "BAM",
+      "name": "Convertible Mark",
+      "minorUnit": 2
+    },
+    {
+      "value": "BWP",
+      "name": "Pula",
+      "minorUnit": 2
+    },
+    {
+      "value": "NOK",
+      "name": "Norwegian Krone",
+      "minorUnit": 2
+    },
+    {
+      "value": "BRL",
+      "name": "Brazilian Real",
+      "minorUnit": 2
+    },
+    {
+      "value": "BND",
+      "name": "Brunei Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "BIF",
+      "name": "Burundi Franc",
+      "minorUnit": 0
+    },
+    {
+      "value": "CVE",
+      "name": "Cabo Verde Escudo",
+      "minorUnit": 2
+    },
+    {
+      "value": "KHR",
+      "name": "Riel",
+      "minorUnit": 2
+    },
+    {
+      "value": "XAF",
+      "name": "CFA Franc BEAC",
+      "minorUnit": 0
+    },
+    {
+      "value": "CAD",
+      "name": "Canadian Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "KYD",
+      "name": "Cayman Islands Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "CLP",
+      "name": "Chilean Peso",
+      "minorUnit": 0
+    },
+    {
+      "value": "CLF",
+      "name": "Unidad de Fomento",
+      "minorUnit": 4
+    },
+    {
+      "value": "CNY",
+      "name": "Yuan Renminbi",
+      "minorUnit": 2
+    },
+    {
+      "value": "COP",
+      "name": "Colombian Peso",
+      "minorUnit": 2
+    },
+    {
+      "value": "COU",
+      "name": "Unidad de Valor Real",
+      "minorUnit": 2
+    },
+    {
+      "value": "KMF",
+      "name": "Comorian Franc",
+      "minorUnit": 0
+    },
+    {
+      "value": "CDF",
+      "name": "Congolese Franc",
+      "minorUnit": 2
+    },
+    {
+      "value": "NZD",
+      "name": "New Zealand Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "CRC",
+      "name": "Costa Rican Colon",
+      "minorUnit": 2
+    },
+    {
+      "value": "CUP",
+      "name": "Cuban Peso",
+      "minorUnit": 2
+    },
+    {
+      "value": "XCG",
+      "name": "Caribbean Guilder",
+      "minorUnit": 2
+    },
+    {
+      "value": "CZK",
+      "name": "Czech Koruna",
+      "minorUnit": 2
+    },
+    {
+      "value": "DKK",
+      "name": "Danish Krone",
+      "minorUnit": 2
+    },
+    {
+      "value": "DJF",
+      "name": "Djibouti Franc",
+      "minorUnit": 0
+    },
+    {
+      "value": "DOP",
+      "name": "Dominican Peso",
+      "minorUnit": 2
+    },
+    {
+      "value": "EGP",
+      "name": "Egyptian Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "SVC",
+      "name": "El Salvador Colon",
+      "minorUnit": 2
+    },
+    {
+      "value": "ERN",
+      "name": "Nakfa",
+      "minorUnit": 2
+    },
+    {
+      "value": "SZL",
+      "name": "Lilangeni",
+      "minorUnit": 2
+    },
+    {
+      "value": "ETB",
+      "name": "Ethiopian Birr",
+      "minorUnit": 2
+    },
+    {
+      "value": "FKP",
+      "name": "Falkland Islands Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "FJD",
+      "name": "Fiji Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "XPF",
+      "name": "CFP Franc",
+      "minorUnit": 0
+    },
+    {
+      "value": "GMD",
+      "name": "Dalasi",
+      "minorUnit": 2
+    },
+    {
+      "value": "GEL",
+      "name": "Lari",
+      "minorUnit": 2
+    },
+    {
+      "value": "GHS",
+      "name": "Ghana Cedi",
+      "minorUnit": 2
+    },
+    {
+      "value": "GIP",
+      "name": "Gibraltar Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "GTQ",
+      "name": "Quetzal",
+      "minorUnit": 2
+    },
+    {
+      "value": "GBP",
+      "name": "Pound Sterling",
+      "minorUnit": 2
+    },
+    {
+      "value": "GNF",
+      "name": "Guinean Franc",
+      "minorUnit": 0
+    },
+    {
+      "value": "GYD",
+      "name": "Guyana Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "HTG",
+      "name": "Gourde",
+      "minorUnit": 2
+    },
+    {
+      "value": "HNL",
+      "name": "Lempira",
+      "minorUnit": 2
+    },
+    {
+      "value": "HKD",
+      "name": "Hong Kong Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "HUF",
+      "name": "Forint",
+      "minorUnit": 2
+    },
+    {
+      "value": "ISK",
+      "name": "Iceland Krona",
+      "minorUnit": 0
+    },
+    {
+      "value": "IDR",
+      "name": "Rupiah",
+      "minorUnit": 2
+    },
+    {
+      "value": "XDR",
+      "name": "SDR (Special Drawing Right)"
+    },
+    {
+      "value": "IRR",
+      "name": "Iranian Rial",
+      "minorUnit": 2
+    },
+    {
+      "value": "IQD",
+      "name": "Iraqi Dinar",
+      "minorUnit": 3
+    },
+    {
+      "value": "ILS",
+      "name": "New Israeli Sheqel",
+      "minorUnit": 2
+    },
+    {
+      "value": "JMD",
+      "name": "Jamaican Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "JPY",
+      "name": "Yen",
+      "minorUnit": 0
+    },
+    {
+      "value": "JOD",
+      "name": "Jordanian Dinar",
+      "minorUnit": 3
+    },
+    {
+      "value": "KZT",
+      "name": "Tenge",
+      "minorUnit": 2
+    },
+    {
+      "value": "KES",
+      "name": "Kenyan Shilling",
+      "minorUnit": 2
+    },
+    {
+      "value": "KPW",
+      "name": "North Korean Won",
+      "minorUnit": 2
+    },
+    {
+      "value": "KRW",
+      "name": "Won",
+      "minorUnit": 0
+    },
+    {
+      "value": "KWD",
+      "name": "Kuwaiti Dinar",
+      "minorUnit": 3
+    },
+    {
+      "value": "KGS",
+      "name": "Som",
+      "minorUnit": 2
+    },
+    {
+      "value": "LAK",
+      "name": "Lao Kip",
+      "minorUnit": 2
+    },
+    {
+      "value": "LBP",
+      "name": "Lebanese Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "LSL",
+      "name": "Loti",
+      "minorUnit": 2
+    },
+    {
+      "value": "ZAR",
+      "name": "Rand",
+      "minorUnit": 2
+    },
+    {
+      "value": "LRD",
+      "name": "Liberian Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "LYD",
+      "name": "Libyan Dinar",
+      "minorUnit": 3
+    },
+    {
+      "value": "CHF",
+      "name": "Swiss Franc",
+      "minorUnit": 2
+    },
+    {
+      "value": "MOP",
+      "name": "Pataca",
+      "minorUnit": 2
+    },
+    {
+      "value": "MKD",
+      "name": "Denar",
+      "minorUnit": 2
+    },
+    {
+      "value": "MGA",
+      "name": "Malagasy Ariary",
+      "minorUnit": 2
+    },
+    {
+      "value": "MWK",
+      "name": "Malawi Kwacha",
+      "minorUnit": 2
+    },
+    {
+      "value": "MYR",
+      "name": "Malaysian Ringgit",
+      "minorUnit": 2
+    },
+    {
+      "value": "MVR",
+      "name": "Rufiyaa",
+      "minorUnit": 2
+    },
+    {
+      "value": "MRU",
+      "name": "Ouguiya",
+      "minorUnit": 2
+    },
+    {
+      "value": "MUR",
+      "name": "Mauritius Rupee",
+      "minorUnit": 2
+    },
+    {
+      "value": "XUA",
+      "name": "ADB Unit of Account"
+    },
+    {
+      "value": "MXN",
+      "name": "Mexican Peso",
+      "minorUnit": 2
+    },
+    {
+      "value": "MXV",
+      "name": "Mexican Unidad de Inversion (UDI)",
+      "minorUnit": 2
+    },
+    {
+      "value": "MDL",
+      "name": "Moldovan Leu",
+      "minorUnit": 2
+    },
+    {
+      "value": "MNT",
+      "name": "Tugrik",
+      "minorUnit": 2
+    },
+    {
+      "value": "MAD",
+      "name": "Moroccan Dirham",
+      "minorUnit": 2
+    },
+    {
+      "value": "MZN",
+      "name": "Mozambique Metical",
+      "minorUnit": 2
+    },
+    {
+      "value": "MMK",
+      "name": "Kyat",
+      "minorUnit": 2
+    },
+    {
+      "value": "NAD",
+      "name": "Namibia Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "NPR",
+      "name": "Nepalese Rupee",
+      "minorUnit": 2
+    },
+    {
+      "value": "NIO",
+      "name": "Cordoba Oro",
+      "minorUnit": 2
+    },
+    {
+      "value": "NGN",
+      "name": "Naira",
+      "minorUnit": 2
+    },
+    {
+      "value": "OMR",
+      "name": "Rial Omani",
+      "minorUnit": 3
+    },
+    {
+      "value": "PKR",
+      "name": "Pakistan Rupee",
+      "minorUnit": 2
+    },
+    {
+      "value": "PAB",
+      "name": "Balboa",
+      "minorUnit": 2
+    },
+    {
+      "value": "PGK",
+      "name": "Kina",
+      "minorUnit": 2
+    },
+    {
+      "value": "PYG",
+      "name": "Guarani",
+      "minorUnit": 0
+    },
+    {
+      "value": "PEN",
+      "name": "Sol",
+      "minorUnit": 2
+    },
+    {
+      "value": "PHP",
+      "name": "Philippine Peso",
+      "minorUnit": 2
+    },
+    {
+      "value": "PLN",
+      "name": "Zloty",
+      "minorUnit": 2
+    },
+    {
+      "value": "QAR",
+      "name": "Qatari Rial",
+      "minorUnit": 2
+    },
+    {
+      "value": "RON",
+      "name": "Romanian Leu",
+      "minorUnit": 2
+    },
+    {
+      "value": "RUB",
+      "name": "Russian Ruble",
+      "minorUnit": 2
+    },
+    {
+      "value": "RWF",
+      "name": "Rwanda Franc",
+      "minorUnit": 0
+    },
+    {
+      "value": "SHP",
+      "name": "Saint Helena Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "WST",
+      "name": "Tala",
+      "minorUnit": 2
+    },
+    {
+      "value": "STN",
+      "name": "Dobra",
+      "minorUnit": 2
+    },
+    {
+      "value": "SAR",
+      "name": "Saudi Riyal",
+      "minorUnit": 2
+    },
+    {
+      "value": "RSD",
+      "name": "Serbian Dinar",
+      "minorUnit": 2
+    },
+    {
+      "value": "SCR",
+      "name": "Seychelles Rupee",
+      "minorUnit": 2
+    },
+    {
+      "value": "SLE",
+      "name": "Leone",
+      "minorUnit": 2
+    },
+    {
+      "value": "SGD",
+      "name": "Singapore Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "XSU",
+      "name": "Sucre"
+    },
+    {
+      "value": "SBD",
+      "name": "Solomon Islands Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "SOS",
+      "name": "Somali Shilling",
+      "minorUnit": 2
+    },
+    {
+      "value": "SSP",
+      "name": "South Sudanese Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "LKR",
+      "name": "Sri Lanka Rupee",
+      "minorUnit": 2
+    },
+    {
+      "value": "SDG",
+      "name": "Sudanese Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "SRD",
+      "name": "Surinam Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "SEK",
+      "name": "Swedish Krona",
+      "minorUnit": 2
+    },
+    {
+      "value": "CHE",
+      "name": "WIR Euro",
+      "minorUnit": 2
+    },
+    {
+      "value": "CHW",
+      "name": "WIR Franc",
+      "minorUnit": 2
+    },
+    {
+      "value": "SYP",
+      "name": "Syrian Pound",
+      "minorUnit": 2
+    },
+    {
+      "value": "TWD",
+      "name": "New Taiwan Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "TJS",
+      "name": "Somoni",
+      "minorUnit": 2
+    },
+    {
+      "value": "TZS",
+      "name": "Tanzanian Shilling",
+      "minorUnit": 2
+    },
+    {
+      "value": "THB",
+      "name": "Baht",
+      "minorUnit": 2
+    },
+    {
+      "value": "TOP",
+      "name": "Pa’anga",
+      "minorUnit": 2
+    },
+    {
+      "value": "TTD",
+      "name": "Trinidad and Tobago Dollar",
+      "minorUnit": 2
+    },
+    {
+      "value": "TND",
+      "name": "Tunisian Dinar",
+      "minorUnit": 3
+    },
+    {
+      "value": "TRY",
+      "name": "Turkish Lira",
+      "minorUnit": 2
+    },
+    {
+      "value": "TMT",
+      "name": "Turkmenistan New Manat",
+      "minorUnit": 2
+    },
+    {
+      "value": "UGX",
+      "name": "Uganda Shilling",
+      "minorUnit": 0
+    },
+    {
+      "value": "UAH",
+      "name": "Hryvnia",
+      "minorUnit": 2
+    },
+    {
+      "value": "AED",
+      "name": "UAE Dirham",
+      "minorUnit": 2
+    },
+    {
+      "value": "USN",
+      "name": "US Dollar (Next day)",
+      "minorUnit": 2
+    },
+    {
+      "value": "UYU",
+      "name": "Peso Uruguayo",
+      "minorUnit": 2
+    },
+    {
+      "value": "UYI",
+      "name": "Uruguay Peso en Unidades Indexadas (UI)",
+      "minorUnit": 0
+    },
+    {
+      "value": "UYW",
+      "name": "Unidad Previsional",
+      "minorUnit": 4
+    },
+    {
+      "value": "UZS",
+      "name": "Uzbekistan Sum",
+      "minorUnit": 2
+    },
+    {
+      "value": "VUV",
+      "name": "Vatu",
+      "minorUnit": 0
+    },
+    {
+      "value": "VES",
+      "name": "Bolívar Soberano",
+      "minorUnit": 2
+    },
+    {
+      "value": "VED",
+      "name": "Bolívar Soberano",
+      "minorUnit": 2
+    },
+    {
+      "value": "VND",
+      "name": "Dong",
+      "minorUnit": 0
+    },
+    {
+      "value": "YER",
+      "name": "Yemeni Rial",
+      "minorUnit": 2
+    },
+    {
+      "value": "ZMW",
+      "name": "Zambian Kwacha",
+      "minorUnit": 2
+    },
+    {
+      "value": "ZWG",
+      "name": "Zimbabwe Gold",
+      "minorUnit": 2
+    },
+    {
+      "value": "XBA",
+      "name": "Bond Markets Unit European Composite Unit (EURCO)"
+    },
+    {
+      "value": "XBB",
+      "name": "Bond Markets Unit European Monetary Unit (E.M.U.-6)"
+    },
+    {
+      "value": "XBC",
+      "name": "Bond Markets Unit European Unit of Account 9 (E.U.A.-9)"
+    },
+    {
+      "value": "XBD",
+      "name": "Bond Markets Unit European Unit of Account 17 (E.U.A.-17)"
+    },
+    {
+      "value": "XTS",
+      "name": "Codes specifically reserved for testing purposes"
+    },
+    {
+      "value": "XXX",
+      "name": "The codes assigned for transactions where no currency is involved"
+    },
+    {
+      "value": "XAU",
+      "name": "Gold"
+    },
+    {
+      "value": "XPD",
+      "name": "Palladium"
+    },
+    {
+      "value": "XPT",
+      "name": "Platinum"
+    },
+    {
+      "value": "XAG",
+      "name": "Silver"
+    }
+  ]
+}
