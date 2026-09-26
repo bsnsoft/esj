@@ -98,8 +98,10 @@ without them.
 
 **What it costs.** For a document of the 2026 edition ESJ carries the content, reads it,
 canonicalizes it, hashes it and validates it structurally. There is no conversion to UBL or
-CII, because no public syntax binding of the terms that edition adds exists, and no rule pack,
-because no official validation artefact for its rules exists. A build that holds no registry
+CII, because no public syntax binding of the terms that edition adds exists. Its business rules
+are a pack of this project, `en16931-2026/0.1`, which no official validation artefact
+corroborates: each rule names what stands behind it instead, and a document of the edition
+therefore reaches `INDETERMINATE` at best. A build that holds no registry
 for the edition a document names reports `ESJ-L2-EDITION-UNKNOWN` and reaches no verdict
 rather than guessing (`SPEC.md` 4.4 and 9.2).
 

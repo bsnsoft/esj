@@ -62,7 +62,8 @@ interface Manifest {
 interface Case {
   id: string;
   rule: string;
-  base: string;
+  base?: string;
+  baseDocument?: string;
   changes: Array<{ path: string; value?: string; remove?: boolean }>;
   expect: { rules: string[]; warnings: string[] };
 }
@@ -307,14 +308,17 @@ test('the rule pack reports on every mutation what the manifest expects', () => 
     if (manifest.rules === undefined) {
       continue;
     }
-    const cases = read<{ cases: Case[] }>(
-      path.join(FIXTURES, manifest.rules.casesFile)).cases;
+    const file = read<{ cases: Case[]; bases?: Record<string, Record<string, unknown>> }>(
+      path.join(FIXTURES, manifest.rules.casesFile));
+    const cases = file.cases;
     assert.equal(cases.length, manifest.rules.cases);
     for (const entry of cases) {
-      let base = bases.get(entry.base);
+      let base = entry.baseDocument !== undefined
+        ? file.bases![entry.baseDocument]
+        : bases.get(entry.base!);
       if (base === undefined) {
-        base = read<Record<string, unknown>>(path.join(ROOT, entry.base));
-        bases.set(entry.base, base);
+        base = read<Record<string, unknown>>(path.join(ROOT, entry.base!));
+        bases.set(entry.base!, base);
       }
       if (!CARRIED.has(base.semanticModel as string)) {
         continue;
@@ -335,6 +339,10 @@ test('the rule pack reports on every mutation what the manifest expects', () => 
     }
   }
   assert.ok(run > 400, 'the mutations of the corpus were run: ' + run);
+  if (MANIFESTS.some((manifest) => manifest.part !== 'core' && manifest.rules !== undefined
+    && CARRIED.has('EN16931-1:2026'))) {
+    assert.ok(run > 448, 'the cases of the pack of the later edition were run: ' + run);
+  }
 });
 
 /**

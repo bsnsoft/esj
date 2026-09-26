@@ -29,13 +29,16 @@ import java.util.Optional;
  * @param retrieved the day it was taken, {@code YYYY-MM-DD}, which is also the file name
  * @param entries   the code values, each with the description the publisher gives it or
  *                  the empty string where the publisher gives none
+ * @param minorUnits the number of fraction digits the publisher gives a code, for the lists
+ *                  that publish one; empty for every other list
  */
 public record CodeList(String listId,
                        String name,
                        String publisher,
                        String source,
                        String retrieved,
-                       Map<String, String> entries) {
+                       Map<String, String> entries,
+                       Map<String, Integer> minorUnits) {
 
     /**
      * Copies the entries and checks that every part is present.
@@ -47,6 +50,7 @@ public record CodeList(String listId,
      * @param retrieved the day it was taken, {@code YYYY-MM-DD}, which is also the file name
      * @param entries   the code values, each with the description the publisher gives it or
      *                  the empty string where the publisher gives none
+     * @param minorUnits the number of fraction digits the publisher gives a code
      * @throws NullPointerException if a part is {@code null}
      */
     public CodeList {
@@ -56,6 +60,37 @@ public record CodeList(String listId,
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(retrieved, "retrieved");
         entries = Map.copyOf(entries);
+        minorUnits = Map.copyOf(minorUnits);
+    }
+
+    /**
+     * Creates a snapshot of a list whose publisher gives no number of fraction digits.
+     *
+     * @param listId    the identifier a rule names the list by
+     * @param name      the name of the list at its publisher
+     * @param publisher who publishes the list
+     * @param source    where the snapshot was taken from
+     * @param retrieved the day it was taken, {@code YYYY-MM-DD}
+     * @param entries   the code values with their descriptions
+     */
+    public CodeList(String listId, String name, String publisher, String source,
+                    String retrieved, Map<String, String> entries) {
+        this(listId, name, publisher, source, retrieved, entries, Map.of());
+    }
+
+    /**
+     * Returns the number of fraction digits the publisher of this list gives a code.
+     *
+     * <p>One list of this repository publishes such a number: the currency list, whose
+     * minor unit column says how many fraction digits an amount in that currency carries.
+     * A rule that asks about it over a list that does not publish it, or over a code the
+     * list does not have, gets no answer and reports nothing rather than guessing.
+     *
+     * @param code the code as the document spells it
+     * @return the number of fraction digits, or an empty optional
+     */
+    public Optional<Integer> minorUnit(String code) {
+        return Optional.ofNullable(minorUnits.get(code));
     }
 
     /**

@@ -23,8 +23,13 @@ import java.util.Optional;
  * <p>The rule is a statement about the document, because two of the four terms sit inside the
  * invoice line and one of those repeats; reading them as a pattern at the document context is
  * one pass either way.
+ *
+ * <p>The class is public because a pack of another edition states the same rule about other
+ * terms: the 2026 edition of EN 16931-1 requires a scheme on seven identifiers more, and the
+ * rules of that pack are this class with other constants. Only the constants belong to an
+ * edition, and they stay in the pack that names them.
  */
-abstract class SchemeIdentifier implements JavaRule {
+public abstract class SchemeIdentifier implements JavaRule {
 
     private final String id;
     private final String pattern;
@@ -41,7 +46,7 @@ abstract class SchemeIdentifier implements JavaRule {
      * @param name    the name of the business term, in English, for the message
      * @param source  the clause of the standard the rule states
      */
-    SchemeIdentifier(String id, String pattern, String term, String name, String source) {
+    protected SchemeIdentifier(String id, String pattern, String term, String name, String source) {
         this.id = id;
         this.pattern = pattern;
         this.term = term;

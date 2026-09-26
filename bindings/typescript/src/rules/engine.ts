@@ -4,9 +4,9 @@ import { codePointCount, forMessage, isDate, isDecimal } from '../grammars.ts';
 import { comparePathText } from '../paths.ts';
 import type { Structure } from '../structure.ts';
 import type {
-  CodeListFile, Expression, RuleDefinition, RulePackFile, RuleSeverity,
+  CodeListFile, Expression, RuleDefinition, RuleOracle, RulePackFile, RuleSeverity,
 } from './pack.ts';
-import { CodeList, RulePackError, ruleIdOfDeclared } from './pack.ts';
+import { CodeList, RULE_ORACLES, RulePackError, ruleIdOfDeclared } from './pack.ts';
 
 /**
  * The engine of the rule language of `rules/README.md`.
@@ -62,7 +62,10 @@ function truthOf(value: RuleValue): boolean {
 
 const ABSENT: RuleValue = { k: 'absent' };
 
-/** What the engine raises where a value does not spell what its semantic data type requires. */
+/**
+ * What the engine raises where a value does not spell what its semantic data type requires, and
+ * where the case a rule names in `undecided` holds.
+ */
 export class Undecided extends Error {
   constructor(message: string) {
     super(message);
@@ -421,6 +424,12 @@ class Compiler {
         return this.len(argument, scope, where);
       case 'decimals':
         return this.decimals(argument, scope, where);
+      case 'minorUnit':
+        return this.minorUnit(argument, scope, where);
+      case 'atRoot':
+        return this.atRoot(argument, where);
+      case 'unit':
+        return this.unit(argument, scope, where);
       case 'and': case 'or':
         return this.junction(operator, argument, scope, where);
       case 'not':
@@ -574,15 +583,113 @@ class Compiler {
       throw new RulePackError(where + ': round takes an expression and a scale');
     }
     const value = coerce(this.compile(parts[0], scope, where), 'decimal', where).evaluate;
-    const scale = asScale(parts[1], where);
+    const scale = this.scale(parts[1], scope, where, 'round');
     return {
       type: 'decimal',
       literal: null,
       evaluate: (run, base) => {
         const number = value(run, base);
-        return number.k === 'absent'
-          ? ABSENT
-          : { k: 'decimal', decimal: numberOf(number).round(scale) };
+        const digits = scale(run, base);
+        if (number.k === 'absent' || digits.k === 'absent') {
+          return ABSENT;
+        }
+        const at = wholeDigits(digits);
+        return at < 0 ? ABSENT : { k: 'decimal', decimal: numberOf(number).round(at) };
+      },
+    };
+  }
+
+  /**
+   * Compiles the second operand of `round` and `decimals`: a whole number of fraction digits,
+   * or an expression that yields one — which is how a rule of an edition that ties the number
+   * to the currency in use writes it: `{"minorUnit": [{"value": "/BT-5"}, "iso-4217"]}`.
+   */
+  private scale(written: unknown, scope: readonly string[], where: string,
+    operator: string): Evaluate {
+    if (typeof written === 'number') {
+      const value: RuleValue = {
+        k: 'decimal', decimal: Decimal.ofInteger(asScale(written, where + ': the scale of ' + operator)),
+      };
+      return () => value;
+    }
+    return coerce(this.compile(written, scope, where), 'decimal', where).evaluate;
+  }
+
+  /**
+   * Compiles `minorUnit`: the number of fraction digits the publisher of a code list gives a
+   * code. A list that publishes no such number is refused here, because a rule that asked it
+   * for one would never be decided. A code the list does not carry yields nothing; a code it
+   * carries without a number makes the rule not decided.
+   */
+  private minorUnit(argument: unknown, scope: readonly string[], where: string): Compiled {
+    const parts = asArray(argument, where);
+    if (parts.length !== 2) {
+      throw new RulePackError(where + ': minorUnit takes an expression and a list identifier');
+    }
+    const code = coerce(this.compile(parts[0], scope, where), 'text', where).evaluate;
+    const listId = parts[1];
+    const list = typeof listId === 'string' ? this.lists.get(listId) : undefined;
+    if (list === undefined) {
+      throw new RulePackError(where + ': the pack carries no snapshot of the code list '
+        + String(listId));
+    }
+    if (!list.publishesMinorUnits) {
+      throw new RulePackError(where + ': the snapshot of ' + String(listId)
+        + ' publishes no number of fraction digits, and a rule that asked it for one would'
+        + ' never be decided');
+    }
+    return {
+      type: 'decimal',
+      literal: null,
+      evaluate: (run, base) => {
+        const value = code(run, base);
+        if (value.k === 'absent') {
+          return ABSENT;
+        }
+        const text = textOf(value);
+        const digits = list.minorUnit(text);
+        if (digits !== undefined) {
+          return { k: 'decimal', decimal: Decimal.ofInteger(digits) };
+        }
+        if (list.contains(text)) {
+          throw new Undecided('the code ' + text + ' is on the list ' + String(listId)
+            + ', which gives it no number of fraction digits');
+        }
+        return ABSENT;
+      },
+    };
+  }
+
+  /**
+   * Compiles `atRoot`: an expression weighed at the document rather than at the business
+   * group instance the rule is evaluated in. What is inside is compiled as if the rule stood
+   * at the document, so only the document is reachable from it.
+   */
+  private atRoot(argument: unknown, where: string): Compiled {
+    const inner = this.compile(argument, [], where);
+    return {
+      type: inner.type,
+      literal: inner.literal,
+      evaluate: (run) => inner.evaluate(run, ''),
+    };
+  }
+
+  /**
+   * Compiles `unit`: the value of one unit at a number of fraction digits, ten raised to the
+   * negative of it — how a rule writes a tolerance stated per minor unit.
+   */
+  private unit(argument: unknown, scope: readonly string[], where: string): Compiled {
+    const scale = coerce(this.compile(argument, scope, where), 'decimal', where).evaluate;
+    return {
+      type: 'decimal',
+      literal: null,
+      evaluate: (run, base) => {
+        const digits = scale(run, base);
+        if (digits.k === 'absent') {
+          return ABSENT;
+        }
+        const at = wholeDigits(digits);
+        return at < 0 ? ABSENT : { k: 'decimal', decimal: unitAt(at) };
       },
     };
   }
@@ -720,9 +827,9 @@ class Compiler {
   /**
    * Compiles `decimals`, which asks how many fraction digits a number needs.
    *
-   * It applies to Amount alone. EN 16931 leaves Unit Price Amount, Quantity and Percentage
-   * unbounded on purpose, so a rule that capped the scale of one of them is a defect of the
-   * pack and is refused here rather than on the first invoice that carries many digits.
+   * It applies to a numeric term. How many fraction digits a term admits is a fact of the
+   * edition it belongs to, and the rule that states it says which number it means — a
+   * constant, or an expression such as the minor unit of the currency in use.
    */
   private decimals(argument: unknown, scope: readonly string[], where: string): Compiled {
     const parts = asArray(argument, where);
@@ -734,11 +841,11 @@ class Compiler {
       throw new RulePackError(where + ': decimals addresses one value of a business term');
     }
     const structure = this.structure;
-    if (structure.term(pattern.last)?.datatype !== 'Amount') {
-      throw new RulePackError(where + ': ' + pattern.last + ' is not an Amount, and decimals'
-        + ' applies to Amount alone');
+    if (ruleTypeOf(structure.term(pattern.last)?.datatype ?? null) !== 'decimal') {
+      throw new RulePackError(where + ': ' + pattern.last + ' is not a numeric term, and'
+        + ' decimals applies to a numeric term');
     }
-    const maxScale = asScale(parts[1], where);
+    const maxScale = this.scale(parts[1], scope, where, 'decimals');
     return {
       type: 'boolean',
       literal: null,
@@ -749,7 +856,12 @@ class Compiler {
           return ABSENT;
         }
         const number = convert(structure, pattern.last, path, value);
-        return { k: 'boolean', truth: numberOf(number).decimals() <= maxScale };
+        const digits = maxScale(run, base);
+        if (digits.k === 'absent') {
+          return ABSENT;
+        }
+        const at = wholeDigits(digits);
+        return at < 0 ? ABSENT : { k: 'boolean', truth: numberOf(number).decimals() <= at };
       },
     };
   }
@@ -975,11 +1087,30 @@ function asObject(argument: unknown, where: string): Record<string, unknown> {
   return argument as Record<string, unknown>;
 }
 
+/** The largest number of fraction digits a scale of the language names. */
+const MAX_SCALE = 20;
+
 function asScale(argument: unknown, where: string): number {
-  if (typeof argument !== 'number' || !Number.isInteger(argument) || argument < 0 || argument > 34) {
-    throw new RulePackError(where + ': a scale is a whole number between 0 and 34');
+  if (typeof argument !== 'number' || !Number.isInteger(argument) || argument < 0
+    || argument > MAX_SCALE) {
+    throw new RulePackError(where + ': a scale is a whole number between 0 and ' + MAX_SCALE);
   }
   return argument;
+}
+
+/** Returns a computed scale as a number of fraction digits, or -1 where it is none. */
+function wholeDigits(value: RuleValue): number {
+  const number = numberOf(value).stripped();
+  if (number.decimals() > 0) {
+    return -1;
+  }
+  const digits = Number(number.toString());
+  return digits < 0 || digits > MAX_SCALE ? -1 : digits;
+}
+
+/** Returns one unit at a number of fraction digits: ten raised to the negative of it. */
+function unitAt(digits: number): Decimal {
+  return digits === 0 ? Decimal.ONE : Decimal.of('0.' + '0'.repeat(digits - 1) + '1');
 }
 
 function reject(
@@ -1064,14 +1195,28 @@ export class RuleEngine {
   private readonly rules: Rule[];
   private readonly structure: Structure;
   private readonly lists: Map<string, CodeList>;
+  private readonly oracles: Map<string, RuleOracle>;
 
   constructor(id: string, version: string, rules: Rule[], structure: Structure,
-    lists: Map<string, CodeList>) {
+    lists: Map<string, CodeList>, oracles: Map<string, RuleOracle>) {
     this.id = id;
     this.version = version;
     this.rules = rules;
     this.structure = structure;
     this.lists = lists;
+    this.oracles = oracles;
+  }
+
+  /**
+   * Returns what stands behind a rule of this engine: an official validation artefact, the
+   * artefact of an earlier edition over the document written down to it, or hand-computed
+   * cases alone.
+   *
+   * @param ruleId the identifier of the rule
+   * @return the oracle, or `undefined` where the engine has no such rule
+   */
+  oracleOf(ruleId: string): RuleOracle | undefined {
+    return this.oracles.get(ruleId);
   }
 
   /**
@@ -1159,6 +1304,15 @@ export class RuleEngine {
 export function compile(
   pack: RulePackFile, structure: Structure, natives: readonly NativeRule[] = [],
 ): RuleEngine {
+  if (typeof pack.edition !== 'string') {
+    throw new RulePackError('the pack ' + pack.id + ' names no edition');
+  }
+  if (pack.edition !== structure.core.edition) {
+    throw new RulePackError('the pack ' + pack.id + '/' + pack.version + ' is written for '
+      + pack.edition + ' and was compiled against the registry of ' + structure.core.edition
+      + '; a rule of one edition is not a statement about a document of another');
+  }
+  const oracles = new Map<string, RuleOracle>();
   const lists = new Map<string, CodeList>();
   for (const [listId, file] of Object.entries(pack.lists ?? {} as Record<string, CodeListFile>)) {
     lists.set(listId, new CodeList(file));
@@ -1172,9 +1326,20 @@ export function compile(
         + definition.id + ' twice');
     }
     seen.add(definition.id);
+    oracles.set(definition.id, oracleOf(definition.oracle, 'the rule ' + definition.id));
     rules.push(language(definition, compiler, structure));
   }
-  const declared = (pack.javaRules ?? []).map(ruleIdOfDeclared);
+  const declared: string[] = [];
+  for (const reference of pack.javaRules ?? []) {
+    if (typeof reference !== 'object' || reference === null
+      || typeof reference.class !== 'string') {
+      throw new RulePackError('the pack ' + pack.id + ' names a rule written in code without'
+        + ' its class and oracle');
+    }
+    const id = ruleIdOfDeclared(reference.class);
+    declared.push(id);
+    oracles.set(id, oracleOf(reference.oracle, 'the rule ' + id));
+  }
   const supplied = natives.map((rule) => rule.id);
   for (const id of declared) {
     if (!supplied.includes(id)) {
@@ -1193,7 +1358,16 @@ export function compile(
     seen.add(rule.id);
     rules.push(native(rule, structure));
   }
-  return new RuleEngine(pack.id, pack.version, rules, structure, lists);
+  return new RuleEngine(pack.id, pack.version, rules, structure, lists, oracles);
+}
+
+/** Reads the oracle a rule declares, refusing one the language does not define. */
+function oracleOf(declared: unknown, where: string): RuleOracle {
+  if (!RULE_ORACLES.includes(declared as RuleOracle)) {
+    throw new RulePackError(where + ' declares the oracle ' + String(declared)
+      + '; a rule rests on an artefact, on a downgrade or on cases');
+  }
+  return declared as RuleOracle;
 }
 
 function contextOf(definition: { context: string }): string | null {
@@ -1230,11 +1404,21 @@ function language(
   const secondMessage = definition.warn === undefined
     ? undefined
     : template(compiler, definition.warn.message, scope, bindings, where + ', warn message');
+  const undecidedWhen = definition.undecided === undefined
+    ? undefined
+    : assertionOf(compiler, definition.undecided.when, scope, where + ', undecided');
+  const undecidedMessage = definition.undecided === undefined
+    ? undefined
+    : template(compiler, definition.undecided.message, scope, bindings,
+      where + ', undecided message');
   return {
     id: definition.id,
     severity: definition.severity,
     context,
     decide: (run, base) => {
+      if (undecidedWhen !== undefined && isTrue(undecidedWhen, run, base)) {
+        throw new Undecided(undecidedMessage!(run, base));
+      }
       if (!holds(assertion, run, base)) {
         return { severity: definition.severity, message: message(run, base) };
       }
@@ -1286,6 +1470,12 @@ function assertionOf(
 function holds(assertion: Evaluate, run: Run, base: string): boolean {
   const truth = assertion(run, base);
   return truth.k === 'absent' || truthOf(truth);
+}
+
+/** Tells whether a condition is true, which it is not where it cannot be decided. */
+function isTrue(condition: Evaluate, run: Run, base: string): boolean {
+  const truth = condition(run, base);
+  return truth.k !== 'absent' && truthOf(truth);
 }
 
 /**

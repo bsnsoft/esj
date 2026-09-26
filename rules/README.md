@@ -28,13 +28,13 @@ One rule then serves a UBL invoice, a CII invoice and a document that was never 
 finding lands on the business term the caller wrote the value at.
 
 This directory is the project's own material, under the licence of the repository, with one
-carve-out: `en16931/<version>/codelists/` holds dated snapshots of code lists published by other
-bodies. Those files are not this project's work, none of the four publishers states terms for
-the data, and [`en16931/1.3.16/codelists/SOURCES.md`](en16931/1.3.16/codelists/SOURCES.md)
-records the source, the digest and that open question for each. Everything else here — the rule
-statements, the manifests, the language — is the project's own. It is not
-[`../packs/`](../packs/README.md), which holds the third-party validation artefacts the syntax
-engine executes, each under the licence it came with; the two are kept apart for that reason.
+carve-out: `<pack>/<version>/codelists/` holds dated snapshots of code lists published by other
+bodies. Those files are not this project's work, no publisher states terms for the data, and
+the `SOURCES.md` beside them ([1.3.16](en16931/1.3.16/codelists/SOURCES.md),
+[2026](en16931-2026/0.1/codelists/SOURCES.md)) records source, digest and that open question
+for each. Everything else here — the rule statements, the manifests, the language — is the
+project's own. It is not [`../packs/`](../packs/README.md), which holds the third-party
+validation artefacts the syntax engine executes, each under the licence it came with.
 
 A note on what this is and is not. The rule *statements* are facts of EN 16931-1, clause 6.4,
 and they are written here in this project's own words: no expression and no assertion text of
@@ -48,11 +48,14 @@ about agreement is made anywhere in this repository without the ledger that meas
 {
   "id": "en16931",
   "version": "1.3.16",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
   "verifiedAgainst": "CEN/TC 434 eInvoicing EN 16931 validation artefacts, release 1.3.16",
   "description": "…",
   "codeLists": { "untdid-5305": "2026-09-19" },
-  "javaRules": ["de.bsnsoft.esj.rules.en16931.SomeRule"],
+  "javaRules": [{ "class": "…rules.en16931.SomeRule", "oracle": "artefact" }],
   "files": ["rules/br.json", "rules/br-co.json"],
+  "shares": [{ "pack": "en16931", "version": "1.3.16", "file": "rules/br.json",
+               "oracle": "downgrade", "rules": ["BR-01", "BR-02"] }],
   "rules": [ … ]
 }
 ```
@@ -60,9 +63,11 @@ about agreement is made anywhere in this repository without the ledger that meas
 | Member | What it is |
 |---|---|
 | `id`, `version` | the pack, which appears in every finding it produces; a released version is never edited, a newer list or a corrected rule is a new version |
-| `verifiedAgainst` | the release of the official artefacts this pack's behaviour is compared against — a statement of what was measured, not a claim of equivalence |
-| `codeLists` | which day's snapshot of each code list this pack decides membership against ([`en16931/1.3.16/codelists/SOURCES.md`](en16931/1.3.16/codelists/SOURCES.md)) |
-| `javaRules` | the classes of the rules the language cannot express; naming a class is not loading it, see below |
+| `edition` | the edition of the semantic model the rules are addresses in. It is the one member by which the engine decides whether a pack may be compiled against a registry and run over a document, and a pack of another edition is refused rather than run |
+| `verifiedAgainst` | optional: the release of the official artefacts this pack's behaviour is compared against — a statement of what was measured, not a claim of equivalence. A pack of an edition no artefact release covers leaves it out and says per rule what stands behind it |
+| `codeLists` | which day's snapshot of each code list this pack decides membership against ([`en16931/1.3.16/codelists/SOURCES.md`](en16931/1.3.16/codelists/SOURCES.md)). A value may be `{"day": …, "from": "en16931/1.3.16"}` instead, which reads the file of that pack: two editions naming one published list decide against the same bytes |
+| `javaRules` | the rules the language cannot express, each by the name of its class and by its oracle; naming a class is not loading it, see below |
+| `shares` | optional: rules of another pack this pack takes over unchanged, by pack, file and identifier, with the oracle under which it takes them. A rule the next edition leaves alone is the same statement about the same terms, and a copy of it is a second file to keep equal by hand. A rule of the named file that is not named here is not taken over, and a shared rule that addresses a path this edition moved does not compile — which is what keeps sharing from being a guess |
 | `files` | the rule files the pack is made of, each an array of rules, each a path relative to the manifest. Two hundred rules in one file are unreadable and unreviewable, so they are split by family; the rules of the files and the rules the manifest writes itself are one set, and an identifier that appears twice in it is refused |
 | `rules` | the rules written in this language, for a pack small enough to be one file |
 
@@ -86,29 +91,27 @@ that the business rules were not checked, which is what the command line does.
 |---|---|
 | `id` | the identifier the standard gives the rule; it is the code of every finding, so a report can be compared with any other tool's |
 | `severity` | `fatal` or `warning`. `info` is the engine's and says that a rule could not be decided |
+| `oracle` | what stands behind the rule: `artefact` (measured against the official artefacts of a release over the same document), `downgrade` (unchanged against the edition such a release covers, and measured against those artefacts over the document written down to it with `esj upgrade`) or `cases` (hand-computed cases alone). None of the three is a conformance claim |
 | `context` | what the rule is a statement about: `/` for the document, or a business group pattern such as `/BG-25/*`. The rule is evaluated once per instance |
 | `terms` | the business terms and groups the rule reads — documentation, and the column a coverage table is built from |
 | `assert` | what must hold; a finding is produced when it is false |
 | `warn` | optional: a second `assert` and `message`, weighed only where the first assertion holds, whose failure is a warning and decides no verdict |
+| `undecided` | optional: a `when` and a `message`, weighed before `assert`. Where `when` is true the rule is not decided at that instance — an `info` finding, `not decided:` and the message — and nothing else of it is weighed. It names a figure a document may state and the rule has no answer for, such as a price per zero units |
 | `bind` | expressions the message may show under a name, evaluated only when the rule fails |
 | `message` | what the finding says, in this project's own words |
 | `source` | the clause of the standard, as a reference and never as a quotation |
 | `note` | optional: why the rule reads the way it does where the statement admits more than one reading — a tolerance, a rounding, a place where the official artefacts settle what the norm leaves open |
 
 A rule with a `warn` says two things: the first assertion decides the verdict, the second is
-noted. It is written where the two official artefacts of a release do not ask the same closeness
-of the same two figures — the rule faults from the wider reading on and warns inside the zone
-only one artefact grants, naming that syntax (`BR-CO-17`; the `*-08` family says it in Java, by
-answering `warn(context)` beside `check(context)`).
+noted. It is written where the two official artefacts of a release do not ask the same
+closeness of the same two figures — the rule faults from the wider reading on and warns inside
+the zone only one artefact grants, naming that syntax.
 
 ### Context: what a rule is about, and how often it runs
 
 A rule with the context `/` is a statement about the document and runs once. A rule with the
 context `/BG-25/*` is a statement about an invoice line and runs once per line; inside it,
-paths are written relative to that line, so `/BT-131` is *this* line's net amount. An invoice
-with three hundred thousand lines runs such a rule three hundred thousand times, and the
-engine is built so that this costs three hundred thousand times one line rather than three
-hundred thousand times the invoice.
+paths are written relative to that line, so `/BT-131` is *this* line's net amount.
 
 ### Paths: no occurrence index, ever
 
@@ -171,11 +174,11 @@ failed business rule would make one problem look like two.
 Every number is an exact `BigDecimal` and no binary floating point type takes part anywhere.
 Three consequences are worth stating because they are decisions and not accidents.
 
-**Unit prices, quantities and percentages are never rounded, capped or normalised.** EN 16931
-fixes Amount at two fraction digits and leaves Unit Price Amount, Quantity and Percentage
-unlimited, for the reason Annex A.2 gives: a net price derived from a gross price needs many
-decimals. So `decimals` — the operator the `BR-DEC-*` rules are written with — applies to
-Amount alone, and a rule that capped the scale of BT-146, BT-129 or BT-119 does not compile.
+**No number is rounded, capped or normalised unless a rule says so.** How many fraction digits a
+term admits is a fact of its edition, stated by the `BR-DEC-*` rules of its pack with `decimals`:
+the 2017 edition fixes Amount at two and leaves Unit Price Amount, Quantity and Percentage
+unlimited (a net price derived from a gross one needs many decimals, Annex A.2); the 2026
+edition ties an amount to the minor unit of the currency in use and bounds some unit prices.
 
 **`decimals` counts what the number needs, not what a file spells.** The CEN artefacts check an
 XML lexical form and count the fraction digits written there, so `100.00` has two of them. ESJ
@@ -191,10 +194,10 @@ choice made here, and it belongs in the ledger next to the rule.
 **Division names a working precision.** Exact arithmetic is the rule and division is the one
 operation that cannot always keep it: one divided by three has no decimal expansion. A
 division whose exact quotient does not terminate is computed to 34 fraction digits, half up —
-far beyond any figure an invoice carries, and every amount a rule compares is rounded to two
-decimals by the rule that computes it, so the choice can change nothing a rule decides. It
-exists so that a rule dividing by a base quantity of three has a number to go on rather than
-an exception. Division by zero is absent.
+far beyond any figure an invoice carries. A cut quotient can still decide a later rounding that
+lands on a half, so a rule divides once and last: `(BT-146 × BT-129) ÷ BT-149`, not the price per
+unit times the quantity. Division by zero is absent; a rule whose divisor a document may state
+as zero names that case in `undecided`.
 
 `round` is always half up, which is what EN 16931-1, 6.5.13 asks for, and it is the only
 operator that rounds.
@@ -202,7 +205,7 @@ operator that rounds.
 ## The operators
 
 An expression is a JSON object with exactly one member, whose name is the operator. There are
-thirty-one of them and there is no thirty-second: the set is closed, and growing it means changing
+thirty-four of them and there is no thirty-fifth: the set is closed, and growing it means changing
 the schema and the compiler together. That is what keeps a rule file data rather than code, and
 it is what lets the same file be read by an implementation in another language — the reason the
 rules of this project are JSON and not a script.
@@ -217,10 +220,16 @@ Below, every operator with an example that would stand in a real rule.
 | `const` | `{"const": "S"}`, `{"const": 2}`, `{"const": true}` | a literal: text, a whole number, a truth value |
 | `exists` | `{"exists": "/BG-25/*/BG-27/*"}` | whether the document carries anything there |
 | `absent` | `{"absent": "/BG-22/BT-114"}` | whether it carries nothing there |
+| `atRoot` | `{"atRoot": {"value": "/BT-5"}}` | an expression weighed at the document rather than at the business group instance the rule runs in |
+| `minorUnit` | `{"minorUnit": [{"value": "/BT-5"}, "iso-4217"]}` | the number of fraction digits the publisher of a code list gives a code |
+| `unit` | `{"unit": {"const": 2}}` | the value of one unit at that many fraction digits, here `0.01` |
 
 `value` addresses exactly one value and refuses a pattern with an asterisk: what to do with
 many values is the aggregates' business. `exists` and `absent` take either, and either a
-business term or a business group.
+business term or a business group. A path is relative to the context of its rule; only `atRoot`
+reaches past it, to the document — a rule about a line that needs the invoice currency. `minorUnit`
+and `unit` say how many fraction digits an amount carries and how large one unit of the currency
+is; the second operand of `round` and `decimals` is a whole number or an expression yielding one.
 
 ### Comparing
 
@@ -327,14 +336,12 @@ Inside a quantifier the paths are relative to the instance: within
 
 ## Rules written in Java
 
-A few rules of a real pack do not fit a closed operator set, and a language large enough for
-them would be a programming language embedded in a data file. Those are written in Java, as
-`JavaRule` implementations, under the same rule identifier, in the same pack, producing the same
-finding: which side of that line a rule fell on is an implementation detail and not a fact about
-the invoice. A test in `esj-rules` writes one rule both ways and asserts that the two findings
-are equal, member for member. A Java rule reads the invoice through `RuleContext`, which records
-every read in the order it was made — the record the finding reports as the paths the rule
-looked at — and resolves every path against the registry as a rule file's paths are resolved.
+A few rules do not fit a closed operator set, and a language large enough for them would be a
+programming language in a data file. Those are `JavaRule` implementations under the same
+identifier, in the same pack, producing the same finding — a test in `esj-rules` writes one rule
+both ways and asserts the two findings equal, member for member. A Java rule reads the invoice
+through `RuleContext`, which records every read in order — the paths the finding reports — and
+resolves every path against the registry as a rule file's paths are resolved.
 
 **The manifest names the classes; it does not load them.** A file that could name a class the
 engine then instantiates would be a file that decides what code runs, and a pack may arrive
@@ -374,66 +381,57 @@ heap:
 | 100 000 | 423 ms | 0.8 |
 | 300 000 | 1 271 ms | 0.8 |
 
-Thirty times the lines cost twenty-four times the time: the cost per line does not grow.
-
-The measurement is a test of `esj-rules`, so it is taken on every build and a change that
-turned a linear pass into a quadratic one would fail it rather than be noticed in the field.
-**How large the largest measured document is, is the decision of whoever runs the build**: the
-default is a hundred thousand lines, which fits the two gibibytes the module asks for and which
-an ordinary continuous integration machine has. The three-hundred-thousand-line run of the table
-above needs a larger heap and is one command away:
+Thirty times the lines cost twenty-four times the time: the cost per line does not grow. The
+measurement is a test of `esj-rules`, taken on every build, so a linear pass turned quadratic
+fails it. **How large the largest measured document is, is the decision of whoever runs the
+build**: the default is a hundred thousand lines, which fits the two gibibytes the module asks
+for; the three-hundred-thousand-line run needs a larger heap:
 
 ```console
 $ mvn -pl esj-rules test -Desj.rules.linearity.maxLines=300000 -DargLine=-Xmx4g
 ```
 
-Three things in the engine are what make it so, and each is the answer to a way of getting it
-wrong. The business group instances of a rule's context come from **one indexed pass** over the
-document, not from a scan per rule. An aggregate over the whole document is **computed once for
-the whole run**, so a pack in which ten rules mention the sum of the line net amounts walks the
-lines once and not ten times. A pattern evaluated inside a line — that line's allowances — is
-answered from **one range of the sorted map**, so it costs the size of the line and not the size
-of the invoice.
+Three things make it so. The business group instances of a rule's context come from **one
+indexed pass** over the document. An aggregate over the whole document is **computed once for
+the whole run**, so ten rules that mention the sum of the line net amounts walk the lines once.
+A pattern inside a line is answered from **one range of the sorted map**, so it costs the size
+of the line, not of the invoice.
 
-## The pack this repository carries
+## The packs this repository carries
 
-[`en16931/1.3.16/`](en16931/1.3.16/pack.json) is the EN 16931 pack: 217 rules over the business
-terms, 189 in this language and 28 in Java, with seventeen code list snapshots. What it covers,
-rule by rule, is [`conformance/rules/coverage.md`](../conformance/rules/coverage.md); what it says
-about documents that are known to be good is
-[`conformance/rules/corpus.md`](../conformance/rules/corpus.md); the rules it does not carry and
-why are [`conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md); and what
-happens when the pack and the official artefacts are run over the same bytes, including bytes
-broken on purpose, is [`conformance/rules/ledger.md`](../conformance/rules/ledger.md).
+| Pack | Edition | Rules | Artefacts | Coverage |
+|---|---|---|---|---|
+| [`en16931/1.3.16/`](en16931/1.3.16/pack.json) | EN 16931-1:2017+A1:2019/AC:2020 | 217, of which 189 in this language and 28 in Java | release 1.3.16 | [`conformance/rules/coverage.md`](../conformance/rules/coverage.md) |
+| [`en16931-2026/0.1/`](en16931-2026/0.1/pack.json) | EN 16931-1:2026 | 252, of which 104 taken over from the pack above and 35 in Java | none is published | [`conformance/rules-2026/coverage.md`](../conformance/rules-2026/coverage.md) |
 
-Two claims are worth making here. Every rule has a case in `esj-rules`: a document the rule is
-silent on and the same document with one thing changed, which it speaks on. And over the 86
-instances of the conformance corpus — invoices the official validator accepts — this pack and
-the official EN 16931 Schematron of the same release report on the same four, with the same
-rule identifiers, and are silent on the other 82.
+Every rule of the first pack has a case in `esj-rules`: a document the rule is silent on and the
+same document with one thing changed, which it speaks on. Over the 86 instances of the
+conformance corpus the pack and the official EN 16931 Schematron of the same release report on
+the same four ([`corpus.md`](../conformance/rules/corpus.md)). Over 448 mutations broken on
+purpose, of the 217 rules the two report the same identifiers on every shape measured for 166,
+agree on one shape and differ on another for 33, differ outright for 16 and cannot be compared
+for 2 — each of the 51 named in [`ledger.md`](../conformance/rules/ledger.md), none open;
+[`not-applicable.md`](../conformance/rules/not-applicable.md) lists the rules it does not carry.
 
-Agreement with the official artefacts beyond that is measured rather than claimed: both engines
-are run over the same bytes, including 448 mutations of the corpus broken on purpose, and the
-identifiers are counted rule by rule. Of the 217 rules, the two report the same identifiers on
-every shape measured for 166, agree on one shape of a defect and differ on another for 33,
-differ outright for 16 and cannot be compared at all for 2 — each of the 51 named in
-[`conformance/rules/ledger.md`](../conformance/rules/ledger.md) with the reason for it, and
-none of them open. That page is what licenses a claim, and no page of this repository says more
-than the figures in it.
+**No official validation artefact is published for EN 16931-1:2026**, so nothing in the second
+pack is corroborated by one and a document of that edition never reaches `VALID`. Every rule
+names in `oracle` what stands behind it, and
+[`conformance/rules-2026/ledger.md`](../conformance/rules-2026/ledger.md) measures both: the 108
+rules the edition leaves unchanged go through the artefacts of release 1.3.16 over the document
+written back, the 144 it changed or adds through cases of this project.
 
 ## Adding a rule
 
 1. Read the statement in EN 16931-1, clause 6.4: the identifier, the terms, the condition.
-   Write it in this language, in this project's words. Do not open the CEN artefacts' XPath for
-   it; their behaviour is the oracle, not the source.
+   Write it in this language, in this project's words. Do not open the CEN artefacts' XPath;
+   their behaviour is the oracle, not the source.
 2. Give it the identifier the standard gives it, its clause in `source`, and the terms it reads
    in `terms`.
-3. Add a positive case and at least one negative fixture — an instance of the conformance
-   corpus, a location in it and one change to make there, kept as data, so that no broken
-   invoice is checked in.
-4. Run it beside the official artefacts over the same bytes and record the agreement and every
-   deviation in the ledger. Only the ledger licenses a claim, and the claim never goes further
-   than the figures in it.
+3. Add a positive case and a negative fixture — a corpus instance, a location in it and one
+   change there, as data, so that no broken invoice is checked in.
+4. Where the edition has artefacts, run the rule beside them over the same bytes and record
+   every deviation in the ledger; where it has none, say so in `oracle`. Only a measurement
+   licenses a claim.
 
-`CONTRIBUTING.md`, under **Adding or changing a semantic rule**, is the same four steps with
-the files each one touches and the tests that hold them together.
+`CONTRIBUTING.md`, under **Adding or changing a semantic rule**, is the same four steps with the
+files each touches and the tests that hold them together.

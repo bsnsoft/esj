@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { readDocumentOrThrow } from '../src/reader.ts';
 import { invoiceOf, SEMANTIC_MODEL } from '../src/generated/en16931-2017/view.ts';
-import { invoiceOf as invoiceOf2026 } from '../src/generated/en16931-2026/view.ts';
 import { registries } from '../src/node/data.ts';
 
 /**
@@ -53,7 +52,11 @@ test('the edition each view reads is the edition it was generated from', () => {
   assert.ok(registries().some((registry) => registry.semanticModel === SEMANTIC_MODEL));
 });
 
-test('the 2026 view reads a document of its own edition', () => {
+/** Whether this build carries the later edition, whose view is generated only then. */
+const LATER_EDITION = registries().some((registry) => registry.semanticModel === 'EN16931-1:2026');
+
+test('the 2026 view reads a document of its own edition', { skip: !LATER_EDITION }, async () => {
+  const { invoiceOf: invoiceOf2026 } = await import('../src/generated/en16931-2026/view.ts');
   const invoice = invoiceOf2026(example('edition-2026.esj.json'));
   assert.equal(invoice.path, '');
   assert.ok(invoice.invoiceNumber().value.length > 0);

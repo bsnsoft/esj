@@ -566,9 +566,14 @@ final class TypedSources {
                         + " editor of the same document, in canonical path order"));
         body.append("     */\n");
         body.append("    SemanticDocument document();\n");
-        if (group.isRoot() && typedPackage.equals(BASE_PACKAGE)) {
+        if (group.isRoot()) {
             imports.add("java.util.Objects");
-            body.append(derivation());
+            shared(imports, "DerivationReport");
+            shared(imports, "DerivationException");
+            body.append(derivation(typedPackage.equals(BASE_PACKAGE)
+                    ? "{@code Totals.STANDARD}"
+                    : "{@code Totals.of(minorUnits)}, with the minor units of the currency"
+                            + " list snapshot the rule pack of the edition carries"));
         }
 
         for (Member member : members(group, imports)) {
@@ -588,15 +593,15 @@ final class TypedSources {
      * emitted. The body is a single call; everything the derivation does is in
      * {@code Totals}, which no generator produced.
      *
-     * <p>It is emitted for the view of one edition only, the one {@code Totals} is
-     * written against. The arithmetic of the standard is stated per edition — which terms
-     * enter a sum, and how many fraction digits an amount may carry — so a derivation for
-     * another edition is another policy, and a view of another edition is generated
-     * without the hook rather than with one that would compute the wrong invoice.
+     * <p>The arithmetic of the standard is stated per edition — which terms enter a sum,
+     * and how many fraction digits an amount may carry — so every edition's package carries
+     * a {@code Totals} of its own, hand-written beside the generated view, and the hook
+     * names the one of its package.
      *
+     * @param example how a caller obtains the policy of the package, as javadoc text
      * @return the source of the method, javadoc included
      */
-    private static String derivation() {
+    private static String derivation(String example) {
         StringBuilder body = new StringBuilder("\n    /**\n");
         body.append(JavaText.wrap("    ", " * ",
                 "Derives the amounts this invoice adds up to and writes them into it: the invoice"
@@ -610,7 +615,7 @@ final class TypedSources {
                 + " where it refuses is written down in {@link Totals}."));
         body.append("     *\n");
         body.append(JavaText.wrap("    ", " * @param policy ",
-                "the derivation policy, for instance {@code Totals.STANDARD}"));
+                "the derivation policy, for instance " + example));
         body.append(JavaText.wrap("    ", " * @return ",
                 "what the policy wrote and where it rounded"));
         body.append(JavaText.wrap("    ", " * @throws DerivationException ",

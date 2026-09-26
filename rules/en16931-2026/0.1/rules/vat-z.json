@@ -1,0 +1,180 @@
+[
+  {
+    "id": "BR-Z-01",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BG-20",
+      "BG-21",
+      "BG-23",
+      "BG-25",
+      "BT-95",
+      "BT-102",
+      "BT-118",
+      "BT-151"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "or": [
+            {
+              "any": {
+                "group": "/BG-25/*",
+                "assert": {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "Z"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "any": {
+                "group": "/BG-20/*",
+                "assert": {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "Z"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "any": {
+                "group": "/BG-21/*",
+                "assert": {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "Z"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "then": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "Z"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "An invoice line, a document level allowance or a document level charge or tax is categorised \"Z\" (zero rated), and no VAT breakdown (BG-23) carries that VAT category code (BT-118).",
+    "source": "EN 16931-1:2026, 6.4.3.4.2, Table 7, BR-Z-1",
+    "note": "The 2017 edition asked for exactly one breakdown of the category; this edition asks for at least one, so a document with two of them is no longer wrong."
+  },
+  {
+    "id": "BR-Z-04",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-102",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-21/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-102"
+                },
+                {
+                  "const": "Z"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "A document level charge or tax (BG-21) is categorised \"Z\" (zero rated), and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.2, Table 7, BR-Z-4",
+    "note": "Against the 2017 edition the identifiers the rule asks for are the same; the group it is about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-Z-07",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102",
+      "BT-103"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-102"
+            },
+            {
+              "const": "Z"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BT-103"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-103"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The document level charge or tax at {.} is categorised \"Z\" (zero rated) and states the VAT rate {/BT-103}; under this category the rate is zero.",
+    "source": "EN 16931-1:2026, 6.4.3.4.2, Table 7, BR-Z-7",
+    "note": "Against the 2017 edition the statement is the same; the group it is about now carries non-VAT taxes as well."
+  }
+]

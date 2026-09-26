@@ -57,6 +57,10 @@ conformance/
     mutations/               instances broken on purpose, as data: a location, the changes,
                              and what each engine is expected to report about the result
     mutate.py                writes those documents out, for a reader who wants one
+  rules-2026/
+    coverage.md              which rule of the 2026 edition its pack carries, and why not
+    ledger.md, ledger.json   what stands behind each oracle, checked on every build
+    cases/cases.json         the hand-computed cases of the rules whose oracle is cases
   scale/                     the generator for synthetic instances of tens of megabytes and
                              hundreds of thousands of lines, which the corpus has none of;
                              see scale/README.md. What it writes is not checked in.
@@ -88,11 +92,8 @@ conformance/
     matrix.json              those four verdicts per business case, and the totals
 ```
 
-One page per syntax the project writes, plus one that compares the two.
-
-`creditnote/` is the one place here that holds a document nobody else wrote: a table that no
-test reaches is a table nobody has measured, and three defects of `ubl-creditnote.json` were
-found within minutes of one credit note existing.
+`creditnote/` is the one place here that holds a document nobody else wrote: a table no test
+reaches is a table nobody has measured.
 
 `readers.md` and `readers.json` are about the corpus: every instance is read both ways and
 every differing semantic path is traced to a cause. `ReaderCorpusTest` in `esj-bindings`
@@ -100,9 +101,8 @@ recomputes the whole comparison on every build — both readers run, neither is 
 checked-in file — and fails where a difference is not one the report explains, where a count
 has moved, or where an instance the two readers agreed on stops agreeing.
 
-The report under `bindings/` is not about documents: it measures a table of the repository
-against other descriptions of the same two syntaxes. It is checked in for the same reason the
-ledgers are, and a test of `esj-core` fails when it leaves a difference unexplained.
+The report under `bindings/` measures a table of the repository against other descriptions of
+the two syntaxes; a test of `esj-core` fails when it leaves a difference unexplained.
 
 An ESJ file records in its `source` member the syntax it came from and the SHA-256 of the bytes
 it was read from, so every file under `esj/` names the instance it belongs to.

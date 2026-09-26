@@ -12,6 +12,10 @@ package de.bsnsoft.esj.rules;
  * make one problem look like two and would put the blame in the wrong place — the rule did
  * not fail, it was never given the number it is about.
  *
+ * <p>A rule raises it as well where the case its {@code undecided} member names holds: a
+ * figure the document may state and the rule has no answer for, such as a price stated per
+ * zero units. The finding is the same, with the reason the rule gives.
+ *
  * <p>The exception travels no further than the rule instance it was raised in. Every other
  * rule, and the same rule at every other business group instance, is evaluated as usual.
  */

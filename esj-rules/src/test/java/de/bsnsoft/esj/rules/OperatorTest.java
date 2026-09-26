@@ -211,26 +211,43 @@ class OperatorTest {
     }
 
     @Test
-    void decimalsRefusesATermWhoseScaleTheStandardLeavesOpen() {
-        assertRefusesDecimals("/BG-25/*", "/BG-29/BT-146");
-        assertRefusesDecimals("/BG-25/*", "/BT-129");
-        assertRefusesDecimals("/BG-23/*", "/BT-119");
+    void decimalsServesEveryNumericTerm() {
+        assertDecidesDecimals("/BG-25/*", "/BG-29/BT-146");
+        assertDecidesDecimals("/BG-25/*", "/BT-129");
+        assertDecidesDecimals("/BG-23/*", "/BT-119");
     }
 
-    private static void assertRefusesDecimals(String context, String path) {
-        RulePackException refused = assertThrows(RulePackException.class, () -> Packs.run(
-                MINIMAL, context, "{\"decimals\": [\"" + path + "\", 2]}"));
-
-        assertTrue(refused.getMessage().contains("decimals applies to Amount alone"),
-                refused.getMessage());
+    private static void assertDecidesDecimals(String context, String path) {
+        assertFalse(Packs.run(MINIMAL, context, "{\"decimals\": [\"" + path + "\", 2]}")
+                .stream().anyMatch(finding -> finding.severity() == RuleSeverity.FATAL));
     }
 
     @Test
-    void decimalsAppliesToAnAmountAlone() {
+    void decimalsAppliesToANumericTermAlone() {
         RulePackException refused = assertThrows(RulePackException.class, () -> Packs.run(MINIMAL,
                 "{\"decimals\": [\"/BT-5\", 2]}"));
 
-        assertTrue(refused.getMessage().contains("decimals applies to Amount alone"));
+        assertTrue(refused.getMessage().contains("decimals applies to a numeric term"));
+    }
+
+    @Test
+    void aScaleMayBeAnExpressionOverTheCurrencyInUse() {
+        SemanticDocument two = Documents.set(Documents.minimal(), "/BG-22/BT-106", "100.01").build();
+
+        assertFalse(Packs.fails(two, "{\"decimals\": [\"/BG-22/BT-106\","
+                + " {\"minorUnit\": [{\"value\": \"/BT-5\"}, \"iso-4217\"]}]}",
+                Packs.currencies()));
+        assertTrue(Packs.fails(two, "{\"decimals\": [\"/BG-22/BT-106\","
+                + " {\"sub\": [{\"minorUnit\": [{\"value\": \"/BT-5\"}, \"iso-4217\"]},"
+                + " {\"const\": 1}]}]}", Packs.currencies()));
+    }
+
+    @Test
+    void unitIsTheValueOfOneUnitAtANumberOfFractionDigits() {
+        assertFalse(Packs.fails(MINIMAL, "{\"eq\": [{\"unit\": {\"const\": 2}},"
+                + " {\"const\": \"0.01\"}]}"));
+        assertFalse(Packs.fails(MINIMAL, "{\"eq\": [{\"unit\": {\"const\": 0}},"
+                + " {\"const\": 1}]}"));
     }
 
     @Test

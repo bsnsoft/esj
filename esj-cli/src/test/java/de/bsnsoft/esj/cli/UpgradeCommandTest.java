@@ -147,6 +147,26 @@ class UpgradeCommandTest {
         assertTrue(report.contains("\"statements\""), report);
     }
 
+    /**
+     * The bound the 2026 edition states over the minor unit of the currency is evaluated
+     * with the currency list snapshot of the rule pack of that edition: the report names
+     * the value that exceeds it, the currency and the snapshot, and leaves the value as it
+     * was.
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void aBoundOverTheMinorUnitIsEvaluatedWithTheSnapshotOfThePack() {
+        String longer = new String(Fixtures.bytes(MINIMAL), StandardCharsets.UTF_8)
+                .replace("\"/BG-22/BT-109\": \"100\"", "\"/BG-22/BT-109\": \"100.001\"");
+        Path written = out("decimals.esj.json");
+        Cli.Run run = Cli.run(longer.getBytes(StandardCharsets.UTF_8), "upgrade", "-",
+                "--to", "2026", "--out", written.toString(), "--output", "json");
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertTrue(run.text().contains("\"kind\": \"decimals-out-of-bounds\""), run.text());
+        assertTrue(run.text().contains("in the rule pack en16931-2026"), run.text());
+        assertFalse(run.text().contains("decimals-not-evaluated"), run.text());
+    }
+
     @Test
     @EnabledIf("carries2026")
     void theSpecificationIdentifierIsWrittenOnlyWhereTheCallerNamesIt() {

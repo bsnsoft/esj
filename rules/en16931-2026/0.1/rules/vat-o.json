@@ -1,0 +1,70 @@
+[
+  {
+    "id": "BR-O-07",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102",
+      "BT-103"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-102"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "absent": "/BT-103"
+        }
+      }
+    },
+    "message": "The document level charge or tax at {.} is categorised \"O\" (not subject to VAT) and states a VAT rate of {/BT-103}; under this category no rate is stated.",
+    "source": "EN 16931-1:2026, 6.4.3.4.12, Table 12, BR-O-7",
+    "note": "Against the 2017 edition the statement is the same; the group it is about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-O-10",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-118",
+      "BT-120",
+      "BT-121"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-118"
+            },
+            {
+              "const": "O"
+            }
+          ]
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BT-120"
+            },
+            {
+              "exists": "/BT-121"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"O\" (not subject to VAT) and states no exemption reason: neither a reason text (BT-120) nor an exemption reason and specification code (BT-121) is there.",
+    "source": "EN 16931-1:2026, 6.4.3.4.12, Table 12, BR-O-10",
+    "note": "Against the 2017 edition the two terms are the same; the code list of BT-121 specifies as well as excuses in this edition."
+  }
+]

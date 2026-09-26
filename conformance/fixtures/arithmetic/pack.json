@@ -1,12 +1,14 @@
 {
   "id": "fixtures-arithmetic",
   "version": "1",
+  "edition": "EN 16931-1:2017+A1:2019/AC:2020",
   "verifiedAgainst": "nothing: the quotients were worked out by hand from rules/README.md, Decimals",
   "description": "Division in the rule language, for every implementation of it. Each DIV-EXACT and DIV-ROUNDED rule asserts that a quotient is not the value worked out by hand for it, so an engine that divides as rules/README.md says reports every one of them: exactly where the quotient terminates, however many fraction digits that takes, and to 34 fraction digits, half up, where it does not. A rule the engine leaves silent names a quotient it computed differently or not at all. The two DIV-BY-ZERO rules report nothing, because the quotient they read is absent. No rule reads a business term; each names BT-1 because a rule has to name one.",
   "rules": [
     {
       "id": "DIV-EXACT-35",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "0.00000000000000000000000000000000001"}, {"const": "1"}]}, {"const": "0.00000000000000000000000000000000001"}]},
@@ -17,6 +19,7 @@
     {
       "id": "DIV-EXACT-36",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "0.000000000000000000000000000000001"}, {"const": "8"}]}, {"const": "0.000000000000000000000000000000000125"}]},
@@ -27,6 +30,7 @@
     {
       "id": "DIV-EXACT-50",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "1"}, {"const": "1125899906842624"}]}, {"const": "0.00000000000000088817841970012523233890533447265625"}]},
@@ -37,6 +41,7 @@
     {
       "id": "DIV-EXACT-EIGHTH",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "1"}, {"const": "8"}]}, {"const": "0.125"}]},
@@ -47,6 +52,7 @@
     {
       "id": "DIV-EXACT-REDUCED",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "0.3"}, {"const": "1.2"}]}, {"const": "0.25"}]},
@@ -57,6 +63,7 @@
     {
       "id": "DIV-ROUNDED-DOWN",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "1"}, {"const": "3"}]}, {"const": "0.3333333333333333333333333333333333"}]},
@@ -67,6 +74,7 @@
     {
       "id": "DIV-ROUNDED-UP",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "2"}, {"const": "3"}]}, {"const": "0.6666666666666666666666666666666667"}]},
@@ -77,6 +85,7 @@
     {
       "id": "DIV-ROUNDED-NEGATIVE",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "-2"}, {"const": "3"}]}, {"const": "-0.6666666666666666666666666666666667"}]},
@@ -87,6 +96,7 @@
     {
       "id": "DIV-ROUNDED-FRACTION-DIGITS",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "10"}, {"const": "3"}]}, {"const": "3.3333333333333333333333333333333333"}]},
@@ -97,6 +107,7 @@
     {
       "id": "DIV-ROUNDED-SMALL",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "1"}, {"const": "3000"}]}, {"const": "0.0003333333333333333333333333333333"}]},
@@ -107,6 +118,7 @@
     {
       "id": "DIV-BY-ZERO-EQ",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"eq": [{"div": [{"const": "1"}, {"const": "0"}]}, {"const": "0"}]},
@@ -118,6 +130,7 @@
     {
       "id": "DIV-BY-ZERO-NE",
       "severity": "fatal",
+      "oracle": "cases",
       "context": "/",
       "terms": ["BT-1"],
       "assert": {"ne": [{"div": [{"const": "1"}, {"const": "0"}]}, {"const": "0"}]},

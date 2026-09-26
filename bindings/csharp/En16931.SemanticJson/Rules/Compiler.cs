@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -47,7 +48,7 @@ internal sealed record Compiled(Expression Expression, RuleType Type, string? Li
 /// everything it cannot turn.
 /// </summary>
 /// <remarks>
-/// The operator set is closed. There are thirty-one operators and there is no way to add
+/// The operator set is closed. There are thirty-four operators and there is no way to add
 /// another without changing this class and <c>rules/rule.schema.json</c> together, which is
 /// the point: a rule file is data, and data that could name an arbitrary function would be
 /// code. A closed set is also what lets the same rule file be read by an implementation in
@@ -121,6 +122,9 @@ internal sealed class Compiler
             "count" => Count(argument, scope, at),
             "round" => Round(argument, scope, at),
             "decimals" => DecimalsOf(argument, scope, at),
+            "minorUnit" => MinorUnit(argument, scope, at),
+            "atRoot" => AtRoot(argument, at),
+            "unit" => Unit(argument, scope, at),
             "abs" => Abs(argument, scope, at),
             "inList" => InList(argument, scope, at),
             "matches" => Matches(argument, scope, at),
@@ -461,12 +465,136 @@ internal sealed class Compiler
         }
 
         Expression value = Coerce(Compile(parts[0], scope, where), RuleType.Decimal, where).Expression;
-        int scale = AsInt(parts[1], where + ": the scale of round", 0, MaxScale);
+        Expression scale = ScaleOf(parts[1], scope, where, "round");
         return new Compiled(
             (evaluation, basePath) =>
             {
                 RuleValue number = value(evaluation, basePath);
-                return number.IsAbsent ? RuleValue.Absent : RuleValue.Of(number.Decimal.SetScale(scale));
+                RuleValue digits = scale(evaluation, basePath);
+                if (number.IsAbsent || digits.IsAbsent)
+                {
+                    return RuleValue.Absent;
+                }
+
+                int at = Digits(digits);
+                return at < 0 ? RuleValue.Absent : RuleValue.Of(number.Decimal.SetScale(at));
+            },
+            RuleType.Decimal,
+            null);
+    }
+
+    /// <summary>
+    /// Compiles the second operand of <c>round</c> and <c>decimals</c>: a whole number of
+    /// fraction digits, or an expression that yields one, which is how a rule of an edition
+    /// that ties the number to the currency in use writes it.
+    /// </summary>
+    private Expression ScaleOf(JsonElement written, Scope scope, string where, string operatorName)
+    {
+        if (written.ValueKind == JsonValueKind.Number)
+        {
+            RuleValue constant = RuleValue.Of(BigDecimal.FromInt64(
+                AsInt(written, where + ": the scale of " + operatorName, 0, MaxScale)));
+            return (_, _) => constant;
+        }
+
+        return Coerce(Compile(written, scope, where), RuleType.Decimal, where).Expression;
+    }
+
+    /// <summary>Returns a computed scale as a number of fraction digits, or -1 where it is none.</summary>
+    private static int Digits(RuleValue value)
+    {
+        BigDecimal number = value.Decimal.StripTrailingZeros();
+        if (number.Scale > 0 || number.Unscaled < 0 || number.Unscaled > MaxScale)
+        {
+            return -1;
+        }
+
+        return (int)number.Unscaled;
+    }
+
+    /// <summary>
+    /// Compiles <c>minorUnit</c>: the number of fraction digits the publisher of a code list
+    /// gives a code. A list that publishes no such number is refused, because a rule that asked
+    /// it for one would never be decided. A code the list does not carry yields nothing; a code
+    /// it carries without a number makes the rule not decided.
+    /// </summary>
+    private Compiled MinorUnit(JsonElement argument, Scope scope, string where)
+    {
+        List<JsonElement> parts = AsArray(argument, where);
+        if (parts.Count != 2)
+        {
+            throw new RulePackException(where + ": minorUnit takes an expression and a list identifier");
+        }
+
+        Expression code = Coerce(Compile(parts[0], scope, where), RuleType.Text, where).Expression;
+        string listId = AsString(parts[1], where + ": the list identifier");
+        CodeList list = _codeLists.Require(listId);
+        if (!list.PublishesMinorUnits)
+        {
+            throw new RulePackException(where + ": the snapshot of " + listId
+                + " publishes no number of fraction digits, and a rule that asked it for one would"
+                + " never be decided");
+        }
+
+        return new Compiled(
+            (evaluation, basePath) =>
+            {
+                RuleValue value = code(evaluation, basePath);
+                if (value.IsAbsent)
+                {
+                    return RuleValue.Absent;
+                }
+
+                int? digits = list.MinorUnit(value.Text);
+                if (digits is not null)
+                {
+                    return RuleValue.Of(BigDecimal.FromInt64(digits.Value));
+                }
+
+                if (list.Contains(value.Text))
+                {
+                    throw new UndecidedException("the code " + value.Text + " is on the list " + listId
+                        + ", which gives it no number of fraction digits");
+                }
+
+                return RuleValue.Absent;
+            },
+            RuleType.Decimal,
+            null);
+    }
+
+    /// <summary>
+    /// Compiles <c>atRoot</c>: an expression weighed at the document rather than at the
+    /// business group instance the rule is evaluated in. What is inside is compiled as if the
+    /// rule stood at the document, so only the document is reachable from it, and the patterns
+    /// it reads are foreseen for the one pass a run makes over the document.
+    /// </summary>
+    private Compiled AtRoot(JsonElement argument, string where)
+    {
+        Compiled inner = Compile(argument, new Scope(Array.Empty<string>(), true), where);
+        Expression expression = inner.Expression;
+        return new Compiled(
+            (evaluation, _) => expression(evaluation, SemanticPath.Root()), inner.Type, inner.Literal);
+    }
+
+    /// <summary>
+    /// Compiles <c>unit</c>: the value of one unit at a number of fraction digits, ten raised
+    /// to the negative of it, which is how a rule writes a tolerance stated per minor unit.
+    /// </summary>
+    private Compiled Unit(JsonElement argument, Scope scope, string where)
+    {
+        Expression scale = Coerce(Compile(argument, scope, where), RuleType.Decimal, where).Expression;
+        return new Compiled(
+            (evaluation, basePath) =>
+            {
+                RuleValue digits = scale(evaluation, basePath);
+                if (digits.IsAbsent)
+                {
+                    return RuleValue.Absent;
+                }
+
+                int at = Digits(digits);
+                return at < 0 ? RuleValue.Absent : RuleValue.Of(new BigDecimal(BigInteger.One, at));
             },
             RuleType.Decimal,
             null);
@@ -482,23 +610,34 @@ internal sealed class Compiler
 
         PathPattern pattern = SingleValuePath(AsString(parts[0], where), scope, where);
         SemanticType type = DatatypeOf(pattern, where);
-        if (type != SemanticType.Amount)
+        if (!type.IsDecimal())
         {
             throw new RulePackException(where + ": " + pattern.LastTerm + " is "
-                + type.RegistryDatatype() + ", and decimals applies to Amount alone. Unit Price"
-                + " Amount, Quantity and Percentage have no fixed scale in EN 16931-1, 6.5, and a"
-                + " rule that capped one of them would refuse a net price this standard expects"
-                + " to carry many fraction digits");
+                + type.RegistryDatatype() + ", and decimals applies to a numeric term. How many"
+                + " fraction digits a term admits is a fact of the edition it belongs to, and the"
+                + " rule that states it says which number it means");
         }
 
-        int maxScale = AsInt(parts[1], where + ": the maximum scale of decimals", 0, MaxScale);
+        Expression maxScale = ScaleOf(parts[1], scope, where, "decimals");
         return new Compiled(
             (evaluation, basePath) =>
             {
                 RuleValue number = evaluation.Read(pattern, basePath, type);
-                return number.IsAbsent
+                if (number.IsAbsent)
+                {
+                    return RuleValue.Absent;
+                }
+
+                RuleValue digits = maxScale(evaluation, basePath);
+                if (digits.IsAbsent)
+                {
+                    return RuleValue.Absent;
+                }
+
+                int at = Digits(digits);
+                return at < 0
                     ? RuleValue.Absent
-                    : RuleValue.Of(Math.Max(0, number.Decimal.StripTrailingZeros().Scale) <= maxScale);
+                    : RuleValue.Of(Math.Max(0, number.Decimal.StripTrailingZeros().Scale) <= at);
             },
             RuleType.Boolean,
             null);

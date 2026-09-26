@@ -48,10 +48,15 @@ internal sealed record RegistryCase(
     IReadOnlyList<JsonElement> SamplePaths);
 
 /// <summary>One rule case: a conformant document, the changes, and what the pack reports.</summary>
+/// <remarks>
+/// The document is a file of the repository named by <c>Base</c>, or, where the case file
+/// carries the documents its cases start from, <c>Carried</c>.
+/// </remarks>
 internal sealed record RuleCase(
     string Id,
     string Rule,
     string Base,
+    JsonElement? Carried,
     IReadOnlyList<JsonElement> Changes,
     IReadOnlyList<string> Rules,
     IReadOnlyList<string> Warnings);
@@ -190,14 +195,16 @@ internal static class Manifest
     private static Dictionary<string, RuleCase> ReadRules()
     {
         Dictionary<string, RuleCase> cases = new(StringComparer.Ordinal);
-        foreach (JsonElement entry in Fixtures.Cases())
+        foreach ((JsonElement file, JsonElement entry) in Fixtures.Cases())
         {
             string id = entry.GetProperty("id").GetString()!;
             JsonElement expect = entry.GetProperty("expect");
+            bool carried = entry.TryGetProperty("baseDocument", out JsonElement named);
             cases[id] = new RuleCase(
                 id,
                 entry.GetProperty("rule").GetString()!,
-                entry.GetProperty("base").GetString()!,
+                carried ? string.Empty : entry.GetProperty("base").GetString()!,
+                carried ? file.GetProperty("bases").GetProperty(named.GetString()!) : null,
                 entry.GetProperty("changes").EnumerateArray().ToList(),
                 expect.GetProperty("rules").EnumerateArray().Select(rule => rule.GetString()!).ToList(),
                 expect.GetProperty("warnings").EnumerateArray().Select(rule => rule.GetString()!).ToList());

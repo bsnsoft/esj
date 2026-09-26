@@ -109,7 +109,7 @@
     <!--
       The files of EN 16931-1:2026 are separable: model/en16931/2026.paths lists the
       files a distribution leaves out when that edition is not shipped, and the profile
-      without-edition-2026 builds such a distribution. These two patterns are what that profile changes; by default
+      without-edition-2026 builds such a distribution. These patterns are what that profile changes; by default
       they match nothing, so nothing is left out. An edition is data, so leaving one
       out is a question for the build and never a question for the code.
     -->
@@ -117,6 +117,9 @@
     <esj.edition-2026.exclude-upgrade>en16931/no-mapping-is-excluded</esj.edition-2026.exclude-upgrade>
     <esj.edition-2026.exclude-schema>no-schema-is-excluded</esj.edition-2026.exclude-schema>
     <esj.edition-2026.exclude-sources>**/no-edition-is-excluded/**</esj.edition-2026.exclude-sources>
+    <esj.edition-2026.exclude-rules>no-pack-is-excluded/**</esj.edition-2026.exclude-rules>
+    <esj.edition-2026.exclude-conformance>no-measurement-is-excluded/**</esj.edition-2026.exclude-conformance>
+    <esj.edition-2026.exclude-service>META-INF/services/no-service-is-excluded</esj.edition-2026.exclude-service>
     <esj.edition-2026.exclude-examples>**/no-example-is-excluded*</esj.edition-2026.exclude-examples>
     <esj.edition-2026.exclude-fixtures>**/no-part-is-excluded*</esj.edition-2026.exclude-fixtures>
     <exec-maven-plugin.version>3.6.4</exec-maven-plugin.version>
@@ -455,9 +458,12 @@
         <esj.edition-2026.exclude>en16931/2026*</esj.edition-2026.exclude>
         <esj.edition-2026.exclude-upgrade>en16931/upgrade-*</esj.edition-2026.exclude-upgrade>
         <esj.edition-2026.exclude-schema>esj-en16931-2026.schema.json</esj.edition-2026.exclude-schema>
-        <esj.edition-2026.exclude-sources>**/typed/v2026/**</esj.edition-2026.exclude-sources>
+        <esj.edition-2026.exclude-sources>**/v2026/**</esj.edition-2026.exclude-sources>
+        <esj.edition-2026.exclude-rules>en16931-2026/**</esj.edition-2026.exclude-rules>
+        <esj.edition-2026.exclude-conformance>rules-2026/**</esj.edition-2026.exclude-conformance>
+        <esj.edition-2026.exclude-service>META-INF/services/de.bsnsoft.esj.rules.RulePackSource</esj.edition-2026.exclude-service>
         <esj.edition-2026.exclude-examples>**/edition-2026*</esj.edition-2026.exclude-examples>
-        <esj.edition-2026.exclude-fixtures>fixtures/manifest-en16931-2026.json</esj.edition-2026.exclude-fixtures>
+        <esj.edition-2026.exclude-fixtures>fixtures/*en16931-2026*</esj.edition-2026.exclude-fixtures>
       </properties>
     </profile>
   </profiles>

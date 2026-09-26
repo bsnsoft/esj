@@ -116,6 +116,12 @@ public enum Phrase {
     /** The row of the native rule engine. One argument: the pack, with its version. */
     ROW_RULES,
 
+    /**
+     * The row of the native rule engine where the pack is of an edition no official artefact
+     * release covers. One argument: the pack, with its version.
+     */
+    ROW_RULES_UNCORROBORATED,
+
     /** One finding of a row that weighs nothing for the verdict. One argument: {@code 1}. */
     NOTE,
 

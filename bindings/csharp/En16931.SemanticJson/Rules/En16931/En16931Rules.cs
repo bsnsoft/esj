@@ -49,6 +49,21 @@ public static class En16931Pack
     }
 }
 
+/// <summary>The EN 16931 pack as one of the packs of this build, by the edition it is written for.</summary>
+internal sealed class En16931PackSource : IRulePackSource
+{
+    private readonly Lazy<RulePack> _pack = new(En16931Pack.Pack);
+
+    /// <inheritdoc />
+    public string Edition => _pack.Value.Edition;
+
+    /// <inheritdoc />
+    public RulePack Pack() => _pack.Value;
+
+    /// <inheritdoc />
+    public RuleEngine Engine(Registry registry) => En16931Pack.Engine(registry);
+}
+
 /// <summary>BR-62: the seller electronic address names an identification scheme.</summary>
 internal sealed class Br62 : SchemeIdentifier
 {

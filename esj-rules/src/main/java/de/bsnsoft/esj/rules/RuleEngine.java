@@ -53,15 +53,18 @@ public final class RuleEngine {
     private final List<CompiledRule> rules;
     private final Set<String> rootValueKeys;
     private final Set<String> rootGroupKeys;
+    private final Map<String, RuleOracle> oracles;
 
     private RuleEngine(RulePack pack, Registry registry, CodeLists codeLists,
-                       List<CompiledRule> rules, Set<String> rootValueKeys, Set<String> rootGroupKeys) {
+                       List<CompiledRule> rules, Set<String> rootValueKeys, Set<String> rootGroupKeys,
+                       Map<String, RuleOracle> oracles) {
         this.pack = pack;
         this.registry = registry;
         this.codeLists = codeLists;
         this.rules = rules;
         this.rootValueKeys = rootValueKeys;
         this.rootGroupKeys = rootGroupKeys;
+        this.oracles = oracles;
     }
 
     /**
@@ -97,22 +100,48 @@ public final class RuleEngine {
         Objects.requireNonNull(registry, "registry");
         Objects.requireNonNull(codeLists, "codeLists");
         Objects.requireNonNull(javaRules, "javaRules");
+        checkEdition(pack, registry);
         checkSnapshots(pack, codeLists);
         checkJavaRules(pack, javaRules);
         Set<String> rootValueKeys = new LinkedHashSet<>();
         Set<String> rootGroupKeys = new LinkedHashSet<>();
         Compiler compiler = new Compiler(registry, codeLists, rootValueKeys, rootGroupKeys);
         Map<String, CompiledRule> byId = new LinkedHashMap<>();
+        Map<String, RuleOracle> oracles = new LinkedHashMap<>();
         for (RuleDefinition definition : pack.rules()) {
             add(byId, language(definition, compiler, registry), pack);
+            oracles.put(definition.id(), definition.oracle());
         }
-        for (String className : pack.javaRules()) {
-            add(byId, java(javaRules.require(className), compiler, registry, className), pack);
+        for (RulePack.JavaRuleRef ref : pack.javaRules()) {
+            CompiledRule rule = java(javaRules.require(ref.className()), compiler, registry,
+                    ref.className());
+            add(byId, rule, pack);
+            oracles.put(rule.id(), ref.oracle());
         }
         List<CompiledRule> ordered = new ArrayList<>(byId.values());
         ordered.sort(Comparator.comparing(CompiledRule::id));
         return new RuleEngine(pack, registry, codeLists, List.copyOf(ordered),
-                Set.copyOf(rootValueKeys), Set.copyOf(rootGroupKeys));
+                Set.copyOf(rootValueKeys), Set.copyOf(rootGroupKeys), Map.copyOf(oracles));
+    }
+
+    /**
+     * Refuses a pack that is not written for the edition of the registry it is compiled
+     * against.
+     *
+     * <p>The edition is read from the {@code edition} member of the manifest and from
+     * nowhere else. A path is an address relative to an edition and the rules of a standard
+     * are renumbered between editions, so a pack of one edition run over a document of
+     * another would report arithmetic about terms the document does not have. The member is
+     * a statement of the pack about itself, which is what makes the refusal a fact rather
+     * than an inference from whatever the rules happen to address.
+     */
+    private static void checkEdition(RulePack pack, Registry registry) {
+        if (!pack.edition().equals(registry.edition())) {
+            throw new RulePackException("the pack " + pack.name() + " is written for "
+                    + pack.edition() + " and was compiled against the registry of "
+                    + registry.edition()
+                    + "; a rule of one edition is not a statement about a document of another");
+        }
     }
 
     private static void checkSnapshots(RulePack pack, CodeLists codeLists) {
@@ -122,7 +151,7 @@ public final class RuleEngine {
     }
 
     private static void checkJavaRules(RulePack pack, JavaRules javaRules) {
-        Set<String> named = new TreeSet<>(pack.javaRules());
+        Set<String> named = new TreeSet<>(pack.javaRuleClasses());
         Set<String> handed = new TreeSet<>(javaRules.classNames());
         if (!named.equals(handed)) {
             Set<String> missing = new TreeSet<>(named);
@@ -163,8 +192,19 @@ public final class RuleEngine {
                 .map(warning -> MessageTemplate.compile(warning.message(), compiler, scope,
                         bindings, where + ", warn message"))
                 .orElse(null);
+        Expression undecidedWhen = definition.notDecided()
+                .map(notDecided -> assertion(notDecided.condition(), compiler, scope,
+                        where + ", undecided"))
+                .orElse(null);
+        MessageTemplate undecidedMessage = definition.notDecided()
+                .map(notDecided -> MessageTemplate.compile(notDecided.message(), compiler, scope,
+                        bindings, where + ", undecided message"))
+                .orElse(null);
         return new CompiledRule(definition.id(), definition.severity(), context, definition.terms(),
                 definition.source(), (evaluation, base) -> {
+                    if (undecidedWhen != null && isTrue(undecidedWhen, evaluation, base)) {
+                        throw new Undecided(undecidedMessage.expand(evaluation, base));
+                    }
                     if (!holds(expression, evaluation, base)) {
                         return Optional.of(new CompiledRule.Outcome(definition.severity(),
                                 message.expand(evaluation, base)));
@@ -191,6 +231,16 @@ public final class RuleEngine {
     private static boolean holds(Expression expression, Evaluation evaluation, SemanticPath base) {
         RuleValue truth = expression.evaluate(evaluation, base);
         return truth.isAbsent() || Boolean.TRUE.equals(truth.truth());
+    }
+
+    /**
+     * Tells whether a condition is true, which it is not where it cannot be decided: the case
+     * in which a rule is not decided is named by what the document states, never by what it
+     * leaves out.
+     */
+    private static boolean isTrue(Expression expression, Evaluation evaluation, SemanticPath base) {
+        RuleValue truth = expression.evaluate(evaluation, base);
+        return !truth.isAbsent() && Boolean.TRUE.equals(truth.truth());
     }
 
     private static CompiledRule java(JavaRule rule, Compiler compiler, Registry registry, String className) {
@@ -300,6 +350,18 @@ public final class RuleEngine {
     }
 
     /**
+     * Returns what stands behind a rule of this engine: an official validation artefact,
+     * the artefact of an earlier edition over the document written down to it, or
+     * hand-computed cases alone.
+     *
+     * @param ruleId the identifier of the rule
+     * @return the oracle, or an empty optional if this engine has no such rule
+     */
+    public Optional<RuleOracle> oracleOf(String ruleId) {
+        return Optional.ofNullable(oracles.get(ruleId));
+    }
+
+    /**
      * Returns the clause a rule of this engine states.
      *
      * @param ruleId the identifier of the rule
@@ -321,7 +383,8 @@ public final class RuleEngine {
      * signal a context accessor raises when a value does not spell what its semantic data
      * type requires. That is reported at {@link RuleSeverity#INFO} as a rule that was not
      * decided, because the defect belongs to the value and a structural layer has already
-     * named it.
+     * named it. A rule whose {@code undecided} case holds, and a code list that gives a code
+     * no number of fraction digits, end the same way.
      *
      * <p>Nothing else is caught. A {@link RulePackException} from a rule written in Java —
      * which is what a path that rule wrote and the registry does not admit raises, on the

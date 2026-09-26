@@ -506,7 +506,9 @@ final class Validation {
          * @return the request
          */
         static RuleRequest notRun(String reason) {
-            return (document, blocked, extension, syntax) -> RuleCheck.notRun(reason);
+            return (document, blocked, extension, syntax) -> document
+                    .map(built -> RuleCheck.notRun(reason, built, extension))
+                    .orElseGet(() -> RuleCheck.notRun(reason));
         }
     }
 

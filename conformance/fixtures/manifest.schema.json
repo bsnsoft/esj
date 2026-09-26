@@ -72,6 +72,11 @@
     },
     "pack": { "type": "string" },
     "directory": { "type": "string" },
+    "bases": {
+      "description": "In a rule case file, documents the cases start from, carried in the file rather than named by path, by the name a case gives in baseDocument.",
+      "type": "object",
+      "additionalProperties": { "type": "object" }
+    },
     "cases": {
       "description": "In a rule case file, the cases themselves.",
       "type": "array",
@@ -256,7 +261,8 @@
     "case": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "rule", "base", "changes", "expect"],
+      "required": ["id", "rule", "changes", "expect"],
+      "oneOf": [{ "required": ["base"] }, { "required": ["baseDocument"] }],
       "properties": {
         "id": { "type": "string" },
         "rule": {
@@ -265,6 +271,10 @@
         },
         "base": {
           "description": "The conformant document the changes are applied to.",
+          "type": "string"
+        },
+        "baseDocument": {
+          "description": "The name of a document of the file's bases the changes are applied to.",
           "type": "string"
         },
         "changes": {

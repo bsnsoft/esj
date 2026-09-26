@@ -5,6 +5,7 @@ import de.bsnsoft.esj.rules.CodeLists;
 import de.bsnsoft.esj.rules.JavaRules;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RulePack;
+import de.bsnsoft.esj.rules.RulePackSource;
 import de.bsnsoft.esj.rules.RulePacks;
 import java.util.List;
 
@@ -32,6 +33,9 @@ public final class En16931 {
 
     /** The version of the pack, which is the release of the artefacts it was verified against. */
     public static final String VERSION = "1.3.16";
+
+    /** The edition of the semantic model the rules of this pack are addresses in. */
+    public static final String EDITION = "EN 16931-1:2017+A1:2019/AC:2020";
 
     private En16931() {
         throw new AssertionError("no instances");
@@ -68,6 +72,39 @@ public final class En16931 {
                 new BrG01(), new BrG08(),
                 new BrO01(), new BrO08(),
                 new BrAf08(), new BrAg08()));
+    }
+
+    /**
+     * Returns this pack as a source, which is how a caller that selects by edition reaches
+     * it.
+     *
+     * <p>It is the one pack this class names directly rather than through a service
+     * declaration, because it is the pack of the edition the ecosystem validates against
+     * today and a build without it would carry no rules at all.
+     *
+     * @return the source
+     */
+    public static RulePackSource source() {
+        return new Source();
+    }
+
+    /** This pack, offered under the edition its rules are written for. */
+    private static final class Source implements RulePackSource {
+
+        @Override
+        public String edition() {
+            return EDITION;
+        }
+
+        @Override
+        public RulePack pack() {
+            return En16931.pack();
+        }
+
+        @Override
+        public RuleEngine engine(Registry registry) {
+            return En16931.engine(registry);
+        }
     }
 
     /**

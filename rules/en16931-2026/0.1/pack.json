@@ -1,0 +1,406 @@
+{
+  "$schema": "../../rule.schema.json",
+  "id": "en16931-2026",
+  "version": "0.1",
+  "edition": "EN 16931-1:2026",
+  "description": "The business rules of EN 16931-1:2026, clause 6.4, together with the fraction digit limits of clause 6.5.13 and the code list restrictions of clause 6.3, written over semantic paths so that one rule serves every form of one invoice. No validation artefact is published for this edition: the artefact releases of CEN/TC 434 end at 1.3.16 and validate the 2017 edition. Every rule therefore says what stands behind it. A rule the edition leaves unchanged is taken over from the pack of the 2017 edition and is measured against the official artefacts over the document written down to that edition with esj upgrade, which its oracle calls downgrade; a rule the edition changed or adds is weighed by hand-computed cases alone, which its oracle calls cases. Neither is a conformance claim, and no finding of this pack is corroborated by an official artefact. Where the edition states a tolerance or a rounding, the rule carries it as a fact of its own with the clause it comes from. conformance/rules-2026/coverage.md says which of the 199 rules of the edition is implemented here and which is not, with the reason and the oracle of each.",
+  "codeLists": {
+    "eas": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "iso-3166-1": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "iso-4217": "2026-09-21",
+    "iso-6523-icd": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "mime-code": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "unece-rec20": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "unece-rec21": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-1001": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-1153": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-2005": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-4451": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-4461": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-5189": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-5305": "2026-09-21",
+    "untdid-7143": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "untdid-7161": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    },
+    "vatex": {
+      "day": "2026-09-19",
+      "from": "en16931/1.3.16"
+    }
+  },
+  "javaRules": [
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.BrCl07",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.BrCl11",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.BrCl13",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.BrCl25",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.Br62",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.Br63",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.Br64",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.Br65",
+      "oracle": "downgrade"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br68",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br69",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br70",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br71",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br72",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br73",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br74",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br75",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrAe01",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrAe08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo09",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo14",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo18",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo49",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo50",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrE01",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrE08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrG01",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrG08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIc01",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIc08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIg08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIp08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrO01",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrO08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrS08",
+      "oracle": "cases"
+    },
+    {
+      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrZ08",
+      "oracle": "cases"
+    }
+  ],
+  "files": [
+    "rules/br-co.json",
+    "rules/br-dec.json",
+    "rules/br.json",
+    "rules/vat-ae.json",
+    "rules/vat-e.json",
+    "rules/vat-g.json",
+    "rules/vat-ic.json",
+    "rules/vat-ig.json",
+    "rules/vat-ip.json",
+    "rules/vat-n.json",
+    "rules/vat-o.json",
+    "rules/vat-s.json",
+    "rules/vat-z.json"
+  ],
+  "shares": [
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/br-cl.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-CL-01",
+        "BR-CL-04",
+        "BR-CL-05",
+        "BR-CL-06",
+        "BR-CL-08",
+        "BR-CL-14",
+        "BR-CL-15",
+        "BR-CL-16",
+        "BR-CL-17",
+        "BR-CL-18",
+        "BR-CL-19",
+        "BR-CL-20",
+        "BR-CL-22",
+        "BR-CL-23"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/br-co.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-CO-03",
+        "BR-CO-04",
+        "BR-CO-19",
+        "BR-CO-21",
+        "BR-CO-23",
+        "BR-CO-26"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/br.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-04",
+        "BR-05",
+        "BR-06",
+        "BR-07",
+        "BR-08",
+        "BR-09",
+        "BR-10",
+        "BR-11",
+        "BR-12",
+        "BR-13",
+        "BR-14",
+        "BR-15",
+        "BR-16",
+        "BR-17",
+        "BR-18",
+        "BR-19",
+        "BR-20",
+        "BR-21",
+        "BR-22",
+        "BR-23",
+        "BR-24",
+        "BR-25",
+        "BR-26",
+        "BR-27",
+        "BR-28",
+        "BR-29",
+        "BR-31",
+        "BR-32",
+        "BR-33",
+        "BR-41",
+        "BR-42",
+        "BR-45",
+        "BR-47",
+        "BR-48",
+        "BR-49",
+        "BR-51",
+        "BR-52",
+        "BR-55",
+        "BR-56",
+        "BR-57",
+        "BR-61"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-ae.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-AE-02",
+        "BR-AE-03",
+        "BR-AE-05",
+        "BR-AE-06",
+        "BR-AE-09"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-e.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-E-02",
+        "BR-E-03",
+        "BR-E-05",
+        "BR-E-06",
+        "BR-E-09"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-g.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-G-02",
+        "BR-G-03",
+        "BR-G-05",
+        "BR-G-06",
+        "BR-G-09"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-ic.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-IC-02",
+        "BR-IC-03",
+        "BR-IC-05",
+        "BR-IC-06",
+        "BR-IC-09"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-o.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-O-05",
+        "BR-O-06",
+        "BR-O-09"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-s.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-S-02",
+        "BR-S-03",
+        "BR-S-05",
+        "BR-S-06"
+      ]
+    },
+    {
+      "pack": "en16931",
+      "version": "1.3.16",
+      "file": "rules/vat-z.json",
+      "oracle": "downgrade",
+      "rules": [
+        "BR-Z-02",
+        "BR-Z-03",
+        "BR-Z-05",
+        "BR-Z-06",
+        "BR-Z-09"
+      ]
+    }
+  ]
+}

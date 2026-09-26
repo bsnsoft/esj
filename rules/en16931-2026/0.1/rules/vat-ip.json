@@ -1,0 +1,520 @@
+[
+  {
+    "id": "BR-IP-01",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BG-20",
+      "BG-21",
+      "BG-23",
+      "BG-25",
+      "BT-95",
+      "BT-102",
+      "BT-118",
+      "BT-151"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "or": [
+            {
+              "any": {
+                "group": "/BG-25/*",
+                "assert": {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "M"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "any": {
+                "group": "/BG-20/*",
+                "assert": {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "M"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "any": {
+                "group": "/BG-21/*",
+                "assert": {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "M"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "then": {
+          "any": {
+            "group": "/BG-23/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "M"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "message": "An invoice line, a document level allowance or a document level charge or tax is categorised \"M\" (Ceuta and Melilla tax), and no VAT breakdown (BG-23) carries that VAT category code (BT-118).",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-1",
+    "note": "The 2017 edition asked for exactly one breakdown of the category; this edition asks for at least one, so a document with two of them is no longer wrong."
+  },
+  {
+    "id": "BR-IP-02",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-151",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-25/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BG-30/BT-151"
+                },
+                {
+                  "const": "M"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An invoice line is categorised \"M\" (Ceuta and Melilla tax), and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-2"
+  },
+  {
+    "id": "BR-IP-03",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-95",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-20/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-95"
+                },
+                {
+                  "const": "M"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "A document level allowance (BG-20) is categorised \"M\" (Ceuta and Melilla tax), and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-3"
+  },
+  {
+    "id": "BR-IP-04",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-102",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-21/*",
+            "assert": {
+              "eq": [
+                {
+                  "value": "/BT-102"
+                },
+                {
+                  "const": "M"
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "A document level charge or tax (BG-21) is categorised \"M\" (Ceuta and Melilla tax), and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-4",
+    "note": "Against the 2017 edition the identifiers the rule asks for are the same; the group it is about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-IP-05",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-30",
+    "terms": [
+      "BT-151",
+      "BT-152"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-151"
+            },
+            {
+              "const": "M"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BT-152"
+            },
+            {
+              "ge": [
+                {
+                  "value": "/BT-152"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice line at {.} is categorised \"M\" (Ceuta and Melilla tax) and states the VAT rate {/BT-152}; under this category the rate is zero or greater.",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-5"
+  },
+  {
+    "id": "BR-IP-06",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-95",
+      "BT-96"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-95"
+            },
+            {
+              "const": "M"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BT-96"
+            },
+            {
+              "ge": [
+                {
+                  "value": "/BT-96"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The document level allowance at {.} is categorised \"M\" (Ceuta and Melilla tax) and states the VAT rate {/BT-96}; under this category the rate is zero or greater.",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-6"
+  },
+  {
+    "id": "BR-IP-07",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-102",
+      "BT-103"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "eq": [
+            {
+              "value": "/BT-102"
+            },
+            {
+              "const": "M"
+            }
+          ]
+        },
+        "then": {
+          "and": [
+            {
+              "exists": "/BT-103"
+            },
+            {
+              "ge": [
+                {
+                  "value": "/BT-103"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "message": "The document level charge or tax at {.} is categorised \"M\" (Ceuta and Melilla tax) and states the VAT rate {/BT-103}; under this category the rate is zero or greater.",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-7",
+    "note": "Against the 2017 edition the statement is the same; the group it is about now carries non-VAT taxes as well."
+  },
+  {
+    "id": "BR-IP-09",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-23/*",
+    "terms": [
+      "BT-116",
+      "BT-117",
+      "BT-118",
+      "BT-119",
+      "BT-184"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "eq": [
+                {
+                  "value": "/BT-118"
+                },
+                {
+                  "const": "M"
+                }
+              ]
+            },
+            {
+              "exists": "/BT-117"
+            },
+            {
+              "exists": "/BT-119"
+            },
+            {
+              "or": [
+                {
+                  "absent": "/BT-184"
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-184"
+                    },
+                    {
+                      "atRoot": {
+                        "value": "/BT-5"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "then": {
+          "le": [
+            {
+              "abs": {
+                "sub": [
+                  {
+                    "value": "/BT-117"
+                  },
+                  {
+                    "round": [
+                      {
+                        "div": [
+                          {
+                            "mul": [
+                              {
+                                "value": "/BT-116"
+                              },
+                              {
+                                "value": "/BT-119"
+                              }
+                            ]
+                          },
+                          {
+                            "const": 100
+                          }
+                        ]
+                      },
+                      {
+                        "atRoot": {
+                          "minorUnit": [
+                            {
+                              "value": "/BT-5"
+                            },
+                            "iso-4217"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "min": [
+                {
+                  "max": [
+                    {
+                      "mul": [
+                        {
+                          "const": "0.001"
+                        },
+                        {
+                          "abs": {
+                            "value": "/BT-117"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "const": "0.01"
+                    }
+                  ]
+                },
+                {
+                  "const": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bind": {
+      "tax": {
+        "round": [
+          {
+            "div": [
+              {
+                "mul": [
+                  {
+                    "value": "/BT-116"
+                  },
+                  {
+                    "value": "/BT-119"
+                  }
+                ]
+              },
+              {
+                "const": 100
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The VAT breakdown at {.} is categorised \"M\" (Ceuta and Melilla tax) with the taxable amount (BT-116) {/BT-116} at the rate (BT-119) {/BT-119} per cent, which comes to {$tax}, and states the tax amount (BT-117) {/BT-117}.",
+    "source": "EN 16931-1:2026, 6.4.3.4.15, Table 15, BR-IP-9",
+    "note": "The 2017 edition stated this arithmetic in one rule for every category (BR-CO-17) and rounded to two fraction digits; this edition withdraws that rule, states the arithmetic per category, rounds to the minor unit of the invoice currency (BT-5) and admits the tolerance of clause 6.5.14: a thousandth of the stated tax amount, never below 0,01 and never above 1. The comparison keeps the sign: a tax amount of the opposite sign to the taxable amount fails it, where the artefacts of the 2017 edition compared the two without their signs. A breakdown in the VAT accounting currency (BT-184 other than BT-5) is left to BR-CO-50."
+  }
+]

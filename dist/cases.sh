@@ -58,6 +58,7 @@ validate-cius validate --extension xrechnung $TECHNICAL/cius/01.01_comprehensive
 validate-b2c validate --extension b2c $EXAMPLES/b2c-gross.esj.json
 validate-extensions validate --extension xrechnung,b2c $EXAMPLES/b2c-gross.esj.json
 validate-no-syntax validate --no-syntax $CORPUS/01.01a-INVOICE_ubl.xml
+validate-edition-2026 validate --output json $EXAMPLES/edition-2026.esj.json
 validate-report-html validate --report @OUT --report-format html $CORPUS/01.01a-INVOICE_ubl.xml
 validate-report-pdf validate --report @OUT --report-format pdf $PDF
 validate-report-letter validate --report @OUT --report-format pdf --report-page LETTER $CORPUS/01.01a-INVOICE_ubl.xml

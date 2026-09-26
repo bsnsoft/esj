@@ -2,6 +2,7 @@
   {
     "id": "BR-DEC-01",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-20/*",
     "terms": [
       "BT-92"
@@ -19,6 +20,7 @@
   {
     "id": "BR-DEC-02",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-20/*",
     "terms": [
       "BT-93"
@@ -36,6 +38,7 @@
   {
     "id": "BR-DEC-05",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-21/*",
     "terms": [
       "BT-99"
@@ -53,6 +56,7 @@
   {
     "id": "BR-DEC-06",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-21/*",
     "terms": [
       "BT-100"
@@ -70,6 +74,7 @@
   {
     "id": "BR-DEC-09",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-106"
@@ -87,6 +92,7 @@
   {
     "id": "BR-DEC-10",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-107"
@@ -104,6 +110,7 @@
   {
     "id": "BR-DEC-11",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-108"
@@ -121,6 +128,7 @@
   {
     "id": "BR-DEC-12",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-109"
@@ -138,6 +146,7 @@
   {
     "id": "BR-DEC-13",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-110"
@@ -155,6 +164,7 @@
   {
     "id": "BR-DEC-14",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-112"
@@ -172,6 +182,7 @@
   {
     "id": "BR-DEC-15",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-111"
@@ -189,6 +200,7 @@
   {
     "id": "BR-DEC-16",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-113"
@@ -206,6 +218,7 @@
   {
     "id": "BR-DEC-17",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-114"
@@ -223,6 +236,7 @@
   {
     "id": "BR-DEC-18",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-22",
     "terms": [
       "BT-115"
@@ -240,6 +254,7 @@
   {
     "id": "BR-DEC-19",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-116"
@@ -257,6 +272,7 @@
   {
     "id": "BR-DEC-20",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-117"
@@ -274,6 +290,7 @@
   {
     "id": "BR-DEC-23",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-131"
@@ -291,6 +308,7 @@
   {
     "id": "BR-DEC-24",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-27/*",
     "terms": [
       "BT-136"
@@ -308,6 +326,7 @@
   {
     "id": "BR-DEC-25",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-27/*",
     "terms": [
       "BT-137"
@@ -325,6 +344,7 @@
   {
     "id": "BR-DEC-27",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-28/*",
     "terms": [
       "BT-141"
@@ -342,6 +362,7 @@
   {
     "id": "BR-DEC-28",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-28/*",
     "terms": [
       "BT-142"

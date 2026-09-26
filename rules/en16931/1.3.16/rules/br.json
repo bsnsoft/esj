@@ -2,6 +2,7 @@
   {
     "id": "BR-01",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-24"
@@ -15,6 +16,7 @@
   {
     "id": "BR-02",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-1"
@@ -28,6 +30,7 @@
   {
     "id": "BR-03",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-2"
@@ -41,6 +44,7 @@
   {
     "id": "BR-04",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-3"
@@ -54,6 +58,7 @@
   {
     "id": "BR-05",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-5"
@@ -67,6 +72,7 @@
   {
     "id": "BR-06",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-27"
@@ -80,6 +86,7 @@
   {
     "id": "BR-07",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-44"
@@ -93,6 +100,7 @@
   {
     "id": "BR-08",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BG-5"
@@ -106,6 +114,7 @@
   {
     "id": "BR-09",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-4/BG-5",
     "terms": [
       "BT-40"
@@ -119,6 +128,7 @@
   {
     "id": "BR-10",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BG-8"
@@ -132,6 +142,7 @@
   {
     "id": "BR-11",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-7/BG-8",
     "terms": [
       "BT-55"
@@ -145,6 +156,7 @@
   {
     "id": "BR-12",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-106"
@@ -158,6 +170,7 @@
   {
     "id": "BR-13",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-109"
@@ -171,6 +184,7 @@
   {
     "id": "BR-14",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-112"
@@ -184,6 +198,7 @@
   {
     "id": "BR-15",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-115"
@@ -197,6 +212,7 @@
   {
     "id": "BR-16",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BG-25"
@@ -217,6 +233,7 @@
   {
     "id": "BR-17",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-10",
     "terms": [
       "BT-59"
@@ -231,6 +248,7 @@
   {
     "id": "BR-18",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-11",
     "terms": [
       "BT-62"
@@ -244,6 +262,7 @@
   {
     "id": "BR-19",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-11",
     "terms": [
       "BG-12"
@@ -257,6 +276,7 @@
   {
     "id": "BR-20",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-11/BG-12",
     "terms": [
       "BT-69"
@@ -270,6 +290,7 @@
   {
     "id": "BR-21",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-126"
@@ -283,6 +304,7 @@
   {
     "id": "BR-22",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-129"
@@ -296,6 +318,7 @@
   {
     "id": "BR-23",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-130"
@@ -309,6 +332,7 @@
   {
     "id": "BR-24",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-131"
@@ -322,6 +346,7 @@
   {
     "id": "BR-25",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-153"
@@ -335,6 +360,7 @@
   {
     "id": "BR-26",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*",
     "terms": [
       "BT-146"
@@ -348,6 +374,7 @@
   {
     "id": "BR-27",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-29",
     "terms": [
       "BT-146"
@@ -375,6 +402,7 @@
   {
     "id": "BR-28",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-29",
     "terms": [
       "BT-148"
@@ -402,6 +430,7 @@
   {
     "id": "BR-29",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-13/BG-14",
     "terms": [
       "BT-73",
@@ -437,6 +466,7 @@
   {
     "id": "BR-30",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-26",
     "terms": [
       "BT-134",
@@ -472,6 +502,7 @@
   {
     "id": "BR-31",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-20/*",
     "terms": [
       "BT-92"
@@ -485,6 +516,7 @@
   {
     "id": "BR-32",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-20/*",
     "terms": [
       "BT-95"
@@ -498,6 +530,7 @@
   {
     "id": "BR-33",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-20/*",
     "terms": [
       "BT-97",
@@ -519,6 +552,7 @@
   {
     "id": "BR-36",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-21/*",
     "terms": [
       "BT-99"
@@ -532,6 +566,7 @@
   {
     "id": "BR-37",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-21/*",
     "terms": [
       "BT-102"
@@ -545,6 +580,7 @@
   {
     "id": "BR-38",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-21/*",
     "terms": [
       "BT-104",
@@ -566,6 +602,7 @@
   {
     "id": "BR-41",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-27/*",
     "terms": [
       "BT-136"
@@ -579,6 +616,7 @@
   {
     "id": "BR-42",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-27/*",
     "terms": [
       "BT-139",
@@ -600,6 +638,7 @@
   {
     "id": "BR-43",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-28/*",
     "terms": [
       "BT-141"
@@ -613,6 +652,7 @@
   {
     "id": "BR-44",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-28/*",
     "terms": [
       "BT-144",
@@ -634,6 +674,7 @@
   {
     "id": "BR-45",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-116"
@@ -647,6 +688,7 @@
   {
     "id": "BR-46",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-117"
@@ -660,6 +702,7 @@
   {
     "id": "BR-47",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-118"
@@ -673,6 +716,7 @@
   {
     "id": "BR-48",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-23/*",
     "terms": [
       "BT-118",
@@ -701,6 +745,7 @@
   {
     "id": "BR-49",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-16",
     "terms": [
       "BT-81"
@@ -714,6 +759,7 @@
   {
     "id": "BR-50",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-16/BG-17/*",
     "terms": [
       "BT-84"
@@ -727,6 +773,7 @@
   {
     "id": "BR-51",
     "severity": "warning",
+    "oracle": "artefact",
     "context": "/BG-16/BG-18",
     "terms": [
       "BT-87"
@@ -746,6 +793,7 @@
   {
     "id": "BR-52",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-24/*",
     "terms": [
       "BT-122"
@@ -759,6 +807,7 @@
   {
     "id": "BR-53",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/",
     "terms": [
       "BT-6",
@@ -780,6 +829,7 @@
   {
     "id": "BR-54",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-25/*/BG-31/BG-32/*",
     "terms": [
       "BT-160",
@@ -801,6 +851,7 @@
   {
     "id": "BR-55",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-3/*",
     "terms": [
       "BT-25"
@@ -814,6 +865,7 @@
   {
     "id": "BR-56",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-11",
     "terms": [
       "BT-63"
@@ -827,6 +879,7 @@
   {
     "id": "BR-57",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-13/BG-15",
     "terms": [
       "BT-80"
@@ -840,6 +893,7 @@
   {
     "id": "BR-61",
     "severity": "fatal",
+    "oracle": "artefact",
     "context": "/BG-16",
     "terms": [
       "BT-81",

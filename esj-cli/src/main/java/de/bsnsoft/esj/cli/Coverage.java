@@ -383,6 +383,22 @@ record Coverage(List<Row> rows) {
         NO_PACK_FOR_EDITION("no-pack-for-edition"),
 
         /**
+         * This build carries a registry and a rule pack for the edition the document
+         * names, and no official validation artefact is published for that edition, so
+         * the component that runs those artefacts could not run.
+         *
+         * <p>It is not a property of this build and cannot be raised by work here. The
+         * artefact releases of CEN/TC 434 are written against one edition of the standard
+         * and no release covers the 2026 one; there is no published syntax binding of the
+         * terms that edition adds either, so an ESJ document of it reaches no written form
+         * an artefact could read. The native rule pack of the edition runs and its findings
+         * decide {@code INVALID}; what it cannot do is make the check complete, so the best
+         * a document of that edition reaches is the third state with this cause.
+         * {@code docs/editions.md} says it per layer.
+         */
+        NO_ARTEFACTS_FOR_EDITION("no-artefacts-for-edition"),
+
+        /**
          * The XML an ESJ document was written to is larger than a bound of this run
          * allows — the bytes the writer may produce, or the bytes the syntax engine
          * accepts — so the official artefacts had nothing to read. It is a bound on the

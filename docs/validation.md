@@ -113,8 +113,8 @@ the engine on every finding.
 
 [`../packs/`](../packs/README.md) holds other people's artefacts, [`../rules/`](../rules/README.md)
 this project's own. A **rule pack** is a directory of rules written over business terms, with the
-code list snapshots its membership tests are decided against and a manifest naming both. This
-build carries one:
+code list snapshots its membership tests are decided against and a manifest naming both, one
+per edition (`esj --list-packs`). The pack of the default edition:
 
 | `en16931/1.3.16` | |
 |---|---|
@@ -123,13 +123,13 @@ build carries one:
 | Code lists | 17 dated snapshots, each with its publisher, its retrieval date and what that publisher says about reuse in [`../rules/en16931/1.3.16/codelists/SOURCES.md`](../rules/en16931/1.3.16/codelists/SOURCES.md) |
 | Verified against | the CEN/TC 434 validation artefacts, release 1.3.16 |
 
-`1.3.16` is the release of the artefacts the pack was *measured against*, not a version of the
-standard and not of this project. A later release is a directory beside this one.
+`1.3.16` is the release of the artefacts the pack was *measured against*. The pack
+`en16931-2026/0.1` has no release behind it ([`editions.md`](editions.md#what-works-for-a-2026-document-today)).
 
 ### The rule language, in short
 
 A rule is a JSON object: the identifier the standard gives it, a severity, the business group
-it is a statement about, the terms it reads, an assertion built from a closed set of thirty-one
+it is a statement about, the terms it reads, an assertion built from a closed set of thirty-four
 operators, a message, and the clause of the standard in `source`.
 
 Four properties of the language matter to a reader of a report. A rule addresses business terms
@@ -284,10 +284,9 @@ The verdict is one word over both engines, and there are three of them:
 | `INVALID` | a fatal finding in anything that ran, whatever the coverage | 1 |
 | `INDETERMINATE` | nothing fatal was found and a component of the complete check did not run or did not complete | 9 |
 
-A run stopped by a **bound of this run** reaches none of the three and says none of the three
-words. Exit code **7** has that one meaning: a bound was met, the document was not judged, and
-the answer is to read it again against a larger bound rather than to reject it. Whether a report
-exists turns on whether the semantic document had been built when the bound was met:
+A run stopped by a **bound of this run** reaches none of the three. Exit code **7** means that:
+a bound was met and the document was not judged, so read it again against a larger bound rather
+than reject it. Whether a report exists turns on whether the document had been built by then:
 
 | Where the bound was met | What the run leaves |
 |---|---|
@@ -304,13 +303,14 @@ carries the same as a `reasons` array of `{component, cause}`, from a closed voc
 | `limit-reached` | a limit of this run stopped the reader before the component could cover the document; the run reaches no verdict at all and leaves with exit code 7 |
 | `not-run-by-this-command` | `esj inspect` names the pack and runs none of it; the second pass of `--after-repair` judges bytes this run made |
 | `no-rules-for-profile` | the document names a specification the pack carries no rules for |
-| `not-in-this-version` | a component announced for a later version and not built yet; no required row carries it today |
+| `not-in-this-version` | a component announced for a later version and not built yet |
 | `extension-registry-missing` | a path only an extension registry defines, and none was loaded; `--extension xrechnung` or `--extension b2c` loads the registries this build carries |
 | `edition-unknown` | no registry for the edition the document names, so the model layers had nothing to measure it against |
-| `no-pack-for-edition` | a registry for that edition is carried and no artefact is written for it — no rule pack, and no binding table an ESJ document could be written through; [`editions.md`](editions.md) |
+| `no-pack-for-edition` | a registry for that edition is carried and this build holds no rule pack written against it; [`editions.md`](editions.md) |
+| `no-artefacts-for-edition` | a registry and a rule pack for that edition are carried and no official validation artefact is published for it, so the component that runs those artefacts could not run; no work in this project closes it; [`editions.md`](editions.md) |
 | `term-not-in-syntax` | the writer had no place in the target syntax for something an ESJ document states, so the XML the artefacts would have judged is not that document; `--via` chooses the other syntax. Not where every term left behind belongs to a registry that declares `"transport": "none"`: the row runs and names them ([`b2c.md`](b2c.md)) |
 | `term-not-stated` | the syntax requires an element a business term of the model carries and this document does not state, so the written XML is a rendition its own schema refuses and the finding is not about the invoice; `--via` chooses the other syntax |
-| `element-not-in-model` | the same where no business term names the element at all and the binding table states no value for it; no corpus instance and no example reaches it |
+| `element-not-in-model` | the same where no business term names the element and the table states no value for it |
 | `written-over-bound` | the XML an ESJ document was written to is longer than `--max-output-bytes` or `--max-input-bytes` allows this run, so the artefacts had nothing to read; the other components keep their answer. A clock that ran out is not this cause: it leaves no verdict and exit code 7 |
 
 ### The container

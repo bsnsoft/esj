@@ -11,6 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -19,7 +20,7 @@ import java.util.regex.PatternSyntaxException;
  * Turns the expression of a rule into something that can be evaluated, and refuses
  * everything it cannot turn.
  *
- * <p>The operator set is closed. There are thirty-one operators and there is no way to add
+ * <p>The operator set is closed. There are thirty-four operators and there is no way to add
  * another without changing this class and {@code rules/rule.schema.json} together, which
  * is the point: a rule file is data, and data that could name an arbitrary function would be
  * code. A closed set is also what lets the same rule file be read by an implementation in
@@ -119,6 +120,9 @@ final class Compiler {
             case "count" -> count(argument, scope, at);
             case "round" -> round(argument, scope, at);
             case "decimals" -> decimals(argument, scope, at);
+            case "minorUnit" -> minorUnit(argument, scope, at);
+            case "atRoot" -> atRoot(argument, at);
+            case "unit" -> unit(argument, scope, at);
             case "abs" -> abs(argument, scope, at);
             case "inList" -> inList(argument, scope, at);
             case "matches" -> matches(argument, scope, at);
@@ -401,12 +405,127 @@ final class Compiler {
             throw new RulePackException(where + ": round takes an expression and a scale");
         }
         Expression value = coerce(compile(parts.get(0), scope, where), RuleType.DECIMAL, where).expression();
-        int scale = parts.get(1).asInt(where + ": the scale of round", 0, MAX_SCALE);
+        Expression scale = scale(parts.get(1), scope, where, "round");
         return new Compiled((evaluation, base) -> {
             RuleValue number = value.evaluate(evaluation, base);
-            return number.isAbsent()
+            RuleValue digits = scale.evaluate(evaluation, base);
+            if (number.isAbsent() || digits.isAbsent()) {
+                return RuleValue.ABSENT;
+            }
+            int at = digits(digits);
+            return at < 0
                     ? RuleValue.ABSENT
-                    : RuleValue.of(number.decimal().setScale(scale, RoundingMode.HALF_UP));
+                    : RuleValue.of(number.decimal().setScale(at, RoundingMode.HALF_UP));
+        }, RuleType.DECIMAL, null);
+    }
+
+    /**
+     * Compiles the second operand of {@code round} and {@code decimals}: a whole number of
+     * fraction digits, or an expression that yields one.
+     *
+     * <p>A constant is what a rule of an edition that fixes the number writes. An
+     * expression is what a rule of an edition that ties the number to the currency in use
+     * writes, which the 2026 edition of EN 16931-1 does for every amount:
+     * {@code {"minorUnit": [{"value": "/BT-5"}, "iso-4217"]}}.
+     */
+    private Expression scale(Json written, Scope scope, String where, String operator) {
+        if (written instanceof Json.Int constant) {
+            RuleValue value = RuleValue.of(
+                    constant.asInt(where + ": the scale of " + operator, 0, MAX_SCALE));
+            return (evaluation, base) -> value;
+        }
+        return coerce(compile(written, scope, where), RuleType.DECIMAL, where).expression();
+    }
+
+    /** Returns a computed scale as a number of fraction digits, or -1 where it is none. */
+    private static int digits(RuleValue value) {
+        BigDecimal number = value.decimal();
+        if (number.stripTrailingZeros().scale() > 0) {
+            return -1;
+        }
+        int digits = number.intValue();
+        return digits < 0 || digits > MAX_SCALE ? -1 : digits;
+    }
+
+    /**
+     * Compiles {@code minorUnit}: the number of fraction digits the publisher of a code
+     * list gives a code, which is what the 2026 edition of EN 16931-1 ties the decimals and
+     * the rounding of an amount to.
+     *
+     * <p>A code the list does not carry yields no number, and the rule that asked is silent
+     * about it: that the code is not on the list is a finding of its own rule. A code the list
+     * carries without a number — ISO 4217 gives none to gold or to the special drawing right —
+     * makes the rule not decided, which the engine reports, rather than a rule that holds.
+     */
+    private Compiled minorUnit(Json argument, Scope scope, String where) {
+        List<Json> parts = argument.asArray(where);
+        if (parts.size() != 2) {
+            throw new RulePackException(where
+                    + ": minorUnit takes an expression and a list identifier");
+        }
+        Expression code = coerce(compile(parts.get(0), scope, where), RuleType.TEXT, where).expression();
+        String listId = parts.get(1).asString(where + ": the list identifier");
+        CodeList list = codeLists.require(listId);
+        if (list.minorUnits().isEmpty()) {
+            throw new RulePackException(where + ": the snapshot of " + listId
+                    + " publishes no number of fraction digits, and a rule that asked it for"
+                    + " one would never be decided");
+        }
+        return new Compiled((evaluation, base) -> {
+            RuleValue value = code.evaluate(evaluation, base);
+            if (value.isAbsent()) {
+                return RuleValue.ABSENT;
+            }
+            String text = value.text();
+            Optional<Integer> unit = list.minorUnit(text);
+            if (unit.isPresent()) {
+                return RuleValue.of(BigDecimal.valueOf(unit.get()));
+            }
+            if (list.contains(text)) {
+                throw new Undecided("the code " + text + " is on the list " + listId
+                        + ", which gives it no number of fraction digits");
+            }
+            return RuleValue.ABSENT;
+        }, RuleType.DECIMAL, null);
+    }
+
+    /**
+     * Compiles {@code atRoot}: an expression weighed at the document rather than at the
+     * business group instance the rule is evaluated in.
+     *
+     * <p>A path is relative to the context of its rule, which is what keeps a rule about one
+     * invoice line from reading another one. A handful of statements are about an instance
+     * and about one fact of the whole document at once: how many fraction digits an amount
+     * may carry follows the currency of the invoice (BT-5), and the currency is at the root
+     * however deep the amount lies. Without this operator such a rule would have to be
+     * written at the document context and could then name no instance in its message.
+     *
+     * <p>What is inside is compiled as if the rule stood at the document: only the document
+     * is reachable from it, and the instance is not. The patterns it reads are collected for
+     * the index of the document like any other root pattern, so the answer is taken from the
+     * one pass the run makes anyway rather than computed per instance.
+     */
+    private Compiled atRoot(Json argument, String where) {
+        Compiled inner = compile(argument, new Scope(List.of(), true), where);
+        Expression expression = inner.expression();
+        return new Compiled((evaluation, base) ->
+                expression.evaluate(evaluation, SemanticPath.root()), inner.type(), inner.literal());
+    }
+
+    /**
+     * Compiles {@code unit}: the value of one unit at a number of fraction digits, which is
+     * ten raised to the negative of it. It is how a rule writes a tolerance the standard
+     * states per minor unit without the language needing a power operator.
+     */
+    private Compiled unit(Json argument, Scope scope, String where) {
+        Expression scale = coerce(compile(argument, scope, where), RuleType.DECIMAL, where).expression();
+        return new Compiled((evaluation, base) -> {
+            RuleValue digits = scale.evaluate(evaluation, base);
+            if (digits.isAbsent()) {
+                return RuleValue.ABSENT;
+            }
+            int at = digits(digits);
+            return at < 0 ? RuleValue.ABSENT : RuleValue.of(BigDecimal.ONE.movePointLeft(at));
         }, RuleType.DECIMAL, null);
     }
 
@@ -417,20 +536,26 @@ final class Compiler {
         }
         PathPattern pattern = singleValuePath(parts.get(0).asString(where), scope, where);
         SemanticType type = datatypeOf(pattern, where);
-        if (type != SemanticType.AMOUNT) {
+        if (!type.isDecimal()) {
             throw new RulePackException(where + ": " + pattern.lastTerm() + " is "
-                    + type.registryDatatype() + ", and decimals applies to Amount alone."
-                    + " Unit Price Amount, Quantity and Percentage have no fixed scale in"
-                    + " EN 16931-1, 6.5, and a rule that capped one of them would refuse a"
-                    + " net price this standard expects to carry many fraction digits");
+                    + type.registryDatatype() + ", and decimals applies to a numeric term."
+                    + " How many fraction digits a term admits is a fact of the edition it"
+                    + " belongs to, and the rule that states it says which number it means");
         }
-        int maxScale = parts.get(1).asInt(where + ": the maximum scale of decimals", 0, MAX_SCALE);
+        Expression maxScale = scale(parts.get(1), scope, where, "decimals");
         return new Compiled((evaluation, base) -> {
             RuleValue number = evaluation.read(pattern, base, type);
             if (number.isAbsent()) {
                 return RuleValue.ABSENT;
             }
-            return RuleValue.of(Math.max(0, number.decimal().stripTrailingZeros().scale()) <= maxScale);
+            RuleValue digits = maxScale.evaluate(evaluation, base);
+            if (digits.isAbsent()) {
+                return RuleValue.ABSENT;
+            }
+            int at = digits(digits);
+            return at < 0
+                    ? RuleValue.ABSENT
+                    : RuleValue.of(Math.max(0, number.decimal().stripTrailingZeros().scale()) <= at);
         }, RuleType.BOOLEAN, null);
     }
 

@@ -1,0 +1,1793 @@
+[
+  {
+    "id": "BR-CO-10",
+    "severity": "fatal",
+    "oracle": "downgrade",
+    "context": "/",
+    "terms": [
+      "BT-106",
+      "BT-131"
+    ],
+    "assert": {
+      "eq": [
+        {
+          "value": "/BG-22/BT-106"
+        },
+        {
+          "round": [
+            {
+              "sum": "/BG-25/*/BT-131"
+            },
+            {
+              "atRoot": {
+                "minorUnit": [
+                  {
+                    "value": "/BT-5"
+                  },
+                  "iso-4217"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "lines": {
+        "round": [
+          {
+            "sum": "/BG-25/*/BT-131"
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The sum of the invoice line net amounts (BT-131) is {$lines}, and the sum of invoice line net amount (BT-106) at {@/BG-22/BT-106} carries {/BG-22/BT-106}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-10",
+    "note": "The rule is the one of the 2017 edition. The sum is rounded to the minor unit of the invoice currency (BT-5) rather than to two fraction digits, clause 6.5.14; for a currency of two digits the two readings agree, which is why the rule is weighed by the downgrade measurement, and it is written out here only because the pack of the 2017 edition rounds to two."
+  },
+  {
+    "id": "BR-CO-11",
+    "severity": "fatal",
+    "oracle": "downgrade",
+    "context": "/",
+    "terms": [
+      "BT-107",
+      "BT-92"
+    ],
+    "assert": {
+      "or": [
+        {
+          "and": [
+            {
+              "exists": "/BG-22/BT-107"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-107"
+                },
+                {
+                  "round": [
+                    {
+                      "sum": "/BG-20/*/BT-92"
+                    },
+                    {
+                      "atRoot": {
+                        "minorUnit": [
+                          {
+                            "value": "/BT-5"
+                          },
+                          "iso-4217"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "and": [
+            {
+              "absent": "/BG-22/BT-107"
+            },
+            {
+              "eq": [
+                {
+                  "count": "/BG-20/*"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "allowances": {
+        "round": [
+          {
+            "sum": "/BG-20/*/BT-92"
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The document level allowance amounts (BT-92) add up to {$allowances}, and the sum of allowances on document level (BT-107) carries {/BG-22/BT-107}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-11",
+    "note": "The rule is the one of the 2017 edition. The sum is rounded to the minor unit of the invoice currency (BT-5) rather than to two fraction digits, clause 6.5.14; for a currency of two digits the two readings agree, which is why the rule is weighed by the downgrade measurement, and it is written out here only because the pack of the 2017 edition rounds to two."
+  },
+  {
+    "id": "BR-CO-12",
+    "severity": "fatal",
+    "oracle": "downgrade",
+    "context": "/",
+    "terms": [
+      "BT-108",
+      "BT-99"
+    ],
+    "assert": {
+      "or": [
+        {
+          "and": [
+            {
+              "exists": "/BG-22/BT-108"
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BG-22/BT-108"
+                },
+                {
+                  "round": [
+                    {
+                      "sum": "/BG-21/*/BT-99"
+                    },
+                    {
+                      "atRoot": {
+                        "minorUnit": [
+                          {
+                            "value": "/BT-5"
+                          },
+                          "iso-4217"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "and": [
+            {
+              "absent": "/BG-22/BT-108"
+            },
+            {
+              "eq": [
+                {
+                  "count": "/BG-21/*"
+                },
+                {
+                  "const": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "charges": {
+        "round": [
+          {
+            "sum": "/BG-21/*/BT-99"
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The document level charge or tax amounts (BT-99) add up to {$charges}, and the sum of charges and taxes on document level (BT-108) carries {/BG-22/BT-108}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-12",
+    "note": "The rule is the one of the 2017 edition. The sum is rounded to the minor unit of the invoice currency (BT-5) rather than to two fraction digits, clause 6.5.14; for a currency of two digits the two readings agree, which is why the rule is weighed by the downgrade measurement, and it is written out here only because the pack of the 2017 edition rounds to two."
+  },
+  {
+    "id": "BR-CO-13",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-109",
+      "BT-131",
+      "BT-107",
+      "BT-108"
+    ],
+    "assert": {
+      "eq": [
+        {
+          "value": "/BG-22/BT-109"
+        },
+        {
+          "round": [
+            {
+              "add": [
+                {
+                  "sub": [
+                    {
+                      "sum": "/BG-25/*/BT-131"
+                    },
+                    {
+                      "if": {
+                        "condition": {
+                          "exists": "/BG-22/BT-107"
+                        },
+                        "then": {
+                          "value": "/BG-22/BT-107"
+                        },
+                        "else": {
+                          "const": 0
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "if": {
+                    "condition": {
+                      "exists": "/BG-22/BT-108"
+                    },
+                    "then": {
+                      "value": "/BG-22/BT-108"
+                    },
+                    "else": {
+                      "const": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "atRoot": {
+                "minorUnit": [
+                  {
+                    "value": "/BT-5"
+                  },
+                  "iso-4217"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "lines": {
+        "sum": "/BG-25/*/BT-131"
+      },
+      "sum": {
+        "round": [
+          {
+            "add": [
+              {
+                "sub": [
+                  {
+                    "sum": "/BG-25/*/BT-131"
+                  },
+                  {
+                    "if": {
+                      "condition": {
+                        "exists": "/BG-22/BT-107"
+                      },
+                      "then": {
+                        "value": "/BG-22/BT-107"
+                      },
+                      "else": {
+                        "const": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "if": {
+                  "condition": {
+                    "exists": "/BG-22/BT-108"
+                  },
+                  "then": {
+                    "value": "/BG-22/BT-108"
+                  },
+                  "else": {
+                    "const": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice total amount without VAT (BT-109) carries {/BG-22/BT-109}, and the invoice line net amounts (BT-131), which add up to {$lines}, less the allowances (BT-107) plus the charges and taxes (BT-108) come to {$sum}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-13",
+    "note": "The 2017 edition built the total from the sum of the line net amounts (BT-106) and rounded it to two fraction digits; this edition builds it from the line net amounts (BT-131) themselves and rounds it to the number of digits the minor unit of the invoice currency (BT-5) gives it, clause 6.5.14. Whether BT-106 is that sum is BR-CO-10's question. The sum of charges is named after charges and taxes here."
+  },
+  {
+    "id": "BR-CO-15",
+    "severity": "fatal",
+    "oracle": "downgrade",
+    "context": "/",
+    "terms": [
+      "BT-109",
+      "BT-110",
+      "BT-112"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BG-22/BT-110"
+        },
+        "then": {
+          "eq": [
+            {
+              "value": "/BG-22/BT-112"
+            },
+            {
+              "round": [
+                {
+                  "add": [
+                    {
+                      "value": "/BG-22/BT-109"
+                    },
+                    {
+                      "value": "/BG-22/BT-110"
+                    }
+                  ]
+                },
+                {
+                  "atRoot": {
+                    "minorUnit": [
+                      {
+                        "value": "/BT-5"
+                      },
+                      "iso-4217"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "else": {
+          "eq": [
+            {
+              "value": "/BG-22/BT-112"
+            },
+            {
+              "value": "/BG-22/BT-109"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice total amount with VAT (BT-112) carries {/BG-22/BT-112}, and the total without VAT (BT-109) of {/BG-22/BT-109} plus the total VAT amount (BT-110) of {/BG-22/BT-110} comes to something else.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-15",
+    "note": "The rule is the one of the 2017 edition. The sum is rounded to the minor unit of the invoice currency (BT-5) rather than to two fraction digits, clause 6.5.14; for a currency of two digits the two readings agree, which is why the rule is weighed by the downgrade measurement, and it is written out here only because the pack of the 2017 edition rounds to two."
+  },
+  {
+    "id": "BR-CO-16",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-112",
+      "BT-113",
+      "BT-114",
+      "BT-115",
+      "BT-179"
+    ],
+    "assert": {
+      "eq": [
+        {
+          "value": "/BG-22/BT-115"
+        },
+        {
+          "round": [
+            {
+              "add": [
+                {
+                  "sub": [
+                    {
+                      "value": "/BG-22/BT-112"
+                    },
+                    {
+                      "if": {
+                        "condition": {
+                          "exists": "/BG-22/BT-113"
+                        },
+                        "then": {
+                          "value": "/BG-22/BT-113"
+                        },
+                        "else": {
+                          "const": 0
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "sum": "/BG-22/BG-34/*/BT-179"
+                },
+                {
+                  "if": {
+                    "condition": {
+                      "exists": "/BG-22/BT-114"
+                    },
+                    "then": {
+                      "value": "/BG-22/BT-114"
+                    },
+                    "else": {
+                      "const": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "atRoot": {
+                "minorUnit": [
+                  {
+                    "value": "/BT-5"
+                  },
+                  "iso-4217"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "due": {
+        "round": [
+          {
+            "add": [
+              {
+                "sub": [
+                  {
+                    "value": "/BG-22/BT-112"
+                  },
+                  {
+                    "if": {
+                      "condition": {
+                        "exists": "/BG-22/BT-113"
+                      },
+                      "then": {
+                        "value": "/BG-22/BT-113"
+                      },
+                      "else": {
+                        "const": 0
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "sum": "/BG-22/BG-34/*/BT-179"
+              },
+              {
+                "if": {
+                  "condition": {
+                    "exists": "/BG-22/BT-114"
+                  },
+                  "then": {
+                    "value": "/BG-22/BT-114"
+                  },
+                  "else": {
+                    "const": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The amount due for payment (BT-115) carries {/BG-22/BT-115}, and the total with VAT (BT-112) of {/BG-22/BT-112}, less what was already paid (BT-113) and with the third-party charges (BT-179) and the rounding amount (BT-114) added, comes to {$due}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-16",
+    "note": "This edition adds the third-party charges (BT-179) to the amount due and rounds the result to the minor unit of the invoice currency (BT-5) rather than to two fraction digits."
+  },
+  {
+    "id": "BR-CO-20",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-37/BG-26",
+    "terms": [
+      "BT-134",
+      "BT-135"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-134"
+        },
+        {
+          "exists": "/BT-135"
+        }
+      ]
+    },
+    "message": "The invoice line period at {.} states neither a start date (BT-134) nor an end date (BT-135).",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-20",
+    "note": "The rule is implemented and cannot fail on a document that passed layer L1. A business group of an ESJ document exists exactly when it carries a value, and the group this rule is about carries no business term other than the two it asks for; a group with neither of them is not an empty group but no group at all. The XML binding can write the empty element the rule was written for, so the rule earns its place in a pack that also serves documents imported from XML — but it earns it as a statement, not as a check that can speak here. The statement is the one the 2017 edition makes; this edition addresses it differently, because the path of a term it names is not a path of that edition. The rule is written out here rather than taken over from the pack of that edition for exactly that reason."
+  },
+  {
+    "id": "BR-CO-22",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-104",
+      "BT-105",
+      "BT-177"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-104"
+        },
+        {
+          "exists": "/BT-105"
+        },
+        {
+          "exists": "/BT-177"
+        }
+      ]
+    },
+    "message": "The document level charge or tax at {.} states neither a reason text (BT-104) nor a charge reason code (BT-105) nor a non-VAT tax code (BT-177).",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-22",
+    "note": "This edition admits the new document level non-VAT tax code (BT-177) as a third way of saying what the charge or tax is."
+  },
+  {
+    "id": "BR-CO-24",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-144",
+      "BT-145",
+      "BT-193"
+    ],
+    "assert": {
+      "or": [
+        {
+          "exists": "/BT-144"
+        },
+        {
+          "exists": "/BT-145"
+        },
+        {
+          "exists": "/BT-193"
+        }
+      ]
+    },
+    "message": "The invoice line charge or tax at {.} states neither a reason text (BT-144) nor a charge reason code (BT-145) nor a non-VAT tax type code (BT-193).",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-24",
+    "note": "This edition admits the new line-level non-VAT tax type code (BT-193) as a third way of saying what the charge or tax is."
+  },
+  {
+    "id": "BR-CO-25",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-9",
+      "BT-20",
+      "BT-115"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "gt": [
+            {
+              "value": "/BG-22/BT-115"
+            },
+            {
+              "const": 0
+            }
+          ]
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BT-9"
+            },
+            {
+              "any": {
+                "group": "/BG-33/*",
+                "assert": {
+                  "exists": "/BT-20"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "message": "The amount due for payment (BT-115) is {/BG-22/BT-115}, and the invoice states neither a payment due date (BT-9) nor a payment term text (BT-20) to pay it by.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-25",
+    "note": "The payment term text sits in the new payment terms group (BG-33) in this edition, so the rule asks the group rather than the document root."
+  },
+  {
+    "id": "BR-CO-28",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-13",
+      "BT-188"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-13"
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "exists": "/BT-188"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice references a purchase order at header level (BT-13) and on an invoice line (BT-188); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-28",
+    "note": "The edition adds the line-level term and forbids a document that uses both levels; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-29",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-16",
+      "BT-189"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-16"
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "exists": "/BT-189"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice references a despatch advice at header level (BT-16) and on an invoice line (BT-189); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-29",
+    "note": "The edition adds the line-level term and forbids a document that uses both levels; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-30",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-15",
+      "BT-191"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-15"
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "exists": "/BT-191"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice references a receiving advice at header level (BT-15) and on an invoice line (BT-191); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-30",
+    "note": "The edition adds the line-level term and forbids a document that uses both levels; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-31",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-29",
+    "terms": [
+      "BT-149"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BT-149"
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BT-149"
+            },
+            {
+              "const": 0
+            }
+          ]
+        }
+      }
+    },
+    "message": "The item price base quantity (BT-149) at {@/BT-149} is {/BT-149}; a base quantity is not negative.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-31"
+  },
+  {
+    "id": "BR-CO-32",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-131",
+      "BT-129",
+      "BT-136",
+      "BT-141",
+      "BT-146",
+      "BT-149"
+    ],
+    "undecided": {
+      "when": {
+        "eq": [
+          {
+            "value": "/BG-29/BT-149"
+          },
+          {
+            "const": 0
+          }
+        ]
+      },
+      "message": "the invoice line at {.} states the item price base quantity (BT-149) {/BG-29/BT-149}, so it has no priced quantity to compare its net amount (BT-131) with"
+    },
+    "assert": {
+      "le": [
+        {
+          "abs": {
+            "sub": [
+              {
+                "value": "/BT-131"
+              },
+              {
+                "round": [
+                  {
+                    "sub": [
+                      {
+                        "add": [
+                          {
+                            "div": [
+                              {
+                                "mul": [
+                                  {
+                                    "value": "/BG-29/BT-146"
+                                  },
+                                  {
+                                    "value": "/BT-129"
+                                  }
+                                ]
+                              },
+                              {
+                                "if": {
+                                  "condition": {
+                                    "exists": "/BG-29/BT-149"
+                                  },
+                                  "then": {
+                                    "value": "/BG-29/BT-149"
+                                  },
+                                  "else": {
+                                    "const": 1
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "sum": "/BG-28/*/BT-141"
+                          }
+                        ]
+                      },
+                      {
+                        "sum": "/BG-27/*/BT-136"
+                      }
+                    ]
+                  },
+                  {
+                    "atRoot": {
+                      "minorUnit": [
+                        {
+                          "value": "/BT-5"
+                        },
+                        "iso-4217"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "mul": [
+            {
+              "const": 2
+            },
+            {
+              "unit": {
+                "atRoot": {
+                  "minorUnit": [
+                    {
+                      "value": "/BT-5"
+                    },
+                    "iso-4217"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "bind": {
+      "computed": {
+        "round": [
+          {
+            "sub": [
+              {
+                "add": [
+                  {
+                    "div": [
+                      {
+                        "mul": [
+                          {
+                            "value": "/BG-29/BT-146"
+                          },
+                          {
+                            "value": "/BT-129"
+                          }
+                        ]
+                      },
+                      {
+                        "if": {
+                          "condition": {
+                            "exists": "/BG-29/BT-149"
+                          },
+                          "then": {
+                            "value": "/BG-29/BT-149"
+                          },
+                          "else": {
+                            "const": 1
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "sum": "/BG-28/*/BT-141"
+                  }
+                ]
+              },
+              {
+                "sum": "/BG-27/*/BT-136"
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice line at {.} states the net amount (BT-131) {/BT-131}, and its priced quantity with the line charges (BT-141) less the line allowances (BT-136) comes to {$computed}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-32",
+    "note": "The edition excepts this rule from the tolerance of clause 6.5.14 and states one of its own instead: two units of the currency in use, which is 2 where the minor unit is 0 and 0,02 where it is 2. The result is rounded to the minor unit of the invoice currency (BT-5) before the comparison. A line that states no price base quantity (BT-149) is priced per one unit, which is what the edition says an absent base quantity means. The price is multiplied by the quantity before it is divided by the base quantity, so that the one division comes last and an exact quotient is never cut before it is rounded. A base quantity of zero, which the edition admits, leaves the line undecided: the rule reports that it was not decided for that line rather than holding."
+  },
+  {
+    "id": "BR-CO-33",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-3",
+      "BT-112"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "or": [
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "81"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "83"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "261"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "262"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "296"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "308"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "381"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "396"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "420"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "502"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "503"
+                }
+              ]
+            },
+            {
+              "eq": [
+                {
+                  "value": "/BT-3"
+                },
+                {
+                  "const": "532"
+                }
+              ]
+            }
+          ]
+        },
+        "then": {
+          "ge": [
+            {
+              "value": "/BG-22/BT-112"
+            },
+            {
+              "const": 0
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice type code (BT-3) {/BT-3} makes the document a credit note, and its invoice total amount with VAT (BT-112) is {/BG-22/BT-112}; the total of a credit note is not negative.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-33",
+    "note": "The edition names no list of the type codes that make a document a credit note. This pack reads as one the twelve codes of UNTDID 1001 whose name in that list is a credit note: 81, 83, 261, 262, 296, 308, 381, 396, 420, 502, 503 and 532. The list is this project's reading, and a document of another type code is not decided by this rule."
+  },
+  {
+    "id": "BR-CO-34",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-105",
+      "BT-177"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-105"
+          },
+          {
+            "exists": "/BT-177"
+          }
+        ]
+      }
+    },
+    "message": "The document level charge or tax at {.} states a charge reason code (BT-105) and a non-VAT tax code (BT-177); this edition admits one of the two and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-34"
+  },
+  {
+    "id": "BR-CO-35",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*/BG-28/*",
+    "terms": [
+      "BT-145",
+      "BT-193"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-145"
+          },
+          {
+            "exists": "/BT-193"
+          }
+        ]
+      }
+    },
+    "message": "The invoice line charge or tax at {.} states a charge reason code (BT-145) and a non-VAT tax type code (BT-193); this edition admits one of the two and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-35"
+  },
+  {
+    "id": "BR-CO-36",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-33/*/BG-35/*",
+    "terms": [
+      "BT-171",
+      "BT-172",
+      "BT-112"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-171"
+            },
+            {
+              "exists": "/BT-172"
+            }
+          ]
+        },
+        "then": {
+          "le": [
+            {
+              "abs": {
+                "sub": [
+                  {
+                    "value": "/BT-172"
+                  },
+                  {
+                    "div": [
+                      {
+                        "mul": [
+                          {
+                            "value": "/BT-171"
+                          },
+                          {
+                            "atRoot": {
+                              "value": "/BG-22/BT-112"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "const": 100
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "min": [
+                {
+                  "max": [
+                    {
+                      "mul": [
+                        {
+                          "const": "0.001"
+                        },
+                        {
+                          "abs": {
+                            "value": "/BT-172"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "const": "0.01"
+                    }
+                  ]
+                },
+                {
+                  "const": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bind": {
+      "computed": {
+        "div": [
+          {
+            "mul": [
+              {
+                "value": "/BT-171"
+              },
+              {
+                "atRoot": {
+                  "value": "/BG-22/BT-112"
+                }
+              }
+            ]
+          },
+          {
+            "const": 100
+          }
+        ]
+      }
+    },
+    "message": "The early payment discount at {.} states the amount (BT-172) {/BT-172} and the percentage (BT-171) {/BT-171} of the invoice total with VAT (BT-112), which comes to {$computed}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-36",
+    "note": "The tolerance is the one clause 6.5.14 states for a rule that multiplies: a thousandth of the stated amount, never below 0,01 and never above 1."
+  },
+  {
+    "id": "BR-CO-38",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-20/*",
+    "terms": [
+      "BT-92",
+      "BT-93",
+      "BT-94"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-93"
+            },
+            {
+              "exists": "/BT-94"
+            }
+          ]
+        },
+        "then": {
+          "le": [
+            {
+              "abs": {
+                "sub": [
+                  {
+                    "value": "/BT-92"
+                  },
+                  {
+                    "round": [
+                      {
+                        "div": [
+                          {
+                            "mul": [
+                              {
+                                "value": "/BT-94"
+                              },
+                              {
+                                "value": "/BT-93"
+                              }
+                            ]
+                          },
+                          {
+                            "const": 100
+                          }
+                        ]
+                      },
+                      {
+                        "atRoot": {
+                          "minorUnit": [
+                            {
+                              "value": "/BT-5"
+                            },
+                            "iso-4217"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "mul": [
+                {
+                  "const": 2
+                },
+                {
+                  "unit": {
+                    "atRoot": {
+                      "minorUnit": [
+                        {
+                          "value": "/BT-5"
+                        },
+                        "iso-4217"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bind": {
+      "computed": {
+        "round": [
+          {
+            "div": [
+              {
+                "mul": [
+                  {
+                    "value": "/BT-94"
+                  },
+                  {
+                    "value": "/BT-93"
+                  }
+                ]
+              },
+              {
+                "const": 100
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The document level allowance at {.} states the amount (BT-92) {/BT-92} and a percentage (BT-94) of {/BT-94} of the base amount (BT-93) {/BT-93}, which comes to {$computed}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-38",
+    "note": "The edition excepts this rule from the tolerance of clause 6.5.14 and states two units of the currency in use instead, and rounds the result to the minor unit of the invoice currency (BT-5)."
+  },
+  {
+    "id": "BR-CO-39",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-21/*",
+    "terms": [
+      "BT-99",
+      "BT-100",
+      "BT-101"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-100"
+            },
+            {
+              "exists": "/BT-101"
+            }
+          ]
+        },
+        "then": {
+          "le": [
+            {
+              "abs": {
+                "sub": [
+                  {
+                    "value": "/BT-99"
+                  },
+                  {
+                    "round": [
+                      {
+                        "div": [
+                          {
+                            "mul": [
+                              {
+                                "value": "/BT-101"
+                              },
+                              {
+                                "value": "/BT-100"
+                              }
+                            ]
+                          },
+                          {
+                            "const": 100
+                          }
+                        ]
+                      },
+                      {
+                        "atRoot": {
+                          "minorUnit": [
+                            {
+                              "value": "/BT-5"
+                            },
+                            "iso-4217"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "mul": [
+                {
+                  "const": 2
+                },
+                {
+                  "unit": {
+                    "atRoot": {
+                      "minorUnit": [
+                        {
+                          "value": "/BT-5"
+                        },
+                        "iso-4217"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bind": {
+      "computed": {
+        "round": [
+          {
+            "div": [
+              {
+                "mul": [
+                  {
+                    "value": "/BT-101"
+                  },
+                  {
+                    "value": "/BT-100"
+                  }
+                ]
+              },
+              {
+                "const": 100
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-5"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The document level charge or tax at {.} states the amount (BT-99) {/BT-99} and a percentage (BT-101) of {/BT-101} of the base amount (BT-100) {/BT-100}, which comes to {$computed}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-39",
+    "note": "The edition excepts this rule from the tolerance of clause 6.5.14 and states two units of the currency in use instead, and rounds the result to the minor unit of the invoice currency (BT-5)."
+  },
+  {
+    "id": "BR-CO-40",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BG-13",
+      "BG-37"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BG-13"
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "exists": "/BG-37"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice states delivery information at header level (BG-13) and on an invoice line (BG-37); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-40",
+    "note": "The edition adds the line-level delivery group; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-45",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-197",
+      "BT-198"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-197"
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "exists": "/BT-198"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice references a delivery note at header level (BT-197) and on an invoice line (BT-198); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-45",
+    "note": "The edition adds the line-level term and forbids a document that uses both levels; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-46",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-14",
+      "BT-200"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "exists": "/BT-14"
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "exists": "/BT-200"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice references a sales order at header level (BT-14) and on an invoice line (BT-200); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-46",
+    "note": "The edition adds the line-level term and forbids a document that uses both levels; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-47",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-25",
+      "BT-217"
+    ],
+    "assert": {
+      "not": {
+        "and": [
+          {
+            "any": {
+              "group": "/BG-3/*",
+              "assert": {
+                "exists": "/BT-25"
+              }
+            }
+          },
+          {
+            "any": {
+              "group": "/BG-25/*",
+              "assert": {
+                "any": {
+                  "group": "/BG-39/*",
+                  "assert": {
+                    "exists": "/BT-217"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice references a preceding invoice at header level (BT-25) and on an invoice line (BT-217); this edition admits one of the two levels and not both.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-47",
+    "note": "The edition adds the line-level preceding invoice group; an invoice written against the 2017 edition has the header level alone and passes."
+  },
+  {
+    "id": "BR-CO-48",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-6",
+      "BT-110",
+      "BT-111",
+      "BT-167"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "and": [
+            {
+              "exists": "/BT-6"
+            },
+            {
+              "exists": "/BT-167"
+            }
+          ]
+        },
+        "then": {
+          "le": [
+            {
+              "abs": {
+                "sub": [
+                  {
+                    "value": "/BG-22/BT-111"
+                  },
+                  {
+                    "round": [
+                      {
+                        "mul": [
+                          {
+                            "value": "/BG-22/BT-110"
+                          },
+                          {
+                            "value": "/BT-167"
+                          }
+                        ]
+                      },
+                      {
+                        "atRoot": {
+                          "minorUnit": [
+                            {
+                              "value": "/BT-6"
+                            },
+                            "iso-4217"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "min": [
+                {
+                  "max": [
+                    {
+                      "mul": [
+                        {
+                          "const": "0.001"
+                        },
+                        {
+                          "abs": {
+                            "value": "/BG-22/BT-111"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "const": "0.01"
+                    }
+                  ]
+                },
+                {
+                  "const": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bind": {
+      "computed": {
+        "round": [
+          {
+            "mul": [
+              {
+                "value": "/BG-22/BT-110"
+              },
+              {
+                "value": "/BT-167"
+              }
+            ]
+          },
+          {
+            "atRoot": {
+              "minorUnit": [
+                {
+                  "value": "/BT-6"
+                },
+                "iso-4217"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "message": "The invoice total VAT amount in VAT accounting currency (BT-111) carries {/BG-22/BT-111}, and the invoice total VAT amount (BT-110) of {/BG-22/BT-110} at the exchange rate (BT-167) {/BT-167} comes to {$computed}.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-48",
+    "note": "The product is rounded to the minor unit of the VAT accounting currency (BT-6) before it is compared, because clause 6.5.14 rounds the final result of a calculation and a total in a currency without fraction digits can only be whole. The tolerance is the one the edition states for this rule: a thousandth of the amount in the accounting currency, never below 0,01 and never above 1. The rate is multiplied, as the rule states it."
+  },
+  {
+    "id": "BR-CO-51",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/BG-25/*",
+    "terms": [
+      "BT-130",
+      "BT-150"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "exists": "/BG-29/BT-150"
+        },
+        "then": {
+          "eq": [
+            {
+              "value": "/BG-29/BT-150"
+            },
+            {
+              "value": "/BT-130"
+            }
+          ]
+        }
+      }
+    },
+    "message": "The invoice line at {.} prices its item per {/BG-29/BT-150} (BT-150) and invoices it in {/BT-130} (BT-130); the two units of measure are the same one.",
+    "source": "EN 16931-1:2026, 6.4.2, Table 4, BR-CO-51"
+  }
+]

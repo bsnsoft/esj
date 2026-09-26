@@ -17,6 +17,10 @@
     <EmbeddedResource Include="$(RepositoryRoot)model/b2c/0.1.json" LogicalName="model/b2c/0.1.json" />
     <EmbeddedResource Include="$(RepositoryRoot)rules/en16931/1.3.16/**/*.json"
                       LogicalName="rules/en16931/1.3.16/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- The rule pack of the later edition goes the way of its registry. -->
+    <EmbeddedResource Include="$(RepositoryRoot)rules/en16931-2026/0.1/**/*.json"
+                      LogicalName="rules/en16931-2026/0.1/%(RecursiveDir)%(Filename)%(Extension)"
+                      Condition="Exists('$(RepositoryRoot)rules/en16931-2026/0.1/pack.json')" />
   </ItemGroup>
 
 </Project>

@@ -100,10 +100,22 @@
         <targetPath>de/bsnsoft/esj/rules/packs</targetPath>
         <excludes>
           <exclude>**/*.md</exclude>
+          <!--
+            The pack of the later edition, which model/en16931/2026.paths lists and the
+            profile without-edition-2026 leaves out.
+          -->
+          <exclude>${esj.edition-2026.exclude-rules}</exclude>
         </excludes>
       </resource>
       <resource>
         <directory>${project.basedir}/src/main/resources</directory>
+        <excludes>
+          <!--
+            The service declaration of that pack, which is left out with the pack and with
+            the Java rules of it; RulePackSources then finds one source fewer.
+          -->
+          <exclude>${esj.edition-2026.exclude-service}</exclude>
+        </excludes>
       </resource>
     </resources>
 
@@ -134,7 +146,11 @@
         <includes>
           <include>esj/**</include>
           <include>rules/**</include>
+          <include>rules-2026/**</include>
         </includes>
+        <excludes>
+          <exclude>${esj.edition-2026.exclude-conformance}</exclude>
+        </excludes>
       </testResource>
       <testResource>
         <!--
@@ -155,6 +171,23 @@
     </testResources>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!--
+            The rules of the later edition that the rule language cannot express. They
+            carry facts of that edition, model/en16931/2026.paths lists the package, and
+            the profile without-edition-2026 builds without it.
+          -->
+          <excludes>
+            <exclude>${esj.edition-2026.exclude-sources}</exclude>
+          </excludes>
+          <testExcludes>
+            <testExclude>${esj.edition-2026.exclude-sources}</testExclude>
+          </testExcludes>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

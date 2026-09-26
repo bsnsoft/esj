@@ -22,7 +22,7 @@ internal static class Fixtures
 
     private static readonly Lazy<string> Root = new(FindRepository);
     private static readonly Lazy<IReadOnlyList<JsonElement>> Files = new(ReadManifests);
-    private static readonly Lazy<JsonElement> RuleCases = new(ReadRuleCases);
+    private static readonly Lazy<IReadOnlyList<JsonElement>> RuleCases = new(ReadRuleCases);
 
     /// <summary>Returns the root of the checkout the fixtures are read from.</summary>
     internal static string Repository => Root.Value;
@@ -59,17 +59,19 @@ internal static class Fixtures
         }
     }
 
-    /// <summary>Returns the rule cases: a base document and the changes that break it.</summary>
-    internal static IEnumerable<JsonElement> Cases()
+    /// <summary>
+    /// Returns the rule cases of the manifest and of every part of it, each with the case file
+    /// it stands in, which carries the documents a case names by <c>baseDocument</c>.
+    /// </summary>
+    /// <returns>the cases</returns>
+    internal static IEnumerable<(JsonElement File, JsonElement Entry)> Cases()
     {
-        if (RuleCases.Value.ValueKind == JsonValueKind.Undefined)
+        foreach (JsonElement file in RuleCases.Value)
         {
-            yield break;
-        }
-
-        foreach (JsonElement entry in RuleCases.Value.GetProperty("cases").EnumerateArray())
-        {
-            yield return entry;
+            foreach (JsonElement entry in file.GetProperty("cases").EnumerateArray())
+            {
+                yield return (file, entry);
+            }
         }
     }
 
@@ -101,18 +103,19 @@ internal static class Fixtures
         return files;
     }
 
-    private static JsonElement ReadRuleCases()
+    private static IReadOnlyList<JsonElement> ReadRuleCases()
     {
+        List<JsonElement> files = new();
         foreach (JsonElement manifest in Manifests)
         {
             if (manifest.TryGetProperty("rules", out JsonElement rules))
             {
-                return Read(Path.Combine(
-                    Repository, ManifestDirectory, rules.GetProperty("casesFile").GetString()!));
+                files.Add(Read(Path.Combine(
+                    Repository, ManifestDirectory, rules.GetProperty("casesFile").GetString()!)));
             }
         }
 
-        return default;
+        return files;
     }
 
     private static JsonElement Read(string path) =>

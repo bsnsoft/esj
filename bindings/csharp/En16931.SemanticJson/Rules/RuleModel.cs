@@ -30,7 +30,8 @@ public sealed class RulePackException : EsjException
 /// structural validator reports it at layer L2 with its path, and a rule that reads it stops
 /// there: it produces one <c>info</c> finding saying which rule was not decided and why, and
 /// no verdict. Reporting the same defect a second time as a failed business rule would make
-/// one problem look like two.
+/// one problem look like two. A rule raises it as well where the case its <c>undecided</c>
+/// member names holds, with the reason the rule gives.
 /// </remarks>
 public sealed class UndecidedException : EsjException
 {

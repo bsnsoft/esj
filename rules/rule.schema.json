@@ -10,7 +10,7 @@
       "required": [
         "id",
         "version",
-        "verifiedAgainst",
+        "edition",
         "description"
       ],
       "additionalProperties": false,
@@ -28,8 +28,13 @@
           "type": "string",
           "pattern": "^[0-9A-Za-z][0-9A-Za-z.-]*$"
         },
+        "edition": {
+          "description": "The edition of the semantic model the rules of this pack are addresses in, in the spelling of the registry that describes it. It is the one member by which the engine decides whether a pack may be compiled against a registry and run over a document: a path is an address relative to an edition, and the rules of a standard are renumbered, added to and withdrawn between editions.",
+          "type": "string",
+          "minLength": 1
+        },
         "verifiedAgainst": {
-          "description": "The release of the official validation artefacts this pack's behaviour is compared against. It is a statement of what was measured, not a claim of equivalence; the ledger carries the figures.",
+          "description": "The release of the official validation artefacts this pack's behaviour is compared against. It is a statement of what was measured, not a claim of equivalence; the ledger carries the figures. A pack written for an edition no artefact release covers leaves the member out and says per rule what stands behind it instead.",
           "type": "string",
           "minLength": 1
         },
@@ -45,16 +50,53 @@
             "$ref": "#/$defs/listId"
           },
           "additionalProperties": {
-            "$ref": "#/$defs/day"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/day"
+              },
+              {
+                "description": "A snapshot that lies in another pack, so that two editions naming the same published list decide against the same bytes.",
+                "type": "object",
+                "required": [
+                  "day",
+                  "from"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "day": {
+                    "$ref": "#/$defs/day"
+                  },
+                  "from": {
+                    "description": "The pack the snapshot file lies in, written identifier/version.",
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9-]*/[0-9A-Za-z][0-9A-Za-z.-]*$"
+                  }
+                }
+              }
+            ]
           }
         },
         "javaRules": {
-          "description": "The classes of the rules the rule language cannot express. Naming a class is not loading it: the caller hands the instances to the engine, which checks that exactly these arrived.",
+          "description": "The rules the rule language cannot express, each by the name of its class and by what stands behind it. Naming a class is not loading it: the caller hands the instances to the engine, which checks that exactly these arrived.",
           "type": "array",
           "uniqueItems": true,
           "items": {
-            "type": "string",
-            "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)+$"
+            "type": "object",
+            "required": [
+              "class",
+              "oracle"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "class": {
+                "description": "The binary name of the class.",
+                "type": "string",
+                "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)+$"
+              },
+              "oracle": {
+                "$ref": "#/$defs/oracle"
+              }
+            }
           }
         },
         "rules": {
@@ -71,6 +113,47 @@
           "items": {
             "type": "string",
             "pattern": "^rules/[a-z0-9-]+\\.json$"
+          }
+        },
+        "shares": {
+          "description": "Rules of another pack that this pack takes over unchanged. A rule that the next edition of a standard leaves alone is the same statement about the same terms, and a copy of it is a second file to keep equal by hand; the pack names the other pack, the file and the identifiers instead, and states the oracle under which it takes them. A rule of the named file that is not named here is not taken over, and a shared rule that addresses a path this edition moved does not compile.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "pack",
+              "version",
+              "file",
+              "oracle",
+              "rules"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "pack": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^[0-9A-Za-z][0-9A-Za-z.-]*$"
+              },
+              "file": {
+                "type": "string",
+                "pattern": "^rules/[a-z0-9-]+\\.json$"
+              },
+              "oracle": {
+                "$ref": "#/$defs/oracle"
+              },
+              "rules": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z0-9-]*$"
+                }
+              }
+            }
           }
         }
       }
@@ -91,6 +174,14 @@
       "description": "A calendar day, YYYY-MM-DD.",
       "type": "string",
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "oracle": {
+      "description": "What stands behind a rule: artefact = measured against the official validation artefacts of a release over the same document; downgrade = the rule is unchanged against the edition such a release covers and was measured against those artefacts over the document written down to that edition; cases = hand-computed cases alone. None of the three is a conformance claim.",
+      "enum": [
+        "artefact",
+        "downgrade",
+        "cases"
+      ]
     },
     "termId": {
       "description": "A business term or business group identifier, with the namespace of an extension where it has one.",
@@ -118,6 +209,7 @@
       "required": [
         "id",
         "severity",
+        "oracle",
         "context",
         "terms",
         "assert",
@@ -137,6 +229,9 @@
             "fatal",
             "warning"
           ]
+        },
+        "oracle": {
+          "$ref": "#/$defs/oracle"
         },
         "context": {
           "$ref": "#/$defs/context"
@@ -174,6 +269,26 @@
             }
           }
         },
+        "undecided": {
+          "description": "A case the document may state and the rule has no answer for, such as a division by a quantity of zero. The condition is weighed before the assertion; where it is true, the rule reports that it was not decided — an info finding whose message is not decided: and the reason — and weighs nothing else. A condition that cannot be decided is not true. Most rules carry none.",
+          "type": "object",
+          "required": [
+            "when",
+            "message"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "when": {
+              "description": "The case, a truth value.",
+              "$ref": "#/$defs/expression"
+            },
+            "message": {
+              "description": "Why the rule is not decided in that case. Its placeholders and the expressions of bind are the rule's own.",
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
         "bind": {
           "description": "Expressions the message may show under a name, written {$name}. They are evaluated only when the rule fails.",
           "type": "object",
@@ -202,7 +317,7 @@
       }
     },
     "expression": {
-      "description": "An object with exactly one member, whose name is one of the thirty-one operators of the language.",
+      "description": "An object with exactly one member, whose name is one of the thirty-four operators of the language.",
       "type": "object",
       "oneOf": [
         {
@@ -422,7 +537,7 @@
                   "$ref": "#/$defs/expression"
                 },
                 {
-                  "$ref": "#/$defs/scale"
+                  "$ref": "#/$defs/scaleOrExpression"
                 }
               ]
             }
@@ -443,7 +558,7 @@
                   "$ref": "#/$defs/path"
                 },
                 {
-                  "$ref": "#/$defs/scale"
+                  "$ref": "#/$defs/scaleOrExpression"
                 }
               ]
             }
@@ -606,6 +721,52 @@
               "$ref": "#/$defs/quantifier"
             }
           }
+        },
+        {
+          "required": [
+            "minorUnit"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "minorUnit": {
+              "description": "The number of fraction digits the publisher of a code list gives a code: an expression that yields the code, and the identifier of the list. It is how a rule of an edition that ties the decimals of an amount to the currency in use says so.",
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "prefixItems": [
+                {
+                  "$ref": "#/$defs/expression"
+                },
+                {
+                  "$ref": "#/$defs/listId"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "required": [
+            "unit"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "description": "The value of one unit at a number of fraction digits: ten raised to the negative of it. It is how a rule writes a tolerance a standard states per minor unit.",
+              "$ref": "#/$defs/expression"
+            }
+          }
+        },
+        {
+          "required": [
+            "atRoot"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "atRoot": {
+              "description": "An expression weighed at the document rather than at the business group instance the rule is evaluated in. Only the document is reachable from inside it. It is how a rule about an instance reads a fact of the whole invoice, such as the currency the fraction digits of every amount follow.",
+              "$ref": "#/$defs/expression"
+            }
+          }
         }
       ]
     },
@@ -657,6 +818,17 @@
           "$ref": "#/$defs/expression"
         }
       }
+    },
+    "scaleOrExpression": {
+      "description": "A number of fraction digits, written as a whole number where the edition fixes it and as an expression where the edition ties it to the currency in use.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/scale"
+        },
+        {
+          "$ref": "#/$defs/expression"
+        }
+      ]
     }
   },
   "oneOf": [

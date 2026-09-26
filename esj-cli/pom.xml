@@ -253,6 +253,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!--
+            The measurement of the rule pack of the later edition. It names that edition,
+            model/en16931/2026.paths lists the package, and the profile
+            without-edition-2026 builds without it.
+          -->
+          <testExcludes>
+            <testExclude>${esj.edition-2026.exclude-sources}</testExclude>
+          </testExcludes>
+        </configuration>
         <executions>
           <execution>
             <id>default-compile</id>

@@ -72,6 +72,8 @@ segment of each name. Findings of the pack are their own layer and are never ESJ
 (`SPEC.md` section 9.4). `Evaluate` refuses a document of an edition other than the one the pack
 was compiled against, because a path is an address relative to an edition: a caller holding a
 document with no pack for its edition reports that nothing was checked.
+`RulePackSources.ForEdition` returns the pack this build carries for an edition; for the later
+one that is `rules/en16931-2026/0.1`, with its rules in `Rules/En16931V2026/`, left out with it.
 
 ## What the classes cover
 

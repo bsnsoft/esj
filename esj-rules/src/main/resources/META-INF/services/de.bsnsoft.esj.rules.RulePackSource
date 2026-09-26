@@ -1,0 +1,4 @@
+# The rule pack of EN 16931-1:2026. This declaration is a fact of that edition and is listed
+# in model/en16931/2026.paths: a distribution that leaves the edition out leaves out the pack,
+# the Java rules of it and this file together, and RulePackSources then finds one source fewer.
+de.bsnsoft.esj.rules.en16931.v2026.En16931V2026

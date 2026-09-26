@@ -97,7 +97,7 @@ final class EsjCommand implements Callable<Integer> {
     @Option(order = 20, names = "--list-packs",
             description = "List the validation packs this build carries — their components,"
                     + " which documents each applies to and the licence each is distributed"
-                    + " under — and exit.")
+                    + " under — and the native rule packs with their edition, and exit.")
     private boolean listPacks;
 
     EsjCommand(Console console) {
@@ -109,6 +109,8 @@ final class EsjCommand implements Callable<Integer> {
     public Integer call() {
         if (listPacks) {
             SyntaxPacks.list(console);
+            console.line();
+            RuleCheck.list(console);
             return ExitCode.SUCCESS;
         }
         spec.commandLine().usage(console.errWriter());

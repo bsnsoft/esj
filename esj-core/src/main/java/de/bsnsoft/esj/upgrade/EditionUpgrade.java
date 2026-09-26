@@ -7,6 +7,7 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Component;
+import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
 import de.bsnsoft.esj.validate.Finding;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -57,6 +59,12 @@ public final class EditionUpgrade {
 
     /** The syntax an ESJ document derived from another ESJ document names as its source. */
     private static final String ESJ = "ESJ";
+
+    /** The invoice currency code, the currency a bound over the minor unit is read in. */
+    private static final SemanticPath INVOICE_CURRENCY = SemanticPath.of("/BT-5");
+
+    /** Where a document states its VAT accounting currency. */
+    private static final SemanticPath ACCOUNTING_CURRENCY = SemanticPath.of("/BT-6");
 
     private EditionUpgrade() {
         throw new AssertionError("no instances");
@@ -505,13 +513,20 @@ public final class EditionUpgrade {
          * and says where a bound was not evaluated.
          *
          * <p>Nothing is rounded. A bound the registry states as a constant is checked
-         * here; a bound the registry states as a rule over the currency in use is a fact
-         * of a versioned rule pack, not of the registry, and this run says that it did not
-         * evaluate it rather than guessing the currency's minor unit.
+         * here. A bound the registry states as a rule over the currency in use is checked
+         * where the caller handed over the minor units of a currency list snapshot
+         * ({@link UpgradeOptions#minorUnits()}), in the currency the value is written in, as
+         * the rule pack of that edition reads it ({@link #currencyOf(SemanticPath)}). Without
+         * a snapshot, or for a
+         * currency the snapshot does not list, this run says that it did not evaluate the
+         * bound rather than guessing the currency's minor unit.
          */
         private void decimals() {
             int unevaluated = 0;
             Set<String> rules = new LinkedHashSet<>();
+            Set<String> unlisted = new LinkedHashSet<>();
+            boolean unnamed = false;
+            Optional<MinorUnits> units = options.minorUnits();
             for (Map.Entry<SemanticPath, SemanticValue> entry : values.entrySet()) {
                 Optional<Term> term = target.term(entry.getKey().term());
                 if (term.isEmpty() || term.orElseThrow().datatype()
@@ -533,19 +548,93 @@ public final class EditionUpgrade {
                     continue;
                 }
                 Optional<String> rule = term.orElseThrow().maxDecimalsRule();
-                if (rule.isPresent()) {
+                if (rule.isEmpty()) {
+                    continue;
+                }
+                Optional<String> currency = currencyOf(entry.getKey());
+                OptionalInt bound = units.isPresent() && currency.isPresent()
+                        ? units.orElseThrow().fractionDigits(term.orElseThrow(),
+                                currency.orElseThrow())
+                        : OptionalInt.empty();
+                if (bound.isEmpty()) {
                     unevaluated++;
                     rules.add(rule.orElseThrow());
+                    if (currency.isEmpty()) {
+                        unnamed = true;
+                    } else {
+                        unlisted.add(currency.orElseThrow());
+                    }
+                } else if (scale > bound.getAsInt()) {
+                    note(UpgradeNote.about(UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS,
+                            entry.getKey(), "carries " + scale + " fraction digits and "
+                                    + target.edition() + " allows " + bound.getAsInt()
+                                    + " in " + currency.orElseThrow() + " (" + rule.orElseThrow()
+                                    + ", " + units.orElseThrow().source()
+                                    + "); the value was not rounded"));
                 }
             }
             if (unevaluated > 0) {
                 note(UpgradeNote.ofDocument(UpgradeNote.Kind.DECIMALS_NOT_EVALUATED,
                         unevaluated + " values stand at terms whose bound "
-                                + target.edition() + " states as " + rules
-                                + "; that bound follows the currency in use, it is a fact of"
-                                + " a rule pack rather than of the registry, and this run did"
-                                + " not evaluate it"));
+                                + target.edition() + " states as " + rules + "; "
+                                + unevaluatedBecause(units, unnamed, unlisted)
+                                + ", and this run did not evaluate it"));
             }
+        }
+
+        /**
+         * Returns the currency a value of the result is written in, where the document names
+         * one: the VAT accounting currency (BT-6) for the total VAT amount in that currency
+         * (BT-111); the currency the group instance of the value states beside it, where the
+         * target edition gives that group a term of the invoice currency's code list; and
+         * otherwise the invoice currency (BT-5).
+         */
+        private Optional<String> currencyOf(SemanticPath path) {
+            if ("BT-111".equals(path.term())) {
+                return content(ACCOUNTING_CURRENCY);
+            }
+            SemanticPath group = path.parent();
+            Optional<String> list = target.term(INVOICE_CURRENCY.term())
+                    .flatMap(Term::codeList);
+            if (!group.isRoot() && list.isPresent()) {
+                for (Term sibling : target.children(group.term())) {
+                    if (!sibling.isGroup() && sibling.codeList().equals(list)) {
+                        Optional<String> named = content(
+                                SemanticPath.of(group + "/" + sibling.id()));
+                        if (named.isPresent()) {
+                            return named;
+                        }
+                    }
+                }
+            }
+            return content(INVOICE_CURRENCY);
+        }
+
+        /** Returns the content of a value of the result, where it carries one. */
+        private Optional<String> content(SemanticPath path) {
+            SemanticValue value = values.get(path);
+            return value == null ? Optional.empty() : Optional.of(value.content());
+        }
+
+        /** Says why a bound that follows the currency was left unevaluated. */
+        private static String unevaluatedBecause(Optional<MinorUnits> units, boolean unnamed,
+                                                 Set<String> unlisted) {
+            if (units.isEmpty()) {
+                return "that bound follows the currency in use, it is a fact of a rule pack"
+                        + " rather than of the registry, and no currency list snapshot was"
+                        + " handed to this run";
+            }
+            StringBuilder why = new StringBuilder("that bound follows the currency a value is"
+                    + " written in");
+            if (unnamed) {
+                why.append(", which the document does not state for every such value");
+            }
+            if (!unlisted.isEmpty()) {
+                why.append(unnamed ? "; " : ", and ").append(units.orElseThrow().source())
+                        .append(" gives ").append(String.join(", ", unlisted))
+                        .append(" no minor unit");
+            }
+            return why.toString();
         }
 
         /** Returns the number of fraction digits of a value, or -1 where it is no decimal. */

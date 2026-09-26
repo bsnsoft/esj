@@ -25,9 +25,13 @@ import de.bsnsoft.esj.rules.RuleDefinition;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RulePack;
+import de.bsnsoft.esj.rules.RulePackSource;
+import de.bsnsoft.esj.rules.RulePackSources;
 import de.bsnsoft.esj.rules.RulePacks;
 import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.upgrade.EditionUpgrade;
+import de.bsnsoft.esj.upgrade.UpgradeOptions;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
 import de.bsnsoft.esj.validate.StructuralValidator;
@@ -47,6 +51,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -106,6 +111,18 @@ class FixtureManifestTest {
 
     /** The file that carries the rule cases, which are too many to read beside the rest. */
     private static final String CASES = "cases-en16931-1.3.16.json";
+
+    /**
+     * The cases the rule pack of the later edition is weighed by, as that pack's evidence
+     * records them: a document of the corpus written up to the edition, and the changes
+     * that make a rule hold and then speak.
+     */
+    private static final String LATER_EDITION_CASES = "conformance/rules-2026/cases/cases.json";
+
+    /** The options the documents of those cases are written up to the later edition with. */
+    private static final UpgradeOptions UPGRADE = UpgradeOptions.builder()
+            .extension(Registry.xrechnungExtension())
+            .build();
 
     /** The format identifier of a manifest file. */
     private static final String FORMAT = "EN16931-Semantic-JSON-Fixtures";
@@ -262,6 +279,13 @@ class FixtureManifestTest {
     @EnabledIf("theLaterEditionIsThere")
     void thePartOfTheLaterEditionIsWhatThisImplementationAnswers() {
         expect(LATER_EDITION_PART, laterEditionPart().bytes());
+    }
+
+    @Test
+    @EnabledIf("theLaterEditionPackIsThere")
+    void theRuleCasesOfTheLaterEditionAreWhatItsPackAnswers() {
+        RulePackSource source = laterEditionPack().orElseThrow();
+        expect(laterEditionCasesFile(source), laterEditionCases(source).bytes());
     }
 
     /**
@@ -459,6 +483,12 @@ class FixtureManifestTest {
         Manifest.Array tables = Manifest.array();
         tables.add(grammar(laterEditionGrammar(), laterEditionDocuments().get(0), registry));
         part.put("grammars", tables);
+
+        laterEditionPack().ifPresent(source -> part.put("rules", Manifest.object()
+                .put("pack", source.pack().id() + "/" + source.pack().version())
+                .put("directory", "rules/" + source.pack().id() + "/" + source.pack().version())
+                .put("casesFile", laterEditionCasesFile(source))
+                .put("cases", 2L * ((List<?>) member(laterEditionCaseSource(), "cases")).size())));
         return part;
     }
 
@@ -503,6 +533,148 @@ class FixtureManifestTest {
                             .put("warnings", Manifest.of(warnings))));
         }
         return file.put("cases", array);
+    }
+
+    /**
+     * Builds the rule cases of the later edition, in the form a binding reads.
+     *
+     * <p>No syntax binds that edition, so no instance of it exists to mutate. Its cases are the
+     * ones its pack is weighed by: a document of the corpus written up to the edition, then
+     * changed so that the rule the case is for holds, then changed once more so that it
+     * speaks. A binding does not write documents up to an edition — the manifest does not
+     * cover {@code esj upgrade} — so the documents the changes start from are carried in the
+     * file itself, and each case records both states with what the pack reports about each.
+     */
+    private Manifest.Object laterEditionCases(RulePackSource source) {
+        RuleEngine engine = source.engine(Registry.forEdition(LATER_EDITION));
+        Object written = laterEditionCaseSource();
+        Manifest.Object bases = Manifest.object();
+        Map<String, SemanticDocument> documents = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> named : ((Map<?, ?>) member(written, "documents")).entrySet()) {
+            String name = (String) named.getKey();
+            SemanticDocument upgraded = EditionUpgrade.apply(
+                    reader.read(Fixtures.bytes((String) member(named.getValue(), "source"))),
+                    LATER_EDITION, UPGRADE).require();
+            SemanticDocument base = changed(upgraded, (List<?>) member(named.getValue(), "prepare"));
+            documents.put(name, base);
+            bases.put(name, tree(Oracle.json(Canonicalizer.canonicalBytes(base))));
+        }
+        Manifest.Array array = Manifest.array();
+        Map<String, Integer> seen = new TreeMap<>();
+        for (Object element : (List<?>) member(written, "cases")) {
+            String rule = (String) member(element, "rule");
+            String name = (String) member(element, "document");
+            SemanticDocument base = documents.get(name);
+            SemanticDocument holds = changed(base, (List<?>) member(element, "holds"));
+            SemanticDocument speaks = changed(holds, (List<?>) member(element, "speaks"));
+            int count = seen.merge(rule, 1, Integer::sum);
+            String id = rule.toLowerCase(Locale.ROOT) + (count == 1 ? "" : "-" + count);
+            array.add(laterEditionCase(engine, id + "-holds", rule, name, base, holds));
+            array.add(laterEditionCase(engine, id + "-speaks", rule, name, base, speaks));
+        }
+        return Manifest.object()
+                .put("format", FORMAT + "-Rules")
+                .put("version", CONTRACT_VERSION)
+                .put("pack", source.pack().id() + "/" + source.pack().version())
+                .put("directory", "rules/" + source.pack().id() + "/" + source.pack().version())
+                .put("bases", bases)
+                .put("cases", array);
+    }
+
+    /** One case of the later edition: a named base document, the changes, the report. */
+    private static Manifest.Object laterEditionCase(RuleEngine engine, String id, String rule,
+                                                    String base, SemanticDocument unchanged,
+                                                    SemanticDocument changed) {
+        SemanticDocument rebuilt = rebuild(unchanged, changed);
+        assertEquals(changed.values(), rebuilt.values(),
+                id + ": the changes rebuild the document the case describes");
+        return Manifest.object()
+                .put("id", id)
+                .put("rule", rule)
+                .put("baseDocument", base)
+                .put("changes", changes(unchanged, changed))
+                .put("expect", Manifest.object()
+                        .put("rules", Manifest.of(reported(engine, rebuilt, false)))
+                        .put("warnings", Manifest.of(reported(engine, rebuilt, true))));
+    }
+
+    /** The case file of the pack of the later edition, as its evidence records it. */
+    private static Object laterEditionCaseSource() {
+        return Oracle.json(Fixtures.bytes(LATER_EDITION_CASES));
+    }
+
+    /** The rule pack of the later edition, where this build carries one. */
+    private static Optional<RulePackSource> laterEditionPack() {
+        if (!theLaterEditionIsThere()) {
+            return Optional.empty();
+        }
+        return RulePackSources.forEdition(Registry.forEdition(LATER_EDITION).edition());
+    }
+
+    static boolean theLaterEditionPackIsThere() {
+        return laterEditionPack().isPresent();
+    }
+
+    /** The name of the rule case file of a pack, which carries the pack in it. */
+    private static String laterEditionCasesFile(RulePackSource source) {
+        return "cases-" + source.pack().id() + "-" + source.pack().version() + ".json";
+    }
+
+    /**
+     * Makes the changes a case of the later edition writes: a value, a value with its
+     * identification scheme, the removal of a value, or the removal of a group instance.
+     */
+    private static SemanticDocument changed(SemanticDocument document, List<?> changes) {
+        SemanticDocument.Builder builder = document.toBuilder();
+        if (changes == null) {
+            return builder.build();
+        }
+        for (Object change : changes) {
+            String path = (String) member(change, "path");
+            if (flag(change, "delete")) {
+                builder.remove(SemanticPath.of(path));
+            } else if (flag(change, "deleteUnder")) {
+                builder.removeUnder(SemanticPath.group(path));
+            } else {
+                String scheme = (String) member(change, "scheme");
+                String content = (String) member(change, "value");
+                builder.set(SemanticPath.of(path), scheme == null
+                        ? SemanticValue.of(content)
+                        : SemanticValue.identifier(content, scheme));
+            }
+        }
+        return builder.build();
+    }
+
+    private static Object member(Object object, String name) {
+        return ((Map<?, ?>) object).get(name);
+    }
+
+    /** Tells whether a member is the literal true, which the tree reader returns as text. */
+    private static boolean flag(Object object, String name) {
+        return "true".equals(String.valueOf(member(object, name)));
+    }
+
+    /** A tree of maps, lists, strings and flags as the manifest writes it. */
+    private static Manifest tree(Object node) {
+        if (node instanceof Map<?, ?> members) {
+            Manifest.Object object = Manifest.object();
+            for (Map.Entry<?, ?> entry : members.entrySet()) {
+                object.put((String) entry.getKey(), tree(entry.getValue()));
+            }
+            return object;
+        }
+        if (node instanceof List<?> elements) {
+            Manifest.Array array = Manifest.array();
+            for (Object element : elements) {
+                array.add(tree(element));
+            }
+            return array;
+        }
+        if (node instanceof Long number) {
+            return Manifest.of(number);
+        }
+        return Manifest.of((String) node);
     }
 
     // ------------------------------------------------------------- the sections

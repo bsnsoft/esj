@@ -60,23 +60,27 @@ class EditionWiringTest {
     }
 
     /**
-     * The document is measured against the registry of its own edition, so the structural
-     * layers find nothing; the business rules of this build are written against another
-     * edition and do not run, which is a component of the check that is missing rather
-     * than one that passed. The verdict is therefore the third state and the exit code 9,
-     * with the cause in the closed vocabulary.
+     * The document is measured against the registry of its own edition and the rule pack
+     * of that edition runs over it, so the structural layers and the business rules both
+     * answer. What cannot run is the component that hands the document to the official
+     * validation artefacts: none is published for this edition, and no syntax binding of
+     * the terms it adds is published either, so the document reaches no written form an
+     * artefact could read. The verdict is therefore the third state and the exit code 9,
+     * with the cause in the closed vocabulary — never {@code VALID}.
      */
     @Test
     @EnabledIf("carries2026")
-    void validateMeasuresTheDocumentAndReportsThatNoPackIsWrittenForItsEdition() {
+    void validateRunsThePackOfTheEditionAndStillReachesNoVerdict() {
         Cli.Run run = Cli.run(Fixtures.bytes(EDITION_2026), "validate", "-");
         assertEquals(ExitCode.INDETERMINATE, run.exitCode(), run.text() + run.err());
         assertTrue(run.text().contains("Semantic model:   EN16931-1:2026"), run.text());
         assertTrue(run.text().contains("Model (L2):                OK"), run.text());
         assertTrue(run.text().contains("Cardinality (L3):          OK"), run.text());
-        assertTrue(run.text().contains("no pack for this edition"), run.text());
+        assertTrue(run.text().contains("pack en16931-2026/0.1"), run.text());
+        assertTrue(run.text().contains("no syntax binding is published for this edition"),
+                run.text());
         assertTrue(run.text().contains("INDETERMINATE"), run.text());
-        assertTrue(run.text().contains("business-rules (no-pack-for-edition)"), run.text());
+        assertTrue(run.text().contains("written-syntax (no-artefacts-for-edition)"), run.text());
     }
 
     @Test
@@ -86,8 +90,71 @@ class EditionWiringTest {
                 "validate", "-", "--output", "json");
         assertEquals(ExitCode.INDETERMINATE, run.exitCode(), run.err());
         assertTrue(run.text().contains("\"semanticModel\": \"EN16931-1:2026\""), run.text());
-        assertTrue(run.text().contains("\"cause\": \"no-pack-for-edition\""), run.text());
+        assertTrue(run.text().contains("\"cause\": \"no-artefacts-for-edition\""), run.text());
         assertTrue(run.text().contains("\"verdict\": \"INDETERMINATE\""), run.text());
+    }
+
+    /**
+     * No official artefact stands behind the pack of this edition, and every place that
+     * names the pack says so: the row of the text form, the pack object of the JSON form
+     * and the row of the report file.
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void everyFormOfTheReportSaysThePackIsNotCorroborated() throws Exception {
+        Cli.Run text = Cli.run(Fixtures.bytes(EDITION_2026), "validate", "-");
+        assertTrue(text.text().contains("EN 16931 business rules (native, pack"
+                + " en16931-2026/0.1, " + RuleCheck.UNCORROBORATED + "): OK"), text.text());
+        Cli.Run json = Cli.run(Fixtures.bytes(EDITION_2026),
+                "validate", "-", "--output", "json");
+        assertTrue(json.text().contains("\"edition\": \"EN 16931-1:2026\""), json.text());
+        assertTrue(json.text().contains("\"corroborated\": false"), json.text());
+        Path report = directory.resolve("report.html");
+        Cli.Run file = Cli.run(Fixtures.bytes(EDITION_2026), "validate", "-",
+                "--report", report.toString(), "--report-lang", "en");
+        assertEquals(ExitCode.INDETERMINATE, file.exitCode(), file.err());
+        assertTrue(Files.readString(report).contains("pack en16931-2026/0.1, "
+                + RuleCheck.UNCORROBORATED), "the report file names it too");
+    }
+
+    /** A fatal finding of the pack of this edition decides the verdict. */
+    @Test
+    @EnabledIf("carries2026")
+    void aFatalFindingOfThePackOfTheEditionMakesTheDocumentInvalid() {
+        String document = new String(Fixtures.bytes(EDITION_2026), StandardCharsets.UTF_8)
+                .replace("\"/BG-22/BT-112\": \"1190\"", "\"/BG-22/BT-112\": \"1191\"");
+        Cli.Run run = Cli.run(document.getBytes(StandardCharsets.UTF_8), "validate", "-");
+        assertEquals(ExitCode.VALIDATION, run.exitCode(), run.text() + run.err());
+        assertTrue(run.text().contains("BR-CO-15 [fatal]"), run.text());
+        assertTrue(run.text().strip().endsWith("INVALID"), run.text());
+    }
+
+    /** Left out by the caller, the row still names the pack the edition would have run. */
+    @Test
+    @EnabledIf("carries2026")
+    void rulesNoneNamesThePackOfTheDocumentsEdition() {
+        Cli.Run run = Cli.run(Fixtures.bytes(EDITION_2026), "validate", "-", "--rules", "none");
+        assertEquals(ExitCode.INDETERMINATE, run.exitCode(), run.err());
+        assertTrue(run.text().contains("pack en16931-2026/0.1, " + RuleCheck.UNCORROBORATED
+                + "): " + RuleCheck.BY_OPTION), run.text());
+        assertFalse(run.text().contains(RuleCheck.PACK), run.text());
+    }
+
+    /** The listing names every rule pack this build carries, with its edition. */
+    @Test
+    void theListingNamesTheRulePacksWithTheirEdition() {
+        Cli.Run run = Cli.run("--list-packs");
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertTrue(run.text().contains(RuleCheck.PACK + System.lineSeparator() + "  "
+                + "EN 16931-1:2017+A1:2019/AC:2020; measured against"), run.text());
+        if (carries2026()) {
+            assertTrue(run.text().contains("en16931-2026/0.1" + System.lineSeparator()
+                    + "  EN 16931-1:2026; " + RuleCheck.UNCORROBORATED), run.text());
+            assertTrue(run.text().contains(" downgrade, ") && run.text().contains(" cases"),
+                    run.text());
+        } else {
+            assertFalse(run.text().contains("en16931-2026"), run.text());
+        }
     }
 
     /** The same document under the default edition is checked whole and is valid. */

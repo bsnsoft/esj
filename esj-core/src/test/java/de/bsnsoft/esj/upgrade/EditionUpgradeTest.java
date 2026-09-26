@@ -9,10 +9,12 @@ import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
+import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -211,6 +213,83 @@ class EditionUpgradeTest {
         assertEquals(1, reported.size());
         assertEquals(UpgradeNote.Severity.INFORMATION, reported.get(0).severity());
         assertTrue(reported.get(0).message().contains("iso4217-minor-unit"));
+    }
+
+    /**
+     * Handed the minor units of a currency list snapshot, the run evaluates the bound that
+     * follows the currency in the invoice currency: a value within it passes without a
+     * note, a value beyond it is reported with the currency and the snapshot, and nothing is
+     * rounded.
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void aBoundThatFollowsTheCurrencyIsEvaluatedWithTheMinorUnitsTheCallerHandsOver() {
+        UpgradeOptions options = UpgradeOptions.builder()
+                .minorUnits(MinorUnits.of(Map.of("EUR", 2, "JPY", 0), "a snapshot of a test"))
+                .build();
+        UpgradeResult within = EditionUpgrade.apply(invoice().build(), "2026", options);
+        assertEquals(List.of(), notes(within, UpgradeNote.Kind.DECIMALS_NOT_EVALUATED));
+        assertEquals(List.of(), notes(within, UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS));
+
+        UpgradeResult beyond = EditionUpgrade.apply(invoice()
+                .set(SemanticPath.of("/BG-22/BT-109"), SemanticValue.of("100.001")).build(), "2026", options);
+        List<UpgradeNote> reported = notes(beyond, UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS);
+        assertEquals(1, reported.size());
+        assertEquals(Optional.of(SemanticPath.of("/BG-22/BT-109")), reported.get(0).path());
+        assertTrue(reported.get(0).message().contains("allows 2 in EUR"),
+                reported.get(0).message());
+        assertTrue(reported.get(0).message().contains("a snapshot of a test"));
+        assertEquals("100.001", beyond.require().value(SemanticPath.of("/BG-22/BT-109"))
+                .orElseThrow().content());
+
+        UpgradeResult yen = EditionUpgrade.apply(invoice().set(SemanticPath.of("/BT-5"), SemanticValue.of("JPY"))
+                .set(SemanticPath.of("/BG-22/BT-109"), SemanticValue.of("100.5")).build(), "2026", options);
+        List<UpgradeNote> inYen = notes(yen, UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS);
+        assertEquals(1, inYen.size());
+        assertTrue(inYen.get(0).message().contains("allows 0 in JPY"), inYen.get(0).message());
+    }
+
+    /**
+     * The total VAT amount in the accounting currency (BT-111) is bounded by the minor unit of
+     * that currency (BT-6), not by the invoice currency: in yen it admits no fraction digit,
+     * in dinar three.
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void theTotalInTheAccountingCurrencyIsBoundedByThatCurrency() {
+        UpgradeOptions options = UpgradeOptions.builder()
+                .minorUnits(MinorUnits.of(Map.of("EUR", 2, "JPY", 0, "KWD", 3),
+                        "a snapshot of a test"))
+                .build();
+        UpgradeResult yen = EditionUpgrade.apply(invoice()
+                .set(SemanticPath.of("/BT-6"), SemanticValue.of("JPY"))
+                .set(SemanticPath.of("/BG-22/BT-111"), SemanticValue.of("1811.88")).build(),
+                "2026", options);
+        List<UpgradeNote> inYen = notes(yen, UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS);
+        assertEquals(1, inYen.size());
+        assertEquals(Optional.of(SemanticPath.of("/BG-22/BT-111")), inYen.get(0).path());
+        assertTrue(inYen.get(0).message().contains("allows 0 in JPY"), inYen.get(0).message());
+
+        UpgradeResult dinar = EditionUpgrade.apply(invoice()
+                .set(SemanticPath.of("/BT-6"), SemanticValue.of("KWD"))
+                .set(SemanticPath.of("/BG-22/BT-111"), SemanticValue.of("3.703")).build(),
+                "2026", options);
+        assertEquals(List.of(), notes(dinar, UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS));
+        assertEquals(List.of(), notes(dinar, UpgradeNote.Kind.DECIMALS_NOT_EVALUATED));
+    }
+
+    /** A currency the snapshot does not list leaves the bound unevaluated, and says why. */
+    @Test
+    @EnabledIf("carries2026")
+    void aCurrencyTheSnapshotDoesNotListLeavesTheBoundUnevaluated() {
+        UpgradeResult result = EditionUpgrade.apply(invoice().set(SemanticPath.of("/BT-5"), SemanticValue.of("XTS")).build(),
+                "2026", UpgradeOptions.builder()
+                        .minorUnits(MinorUnits.of(Map.of("EUR", 2), "a snapshot of a test"))
+                        .build());
+        List<UpgradeNote> reported = notes(result, UpgradeNote.Kind.DECIMALS_NOT_EVALUATED);
+        assertEquals(1, reported.size());
+        assertTrue(reported.get(0).message().contains("gives XTS no minor unit"),
+                reported.get(0).message());
     }
 
     @Test

@@ -1,0 +1,273 @@
+[
+  {
+    "id": "BR-N-02",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-151",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-25/*",
+            "assert": {
+              "or": [
+                {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "N"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "D"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "F"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "I"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BG-30/BT-151"
+                    },
+                    {
+                      "const": "J"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "An invoice line is categorised under a national or a margin scheme, and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.14, Table 13, BR-N-2",
+    "note": "The edition names the category N of Table 5 and the four margin scheme codes of clause 6.4.3.4.13, of which only N is in the subset Table 5 admits. The five are written into the rule rather than looked up, because they are a set the edition states and not a published list, and a document can carry one of the other four only where a specification widens the list."
+  },
+  {
+    "id": "BR-N-03",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-95",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-20/*",
+            "assert": {
+              "or": [
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "N"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "D"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "F"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "I"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-95"
+                    },
+                    {
+                      "const": "J"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "A document level allowance (BG-20) is categorised under a national or a margin scheme, and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.14, Table 13, BR-N-3"
+  },
+  {
+    "id": "BR-N-04",
+    "severity": "fatal",
+    "oracle": "cases",
+    "context": "/",
+    "terms": [
+      "BT-102",
+      "BT-31",
+      "BT-32",
+      "BT-63"
+    ],
+    "assert": {
+      "if": {
+        "condition": {
+          "any": {
+            "group": "/BG-21/*",
+            "assert": {
+              "or": [
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "N"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "D"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "F"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "I"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "value": "/BT-102"
+                    },
+                    {
+                      "const": "J"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "then": {
+          "or": [
+            {
+              "exists": "/BG-4/BT-31"
+            },
+            {
+              "exists": "/BG-4/BT-32"
+            },
+            {
+              "exists": "/BG-11/BT-63"
+            }
+          ]
+        }
+      }
+    },
+    "message": "A document level charge or tax (BG-21) is categorised under a national or a margin scheme, and the invoice carries none of them: a seller VAT identifier (BT-31), a seller tax registration identifier (BT-32) or a seller tax representative VAT identifier (BT-63).",
+    "source": "EN 16931-1:2026, 6.4.3.4.14, Table 13, BR-N-4"
+  }
+]

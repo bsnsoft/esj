@@ -432,10 +432,9 @@ List<Removed> removed = report.removals();
 Optional<Derived> lineNet = report.at("/BG-25/0/BT-131");
 ```
 
-`removals()` is what the run took out with nothing in its place: BT-107 or BT-108 with no
-document level allowance or charge behind it, and a breakdown for a category and rate the invoice
-does not use. A stated value written over is a `replacements()` entry, matched by category and
-rate, not by index.
+`removals()` is what the run took out: BT-107 or BT-108 with no allowance or charge behind it, a
+breakdown no category and rate of the invoice uses. `replacements()` are stated values written
+over, matched by category and rate, not by index.
 
 It writes the line net amount (BT-131) of every line, one VAT breakdown (BG-23) per pair of VAT
 category code and VAT rate, and the document totals (BG-22), in that order:
@@ -449,19 +448,20 @@ category code and VAT rate, and the document totals (BG-22), in that order:
 | BT-109, BT-110, BT-112 | BT-106 − BT-107 + BT-108, Σ BT-117, BT-109 + BT-110 |
 | BT-115 | BT-112 − BT-113 + BT-114, taking BT-113 and BT-114 from the invoice |
 
-Base quantity is one where the invoice does not state it, a category keeps the exemption reason
-(BT-120, BT-121) its breakdown carried, and BT-111 is written only with the exchange rate in
-`TotalsOptions`. Decimals follow 6.5: item net price, invoiced quantity, item price base
-quantity and VAT rate are unlimited and used at the scale the caller gave; every intermediate
-result is an exact `BigDecimal`; rounding is half up to two decimals, once per amount, and the
-totals are sums of amounts already rounded (6.5.13).
+Base quantity is one where not stated, a category keeps the exemption reason (BT-120, BT-121)
+its breakdown carried, BT-111 needs the exchange rate in `TotalsOptions`. Prices, quantities and
+rates keep the caller's scale; arithmetic is exact, each amount rounded half up once, and totals
+are sums of rounded amounts (6.5.13).
 
 The derivation runs where it is asked to and never inside `document()`. Where the invoice does
 not say enough — a line with no VAT category, a category levied at a rate with no rate, a base
 quantity with no price, an allowance with no category, no line at all — it throws
-`DerivationException` naming the term and the group instance. A line that already carries a net
-amount is checked against the formula, and a mismatch is a refusal unless
-`TotalsOptions.standard().withOverwriteLines(true)` replaces it.
+`DerivationException` naming the term and the group instance. A stated line net amount that the
+formula contradicts is refused unless `TotalsOptions.standard().withOverwriteLines(true)`.
+
+The 2026 view has its own policy, `…typed.v2026.Totals.of(En16931V2026.minorUnits())`, with the
+same report: each amount rounded to the minor unit of its currency, BT-179 added into BT-115, one
+breakdown per exemption reason and goods/services code ([`editions.md`](editions.md)).
 
 ## The domain API
 

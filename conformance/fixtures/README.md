@@ -16,6 +16,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | `manifest.schema.json` | the schema of a manifest file, parts included |
 | `manifest-en16931-2026.json` | the part of the later edition, absent from a distribution that does not ship it |
 | `cases-en16931-1.3.16.json` | the rule cases: 448 mutations of the corpus as base document plus changes |
+| `cases-en16931-2026-0.1.json` | the rule cases of the later edition's pack: its documents, carried in the file, plus changes |
 | `arithmetic/pack.json` | a pack of the rule language whose rules pin division, each quotient worked out by hand |
 | `canonical-order/` | documents whose members are written in the wrong order, with their canonical bytes |
 | `run.py` | the runner, and the request protocol a binding answers |
@@ -29,7 +30,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | `invalid` | a document that has to be rejected | the layer, the finding code of SPEC.md section 9.6 and the path that finding names, one row per code where a document is wrong in two ways at L1; for a document rejected at layer L1, that those rows are the whole answer and nothing stands beside them |
 | `canonicalOrder` | a document whose members are in the wrong order | the canonical bytes, byte for byte |
 | `grammars` | a value substituted into a base document at one path | the finding code reported about that path, or none |
-| `rules` | a base document plus changes | the rule identifiers the pack reports, and which of them decide no verdict |
+| `rules` | a base document plus changes, answered by the pack of the document's edition | the rule identifiers the pack reports, and which of them decide no verdict |
 | `arithmetic` | the pack `arithmetic/pack.json` over one document | the rule identifiers that pack reports, compared rule by rule |
 
 The `arithmetic` section pins what `rules/README.md` says about division: a quotient that

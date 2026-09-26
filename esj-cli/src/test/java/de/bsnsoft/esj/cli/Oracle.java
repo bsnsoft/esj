@@ -42,11 +42,15 @@ import org.w3c.dom.NodeList;
  * that reformats an instance. {@code conformance/rules/mutate.py} writes the same documents
  * out for a reader who wants to look at one.
  *
+ * <p>The class is public because the measurement of a rule pack of another edition reads the
+ * same set: {@code conformance/rules-2026} weighs the rules it took over from this one by
+ * putting every mutation through {@code esj upgrade} and back.
+ *
  * <p>An expression that selects nothing is an error rather than a change that does nothing,
  * because a set whose expressions have gone stale would otherwise pass by validating the
  * corpus over and over.
  */
-final class Oracle {
+public final class Oracle {
 
     /** Where the set lives on the test class path. */
     private static final String FILE = "/conformance/rules/mutations/mutations.json";
@@ -80,7 +84,7 @@ final class Oracle {
      * @param outcome  {@code agrees}, {@code differs} or {@code silent}
      * @param cause    why the two differ, empty where they do not
      */
-    record Mutation(String id,
+    public record Mutation(String id,
                     String rule,
                     String syntax,
                     String source,
@@ -112,12 +116,12 @@ final class Oracle {
     }
 
     /** Returns the mutations, in the order the file lists them. */
-    static List<Mutation> all() {
+    public static List<Mutation> all() {
         return SET;
     }
 
     /** Returns the mutations, for a parameterized test. */
-    static List<Mutation> mutations() {
+    public static List<Mutation> mutations() {
         return SET;
     }
 
@@ -128,7 +132,7 @@ final class Oracle {
      * @return the bytes of the mutated document
      * @throws IllegalStateException if one of its expressions selects nothing
      */
-    static byte[] apply(Mutation mutation) {
+    public static byte[] apply(Mutation mutation) {
         Document document = parse(bytes(CORPUS + mutation.source()));
         for (Change change : mutation.changes()) {
             apply(document, change, mutation.id());
@@ -137,12 +141,12 @@ final class Oracle {
     }
 
     /** Returns the instance a mutation is made from, unchanged. */
-    static byte[] instance(Mutation mutation) {
+    public static byte[] instance(Mutation mutation) {
         return bytes(CORPUS + mutation.source());
     }
 
     /** Returns a file of the test class path. */
-    static byte[] bytes(String resource) {
+    public static byte[] bytes(String resource) {
         try (InputStream in = Oracle.class.getResourceAsStream(resource)) {
             if (in == null) {
                 throw new IllegalStateException(resource + " is not on the class path");
@@ -154,7 +158,7 @@ final class Oracle {
     }
 
     /** Returns a file of the test class path as text. */
-    static String text(String resource) {
+    public static String text(String resource) {
         return new String(bytes(resource), StandardCharsets.UTF_8);
     }
 
@@ -319,7 +323,7 @@ final class Oracle {
     }
 
     /** Reads JSON into maps, lists and strings, which is all the set is written in. */
-    static Object json(byte[] bytes) {
+    public static Object json(byte[] bytes) {
         try (JsonParser parser = new JsonFactory().createParser(bytes)) {
             parser.nextToken();
             return value(parser);

@@ -57,9 +57,9 @@ such a PDF to read, `--attachment-index <position>` names it by the position the
 where two attachments carry one name, and `--strict` refuses a document whose bytes are not
 written in the encoding it declares instead of recoding them.
 
-`esj --version` prints the version of the tool, of the ESJ format, of the semantic model it writes
-by default and of the registries it carries; `esj --list-packs` prints the validation packs, their
-components, documents, licence and the number of rules each profile levels. Neither takes an input.
+`esj --version` prints the versions of the tool, the format, the default semantic model and the
+registries; `esj --list-packs` the validation packs (components, documents, licence, rules each
+profile levels) and the rule packs (edition, rules per oracle). Neither takes an input.
 
 ## convert
 
