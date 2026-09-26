@@ -2,10 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tag:bsnsoft.de,2026:esj/conformance/fixtures/manifest.schema.json",
   "title": "ESJ fixture manifest",
-  "description": "A manifest file: the core manifest, or one part of it. Both have the same shape; a part carries the fixtures of one edition and is left out of a distribution that does not ship that edition.",
+  "description": "A file of the fixture manifest: the core manifest, one part of it, or the rule case file the core manifest names in rules.casesFile. The core manifest and a part have the same shape; a part carries the fixtures of one edition and is left out of a distribution that does not ship that edition. A rule case file carries its pack, the directory of that pack and the cases, and names no part.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "version", "part"],
+  "required": ["format", "version"],
+  "if": {
+    "required": ["format"],
+    "properties": { "format": { "const": "EN16931-Semantic-JSON-Fixtures-Rules" } }
+  },
+  "then": {
+    "required": ["pack", "directory", "cases"],
+    "propertyNames": { "enum": ["format", "version", "pack", "directory", "cases"] }
+  },
+  "else": {
+    "required": ["part"],
+    "propertyNames": { "not": { "enum": ["pack", "directory", "cases"] } }
+  },
   "properties": {
     "format": {
       "description": "The kind of file. A rule case file says -Rules.",
@@ -16,7 +28,7 @@
       "const": "1"
     },
     "part": {
-      "description": "core, or the name of the edition part.",
+      "description": "In a manifest file, core or the name of the edition part.",
       "type": "string",
       "minLength": 1
     },
@@ -70,8 +82,14 @@
       "description": "A pack of the rule language whose rules pin its arithmetic, the document it is run over, and what it reports there.",
       "$ref": "#/$defs/arithmetic"
     },
-    "pack": { "type": "string" },
-    "directory": { "type": "string" },
+    "pack": {
+      "description": "In a rule case file, the pack the cases are evaluated with.",
+      "type": "string"
+    },
+    "directory": {
+      "description": "In a rule case file, the directory of that pack, relative to the repository root.",
+      "type": "string"
+    },
     "cases": {
       "description": "In a rule case file, the cases themselves.",
       "type": "array",

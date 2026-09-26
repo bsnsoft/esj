@@ -133,8 +133,8 @@ final class EmbedCommand implements Callable<Integer> {
         SemanticDocument document = loaded.require(console);
 
         byte[] hybrid = Embedding.into(container.bytes(), document,
-                Embedding.options(profile, name, verapdf, !noEsj, document, console,
-                        deadline),
+                Embedding.options(profile, name, verapdf, !noEsj, extensions, document,
+                        console, deadline),
                 console);
         Output.write(out, hybrid, console);
         console.verbose("embedded " + invoice.name() + " (" + loaded.syntax().label() + ", "

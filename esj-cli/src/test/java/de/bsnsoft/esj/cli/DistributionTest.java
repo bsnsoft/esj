@@ -1,12 +1,15 @@
 package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
@@ -77,6 +81,13 @@ class DistributionTest {
     /** A run of a packaged artefact on a page, with the directory it lies in. */
     private static final Pattern ARTEFACT_RUN_ON_PAGE =
             Pattern.compile("^dist/out/(\\S+)/esj \\S.*$", Pattern.MULTILINE);
+
+    /** The pages the platform-independent archive carries, as {@code dist/package.sh} lists them. */
+    private static final Pattern PAGES_OF_THE_ARCHIVE =
+            Pattern.compile("^ *for page in ([a-z0-9. -]+); do$", Pattern.MULTILINE);
+
+    /** The version the stand-in for the jar answers with. */
+    private static final String STAND_IN_VERSION = "0.0.0-TEST";
 
     /** The document the Homebrew formula writes in its test block. */
     private static final Pattern FORMULA_DOCUMENT =
@@ -322,6 +333,77 @@ class DistributionTest {
         assertTrue(process.waitFor(2, TimeUnit.MINUTES), "sh -n finished");
         assertEquals(0, process.exitValue(), "dist/" + script + ": " + complaint);
         Files.delete(file);
+    }
+
+    /**
+     * A relative {@code --out} names a directory under the working directory, for the
+     * targets that name it from another one as well: {@code zip} writes the archive from
+     * inside its staging directory, and left with exit code 15 where {@code --out} was
+     * relative. The packaging runs here over a tree of its own — the scripts, a stand-in for
+     * the jar, the files the archive carries — with a stand-in for the JDK that answers the
+     * two questions the script asks of one, from a working directory outside that tree.
+     *
+     * @param directory a directory of this test
+     * @throws Exception if the shell cannot be started, does not finish, or the archive
+     *                   cannot be read
+     */
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void aRelativeOutIsUnderTheWorkingDirectory(@TempDir Path directory) throws Exception {
+        Path root = Files.createDirectories(directory.resolve("repository"));
+        Path dist = Files.createDirectories(root.resolve("dist"));
+        for (String script : List.of("package.sh", "cases.sh", "checks.sh")) {
+            Files.write(dist.resolve(script), Fixtures.bytes("dist/" + script));
+        }
+        Path pom = root.resolve("pom.xml");
+        Files.writeString(pom, "<project.build.outputTimestamp>2026-09-22T20:42:11Z"
+                + "</project.build.outputTimestamp>\n");
+        for (String file : List.of("LICENSE", "NOTICE", "README.md")) {
+            Files.writeString(root.resolve(file), file + "\n");
+        }
+        Path docs = Files.createDirectories(root.resolve("docs"));
+        Matcher pages = PAGES_OF_THE_ARCHIVE.matcher(Fixtures.text("dist/package.sh"));
+        assertTrue(pages.find(), "dist/package.sh lists the pages of the archive");
+        for (String page : pages.group(1).split(" ")) {
+            Files.writeString(docs.resolve(page), page + "\n");
+        }
+        Path jar = Files.createDirectories(root.resolve("esj-cli/target")).resolve("esj.jar");
+        Files.writeString(jar, "a stand-in for the jar\n");
+        // Older than the jar, so that the packaging finds it up to date and builds nothing.
+        Files.setLastModifiedTime(pom, FileTime.fromMillis(0));
+        Path jdk = Files.createDirectories(directory.resolve("jdk/bin"));
+        Files.writeString(jdk.resolve("java"), "#!/bin/sh\n"
+                + "case $1 in\n"
+                + "  -version) echo 'openjdk version \"25\"' >&2 ;;\n"
+                + "  -jar) echo 'esj " + STAND_IN_VERSION + "' ;;\n"
+                + "esac\n");
+        assertTrue(jdk.resolve("java").toFile().setExecutable(true),
+                "the stand-in for java is executable");
+        Path work = Files.createDirectories(directory.resolve("work"));
+        Path log = directory.resolve("package.log");
+
+        ProcessBuilder builder = new ProcessBuilder("sh",
+                dist.resolve("package.sh").toString(), "zip", "--out", "out")
+                .directory(work.toFile())
+                .redirectErrorStream(true)
+                .redirectOutput(log.toFile());
+        builder.environment().put("ESJ_JDK25_HOME", jdk.getParent().toString());
+        Process process = builder.start();
+        boolean finished = process.waitFor(2, TimeUnit.MINUTES);
+        if (!finished) {
+            process.destroyForcibly();
+        }
+
+        assertTrue(finished, "dist/package.sh finished: " + Files.readString(log));
+        assertEquals(0, process.exitValue(), Files.readString(log));
+        Path archive = work.resolve("out/esj-" + STAND_IN_VERSION + ".zip");
+        try (ZipFile zip = new ZipFile(archive.toFile())) {
+            assertNotNull(zip.getEntry("esj-" + STAND_IN_VERSION + "/lib/esj.jar"),
+                    "the archive carries the jar");
+        }
+        assertTrue(Files.isRegularFile(work.resolve("out/esj-" + STAND_IN_VERSION
+                + ".zip.sha256")), "and its checksum stands beside it");
+        assertFalse(Files.exists(root.resolve("out")), "nothing went under the repository");
     }
 
     /** Returns the commands the tool's own help lists. */

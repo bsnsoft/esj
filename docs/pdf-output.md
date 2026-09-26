@@ -39,7 +39,8 @@ byte[] hybrid = FacturX.embed(rendering, document,
 ```
 
 `EmbedOptions` carries the profile, the `HybridFlavour`, the `PdfLimits` the input is opened
-under, and an optional `PdfaCheck` the caller lends. What the call writes:
+under, an optional `PdfaCheck` the caller lends, and the extension registries the writer of the
+attachment is handed (`withExtensions(…)`). What the call writes:
 
 | What | Written as |
 |---|---|
@@ -50,8 +51,8 @@ under, and an optional `PdfaCheck` the caller lends. What the call writes:
 
 `embedWithReport` returns the file and the report of the writer beside it, because a term the cross
 industry invoice had no place for is a term the archived record does not carry; the command line
-prints it. [`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) is a whole
-program around this call.
+prints it, and a term those registries keep out of every syntax on one `info:` line, as `convert` does.
+[`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) is a whole program around this call.
 
 ## The ESJ document beside the invoice
 
@@ -147,7 +148,6 @@ The PDF library is Apache PDFBox 3.x under the Apache License, Version 2.0; the 
 embedded as the output intent is the ICC's, copied unaltered under the terms of its profile
 library; the fonts are Liberation Sans under the SIL Open Font License, Version 1.1; the modules
 of the payment code are encoded by ZXing Core under the Apache License, Version 2.0, and drawn
-as rectangles of the page rather than placed as an image
-([`letter-layout.md`](letter-layout.md#the-payment-code)). veraPDF is
-a test-scope dependency under GPLv3+ / MPLv2+ and is in no artefact this project publishes. The
-`NOTICE` of this repository names each of them.
+as rectangles of the page rather than placed as an image ([`letter-layout.md`](letter-layout.md#the-payment-code)).
+veraPDF is a test-scope dependency under GPLv3+ / MPLv2+ and is in no artefact this project
+publishes. The `NOTICE` of this repository names each of them.

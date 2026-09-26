@@ -845,7 +845,9 @@ final class Reports {
      * <p>Every command that writes a document into a syntax says this the same way, and
      * {@code esj embed} says it about the invoice inside the container it writes, because
      * that file is the archived record of the invoice and a term it lost is a term nobody
-     * will notice again.
+     * will notice again. A term whose registry keeps it out of every syntax is no loss: it
+     * is named on one information line per registry, as {@code esj convert} names it, and
+     * the warning counts and lists the shortfalls alone.
      *
      * <p>The notes are collapsed the way the importer's are: one line per distinct
      * sentence with a count, cut off after {@link #NOTE_LINES}, and shown whole under
@@ -857,12 +859,17 @@ final class Reports {
      * @param report  what the writer had to say
      */
     static void notPlaced(Console console, WriteReport report) {
+        for (WrittenCheck.ByDesign entry : Transport.entries(report)) {
+            console.information(WrittenCheck.stayed(entry));
+        }
         if (report.isComplete()) {
             return;
         }
-        console.warning(notPlacedHeadline(report));
+        List<WriteNote> shortfalls = report.notes().stream()
+                .filter(note -> note.kind().isShortfall()).toList();
+        console.warning(notPlacedHeadline(report, shortfalls.size()));
         Map<String, Integer> collapsed = new LinkedHashMap<>();
-        for (WriteNote note : report.notes()) {
+        for (WriteNote note : shortfalls) {
             collapsed.merge(console.options().verbose() ? note.toString()
                     : note.kind() + ": " + note.message(), 1, Integer::sum);
         }
@@ -887,10 +894,10 @@ final class Reports {
      * itself in the document — and a line that counted those as values would say zero and
      * then list them.
      */
-    private static String notPlacedHeadline(WriteReport report) {
+    private static String notPlacedHeadline(WriteReport report, int shortfalls) {
         if (report.dropped() == 0) {
-            return report.notes().size()
-                    + (report.notes().size() == 1
+            return shortfalls
+                    + (shortfalls == 1
                             ? " observation about what the syntax has no place for"
                             : " observations about what the syntax has no place for");
         }

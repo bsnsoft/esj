@@ -135,6 +135,16 @@
       <artifactId>junit-platform-launcher</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
+      The JSON Schema validator that checks the files of the fixture manifest against
+      conformance/fixtures/manifest.schema.json, as esj-core checks its own schemas. Test
+      scope, as there.
+    -->
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

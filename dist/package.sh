@@ -73,6 +73,9 @@ fail() { echo "package: $*" >&2; [ -n "$keep_going" ] || exit 1; }
 # The directory this script writes into is its own, and it says so in a marker
 # file. Nothing outside a directory carrying that marker is ever removed.
 mkdir -p "$out"
+# Absolute from here on: zip, linux-native and smoke name it from another
+# directory than the one it was given in.
+out=$(CDPATH='' cd -- "$out" && pwd)
 marker=$out/.esj-dist
 [ -f "$marker" ] || echo "Artefacts of dist/package.sh. Everything here is generated." > "$marker"
 replace() {

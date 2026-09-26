@@ -13,7 +13,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | File | What it holds |
 |---|---|
 | `manifest.json` | the manifest: registries, documents, negative fixtures, canonical order, value grammars |
-| `manifest.schema.json` | the schema of a manifest file, parts included |
+| `manifest.schema.json` | the schema of the manifest, of its parts and of the rule case file |
 | `manifest-en16931-2026.json` | the part of the later edition, absent from a distribution that does not ship it |
 | `cases-en16931-1.3.16.json` | the rule cases: 448 mutations of the corpus as base document plus changes |
 | `arithmetic/pack.json` | a pack of the rule language whose rules pin division, each quotient worked out by hand |

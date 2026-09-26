@@ -241,8 +241,8 @@ final class RenderCommand implements Callable<Integer> {
                         loaded.syntax().xrSyntax().orElseThrow(), XrSyntax.CII));
             }
             rendering = Embedding.into(rendering, document,
-                    Embedding.options(null, null, verapdf, !noEsj, document, console,
-                            deadline),
+                    Embedding.options(null, null, verapdf, !noEsj, extensions, document,
+                            console, deadline),
                     console);
         }
         Output.write(out, rendering, console);

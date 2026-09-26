@@ -104,7 +104,9 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
  * report of {@link #embedWithReport}, and {@link #embed} is the short form for a caller
  * that has already seen it. A term the cross industry invoice cannot carry is a term the
  * archived record does not carry either, and the caller is the one who gets to decide
- * what that means.
+ * what that means. The writer is handed the registries of
+ * {@link EmbedOptions#withExtensions}, so a term whose registry keeps it out of every
+ * transport syntax is named there as left behind by design and not as a loss.
  *
  * <p>Embedding the same document into the same file twice gives the same bytes. Nothing
  * of the machine, the moment or the run takes part: the only date written is BT-2, the
@@ -217,8 +219,8 @@ public final class FacturX {
      *
      * @param pdf      the rendering to embed into, which has to be a PDF/A-3 file
      * @param document the invoice
-     * @param options  the profile, the flavour, the bounds and an optional PDF/A
-     *                 validator for the input
+     * @param options  the profile, the flavour, the bounds, an optional PDF/A validator
+     *                 for the input and the extension registries of the document
      * @return the hybrid invoice and the report of the writer
      * @throws EmbedRefusedException if the input or the document is not one this module
      *                               embeds; see {@link EmbedRefusedException}
@@ -236,7 +238,7 @@ public final class FacturX {
         Objects.requireNonNull(options, "options");
         requireProfile(document, options);
         WriteResult invoice = CiiWriter.writeWithReport(document,
-                WriterOptions.defaults());
+                WriterOptions.builder().extensions(options.extensions()).build());
         Optional<String> unproven = options.esj()
                 ? disagreement(document, invoice.xml())
                 : Optional.empty();

@@ -36,8 +36,10 @@ import java.util.Optional;
  *
  * <p>The report of the writer is carried out with the file rather than dropped: the
  * hybrid invoice is the archived record, and a term the cross industry invoice had no
- * place for is a term the archive does not carry. Both commands print it the way
- * {@code esj convert --to cii} prints it.
+ * place for is a term the archive does not carry. The writer is handed the extension
+ * registries {@code --extension} loaded, and both commands print its report the way
+ * {@code esj convert --to cii} prints it: a term its registry keeps out of every syntax on
+ * one information line, anything else the syntax had no place for as a warning.
  */
 final class Embedding {
 
@@ -112,16 +114,18 @@ final class Embedding {
     /**
      * Returns what the container will declare, out of the options and the document.
      *
-     * @param profile  what {@code --profile} named, or {@code null} to take the
-     *                 document's own
-     * @param name     what {@code --name} named, or {@code null} for {@code factur-x.xml}
-     * @param verapdf  what {@code --verapdf} named, or {@code null} to go by what the
-     *                 input PDF declares about itself
-     * @param esj      whether the ESJ document of the invoice is attached beside the XML
-     * @param document the invoice, whose BT-24 names the profile it is written to
-     * @param console  the streams and the bounds of this run
-     * @param deadline what is left of the time this run was given, which the validator
-     *                 runs inside
+     * @param profile    what {@code --profile} named, or {@code null} to take the
+     *                   document's own
+     * @param name       what {@code --name} named, or {@code null} for {@code factur-x.xml}
+     * @param verapdf    what {@code --verapdf} named, or {@code null} to go by what the
+     *                   input PDF declares about itself
+     * @param esj        whether the ESJ document of the invoice is attached beside the XML
+     * @param extensions the extension registries {@code --extension} loaded, which the
+     *                   writer of the attachment is handed
+     * @param document   the invoice, whose BT-24 names the profile it is written to
+     * @param console    the streams and the bounds of this run
+     * @param deadline   what is left of the time this run was given, which the validator
+     *                   runs inside
      * @return the options
      * @throws CliException if a token names something this version does not write, or if
      *                      the profile has to be taken from a document that names none
@@ -130,6 +134,7 @@ final class Embedding {
                                 String name,
                                 String verapdf,
                                 boolean esj,
+                                Extensions extensions,
                                 SemanticDocument document,
                                 Console console,
                                 Deadline deadline) {
@@ -140,7 +145,8 @@ final class Embedding {
         requireBindableEdition(document);
         EmbedOptions options = EmbedOptions.of(profile(profile, document))
                 .withLimits(console.options().bounds().pdfLimits())
-                .withEsj(esj);
+                .withEsj(esj)
+                .withExtensions(extensions.registries());
         if (name != null) {
             options = options.withFlavour(flavour(name));
         }
