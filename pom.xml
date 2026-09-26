@@ -86,14 +86,14 @@
     <project.build.outputTimestamp>2026-09-22T20:42:11Z</project.build.outputTimestamp>
 
     <jackson.version>2.22.2</jackson.version>
-    <picocli.version>4.7.6</picocli.version>
-    <saxon.version>12.10</saxon.version>
+    <picocli.version>4.7.7</picocli.version>
+    <saxon.version>13.0</saxon.version>
     <pdfbox.version>3.0.8</pdfbox.version>
     <zxing.version>3.5.4</zxing.version>
-    <junit.version>5.14.4</junit.version>
+    <junit.version>6.1.3</junit.version>
     <json-schema-validator.version>3.0.7</json-schema-validator.version>
     <embedded-postgres.version>2.2.2</embedded-postgres.version>
-    <embedded-postgres-binaries.version>14.22.0</embedded-postgres-binaries.version>
+    <embedded-postgres-binaries.version>18.6.0</embedded-postgres-binaries.version>
     <verapdf.version>1.30.2</verapdf.version>
 
     <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
@@ -119,9 +119,9 @@
     <esj.edition-2026.exclude-sources>**/no-edition-is-excluded/**</esj.edition-2026.exclude-sources>
     <esj.edition-2026.exclude-examples>**/no-example-is-excluded*</esj.edition-2026.exclude-examples>
     <esj.edition-2026.exclude-fixtures>**/no-part-is-excluded*</esj.edition-2026.exclude-fixtures>
-    <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
-    <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
-    <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
+    <exec-maven-plugin.version>3.6.4</exec-maven-plugin.version>
+    <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
+    <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
     <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
   </properties>
 
@@ -195,18 +195,17 @@
       </dependency>
       <!--
         The server binaries the artefact above carries by default cover x86-64 on Linux,
-        macOS and Windows. These two add the 64-bit ARM builds, so the page is checked on an
-        ARM build server and on an Apple Silicon machine as well.
+        macOS and Windows, at the PostgreSQL release it was built against. The bill of
+        materials of those binaries pins every platform's build to one release instead, so
+        the page is checked against the same PostgreSQL wherever the build runs; esj-xr adds
+        the 64-bit ARM builds from it, for an ARM build server and an Apple Silicon machine.
       -->
       <dependency>
         <groupId>io.zonky.test.postgres</groupId>
-        <artifactId>embedded-postgres-binaries-linux-arm64v8</artifactId>
+        <artifactId>embedded-postgres-binaries-bom</artifactId>
         <version>${embedded-postgres-binaries.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zonky.test.postgres</groupId>
-        <artifactId>embedded-postgres-binaries-darwin-arm64v8</artifactId>
-        <version>${embedded-postgres-binaries.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <!--
         The PDF/A oracle of esj-render, in test scope and in no published artefact. It is

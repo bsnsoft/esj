@@ -9,7 +9,8 @@ index `/BT-1`.
 
 The statements are PostgreSQL 14 or newer, and every one is executed in the order this page
 prints it, by `esj-xr/src/test/java/de/bsnsoft/esj/xr/StorageExamplesTest.java`
-against a server it starts itself and fills with the UBL and the CII rendering of one invoice.
+against a PostgreSQL 18 it starts itself and fills with the UBL and the CII rendering of one
+invoice.
 
 ## A table and a query
 
