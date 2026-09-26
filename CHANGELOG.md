@@ -84,6 +84,18 @@ still change; a change to it is named here under *Format*.
   umask of a build leave no trace in its bytes, and nothing is attached before every checksum has
   been checked against the archive beside it, no name comes from two jobs with different
   contents, and a tag finds the archive of the version it names.
+- `esj embed` and `esj render --embed cii` hand the writer of the attachment the extension
+  registries `--extension` loads, as `esj convert` does: a term whose registry declares
+  `"transport": "none"` is named on one information line instead of being warned about as a value
+  that was not written. `EmbedOptions.withExtensions(...)` hands them over in Java; the hybrid
+  file is the same file.
+- `conformance/fixtures/manifest.schema.json` describes the rule case file as it is written: it
+  required a `part` of every file, and the rule case file names its pack, the directory of that
+  pack and its cases instead. `FixtureManifestTest` validates every file of the manifest against
+  the schema.
+- `dist/package.sh --out <directory>` takes a relative directory: `zip` left with exit code 15,
+  and `linux-native` and `smoke` looked for it under the repository rather than under the
+  working directory.
 
 ## [0.9.1] — 2026-09-22
 

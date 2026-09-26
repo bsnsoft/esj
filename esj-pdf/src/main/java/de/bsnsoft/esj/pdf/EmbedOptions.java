@@ -1,5 +1,8 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.model.Registry;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,25 +26,61 @@ import java.util.Optional;
  * attachment ({@link EsjAttachment}). It is on by default and is written only where the
  * attachment and the invoice XML are two accounts of one invoice; see {@link FacturX}.
  *
- * @param profile the profile the invoice is written in, which the specification
- *                identifier of the document has to name as well
- * @param flavour the container specification the file declares itself under
- * @param limits  what opening the input PDF may cost
- * @param check   a PDF/A validator for the input, or an empty optional to go by what the
- *                input declares about itself
- * @param esj     whether the ESJ document of the invoice is attached beside the XML
+ * <p>The sixth is a fact only the caller knows: the extension registries the terms of the
+ * document come from. The writer of the attachment is handed them, so that a value of a
+ * term whose registry declares {@code "transport": "none"} is reported as left behind by
+ * design rather than as a loss, as {@code WriterOptions.extensions()} says.
+ *
+ * @param profile    the profile the invoice is written in, which the specification
+ *                   identifier of the document has to name as well
+ * @param flavour    the container specification the file declares itself under
+ * @param limits     what opening the input PDF may cost
+ * @param check      a PDF/A validator for the input, or an empty optional to go by what
+ *                   the input declares about itself
+ * @param esj        whether the ESJ document of the invoice is attached beside the XML
+ * @param extensions the extension registries the terms of the document come from, none by
+ *                   default
  */
 public record EmbedOptions(FacturXProfile profile,
                            HybridFlavour flavour,
                            PdfLimits limits,
                            Optional<PdfaCheck> check,
-                           boolean esj) {
+                           boolean esj,
+                           List<Registry> extensions) {
 
     private static final EmbedOptions DEFAULTS = new EmbedOptions(FacturXProfile.EN_16931,
-            HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty(), true);
+            HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty(), true,
+            List.of());
 
     /**
-     * Checks the profile.
+     * Checks the profile and copies the registries.
+     *
+     * @param profile    the profile the invoice is written in, which the specification
+     *                   identifier of the document has to name as well
+     * @param flavour    the container specification the file declares itself under
+     * @param limits     what opening the input PDF may cost
+     * @param check      a PDF/A validator for the input, or an empty optional to go by what
+     *                   the input declares about itself
+     * @param esj        whether the ESJ document of the invoice is attached beside the XML
+     * @param extensions the extension registries the terms of the document come from
+     * @throws IllegalArgumentException if the profile is not an EN 16931 invoice
+     * @throws NullPointerException     if a member or a registry is {@code null}
+     */
+    public EmbedOptions {
+        Objects.requireNonNull(profile, "profile");
+        Objects.requireNonNull(flavour, "flavour");
+        Objects.requireNonNull(limits, "limits");
+        Objects.requireNonNull(check, "check");
+        extensions = List.copyOf(Objects.requireNonNull(extensions, "extensions"));
+        if (!profile.isEn16931Invoice()) {
+            throw new IllegalArgumentException("the profile "
+                    + Messages.quoted(profile.conformanceLevel()) + " is not an EN 16931"
+                    + " invoice, and this module embeds no other kind");
+        }
+    }
+
+    /**
+     * Creates options that hand the writer no extension registry.
      *
      * @param profile the profile the invoice is written in, which the specification
      *                identifier of the document has to name as well
@@ -53,22 +92,18 @@ public record EmbedOptions(FacturXProfile profile,
      * @throws IllegalArgumentException if the profile is not an EN 16931 invoice
      * @throws NullPointerException     if a member is {@code null}
      */
-    public EmbedOptions {
-        Objects.requireNonNull(profile, "profile");
-        Objects.requireNonNull(flavour, "flavour");
-        Objects.requireNonNull(limits, "limits");
-        Objects.requireNonNull(check, "check");
-        if (!profile.isEn16931Invoice()) {
-            throw new IllegalArgumentException("the profile "
-                    + Messages.quoted(profile.conformanceLevel()) + " is not an EN 16931"
-                    + " invoice, and this module embeds no other kind");
-        }
+    public EmbedOptions(FacturXProfile profile,
+                        HybridFlavour flavour,
+                        PdfLimits limits,
+                        Optional<PdfaCheck> check,
+                        boolean esj) {
+        this(profile, flavour, limits, check, esj, List.of());
     }
 
     /**
      * Returns the defaults: the profile EN 16931, the flavour Factur-X 1.0, the default
-     * limits, the declaration of the input taken as it is written, and the ESJ document
-     * attached beside the invoice.
+     * limits, the declaration of the input taken as it is written, the ESJ document
+     * attached beside the invoice, and no extension registry.
      *
      * @return the defaults
      */
@@ -107,7 +142,7 @@ public record EmbedOptions(FacturXProfile profile,
      * @throws NullPointerException     if {@code value} is {@code null}
      */
     public EmbedOptions withProfile(FacturXProfile value) {
-        return new EmbedOptions(value, flavour, limits, check, esj);
+        return new EmbedOptions(value, flavour, limits, check, esj, extensions);
     }
 
     /**
@@ -119,7 +154,7 @@ public record EmbedOptions(FacturXProfile profile,
      * @throws NullPointerException if {@code value} is {@code null}
      */
     public EmbedOptions withFlavour(HybridFlavour value) {
-        return new EmbedOptions(profile, value, limits, check, esj);
+        return new EmbedOptions(profile, value, limits, check, esj, extensions);
     }
 
     /**
@@ -130,7 +165,7 @@ public record EmbedOptions(FacturXProfile profile,
      * @throws NullPointerException if {@code value} is {@code null}
      */
     public EmbedOptions withLimits(PdfLimits value) {
-        return new EmbedOptions(profile, flavour, value, check, esj);
+        return new EmbedOptions(profile, flavour, value, check, esj, extensions);
     }
 
     /**
@@ -145,7 +180,7 @@ public record EmbedOptions(FacturXProfile profile,
      * @return the options
      */
     public EmbedOptions withEsj(boolean value) {
-        return new EmbedOptions(profile, flavour, limits, check, value);
+        return new EmbedOptions(profile, flavour, limits, check, value, extensions);
     }
 
     /**
@@ -158,6 +193,23 @@ public record EmbedOptions(FacturXProfile profile,
      */
     public EmbedOptions checkedWith(PdfaCheck value) {
         return new EmbedOptions(profile, flavour, limits,
-                Optional.of(Objects.requireNonNull(value, "value")), esj);
+                Optional.of(Objects.requireNonNull(value, "value")), esj, extensions);
+    }
+
+    /**
+     * Returns these options with the extension registries the terms of the document come
+     * from, replacing any given before.
+     *
+     * <p>Hand over the extension registries themselves, as {@code Registry.b2cExtension()}
+     * returns one, and not a registry combined with them: the declaration that terms do not
+     * travel belongs to the file that defines them.
+     *
+     * @param value the registries
+     * @return the options
+     * @throws NullPointerException if {@code value} is or holds {@code null}
+     */
+    public EmbedOptions withExtensions(Collection<Registry> value) {
+        return new EmbedOptions(profile, flavour, limits, check, esj,
+                List.copyOf(Objects.requireNonNull(value, "value")));
     }
 }

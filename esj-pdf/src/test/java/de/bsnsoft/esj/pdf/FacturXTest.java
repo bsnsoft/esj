@@ -2,6 +2,7 @@ package de.bsnsoft.esj.pdf;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,6 +15,7 @@ import de.bsnsoft.esj.bindings.CiiWriter;
 import de.bsnsoft.esj.bindings.WriteNote;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.json.EsjWriter;
+import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
@@ -340,6 +342,58 @@ class FacturXTest {
                 "and the note names it");
         assertArrayEquals(FacturX.embed(pages, document, EmbedOptions.defaults()),
                 result.pdf(), "the short form writes the same file");
+    }
+
+    /**
+     * Handed the registry that defines it, the writer knows a term that belongs to no
+     * transport syntax by design: the report names it with that registry and counts it as
+     * no loss, and the file is the one written without the registry.
+     */
+    @Test
+    void aTermItsRegistryKeepsOutOfEverySyntaxIsNoLoss() {
+        SemanticDocument document = withATermThisSyntaxCannotCarry();
+        List<Registry> b2c = List.of(Registry.b2cExtension());
+        byte[] pages = Pdfs.pdfa3();
+
+        EmbedResult result = FacturX.embedWithReport(pages, document,
+                EmbedOptions.defaults().withExtensions(b2c));
+
+        assertTrue(result.report().isComplete(), result.report().toString());
+        assertEquals(0, result.report().dropped(), result.report().toString());
+        assertEquals(List.of("/BT-B2C-010"),
+                result.report().notes(WriteNote.Kind.TERM_BY_DESIGN).stream()
+                        .map(WriteNote::path).toList(),
+                "the note names the term");
+        assertEquals(List.of("ESJ-B2C 0.1"),
+                result.report().notes(WriteNote.Kind.TERM_BY_DESIGN).stream()
+                        .map(WriteNote::registry).toList(),
+                "and the registry that keeps it out of every syntax");
+        assertFalse(result.report().notes().stream()
+                        .anyMatch(note -> note.kind() == WriteNote.Kind.TERM_UNKNOWN),
+                result.report().toString());
+        assertArrayEquals(FacturX.embed(pages, document, EmbedOptions.defaults()),
+                result.pdf(), "the registries change the report and not the file");
+    }
+
+    /** The registries stay with the options whatever else is set after them. */
+    @Test
+    void theRegistriesSurviveEveryOtherSetting() {
+        List<Registry> b2c = List.of(Registry.b2cExtension());
+
+        EmbedOptions options = EmbedOptions.defaults().withExtensions(b2c)
+                .withProfile(FacturXProfile.XRECHNUNG)
+                .withFlavour(HybridFlavour.ZUGFERD_2_0)
+                .withLimits(PdfLimits.defaults())
+                .withEsj(false)
+                .checkedWith(pdf -> Optional.empty());
+
+        assertEquals(b2c, options.extensions());
+        assertEquals(List.of(), EmbedOptions.defaults().extensions(),
+                "the defaults hand the writer no registry");
+        assertEquals(List.of(), new EmbedOptions(FacturXProfile.EN_16931,
+                        HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty(),
+                        true).extensions(),
+                "and neither do the five members without them");
     }
 
     /** A document whose every value reached the syntax says exactly that. */

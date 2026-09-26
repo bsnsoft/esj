@@ -2,11 +2,16 @@ package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.networknt.schema.InputFormat;
+import com.networknt.schema.Schema;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SpecificationVersion;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
@@ -106,6 +111,9 @@ class FixtureManifestTest {
 
     /** The file that carries the rule cases, which are too many to read beside the rest. */
     private static final String CASES = "cases-en16931-1.3.16.json";
+
+    /** The schema of the manifest, of its parts and of the rule case file. */
+    private static final String SCHEMA = "manifest.schema.json";
 
     /** The format identifier of a manifest file. */
     private static final String FORMAT = "EN16931-Semantic-JSON-Fixtures";
@@ -285,6 +293,52 @@ class FixtureManifestTest {
         for (String file : referencedFiles()) {
             assertNotNull(resource(file), file + " is named by the manifest and is not there");
         }
+    }
+
+    /**
+     * Every file of the manifest this build carries has the shape the schema documents,
+     * which is the shape the bindings read. The comparisons above hold the files to this
+     * implementation; this holds them to the schema. The part of the later edition is
+     * checked where the build carries it.
+     */
+    @Test
+    void everyFileOfTheManifestHasTheShapeOfTheSchema() {
+        Schema schema = schema();
+        List<String> files = new ArrayList<>(List.of(MANIFEST, CASES));
+        if (theLaterEditionIsThere()) {
+            files.add(LATER_EDITION_PART);
+        }
+        for (String file : files) {
+            assertEquals(List.of(),
+                    schema.validate(Fixtures.text(DIRECTORY + file), InputFormat.JSON),
+                    DIRECTORY + file + " has the shape of " + DIRECTORY + SCHEMA);
+        }
+    }
+
+    /**
+     * The schema tells the two kinds of file apart: a manifest names its part, a rule case
+     * file its pack and no part, and either written the other way fails it.
+     */
+    @Test
+    void theSchemaTellsAManifestFromARuleCaseFile() {
+        Schema schema = schema();
+        String manifest = Fixtures.text(DIRECTORY + MANIFEST);
+        String cases = Fixtures.text(DIRECTORY + CASES);
+
+        assertFalse(schema.validate(manifest.replaceFirst("\n  \"part\": \"core\",", ""),
+                InputFormat.JSON).isEmpty(), "a manifest names its part");
+        assertFalse(schema.validate(cases.replaceFirst("\n  \"pack\": ",
+                        "\n  \"part\": \"core\",\n  \"pack\": "),
+                InputFormat.JSON).isEmpty(), "a rule case file names none");
+        assertFalse(schema.validate(cases.replaceFirst("\"" + FORMAT + "-Rules\"",
+                        "\"" + FORMAT + "\""),
+                InputFormat.JSON).isEmpty(), "and says what it is");
+    }
+
+    /** Returns the schema of the manifest files, as the repository carries it. */
+    private static Schema schema() {
+        return SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12)
+                .getSchema(Fixtures.text(DIRECTORY + SCHEMA), InputFormat.JSON);
     }
 
     /**
@@ -958,7 +1012,7 @@ class FixtureManifestTest {
         files.add(DIRECTORY + "canonical-order/indices.canonical.esj.json");
         files.add(DIRECTORY + CASES);
         files.add(ARITHMETIC_PACK);
-        files.add(DIRECTORY + "manifest.schema.json");
+        files.add(DIRECTORY + SCHEMA);
         files.add(GRAMMAR_BASE);
         files.add(CORE_REGISTRY);
         files.addAll(EXTENSION_REGISTRIES);

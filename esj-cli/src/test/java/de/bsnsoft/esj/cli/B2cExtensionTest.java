@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.cli;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,6 +50,14 @@ class B2cExtensionTest {
 
     /** The figures the buyer was shown, which only the extension carries. */
     private static final List<String> DISPLAYED = List.of("99,99", "39,98", "15,96", "13,50");
+
+    /** The line every command that writes the example into CII says about the four terms. */
+    private static final String STAYED = "info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document"
+            + " by design: BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003\n";
+
+    /** The line the embedding writes when the ESJ document went in beside the invoice. */
+    private static final String ATTACHED = "the ESJ document of this invoice is attached beside"
+            + " it as \"invoice.esj.json\"\n";
 
     @TempDir
     private Path directory;
@@ -150,6 +159,45 @@ class B2cExtensionTest {
                 english);
         assertTrue(english.contains("by design in the ESJ document only: BT-B2C-010,"
                 + " BT-B2C-001, BT-B2C-002, BT-B2C-003"), english);
+    }
+
+    /**
+     * {@code embed} writes the invoice into CII as {@code convert --to cii} does, and hands
+     * the writer the registry {@code --extension} loaded: the four terms are named on the
+     * information line of {@code convert} and nothing warns. The registry changes what is
+     * said about the attachment and not the file.
+     */
+    @Test
+    void namesTheTermsLeftBehindByDesignWhenItEmbedsTheExample() throws IOException {
+        Path pages = directory.resolve("pages.pdf");
+        Path loaded = directory.resolve("loaded.pdf");
+        Path unloaded = directory.resolve("unloaded.pdf");
+        Cli.Run rendered = Cli.run("render", example(), "--extension", "b2c",
+                "--out", pages.toString());
+        assertEquals(ExitCode.SUCCESS, rendered.exitCode(), rendered.err());
+
+        Cli.Run run = Cli.run("embed", pages.toString(), example(), "--extension", "b2c",
+                "--out", loaded.toString());
+        Cli.Run without = Cli.run("embed", pages.toString(), example(),
+                "--out", unloaded.toString());
+
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertEquals(STAYED + ATTACHED, run.err());
+        assertEquals(ExitCode.SUCCESS, without.exitCode(), without.err());
+        assertTrue(without.err().startsWith("warning: 10 values of the document have no place"
+                + " in this syntax and were not written\n"), without.err());
+        assertArrayEquals(Files.readAllBytes(unloaded), Files.readAllBytes(loaded),
+                "the hybrid invoice is the same file");
+    }
+
+    /** {@code render --embed cii} is the same write, and says the same line. */
+    @Test
+    void namesTheTermsLeftBehindByDesignWhenItRendersTheHybrid() {
+        Cli.Run run = Cli.run("render", example(), "--extension", "b2c", "--embed", "cii",
+                "--out", directory.resolve("hybrid.pdf").toString());
+
+        assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertEquals(STAYED + ATTACHED, run.err());
     }
 
     /** Writes the report of the example in one language and returns it. */
