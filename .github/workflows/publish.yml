@@ -61,6 +61,28 @@ jobs:
             exit 1
           fi
 
+      # setup-java v5 and later import the signing key into an isolated GNUPGHOME of
+      # their own and export that variable. The signing plugin passes the passphrase
+      # on a file descriptor with the loopback pinentry, which the agent of a fresh
+      # home has to allow; the run of 2026-09-26 ended in "signing failed: No
+      # pinentry" without this. The probe signs a byte with the same passphrase, so
+      # a wrong or missing secret is named here and not by the deployment.
+      - name: Prepare the signing keyring for batch use
+        run: |
+          set -eu
+          : "${GNUPGHOME:?setup-java exported no GNUPGHOME}"
+          gpg --version | head -1
+          printf 'pinentry-mode loopback\n' >> "$GNUPGHOME/gpg.conf"
+          printf 'allow-loopback-pinentry\n' >> "$GNUPGHOME/gpg-agent.conf"
+          gpgconf --kill gpg-agent || true
+          gpg --batch --list-secret-keys --keyid-format long | sed -n '1,6p'
+          printf 'probe' > "$RUNNER_TEMP/probe.txt"
+          printf '%s' "$MAVEN_GPG_PASSPHRASE" | gpg --batch --yes --pinentry-mode loopback \
+              --passphrase-fd 0 --detach-sign --output "$RUNNER_TEMP/probe.sig" "$RUNNER_TEMP/probe.txt"
+          gpg --batch --verify "$RUNNER_TEMP/probe.sig" "$RUNNER_TEMP/probe.txt" 2>&1 | grep -E 'Good signature|using'
+        env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
       # No tests here: ci.yml runs every test of this commit on JDK 17, 21 and 25,
       # and a second run would not test the deployed artefacts any further. The
       # release profile signs every file and hands the reactor to the Portal as one
