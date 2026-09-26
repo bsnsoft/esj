@@ -6,6 +6,14 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.3] — unreleased
 
+### Fixed
+
+- The deployment to Maven Central signs again under `actions/setup-java` v5 and later, which
+  import the signing key into an isolated GPG home: the workflow allows the loopback pinentry in
+  that home and signs a probe with the passphrase before the deployment, so a wrong secret is
+  named by the probe and not by the Portal (the first deployment of 0.9.2 ended in "signing
+  failed: No pinentry" and was repeated from `main`).
+
 ## [0.9.2] — 2026-09-26
 
 ### Added

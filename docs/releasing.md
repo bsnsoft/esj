@@ -39,7 +39,8 @@ git push origin main v0.9.0
 The tag runs `release.yml`, which builds the archives and publishes the GitHub release with them.
 That release fires no `release` event — GitHub raises none for a release a workflow created with
 its own token — so `publish.yml` is started by hand, on the tag, with the tag as its input
-(`gh workflow run publish.yml --ref v0.9.0 -f tag=v0.9.0`): it
+(`gh workflow run publish.yml --ref v0.9.0 -f tag=v0.9.0`; the workflow file comes from `--ref`,
+the code from the tag, so a workflow fixed on `main` after the tag was cut runs with `--ref main`): it
 refuses a snapshot version and a tag that does not name the version of the POM, signs every
 file, and hands the reactor to the Portal as one deployment that is validated and published or
 rejected as a whole. Afterwards:
