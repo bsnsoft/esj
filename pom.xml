@@ -85,7 +85,7 @@
     -->
     <project.build.outputTimestamp>2026-09-29T13:17:56Z</project.build.outputTimestamp>
 
-    <jackson.version>2.22.2</jackson.version>
+    <jackson.version>2.22.3</jackson.version>
     <picocli.version>4.7.7</picocli.version>
     <saxon.version>13.0</saxon.version>
     <pdfbox.version>3.0.8</pdfbox.version>
