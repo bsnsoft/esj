@@ -1292,7 +1292,7 @@ class LetterLayoutTest {
 
         String text = Pdf.flat(pdf);
         assertTrue(text.contains(language == RenderLanguage.GERMAN
-                        ? "Schlussrechnung Bau RE-2026-0815 zu den Rechnungen RE-2026-0001 vom"
+                        ? "Schlussrechnung RE-2026-0815 zu den Rechnungen RE-2026-0001 vom"
                                 + " 01.01.2026, RE-2026-0002 vom 01.02.2026, RE-2026-0003"
                         : "Final construction invoice RE-2026-0815 to invoices RE-2026-0001 of"
                                 + " 2026-01-01, RE-2026-0002 of 2026-02-01, RE-2026-0003"),

@@ -122,7 +122,7 @@
     },
     "386": {
       "en": "Prepayment invoice",
-      "de": "Abschlagsrechnung"
+      "de": "Vorauszahlungsrechnung"
     },
     "387": {
       "en": "Hire invoice",
@@ -242,15 +242,15 @@
     },
     "875": {
       "en": "Partial construction invoice",
-      "de": "Bauabschlagsrechnung"
+      "de": "Abschlagsrechnung"
     },
     "876": {
       "en": "Partial final construction invoice",
-      "de": "Teilschlussrechnung Bau"
+      "de": "Teilschlussrechnung"
     },
     "877": {
       "en": "Final construction invoice",
-      "de": "Schlussrechnung Bau"
+      "de": "Schlussrechnung"
     },
     "935": {
       "en": "Customs invoice",

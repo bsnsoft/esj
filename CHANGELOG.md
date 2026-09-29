@@ -6,6 +6,16 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.3] — unreleased
 
+### Changed
+
+- The German display names of four invoice type codes (UNTDID 1001) in the letter layout now
+  read as a German document writes them: 386 `Vorauszahlungsrechnung` (was
+  `Abschlagsrechnung`), 875 `Abschlagsrechnung` (was `Bauabschlagsrechnung`), 876
+  `Teilschlussrechnung` (was `Teilschlussrechnung Bau`), 877 `Schlussrechnung` (was
+  `Schlussrechnung Bau`). 875–877 are the terms of § 16 VOB/B and § 14 (5) UStG, written
+  without the trade qualifier; 386 is the invoice before the supply, whereas a partial
+  payment invoice (875) presupposes a supplied part. The English names are unchanged.
+
 ### Fixed
 
 - The deployment to Maven Central signs again under `actions/setup-java` v5 and later, which
