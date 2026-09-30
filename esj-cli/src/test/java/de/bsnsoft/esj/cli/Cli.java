@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.function.IntConsumer;
 
 /**
@@ -15,6 +16,9 @@ import java.util.function.IntConsumer;
  * wrote and the code it would have left with. That is the reason the tool is built that
  * way: a command line whose behaviour can only be checked by spawning a process tends not
  * to be checked.
+ *
+ * <p>The environment the tool reads is empty unless a test hands it one
+ * ({@link #runWith(Map, String...)}).
  */
 final class Cli {
 
@@ -50,9 +54,25 @@ final class Cli {
      * a deadline fire without taking the test runner with it.
      */
     static Run run(InputStream stdin, IntConsumer halt, String... args) {
+        return run(stdin, halt, Map.of(), args);
+    }
+
+    /**
+     * Runs the tool with an environment of the test's own.
+     *
+     * <p>Every other method of this class runs it with an empty environment, so that a
+     * variable of the machine the build runs on — {@code ESJ_PACKS} of a developer who
+     * fetched a pack — reaches no test that did not ask for it.
+     */
+    static Run runWith(Map<String, String> environment, String... args) {
+        return run(new ByteArrayInputStream(new byte[0]), code -> { }, environment, args);
+    }
+
+    private static Run run(InputStream stdin, IntConsumer halt, Map<String, String> environment,
+                           String... args) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
-        int code = Main.run(args, stdin, out, err, halt);
+        int code = Main.run(args, stdin, out, err, halt, environment);
         return new Run(code, out.toByteArray(), err.toString(StandardCharsets.UTF_8));
     }
 

@@ -5,7 +5,6 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.pdf.FacturXProfile;
-import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.ProfileLevels;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
@@ -480,11 +479,11 @@ final class Validation {
          * ({@link RuleCheck.Levelled}). The pack that carries those tables is the one the
          * syntax engine was given, so both halves of a run read one set of levels.
          *
-         * @param chosen the pack {@code --pack} named, or {@code null} to let the document
-         *               choose among the bundled ones
+         * @param packs the pack {@code --pack} named, or the packs the document chooses
+         *              among
          * @return the request
          */
-        static RuleRequest pack(Pack chosen) {
+        static RuleRequest pack(PackChoice packs) {
             return (document, blocked, extension, syntax) -> {
                 if (document.isEmpty()) {
                     return RuleCheck.notRun(RuleCheck.NO_DOCUMENT);
@@ -494,7 +493,7 @@ final class Validation {
                 }
                 SemanticDocument built = document.orElseThrow();
                 ProfileLevels levels =
-                        SyntaxPacks.levels(chosen, syntax, customizationId(built));
+                        packs.levels(syntax, customizationId(built));
                 return RuleCheck.run(built, extension, levels);
             };
         }

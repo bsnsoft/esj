@@ -14,6 +14,7 @@ import de.bsnsoft.esj.syntax.ComponentRun;
 import de.bsnsoft.esj.syntax.Engine;
 import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.PackComponent;
+import de.bsnsoft.esj.syntax.PackRecipes;
 import de.bsnsoft.esj.syntax.Severity;
 import de.bsnsoft.esj.syntax.SkippedComponent;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
@@ -26,6 +27,7 @@ import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -544,6 +546,27 @@ final class Reports {
         report.pack().ifPresent(pack ->
                 components(console, check, report, pack, console.options().verbose()));
         report.profileNote().ifPresent(note -> console.line("  " + note));
+        fetchable(report).ifPresent(line -> console.line("  " + line));
+    }
+
+    /**
+     * Returns the line that names the recipe which would bring the rules a document asked
+     * for, where the run found none and this build carries such a recipe.
+     *
+     * <p>The verdict stays what it is — nothing here ran those rules — but a reader who is
+     * told that the rules of a profile are missing is better served by the command that
+     * makes them available than by a search for it.
+     */
+    static Optional<String> fetchable(SyntaxReport report) {
+        if (!report.profileRulesMissing() || report.syntax().isEmpty()) {
+            return Optional.empty();
+        }
+        return PackRecipes.bringingRulesFor(report.syntax().orElseThrow(),
+                        report.customizationId())
+                .map(recipe -> "the rules of this profile are published under terms that"
+                        + " allow no redistribution; esj packs fetch " + recipe.name()
+                        + " --into <directory> makes their pack on this machine, and --packs"
+                        + " <directory> or " + PackChoice.ENVIRONMENT + " adds it");
     }
 
     /**
@@ -1057,9 +1080,12 @@ final class Reports {
      *
      * <p>{@code pack.source} is where the artefacts came from — {@code bundled} for the
      * pack this build carries, whose digests and licences are recorded with the source,
-     * and {@code supplied} for a directory the caller pointed {@code --pack} at. It is the
-     * one thing about a pack that the manifest does not get to say, and a report that is
-     * diffed or checked into a repository is read by people who did not run it.
+     * {@code supplied} for a directory the caller pointed {@code --pack} at, and
+     * {@code directory} for a pack found in a pack directory of {@code ESJ_PACKS} or
+     * {@code --packs} — and {@code pack.location} is the directory it was read from, null
+     * for a bundled pack. They are the one thing about a pack that the manifest does not
+     * get to say, and a report that is diffed or checked into a repository is read by
+     * people who did not run it.
      *
      * <p>An entry of {@code ran} carries {@code stopped}: an artefact can be applied to a
      * document and reach no result of its own, and its presence in the list is therefore
@@ -1101,6 +1127,12 @@ final class Reports {
             generator.writeStringField("version", pack.orElseThrow().version());
             generator.writeStringField("release", pack.orElseThrow().release());
             generator.writeStringField("source", pack.orElseThrow().source().token());
+            Optional<Path> location = pack.orElseThrow().location();
+            if (location.isEmpty()) {
+                generator.writeNullField("location");
+            } else {
+                generator.writeStringField("location", location.orElseThrow().toString());
+            }
             generator.writeEndObject();
         }
         if (report.profileNote().isEmpty()) {

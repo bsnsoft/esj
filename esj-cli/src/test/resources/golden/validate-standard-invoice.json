@@ -37,7 +37,8 @@
         "id": "xrechnung",
         "version": "3.0.2",
         "release": "2026-08-31",
-        "source": "bundled"
+        "source": "bundled",
+        "location": null
       },
       "profileNote": "no core invoice usage specification of this pack applies to this profile: the EN 16931 artefacts ran, no CIUS rules did",
       "profileRulesSkipped": true,

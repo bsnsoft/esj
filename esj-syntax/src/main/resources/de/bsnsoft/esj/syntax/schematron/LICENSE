@@ -1,0 +1,48 @@
+The four stylesheets in this directory are the XSLT 2 implementation of ISO Schematron
+("the skeleton"), 2010 release, by Rick Jelliffe with the Academia Sinica Computing
+Centre, Taiwan. Each file carries the following notice at its head, with the copyright
+line given below for that file.
+
+  iso_dsdl_include.xsl                    Copyright (c) 2008-2010 Rick Jelliffe
+  iso_abstract_expand.xsl                 Copyright (c) 2004-2010 Rick Jellife and
+                                          Academia Sinica Computing Centre, Taiwan
+  iso_svrl_for_xslt2.xsl                  Copyright (c) 2004-2010 Rick Jellife and
+                                          Academia Sinica Computing Centre, Taiwan
+  iso_schematron_skeleton_for_saxon.xsl   Copyright (c) 2000-2010 Rick Jellife and
+                                          Academia Sinica Computing Centre, Taiwan.
+
+The MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+The copies were taken from the artefact com.helger.schematron:ph-schematron-xslt:8.0.6
+of Maven Central, which carries them under external/schematron/20100710-xslt2/. That
+artefact is published by Philip Helger under the Apache License, Version 2.0, whose
+text is the LICENSE at the root of this repository, and its NOTICE reads:
+
+  This product includes Open Source Software developed by
+  Philip Helger - https://www.helger.com/
+
+  This product includes Open Source Software developed by phloc systems (http://www.phloc.com/)
+
+Seven places in the four files carry a comment beginning with [ph]: the changes made in
+that copy. Four raise a version from 1.0 to 2.0 (of three of the stylesheets and of the
+stylesheet the skeleton generates), one corrects the parameter of a template call, one
+adjusts the context expression of the generated rules and one generates a parameter
+where the original generated a variable. The files here are that copy, byte for byte.

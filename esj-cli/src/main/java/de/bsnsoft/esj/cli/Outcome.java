@@ -146,7 +146,9 @@ final class Outcome {
         report.syntaxCheck().report().flatMap(SyntaxReport::pack).ifPresent(pack ->
                 packs.add(new ValidationOutcome.Pack(SYNTAX_ROLE, pack.id(), pack.version(),
                         Optional.of(pack.release()),
-                        Optional.of(pack.source().token()))));
+                        Optional.of(pack.source() == PackSource.DIRECTORY
+                                ? "from " + SyntaxPacks.origin(pack)
+                                : pack.source().token()))));
         report.ruleCheck().found().ifPresent(found ->
                 packs.add(new ValidationOutcome.Pack(RULES_ROLE, found.packId(),
                         found.packVersion(), Optional.empty(),

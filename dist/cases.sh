@@ -32,6 +32,9 @@ esj_cases() {
 version --version
 help --help
 packs --list-packs
+packs-list packs list
+packs-list-directory packs list --packs $EXAMPLES
+packs-fetch-unknown packs fetch no-such-recipe --into @OUT
 convert-ubl convert $CORPUS/01.01a-INVOICE_ubl.xml
 convert-cii convert $CORPUS/01.01a-INVOICE_uncefact.xml
 convert-json convert --output json $CORPUS/02.01a-INVOICE_ubl.xml
@@ -58,6 +61,7 @@ validate-cius validate --extension xrechnung $TECHNICAL/cius/01.01_comprehensive
 validate-b2c validate --extension b2c $EXAMPLES/b2c-gross.esj.json
 validate-extensions validate --extension xrechnung,b2c $EXAMPLES/b2c-gross.esj.json
 validate-no-syntax validate --no-syntax $CORPUS/01.01a-INVOICE_ubl.xml
+validate-packs-directory validate --packs $EXAMPLES $CORPUS/01.01a-INVOICE_ubl.xml
 validate-edition-2026 validate --output json $EXAMPLES/edition-2026.esj.json
 validate-report-html validate --report @OUT --report-format html $CORPUS/01.01a-INVOICE_ubl.xml
 validate-report-pdf validate --report @OUT --report-format pdf $PDF

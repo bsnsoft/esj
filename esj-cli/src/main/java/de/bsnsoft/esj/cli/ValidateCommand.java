@@ -16,13 +16,12 @@ import de.bsnsoft.esj.render.RenderLanguage;
 import de.bsnsoft.esj.render.ReportOptions;
 import de.bsnsoft.esj.render.ReportRenderer;
 import de.bsnsoft.esj.report.ValidationOutcome;
-import de.bsnsoft.esj.syntax.Pack;
-import de.bsnsoft.esj.syntax.PackSource;
 import de.bsnsoft.esj.syntax.SyntaxLimitException;
 import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.ValidationLayer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -123,10 +122,19 @@ final class ValidateCommand implements Callable<Integer> {
     private String extension;
 
     @Option(order = 40, names = "--pack", paramLabel = "<directory|id>",
-            description = "Run this validation pack instead of the bundled one that"
-                    + " recognizes the profile: a directory holding a pack.json, or the"
-                    + " identity of a bundled pack. esj --list-packs shows what is bundled.")
+            description = "Run this validation pack instead of the one that recognizes the"
+                    + " profile: a directory holding a pack.json, or the identity of a"
+                    + " bundled pack or of one in a pack directory. esj --list-packs shows"
+                    + " them.")
     private String pack;
+
+    @Option(order = 42, names = "--packs", paramLabel = "<directory>",
+            description = "Add a pack directory: every <id>/<version>/<release>/pack.json"
+                    + " below it joins the bundled packs, and the one that recognizes the"
+                    + " profile of the document runs. Repeatable, and added to the"
+                    + " directories ESJ_PACKS names. esj packs fetch writes such a"
+                    + " directory.")
+    private List<String> packs = new ArrayList<>();
 
     @Option(order = 45, names = "--via", paramLabel = "<cii|ubl>", defaultValue = "cii",
             description = "The syntax an ESJ document is written to, in memory, so that the"
@@ -228,8 +236,8 @@ final class ValidateCommand implements Callable<Integer> {
         Extensions extensions = Options.extension(extension);
         boolean businessRules = Options.rules(rules);
         Deadline deadline = Deadline.of(console.options().maxRuntime());
-        Pack chosen = deadline.within("reading the validation pack",
-                () -> SyntaxPacks.resolve(pack));
+        PackChoice chosen = deadline.within("reading the validation packs",
+                () -> PackChoice.of(pack, packs, console));
 
         Input input = deadline.within(Input.label(file) + ": reading the input",
                 () -> Input.read(file, console));
@@ -307,12 +315,16 @@ final class ValidateCommand implements Callable<Integer> {
      * <p>The provenance is on the line because the identity alone cannot carry it. A
      * directory handed to {@code --pack} writes its own manifest, so it can call itself
      * the release this build carries; the caller who pointed at it knows what is in it,
-     * and the person reading the report afterwards has nothing else to go on.
+     * and the person reading the report afterwards has nothing else to go on. A pack of a
+     * pack directory is named with the directory it was read from, which is where the
+     * files that ran are.
      */
     private static String pack(SyntaxReport report) {
-        return report.pack().map(pack -> " (pack " + pack.directory()
-                + (pack.source() == PackSource.BUNDLED ? "" : ", supplied with --pack")
-                + ")").orElse("");
+        return report.pack().map(pack -> " (pack " + pack.directory() + switch (pack.source()) {
+            case BUNDLED -> "";
+            case SUPPLIED -> ", supplied with --pack";
+            case DIRECTORY -> ", from " + SyntaxPacks.origin(pack);
+        } + ")").orElse("");
     }
 
     /**
@@ -567,14 +579,14 @@ final class ValidateCommand implements Callable<Integer> {
      * says how to write.
      *
      * @param loaded     the document, read
-     * @param pack       the pack the run was given, or {@code null} for the bundled ones
+     * @param pack       the pack the run was given, or the packs the document chooses among
      * @param extensions the extension registries this run loaded, which say whether a term
      *                   the writer leaves behind was meant to travel at all
      * @param deadline   what is left of the time the command was given
      * @return the request the structural layers answer
      */
     private Validation.WrittenRequest written(Loaded loaded,
-                                              Pack pack,
+                                              PackChoice pack,
                                               Extensions extensions,
                                               Deadline deadline) {
         String target = Options.via(via);
@@ -635,7 +647,7 @@ final class ValidateCommand implements Callable<Integer> {
      */
     private WrittenCheck artefacts(Loaded loaded,
                                    SemanticDocument document,
-                                   Pack pack,
+                                   PackChoice pack,
                                    Extensions extensions,
                                    Deadline deadline) {
         WriteResult result;
