@@ -128,7 +128,7 @@ public final class SyntaxValidator {
         String customizationId = Profiles.customizationId(root, syntax);
         PackSelection selection = options.pack()
                 .map(pack -> pack.select(syntax, customizationId))
-                .orElseGet(() -> Packs.select(syntax, customizationId));
+                .orElseGet(() -> options.packs().select(syntax, customizationId));
         if (selection.applied().isEmpty()) {
             throw new SyntaxNotSupportedException("the pack " + selection.pack().directory()
                     + " carries no artefact for a " + Syntaxes.title(syntax)

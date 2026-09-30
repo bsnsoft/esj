@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * The validation packs this module can run: the ones packaged into it, and the ones a
@@ -94,6 +93,20 @@ public final class Packs {
      * @throws NullPointerException if {@code directory} is {@code null}
      */
     public static Pack fromDirectory(Path directory) {
+        return fromDirectory(directory, PackSource.SUPPLIED);
+    }
+
+    /**
+     * Reads a pack from a directory of the file system, recording how it was reached.
+     *
+     * @param directory the directory of the pack
+     * @param source    {@link PackSource#SUPPLIED} for a directory named with
+     *                  {@code --pack}, {@link PackSource#DIRECTORY} for one found in a pack
+     *                  directory
+     * @return the pack
+     * @throws PackException if the directory holds no manifest this module reads
+     */
+    static Pack fromDirectory(Path directory, PackSource source) {
         Objects.requireNonNull(directory, "directory");
         Path named = directory.toAbsolutePath().normalize();
         if (!Files.isRegularFile(named.resolve(PackManifest.FILE))) {
@@ -101,7 +114,7 @@ public final class Packs {
                     + " holds no " + PackManifest.FILE);
         }
         Path root = real(named);
-        return PackManifest.read("directory:" + root, PackSource.SUPPLIED,
+        return PackManifest.read("directory:" + root, source, root,
                 root.getFileName().toString(),
                 read(root.resolve(PackManifest.FILE)),
                 path -> read(inside(root, path)));
@@ -122,22 +135,7 @@ public final class Packs {
      * @throws NullPointerException if an argument is {@code null}
      */
     public static PackSelection select(XrSyntax syntax, String customizationId) {
-        Objects.requireNonNull(syntax, "syntax");
-        Objects.requireNonNull(customizationId, "customizationId");
-        if (BUNDLED.isEmpty()) {
-            throw new PackException("no validation pack is packaged into this module");
-        }
-        PackSelection fallback = null;
-        for (Pack pack : BUNDLED) {
-            PackSelection selection = pack.select(syntax, customizationId);
-            if (selection.profileNote().isEmpty()) {
-                return selection;
-            }
-            if (fallback == null) {
-                fallback = selection;
-            }
-        }
-        return fallback;
+        return PackCatalog.bundled().select(syntax, customizationId);
     }
 
     /**
@@ -155,9 +153,7 @@ public final class Packs {
      * @throws NullPointerException if an argument is {@code null}
      */
     public static ProfileLevels levels(XrSyntax syntax, String customizationId) {
-        Objects.requireNonNull(syntax, "syntax");
-        Objects.requireNonNull(customizationId, "customizationId");
-        return first(pack -> ProfileLevels.of(pack, syntax, customizationId));
+        return PackCatalog.bundled().levels(syntax, customizationId);
     }
 
     /**
@@ -170,19 +166,7 @@ public final class Packs {
      * @throws NullPointerException if {@code customizationId} is {@code null}
      */
     public static ProfileLevels levels(String customizationId) {
-        Objects.requireNonNull(customizationId, "customizationId");
-        return first(pack -> ProfileLevels.of(pack, customizationId));
-    }
-
-    /** Returns the first answer that levels a rule, or the one that levels none. */
-    private static ProfileLevels first(Function<Pack, ProfileLevels> lookup) {
-        for (Pack pack : BUNDLED) {
-            ProfileLevels levels = lookup.apply(pack);
-            if (levels.any()) {
-                return levels;
-            }
-        }
-        return ProfileLevels.none();
+        return PackCatalog.bundled().levels(customizationId);
     }
 
     /**
@@ -216,7 +200,8 @@ public final class Packs {
     private static List<Pack> loadBundled() {
         List<Pack> packs = new ArrayList<>();
         for (String directory : index()) {
-            Pack pack = PackManifest.read("classpath:" + ROOT, PackSource.BUNDLED, directory,
+            Pack pack = PackManifest.read("classpath:" + ROOT, PackSource.BUNDLED, null,
+                    directory,
                     resource(directory + "/" + PackManifest.FILE),
                     path -> resource(directory + "/" + path));
             if (!pack.directory().equals(directory)) {
@@ -266,7 +251,7 @@ public final class Packs {
         }
     }
 
-    private static byte[] read(Path file) {
+    static byte[] read(Path file) {
         try {
             return Files.readAllBytes(file);
         } catch (IOException e) {
@@ -297,7 +282,7 @@ public final class Packs {
      * Returns a path with every link on it resolved, so that what is compared is what
      * would be opened.
      */
-    private static Path real(Path path) {
+    static Path real(Path path) {
         try {
             return path.toRealPath();
         } catch (IOException e) {

@@ -6,6 +6,38 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.4] — unreleased
 
+### Added
+
+- Pack directories: `esj validate` and `esj inspect` take `--packs <directory>` (repeatable) and
+  read the environment variable `ESJ_PACKS` (a path list); every `<id>/<version>/<release>/pack.json`
+  found there joins the bundled packs and is chosen by the profile of the document. A pack with the
+  identity of a bundled one, and a profile two packs recognize, are refused by name. Every report
+  names the origin of the pack beside its identity: `syntax.pack.source` is `directory` and the new
+  `syntax.pack.location` the directory it was read from (`null` for a bundled pack), and
+  `esj --list-packs` prints `origin` for every pack.
+- `esj packs list` and `esj packs fetch <recipe> --into <directory> [--replace]`. `fetch` follows a
+  recipe this build carries for artefacts that may be used but not redistributed: it downloads the
+  files over https, refuses any whose SHA-256 is not the one the recipe pins, compiles the
+  Schematron to XSLT in process with the ISO Schematron XSLT 2 skeleton (MIT, now in
+  `esj-syntax`), copies the schema modules out of the bundled pack and writes a pack whose
+  manifest records the source URLs, the fetch date and the SHA-256 of every file. It is the only
+  command that opens a network connection.
+- The recipe `peppol-bis-billing-3.0.20`: the Peppol BIS Billing 3.0 validation artefacts, as
+  published by OpenPeppol, tag `v3.0.20` — the Peppol rules for UBL and CII and the EN 16931
+  Schematron 1.3.15 that release ships. None of those files is in this repository or in any
+  artefact; `esj validate` on a Peppol invoice without the pack names the command that makes it.
+  OpenPeppol's 9 examples validate `VALID` with the pack, and all 58 rules its own unit tests
+  cover fire as those tests expect (`conformance/peppol/README.md`, run with
+  `-Desj.network=true` and in the JDK 21 job of the continuous integration).
+
+### Changed
+
+- A PDF written by 0.9.0 to 0.9.3 still carries `invoice.esj.json`. It is read as an attachment
+  that is not the invoice, as a logo would be: `esj inspect` and `esj extract --list` list it
+  (`not XML`, `application/json`, `Supplement`), `esj extract --attachment invoice.esj.json`
+  hands out its bytes, and `esj validate` reports nothing about it. A PDF whose one attachment it
+  is carries no invoice (exit code 2).
+
 ### Removed
 
 - The ESJ document inside the hybrid PDF. `esj embed` and `esj render --embed cii` write one
@@ -24,14 +56,6 @@ still change; a change to it is named here under *Format*.
   `AttachmentKind.ESJ_DOCUMENT`, `ContainerFinding.Category.PDF_ESJ` and the three-argument
   `ContainerChecks.run`; in `esj-core` the phrases `Phrase.ROW_PDF_ESJ`, `ESJ_ATTACHMENT` and
   `ESJ_ATTACHMENT_PARTLY`.
-
-### Changed
-
-- A PDF written by 0.9.0 to 0.9.3 still carries `invoice.esj.json`. It is read as an attachment
-  that is not the invoice, as a logo would be: `esj inspect` and `esj extract --list` list it
-  (`not XML`, `application/json`, `Supplement`), `esj extract --attachment invoice.esj.json`
-  hands out its bytes, and `esj validate` reports nothing about it. A PDF whose one attachment it
-  is carries no invoice (exit code 2).
 
 ## [0.9.3] — 2026-09-29
 

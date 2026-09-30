@@ -5,9 +5,9 @@
 One question, one command or one snippet. `invoice.xml` stands for a UBL or CII invoice,
 `invoice.pdf` for a Factur-X or ZUGFeRD file, `invoice.esj.json` for an ESJ document,
 `letterhead.json` for a render template and `pages.pdf` for a PDF/A-3 file without an invoice. A
-test runs every `esj` line but the one that needs an installed veraPDF over files of the
-repository, and every other block is taken as it stands from the page it links to, where a
-test runs it.
+test runs every `esj` line over files of the repository, but the one that needs an installed
+veraPDF and the one that fetches over the network, and every other block is taken as it stands
+from the page it links to, where a test runs it.
 
 ## Reading
 
@@ -60,6 +60,14 @@ esj validate invoice.xml                    # XML Schema, Schematron and busines
 ```sh
 esj validate invoice.xml                    # the pack follows BT-24: xrechnung/3.0.2/2026-08-31
 esj validate --extension xrechnung invoice.xml   # with the extension terms of XRechnung checked too
+```
+
+**How do I check a Peppol BIS Billing 3.0 invoice?** The Peppol artefacts may not be
+redistributed, so esj carries a recipe and makes the pack on the machine that runs it
+([`validation.md`](validation.md#packs-made-on-this-machine)).
+```sh
+esj packs fetch peppol-bis-billing-3.0.20 --into esj-packs   # once, over the network: SHA-256 checked, compiled here
+esj validate --packs esj-packs invoice.xml  # or ESJ_PACKS=esj-packs; the pack follows BT-24
 ```
 
 **How do I check a Factur-X or ZUGFeRD PDF, the container and the invoice?**

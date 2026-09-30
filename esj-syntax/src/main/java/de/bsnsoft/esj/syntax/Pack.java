@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
 import de.bsnsoft.esj.xr.XrSyntax;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -36,12 +37,14 @@ public final class Pack {
 
     private final String origin;
     private final PackSource source;
+    private final Path location;
     private final String directory;
     private final String id;
     private final String version;
     private final String release;
     private final String title;
     private final String retrieved;
+    private final String note;
     private final List<PackComponent> components;
     private final List<PackLevels> levels;
     private final SortedSet<String> baseProfiles;
@@ -50,12 +53,14 @@ public final class Pack {
 
     Pack(String origin,
          PackSource source,
+         Path location,
          String directory,
          String id,
          String version,
          String release,
          String title,
          String retrieved,
+         String note,
          List<PackComponent> components,
          List<PackLevels> levels,
          Collection<String> baseProfiles,
@@ -63,12 +68,18 @@ public final class Pack {
          PackFiles bytes) {
         this.origin = Objects.requireNonNull(origin, "origin");
         this.source = Objects.requireNonNull(source, "source");
+        this.location = location;
+        if ((location == null) != (source == PackSource.BUNDLED)) {
+            throw new IllegalArgumentException("a pack has a location exactly where it was"
+                    + " read from a directory");
+        }
         this.directory = Objects.requireNonNull(directory, "directory");
         this.id = Objects.requireNonNull(id, "id");
         this.version = Objects.requireNonNull(version, "version");
         this.release = Objects.requireNonNull(release, "release");
         this.title = Objects.requireNonNull(title, "title");
         this.retrieved = Objects.requireNonNull(retrieved, "retrieved");
+        this.note = note;
         this.components = List.copyOf(Objects.requireNonNull(components, "components"));
         this.levels = List.copyOf(Objects.requireNonNull(levels, "levels"));
         this.baseProfiles = Collections.unmodifiableSortedSet(
@@ -91,6 +102,37 @@ public final class Pack {
      */
     public PackSource source() {
         return source;
+    }
+
+    /**
+     * Returns the directory the manifest of this pack was read from.
+     *
+     * <p>A bundled pack has none: it is read from the class path of this module and from
+     * nowhere else. A pack a caller supplied, or one found in a pack directory, is a
+     * directory of files on this machine, and a report names that directory beside the
+     * identity, because the identity is what the manifest says and the directory is
+     * where the files that ran actually are.
+     *
+     * @return the canonical directory that holds {@code pack.json}, or an empty optional
+     *         for a bundled pack
+     */
+    public Optional<Path> location() {
+        return Optional.ofNullable(location);
+    }
+
+    /**
+     * Returns the one-line note the manifest carries about the pack, where it carries
+     * one.
+     *
+     * <p>A pack that was fetched and compiled on the machine that runs it says so here, and
+     * under which terms its files were published: they may be material nobody may
+     * redistribute, and a listing that named only a licence identifier would leave that
+     * unsaid.
+     *
+     * @return the note, or an empty optional
+     */
+    public Optional<String> note() {
+        return Optional.ofNullable(note);
     }
 
     /**

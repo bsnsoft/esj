@@ -6,13 +6,12 @@ import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.pdf.PdfaIdentification;
-import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.PackException;
 import de.bsnsoft.esj.syntax.PackSelection;
-import de.bsnsoft.esj.syntax.PackSource;
-import de.bsnsoft.esj.syntax.Packs;
 import de.bsnsoft.esj.validate.ValidationLayer;
 import de.bsnsoft.esj.xr.XrSyntax;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
@@ -81,9 +80,14 @@ final class InspectCommand implements Callable<Integer> {
     private String extension;
 
     @Option(order = 30, names = "--pack", paramLabel = "<directory|id>",
-            description = "Name this validation pack instead of the bundled one that"
-                    + " recognizes the profile. esj --list-packs shows what is bundled.")
+            description = "Name this validation pack instead of the one that recognizes the"
+                    + " profile. esj --list-packs shows them.")
     private String pack;
+
+    @Option(order = 35, names = "--packs", paramLabel = "<directory>",
+            description = "Add a pack directory, as esj validate --packs does. Repeatable,"
+                    + " and added to the directories ESJ_PACKS names.")
+    private List<String> packs = new ArrayList<>();
 
     InspectCommand(Console console) {
         this.console = console;
@@ -93,7 +97,7 @@ final class InspectCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         Extensions extensions = Options.extension(extension);
-        Pack chosen = SyntaxPacks.resolve(pack);
+        PackChoice chosen = PackChoice.of(pack, packs, console);
         Input input = Input.read(file, console);
         Loaded loaded;
         try {
@@ -163,13 +167,13 @@ final class InspectCommand implements Callable<Integer> {
      * suggest a check that is not on offer, so the note of the selection — the same
      * sentence {@code esj validate} prints — follows the name.
      *
-     * <p>Where the pack is a directory the caller named, the line says so. An identity is
-     * what a manifest claims, and a directory is free to claim the one this build
-     * carries.
+     * <p>Where the pack is a directory the caller named, or one found in a pack directory,
+     * the line says so. An identity is what a manifest claims, and a directory is free to
+     * claim the one this build carries.
      */
     private static String validationPack(Loaded loaded,
                                          SemanticDocument document,
-                                         Pack chosen) {
+                                         PackChoice chosen) {
         Optional<XrSyntax> syntax = loaded.syntax().xrSyntax();
         if (syntax.isEmpty()) {
             return SyntaxCheck.NO_XML;
@@ -177,12 +181,13 @@ final class InspectCommand implements Callable<Integer> {
         String profile = find(document, "/BG-2/BT-24")
                 .map(SemanticValue::canonicalContent).orElse("");
         try {
-            PackSelection selection = chosen == null
-                    ? Packs.select(syntax.orElseThrow(), profile)
-                    : chosen.select(syntax.orElseThrow(), profile);
+            PackSelection selection = chosen.select(syntax.orElseThrow(), profile);
             return selection.pack().directory()
-                    + (selection.pack().source() == PackSource.BUNDLED
-                            ? "" : " (supplied with --pack)")
+                    + switch (selection.pack().source()) {
+                        case BUNDLED -> "";
+                        case SUPPLIED -> " (supplied with --pack)";
+                        case DIRECTORY -> " (from " + SyntaxPacks.origin(selection.pack()) + ")";
+                    }
                     + selection.profileNote().map(note -> " (" + note + ")").orElse("");
         } catch (PackException e) {
             throw CliException.input("the validation pack cannot be read: " + e.getMessage(), e);

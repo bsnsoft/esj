@@ -39,13 +39,17 @@ import org.junit.jupiter.params.provider.MethodSource;
  * <p>Two kinds of line in those blocks are not commands of this tool and are not run: the
  * {@code java -jar} line a service spawns it with, which {@code docs/deployment.md} shows
  * and {@code DeploymentExampleIT} holds, and the packaging script, which
- * {@code DistributionTest} holds. One command is skipped: {@code --verapdf} names an
+ * {@code DistributionTest} holds. Two commands are skipped: {@code --verapdf} names an
  * installation of veraPDF, which this project never bundles, and what this tool does with
- * what such a validator says is asked in {@code VerapdfOptionTest}. That skip is counted,
- * once per page, so it cannot quietly grow. One line more goes unrun where a build leaves
- * an edition out: the one that names that edition with {@code --to}, which would fail for
- * the registry's absence rather than for the answer. A build that carries every edition
- * runs them all.
+ * what such a validator says is asked in {@code VerapdfOptionTest}; {@code esj packs fetch}
+ * fetches from the publisher of a pack over the network, which a build does only with
+ * {@code -Desj.network=true}, in {@code PeppolPackTest}. The directory the fetch writes
+ * into is made, empty, in the temporary directory, so that a later line of the same block
+ * that names it with {@code --packs} runs against a pack directory that exists. Each skip
+ * is counted, once per page, so neither can quietly grow. One line more goes unrun where a
+ * build leaves an edition out: the one that names that edition with {@code --to}, which
+ * would fail for the registry's absence rather than for the answer. A build that carries
+ * every edition runs them all.
  *
  * <p>The placeholders the pages use stand for files of this repository, and the test passes
  * those: {@code invoice.xml} is the UBL of the first business case of the corpus,
@@ -103,6 +107,15 @@ class FaqExamplesTest {
 
     /** How many lines of a page the veraPDF installation keeps the test from running. */
     private static final int SKIPPED = 1;
+
+    /** What a line begins with that fetches a pack from its publisher over the network. */
+    private static final String FETCH = "esj packs fetch ";
+
+    /** The option of {@link #FETCH} that names the pack directory it writes into. */
+    private static final String INTO = "--into";
+
+    /** How many lines of a page fetch over the network. */
+    private static final int FETCHES = 1;
 
     /**
      * The option that names an edition. A distribution may be built without the registry of
@@ -179,6 +192,10 @@ class FaqExamplesTest {
     @MethodSource("blocks")
     void leavesWithTheExitCodeThePageStates(Block block) {
         for (String line : block.lines()) {
+            if (line.startsWith(FETCH)) {
+                packDirectory(withoutComment(line));
+                continue;
+            }
             if (!line.startsWith(COMMAND) || line.contains(VERAPDF)
                     || namesAnEditionThisBuildLacks(line)) {
                 continue;
@@ -204,6 +221,21 @@ class FaqExamplesTest {
                     .count();
             assertEquals(SKIPPED, skipped, page + " leaves " + SKIPPED + " command unrun,"
                     + " the one that names a veraPDF installation");
+        }
+    }
+
+    /**
+     * The other line a test does not run is the one that fetches over the network, and it
+     * is counted for the same reason.
+     */
+    @Test
+    void runsEveryCommandButTheOneThatFetchesOverTheNetwork() {
+        for (String page : PAGES) {
+            long fetches = commands(page).stream()
+                    .filter(command -> (command.line() + " ").startsWith(FETCH))
+                    .count();
+            assertEquals(FETCHES, fetches, page + " leaves " + FETCHES + " command unrun,"
+                    + " the one that fetches a pack over the network");
         }
     }
 
@@ -300,6 +332,28 @@ class FaqExamplesTest {
             return copy(placeholder);
         }
         return FIXTURES.stream().anyMatch(token::startsWith) ? copy(token) : token;
+    }
+
+    /**
+     * Makes the pack directory a fetch line names, empty, and remembers it, so that a later
+     * line of the block that names it reads a directory that exists.
+     */
+    private void packDirectory(String command) {
+        String[] tokens = command.split("\\s+");
+        for (int i = 0; i + 1 < tokens.length; i++) {
+            if (INTO.equals(tokens[i])) {
+                Path target = directory.resolve(tokens[i + 1]);
+                try {
+                    Files.createDirectories(target);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+                written.put(tokens[i + 1], target.toString());
+                return;
+            }
+        }
+        throw new AssertionError("a fetch line names the directory it writes into with "
+                + INTO + ": " + command);
     }
 
     /**

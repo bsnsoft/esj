@@ -10,6 +10,12 @@ permissions:
 jobs:
   # The library is compiled for Java 17 and is therefore tested on 17, on the
   # release in between and on the release the packaged command line ships on.
+  #
+  # The JDK 21 job also runs the tests that fetch at test time
+  # (-Desj.network=true): the Peppol BIS Billing 3.0 pack is made by
+  # esj packs fetch from its recipe and put to OpenPeppol's own examples and
+  # unit tests, none of which is in this repository (conformance/peppol).
+  # They add well under a minute; the other two jobs skip them by name.
   build:
     name: Build and test on JDK ${{ matrix.java }}
     runs-on: ubuntu-latest
@@ -17,6 +23,9 @@ jobs:
       fail-fast: false
       matrix:
         java: ['17', '21', '25']
+        include:
+          - java: '21'
+            network: -Desj.network=true
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
@@ -29,7 +38,7 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: mvn -B verify
+        run: mvn -B verify ${{ matrix.network }}
 
   # The format has three implementations, and one fixture manifest holds them
   # together (conformance/fixtures). The TypeScript and the C# binding run their

@@ -138,6 +138,21 @@ is bound to UBL.
 - Licence: none in the open-source sense. OpenPeppol AISBL holds the copyright and forbids
   modification, redistribution, sale and repackaging without prior consent. **No Peppol
   material is included in this repository**, and none of its text informs the wording here.
+  Checked again 2026-09-30: the repository carries no licence file (GitHub API: `license:
+  null`), its `README.adoc` states none, the Peppol Schematron files name only CEN's
+  permission, and the statement of copyright in the BIS document at
+  <https://docs.peppol.eu/poacc/billing/3.0/bis/> is unchanged.
+- Validation artefacts: fetched by the user, never shipped. The recipe
+  [`../packs/recipes/peppol-bis-billing-3.0.20.json`](../packs/recipes/peppol-bis-billing-3.0.20.json)
+  names the four Schematron files of `rules/sch/` at tag `v3.0.20` (commit
+  `261c458474e27d58a25be629cccac28883171c92`, "BIS version 3.0.20: 2025 November Release",
+  published 2026-03-16) with their SHA-256, and `esj packs fetch` downloads and compiles them on
+  the machine that runs it ([`validation.md`](validation.md#packs-made-on-this-machine)). The
+  two CEN files of that release state version 1.3.15 of 2025-10-16 (its `rules/sch/README.md`
+  still names 1.3.14.1) and are under the EUPL 1.2; they are fetched with the rest, because the
+  pack is one release of one publisher. The examples and unit tests the evidence runs are fetched
+  at test time, listed with their digests in
+  [`../conformance/peppol/README.md`](../conformance/peppol/README.md).
 - Two facts are taken from it and named where they are used: the value `NA` that document
   states at `cac:OrderReference/cbc:ID` and at `cac:CardAccount/cbc:NetworkID` where the
   invoice has nothing to put there. They are conventions of the UBL binding tables with this
@@ -191,9 +206,10 @@ property names, allowed values, conventional names — are in [`pdf-input.md`](p
 ## Vendored assets
 
 Third-party files copied in unmodified, each with the upstream terms and the SHA-256 of every
-file in a `README.md` beside it and a test that recomputes the digest. These four live under
-`esj-render/src/main/resources/de/bsnsoft/esj/render/`; the XR stylesheets of
-`esj-xr` and the artefacts under `packs/` are recorded above.
+file in a `README.md` beside it and a test that recomputes the digest. The first four live under
+`esj-render/src/main/resources/de/bsnsoft/esj/render/`, the fifth under
+`esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/`; the XR stylesheets of `esj-xr` and the
+artefacts under `packs/` are recorded above.
 
 - **Liberation Sans**, regular and bold, in `fonts/` — SIL Open Font License 1.1, whose text is
   beside the files. Subset-embedded in every PDF.
@@ -207,6 +223,21 @@ file in a `README.md` beside it and a test that recomputes the digest. These fou
 - **FileSaver.js** `FileSaver-v2.0.5.js`, in `kosit/` — third-party material inside that
   release: copyright Eli Grey, MIT licence, <https://github.com/eligrey/FileSaver.js>. Its
   notice is shipped beside the file as `FileSaver-LICENSE.txt` and in `NOTICE`.
+- **ISO Schematron XSLT 2 skeleton**, 2010 release, in `schematron/` — `iso_dsdl_include.xsl`,
+  `iso_abstract_expand.xsl`, `iso_svrl_for_xslt2.xsl` and `iso_schematron_skeleton_for_saxon.xsl`
+  by Rick Jelliffe with the Academia Sinica Computing Centre, Taiwan, under the MIT licence
+  stated at the head of each file (moved from an earlier permissive notice to MIT on
+  2010-07-10, as their version notes record). Copied byte for byte from
+  `external/schematron/20100710-xslt2/` of the Maven Central artefact
+  `com.helger.schematron:ph-schematron-xslt:8.0.6` (Apache-2.0, Philip Helger; jar SHA-256
+  `eac96bfab38187cfc22bb98b227f4e515beffb8ebf24a8bbcb38b392c41d169b`), retrieved 2026-09-30;
+  that copy carries seven changes marked `[ph]`, among them the stylesheet version raised to 2.0.
+  SHA-256 of the files: `e59976a934bcffba9998607f4fce5009130d69f9530ebee9a858aa289ac03412`
+  (`iso_dsdl_include.xsl`), `16e8e7da796100de38446e64c4b2845c318e316a35c66098381b6846f6c89aac`
+  (`iso_abstract_expand.xsl`), `a3a497c2e792700575111bce2bc646c435edc5296334c16a29fc7a114c2fa951`
+  (`iso_svrl_for_xslt2.xsl`), `3fa57d52a633d2f73214e85f22005a40db3a6c9f7d7917c73e3ed5a6973c0787`
+  (`iso_schematron_skeleton_for_saxon.xsl`). `esj packs fetch` compiles the Schematron of a
+  recipe with them; no bundled pack is compiled with them.
 
 ## Display names of codes
 

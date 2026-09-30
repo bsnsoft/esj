@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.IntConsumer;
 
 /**
@@ -106,6 +107,22 @@ public final class Main {
     }
 
     /**
+     * Runs the tool over the given streams, with the given way of ending the process and
+     * the environment of this process.
+     *
+     * @param args the command line
+     * @param in   the stream a file name of {@code -} reads from
+     * @param out  the stream a document is written to
+     * @param err  the stream diagnostics, warnings and errors are written to
+     * @param halt what ends the process when the deadline passes
+     * @return one of the codes of {@link ExitCode}
+     */
+    static int run(String[] args, InputStream in, OutputStream out, OutputStream err,
+                   IntConsumer halt) {
+        return run(args, in, out, err, halt, System.getenv());
+    }
+
+    /**
      * Runs the tool over the given streams and with the given way of ending the process.
      *
      * <p>{@code halt} is what {@code --max-runtime} calls when the deadline passes. The
@@ -119,11 +136,14 @@ public final class Main {
      * @param out  the stream a document is written to
      * @param err  the stream diagnostics, warnings and errors are written to
      * @param halt what ends the process when the deadline passes
+     * @param environment the environment variables the run reads its settings from —
+     *             {@code ESJ_PACKS} is the one there is
      * @return one of the codes of {@link ExitCode}
      */
     static int run(String[] args, InputStream in, OutputStream out, OutputStream err,
-                   IntConsumer halt) {
+                   IntConsumer halt, Map<String, String> environment) {
         GlobalOptions options = new GlobalOptions();
+        options.environment(environment);
         Console console = new Console(in, out, err, options);
         // Before anything opens a PDF: the diagnostics of the PDF library belong to this
         // tool's output and not to whatever the virtual machine was configured with.
@@ -139,7 +159,8 @@ public final class Main {
                 .addSubcommand(new GetCommand(console))
                 .addSubcommand(new ListCommand(console))
                 .addSubcommand(new DiffCommand(console))
-                .addSubcommand(new CanonicalizeCommand(console));
+                .addSubcommand(new CanonicalizeCommand(console))
+                .addSubcommand(PacksCommand.tree(console));
         command.setOut(console.outWriter());
         command.setErr(console.errWriter());
         command.setExecutionExceptionHandler(

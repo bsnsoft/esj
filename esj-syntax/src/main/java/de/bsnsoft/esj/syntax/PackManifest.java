@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -43,14 +44,16 @@ final class PackManifest {
      * @param source   whether the files were carried with this build or supplied by the
      *                 caller, which a report says because the identity in the manifest
      *                 cannot distinguish the two
+     * @param location the directory the manifest was read from, {@code null} for a bundled
+     *                 pack
      * @param label    where the manifest was read from, for a message
      * @param manifest the bytes of {@code pack.json}
      * @param files    where the other files of the pack are read from
      * @return the pack
      * @throws PackException if the manifest is not one this module reads
      */
-    static Pack read(String origin, PackSource source, String label, byte[] manifest,
-                     PackFiles files) {
+    static Pack read(String origin, PackSource source, Path location, String label,
+                     byte[] manifest, PackFiles files) {
         String where = label + "/" + FILE;
         Map<?, ?> root = asObject(PackJson.read(manifest, where), where);
         String format = string(root, "format", where);
@@ -82,12 +85,14 @@ final class PackManifest {
         String release = string(root, "release", where);
         return new Pack(origin,
                 source,
+                location,
                 id + "/" + version + "/" + release,
                 id,
                 version,
                 release,
                 string(root, "title", where),
                 string(root, "retrieved", where),
+                optionalString(root, "note", where),
                 components,
                 levels,
                 baseProfiles,
@@ -180,6 +185,14 @@ final class PackManifest {
             throw new PackException(where + " has no member " + name);
         }
         return asString(value, where);
+    }
+
+    /**
+     * Returns a string member that a manifest need not have, or {@code null}. A member that
+     * is there and is not a string is still a manifest this module refuses.
+     */
+    private static String optionalString(Map<?, ?> object, String name, String where) {
+        return object.containsKey(name) ? string(object, name, where) : null;
     }
 
     /**

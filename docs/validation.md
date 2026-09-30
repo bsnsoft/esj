@@ -59,14 +59,58 @@ the artefact bundle, and all three appear in every report, because a bugfix rele
 removes or re-levels rules. A new release is a new directory beside the old one.
 
 **Nothing is fetched at run time.** The packs are in the jar, so a build works offline and the
-digests in `SOURCES.md`, recomputed on every build, are those of the artefacts that judged.
+digests in `SOURCES.md`, recomputed on every build, are those of the artefacts that judged. The
+one command that goes to the network is `esj packs fetch` (below), and only when it is called.
 
 **A pack can be replaced, and every form says when it was.** `--pack <directory>` runs a pack
-from a directory holding a `pack.json`, `--pack <id>` selects a bundled one; a manifest writes
-its own identity, so the source is printed beside the name and `--output json` carries
-`syntax.pack.source` with `bundled` or `supplied`. Adding a release is a directory, a manifest,
-the provenance rows and a line in the index — no code:
+from a directory holding a `pack.json`, `--pack <id>` selects a bundled one or one of a pack
+directory; a manifest writes its own identity, so the origin is printed beside the name and
+`--output json` carries `syntax.pack.source` — `bundled`, `supplied` or `directory` — and
+`syntax.pack.location`, the directory the files that ran were read from. Adding a release is a
+directory, a manifest, the provenance rows and a line in the index — no code:
 [`../packs/README.md`](../packs/README.md#adding-a-release).
+
+### Packs made on this machine
+
+Some artefacts may be used but not redistributed. The Peppol BIS Billing 3.0 validation
+artefacts, as published by OpenPeppol, carry no open-source licence and OpenPeppol permits no
+redistribution without its consent, so no file of them is in this repository or in any artefact
+it publishes. What esj carries instead is its own work: a recipe that names the files of one
+release with their SHA-256, and the command that follows it.
+
+```text
+$ esj packs fetch peppol-bis-billing-3.0.20 --into ~/esj-packs
+$ esj validate --packs ~/esj-packs invoice.xml
+```
+
+`esj packs fetch` downloads the four Schematron files of tag `v3.0.20` from the OpenPeppol
+repository over https, refuses any whose SHA-256 is not the one the recipe pins and then writes
+nothing, compiles each to XSLT in process with the ISO Schematron skeleton this build carries,
+copies the UBL and CII schema modules out of the bundled pack, and writes the pack to
+`<directory>/peppol-bis-billing/3.0/3.0.20` with a `pack.json` that records the source URLs, the
+fetch date and the SHA-256 of every file it wrote. A second fetch into the same directory leaves an
+identical pack alone; a different one is refused unless `--replace` is given.
+
+A **pack directory** is a directory of packs laid out as `<id>/<version>/<release>/pack.json`.
+`--packs <directory>` on `validate` and `inspect`, repeatable, and the environment variable
+`ESJ_PACKS`, a path list, name pack directories; every pack found there joins the bundled ones
+and is chosen the same way, by the profile the document names in BT-24. Two rules keep the
+choice unambiguous: a pack there with the identity of a bundled pack is refused by name, and a
+document whose profile two packs recognize, one of them from a pack directory, is refused with
+both named — `--pack <id>` chooses. A document of another profile is judged as without the
+directory. `esj --list-packs` and `esj packs list` print the origin of every pack, `bundled` or
+the directory, and for a rule set compiled on this machine the file it came from and the SHA-256
+of what came out; the recipes this build carries are listed after the packs. A container reads a
+pack directory from a mount ([`install.md`](install.md#container-image)).
+
+The pack carries the rule sets the release ships: the EN 16931 Schematron of CEN/TC 434 in the
+version OpenPeppol took into it — 1.3.15 of 2025-10-16 for 3.0.20, as the files state — and the
+Peppol rules for UBL and for CII, each at the level its artefact flags: the build configuration of
+the release runs the schema, the CEN rules and the Peppol rules of a syntax together and levels no
+rule, so the pack has no level table. The Peppol rules run for
+`urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0` and every
+identifier that begins with it, for Invoice and CreditNote alike; a document of any other profile
+is not chosen for this pack.
 
 ## The check table
 
@@ -331,7 +375,7 @@ validator of its own turns a refusal into `Container: INVALID`
 |---|---|---|
 | 0 | completely checked, nothing fatal found | proceed |
 | 1 | a fatal finding, from either engine | reject the document, report the findings |
-| 2 | the input could not be read, recognized or parsed, or the command line could not be parsed | the bytes or the arguments are the problem, not the invoice |
+| 2 | the input could not be read, recognized or parsed, a validation pack could not be read, or the command line could not be parsed | the bytes, a pack or the arguments are the problem, not the invoice |
 | 3 | not this tool's: the virtual machine aborted under `-XX:+ExitOnOutOfMemoryError` | treat as a crash, never as a verdict |
 | 4 | something this version does not implement | |
 | 5 | an internal error, a defect of the tool | report it; the document is unjudged |
@@ -353,6 +397,9 @@ A document that names a specification the pack carries no rules for is checked a
 schema of its syntax and nothing else: `INDETERMINATE`, cause `no-rules-for-profile`. A document
 that names EN 16931 and no CIUS leaves the same rule sets unused and is complete. Both name the
 rule sets left out, set `syntax.profileRulesSkipped` and carry `profile-rules` in `notChecked`.
+Where a recipe of this build brings the rules of the profile — Peppol BIS Billing 3.0 — the text
+report adds a line with the `esj packs fetch` command that makes their pack
+([Packs made on this machine](#packs-made-on-this-machine)); the verdict stays what it is.
 
 ## The report
 
@@ -457,6 +504,48 @@ no verdict either — `INDETERMINATE`, cause `no-rules-for-profile`, exit code 9
 proof of equivalence on documents nobody has run. The oracle is not part of the build — running it
 needs a download of the official validator — and what the build keeps is its answer, with a test
 that re-runs this engine over the mutation set and pins every identifier it must report.
+
+### The Peppol pack, beside OpenPeppol's own tests
+
+A pack made by `esj packs fetch` is compiled on the machine that runs it, so the question is
+whether the compiled rule sets say what their publisher's tests say they say. Nothing of
+OpenPeppol is in this repository, so the evidence is fetched at test time: two tests run only with
+`-Desj.network=true`, fetch every file from tag `v3.0.20` and weigh it against the SHA-256
+[`../conformance/peppol/README.md`](../conformance/peppol/README.md) records, and the continuous
+integration runs them in the JDK 21 job. Without the property they are skipped by name and the
+build stays offline.
+
+| | |
+|---|---|
+| Under test | the pack `peppol-bis-billing/3.0/3.0.20` as `esj packs fetch` makes it |
+| OpenPeppol's examples, `rules/examples/` | 9 of 9 `VALID`, exit 0 |
+| OpenPeppol's unit tests, `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` | 102 test sets (2 hold no test), 354 tests, 354 expectations over 58 rules |
+| Rules whose every expectation holds | 58 of 58 |
+| Rules with an expectation that does not hold | 0 |
+
+A unit test is a fragment and the rules it expects to fire, or not to fire; the test runs the rule
+sets its configuration names over it — the Peppol rules of the syntax, with the EN 16931 rules
+where the configuration adds them — and compares rule identifier by rule identifier, with the
+flag and, where the test states one, the count.
+
+Four changes to `base-example.xml`, one at a time, each `INVALID` with exit 1:
+
+| Change | Rules that fire |
+|---|---|
+| no invoice number (BT-1) | `BR-02`, `PEPPOL-EN16931-R008` |
+| VAT category code `X` on a line | `BR-CL-18`, `BR-S-08` |
+| category `S` with the exemption reason `VATEX-EU-G` | `BR-S-10`, `PEPPOL-EN16931-P0104` |
+| a business process no Peppol process names (BT-23) | `PEPPOL-EN16931-R007` |
+
+A specification identifier (BT-24) the pack does not name is not a change it can judge: the
+identifier is how the pack is chosen, so the document is judged by the bundled pack and ends
+`INDETERMINATE`, cause `no-rules-for-profile`, and so it does with `--pack` naming the Peppol pack,
+whose Peppol rule sets do not apply to it. `PEPPOL-EN16931-R004`, the rule that asks for that
+identifier, is among the 58 of the unit tests.
+
+Fetching and compiling the pack takes about 5 seconds with the jar and about 2 with the native
+executable, a second or so of it the download; a document then takes what a bundled pack takes,
+0.2 to 0.3 seconds for each of OpenPeppol's examples with the native executable.
 
 ### The rule pack, beside the official Schematron
 

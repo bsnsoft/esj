@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.cli;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -46,8 +47,9 @@ import picocli.CommandLine.Spec;
                     + " and what it finds is reported as its own layer and never as ESJ"
                     + " conformance.",
             "",
-            "esj --list-packs shows the validation packs this build carries, with their"
-                    + " components and licences.",
+            "esj --list-packs shows the validation packs this build carries and the ones of"
+                    + " the pack directories ESJ_PACKS names, with their components and"
+                    + " licences, and the recipes esj packs fetch makes a pack from.",
             ""},
         versionProvider = VersionProvider.class,
         synopsisSubcommandLabel = "<command>",
@@ -58,8 +60,8 @@ import picocli.CommandLine.Spec;
             "  1  a validation found an error, the profile of a container puts the rules",
             "     of EN 16931 out of scope, two documents differ, or esj get found no",
             "     value at the path it was asked for",
-            "  2  the input could not be read, recognized or parsed, or the command line",
-            "     could not be parsed",
+            "  2  the input could not be read, recognized or parsed, a validation pack",
+            "     could not be read or fetched, or the command line could not be parsed",
             "  3  not this tool's: the virtual machine aborts with it under",
             "     -XX:+ExitOnOutOfMemoryError and writes its notice to the standard",
             "     output, so it is a crash and no verdict",
@@ -95,9 +97,12 @@ final class EsjCommand implements Callable<Integer> {
     private boolean versionRequested;
 
     @Option(order = 20, names = "--list-packs",
-            description = "List the validation packs this build carries — their components,"
+            description = "List the validation packs this build carries and the ones of the"
+                    + " pack directories ESJ_PACKS names — their origin, their components,"
                     + " which documents each applies to and the licence each is distributed"
-                    + " under — and the native rule packs with their edition, and exit.")
+                    + " under — the recipes esj packs fetch follows, and the native rule"
+                    + " packs with their edition, and exit. esj packs list does the same and"
+                    + " takes --packs.")
     private boolean listPacks;
 
     EsjCommand(Console console) {
@@ -108,7 +113,7 @@ final class EsjCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         if (listPacks) {
-            SyntaxPacks.list(console);
+            SyntaxPacks.list(console, PackChoice.catalog(List.of(), console));
             console.line();
             RuleCheck.list(console);
             return ExitCode.SUCCESS;

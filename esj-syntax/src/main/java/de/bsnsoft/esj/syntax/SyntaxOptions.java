@@ -39,23 +39,27 @@ public final class SyntaxOptions {
      */
     public static final Duration DEFAULT_MAX_RUNTIME = Duration.ofMinutes(5);
 
-    private static final SyntaxOptions DEFAULTS =
-            new SyntaxOptions(null, DEFAULT_MAX_INPUT_BYTES, DEFAULT_MAX_RUNTIME);
+    private static final SyntaxOptions DEFAULTS = new SyntaxOptions(null, null,
+            DEFAULT_MAX_INPUT_BYTES, DEFAULT_MAX_RUNTIME);
 
     private final Pack pack;
+    /** The catalog to choose among, {@code null} for the bundled one, read when asked. */
+    private final PackCatalog packs;
     private final long maxInputBytes;
     private final Duration maxRuntime;
 
-    private SyntaxOptions(Pack pack, long maxInputBytes, Duration maxRuntime) {
+    private SyntaxOptions(Pack pack, PackCatalog packs, long maxInputBytes,
+                          Duration maxRuntime) {
         this.pack = pack;
+        this.packs = packs;
         this.maxInputBytes = maxInputBytes;
         this.maxRuntime = maxRuntime;
     }
 
     /**
      * Returns the options a run uses unless it is given others: the bundled pack that
-     * recognizes the profile of the document, {@link #DEFAULT_MAX_INPUT_BYTES} and
-     * {@link #DEFAULT_MAX_RUNTIME}.
+     * recognizes the profile of the document ({@link PackCatalog#bundled()}),
+     * {@link #DEFAULT_MAX_INPUT_BYTES} and {@link #DEFAULT_MAX_RUNTIME}.
      *
      * @return the default options
      */
@@ -71,6 +75,16 @@ public final class SyntaxOptions {
      */
     public Optional<Pack> pack() {
         return Optional.ofNullable(pack);
+    }
+
+    /**
+     * Returns the packs this run chooses among where it was given no single pack: the
+     * bundled ones unless {@link #withPacks(PackCatalog)} named others beside them.
+     *
+     * @return the catalog
+     */
+    public PackCatalog packs() {
+        return packs == null ? PackCatalog.bundled() : packs;
     }
 
     /**
@@ -99,8 +113,22 @@ public final class SyntaxOptions {
      * @throws NullPointerException if {@code pack} is {@code null}
      */
     public SyntaxOptions withPack(Pack pack) {
-        return new SyntaxOptions(Objects.requireNonNull(pack, "pack"), maxInputBytes,
-                maxRuntime);
+        return new SyntaxOptions(Objects.requireNonNull(pack, "pack"), packs,
+                maxInputBytes, maxRuntime);
+    }
+
+    /**
+     * Returns options that choose among the packs of a catalog — the bundled packs and the
+     * ones of the pack directories it was read from — by the profile of the document. A
+     * pack named with {@link #withPack(Pack)} still takes precedence over the choice.
+     *
+     * @param packs the packs to choose among
+     * @return the new options
+     * @throws NullPointerException if {@code packs} is {@code null}
+     */
+    public SyntaxOptions withPacks(PackCatalog packs) {
+        return new SyntaxOptions(pack, Objects.requireNonNull(packs, "packs"),
+                maxInputBytes, maxRuntime);
     }
 
     /**
@@ -114,7 +142,7 @@ public final class SyntaxOptions {
         if (maxInputBytes <= 0) {
             throw new IllegalArgumentException("an input bound is a positive number of bytes");
         }
-        return new SyntaxOptions(pack, maxInputBytes, maxRuntime);
+        return new SyntaxOptions(pack, packs, maxInputBytes, maxRuntime);
     }
 
     /**
@@ -130,6 +158,6 @@ public final class SyntaxOptions {
         if (maxRuntime.isZero() || maxRuntime.isNegative()) {
             throw new IllegalArgumentException("a time bound is a positive duration");
         }
-        return new SyntaxOptions(pack, maxInputBytes, maxRuntime);
+        return new SyntaxOptions(pack, packs, maxInputBytes, maxRuntime);
     }
 }

@@ -42,6 +42,7 @@ below are written as `esj` and name files of this repository, so they can be pas
 | `diff` | the paths at which two documents differ, across syntaxes |
 | `canonicalize` | the canonical bytes, or the two digests taken over them |
 | `upgrade` | write an ESJ document as a document of another edition of the semantic model |
+| `packs` | list the validation packs a run chooses among, or make one from a recipe ([below](#packs)) |
 
 [`editions.md`](editions.md) is the reference for `upgrade` and for editions: its option table,
 what every other command does with a document of a non-default edition, and the refusals. A
@@ -58,8 +59,9 @@ where two attachments carry one name, and `--strict` refuses a document whose by
 written in the encoding it declares instead of recoding them.
 
 `esj --version` prints the versions of the tool, the format, the default semantic model and the
-registries; `esj --list-packs` the validation packs (components, documents, licence, rules each
-profile levels) and the rule packs (edition, rules per oracle). Neither takes an input.
+registries; `esj --list-packs` the validation packs (origin, components, documents, licence, rules
+each profile levels), the recipes of [`esj packs fetch`](#packs) and the rule packs (edition,
+rules per oracle). Neither takes an input.
 
 ## convert
 
@@ -363,13 +365,21 @@ profile ([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-pro
 | Option | What it does |
 |---|---|
 | `--pack <directory>` | run a pack from a directory holding a `pack.json` — the way a release newer than this build reaches the engine |
-| `--pack <id>` | run one of the bundled packs by its identity, `id/version/release` |
+| `--pack <id>` | run one of the bundled packs, or of the pack directories, by its identity, `id/version/release` |
+| `--packs <directory>` | add a pack directory, repeatable: every `<id>/<version>/<release>/pack.json` below it joins the bundled packs and is chosen by the profile of the document; also on `inspect` |
 | `--no-syntax` | leave the official artefacts out and run the structural layers alone |
 | `--via cii\|ubl` | which syntax an ESJ input is written to for the artefacts to read; `cii` is the default |
 | `--max-runtime <duration>` | how long the whole command may take over the document: `500ms`, `90s`, `5m`, or a bare number of seconds — a global switch, described under [Limits](#limits) |
 
 A manifest writes its own identity, so a directory can call itself the release this build carries:
 the `Profile:` line then reads `supplied with --pack` and `syntax.pack.source` says `supplied`.
+A pack of a pack directory is named with the directory it was read from — `(pack
+peppol-bis-billing/3.0/3.0.20, from /home/me/esj-packs/peppol-bis-billing/3.0/3.0.20)` — and
+`syntax.pack.source` says `directory`, with the directory in `syntax.pack.location`.
+`ESJ_PACKS` names pack directories as a path list, `:` between entries (`;` on Windows), before
+those of `--packs`. A directory that does not exist, a pack there with the identity of a bundled
+one, and a document whose profile a pack there and another pack both recognize are refused with
+exit code 2, naming what collides ([`validation.md`](validation.md#packs-made-on-this-machine)).
 Nothing is fetched at run time. `--no-syntax` leaves a component of the complete check out, so the
 run reaches no verdict: exit code 9 and `syntax-binding (skipped-by-caller)` in the last line and
 in `reasons` ([`validation.md`](validation.md#--no-syntax-and---rules)).
@@ -401,6 +411,14 @@ tell apart are printed under the rows:
 
 ```text
   no rule set of this pack applies to this profile: schema validation only
+```
+
+Where a recipe of this build brings the rules of the profile, one more line says how to get them:
+
+```text
+  the rules of this profile are published under terms that allow no redistribution; esj packs
+  fetch peppol-bis-billing-3.0.20 --into <directory> makes their pack on this machine, and
+  --packs <directory> or ESJ_PACKS adds it
 ```
 
 The first is `VALID` with exit 0, the second `INDETERMINATE` with exit 9 and the cause
@@ -553,7 +571,8 @@ this project's own English, never a translation of a published assertion; `flag`
 the rule declares and `severity` the one the verdict is made on.
 
 Where the syntax engine ran, `syntax` carries the customization identifier the document named,
-the pack chosen for it with `source` saying whether it was `bundled` or `supplied`,
+the pack chosen for it with `source` — `bundled`, `supplied` (`--pack <directory>`) or `directory`
+(a pack directory) — and `location`, the directory it was read from, `null` for a bundled pack,
 `profileNote` and `profileRulesSkipped` — the sentence for a person and the same fact for a
 program — `ran` and `skipped`, every component of the pack with the reason each one did not run
 and whether a component that ran `stopped` over the document, and `findings`, one entry per
@@ -1089,7 +1108,8 @@ code — 9, not 0 — says so without anybody reading the line.
 
 The `Validation pack` line names the pack `esj validate` would run against the document, which
 follows from its syntax and the customization identifier of BT-24; `--pack` names a different
-one. Where the document names a profile that pack carries no rule set for, the line says so.
+one, and `--packs` and `ESJ_PACKS` add pack directories as they do for `validate`. Where the
+document names a profile that pack carries no rule set for, the line says so.
 
 ## get and list
 
@@ -1205,6 +1225,63 @@ the invoice change*; the document digest is taken over the whole document and an
 the file I received*. Two extractions of the same invoice differ in `source`, and therefore in
 their document digests, while their semantic digests agree.
 
+## packs
+
+The validation packs themselves, rather than a document. `esj packs list` prints what
+`esj --list-packs` prints and takes `--packs <directory>`, which a top-level switch cannot:
+
+```console
+$ esj packs list
+xrechnung/3.0.2/2026-08-31
+  XRechnung 3.0.2 validation pack, release 2026-08-31
+  origin bundled
+...
+Recipes, for artefacts that may be used but not redistributed (esj packs fetch <recipe> --into <directory>):
+peppol-bis-billing-3.0.20
+  Peppol BIS Billing 3.0 validation artefacts, as published by OpenPeppol, release 3.0.20
+  makes peppol-bis-billing/3.0/3.0.20 from https://github.com/OpenPEPPOL/peppol-bis-invoice-3 at tag v3.0.20; not fetched into any pack directory of this run
+...
+```
+
+`origin` is `bundled` or the directory a pack was read from; a pack of a pack directory adds the
+note of its manifest and, for every rule set compiled on this machine, the file it was compiled
+from and the SHA-256 of the stylesheet, which is what the engine weighs before it runs it.
+
+`esj packs fetch <recipe> --into <directory>` makes the pack of a recipe this build carries, for
+artefacts whose publisher permits their use and not their redistribution
+([`validation.md`](validation.md#packs-made-on-this-machine)). It is the one command of the tool
+that opens a network connection, and it opens one only to the base URL of that recipe.
+
+| Option | What it does |
+|---|---|
+| `<recipe>` | the name of the recipe, as `esj packs list` prints it: `peppol-bis-billing-3.0.20` |
+| `--into <directory>` | the pack directory the pack is written into, as `<id>/<version>/<release>`; made where it is not there |
+| `--replace` | replace a different pack of the same identity there; only files its own manifest lists are removed, and a pack with a file it does not list is refused |
+
+```text
+$ esj packs fetch peppol-bis-billing-3.0.20 --into ~/esj-packs
+peppol-bis-billing/3.0/3.0.20 written to /home/me/esj-packs/peppol-bis-billing/3.0/3.0.20
+  4 files fetched from https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/v3.0.20/, each with the SHA-256 the recipe pins
+  4 Schematron files compiled to XSLT on this machine
+  copied from the bundled pack xrechnung/3.0.2/2026-08-31 ubl-2.1-xsd
+  copied from the bundled pack xrechnung/3.0.2/2026-08-31 cii-d16b-xsd
+  Fetched from the publisher and compiled on this machine by esj packs fetch; the Peppol files carry no open-source licence and OpenPeppol AISBL permits no redistribution without its consent.
+esj validate <file> --packs /home/me/esj-packs runs it, as does ESJ_PACKS=/home/me/esj-packs
+```
+
+Every file is fetched over https, with no redirect followed and 60 seconds each, and weighed
+against the size and the SHA-256 the recipe pins; a file that differs is named, with both
+digests, and nothing is written. The Schematron is compiled in process with the ISO Schematron
+skeleton this build carries, and a schema that would include a file the recipe does not name is
+refused. The pack is assembled in a directory of the pack directory whose name begins with a dot,
+which no run reads packs from, and moved into place in one step, then read back, every file weighed against its manifest. A target
+that already holds the same files is left alone (`is already, unchanged, in`), one that holds a
+different pack is refused unless `--replace` is given, and one that holds anything else is
+refused. A proxy is taken from the Java system properties `https.proxyHost` and
+`https.proxyPort`. The command leaves with 0 when the pack is there, and with 2 when a recipe is
+unknown, a file cannot be fetched or is not the one pinned, or the target holds what the command
+does not overwrite; `--verbose` adds how long fetching and compiling took.
+
 ## Limits
 
 Reading an invoice costs memory and time before anything is known about it, so a run reads
@@ -1314,7 +1391,7 @@ The exit codes are the interface a script is written against; their meanings do 
 |---|---|
 | 0 | success |
 | 1 | a validation found an error, the profile of a container puts the rules of EN 16931 out of scope, two documents differ, or `esj get` found no value |
-| 2 | the input could not be read, recognized or parsed, or the command line could not be parsed |
+| 2 | the input could not be read, recognized or parsed, a validation pack could not be read or fetched, or the command line could not be parsed |
 | 3 | not this tool's: the out-of-memory abort under `-XX:+ExitOnOutOfMemoryError`; its notice goes to the standard output, or to the error stream from the native executable, so it is a crash and no verdict |
 | 4 | a feature this version does not implement, such as a ZUGFeRD 1.0 attachment |
 | 5 | an internal error |

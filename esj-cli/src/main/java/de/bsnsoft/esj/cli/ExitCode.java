@@ -15,8 +15,9 @@ package de.bsnsoft.esj.cli;
  *   <tr><td>1</td><td>a validation found an error, the profile of a container puts the
  *                     rules of EN 16931 out of scope, two documents differ, or
  *                     {@code esj get} found no value at the path it was asked for</td></tr>
- *   <tr><td>2</td><td>the input could not be read, recognized or parsed, or the command
- *                     line could not be parsed</td></tr>
+ *   <tr><td>2</td><td>the input could not be read, recognized or parsed, a validation pack
+ *                     could not be read or fetched, or the command line could not be
+ *                     parsed</td></tr>
  *   <tr><td>3</td><td>not a code of this tool: it is what the virtual machine leaves with
  *                     under {@code -XX:+ExitOnOutOfMemoryError}, so it is a crash and no
  *                     verdict on the document</td></tr>
@@ -80,7 +81,9 @@ public final class ExitCode {
      * The input could not be read, recognized or parsed: an unreadable file, a byte
      * sequence that is neither a JSON object nor an XML document of a syntax this tool
      * reads, or a document that fails to parse. A document that was readable and was
-     * refused on a bound of this run leaves with {@link #LIMIT} instead.
+     * refused on a bound of this run leaves with {@link #LIMIT} instead. A validation pack
+     * that cannot be read, and a pack {@code esj packs fetch} cannot make, are input of the
+     * same kind and leave with this code.
      *
      * <p>A command line the parser could not make sense of — an unknown option, a missing
      * argument, a subcommand that does not exist — leaves with this code as well. Nothing

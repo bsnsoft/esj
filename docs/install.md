@@ -85,6 +85,18 @@ linux/arm64. `latest` follows the newest release; a deployment pins the version 
 with, `ghcr.io/bsnsoft/esj:<version>`. Java 25, an unprivileged account, the ahead-of-time cache
 recorded on the architecture it runs on, and `ESJ_MAX_HEAP` for the ceiling (512 MiB by default).
 
+A pack made with `esj packs fetch` ([`validation.md`](validation.md#packs-made-on-this-machine))
+is fetched once, in a run that is given the network and writes as the owner of the directory,
+and mounted read-only into every run that validates:
+
+```console
+$ docker run --rm --user "$(id -u):$(id -g)" -v "$HOME/esj-packs:/packs" \
+      ghcr.io/bsnsoft/esj:latest packs fetch peppol-bis-billing-3.0.20 --into /packs
+$ docker run --rm -i --memory 1g --network none -v "$PWD:/work:ro" -w /work \
+      -v "$HOME/esj-packs:/packs:ro" -e ESJ_PACKS=/packs \
+      ghcr.io/bsnsoft/esj:latest validate invoice.xml
+```
+
 ```console
 $ dist/package.sh docker              # the image of a checkout: esj:<version> and esj:latest
 ```

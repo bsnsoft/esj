@@ -4,6 +4,7 @@ import de.bsnsoft.esj.syntax.SyntaxOptions;
 import java.time.Duration;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -35,6 +36,7 @@ final class GlobalOptions {
     private Bounds bounds;
     private Duration maxRuntime;
     private Consumer<Duration> runtimeLimit = duration -> { };
+    private Map<String, String> environment = Map.of();
 
     /** Tells whether the tool was asked to explain what it does on the error stream. */
     boolean verbose() {
@@ -200,5 +202,27 @@ final class GlobalOptions {
      */
     Duration maxRuntime() {
         return maxRuntime == null ? SyntaxOptions.DEFAULT_MAX_RUNTIME : maxRuntime;
+    }
+
+    /**
+     * Records the environment of the process the run reads its settings from.
+     *
+     * <p>It is handed in rather than read by whoever needs it, so that a test runs the tool
+     * with the environment it chose and a developer's own settings reach no test.
+     *
+     * @param environment the variables, by name
+     */
+    void environment(Map<String, String> environment) {
+        this.environment = Map.copyOf(environment);
+    }
+
+    /**
+     * Returns one variable of the environment the run was started with.
+     *
+     * @param name the name of the variable
+     * @return its value, or an empty optional where it is not set
+     */
+    Optional<String> environment(String name) {
+        return Optional.ofNullable(environment.get(name));
     }
 }

@@ -662,7 +662,7 @@ class ValidateCommandTest {
                         "written", "required", "checked", "target", "reason", "byDesign",
                         "syntax", "checked", "ok", "reason", "customizationId",
                         "pack", "directory", "id", "version", "release", "source",
-                        "profileNote", "profileRulesSkipped",
+                        "location", "profileNote", "profileRulesSkipped",
                         "ran", "component", "engine", "stopped",
                         "component", "engine", "stopped",
                         "skipped", "component", "reason", "component", "reason",

@@ -1,7 +1,6 @@
 package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.syntax.ComponentRun;
-import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.PackException;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxLimitException;
@@ -100,8 +99,8 @@ record SyntaxCheck(Optional<SyntaxReport> report, Optional<String> reason) {
      *
      * @param input       the bytes and the name of the input
      * @param syntax      the syntax the bytes were recognized as
-     * @param pack        the pack {@code --pack} named, or {@code null} to let the
-     *                    document choose among the bundled ones
+     * @param packs       the pack {@code --pack} named, or the packs the document
+     *                    chooses among
      * @param deadline    the time the whole command was given, and what is left of it
      * @param console     the streams of the process, for {@code --verbose}
      * @return what the engine found, or the reason it did not run
@@ -109,13 +108,13 @@ record SyntaxCheck(Optional<SyntaxReport> report, Optional<String> reason) {
      */
     static SyntaxCheck run(Input input,
                            InputSyntax syntax,
-                           Pack pack,
+                           PackChoice packs,
                            Deadline deadline,
                            Console console) {
         if (!syntax.isXml()) {
             return notRun(NO_XML);
         }
-        return run(input.bytes(), input.name(), pack, deadline, console);
+        return run(input.bytes(), input.name(), packs, deadline, console);
     }
 
     /**
@@ -129,8 +128,8 @@ record SyntaxCheck(Optional<SyntaxReport> report, Optional<String> reason) {
      *
      * @param xml      the XML to judge
      * @param name     what the report calls it
-     * @param pack     the pack {@code --pack} named, or {@code null} to let the document
-     *                 choose among the bundled ones
+     * @param packs    the pack {@code --pack} named, or the packs the document chooses
+     *                 among
      * @param deadline the time the whole command was given, and what is left of it
      * @param console  the streams of the process, for {@code --verbose}
      * @return what the engine found
@@ -138,15 +137,12 @@ record SyntaxCheck(Optional<SyntaxReport> report, Optional<String> reason) {
      */
     static SyntaxCheck run(byte[] xml,
                            String name,
-                           Pack pack,
+                           PackChoice packs,
                            Deadline deadline,
                            Console console) {
         Duration left = deadline.remaining(name + ": the official artefacts");
-        SyntaxOptions options = SyntaxOptions.defaults().withMaxRuntime(left)
-                .withMaxInputBytes(console.options().bounds().maxInputBytes());
-        if (pack != null) {
-            options = options.withPack(pack);
-        }
+        SyntaxOptions options = packs.apply(SyntaxOptions.defaults().withMaxRuntime(left)
+                .withMaxInputBytes(console.options().bounds().maxInputBytes()));
         try {
             SyntaxReport report = SyntaxValidator.validate(xml, options);
             explain(report, name, console);

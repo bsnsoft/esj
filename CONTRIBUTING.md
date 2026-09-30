@@ -13,6 +13,9 @@ is the whole check: it compiles the eleven modules with a JDK 17, 21 or 25 at re
 every test, builds the source and Javadoc jars, and writes the self-contained
 `esj-cli/target/esj.jar` that `bin/esj` runs. Warnings are errors — the compiler runs with
 `-Xlint:all` and `failOnWarning`, Javadoc with `doclint` on every group and `failOnWarnings`.
+It needs no network. `-Desj.network=true` adds the tests that fetch at test time — the Peppol
+pack and OpenPeppol's own examples and unit tests ([`conformance/peppol/`](conformance/peppol/README.md)) —
+which the JDK 21 job of the continuous integration runs.
 
 After `mvn -B verify`, regenerate:
 

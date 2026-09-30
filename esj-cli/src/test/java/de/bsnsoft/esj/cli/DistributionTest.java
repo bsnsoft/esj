@@ -422,7 +422,7 @@ class DistributionTest {
                 }
             }
         }
-        assertEquals(11, commands.size(), "the commands of the help text: " + commands);
+        assertEquals(12, commands.size(), "the commands of the help text: " + commands);
         return commands;
     }
 }
