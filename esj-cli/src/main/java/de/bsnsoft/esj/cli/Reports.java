@@ -3,7 +3,6 @@ package de.bsnsoft.esj.cli;
 import com.fasterxml.jackson.core.JsonGenerator;
 import de.bsnsoft.esj.bindings.WriteNote;
 import de.bsnsoft.esj.bindings.WriteReport;
-import de.bsnsoft.esj.pdf.AttachmentKind;
 import de.bsnsoft.esj.pdf.ContainerFinding;
 import de.bsnsoft.esj.pdf.EmbeddedFile;
 import de.bsnsoft.esj.pdf.FacturXMetadata;
@@ -129,9 +128,6 @@ final class Reports {
     /** How many findings of one check the text report prints without {@code --verbose}. */
     private static final int FINDING_LINES = 20;
 
-    /** The code of a finding that says the agreement rule was not applied at all. */
-    private static final String UNCHECKED = "PDF-ESJ-UNCHECKED";
-
     /** The heading of the block the official artefacts fill. */
     private static final String SYNTAX_HEADING = "Syntax";
 
@@ -217,7 +213,7 @@ final class Reports {
     }
 
     /**
-     * Writes the checks of the container, each with what it found.
+     * Writes the five checks of the container, each with what it found.
      *
      * <p>They are structural and they say so: the name tree, the associated files array,
      * the embedded file dictionary and the XMP packet are read, and conformance to the
@@ -243,30 +239,6 @@ final class Reports {
                 null);
         row(console, "Embedded file params",
                 pdf.findings(ContainerFinding.Category.PDF_EMBEDDED), null);
-        // Only for a file that carries one: a container without an ESJ document beside
-        // its invoice is the ordinary hybrid invoice and has nothing to answer for.
-        pdf.esj().ifPresent(esj -> row(console, "ESJ document attached",
-                pdf.findings(ContainerFinding.Category.PDF_ESJ),
-                ValueText.quoted(esj.name()) + checkedAgainst(esj)));
-    }
-
-    /**
-     * Returns what the row of the ESJ document says beside its name.
-     *
-     * <p>Where the enclosure carried paths of terms the invoice syntax binds nothing of,
-     * the row says how many. Those are the paths the comparison had nothing to measure
-     * them against — the room a model extension needs, which is what the enclosure exists
-     * for — and a row that reported the comparison without naming them would be claiming
-     * more than the run established.
-     */
-    private static String checkedAgainst(Container.Esj esj) {
-        if (!esj.read()) {
-            return "";
-        }
-        Integer unchecked = esj.unchecked();
-        return ", checked against the invoice"
-                + (unchecked == null || unchecked == 0 ? ""
-                        : "; " + unchecked + " paths were not checked");
     }
 
     /**
@@ -1294,7 +1266,6 @@ final class Reports {
         writeOrNull(generator, "profile",
                 report.profile().map(FacturXProfile::conformanceLevel));
         generator.writeBooleanField("en16931Invoice", report.en16931Invoice());
-        esjJson(generator, pdf);
         pdfaJson(generator, pdf.pdfa(), report.pdfaValidation());
         facturXJson(generator, pdf.facturX());
         generator.writeArrayFieldStart("findings");
@@ -1315,69 +1286,6 @@ final class Reports {
             position++;
         }
         generator.writeEndArray();
-        generator.writeEndObject();
-    }
-
-    /**
-     * Writes what became of the ESJ document a container carries beside its invoice.
-     *
-     * <p>The member is written either way, because a program that branches on it is
-     * entitled to find it. It has three states and not two: a file that carries no ESJ
-     * document is {@code null}; a file that carries one says whether it and the invoice
-     * are two accounts of one invoice; and a file that carries several is a file whose
-     * producer left the choice to the reader, so none of them was checked and neither
-     * {@code null} nor an answer about one of them would be true. {@code status} tells
-     * the three apart and {@code agrees} is {@code null} where nothing was checked. What
-     * is wrong stands among the findings, under {@code PDF-ESJ} or {@code PDF-EMBEDDED},
-     * so this member stays the one question and the findings stay the one list.
-     *
-     * <p>{@code pathsNotChecked} says how many paths the comparison had nothing to
-     * measure against, and is absent where it had something for every one of them. A
-     * program that reads {@code agrees} without it would be told that the whole document
-     * was held against the invoice, which is exactly what the row in the lines is careful
-     * not to claim.
-     */
-    private static void esjJson(JsonGenerator generator, Container pdf) throws IOException {
-        Optional<Container.Esj> esj = pdf.esj();
-        long carried = pdf.attachments().stream()
-                .filter(attachment -> attachment.kind() == AttachmentKind.ESJ_DOCUMENT)
-                .count();
-        if (esj.isEmpty() && carried < 2) {
-            generator.writeNullField("esj");
-            return;
-        }
-        generator.writeObjectFieldStart("esj");
-        generator.writeStringField("status", esj.isPresent() ? "one" : "several");
-        generator.writeNumberField("count", carried);
-        writeOrNull(generator, "attachment", esj.map(Container.Esj::name));
-        if (esj.isEmpty()) {
-            generator.writeNullField("attachmentIndex");
-            generator.writeNullField("agrees");
-        } else {
-            generator.writeNumberField("attachmentIndex", esj.orElseThrow().position());
-            // What the comparison had nothing to measure — the paths of terms the syntax
-            // of the invoice binds nothing of, which is the room an enclosure exists for.
-            // The member is written only where there were such paths, so a program that
-            // does not know about it reads the whole comparison where it was whole; a
-            // program that reads it learns that "agrees" is an answer about the rest.
-            Integer notChecked = esj.orElseThrow().unchecked();
-            if (notChecked != null && notChecked > 0) {
-                generator.writeNumberField("pathsNotChecked", notChecked);
-            }
-            // Null where the rule was not applied at all — the invoice is in a syntax this
-            // version has no binding table for, or a bound was reached inside the
-            // attachment. "No error was found" is not "the two agree" when nothing looked.
-            boolean unchecked = pdf.findings(ContainerFinding.Category.PDF_ESJ).stream()
-                    .anyMatch(finding -> UNCHECKED.equals(finding.code()));
-            if (unchecked) {
-                generator.writeNullField("agrees");
-            } else {
-                generator.writeBooleanField("agrees",
-                        pdf.findings(ContainerFinding.Category.PDF_ESJ).stream()
-                                .noneMatch(finding ->
-                                        finding.severity() == ContainerFinding.Severity.ERROR));
-            }
-        }
         generator.writeEndObject();
     }
 

@@ -30,6 +30,33 @@ still change; a change to it is named here under *Format*.
   cover fire as those tests expect (`conformance/peppol/README.md`, run with
   `-Desj.network=true` and in the JDK 21 job of the continuous integration).
 
+### Changed
+
+- A PDF written by 0.9.0 to 0.9.3 still carries `invoice.esj.json`. It is read as an attachment
+  that is not the invoice, as a logo would be: `esj inspect` and `esj extract --list` list it
+  (`not XML`, `application/json`, `Supplement`), `esj extract --attachment invoice.esj.json`
+  hands out its bytes, and `esj validate` reports nothing about it. A PDF whose one attachment it
+  is carries no invoice (exit code 2).
+
+### Removed
+
+- The ESJ document inside the hybrid PDF. `esj embed` and `esj render --embed cii` write one
+  embedded file, the invoice XML. Gone with the second file `invoice.esj.json`: the rule that it
+  and the XML are two accounts of one invoice, the option `--no-esj` and the line saying the
+  attachment went in, the container row `ESJ document attached` of `esj validate` (lines, the
+  JSON member `container.esj`, the HTML and the PDF report), the findings `PDF-ESJ-DISAGREES`,
+  `PDF-ESJ-UNSOUND`, `PDF-ESJ-UNREADABLE`, `PDF-ESJ-UNCHECKED`, `PDF-EMBEDDED-SEVERAL-ESJ` and
+  `PDF-EMBEDDED-ESJ-LABEL`, and section 15 of `SPEC.md` (informative). A receiver of two
+  representations of one invoice has to parse and compare both; the XML is the invoice, and the
+  ESJ document derives from it at any time ([`docs/design-decisions.md`](docs/design-decisions.md)).
+- The API of that feature, which breaks callers of it: in `esj-pdf` the classes `EsjAgreement`
+  and `EsjAttachment`, `EmbedOptions.withEsj` and the `esj` component of `EmbedOptions` (its
+  constructors take one argument fewer), `EmbedResult.EsjOutcome`, `EmbedResult.esj()`,
+  `esjAttached()` and `esjOmitted()` (its constructor takes the file and the report),
+  `AttachmentKind.ESJ_DOCUMENT`, `ContainerFinding.Category.PDF_ESJ` and the three-argument
+  `ContainerChecks.run`; in `esj-core` the phrases `Phrase.ROW_PDF_ESJ`, `ESJ_ATTACHMENT` and
+  `ESJ_ATTACHMENT_PARTLY`.
+
 ## [0.9.3] — 2026-09-29
 
 ### Changed

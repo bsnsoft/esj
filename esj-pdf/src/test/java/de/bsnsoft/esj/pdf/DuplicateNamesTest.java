@@ -29,6 +29,9 @@ class DuplicateNamesTest {
 
     private static final String DUPLICATE = "PDF-EMBEDDED-DUPLICATE-NAME";
 
+    /** The name of the JSON enclosure a hybrid of 0.9.0 to 0.9.3 carried. */
+    private static final String JSON = "invoice.esj.json";
+
     /** Bytes that are no XML: the file signature of a PNG image. */
     private static final byte[] IMAGE = {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
 
@@ -105,35 +108,38 @@ class DuplicateNamesTest {
     }
 
     @Test
-    void aDuplicatedEsjDocumentIsReportedAndCannotBeNamed() {
+    void aDuplicatedNameOfAnAttachmentThatIsNotTheInvoiceIsReportedAndCannotBeNamed() {
         byte[] pdf = Pdfs.builder()
                 .attach(Pdfs.Attachment.invoice(Pdfs.FACTUR_X, Conformance.instance(CII)))
-                .attach(esj("{\"shadow\":true}"))
-                .attach(esj("{\"original\":true}"))
-                .keys(Pdfs.FACTUR_X, EsjAttachment.NAME, EsjAttachment.NAME)
+                .attach(json("{\"shadow\":true}"))
+                .attach(json("{\"original\":true}"))
+                .keys(Pdfs.FACTUR_X, JSON, JSON)
                 .xmp(Pdfs.xmp(Pdfs.FACTUR_X, "EN 16931"))
                 .build();
 
         try (PdfContainer container = PdfContainer.open(pdf)) {
             InvoiceAttachments located = InvoiceAttachments.locate(container);
 
-            assertEquals(3, located.all().size(), "both ESJ documents are listed");
+            assertEquals(3, located.all().size(), "both JSON files are listed");
+            assertEquals(List.of(AttachmentKind.CII_INVOICE, AttachmentKind.NOT_XML,
+                            AttachmentKind.NOT_XML),
+                    located.all().stream().map(LocatedAttachment::kind).toList());
             assertEquals(AttachmentKind.CII_INVOICE, located.single().kind(),
                     "the invoice itself is not in doubt");
-            assertTrue(EsjAttachment.in(located).isEmpty(),
-                    "neither of the two is taken for the ESJ document of the file");
             assertThrows(AmbiguousInvoiceAttachmentException.class,
-                    () -> located.named(EsjAttachment.NAME));
+                    () -> located.named(JSON));
 
             List<ContainerFinding> findings = ContainerChecks.run(container, located);
             ContainerFinding duplicate = finding(findings, DUPLICATE);
             assertEquals(ContainerFinding.Severity.ERROR, duplicate.severity());
             assertTrue(duplicate.message().contains("\"invoice.esj.json\""), duplicate.message());
-            assertTrue(duplicate.message().contains(" 2 \"invoice.esj.json\""),
+            assertTrue(duplicate.message().contains(" 2 \"invoice.esj.json\" (not XML, "),
                     duplicate.message());
-            assertTrue(duplicate.message().contains(" 3 \"invoice.esj.json\""),
+            assertTrue(duplicate.message().contains(" 3 \"invoice.esj.json\" (not XML, "),
                     duplicate.message());
-            finding(findings, "PDF-EMBEDDED-SEVERAL-ESJ");
+            assertEquals(List.of(DUPLICATE), findings.stream()
+                    .filter(finding -> finding.severity() == ContainerFinding.Severity.ERROR)
+                    .map(ContainerFinding::code).toList());
         }
     }
 
@@ -262,11 +268,14 @@ class DuplicateNamesTest {
                 associated, content.length, false, null);
     }
 
-    /** An attachment wearing the label of the ESJ document. */
-    private static Pdfs.Attachment esj(String json) {
+    /**
+     * A JSON enclosure under the name a hybrid of 0.9.0 to 0.9.3 gave the ESJ document it
+     * carried beside the invoice.
+     */
+    private static Pdfs.Attachment json(String json) {
         byte[] content = json.getBytes(StandardCharsets.UTF_8);
-        return new Pdfs.Attachment(EsjAttachment.NAME, content, EsjAttachment.MEDIA_TYPE,
-                EsjAttachment.RELATIONSHIP, true, content.length, false, null);
+        return new Pdfs.Attachment(JSON, content, "application/json", "Supplement", true,
+                content.length, false, null);
     }
 
     /** Returns the name tree key the container gives more than one file. */

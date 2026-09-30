@@ -38,13 +38,6 @@ import picocli.CommandLine.Parameters;
  * the error stream, exactly as {@code esj convert --to cii} writes it: this file is the
  * archived record of the invoice, and a term that did not reach it is one nobody will
  * notice again.
- *
- * <p>The same invoice goes in a second time as an ESJ document, under the name
- * {@code invoice.esj.json} and declared as an enclosure rather than as the invoice. It is
- * written where it and the cross industry invoice are two accounts of one invoice, which
- * is what a term the syntax has no place for does not break and a core value the writer
- * had to leave out does; a line on the error stream says which of the two happened, and
- * {@code --no-esj} leaves it out. {@code docs/pdf-output.md} has the rule.
  */
 @Command(name = "embed",
         description = "Write an invoice into a PDF/A-3 file, so that the pages a person"
@@ -108,12 +101,6 @@ final class EmbedCommand implements Callable<Integer> {
                     + " into, or its executable. A file the validator rejects is refused.")
     private String verapdf;
 
-    @Option(order = 70, names = "--no-esj",
-            description = "Do not attach the invoice as an ESJ document beside the XML."
-                    + " By default it goes in as invoice.esj.json, where it and the XML"
-                    + " are two accounts of one invoice.")
-    private boolean noEsj;
-
     EmbedCommand(Console console) {
         this.console = console;
         this.flags = new GlobalFlags(console.options());
@@ -133,8 +120,8 @@ final class EmbedCommand implements Callable<Integer> {
         SemanticDocument document = loaded.require(console);
 
         byte[] hybrid = Embedding.into(container.bytes(), document,
-                Embedding.options(profile, name, verapdf, !noEsj, extensions, document,
-                        console, deadline),
+                Embedding.options(profile, name, verapdf, extensions, document, console,
+                        deadline),
                 console);
         Output.write(out, hybrid, console);
         console.verbose("embedded " + invoice.name() + " (" + loaded.syntax().label() + ", "

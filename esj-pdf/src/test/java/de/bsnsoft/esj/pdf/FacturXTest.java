@@ -61,12 +61,11 @@ class FacturXTest {
 
     @Test
     void theAttachmentIsAnAssociatedAlternativeUnderTheNameTheMetadataGives() {
-        byte[] hybrid = FacturX.embed(Pdfs.pdfa3(), document(),
-                XRECHNUNG.withEsj(false));
+        byte[] hybrid = FacturX.embed(Pdfs.pdfa3(), document(), XRECHNUNG);
 
         try (PdfContainer container = PdfContainer.open(hybrid)) {
             List<EmbeddedFile> files = container.embeddedFiles();
-            assertEquals(1, files.size(), "one attachment");
+            assertEquals(1, files.size(), "the invoice XML is the one embedded file");
             EmbeddedFile file = files.get(0);
             assertEquals(HybridFlavour.FACTUR_X_1_0.attachmentName(), file.name());
             assertEquals(Optional.of(Pdfs.XML), file.declaredMediaType());
@@ -224,7 +223,7 @@ class FacturXTest {
     @Test
     void theOtherFlavourWritesItsOwnNameNamespaceAndVersion() {
         byte[] hybrid = FacturX.embed(Pdfs.pdfa3(), document(),
-                XRECHNUNG.withFlavour(HybridFlavour.ZUGFERD_2_0).withEsj(false));
+                XRECHNUNG.withFlavour(HybridFlavour.ZUGFERD_2_0));
 
         try (PdfContainer container = PdfContainer.open(hybrid)) {
             assertEquals("zugferd-invoice.xml", container.embeddedFiles().get(0).name());
@@ -313,11 +312,10 @@ class FacturXTest {
         byte[] hybrid = FacturX.embed(pdf, document(), XRECHNUNG);
 
         try (PdfContainer container = PdfContainer.open(hybrid)) {
-            assertEquals(List.of(HybridFlavour.FACTUR_X_1_0.attachmentName(),
-                            EsjAttachment.NAME, "terms.txt"),
+            assertEquals(List.of(HybridFlavour.FACTUR_X_1_0.attachmentName(), "terms.txt"),
                     container.embeddedFiles().stream().map(EmbeddedFile::name)
                             .sorted().toList(),
-                    "what the file carried, the invoice, and the ESJ document beside it");
+                    "what the file carried, and the invoice");
         }
     }
 
@@ -384,16 +382,15 @@ class FacturXTest {
                 .withProfile(FacturXProfile.XRECHNUNG)
                 .withFlavour(HybridFlavour.ZUGFERD_2_0)
                 .withLimits(PdfLimits.defaults())
-                .withEsj(false)
                 .checkedWith(pdf -> Optional.empty());
 
         assertEquals(b2c, options.extensions());
         assertEquals(List.of(), EmbedOptions.defaults().extensions(),
                 "the defaults hand the writer no registry");
         assertEquals(List.of(), new EmbedOptions(FacturXProfile.EN_16931,
-                        HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty(),
-                        true).extensions(),
-                "and neither do the five members without them");
+                        HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty())
+                        .extensions(),
+                "and neither do the four members without them");
     }
 
     /** A document whose every value reached the syntax says exactly that. */

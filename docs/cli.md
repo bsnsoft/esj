@@ -739,11 +739,8 @@ $ echo $?
 
 The checks are structural: the embedded files name tree, the associated files array, the embedded
 file dictionary, and the XMP packet with the Factur-X extension schema, including whether it
-agrees with the attachment and with BT-24. A file that carries an ESJ document beside its invoice
-gains the row `ESJ document attached`, which is the two checked against each other
-([`pdf-output.md`](pdf-output.md#the-esj-document-beside-the-invoice)); a file without one has no
-such row. **PDF/A conformance is none of them**; it is validated where
-[`--verapdf`](#validating-the-pdfa-claim) names a validator, and nowhere else.
+agrees with the attachment and with BT-24. **PDF/A conformance is none of them**; it is validated
+where [`--verapdf`](#validating-the-pdfa-claim) names a validator, and nowhere else.
 
 The two verdicts stay apart, either of them failing is exit code 1, and `--output json` carries
 them as `container.ok` and `invoice.checked` with `invoice.ok`. A layer that did not run has not
@@ -762,7 +759,7 @@ structured invoice, and that is what is reported, with exit code 2.
 | two attachments of one name, named with `--attachment` | refused; `--attachment-index <position>` names one | 2 |
 | a name that leads to two files — a key the name tree lists twice, or a file specification holding two streams — and one of them could be the invoice, none named | refused like several candidates, both listed with the name they share | 2 |
 | the same, one named with `--attachment-index` | read, with `PDF-EMBEDDED-DUPLICATE-NAME` (an error): `Container: INVALID` | 1 or 7 |
-| a name that leads to two files, neither of which could be the invoice (two ESJ documents, two enclosures) | the invoice is read, with `PDF-EMBEDDED-DUPLICATE-NAME` (an error): `Container: INVALID` | 1 or 7 |
+| a name that leads to two files, neither of which could be the invoice (two enclosures) | the invoice is read, with `PDF-EMBEDDED-DUPLICATE-NAME` (an error): `Container: INVALID` | 1 or 7 |
 | an invoice a page refers to — a file attachment annotation, the associated files array of the page or of an annotation — beside the one the name tree lists | counted among the candidates, its place named, with `PDF-EMBEDDED-NOT-IN-TREE` | 2 |
 | `--attachment` and `--attachment-index` naming two different attachments | refused | 2 |
 | an XML attachment whose root element is beyond the window, declared `/Alternative`, `/Data`, `/Source` or nothing | counted among the candidates, with `PDF-EMBEDDED-UNDETERMINED` | 2 |
@@ -839,7 +836,6 @@ $ esj validate conformance/pdf/factur-x.pdf --output json
     "kind": "CII",
     "profile": "XRECHNUNG",
     "en16931Invoice": true,
-    "esj": null,
     "pdfa": {
       "declared": "PDF/A-3B",
       "part": 3,
@@ -886,10 +882,7 @@ severity was made, and silent about the invoice, which `invoice` answers on its 
 where a command reported a container without reading an invoice out of it. `profile` is the
 profile as the report settled it and `en16931Invoice` whether the rules of the standard apply.
 
-`esj` is the ESJ document beside the invoice: `null` where the file carries none, otherwise
-`status` (`one` or `several`), `count`, `attachment`, `attachmentIndex`, `agrees` — `null`
-wherever nothing was compared — and `pathsNotChecked` where it carried paths the invoice syntax
-binds nothing of. `pdfa` is what the file declares about itself, with `validated: false` in the
+`pdfa` is what the file declares about itself, with `validated: false` in the
 object. `facturX` is the extension schema of the XMP packet, property by property; its namespace
 says whether the file was written as Factur-X or as ZUGFeRD 2.0. `findings` carries the `PDF-*`
 codes of [`pdf-input.md`](pdf-input.md). `attachments` lists everything the container carries:
@@ -969,7 +962,6 @@ input is any of the three syntaxes or a PDF carrying one of them.
 | `--no-payment-code` | leave out the EPC QR code the letter layout draws where the invoice states a credit transfer ([`letter-layout.md`](letter-layout.md#the-payment-code)). Letter layout only |
 | `--embed cii` | attach the invoice to the PDF as a cross industry invoice, so that one command writes the hybrid file ([`embed`](#embed)). PDF only |
 | `--verapdf <path>` | with `--embed cii`, validate the rendering with a veraPDF of your own before writing into it ([below](#validating-the-pdfa-claim)) |
-| `--no-esj` | with `--embed cii`, leave out the ESJ document that otherwise goes in beside the XML ([`embed`](#embed)) |
 | `--from`, `--extension` | as for every other command |
 
 ```console
@@ -995,7 +987,6 @@ The lead use case is that line with `--embed cii` on it.
 ```console
 $ esj render examples/standard-invoice.esj.json \
              --template examples/templates/letterhead.json --embed cii --out hybrid.pdf
-the ESJ document of this invoice is attached beside it as "invoice.esj.json"
 $ esj validate hybrid.pdf
 ...
 Container:        OK
@@ -1045,13 +1036,11 @@ the same step where the pages are this tool's own.
 | `--profile <profile>` | what the container declares: `EN16931`, `BASIC`, `EXTENDED` or `XRECHNUNG`. Default: the profile BT-24 of the document names |
 | `--name <name>` | the container specification the file declares itself under, named by its attachment: `factur-x.xml` (Factur-X 1.0, ZUGFeRD 2.1 and later) or `zugferd-invoice.xml` (ZUGFeRD 2.0). It decides the XMP namespace and `Version` with the name. Default: `factur-x.xml` |
 | `--verapdf <path>` | validate the input PDF with a veraPDF of your own instead of believing its own declaration; a file it rejects is refused |
-| `--no-esj` | leave out the ESJ document that otherwise goes in beside the XML as `invoice.esj.json` |
 | `--from`, `--extension` | as for every other command |
 
 ```console
 $ esj render examples/standard-invoice.esj.json --out pages.pdf
 $ esj embed pages.pdf examples/standard-invoice.esj.json --out invoice.pdf
-the ESJ document of this invoice is attached beside it as "invoice.esj.json"
 $ esj validate invoice.pdf
 ...
 Container:        OK
@@ -1061,10 +1050,7 @@ $ echo $?
 ```
 
 What the cross industry invoice had no place for goes to the error stream, as under
-`convert --to cii`. The same invoice goes in a second time as `invoice.esj.json`, declared as an
-enclosure and never read as the invoice, where it and the XML are two accounts of one invoice; one
-line says whether it was written, `--no-esj` leaves it out, and `esj validate` checks the pair
-([`pdf-output.md`](pdf-output.md#the-esj-document-beside-the-invoice)).
+`convert --to cii`. The invoice XML is the one file the command embeds.
 
 **Nothing is converted and nothing is overwritten.** A PDF/A-1 or PDF/A-2 input is refused
 rather than lifted to part 3, and a file that already carries something that could be the

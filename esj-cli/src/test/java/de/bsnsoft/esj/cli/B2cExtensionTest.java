@@ -55,10 +55,6 @@ class B2cExtensionTest {
     private static final String STAYED = "info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document"
             + " by design: BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003\n";
 
-    /** The line the embedding writes when the ESJ document went in beside the invoice. */
-    private static final String ATTACHED = "the ESJ document of this invoice is attached beside"
-            + " it as \"invoice.esj.json\"\n";
-
     @TempDir
     private Path directory;
 
@@ -182,7 +178,7 @@ class B2cExtensionTest {
                 "--out", unloaded.toString());
 
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
-        assertEquals(STAYED + ATTACHED, run.err());
+        assertEquals(STAYED, run.err());
         assertEquals(ExitCode.SUCCESS, without.exitCode(), without.err());
         assertTrue(without.err().startsWith("warning: 10 values of the document have no place"
                 + " in this syntax and were not written\n"), without.err());
@@ -197,7 +193,7 @@ class B2cExtensionTest {
                 "--out", directory.resolve("hybrid.pdf").toString());
 
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
-        assertEquals(STAYED + ATTACHED, run.err());
+        assertEquals(STAYED, run.err());
     }
 
     /** Writes the report of the example in one language and returns it. */

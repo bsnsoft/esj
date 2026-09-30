@@ -87,11 +87,9 @@ class HybridInvoiceExampleTest {
         compile(source(), classes);
         List<String> printed = run(classes, output);
 
-        assertTrue(printed.contains("attachment: factur-x.xml (text/xml, Alternative)"),
-                "the file carries the invoice as an associated Factur-X attachment: " + printed);
-        assertTrue(printed.contains(
-                        "attachment: invoice.esj.json (application/json, Supplement)"),
-                "and the same invoice as an ESJ document beside it: " + printed);
+        assertEquals(List.of("attachment: factur-x.xml (text/xml, Alternative)"),
+                printed.stream().filter(line -> line.startsWith("attachment: ")).toList(),
+                "the file carries the invoice as its one attachment, associated Factur-X");
         assertEquals(List.of(),
                 printed.stream().filter(line -> line.startsWith("write note:")).toList(),
                 "this invoice reaches the cross industry invoice whole");
@@ -120,7 +118,7 @@ class HybridInvoiceExampleTest {
                     "with the invoice inside it");
         }
         assertTrue(Files.size(output.resolve("invoice.esj.json")) > 0,
-                "and the ESJ document beside it");
+                "and the ESJ document is a file of its own beside the PDF");
     }
 
     /** Reads the example out of the test classpath. */

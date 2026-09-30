@@ -276,6 +276,13 @@ rule, and `esj validate` runs the same one over a file somebody else wrote, so a
 consumer of one file cannot be applying two rules. A failure of it is a finding about the
 container and never about the invoice.
 
+**Revoked on 2026-09-30.** From 0.9.4 the hybrid PDF carries the invoice XML alone. Two
+machine-readable accounts of one invoice mean that every receiver, this project included, has to
+parse both, compare them and decide what a difference means — work and a failure mode on every
+file, for nothing the XML does not already carry. The XML is the invoice, and the ESJ document
+derives from it at any time. A file written by 0.9.0 to 0.9.3 still carries `invoice.esj.json`,
+which is read as an attachment that is not the invoice.
+
 ## The PDF rendering is PDF/A-3b, and carries no date
 
 Every PDF `PdfRenderer` writes conforms to ISO 19005-3, conformance level B: fonts embedded,

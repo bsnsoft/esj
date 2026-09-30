@@ -182,7 +182,7 @@ property names, allowed values, conventional names — are in [`pdf-input.md`](p
   with the document, while sample files of ZUGFeRD 2.1 use `Data` and of Factur-X 1.0.05
   `Unspecified`. Read 2026-09-21 in the PDFlib knowledge base article *The ZUGFeRD and Factur-X
   Formats for electronic Invoices*, <https://www.pdflib.com/pdf-knowledge-base/zugferd-and-factur-x/>;
-  the specification documents are behind e-mail-gated downloads. This project writes `Supplement`.
+  the specification documents are behind e-mail-gated downloads.
 
 - **ISO 32000-1:2008** (PDF 1.7) — the file structure, the cross-reference table, the embedded
   file streams, the name trees and the file identifier of clause 14.4. Published free of charge

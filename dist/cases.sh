@@ -119,10 +119,7 @@ embed-rendering embed @FROM:render-pdf $EXAMPLES/standard-invoice.esj.json --out
 embed-name embed @FROM:render-pdf $EXAMPLES/standard-invoice.esj.json --name zugferd-invoice.xml --out @OUT
 embed-profile embed @FROM:render-pdf $EXAMPLES/standard-invoice.esj.json --profile BASIC --out @OUT
 embed-carrying embed @FROM:render-embed $EXAMPLES/standard-invoice.esj.json --out @OUT
-embed-no-esj embed @FROM:render-pdf $EXAMPLES/standard-invoice.esj.json --no-esj --out @OUT
-render-embed-no-esj render --embed cii --no-esj --out @OUT $EXAMPLES/standard-invoice.esj.json
-extract-esj-list extract --list @FROM:render-embed
-extract-esj extract --attachment invoice.esj.json @FROM:render-embed
+extract-hybrid-list extract --list @FROM:render-embed
 extract-hybrid-invoice extract --attachment factur-x.xml @FROM:render-embed
 render-of-hybrid render --out @OUT @FROM:render-embed
 validate-hybrid-json validate --output json @FROM:render-embed

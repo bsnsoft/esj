@@ -66,17 +66,13 @@ that a second invoice cannot hide behind a long comment:
 | XML whose root element is beyond the window | undetermined, and a candidate |
 | no element at all | not XML |
 | a stream this reader does not decode | unreadable, and no candidate |
-| a JSON object named `invoice.esj.json`, declared `application/json` | ESJ document, and never a candidate |
 
 The encoding is the document's business: a byte order mark, a UTF-16 attachment with or without
 one and the `encoding` pseudo-attribute are all read before the root element is.
 
 The name of the attachment and the media type its embedded file stream declares take no
 part in this; both are strings somebody chose. Where the name and the content disagree,
-that is a finding — `PDF-EMBEDDED-NAME` — and not a reason to believe the name. The one
-exception is the last row: the two labels can only make an attachment that is not XML into
-*this project's own document, and still not the invoice*, and what it holds is read solely in
-order to be checked against the invoice ([below](#the-esj-document-beside-the-invoice)).
+that is a finding — `PDF-EMBEDDED-NAME` — and not a reason to believe the name.
 
 ZUGFeRD 1.0 is refused rather than read: its root element belongs to CII D14B and is no binding
 of EN 16931. Saying so is a different answer from "no invoice here", and has its own exit code.
@@ -161,8 +157,7 @@ report and not its last word; the cause tokens are the ones
 | `PDF-STRUCTURE` | `PDF-STRUCTURE-XREF`, `PDF-STRUCTURE-EOF`, `PDF-STRUCTURE-PDFA` | the object structure of the file, and what the file declares itself to be |
 | `PDF-AF` | `PDF-AF-ABSENT`, `PDF-AF-RELATIONSHIP` | whether the catalog's `/AF` array says that the invoice attachment is what the document is about, and in what relationship |
 | `PDF-XMP` | `PDF-XMP-ABSENT`, `PDF-XMP-SCHEMA`, `PDF-XMP-DOCUMENT-TYPE`, `PDF-XMP-VERSION`, `PDF-XMP-FILENAME`, `PDF-XMP-CONFORMANCE`, `PDF-XMP-CONFORMANCE-MISMATCH` | the Factur-X extension schema of the XMP packet, and whether what it says about the attachment and the profile agrees with the attachment and the invoice |
-| `PDF-EMBEDDED` | `PDF-EMBEDDED-MIME`, `PDF-EMBEDDED-SIZE`, `PDF-EMBEDDED-NAME`, `PDF-EMBEDDED-TRUNCATED`, `PDF-EMBEDDED-UNDETERMINED`, `PDF-EMBEDDED-UNREADABLE`, `PDF-EMBEDDED-SEVERAL`, `PDF-EMBEDDED-SEVERAL-ESJ`, `PDF-EMBEDDED-ESJ-LABEL`, `PDF-EMBEDDED-DUPLICATE-NAME`, `PDF-EMBEDDED-NOT-IN-TREE` | the embedded file dictionary: the declared media type, the declared size, the name against the content, an attachment whose root element lay beyond the window, one whose stream this reader does not decode, a container that carries more than one attachment that could be the invoice, one that carries more than one ESJ document, one carrying an attachment that wears the name of the ESJ document without being one, a name that leads to two files (an error), and an attachment that could be the invoice and lies outside the name tree |
-| `PDF-ESJ` | `PDF-ESJ-DISAGREES`, `PDF-ESJ-UNSOUND`, `PDF-ESJ-UNREADABLE`, `PDF-ESJ-UNCHECKED` | the ESJ document beside the invoice: whether it can be read (layer L1), whether it is a document of the semantic model it names (layer L2), whether it and the invoice are two accounts of one invoice, and the cases where nothing was compared — the invoice this run read is in no syntax this version has a binding table for, or `esj inspect` met a bound inside the attachment |
+| `PDF-EMBEDDED` | `PDF-EMBEDDED-MIME`, `PDF-EMBEDDED-SIZE`, `PDF-EMBEDDED-NAME`, `PDF-EMBEDDED-TRUNCATED`, `PDF-EMBEDDED-UNDETERMINED`, `PDF-EMBEDDED-UNREADABLE`, `PDF-EMBEDDED-SEVERAL`, `PDF-EMBEDDED-DUPLICATE-NAME`, `PDF-EMBEDDED-NOT-IN-TREE` | the embedded file dictionary: the declared media type, the declared size, the name against the content, an attachment whose root element lay beyond the window, one whose stream this reader does not decode, a container that carries more than one attachment that could be the invoice, a name that leads to two files (an error), and an attachment that could be the invoice and lies outside the name tree |
 
 **PDF/A conformance is validated only where [`--verapdf`](cli.md#validating-the-pdfa-claim)
 names a validator.** Without one, a file that declares PDF/A-3B is reported as declaring it,
@@ -327,22 +322,6 @@ and in the invoice as BT-24, the specification identifier. The invoice is asked 
 because the invoice is the document; the packet is a claim the container makes about it.
 Where the two disagree, `PDF-XMP-CONFORMANCE-MISMATCH` says so, because a consumer that
 reads the container and one that reads the invoice are then told two different things.
-
-## The ESJ document beside the invoice
-
-A file this project writes carries the same invoice a second time, as `invoice.esj.json` declared
-`/Supplement`; [`pdf-output.md`](pdf-output.md#the-esj-document-beside-the-invoice) is the rule. On the way back in:
-
-- it is **never the invoice**. Every command reads the invoice XML, and this attachment is no
-  candidate whatever the file declares about it.
-- `esj inspect` and `esj extract --list` show it with its role, `esj extract --attachment
-  invoice.esj.json` hands out its bytes, and a PDF that carries it and *no* invoice XML is a PDF
-  with no structured invoice — exit code 2, with a line saying an ESJ attachment was seen and is
-  not read as the invoice in this version.
-- `esj validate` and `esj inspect` read it, through the reader bounds of the run, measure it on
-  layers L1 and L2 and compare it with the invoice
-  ([`validation.md`](validation.md#the-container)); no other command opens it. A bound met inside
-  it ends `esj validate` at exit 7 and no verdict; `esj inspect` reports it on the row.
 
 ## Embedding the invoice
 
