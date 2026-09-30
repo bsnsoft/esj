@@ -231,7 +231,7 @@ public final class InvoiceAttachments {
             case CII_INVOICE, UBL_INVOICE, UBL_CREDIT_NOTE, ZUGFERD_1 -> true;
             case UNDETERMINED -> !(oneInvoice && isSupplementary(attachment));
             case UNREADABLE -> couldBeTheDocument(attachment);
-            case NOT_XML, OTHER_XML, ESJ_DOCUMENT -> false;
+            case NOT_XML, OTHER_XML -> false;
         };
     }
 
@@ -431,12 +431,7 @@ public final class InvoiceAttachments {
             return new LocatedAttachment(file, AttachmentKind.UNREADABLE, Optional.empty());
         }
         if (!XmlRoot.looksLikeXml(head)) {
-            // The one classification that reads the name and the declared media type. It
-            // can only answer "this is not the invoice, and it carries the label of this
-            // project's own document"; see EsjAttachment.
-            return new LocatedAttachment(file, EsjAttachment.labelled(file, head)
-                    ? AttachmentKind.ESJ_DOCUMENT : AttachmentKind.NOT_XML,
-                    Optional.empty());
+            return new LocatedAttachment(file, AttachmentKind.NOT_XML, Optional.empty());
         }
         Optional<XmlRoot.Name> root = XmlRoot.of(head);
         if (root.isEmpty()) {

@@ -163,7 +163,7 @@ esj render invoice.esj.json --template letterhead.json --embed cii --out invoice
 
 **How do I attach an e-invoice to a PDF I already have?**
 ```sh
-esj embed pages.pdf invoice.esj.json --out invoice.pdf   # XML and ESJ attached; PDF/A-3 stays what it was
+esj embed pages.pdf invoice.esj.json --out invoice.pdf   # the invoice XML attached; PDF/A-3 stays what it was
 ```
 
 **How does a GiroCode get onto the invoice?**

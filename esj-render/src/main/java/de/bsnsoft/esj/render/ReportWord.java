@@ -188,20 +188,6 @@ enum ReportWord {
     /** The row of the parameters of an embedded file. */
     ROW_PDF_EMBEDDED("Embedded file params", "Parameter der eingebetteten Datei"),
 
-    /** The row of the ESJ document a container carries beside the invoice. */
-    ROW_PDF_ESJ("ESJ document attached", "ESJ-Dokument beigelegt"),
-
-    /** The name a container gives the ESJ document beside its invoice. */
-    ESJ_ATTACHMENT("%1$s, checked against the invoice",
-            "%1$s, gegen die Rechnung geprüft"),
-
-    /**
-     * The same, where the enclosure carried paths of terms the invoice syntax binds
-     * nothing of, so that the invoice had nothing to measure them against.
-     */
-    ESJ_ATTACHMENT_PARTLY("%1$s, checked against the invoice; %2$s paths were not checked",
-            "%1$s, gegen die Rechnung geprüft; %2$s Pfade wurden nicht geprüft"),
-
     /** The row of the import that built the document. */
     ROW_IMPORT("Import", "Import"),
 
@@ -426,9 +412,6 @@ enum ReportWord {
             case ROW_PDF_AF -> ROW_PDF_AF;
             case ROW_PDF_XMP -> ROW_PDF_XMP;
             case ROW_PDF_EMBEDDED -> ROW_PDF_EMBEDDED;
-            case ROW_PDF_ESJ -> ROW_PDF_ESJ;
-            case ESJ_ATTACHMENT -> ESJ_ATTACHMENT;
-            case ESJ_ATTACHMENT_PARTLY -> ESJ_ATTACHMENT_PARTLY;
             case ROW_IMPORT -> ROW_IMPORT;
             case SYNTAX_FROM_ATTACHMENT -> SYNTAX_FROM_ATTACHMENT;
             case READER_STREAMING -> READER_STREAMING;

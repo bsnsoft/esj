@@ -54,8 +54,7 @@ often and of what type are facts of one registry per edition ([`model/README.md`
 - A cross industry invoice, or a UBL invoice or credit note, written back out of the document
   from the binding tables the reader matches against ([`docs/bindings.md`](docs/bindings.md)).
 - A rendering to read: one self-contained HTML page or a PDF/A-3b file, plain or branded from a
-  template, with the invoice as Factur-X / ZUGFeRD 2.x and, beside it, the ESJ document of the
-  same invoice, checked against the XML ([`docs/pdf-output.md`](docs/pdf-output.md)).
+  template, with the invoice as Factur-X / ZUGFeRD 2.x ([`docs/pdf-output.md`](docs/pdf-output.md)).
 - That PDF as a letter, the default, on the sender's letterhead where a template brings one: the
   address field where DIN 5008 puts it, the reference line across the text area, and the EPC QR
   code in the payment block ([`docs/letter-layout.md`](docs/letter-layout.md)).
@@ -98,7 +97,6 @@ $ esj get examples/standard-invoice.esj.json /BG-22/BT-112
 2915.5
 $ esj render examples/standard-invoice.esj.json \
              --template examples/templates/letter.json --embed cii --out invoice.pdf
-the ESJ document of this invoice is attached beside it as "invoice.esj.json"
 $ esj validate invoice.pdf --report proof.pdf
 ...
 Container:        OK

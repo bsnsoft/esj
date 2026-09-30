@@ -10,9 +10,9 @@ the writing side; [`pdf-input.md`](pdf-input.md) reads, [`rendering.md`](renderi
 | `esj render <invoice> --embed cii --out <pdf>` | draws the pages and attaches the invoice to them |
 | `esj embed <pdf> <invoice> --out <pdf>` | attaches the invoice to a PDF/A-3 file from somewhere else |
 
-Both write a PDF/A-3 file carrying the cross industry invoice of [`CiiWriter`](bindings.md) as an
-associated file, as Factur-X asks, and the same invoice as an ESJ document beside it. Neither
-converts a page and neither draws one over another: what the file is, it stays.
+Both write a PDF/A-3 file carrying one embedded file, the cross industry invoice of
+[`CiiWriter`](bindings.md), as an associated file, as Factur-X asks. Neither converts a page and
+neither draws one over another: what the file is, it stays.
 
 ## The file is PDF/A-3b
 
@@ -52,42 +52,9 @@ attachment is handed (`withExtensions(…)`). What the call writes:
 `embedWithReport` returns the file and the report of the writer beside it, because a term the cross
 industry invoice had no place for is a term the archived record does not carry; the command line
 prints it, and a term those registries keep out of every syntax on one `info:` line, as `convert` does.
-[`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) is a whole program around this call.
-
-## The ESJ document beside the invoice
-
-The same invoice goes into the file a second time, as the canonical bytes of the ESJ document, and
-as an enclosure rather than as the invoice: the XML stays what every reader of a hybrid file reads.
-
-| What | Written as |
-|---|---|
-| name | `invoice.esj.json` |
-| media type | `application/json` |
-| relationship | `/AFRelationship /Supplement`, in the catalog's `/AF` array and in `/Names /EmbeddedFiles` beside the XML |
-| `/Params /ModDate` | BT-2, as for the invoice |
-
-It is written only where it is true. The cross industry invoice just written is read back with the
-streaming reader, and the pair has to satisfy one rule:
-
-1. both name the same semantic model;
-2. the ESJ document holds together under the registry of that model — layer L2: every term is a
-   term of that edition, every value satisfies its datatype, components and group chain;
-3. every value the XML states stands in the ESJ document unchanged — same path, same content,
-   same supplementary components;
-4. everything the ESJ document states beyond that stands at a path at least one of whose terms
-   the binding table of that syntax does not bind.
-
-The attachment is measured on L1 and L2 and no further. Condition 2 keeps condition 1 from being a
-claim about a header; condition 4 keeps the extension terms the XML has no place for, since a path
-only an extension registry defines is reported on L2 as not checked. A core value the writer had to
-leave out breaks the rule, and then **no ESJ document is attached**: the file carries the XML alone
-and the command says why, naming the model or the paths. `EmbedOptions.withEsj(false)` and
-`--no-esj` leave it out outright, which is no warning.
-
-One function decides the rule on both sides: `esj validate` checks it over a file somebody else
-wrote and reports it as a row of the container block
-([`validation.md`](validation.md#the-container)); reading such a file is
-[`pdf-input.md`](pdf-input.md).
+An ESJ document of the invoice is one `esj convert` over the file away, whenever one is wanted.
+[`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) is a whole
+program around this call.
 
 ## Flavour and profile
 
@@ -140,9 +107,9 @@ over the result gives the document that went in.
 ## Attribution
 
 The container facts — attachment names, the XMP extension schema and its properties, the
-`AFRelationship` values, what a further attachment beside the invoice may be — come from the
-public Factur-X and ZUGFeRD documents, with their sources in [`pdf-input.md`](pdf-input.md#facts-this-module-relies-on-and-where-they-come-from)
-and their terms in [`sources.md`](sources.md). No prose is reproduced and no code was copied.
+`AFRelationship` values — come from the public Factur-X and ZUGFeRD documents, with their sources
+in [`pdf-input.md`](pdf-input.md#facts-this-module-relies-on-and-where-they-come-from) and their
+terms in [`sources.md`](sources.md). No prose is reproduced and no code was copied.
 
 The PDF library is Apache PDFBox 3.x under the Apache License, Version 2.0; the sRGB profile
 embedded as the output intent is the ICC's, copied unaltered under the terms of its profile

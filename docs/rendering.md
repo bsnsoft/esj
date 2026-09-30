@@ -332,8 +332,8 @@ esj render invoice.esj.json --html --lang en --out invoice.html
 esj render invoice.xml --template letterhead.json --embed cii --out hybrid.pdf
 ```
 
-`--embed cii` attaches the same invoice as a cross industry invoice and, beside it, as an ESJ
-document; `esj embed` is that step over a PDF from elsewhere ([`pdf-output.md`](pdf-output.md)).
+`--embed cii` attaches the same invoice as a cross industry invoice; `esj embed` is that step
+over a PDF from elsewhere ([`pdf-output.md`](pdf-output.md)).
 
 The destination is `--out` and has no default — `-` is the standard output, for a pipeline —
 `--lang de|en` is the language of this page, `--page A4|LETTER` the paper of the PDF and

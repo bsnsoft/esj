@@ -8,18 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
-import de.bsnsoft.esj.bindings.BindingSyntax;
 import de.bsnsoft.esj.bindings.CiiWriter;
-import de.bsnsoft.esj.bindings.StreamingReader;
-import de.bsnsoft.esj.json.Canonicalizer;
-import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.json.EsjWriter;
 import de.bsnsoft.esj.pdf.ContainerChecks;
 import de.bsnsoft.esj.pdf.ContainerFinding;
 import de.bsnsoft.esj.pdf.EmbedOptions;
-import de.bsnsoft.esj.pdf.EmbedResult;
-import de.bsnsoft.esj.pdf.EsjAgreement;
-import de.bsnsoft.esj.pdf.EsjAttachment;
 import de.bsnsoft.esj.pdf.FacturX;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.pdf.HybridFlavour;
@@ -37,7 +30,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,13 +68,11 @@ class HybridInvoiceTest {
     private static final String DECLARATION = "PDF-STRUCTURE-PDFA";
 
     /**
-     * The file {@code --no-esj} writes over the generic rendering of
-     * {@code examples/standard-invoice.esj.json}, by its digest: the hybrid invoice as this
-     * project wrote it before the ESJ attachment existed, when that layout was the default.
-     * It changes when the rendering, the invoice or the container changes, which is when
-     * somebody should look.
+     * The hybrid invoice over the generic rendering of
+     * {@code examples/standard-invoice.esj.json}, by its digest. It changes when the
+     * rendering, the invoice or the container changes, which is when somebody should look.
      */
-    private static final String WITHOUT_ESJ =
+    private static final String GENERIC_HYBRID =
             "b53cbb53128a0043a50997f08b4f1148f00672ec6bfa40191ed0a044c3bc1ef3";
 
     /** The body of the embedding snippet of {@code docs/pdf-output.md}, as the page prints it. */
@@ -112,8 +102,17 @@ class HybridInvoiceTest {
 
         assertPdfa(instance, hybrid);
         assertReadsBack(instance, document, hybrid);
-        assertEsjAttachment(instance, document, hybrid);
+        assertTheInvoiceAlone(instance, hybrid);
         assertEveryFileOnceUnderOneName(instance, hybrid);
+    }
+
+    /** The file carries one embedded file, and that file is the invoice XML. */
+    private static void assertTheInvoiceAlone(String what, byte[] hybrid) {
+        try (PdfContainer container = PdfContainer.open(hybrid)) {
+            assertEquals(List.of(HybridFlavour.FACTUR_X_1_0.attachmentName()),
+                    container.embeddedFiles().stream().map(EmbeddedFile::name).toList(),
+                    what + ": the embedded files");
+        }
     }
 
     /**
@@ -141,44 +140,8 @@ class HybridInvoiceTest {
     }
 
     /**
-     * The ESJ document is in the file exactly where the rule it is written under holds, and
-     * what is in it is the document: the canonical bytes, and no disagreement with the
-     * cross industry invoice beside it. Two instances of the corpus carry a second
-     * preceding invoice reference, which the cross industry invoice has one place for, and
-     * those two get no attachment and say so.
-     */
-    private static void assertEsjAttachment(String what, SemanticDocument document,
-                                            byte[] hybrid) {
-        List<EsjAgreement.Difference> expected = EsjAgreement.differences(document,
-                new StreamingReader().read(CiiWriter.write(document)).document(),
-                BindingSyntax.CII);
-        try (PdfContainer container = PdfContainer.open(hybrid)) {
-            Optional<EmbeddedFile> attached = container.embeddedFiles().stream()
-                    .filter(file -> EsjAttachment.NAME.equals(file.name()))
-                    .findFirst();
-            if (!expected.isEmpty()) {
-                assertEquals(Optional.empty(), attached.map(EmbeddedFile::name),
-                        what + ": the rule does not hold here, so nothing is attached");
-                return;
-            }
-            assertArrayEquals(Canonicalizer.canonicalBytes(document),
-                    attached.orElseThrow(() -> new AssertionError(
-                            what + ": no ESJ document beside the invoice")).content().bytes(),
-                    what + ": the canonical bytes of the document");
-            assertEquals(List.of(), EsjAgreement.differences(
-                            EsjReader.strict().read(attached.orElseThrow().content().bytes()),
-                            new StreamingReader().read(container.embeddedFiles().stream()
-                                    .filter(file -> HybridFlavour.FACTUR_X_1_0.attachmentName()
-                                            .equals(file.name()))
-                                    .findFirst().orElseThrow().content().bytes()).document(),
-                            BindingSyntax.CII),
-                    what + ": the two files of this container agree");
-        }
-    }
-
-    /**
      * The letter layout, with the EPC QR code of its credit transfer drawn on the page and
-     * a letterhead under it, carries both attachments and is still an archival file. The
+     * a letterhead under it, carries the invoice and is still an archival file. The
      * code is vector art and the letterhead is an imported form, so each brings resources
      * of its own into a file the profile has to hold for.
      */
@@ -197,48 +160,29 @@ class HybridInvoiceTest {
             List<String> names = container.embeddedFiles().stream()
                     .map(EmbeddedFile::name).sorted().toList();
 
-            assertEquals(List.of(HybridFlavour.FACTUR_X_1_0.attachmentName(),
-                            EsjAttachment.NAME).stream().sorted().toList(), names,
-                    "the invoice, and the ESJ document beside it");
+            assertEquals(List.of(HybridFlavour.FACTUR_X_1_0.attachmentName()), names,
+                    "the invoice alone");
         }
     }
 
     /**
-     * {@code --no-esj} writes the file this project wrote before the second attachment
-     * existed, byte for byte. The digest is the golden: the rendering and the embedding are
-     * each a function of the document, so the file is, and the switch has to change what is
-     * in the container and nothing else.
+     * The file this project writes over the generic rendering of the standard example,
+     * byte for byte. The digest is the golden: the rendering and the embedding are each a
+     * function of the document, so the file is.
      */
     @Test
-    void theSwitchWritesTheFileThisProjectWroteBefore() {
+    void theHybridOfTheStandardExampleIsPinnedByItsDigest() {
         SemanticDocument document = Corpus.example("standard-invoice");
         byte[] rendering = new PdfRenderer().render(document,
                 RenderOptions.defaults().layout(Layout.GENERIC));
 
-        byte[] without = FacturX.embed(rendering, document,
-                EmbedOptions.of(FacturXProfile.EN_16931).withEsj(false));
+        byte[] hybrid = FacturX.embed(rendering, document,
+                EmbedOptions.of(FacturXProfile.EN_16931));
 
-        assertEquals(WITHOUT_ESJ, sha256(without),
-                "the file --no-esj writes is the one this project wrote before");
-        try (PdfContainer container = PdfContainer.open(without)) {
+        assertEquals(GENERIC_HYBRID, sha256(hybrid), "the hybrid invoice, by its digest");
+        try (PdfContainer container = PdfContainer.open(hybrid)) {
             assertEquals(1, container.embeddedFiles().size(), "the invoice alone");
         }
-    }
-
-    /** What is attached, and what is said where nothing is. */
-    @Test
-    void theResultSaysWhetherTheEsjDocumentWentIn() {
-        SemanticDocument document = Corpus.example("standard-invoice");
-        byte[] rendering = new PdfRenderer().render(document);
-
-        EmbedResult attached = FacturX.embedWithReport(rendering, document,
-                EmbedOptions.of(FacturXProfile.EN_16931));
-        EmbedResult omitted = FacturX.embedWithReport(rendering, document,
-                EmbedOptions.of(FacturXProfile.EN_16931).withEsj(false));
-
-        assertTrue(attached.esjAttached(), attached.esjOmitted().orElse(""));
-        assertTrue(omitted.esjOmitted().orElseThrow().contains("turned it off"),
-                omitted.esjOmitted().orElseThrow());
     }
 
     /** Returns the SHA-256 of some bytes, lower case hexadecimal. */

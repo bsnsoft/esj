@@ -57,25 +57,8 @@ public enum Phrase {
     /** The row of the parameters of an embedded file. No argument. */
     ROW_PDF_EMBEDDED,
 
-    /**
-     * The row of the ESJ document a container carries beside the invoice. No argument.
-     */
-    ROW_PDF_ESJ,
-
     /** The row of the import, where one built the document. No argument. */
     ROW_IMPORT,
-
-    /**
-     * The name a container gives the ESJ document beside its invoice. One argument: the
-     * name, as the container spells it.
-     */
-    ESJ_ATTACHMENT,
-
-    /**
-     * The same, where the enclosure carried paths the comparison had nothing to measure
-     * them against. Two arguments: the name, and how many such paths there are.
-     */
-    ESJ_ATTACHMENT_PARTLY,
 
     /**
      * The syntax of an invoice that was taken out of a container. One argument: the

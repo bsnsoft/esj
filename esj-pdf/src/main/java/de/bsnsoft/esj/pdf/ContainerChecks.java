@@ -98,31 +98,6 @@ public final class ContainerChecks {
      */
     public static List<ContainerFinding> run(PdfContainer container,
                                              InvoiceAttachments located) {
-        return run(container, located, null);
-    }
-
-    /**
-     * Runs every check that needs the container alone, with the truncation of one
-     * attachment left to the caller to report.
-     *
-     * <p>A bound of the run is not a defect of the file. Where the caller has decided that
-     * a bound met inside one attachment must not decide what it says about the container —
-     * {@code esj inspect} over an attachment somebody appended to somebody else's hybrid
-     * invoice — the attachment is still decoded, so that every check that is about decoded
-     * content is made over it, and the one finding that only says this reader stopped is
-     * left out here and reported by the caller on the row that attachment has of its own.
-     *
-     * @param container         the container
-     * @param located           its attachments, classified
-     * @param boundNotReported  the attachment whose truncation the caller reports itself,
-     *                          or {@code null} where every attachment is reported here
-     * @return the findings, in the order the checks were made, possibly none
-     * @throws PdfLimitException    if reading the XMP packet meets a bound
-     * @throws NullPointerException if {@code container} or {@code located} is {@code null}
-     */
-    public static List<ContainerFinding> run(PdfContainer container,
-                                             InvoiceAttachments located,
-                                             LocatedAttachment boundNotReported) {
         Objects.requireNonNull(container, "container");
         Objects.requireNonNull(located, "located");
         List<ContainerFinding> findings = new ArrayList<>(container.structureFindings());
@@ -140,10 +115,8 @@ public final class ContainerChecks {
         duplicateNames(located, findings);
         outsideTheTree(located, findings);
         several(located, findings);
-        severalEsjDocuments(located, findings);
-        labelledButNotAnEsjDocument(located, findings);
         for (LocatedAttachment attachment : located.all()) {
-            embedded(attachment, findings, attachment == boundNotReported);
+            embedded(attachment, findings);
         }
         return List.copyOf(findings);
     }
@@ -264,91 +237,6 @@ public final class ContainerChecks {
                         ? ", " + file.declaredSize().getAsLong() + " bytes declared"
                         : ", no size declared")
                 + ")";
-    }
-
-    /**
-     * Says that the container carries more than one ESJ document.
-     *
-     * <p>None of them is the invoice, so this decides nothing about the invoice — but a
-     * file that offers two accounts of itself and says nothing about which one it means is
-     * a file whose producer left the choice to the reader, which is the choice this project
-     * refuses to make silently. Nothing is checked against the invoice while it holds; the
-     * finding is the answer.
-     */
-    private static void severalEsjDocuments(InvoiceAttachments located,
-                                            List<ContainerFinding> findings) {
-        List<LocatedAttachment> documents = located.all().stream()
-                .filter(attachment -> attachment.kind() == AttachmentKind.ESJ_DOCUMENT)
-                .toList();
-        if (documents.size() < 2) {
-            return;
-        }
-        findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                "PDF-EMBEDDED-SEVERAL-ESJ", ContainerFinding.Severity.ERROR,
-                "this file carries " + documents.size() + " ESJ documents beside its"
-                        + " invoice, and nothing says which of them is this invoice, so"
-                        + " none of them was checked against it"));
-    }
-
-    /**
-     * Says that an attachment wears the label of this project's ESJ document and is not
-     * one.
-     *
-     * <p>Classification is by content, so such an attachment is simply not an ESJ document
-     * and every row about one is silent about it. That silence is the wrong answer to give
-     * about a file that calls itself {@value EsjAttachment#NAME} and declares the
-     * relationship of an enclosure: a consumer that picks the attachment by its name or by
-     * its relationship, as another vendor's reader may, gets those bytes and makes of them
-     * what it can. So the label is reported, with what the content turned out to be.
-     *
-     * <p>It is a warning and not an error. The invoice of the container is its XML and is
-     * untouched by anything an enclosure says, and a file that carries a wrongly labelled
-     * enclosure beside a sound invoice is not a file whose invoice is in doubt. It stands
-     * on the row of the embedded files rather than on the row of the ESJ document,
-     * because there is no ESJ document: that row is printed for a container that carries
-     * one, and this is the answer for a container that does not.
-     */
-    private static void labelledButNotAnEsjDocument(InvoiceAttachments located,
-                                                    List<ContainerFinding> findings) {
-        for (LocatedAttachment attachment : located.all()) {
-            if (attachment.kind() == AttachmentKind.ESJ_DOCUMENT) {
-                continue;
-            }
-            EmbeddedFile file = attachment.file();
-            boolean named = EsjAttachment.NAME.equals(file.name());
-            boolean enclosure = file.associatedRelationship()
-                    .map(EsjAttachment.RELATIONSHIP::equals).orElse(Boolean.FALSE);
-            if (!named) {
-                continue;
-            }
-            findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                    "PDF-EMBEDDED-ESJ-LABEL", ContainerFinding.Severity.WARNING,
-                    "the attachment " + Messages.quoted(file.name()) + " carries the name"
-                            + " this project gives the ESJ document beside an invoice"
-                            + (enclosure ? " and the relationship of an enclosure" : "")
-                            + ", and its content is " + content(attachment.kind())
-                            + "; it was not checked against the invoice"));
-        }
-    }
-
-    /**
-     * Returns what the content of such an attachment turned out to be, in words that fit
-     * an attachment the name promises is JSON.
-     *
-     * <p>{@link AttachmentKind#describe()} answers the question the invoice attachment
-     * asks — which syntax is this? — and one of its answers, <i>not XML</i>, is no ground
-     * at all for the conclusion drawn here: an ESJ document is JSON, and a file that is
-     * not XML has said nothing about whether it is one. What rules it out is the
-     * classification, so that kind says so in its own words and the others, which do rule
-     * it out by being something else, keep theirs.
-     *
-     * @param kind what the content was classified as, which is never the ESJ document
-     * @return the phrase the finding states after "its content is"
-     */
-    private static String content(AttachmentKind kind) {
-        return kind == AttachmentKind.NOT_XML
-                ? "neither an ESJ document this reader reads nor XML"
-                : kind.describe() + ", so it is no ESJ document";
     }
 
     /**
@@ -528,8 +416,7 @@ public final class ContainerChecks {
     }
 
     private static void embedded(LocatedAttachment attachment,
-                                 List<ContainerFinding> findings,
-                                 boolean boundNotReported) {
+                                 List<ContainerFinding> findings) {
         EmbeddedFile file = attachment.file();
         String name = file.name();
         mediaType(attachment, findings);
@@ -563,7 +450,7 @@ public final class ContainerChecks {
                             + attachment.kind().describe()));
         }
         file.decoded().ifPresent(content -> {
-            if (content.truncated() && !boundNotReported) {
+            if (content.truncated()) {
                 findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
                         "PDF-EMBEDDED-TRUNCATED", ContainerFinding.Severity.ERROR,
                         "the attachment " + Messages.quoted(name) + " decodes to more than"
@@ -585,11 +472,7 @@ public final class ContainerChecks {
     private static void mediaType(LocatedAttachment attachment,
                                   List<ContainerFinding> findings) {
         if (attachment.kind() == AttachmentKind.NOT_XML
-                || attachment.kind() == AttachmentKind.UNREADABLE
-                || attachment.kind() == AttachmentKind.ESJ_DOCUMENT) {
-            // The ESJ document is not XML and was classified partly by the media type it
-            // declares, so a check that the declaration fits the content has nothing left
-            // to find; EsjAgreement checks what it holds against the invoice instead.
+                || attachment.kind() == AttachmentKind.UNREADABLE) {
             return;
         }
         EmbeddedFile file = attachment.file();

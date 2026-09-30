@@ -32,9 +32,9 @@ This specification defines:
 7. **extensions** and the handling of profiles (section 11),
 8. **security considerations** and reader limits (section 12).
 
-Sections 13 (relational and key/value mapping), 14 (non-goals) and 15 (an ESJ document inside
-a PDF) are informative. Section 3 defines the conformance classes; every normative requirement
-in this document belongs to one of them.
+Sections 13 (relational and key/value mapping) and 14 (non-goals) are informative. Section 3
+defines the conformance classes; every normative requirement in this document belongs to one
+of them.
 
 ### 1.2 What this document does not specify
 
@@ -2573,63 +2573,6 @@ ESJ does not:
 * guarantee a lossless round trip for data outside the EN 16931 semantic model,
 * replace national profiles such as XRechnung,
 * define transport, signing, encryption or archiving.
-
----
-
-## 15. An ESJ document inside a PDF (informative)
-
-This section is informative. It describes a convention, not a requirement of this
-specification: nothing here changes what an ESJ document is, and a producer that follows none
-of it is still conformant.
-
-A hybrid invoice — a PDF/A-3 file carrying an electronic invoice as an embedded file — may
-carry the same invoice as an ESJ document beside that invoice, for a consumer that would
-rather read the semantic model than a syntax binding. The invoice XML remains the electronic
-invoice of such a file; the ESJ document is an enclosure.
-
-| | |
-|---|---|
-| File name | `invoice.esj.json` |
-| Media type | `application/json` |
-| Relationship | `Supplement`, referenced from the document catalog's `/AF` array and from `/Names /EmbeddedFiles` |
-| Content | the canonical bytes of the document (section 7) |
-
-**The agreement rule.** An ESJ document carried this way agrees with the invoice when both
-hold:
-
-1. both name the same semantic model (section 4.4);
-2. the ESJ document satisfies layer L2 (section 3.5) under the registry of that model: every
-   business term it states is a term of that edition, and every value satisfies the datatype,
-   the supplementary components and the group chain the registry records for its term;
-3. every value the invoice states is stated in the ESJ document with the same semantic path
-   (section 5), the same content and the same supplementary components (section 6);
-4. every value the ESJ document states and the invoice does not stands at a semantic path at
-   least one of whose business terms the syntax binding of that invoice does not bind.
-
-The ESJ document is measured on layers L1 and L2 and no further. Layer L3 and the business rules
-are questions about the invoice, and the invoice of such a file is the invoice syntax, judged as
-any invoice of that syntax is.
-
-Condition 1 is not a formality: the model edition names the registry a consumer reads the
-document under, and two editions need not agree on the scale of an amount, on which
-supplementary components are mandatory or on the path a term stands at. Condition 2 is what
-keeps condition 1 from being a statement about a header: an ESJ document naming one edition and
-stating a business term of another would otherwise pass, because no syntax binds such a term and
-condition 4 would take it in. Only errors of layer L2 count there; a path only an extension
-registry defines is reported by that layer as not checked (section 11) and is not an error.
-
-Condition 4 is what the ESJ document adds: a term of a model extension (section 11) has no
-place in the invoice syntax, and carrying it is not a disagreement. A term the syntax does bind
-is a term the invoice would have stated, so a difference there means the two files describe two
-invoices. A value inside a group the syntax has no place for could not have reached the invoice
-however well its own term is bound, which is why one unbound term of the path is enough.
-
-A producer that cannot satisfy the rule — because the syntax binding had no place for a core
-value — omits the ESJ document rather than writing one that disagrees. A consumer that finds
-one may check the rule and, where it does not hold, treat the file as defective; the verdict is
-about the file and not about the invoice in it, which is judged as any invoice of that syntax
-is. The `extensions` member (section 4.6) takes no part in the rule: it holds data of no
-business term, so there is no term for a binding to bind.
 
 ---
 

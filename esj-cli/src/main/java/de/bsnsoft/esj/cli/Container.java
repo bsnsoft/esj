@@ -6,14 +6,9 @@ import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.pdf.AmbiguousInvoiceAttachmentException;
 import de.bsnsoft.esj.pdf.AttachmentContent;
 import de.bsnsoft.esj.pdf.AttachmentKind;
-import de.bsnsoft.esj.bindings.BindingSyntax;
-import de.bsnsoft.esj.json.EsjReader;
-import de.bsnsoft.esj.json.ReadResult;
 import de.bsnsoft.esj.pdf.ContainerChecks;
 import de.bsnsoft.esj.pdf.ContainerFinding;
 import de.bsnsoft.esj.pdf.EmbeddedFile;
-import de.bsnsoft.esj.pdf.EsjAgreement;
-import de.bsnsoft.esj.pdf.EsjAttachment;
 import de.bsnsoft.esj.pdf.FacturXMetadata;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.pdf.InvoiceAttachments;
@@ -26,12 +21,8 @@ import de.bsnsoft.esj.pdf.PdfLimitException;
 import de.bsnsoft.esj.pdf.PdfLimits;
 import de.bsnsoft.esj.pdf.PdfaIdentification;
 import de.bsnsoft.esj.pdf.UnsupportedInvoiceException;
-import de.bsnsoft.esj.validate.Finding;
-import de.bsnsoft.esj.validate.FindingCode;
-import de.bsnsoft.esj.xr.XrSyntax;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 
@@ -70,48 +61,19 @@ final class Container {
     private final Optional<FacturXMetadata> facturX;
     private final Optional<PdfaIdentification> pdfa;
     private final Invoice invoice;
-    private final Esj esj;
-    private final Supplement supplement;
 
     private Container(List<LocatedAttachment> attachments,
                       List<InvoiceAttachments.DuplicateName> duplicates,
                       List<ContainerFinding> findings,
                       Optional<FacturXMetadata> facturX,
                       Optional<PdfaIdentification> pdfa,
-                      Invoice invoice,
-                      Esj esj,
-                      Supplement supplement) {
+                      Invoice invoice) {
         this.attachments = List.copyOf(attachments);
         this.duplicates = List.copyOf(duplicates);
         this.findings = List.copyOf(findings);
         this.facturX = facturX;
         this.pdfa = pdfa;
         this.invoice = invoice;
-        this.esj = esj;
-        this.supplement = supplement;
-    }
-
-    /**
-     * What a command wants of the ESJ document a container may carry beside its invoice.
-     *
-     * <p>The three answers differ in what a bound of this run costs. A command that never
-     * reads it cannot be stopped by it at all; a command that pronounces a verdict over
-     * the container has to be stopped by it, because a reader that stopped has said
-     * nothing about what it was reading and least of all that the two accounts agree; a
-     * command that only describes the file reports the bound as a row and goes on, because
-     * otherwise anyone able to append one file to somebody else's hybrid invoice could
-     * decide what its recipient is allowed to be told about it.
-     */
-    enum Supplement {
-
-        /** Not read: the command was asked for the invoice. */
-        SKIPPED,
-
-        /** Read, and a bound met inside it ends the run with {@link ExitCode#LIMIT}. */
-        REQUIRED,
-
-        /** Read, and a bound met inside it is reported instead of ending the run. */
-        OPTIONAL
     }
 
     /**
@@ -135,81 +97,7 @@ final class Container {
     }
 
     /**
-     * The ESJ document a container carries beside the invoice, and the bytes it decoded
-     * to.
-     *
-     * <p>It is read because a container that carries two machine-readable accounts of one
-     * invoice has to be right about itself, and for no other reason: what the invoice is
-     * stays the XML, whatever this attachment says.
-     *
-     * <p>A command that may be stopped by no attachment of somebody else's file
-     * ({@link Supplement#OPTIONAL}) keeps the attachment and loses the bytes where a bound
-     * was reached inside it: what the container carries is still worth saying, and what
-     * the file says about itself is then a question this run did not answer.
-     *
-     * @param attachment the attachment, with what its bytes turned out to be
-     * @param position   where it stands in the enumeration of the container, counted
-     *                   from one
-     * @param bytes      its decoded content, or {@code null} where a bound was reached
-     *                   before it had been decoded
-     * @param unread     why the bytes are absent, or {@code null} where they are there
-     * @param unchecked  how many of its paths the comparison with the invoice did not
-     *                   check, or {@code null} where the comparison did not run
-     */
-    record Esj(LocatedAttachment attachment, int position, byte[] bytes, String unread,
-               Integer unchecked) {
-
-        /**
-         * Checks that the bytes and the reason they are missing are not both there and
-         * not both absent.
-         *
-         * @param attachment the attachment, with what its bytes turned out to be
-         * @param position   where it stands in the enumeration of the container
-         * @param bytes      its decoded content, or {@code null}
-         * @param unread     why the bytes are absent, or {@code null}
-         * @param unchecked  how many paths the comparison did not check, or {@code null}
-         * @throws NullPointerException     if {@code attachment} is {@code null}
-         * @throws IllegalArgumentException if the bytes and the reason are both there or
-         *                                  both absent
-         */
-        Esj {
-            Objects.requireNonNull(attachment, "attachment");
-            if ((bytes == null) == (unread == null)) {
-                throw new IllegalArgumentException("an attachment has either its bytes or"
-                        + " a reason they are missing");
-            }
-        }
-
-        /** Returns the name the container gives the attachment. */
-        String name() {
-            return attachment.name();
-        }
-
-        /** Tells whether this run decoded the attachment. */
-        boolean read() {
-            return bytes != null;
-        }
-
-        /**
-         * Returns this attachment with what the comparison against the invoice left
-         * unmeasured.
-         *
-         * @param paths how many of its paths the invoice syntax binds no term of, so that
-         *              the invoice had nothing to say about them
-         * @return the attachment
-         */
-        Esj checkedAgainstTheInvoice(int paths) {
-            return new Esj(attachment, position, bytes, unread, paths);
-        }
-    }
-
-    /**
      * Opens a PDF and decodes the one attachment this run reads.
-     *
-     * <p>The ESJ document a container may carry beside the invoice is not decoded. It is
-     * of no use to a command that was asked for the invoice, and decoding it would let an
-     * attachment nobody asked for reach a bound and end the run: anyone able to append one
-     * file to somebody else's hybrid invoice would thereby deny its recipient the invoice.
      *
      * @param input   the bytes of the file and the name to report them under
      * @param console the console, for the bounds of this run and {@code --attachment}
@@ -218,28 +106,7 @@ final class Container {
      *                      several without one being named, or reaches a bound
      */
     static Container read(Input input, Console console) {
-        return open(input, console, true, Supplement.SKIPPED);
-    }
-
-    /**
-     * Opens a PDF, decodes the one attachment this run reads and the ESJ document beside
-     * it, for the commands that report on the container.
-     *
-     * <p>Only those commands: what the supplement costs to read is the caller's bound, and
-     * only a command that says something about it has a reason to spend it.
-     *
-     * @param input      the bytes of the file and the name to report them under
-     * @param console    the console, for the bounds of this run and {@code --attachment}
-     * @param supplement whether a bound met inside the supplement ends the run, which it
-     *                   does for the command that pronounces a verdict over the container
-     *                   and does not for the command that only describes it
-     * @return the container, with the chosen attachment and the supplement decoded
-     * @throws CliException if the file cannot be opened, carries no invoice, carries
-     *                      several without one being named, or reaches a bound
-     */
-    static Container readWithSupplement(Input input, Console console,
-                                        Supplement supplement) {
-        return open(input, console, true, supplement);
+        return open(input, console, true);
     }
 
     /**
@@ -251,76 +118,21 @@ final class Container {
      * @throws CliException if the file cannot be opened or reaches a bound
      */
     static Container list(Input input, Console console) {
-        return open(input, console, false, Supplement.SKIPPED);
+        return open(input, console, false);
     }
 
-    private static Container open(Input input, Console console, boolean decode,
-                                  Supplement supplement) {
+    private static Container open(Input input, Console console, boolean decode) {
         Bounds bounds = console.options().bounds();
         PdfLimits limits = bounds.pdfLimits();
         try (PdfContainer container = PdfContainer.open(input.bytes(), limits)) {
             InvoiceAttachments located = InvoiceAttachments.locate(container);
             Invoice invoice = decode ? decode(located, input, console, limits) : null;
-            // The supplement is decoded before the checks run wherever it is read at all,
-            // so that every check that is about decoded content — its declared size
-            // against its length — is made over it too. What differs between the two
-            // commands is the one finding that says this reader stopped rather than that
-            // the file is wrong: for a command that only describes the file, a bound of
-            // this run must not turn into a finding about the file and from there into a
-            // verdict, so that finding is left out here and stands on the row of the ESJ
-            // document instead. For a command that pronounces a verdict, a bound met
-            // inside the supplement ends the command anyway.
-            Esj esj = supplement == Supplement.SKIPPED
-                    ? null
-                    : esj(located, input, console, limits, supplement);
-            List<ContainerFinding> checks = ContainerChecks.run(container, located,
-                    supplement == Supplement.OPTIONAL && esj != null
-                            ? esj.attachment() : null);
-            return new Container(located.all(), located.duplicateNames(), checks,
-                    container.facturX(), container.pdfaIdentification(), invoice, esj,
-                    supplement);
+            return new Container(located.all(), located.duplicateNames(),
+                    ContainerChecks.run(container, located), container.facturX(),
+                    container.pdfaIdentification(), invoice);
         } catch (PdfException e) {
             throw refuse(e, input, bounds);
         }
-    }
-
-    /**
-     * Decodes the ESJ document the container carries beside the invoice, where it carries
-     * one.
-     *
-     * <p>It goes through the bounds of this run like every other attachment. For a command
-     * that pronounces a verdict over the container, an attachment that outgrew them stops
-     * the command with {@link ExitCode#LIMIT}: a reader that stopped has said nothing
-     * about what it was reading, and least of all that the two accounts of the invoice
-     * agree. For a command that only describes the file, the bound is what this run has to
-     * say about that attachment and the rest of the description is unaffected.
-     */
-    private static Esj esj(InvoiceAttachments located,
-                           Input input,
-                           Console console,
-                           PdfLimits limits,
-                           Supplement supplement) {
-        Optional<LocatedAttachment> found = EsjAttachment.in(located);
-        if (found.isEmpty()) {
-            return null;
-        }
-        LocatedAttachment attachment = found.orElseThrow();
-        int position = positionOf(located, attachment);
-        AttachmentContent content = attachment.file().content();
-        if (content.truncated()) {
-            String bound = "decodes to more than the " + limits.maxAttachmentBytes()
-                    + " bytes this reader holds, so the ESJ document beside the invoice"
-                    + " was cut off and could not be checked against it";
-            if (supplement == Supplement.REQUIRED) {
-                throw CliException.limit(console.options().bounds().refusal(input.name(),
-                        "the attachment " + ValueText.quoted(attachment.name()) + " "
-                                + bound));
-            }
-            return new Esj(attachment, position, null, "it " + bound, null);
-        }
-        console.verbose(input.name() + ": reading the attachment at position "
-                + position + ", " + describe(attachment));
-        return new Esj(attachment, position, content.bytes(), null, null);
     }
 
     /**
@@ -545,16 +357,6 @@ final class Container {
     }
 
     /**
-     * Returns the ESJ document the container carries beside the invoice, where it carries
-     * one and this run decoded it.
-     *
-     * @return the attachment and its bytes, or an empty optional
-     */
-    Optional<Esj> esj() {
-        return Optional.ofNullable(esj);
-    }
-
-    /**
      * Returns the attachment this run read.
      *
      * @return the invoice attachment and its bytes
@@ -587,20 +389,7 @@ final class Container {
     Container with(ContainerFinding finding) {
         List<ContainerFinding> all = new ArrayList<>(findings);
         all.add(finding);
-        return new Container(attachments, duplicates, all, facturX, pdfa, invoice, esj,
-                supplement);
-    }
-
-    /**
-     * Returns this container with the ESJ document replaced by what the comparison against
-     * the invoice made of it.
-     *
-     * @param replaced the attachment, carrying what the comparison left unmeasured
-     * @return a container carrying it
-     */
-    private Container withEsj(Esj replaced) {
-        return new Container(attachments, duplicates, findings, facturX, pdfa, invoice,
-                replaced, supplement);
+        return new Container(attachments, duplicates, all, facturX, pdfa, invoice);
     }
 
     /**
@@ -610,140 +399,10 @@ final class Container {
      * @param document the invoice that was read out of it
      * @return this container, or one finding richer
      */
-    Container against(SemanticDocument document, Input input, Console console) {
-        Container checked = ContainerChecks.profileAgainstInvoice(facturX, document)
+    Container against(SemanticDocument document) {
+        return ContainerChecks.profileAgainstInvoice(facturX, document)
                 .map(this::with)
                 .orElse(this);
-        return esjAgainst(checked, document, input, console);
-    }
-
-    /**
-     * Returns the container with what the ESJ document beside the invoice turned out to
-     * be, where it carries one.
-     *
-     * <p>A container whose two machine-readable representations disagree is wrong about
-     * itself, so every answer but "they are two accounts of one invoice" is an error of
-     * the container — and none of them is a finding about the invoice, which is the XML
-     * and was read before this ran.
-     *
-     * <p>A bound is not such an answer. The attachment is read under the reader bounds of
-     * this run, like every other ESJ document the command line reads, and a bound met
-     * anywhere inside it — before the first other finding or after the hundredth — leaves
-     * a command that pronounces a verdict with {@link ExitCode#LIMIT} and no verdict: a
-     * reader that stopped has said nothing about what it was reading, and least of all
-     * that the two accounts of the invoice differ. The bound is looked for among all the
-     * findings and not only the first, because the reader collects what it meets and reads
-     * on, so a malformed path early in the file would otherwise hide the bound behind it.
-     */
-    private static Container esjAgainst(Container container, SemanticDocument document,
-                                        Input input, Console console) {
-        if (container.esj == null) {
-            return container;
-        }
-        if (!container.esj.read()) {
-            return container.with(unchecked(container.esj,
-                    "a bound of this run was reached: " + container.esj.unread()));
-        }
-        Optional<BindingSyntax> syntax = container.invoice()
-                .flatMap(read -> read.attachment().kind().syntax())
-                .flatMap(Container::bindingSyntax);
-        if (syntax.isEmpty()) {
-            return container.with(unchecked(container.esj, "the invoice of this container"
-                    + " is written in a syntax this version has no binding table for"));
-        }
-        ReadResult read = EsjReader.withLimits(console.options().bounds().readerLimits())
-                .readWithFindings(container.esj.bytes());
-        Optional<Finding> limit = read.findings().stream()
-                .filter(finding -> finding.code() == FindingCode.ESJ_L1_LIMIT)
-                .findFirst();
-        if (limit.isPresent()) {
-            String bound = limit.orElseThrow().message();
-            if (container.supplement == Supplement.REQUIRED) {
-                throw CliException.limit(console.options().bounds().refusal(input.name(),
-                        "the attachment " + ValueText.quoted(container.esj.name()) + ": "
-                                + bound));
-            }
-            return container.with(unchecked(container.esj,
-                    "a bound of this run was reached: " + bound));
-        }
-        Optional<Finding> error = read.findings().stream()
-                .filter(Finding::isError).findFirst();
-        if (read.document().isEmpty() || error.isPresent()) {
-            return container.with(esjFinding("PDF-ESJ-UNREADABLE",
-                    ContainerFinding.Severity.ERROR,
-                    "the attachment " + ValueText.quoted(container.esj.name()) + " is no"
-                            + " ESJ document this reader can read: "
-                            + error.map(Finding::toString).orElse("it is not well formed")));
-        }
-        SemanticDocument enclosed = read.document().orElseThrow();
-        Optional<EsjAgreement.Disagreement> disagreement =
-                EsjAgreement.disagreement(enclosed, document, syntax.orElseThrow());
-        if (disagreement.isPresent()) {
-            EsjAgreement.Disagreement reason = disagreement.orElseThrow();
-            return container.with(esjFinding(code(reason.ground()),
-                    ContainerFinding.Severity.ERROR,
-                    "the attachment " + ValueText.quoted(container.esj.name())
-                            + preamble(reason.ground()) + reason.message()));
-        }
-        // The two are two accounts of one invoice, and the row says so; what it may not
-        // also say is that everything the enclosure carries was measured. A term the
-        // syntax binds nothing of is what the enclosure is for, and the invoice had
-        // nothing to say about it either way.
-        return container.withEsj(container.esj.checkedAgainstTheInvoice(
-                EsjAgreement.unchecked(enclosed, document, syntax.orElseThrow())));
-    }
-
-    /**
-     * Returns the code a broken condition of the agreement rule is reported under.
-     *
-     * <p>Two answers and not one: a supplement that does not hold together under the model
-     * it names has not been established to state anything, which is not the same as
-     * stating something the invoice does not state, and a consumer that keeps the one and
-     * rejects the other is entitled to tell them apart without reading English.
-     */
-    private static String code(EsjAgreement.Ground ground) {
-        return ground == EsjAgreement.Ground.UNSOUND ? "PDF-ESJ-UNSOUND"
-                : "PDF-ESJ-DISAGREES";
-    }
-
-    /**
-     * Returns what stands between the name of the attachment and the reason.
-     *
-     * <p>A document that does not hold together under its own model carries its own
-     * sentence, because it is not a statement about the pair of files.
-     */
-    private static String preamble(EsjAgreement.Ground ground) {
-        return ground == EsjAgreement.Ground.UNSOUND ? ": "
-                : " and the invoice of this container are not two accounts of one invoice: ";
-    }
-
-    /** Returns the binding table the syntax of an attachment belongs to. */
-    private static Optional<BindingSyntax> bindingSyntax(XrSyntax syntax) {
-        return switch (syntax) {
-            case UBL_INVOICE -> Optional.of(BindingSyntax.UBL_INVOICE);
-            case UBL_CREDIT_NOTE -> Optional.of(BindingSyntax.UBL_CREDIT_NOTE);
-            case CII -> Optional.of(BindingSyntax.CII);
-        };
-    }
-
-    /**
-     * Returns the finding that says the agreement rule was not applied to the attachment.
-     *
-     * <p>It is a warning and not an error: nothing was found to be wrong with the file,
-     * and what a run did not do is not a defect of what it was looking at.
-     */
-    private static ContainerFinding unchecked(Esj esj, String because) {
-        return esjFinding("PDF-ESJ-UNCHECKED", ContainerFinding.Severity.WARNING,
-                "the attachment " + ValueText.quoted(esj.name()) + " was not checked"
-                        + " against the invoice, because " + because);
-    }
-
-    /** Returns one finding about the ESJ document beside the invoice. */
-    private static ContainerFinding esjFinding(String code,
-                                               ContainerFinding.Severity severity,
-                                               String message) {
-        return new ContainerFinding(ContainerFinding.Category.PDF_ESJ, code, severity,
-                message);
     }
 
     /**
@@ -956,19 +615,12 @@ final class Container {
      * case would be asserting something nobody checked.
      */
     private static String noInvoice(String name, NoInvoiceAttachmentException none) {
-        String esj = none.attachments().stream()
-                .anyMatch(attachment -> attachment.kind() == AttachmentKind.ESJ_DOCUMENT)
-                ? "\n  one attachment is an ESJ document of this project; the electronic"
-                        + " invoice of a hybrid file is its XML, and this version reads no"
-                        + " invoice out of an ESJ attachment"
-                : "";
         if (none.unestablished().isEmpty()) {
             return name + ": the PDF contains no structured invoice representation"
                     + (none.attachments().isEmpty()
                             ? " and carries no attachment at all"
                             : "; none of its attachments is an electronic invoice:"
                                     + numbered(none.attachments()))
-                    + esj
                     + "\n  nothing is read off the page: this tool validates structured"
                     + " data or says that there is none";
         }
@@ -979,7 +631,6 @@ final class Container {
         return name + ": no attachment of this PDF was established to be an electronic"
                 + " invoice:"
                 + numbered(none.attachments())
-                + esj
                 + (beyondWindow
                         ? "\n  an attachment begins an XML document whose root element lies"
                                 + " beyond the bytes this reader classifies an attachment"

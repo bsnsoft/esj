@@ -103,26 +103,7 @@ record Loaded(String name,
     static Loaded read(Input input, InputSyntax from, Extensions extension, Console console) {
         return load(input, from, extension, console,
                 console.options().strict() ? XrEncodingMode.STRICT : XrEncodingMode.REPAIR,
-                false, Container.Supplement.SKIPPED);
-    }
-
-    /**
-     * Reads one input for {@code esj inspect}, which reports on the container it came out
-     * of and therefore reads the ESJ document beside the invoice as well.
-     *
-     * @param input     the bytes and their name
-     * @param from      the syntax the caller named with {@code --from}, or {@code null}
-     * @param extension the extension registries this run loads
-     * @param console   the streams of the process
-     * @return the input, read
-     * @throws CliException if the syntax is not one this tool reads, or an XML input
-     *                      cannot be imported
-     */
-    static Loaded inspect(Input input, InputSyntax from, Extensions extension,
-                          Console console) {
-        return load(input, from, extension, console,
-                console.options().strict() ? XrEncodingMode.STRICT : XrEncodingMode.REPAIR,
-                false, Container.Supplement.OPTIONAL);
+                false);
     }
 
     /**
@@ -144,8 +125,7 @@ record Loaded(String name,
      */
     static Loaded validate(Input input, InputSyntax from, Extensions extension,
                            Console console) {
-        return load(input, from, extension, console, XrEncodingMode.STRICT, true,
-                Container.Supplement.REQUIRED);
+        return load(input, from, extension, console, XrEncodingMode.STRICT, true);
     }
 
     /**
@@ -166,8 +146,7 @@ record Loaded(String name,
      */
     static Loaded repaired(Input input, InputSyntax from, Extensions extension,
                            Console console) {
-        return load(input, from, extension, console, XrEncodingMode.REPAIR, false,
-                Container.Supplement.REQUIRED);
+        return load(input, from, extension, console, XrEncodingMode.REPAIR, false);
     }
 
     private static Loaded load(Input input,
@@ -175,15 +154,10 @@ record Loaded(String name,
                                Extensions extension,
                                Console console,
                                XrEncodingMode mode,
-                               boolean encodingIsAFinding,
-                               Container.Supplement supplement) {
+                               boolean encodingIsAFinding) {
         Bounds bounds = console.options().bounds();
         if (input.isPdf()) {
-            // Only a command that reports on the container reads the ESJ document beside
-            // the invoice: see Container.read.
-            Container container = supplement == Container.Supplement.SKIPPED
-                    ? Container.read(input, console)
-                    : Container.readWithSupplement(input, console, supplement);
+            Container container = Container.read(input, console);
             Container.Invoice invoice = container.requireInvoice();
             // An attachment whose root element lies beyond the classification window was
             // never established to be anything, and a caller who names it is asking for it
@@ -211,8 +185,7 @@ record Loaded(String name,
                     extension, console, bounds, mode, encodingIsAFinding,
                     Optional.of(container));
             return loaded.document().isPresent()
-                    ? loaded.inside(container.against(loaded.document().orElseThrow(),
-                            input, console))
+                    ? loaded.inside(container.against(loaded.document().orElseThrow()))
                     : loaded;
         }
         return read(input, resolve(input, from), origin(from, false), extension, console,

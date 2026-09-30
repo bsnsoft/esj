@@ -163,7 +163,7 @@ esj render invoice.esj.json --template letterhead.json --embed cii --out invoice
 
 **Wie hänge ich eine E-Rechnung an ein PDF, das ich schon habe?**
 ```sh
-esj embed pages.pdf invoice.esj.json --out invoice.pdf   # XML und ESJ angehängt; PDF/A-3 bleibt, was es war
+esj embed pages.pdf invoice.esj.json --out invoice.pdf   # die Rechnungs-XML angehängt; PDF/A-3 bleibt, was es war
 ```
 
 **Wie kommt ein GiroCode auf die Rechnung?**

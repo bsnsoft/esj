@@ -325,24 +325,6 @@ a bad invoice. The report keeps the two apart, in two lines and two members;
 validator of its own turns a refusal into `Container: INVALID`
 ([`cli.md`](cli.md#validating-the-pdfa-claim)).
 
-A file carrying an ESJ document beside its invoice
-([`pdf-output.md`](pdf-output.md#the-esj-document-beside-the-invoice)) gains one row:
-
-| `ESJ document attached` | When | Verdict |
-|---|---|---|
-| no row, `"esj": null` | the file carries none | |
-| `OK`, `"status": "one"` | it and the invoice name one semantic model and are two accounts of one invoice; where it carries paths of terms the syntax of the invoice binds nothing of — what the enclosure is for — the invoice had nothing to measure them against, and the row counts them as not checked, as `"pathsNotChecked"` does | |
-| `PDF-ESJ-DISAGREES`, with the model or the first differing paths | they are not | `Container: INVALID`, exit 1 |
-| `PDF-ESJ-UNSOUND`, with the first model findings | it is no document of the model it names | `Container: INVALID`, exit 1 |
-| `PDF-ESJ-UNREADABLE` | it is no ESJ document this reader reads | `Container: INVALID`, exit 1 |
-| `PDF-ESJ-UNCHECKED`, `"agrees": null` | nothing was compared: the invoice is in a syntax with no binding table here, or `esj inspect` met a bound inside the attachment | warning |
-| no row, `"status": "several"`, `PDF-EMBEDDED-SEVERAL-ESJ` | the file carries more than one, so none was checked | `Container: INVALID`, exit 1 |
-| — | a bound of the run stopped the reader before it was read | no verdict, exit 7 |
-
-The attachment is measured on layers L1 and L2 and then compared with the invoice; L3 and the
-business rules are questions about the XML. `esj inspect` gives no verdict and reports a bound
-inside the attachment on that row instead of leaving at exit 7.
-
 ### Exit codes
 
 | Code | When | What a pipeline should do |
@@ -386,12 +368,12 @@ verdict, the rows and the exit code the command printed, never a second run ([`c
 
 It claims no more than the run did. The PDF/A row is what the container declares, and says so
 rather than `OK`, unless `--verapdf` ran — then it is the validator's answer, and a refusal makes
-the container `INVALID` there as in the lines; the `ESJ document attached` row is there only for a
-file that carries one. The syntax block over an input that was never XML is `not applicable`, never
-a pass. A check that did not run says so and why, an `INDETERMINATE` verdict names each component,
-and a levelled finding carries both levels. A document no renderer of this build takes is reported
-all the same, with the sentence that says what refused it where the invoice would be; so is one
-whose rendering would be larger than the HTML form carries ([`cli.md`](cli.md#the-report)).
+the container `INVALID` there as in the lines. The syntax block over an input that was never XML is
+`not applicable`, never a pass. A check that did not run says so and why, an `INDETERMINATE`
+verdict names each component, and a levelled finding carries both levels. A document no renderer
+of this build takes is reported all the same, with the sentence that says what refused it where the
+invoice would be; so is one whose rendering would be larger than the HTML form carries
+([`cli.md`](cli.md#the-report)).
 
 ## `--no-syntax` and `--rules`
 
