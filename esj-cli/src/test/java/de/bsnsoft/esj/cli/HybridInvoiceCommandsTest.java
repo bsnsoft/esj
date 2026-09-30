@@ -354,7 +354,7 @@ class HybridInvoiceCommandsTest {
         Cli.Run run = Cli.run("embed", pages, invoice,
                 "--out", directory.resolve("out.pdf").toString());
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
-        assertFalse(run.err().contains("no place in this syntax"), run.err());
+        assertEquals("", run.err());
     }
 
     /** An invoice carrying a term of no published model, as ESJ. */

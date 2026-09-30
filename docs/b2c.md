@@ -160,8 +160,8 @@ Java the writer knows the declaration when it is handed the registry:
 
 ## In a syntax and in a rendering
 
-The extension travels in ESJ. A hybrid PDF loses nothing: the ESJ document it carries beside the
-invoice XML holds them, and the container still agrees with itself ([pdf-output.md](pdf-output.md#the-esj-document-beside-the-invoice)).
+The extension travels in ESJ. The invoice XML of a hybrid PDF carries the net core terms and not
+the four, which stay in the ESJ document and on the page ([pdf-output.md](pdf-output.md)).
 The baseline PDF rendering prints the figures marked `(B2C)` and never inside a core totals row; the
 baseline HTML rendering, built from the XR representation, has no element for them and names every
 one in its report; a branded template gives them places of their own

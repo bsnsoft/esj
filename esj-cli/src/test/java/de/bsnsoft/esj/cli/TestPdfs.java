@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -100,6 +101,41 @@ final class TestPdfs {
 
     private TestPdfs() {
         throw new AssertionError("no instances");
+    }
+
+    /**
+     * Returns a PDF with one more attachment: an entry appended to the flat embedded files
+     * name tree, and, where the attachment is associated, to the catalog's {@code /AF}
+     * array. Everything else of the file stays as it was.
+     *
+     * <p>It is how a hybrid of 0.9.0 to 0.9.3 is made from one this build writes: those
+     * versions carried the ESJ document as a second embedded file under
+     * {@code invoice.esj.json}, which sorts after the name of the invoice.
+     *
+     * @param pdf        a PDF whose name tree is one node with a {@code /Names} array
+     * @param attachment the attachment to add
+     * @return the file with the attachment
+     */
+    static byte[] enclose(byte[] pdf, Attachment attachment) {
+        try (PDDocument document = Loader.loadPDF(pdf)) {
+            COSDictionary catalog = document.getDocumentCatalog().getCOSObject();
+            COSDictionary names = catalog.getCOSDictionary(COSName.NAMES);
+            COSDictionary tree = names.getCOSDictionary(COSName.EMBEDDED_FILES);
+            COSArray entries = tree.getCOSArray(COSName.NAMES);
+            PDComplexFileSpecification specification =
+                    Builder.specification(document, attachment);
+            entries.add(new COSString(attachment.name()));
+            entries.add(specification.getCOSObject());
+            if (attachment.associated()) {
+                catalog.getCOSArray(COSName.getPDFName("AF"))
+                        .add(specification.getCOSObject());
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            document.save(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     /** Returns a builder for a PDF with one page and nothing else. */

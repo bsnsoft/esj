@@ -157,12 +157,11 @@ final class Outcome {
     /**
      * Returns the block of the file an invoice was carried in, where there was one.
      *
-     * <p>The rows are the ones the text form prints, and the PDF/A row says what the
+     * <p>The five rows are the ones the text form prints, and the PDF/A row says what the
      * run says: without {@code --verapdf} the file declares a conformance and nothing here
      * validated it, so the status is that declaration and never {@code OK}; with one, the
      * row carries the validator, its version, the profile it ran and its verdict, and it
-     * is a check like any other. The sixth row is there only for a file that carries an
-     * ESJ document beside its invoice.
+     * is a check like any other.
      */
     private static Optional<Block> container(Validation.Report report) {
         Optional<Container> found = report.container();
@@ -170,7 +169,7 @@ final class Outcome {
             return Optional.empty();
         }
         Container pdf = found.orElseThrow();
-        List<Row> rows = new ArrayList<>(List.of(
+        List<Row> rows = List.of(
                 containerRow(pdf, Phrase.ROW_PDF_STRUCTURE,
                         ContainerFinding.Category.PDF_STRUCTURE, null),
                 pdfaRow(pdf, report.pdfaValidation()),
@@ -179,36 +178,14 @@ final class Outcome {
                 containerRow(pdf, Phrase.ROW_PDF_XMP, ContainerFinding.Category.PDF_XMP,
                         null),
                 containerRow(pdf, Phrase.ROW_PDF_EMBEDDED,
-                        ContainerFinding.Category.PDF_EMBEDDED, null)));
-        // Only where the file carries one. A container without an ESJ document beside its
-        // invoice is the ordinary hybrid invoice and has nothing to answer for, and a row
-        // saying so on every run would be a check nobody asked for.
-        pdf.esj().ifPresent(esj -> rows.add(containerRow(pdf, Phrase.ROW_PDF_ESJ,
-                ContainerFinding.Category.PDF_ESJ,
-                esjDetail(esj))));
+                        ContainerFinding.Category.PDF_EMBEDDED, null));
         List<ValidationOutcome.Finding> findings = new ArrayList<>();
         for (ContainerFinding finding : spoken(pdf.findings())) {
             findings.add(new ValidationOutcome.Finding(finding.category().id(),
                     finding.code(), severity(finding), "container", Optional.empty(),
                     List.of(), finding.message()));
         }
-        return Optional.of(new Block(Block.Kind.CONTAINER, List.copyOf(rows), findings));
-    }
-
-    /**
-     * Returns what the row of the ESJ document says beside its name.
-     *
-     * <p>Where the enclosure carried paths of terms the invoice syntax binds nothing of,
-     * the row says how many: those are the paths the comparison had nothing to measure
-     * them against, and a row that reported the comparison without naming them would be
-     * claiming more than the run established.
-     */
-    private static Text esjDetail(Container.Esj esj) {
-        String name = ValueText.quoted(esj.name());
-        Integer unchecked = esj.unchecked();
-        return unchecked == null || unchecked == 0
-                ? Text.of(Phrase.ESJ_ATTACHMENT, name)
-                : Text.of(Phrase.ESJ_ATTACHMENT_PARTLY, name, Integer.toString(unchecked));
+        return Optional.of(new Block(Block.Kind.CONTAINER, rows, findings));
     }
 
     /** Returns one row of the container block, counted by the findings of its category. */

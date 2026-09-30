@@ -60,14 +60,7 @@ public record ContainerFinding(Category category,
         PDF_XMP("PDF-XMP"),
 
         /** The embedded file dictionary: the declared media type, size and name. */
-        PDF_EMBEDDED("PDF-EMBEDDED"),
-
-        /**
-         * The ESJ document attached beside the invoice: whether it can be read, and
-         * whether it and the invoice are two accounts of one invoice
-         * ({@link EsjAgreement}).
-         */
-        PDF_ESJ("PDF-ESJ");
+        PDF_EMBEDDED("PDF-EMBEDDED");
 
         private final String id;
 

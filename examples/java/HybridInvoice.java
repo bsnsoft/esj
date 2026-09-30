@@ -76,9 +76,9 @@ public final class HybridInvoice {
         // 2. The pages a person reads: a PDF/A-3b file, drawn from the document alone.
         byte[] pages = new PdfRenderer().render(invoice, RenderOptions.in(RenderLanguage.ENGLISH));
 
-        // 3. The invoice embedded as Factur-X, and beside it the same invoice as an ESJ
-        // document, so that the file carries two attachments. The notes of the write report
-        // name every term the cross industry invoice has no place for.
+        // 3. The invoice embedded as Factur-X, the one attachment of the file. The notes of
+        // the write report name every term the cross industry invoice has no place for. The
+        // ESJ document is stored beside the PDF as a file of its own.
         EmbedResult hybrid = FacturX.embedWithReport(pages, invoice,
                 EmbedOptions.of(FacturXProfile.EN_16931));
         hybrid.report().notes().forEach(note -> System.out.println("write note: " + note));

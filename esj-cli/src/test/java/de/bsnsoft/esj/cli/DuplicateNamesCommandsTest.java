@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -15,8 +16,8 @@ import org.junit.jupiter.api.Test;
  * the first and outside the associated files array, behind it, inside the array — and a
  * key split across two nodes of the tree are refused with the code of a container that
  * names more than one invoice; a caller who picks one by position gets a verdict about that
- * one and a container that is reported as unsound. A duplicated ESJ document leaves the
- * invoice alone and makes the container unsound.
+ * one and a container that is reported as unsound. Two attachments that are not the invoice
+ * under one name leave the invoice alone and make the container unsound.
  */
 class DuplicateNamesCommandsTest {
 
@@ -84,11 +85,11 @@ class DuplicateNamesCommandsTest {
     }
 
     @Test
-    void aDuplicatedEsjDocumentMakesTheContainerUnsoundAndCannotBeExtractedByName() {
+    void aDuplicatedNameOfAnotherAttachmentMakesTheContainerUnsoundAndCannotBeExtracted() {
         byte[] pdf = TestPdfs.builder()
                 .attach(NAME, Fixtures.bytes(CII))
-                .attach(esj("{\"shadow\":true}"))
-                .attach(esj("{\"original\":true}"))
+                .attach(json("{\"shadow\":true}"))
+                .attach(json("{\"original\":true}"))
                 .keys(NAME, "invoice.esj.json", "invoice.esj.json")
                 .xmp(TestPdfs.xmp(NAME, TestPdfs.XRECHNUNG))
                 .build();
@@ -97,11 +98,10 @@ class DuplicateNamesCommandsTest {
         assertEquals(ExitCode.VALIDATION, validate.exitCode(), validate.text() + validate.err());
         String text = validate.text();
         assertTrue(text.contains(CODE + " [error]"), text);
-        assertTrue(text.contains("PDF-EMBEDDED-SEVERAL-ESJ [error]"), text);
-        assertTrue(text.contains(" 2 \"invoice.esj.json\" (ESJ document, not the invoice, object "),
-                text);
-        assertTrue(text.contains(" 3 \"invoice.esj.json\" (ESJ document, not the invoice, object "),
-                text);
+        assertTrue(text.contains(" 2 \"invoice.esj.json\" (not XML, object "), text);
+        assertTrue(text.contains(" 3 \"invoice.esj.json\" (not XML, object "), text);
+        assertFalse(text.contains("PDF-ESJ"), text);
+        assertFalse(text.contains("PDF-EMBEDDED-SEVERAL"), text);
         assertTrue(text.contains("Container:        INVALID"), text);
         assertTrue(text.contains("Invoice:          VALID"), text);
 
@@ -180,8 +180,11 @@ class DuplicateNamesCommandsTest {
                 TestPdfs.ALTERNATIVE, associated);
     }
 
-    /** An attachment wearing the label of the ESJ document. */
-    private static TestPdfs.Attachment esj(String json) {
+    /**
+     * A JSON enclosure under the name a hybrid of 0.9.0 to 0.9.3 gave the ESJ document it
+     * carried beside the invoice.
+     */
+    private static TestPdfs.Attachment json(String json) {
         return new TestPdfs.Attachment("invoice.esj.json", json.getBytes(StandardCharsets.UTF_8),
                 "application/json", "Supplement", true);
     }

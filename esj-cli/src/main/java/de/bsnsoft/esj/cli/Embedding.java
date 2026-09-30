@@ -9,7 +9,6 @@ import de.bsnsoft.esj.bindings.BindingSyntax;
 import de.bsnsoft.esj.pdf.EmbedOptions;
 import de.bsnsoft.esj.pdf.EmbedRefusedException;
 import de.bsnsoft.esj.pdf.EmbedResult;
-import de.bsnsoft.esj.pdf.EsjAttachment;
 import de.bsnsoft.esj.pdf.FacturX;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.pdf.HybridFlavour;
@@ -69,7 +68,6 @@ final class Embedding {
         try {
             EmbedResult result = FacturX.embedWithReport(pdf, document, options);
             Reports.notPlaced(console, result.report());
-            say(console, result);
             return result.pdf();
         } catch (BindingEditionException refused) {
             throw editionRefusal(document);
@@ -88,30 +86,6 @@ final class Embedding {
     }
 
     /**
-     * Says in one line what became of the ESJ document that goes in beside the invoice.
-     *
-     * <p>Both ways round. A file that carries it says so, because a consumer that has to
-     * open the container to find out is a consumer nobody told; a file that does not says
-     * why, because an attachment that is quietly absent is the one a sender believes is
-     * there. The line goes to the error stream, where everything this command says about
-     * the file it wrote goes: the standard output is the file.
-     *
-     * <p>Only one of the three is a warning. A run that left the attachment out because
-     * {@code --no-esj} said to did what it was told, and a tool that warns about obeying
-     * its caller teaches that caller to ignore its warnings; a run that left it out
-     * although it was wanted is the one nobody must miss.
-     */
-    private static void say(Console console, EmbedResult result) {
-        switch (result.esj()) {
-            case ATTACHED -> console.diagnostic("the ESJ document of this invoice is"
-                    + " attached beside it as " + ValueText.quoted(EsjAttachment.NAME));
-            case TURNED_OFF -> console.diagnostic(result.esjOmitted().orElseThrow());
-            case UNPROVEN -> console.warning(result.esjOmitted().orElseThrow());
-            default -> throw new IllegalStateException("unknown outcome: " + result.esj());
-        }
-    }
-
-    /**
      * Returns what the container will declare, out of the options and the document.
      *
      * @param profile    what {@code --profile} named, or {@code null} to take the
@@ -119,7 +93,6 @@ final class Embedding {
      * @param name       what {@code --name} named, or {@code null} for {@code factur-x.xml}
      * @param verapdf    what {@code --verapdf} named, or {@code null} to go by what the
      *                   input PDF declares about itself
-     * @param esj        whether the ESJ document of the invoice is attached beside the XML
      * @param extensions the extension registries {@code --extension} loaded, which the
      *                   writer of the attachment is handed
      * @param document   the invoice, whose BT-24 names the profile it is written to
@@ -133,7 +106,6 @@ final class Embedding {
     static EmbedOptions options(String profile,
                                 String name,
                                 String verapdf,
-                                boolean esj,
                                 Extensions extensions,
                                 SemanticDocument document,
                                 Console console,
@@ -145,7 +117,6 @@ final class Embedding {
         requireBindableEdition(document);
         EmbedOptions options = EmbedOptions.of(profile(profile, document))
                 .withLimits(console.options().bounds().pdfLimits())
-                .withEsj(esj)
                 .withExtensions(extensions.registries());
         if (name != null) {
             options = options.withFlavour(flavour(name));

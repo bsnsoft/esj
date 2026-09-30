@@ -36,17 +36,6 @@ public enum AttachmentKind {
     OTHER_XML(false, false),
 
     /**
-     * An EN16931 Semantic JSON document attached beside the invoice, as
-     * {@link EsjAttachment} describes it.
-     *
-     * <p>It is not an invoice of this container: the electronic invoice of a hybrid file
-     * is its XML, and this attachment is an enclosure the container declares as one. What
-     * it holds is read only in order to be checked against the invoice
-     * ({@link EsjAgreement}), never instead of it.
-     */
-    ESJ_DOCUMENT(false, false),
-
-    /**
      * XML whose root element this reader did not reach inside the window it classifies an
      * attachment by, so what the attachment is was never established.
      *
@@ -134,7 +123,6 @@ public enum AttachmentKind {
             case UBL_CREDIT_NOTE -> "UBL credit note";
             case ZUGFERD_1 -> "ZUGFeRD 1.0";
             case OTHER_XML -> "XML";
-            case ESJ_DOCUMENT -> "ESJ document, not the invoice";
             case UNDETERMINED -> "XML, root element beyond the window";
             case NOT_XML -> "not XML";
             case UNREADABLE -> "filtered with something this reader does not decode";

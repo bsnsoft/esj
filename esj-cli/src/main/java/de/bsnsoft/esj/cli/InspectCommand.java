@@ -97,7 +97,7 @@ final class InspectCommand implements Callable<Integer> {
         Input input = Input.read(file, console);
         Loaded loaded;
         try {
-            loaded = Loaded.inspect(input, Options.from(from), extensions, console);
+            loaded = Loaded.read(input, Options.from(from), extensions, console);
         } catch (CliException refusal) {
             showContainer(input);
             throw refusal;

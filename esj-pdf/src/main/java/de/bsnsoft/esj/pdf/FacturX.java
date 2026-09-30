@@ -3,13 +3,9 @@ package de.bsnsoft.esj.pdf;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
-import de.bsnsoft.esj.bindings.BindingException;
-import de.bsnsoft.esj.bindings.BindingSyntax;
 import de.bsnsoft.esj.bindings.CiiWriter;
-import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.bindings.WriteResult;
 import de.bsnsoft.esj.bindings.WriterOptions;
-import de.bsnsoft.esj.json.Canonicalizer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,29 +59,10 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
  *       {@code /Names /EmbeddedFiles}, under the attachment name, which is where a reader
  *       that goes by names looks;</li>
  *   <li>the <b>metadata</b>: the Factur-X extension schema and its four properties are
- *       merged into the XMP packet the file already has (see {@code FacturXXmp});</li>
- *   <li>the <b>ESJ document</b>: the canonical bytes of the same invoice, as a second
- *       embedded file beside the first — {@link EsjAttachment} says what it is called and
- *       what it is declared as, and {@link EmbedOptions#withEsj(boolean)} turns it off.
- *       It is written only where the invoice XML that has just been written and the
- *       document are two accounts of one invoice, which is checked by reading that XML
- *       back; see below.</li>
+ *       merged into the XMP packet the file already has (see {@code FacturXXmp}).</li>
  * </ul>
  *
- * <h2>The ESJ document beside the invoice</h2>
- *
- * <p>The XML stays the invoice, and the second attachment is an enclosure: it is declared
- * with the relationship of one and is never read as an invoice by anything in this
- * project. What it is for is the terms the syntax has no place for — a model extension
- * the XML cannot carry — and a consumer that would rather read the invoice than map it.
- *
- * <p>It is written only where it is true. The cross industry invoice that has just been
- * written is read back with the streaming reader and checked against the document with
- * {@link EsjAgreement}: the document has to hold together under the semantic model it
- * names, every value the XML states has to stand in it unchanged, and what it states
- * beyond that has to belong to terms the binding table does not bind. Where the writer had
- * to leave a core value out, that does not hold, and then no ESJ document is attached and
- * {@link EmbedResult#esjOmitted()} names the paths. The XML is embedded either way.
+ * <p>The invoice XML is the one embedded file this class writes.
  *
  * <h2>What is refused</h2>
  *
@@ -138,13 +115,6 @@ public final class FacturX {
      */
     private static final COSName ALTERNATIVE = COSName.getPDFName("Alternative");
 
-    /**
-     * The relationship the ESJ document is declared with: the value PDF 32000-2 defines
-     * for a file that travels with the document rather than being it.
-     */
-    private static final COSName SUPPLEMENT =
-            COSName.getPDFName(EsjAttachment.RELATIONSHIP);
-
     /** The key of the associated files array on the catalog. */
     private static final COSName AF = COSName.getPDFName("AF");
 
@@ -157,10 +127,6 @@ public final class FacturX {
      * better answer there than the file name repeated.
      */
     private static final String DESCRIPTION = "the electronic invoice of this document";
-
-    /** What the result says where the caller turned the ESJ attachment off. */
-    private static final String TURNED_OFF =
-            "the ESJ document was not attached, because this run turned it off";
 
     /**
      * The number the draft identifier is derived from where the input carries none, as in
@@ -239,11 +205,6 @@ public final class FacturX {
         requireProfile(document, options);
         WriteResult invoice = CiiWriter.writeWithReport(document,
                 WriterOptions.builder().extensions(options.extensions()).build());
-        Optional<String> unproven = options.esj()
-                ? disagreement(document, invoice.xml())
-                : Optional.empty();
-        EmbedResult.EsjOutcome outcome = outcome(options.esj(), unproven);
-        Optional<String> omitted = options.esj() ? unproven : Optional.of(TURNED_OFF);
         try (PdfContainer container = PdfContainer.open(pdf, options.limits())) {
             requirePdfa3(container, pdf, options);
             requireNoInvoiceYet(container);
@@ -254,64 +215,11 @@ public final class FacturX {
                             + " a packet, so this one does not declare what it is"));
             byte[] merged = FacturXXmp.merged(packet, options.flavour(), options.profile());
             PDDocument open = container.document();
-            Optional<Calendar> modified = modificationDate(document);
-            attach(open, invoice.xml(), options.flavour().attachmentName(), MEDIA_TYPE,
-                    ALTERNATIVE, DESCRIPTION, modified);
-            if (outcome == EmbedResult.EsjOutcome.ATTACHED) {
-                attach(open, Canonicalizer.canonicalBytes(document), EsjAttachment.NAME,
-                        EsjAttachment.MEDIA_TYPE, SUPPLEMENT, EsjAttachment.DESCRIPTION,
-                        modified);
-            }
+            attach(open, invoice.xml(), options.flavour().attachmentName(),
+                    modificationDate(document));
             metadata(open, merged);
-            return new EmbedResult(saved(open), invoice.report(), outcome, omitted);
+            return new EmbedResult(saved(open), invoice.report());
         }
-    }
-
-    /**
-     * Returns what became of the ESJ document, which is three answers and not two.
-     *
-     * <p>A caller who turned the attachment off got what was asked for; a file that comes
-     * back without it although it was asked for is the answer somebody has to read. The
-     * two travel apart so that the command line can say each of them in its own voice.
-     */
-    private static EmbedResult.EsjOutcome outcome(boolean wanted, Optional<String> unproven) {
-        if (!wanted) {
-            return EmbedResult.EsjOutcome.TURNED_OFF;
-        }
-        return unproven.isEmpty() ? EmbedResult.EsjOutcome.ATTACHED
-                : EmbedResult.EsjOutcome.UNPROVEN;
-    }
-
-    /**
-     * Returns why the document must not be attached beside this invoice XML, where it
-     * must not.
-     *
-     * <p>The check is made on the XML that has just been written and not on the document
-     * alone, because what is being asserted is that the two files in this container say
-     * the same thing. Reading it back costs what reading an invoice costs and is the only
-     * way to assert it: the writer's own report says what it left out, not what a reader
-     * makes of what it wrote.
-     */
-    private static Optional<String> disagreement(SemanticDocument document, byte[] xml) {
-        SemanticDocument written;
-        try {
-            written = new StreamingReader().read(xml).document();
-        } catch (BindingException e) {
-            // The invoice is written and goes in; what could not be done is the proof that
-            // the two say the same thing, and an attachment nobody proved is one this
-            // module does not write.
-            return Optional.of("the cross industry invoice of this container could not be"
-                    + " read back, so the document beside it was not checked against it: "
-                    + e.getMessage());
-        }
-        // A document that does not hold together under its own model carries its own
-        // sentence: what is wrong with it is not a statement about the pair of files.
-        return EsjAgreement.disagreement(document, written, BindingSyntax.CII)
-                .map(reason -> reason.ground() == EsjAgreement.Ground.UNSOUND
-                        ? reason.message()
-                        : "the cross industry invoice of this container and the document"
-                                + " are not two accounts of one invoice: "
-                                + reason.message());
     }
 
     /**
@@ -445,45 +353,36 @@ public final class FacturX {
     /**
      * Writes the attachment, the name tree entry and the associated files entry.
      */
-    private static void attach(PDDocument pdf,
-                               byte[] content,
-                               String name,
-                               String mediaType,
-                               COSName relationship,
-                               String description,
+    private static void attach(PDDocument pdf, byte[] invoice, String name,
                                Optional<Calendar> modified) {
         PDDocumentCatalog catalog = pdf.getDocumentCatalog();
-        PDComplexFileSpecification specification = specification(pdf, content, name,
-                mediaType, relationship, description, modified);
+        PDComplexFileSpecification specification =
+                specification(pdf, invoice, name, modified);
         names(catalog, name, specification);
         associate(catalog, specification);
     }
 
     private static PDComplexFileSpecification specification(PDDocument pdf,
-                                                            byte[] content,
+                                                            byte[] invoice,
                                                             String name,
-                                                            String mediaType,
-                                                            COSName relationship,
-                                                            String description,
                                                             Optional<Calendar> modified) {
         PDEmbeddedFile embedded;
         try {
-            embedded = new PDEmbeddedFile(pdf, new ByteArrayInputStream(content),
+            embedded = new PDEmbeddedFile(pdf, new ByteArrayInputStream(invoice),
                     COSName.FLATE_DECODE);
         } catch (IOException e) {
-            throw new PdfFormatException("the attachment " + Messages.quoted(name)
-                    + " could not be written into the file", e);
+            throw new PdfFormatException("the invoice could not be written into the file", e);
         }
-        embedded.setSubtype(mediaType);
-        embedded.setSize(content.length);
+        embedded.setSubtype(MEDIA_TYPE);
+        embedded.setSize(invoice.length);
         modified.ifPresent(embedded::setModDate);
         PDComplexFileSpecification specification = new PDComplexFileSpecification();
         specification.setFile(name);
         specification.setFileUnicode(name);
         specification.setEmbeddedFile(embedded);
         specification.setEmbeddedFileUnicode(embedded);
-        specification.setFileDescription(description);
-        specification.getCOSObject().setItem(AF_RELATIONSHIP, relationship);
+        specification.setFileDescription(DESCRIPTION);
+        specification.getCOSObject().setItem(AF_RELATIONSHIP, ALTERNATIVE);
         return specification;
     }
 

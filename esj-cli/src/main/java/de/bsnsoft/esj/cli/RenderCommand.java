@@ -162,12 +162,6 @@ final class RenderCommand implements Callable<Integer> {
                     + " executable.")
     private String verapdf;
 
-    @Option(order = 100, names = "--no-esj",
-            description = "With --embed cii, do not attach the invoice as an ESJ document"
-                    + " beside the XML. By default it goes in as invoice.esj.json, where"
-                    + " it and the XML are two accounts of one invoice.")
-    private boolean noEsj;
-
     RenderCommand(Console console) {
         this.console = console;
         this.flags = new GlobalFlags(console.options());
@@ -200,11 +194,6 @@ final class RenderCommand implements Callable<Integer> {
         if (verapdf != null && !embedding) {
             console.warning("--verapdf checks the file the invoice is written into, and"
                     + " this run embeds nothing; nothing was validated");
-        }
-        if (noEsj && !embedding) {
-            console.warning("--no-esj is about what goes into the container beside the"
-                    + " invoice, and this run embeds nothing; the rendering is the same"
-                    + " with and without it");
         }
 
         console.options().defaultMaxRuntime(DEFAULT_MAX_RUNTIME);
@@ -241,8 +230,8 @@ final class RenderCommand implements Callable<Integer> {
                         loaded.syntax().xrSyntax().orElseThrow(), XrSyntax.CII));
             }
             rendering = Embedding.into(rendering, document,
-                    Embedding.options(null, null, verapdf, !noEsj, extensions, document,
-                            console, deadline),
+                    Embedding.options(null, null, verapdf, extensions, document, console,
+                            deadline),
                     console);
         }
         Output.write(out, rendering, console);
