@@ -28,8 +28,8 @@ import org.xml.sax.InputSource;
 /**
  * Compiles an ISO Schematron schema to the XSLT the syntax engine runs.
  *
- * <p>The compilation is the one every compiled artefact of a bundled pack went through at
- * its publisher: the XSLT 2 implementation of ISO Schematron, the "skeleton", in its three
+ * <p>The compilation is the one the compiled artefacts of the bundled packs show the output
+ * form of: the XSLT 2 implementation of ISO Schematron, the "skeleton", in its three
  * stages — {@code iso_dsdl_include.xsl} assembles the schema, {@code iso_abstract_expand.xsl}
  * expands abstract patterns, {@code iso_svrl_for_xslt2.xsl} (with
  * {@code iso_schematron_skeleton_for_saxon.xsl}, which it imports) writes the stylesheet that

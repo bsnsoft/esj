@@ -13,11 +13,110 @@ message that names the property, and the build stays offline:
 | Test | What it does |
 |---|---|
 | `esj-syntax` `PeppolUnitTestsTest` | fetches and compiles the pack, then runs every test of `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` through the rule sets its configuration names and compares the rules that fire with the ones each test expects |
-| `esj-cli` `PeppolPackTest` | runs `esj packs fetch`, then `esj validate --packs` over every example of `rules/examples/` and over three documents made from `base-example.xml` by one change each |
+| `esj-cli` `PeppolPackTest` | runs `esj packs fetch`, then `esj validate --packs` over every example of `rules/examples/` and over five documents made from `base-example.xml` by one change each |
 
 Every file is fetched from
 `https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/v3.0.20/` and weighed against
-the digest below before it is used; a file that differs fails the test by name.
+the digest below before it is used; a file that differs fails the test by name. The continuous
+integration runs both in its JDK 21 build job (`.github/workflows/ci.yml`).
+
+## Evidence
+
+Run on 2026-09-30 with the recipe as it stands, `mvn -B verify -Desj.network=true`. The two tests
+hold every count below, the rule table row by row; the times were taken the same day on a
+macOS arm64 machine under load, and are indications.
+
+| | |
+|---|---|
+| `esj packs fetch peppol-bis-billing-3.0.20` | 4 files fetched, 4 rule sets compiled, 30 files written; about 5 seconds with the jar (1.3 fetching, 3.3 compiling), 2.3 with the native executable of macOS arm64, which writes the same bytes; a second fetch leaves the pack alone |
+| OpenPeppol's examples, `rules/examples/` | 9 of 9 `VALID`, exit 0, judged by the pack `peppol-bis-billing/3.0/3.0.20` |
+| OpenPeppol's unit tests | 102 test sets, of which 2 hold their tests in a comment and run nothing; 354 tests; 354 expectations over 58 rules |
+| Rules whose every expectation holds | 58 of 58 |
+| Rules with an expectation that does not hold | 0 |
+
+A test set of `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` names a configuration of
+OpenPeppol's build and holds tests, each a document — mostly a fragment — and the rule
+identifiers it expects to fire as an error or as a warning, or not to fire, sometimes with a
+count. `PeppolUnitTestsTest` runs the rule sets of the configuration over each document as the
+syntax engine runs them, without the XML Schema in front, because a fragment is no document the
+schema admits and the tests do not ask about it: `peppolbis-en16931-base-3.0-ubl` and `-cii` run
+the Peppol rules of the syntax, `peppolbis-en16931-01-3.0-ubl-invoice` runs the EN 16931 rules
+with them. A rule is *identical* where every expectation about it holds, flag and count included.
+
+| Rule | Expectations | |
+|---|---|---|
+| `PEPPOL-COMMON-R040` | 2 | identical |
+| `PEPPOL-COMMON-R041` | 4 | identical |
+| `PEPPOL-COMMON-R042` | 4 | identical |
+| `PEPPOL-COMMON-R043` | 12 | identical |
+| `PEPPOL-COMMON-R044` | 11 | identical |
+| `PEPPOL-COMMON-R045` | 11 | identical |
+| `PEPPOL-COMMON-R046` | 10 | identical |
+| `PEPPOL-COMMON-R047` | 11 | identical |
+| `PEPPOL-COMMON-R049` | 8 | identical |
+| `PEPPOL-COMMON-R050` | 6 | identical |
+| `PEPPOL-COMMON-R052` | 4 | identical |
+| `PEPPOL-COMMON-R053` | 4 | identical |
+| `PEPPOL-EN16931-CL001` | 4 | identical |
+| `PEPPOL-EN16931-CL002` | 6 | identical |
+| `PEPPOL-EN16931-CL003` | 6 | identical |
+| `PEPPOL-EN16931-CL006` | 2 | identical |
+| `PEPPOL-EN16931-CL007` | 4 | identical |
+| `PEPPOL-EN16931-CL008` | 8 | identical |
+| `PEPPOL-EN16931-F001` | 5 | identical |
+| `PEPPOL-EN16931-P0100` | 7 | identical |
+| `PEPPOL-EN16931-P0101` | 4 | identical |
+| `PEPPOL-EN16931-P0104` | 3 | identical |
+| `PEPPOL-EN16931-P0105` | 3 | identical |
+| `PEPPOL-EN16931-P0106` | 3 | identical |
+| `PEPPOL-EN16931-P0107` | 3 | identical |
+| `PEPPOL-EN16931-P0108` | 3 | identical |
+| `PEPPOL-EN16931-P0109` | 3 | identical |
+| `PEPPOL-EN16931-P0110` | 3 | identical |
+| `PEPPOL-EN16931-P0111` | 3 | identical |
+| `PEPPOL-EN16931-P0112` | 4 | identical |
+| `PEPPOL-EN16931-R001` | 5 | identical |
+| `PEPPOL-EN16931-R002` | 7 | identical |
+| `PEPPOL-EN16931-R003` | 7 | identical |
+| `PEPPOL-EN16931-R004` | 6 | identical |
+| `PEPPOL-EN16931-R005` | 6 | identical |
+| `PEPPOL-EN16931-R006` | 3 | identical |
+| `PEPPOL-EN16931-R007` | 4 | identical |
+| `PEPPOL-EN16931-R010` | 4 | identical |
+| `PEPPOL-EN16931-R020` | 4 | identical |
+| `PEPPOL-EN16931-R040` | 12 | identical |
+| `PEPPOL-EN16931-R041` | 11 | identical |
+| `PEPPOL-EN16931-R042` | 11 | identical |
+| `PEPPOL-EN16931-R043` | 14 | identical |
+| `PEPPOL-EN16931-R044` | 5 | identical |
+| `PEPPOL-EN16931-R046` | 4 | identical |
+| `PEPPOL-EN16931-R051` | 6 | identical |
+| `PEPPOL-EN16931-R053` | 5 | identical |
+| `PEPPOL-EN16931-R054` | 7 | identical |
+| `PEPPOL-EN16931-R055` | 4 | identical |
+| `PEPPOL-EN16931-R061` | 5 | identical |
+| `PEPPOL-EN16931-R080` | 7 | identical |
+| `PEPPOL-EN16931-R100` | 7 | identical |
+| `PEPPOL-EN16931-R101` | 4 | identical |
+| `PEPPOL-EN16931-R110` | 9 | identical |
+| `PEPPOL-EN16931-R111` | 9 | identical |
+| `PEPPOL-EN16931-R120` | 12 | identical |
+| `PEPPOL-EN16931-R121` | 8 | identical |
+| `PEPPOL-EN16931-R130` | 7 | identical |
+
+Documents made from `base-example.xml` by one change each, through `esj validate --packs`:
+
+| Change | Exit | Rules that fire, from the artefacts and the native rule pack |
+|---|---|---|
+| no invoice number (BT-1) | 1 | `BR-02`, `PEPPOL-EN16931-R008` |
+| VAT category code `X` on a line | 1 | `BR-CL-18`, `BR-S-08` |
+| category `S` with the exemption reason `VATEX-EU-G` | 1 | `BR-S-10`, `PEPPOL-EN16931-P0104` |
+| a business process no Peppol process names (BT-23) | 1 | `PEPPOL-EN16931-R007` |
+| a specification identifier no pack names (BT-24) | 9 | none: the bundled pack is chosen and no CIUS rule runs; with `--pack peppol-bis-billing/3.0/3.0.20` the Peppol rule sets do not apply either |
+
+The last row is the design, not a gap: the specification identifier is how a pack and its rule
+sets are chosen, so `PEPPOL-EN16931-R004`, which asks for that identifier, cannot fire on a
+document that is judged by the pack. The unit tests hold it, with the other 57.
 
 ## Files
 

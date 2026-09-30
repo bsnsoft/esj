@@ -5,9 +5,9 @@
 Eine Frage, ein Befehl oder ein Ausschnitt. `invoice.xml` steht für eine UBL- oder CII-Rechnung,
 `invoice.pdf` für eine Factur-X- oder ZUGFeRD-Datei, `invoice.esj.json` für ein ESJ-Dokument,
 `letterhead.json` für eine Render-Vorlage und `pages.pdf` für eine PDF/A-3-Datei ohne Rechnung.
-Ein Test führt jede `esj`-Zeile bis auf die, die ein installiertes veraPDF braucht, über Dateien
-des Repositorys aus; jeder andere Block steht wörtlich auf der verlinkten englischen Seite, wo
-ein Test ihn ausführt.
+Ein Test führt jede `esj`-Zeile über Dateien des Repositorys aus, bis auf die, die ein
+installiertes veraPDF braucht, und die, die über das Netz holt; jeder andere Block steht
+wörtlich auf der verlinkten englischen Seite, wo ein Test ihn ausführt.
 
 ## Lesen
 
@@ -60,6 +60,14 @@ esj validate invoice.xml                    # XML-Schema, Schematron und Geschä
 ```sh
 esj validate invoice.xml                    # das Paket folgt aus BT-24: xrechnung/3.0.2/2026-08-31
 esj validate --extension xrechnung invoice.xml   # zusätzlich die Erweiterungsterme der XRechnung
+```
+
+**Wie prüfe ich eine Rechnung nach Peppol BIS Billing 3.0?** Die Peppol-Artefakte dürfen nicht
+weitergegeben werden, deshalb bringt esj ein Rezept mit und baut das Paket auf dem eigenen Rechner
+([`validation.md`](validation.md#packs-made-on-this-machine)).
+```sh
+esj packs fetch peppol-bis-billing-3.0.20 --into esj-packs   # einmal, über das Netz: SHA-256 geprüft, hier kompiliert
+esj validate --packs esj-packs invoice.xml  # oder ESJ_PACKS=esj-packs; das Paket folgt aus BT-24
 ```
 
 **Wie prüfe ich ein Factur-X- oder ZUGFeRD-PDF, Container und Rechnung?**

@@ -31,6 +31,14 @@ import org.junit.jupiter.api.io.TempDir;
  * fetch} over the network, then {@code esj validate --packs} over OpenPeppol's own examples
  * and over documents made from one of them by one change each.
  *
+ * <p>A document whose specification identifier (BT-24) names no profile of the pack is not
+ * judged by it at all, and that is the answer for the last kind of change: the identifier
+ * is how the engine chooses a pack and the rule sets in it, so {@code PEPPOL-EN16931-R004},
+ * which asks for that identifier, can only fire on a document the pack is never chosen for.
+ * Such a document stays {@code INDETERMINATE} with the bundled pack and with the Peppol
+ * pack named by {@code --pack}; the rule itself is held by OpenPeppol's own unit tests in
+ * {@code PeppolUnitTestsTest}.
+ *
  * <p>It runs only with {@code -Desj.network=true}: nothing of OpenPeppol is in this
  * repository, so the pack and the documents are fetched at test time, each document weighed
  * against the digest {@code conformance/peppol/README.md} records for it. Without the
@@ -57,7 +65,7 @@ class PeppolPackTest {
     Path directory;
 
     @Test
-    void fetchesThePackAndJudgesOpenPeppolsExamplesAndThreeBrokenDocuments() throws Exception {
+    void fetchesThePackAndJudgesOpenPeppolsExamplesAndBrokenDocuments() throws Exception {
         assumeTrue(Boolean.getBoolean(PROPERTY), "skipped: this test fetches the Peppol BIS"
                 + " Billing 3.0 artefacts and OpenPeppol's examples at test time; run the"
                 + " build with -D" + PROPERTY + "=true to include it");
@@ -105,19 +113,28 @@ class PeppolPackTest {
         String base = new String(fetch("rules/examples/base-example.xml"),
                 StandardCharsets.UTF_8);
         Map<String, String> mutations = new LinkedHashMap<>();
+        // Each change is found by the structure of UBL rather than by the text of the
+        // example, so that no part of a document of OpenPeppol stands in this file.
         mutations.put("no invoice number (BT-1)",
-                once(base, "<cbc:ID>Snippet1</cbc:ID>", "<cbc:ID></cbc:ID>"));
+                first(base, "(</cbc:ProfileID>\\s*<cbc:ID>)[^<]*(</cbc:ID>)", "$1$2"));
         mutations.put("VAT category code X on the line",
-                once(base, "<cac:ClassifiedTaxCategory>\n                <cbc:ID>S</cbc:ID>",
-                        "<cac:ClassifiedTaxCategory>\n                <cbc:ID>X</cbc:ID>"));
+                first(base, "(<cac:ClassifiedTaxCategory>\\s*<cbc:ID>)S(</cbc:ID>)", "$1X$2"));
+        mutations.put("VAT category S with the exemption reason VATEX-EU-G",
+                first(base, "(<cac:TaxSubtotal>(?:(?!</cac:TaxSubtotal>).)*?<cac:TaxCategory>"
+                        + "\\s*<cbc:ID>S</cbc:ID>\\s*<cbc:Percent>[^<]*</cbc:Percent>)",
+                        "$1<cbc:TaxExemptionReasonCode>VATEX-EU-G</cbc:TaxExemptionReasonCode>"));
         mutations.put("a business process no Peppol process names (BT-23)",
-                once(base, "<cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0",
-                        "<cbc:ProfileID>urn:example:process"));
-        // What fires, from the official artefacts and the native rules together: an
-        // identifier both engines report is listed once.
+                first(base, "(<cbc:ProfileID>)[^<]*(</cbc:ProfileID>)",
+                        "$1urn:example:process$2"));
+        // What fires, from the artefacts of the pack and the native rules together: an
+        // identifier both engines report is listed once. A code outside the code list is a
+        // rule of EN 16931 that the pack runs; a category the exemption reason contradicts
+        // is a rule of Peppol's own.
         Map<String, List<String>> expected = Map.of(
                 "no invoice number (BT-1)", List.of("BR-02", "PEPPOL-EN16931-R008"),
                 "VAT category code X on the line", List.of("BR-CL-18", "BR-S-08"),
+                "VAT category S with the exemption reason VATEX-EU-G",
+                List.of("BR-S-10", "PEPPOL-EN16931-P0104"),
                 "a business process no Peppol process names (BT-23)",
                 List.of("PEPPOL-EN16931-R007"));
         int index = 0;
@@ -135,8 +152,8 @@ class PeppolPackTest {
                     mutation.getKey() + ": " + validated.text());
         }
 
-        String unknown = once(base, "<cbc:CustomizationID>" + PEPPOL,
-                "<cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:example:cius:1.0");
+        String unknown = first(base, "(<cbc:CustomizationID>)" + Pattern.quote(PEPPOL),
+                "$1urn:cen.eu:en16931:2017#compliant#urn:example:cius:1.0");
         Path unknownFile = directory.resolve("mutation-unknown-cius.xml");
         Files.writeString(unknownFile, unknown, StandardCharsets.UTF_8);
         Cli.Run automatic = Cli.run("validate", "--packs", packs.toString(),
@@ -172,12 +189,14 @@ class PeppolPackTest {
         return codes;
     }
 
-    /** Replaces the one occurrence of a text, failing where there is not exactly one. */
-    private static String once(String text, String find, String replace) {
-        int first = text.indexOf(find);
-        assertTrue(first >= 0 && text.indexOf(find, first + 1) < 0,
-                "base-example.xml carries " + find + " once");
-        return text.replace(find, replace);
+    /**
+     * Replaces the first match of a pattern, which may span lines, failing where there is
+     * none.
+     */
+    private static String first(String text, String pattern, String replacement) {
+        Matcher matcher = Pattern.compile(pattern, Pattern.DOTALL).matcher(text);
+        assertTrue(matcher.find(), "base-example.xml has a match for " + pattern);
+        return matcher.replaceFirst(replacement);
     }
 
     private Path write(String path, byte[] bytes) throws IOException {

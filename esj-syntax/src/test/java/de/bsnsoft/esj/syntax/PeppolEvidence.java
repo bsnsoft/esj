@@ -73,17 +73,21 @@ final class PeppolEvidence {
     static byte[] fetch(String path) {
         String digest = files().get(path);
         assertNotNull(digest, "conformance/peppol/README.md lists " + path);
-        return FETCHED.computeIfAbsent(path, key -> {
-            PackRecipe recipe = PackRecipes.named(RECIPE);
-            URI url = recipe.url(key);
-            try {
-                byte[] bytes = DOWNLOAD.get(url, 8L * 1024 * 1024);
-                assertEquals(digest, PackFetcher.sha256(bytes),
-                        url + " is the file conformance/peppol/README.md records");
-                return bytes;
-            } catch (IOException e) {
-                throw new UncheckedIOException("could not fetch " + url, e);
-            }
-        });
+        byte[] cached = FETCHED.get(path);
+        if (cached != null) {
+            return cached;
+        }
+        // Fetched outside the map, so that requests for different files run side by side.
+        URI url = PackRecipes.named(RECIPE).url(path);
+        byte[] bytes;
+        try {
+            bytes = DOWNLOAD.get(url, 8L * 1024 * 1024);
+        } catch (IOException e) {
+            throw new UncheckedIOException("could not fetch " + url, e);
+        }
+        assertEquals(digest, PackFetcher.sha256(bytes),
+                url + " is the file conformance/peppol/README.md records");
+        FETCHED.putIfAbsent(path, bytes);
+        return FETCHED.get(path);
     }
 }

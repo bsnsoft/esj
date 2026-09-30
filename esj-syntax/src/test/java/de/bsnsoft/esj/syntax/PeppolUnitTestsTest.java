@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
@@ -49,6 +51,10 @@ import org.junit.jupiter.api.io.TempDir;
 class PeppolUnitTestsTest {
 
     private static final String VEFA = "http://difi.no/xsd/vefa/validator/1.0";
+
+    /** One row of the rule table of the README: identifier, expectations, result. */
+    private static final Pattern LEDGER_ROW = Pattern.compile(
+            "^\\| `([A-Z0-9-]+)` \\| (\\d+) \\| (identical|differing) \\|$", Pattern.MULTILINE);
 
     /** The rule sets each configuration of the test sets runs, by component name. */
     private static final Map<String, List<String>> CONFIGURATIONS = Map.of(
@@ -81,7 +87,9 @@ class PeppolUnitTestsTest {
                         || path.startsWith("rules/unit-CII-PEPPOL/"))
                 .toList();
         long fetchStart = System.nanoTime();
-        paths.forEach(PeppolEvidence::fetch);
+        // A hundred small files, each its own request: fetched side by side, they cost what
+        // the slowest of them costs rather than the sum.
+        paths.parallelStream().forEach(PeppolEvidence::fetch);
         Duration fetchTests = Duration.ofNanos(System.nanoTime() - fetchStart);
 
         Map<String, Rule> rules = new TreeMap<>();
@@ -143,6 +151,23 @@ class PeppolUnitTestsTest {
                 "the rules whose expectations do not all hold:\n"
                         + String.join("\n", failures));
         assertFalse(rules.isEmpty());
+        Map<String, String> measured = new TreeMap<>();
+        rules.values().forEach(rule -> measured.put(rule.code, rule.expectations + " "
+                + (rule.failed == 0 ? "identical" : "differing")));
+        assertEquals(recorded(), measured,
+                "conformance/peppol/README.md records every rule with its expectations");
+        assertEquals(6, pack.components().size(), "two schema sets and four rule sets");
+        assertEquals(30, pack.files().size(), "the files the pack writes besides its manifest");
+    }
+
+    /** Returns the rules the table of {@code conformance/peppol/README.md} records. */
+    private static Map<String, String> recorded() {
+        Map<String, String> recorded = new TreeMap<>();
+        Matcher row = LEDGER_ROW.matcher(Corpus.text("/conformance/peppol/README.md"));
+        while (row.find()) {
+            recorded.put(row.group(1), row.group(2) + " " + row.group(3));
+        }
+        return recorded;
     }
 
     /** Runs the rule sets of a configuration over one document. */

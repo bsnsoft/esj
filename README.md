@@ -141,7 +141,9 @@ The structural layers L1 to L3 against the registry. And the business rules of E
 6.4 as the pack [`rules/en16931/1.3.16`](rules/README.md) — 217 rules and seventeen dated code list
 snapshots, over the business terms. An ESJ document is written out through a binding table in
 memory so that the artefacts read it too, so every input gets all three, and a native finding is a
-layer of its own, never ESJ conformance.
+layer of its own, never ESJ conformance. The Peppol BIS Billing 3.0 artefacts may not be
+redistributed, so `esj packs fetch` makes their pack on your machine from a pinned recipe
+([`docs/validation.md`](docs/validation.md#packs-made-on-this-machine)).
 
 `VALID` and exit code 0 are given only where the complete check for that kind of input ran and found
 nothing fatal; `INVALID` and 1 follow a fatal finding in anything that ran; `INDETERMINATE` and 9

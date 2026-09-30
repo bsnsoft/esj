@@ -47,8 +47,8 @@ import java.util.stream.Stream;
  *
  * <p>Nothing is written until everything has been fetched, weighed and compiled: a file
  * that is not the one the recipe pins is refused by name and leaves the target as it was.
- * The pack is then written into a directory beside the target whose name begins with a dot,
- * which a pack directory is not read from, and moved into place in one step. A target that
+ * The pack is then written into a directory of the pack directory whose name begins with a
+ * dot, which a pack directory is not read from, and moved into place in one step. A target that
  * already holds the same pack — every file with the digest the new manifest would record —
  * is left alone; one that holds a different pack is refused unless the caller asked to
  * replace it, and even then only files its own manifest lists are removed.
@@ -601,9 +601,9 @@ public final class PackFetcher {
 
     /**
      * Writes the notice a fetched pack carries: what the files are, where each came from,
-     * under which terms, and that the pack was made on this machine. It carries no date, so
-     * and no version of the tool, so that two fetches of one recipe write the same bytes;
-     * the manifest records what compiled the rule sets.
+     * under which terms, and that the pack was made on this machine. It carries no date and
+     * no version of the tool, so that two fetches of one recipe write the same bytes; the
+     * manifest records what compiled the rule sets.
      */
     static String notice(PackRecipe recipe) {
         StringBuilder text = new StringBuilder();

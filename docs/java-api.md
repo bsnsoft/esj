@@ -812,7 +812,10 @@ PackSource source = fromDisk.source();          // SUPPLIED
 ```
 
 `source()` is the one thing about a pack that the pack does not get to say: everything else a
-report prints is read out of its manifest. Compiling a schema library and a rule set does not
+report prints is read out of its manifest. `PackCatalog.withDirectories(directories)` reads pack
+directories beside the bundled packs, and `SyntaxOptions.withPacks(catalog)` lets a document
+choose among them; `PackRecipes` and `PackFetcher` are what `esj packs fetch` runs
+([`validation.md`](validation.md#packs-made-on-this-machine)). Compiling a schema library and a rule set does not
 depend on the document, so each artefact is compiled once per process and shared; a
 `ComponentRun` reports the run and the compilation apart.
 

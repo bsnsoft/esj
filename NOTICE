@@ -317,6 +317,65 @@ Validation packs (packs/)
     release states in its customLevel elements. packs/SOURCES.md lists all of
     them.
 
+Pack recipes (packs/recipes/)
+  A recipe is this project's own file: it names the files of one release of a
+  publisher, with their SHA-256, that the command esj packs fetch downloads and
+  compiles on the machine that runs it. The recipe peppol-bis-billing-3.0.20
+  names the Peppol BIS Billing 3.0 validation artefacts, as published by
+  OpenPeppol AISBL at https://github.com/OpenPEPPOL/peppol-bis-invoice-3. Those
+  artefacts carry no open-source licence, and OpenPeppol AISBL permits their
+  modification, redistribution, sale or repackaging only with its prior consent,
+  so none of them is part of this repository or of any artefact this project
+  publishes; they travel from the publisher to the user. This project claims no
+  endorsement by OpenPeppol.
+
+ISO Schematron XSLT 2 skeleton (esj-syntax/src/main/resources/de/bsnsoft/esj/
+syntax/schematron/)
+  The files iso_dsdl_include.xsl, iso_abstract_expand.xsl, iso_svrl_for_xslt2.xsl
+  and iso_schematron_skeleton_for_saxon.xsl are the XSLT 2 implementation of ISO
+  Schematron, 2010 release, by Rick Jelliffe with the Academia Sinica Computing
+  Centre, Taiwan, published under the MIT licence:
+
+    Copyright (c) 2008-2010 Rick Jelliffe (iso_dsdl_include.xsl)
+    Copyright (c) 2004-2010 Rick Jellife and Academia Sinica Computing Centre,
+    Taiwan (iso_abstract_expand.xsl, iso_svrl_for_xslt2.xsl)
+    Copyright (c) 2000-2010 Rick Jellife and Academia Sinica Computing Centre,
+    Taiwan (iso_schematron_skeleton_for_saxon.xsl)
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+    IN THE SOFTWARE.
+
+  They are byte-for-byte copies of external/schematron/20100710-xslt2/ of the
+  artefact com.helger.schematron:ph-schematron-xslt:8.0.6 of Maven Central,
+  published by Philip Helger under the Apache License, Version 2.0; that copy
+  carries seven changes, each marked with a comment beginning [ph]. Its NOTICE
+  reads:
+
+    This product includes Open Source Software developed by
+    Philip Helger - https://www.helger.com/
+
+    This product includes Open Source Software developed by phloc systems
+    (http://www.phloc.com/)
+
+  The LICENSE and the README.md beside the files carry the notice, the origin
+  and the SHA-256 of every file. esj packs fetch compiles the Schematron files of
+  a recipe with them, on the machine that runs it.
+
 Saxon-HE (dependency of esj-xr)
   esj-xr depends at runtime on net.sf.saxon:Saxon-HE, published by Saxonica Limited
   under the Mozilla Public License, Version 2.0 (https://www.mozilla.org/MPL/2.0/).
@@ -464,6 +523,8 @@ The self-contained jar of the command line tool (esj-cli/target/esj.jar)
       Liberation Sans faces under the SIL Open Font License, Version 1.1, the sRGB
       profile of the International Color Consortium and the tables of display names,
       each under the entry above.
+    - The files of esj-syntax, with that module's classes: the validation packs,
+      the pack recipes and the ISO Schematron skeleton, each under the entry above.
     - xmlresolver, published by Norman Walsh under the Apache License, Version 2.0;
       source at https://github.com/xmlresolver/xmlresolver. It is a dependency of
       Saxon-HE.
@@ -507,4 +568,5 @@ The packaged artefacts (dist/package.sh)
   (picocli-codegen, Apache License, Version 2.0) writes reachability metadata into
   the jar and is on no class path at run time.
 
-No Peppol material is included in this repository.
+No Peppol material is included in this repository or in any artefact it
+publishes; the recipe named above says where a user fetches it from.

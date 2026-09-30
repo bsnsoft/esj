@@ -102,7 +102,7 @@ One process reads **one document** and writes **one result**.
 |---|---|
 | 0 | success |
 | 1 | a validation found an error, the profile of a container puts the rules of EN 16931 out of scope, two documents differ, or `esj get` found no value |
-| 2 | the input could not be read, recognized or parsed, or the command line could not be parsed |
+| 2 | the input could not be read, recognized or parsed, a validation pack could not be read or fetched, or the command line could not be parsed |
 | 3 | not this tool's: the out-of-memory abort under `-XX:+ExitOnOutOfMemoryError`; its notice goes to the standard output from a JVM and to the error stream from the native executable, so it is a crash and no verdict |
 | 4 | a feature this version does not implement, such as a ZUGFeRD 1.0 attachment |
 | 5 | an internal error |

@@ -11,9 +11,9 @@ corrected by their owners; a Java translation of an XPath expression would be a 
 opinion with its own release cycle, and a wrong one on the day the owner ships a fix. So the
 artefacts travel as data and the engine is the only thing this project writes.
 
-Nothing under `packs/` is this project's work. Every file keeps the licence it came with, and
-[`SOURCES.md`](SOURCES.md) records for each one where it came from, under which licence, with
-which digest and on which day it was fetched.
+Nothing under `packs/` is this project's work but the recipes under `recipes/` ([Recipes](#recipes)).
+Every other file keeps the licence it came with, and [`SOURCES.md`](SOURCES.md) records for each
+one where it came from, under which licence, with which digest and on which day it was fetched.
 
 ## Layout
 
@@ -21,6 +21,7 @@ which digest and on which day it was fetched.
 packs/
   README.md                       this file
   SOURCES.md                      provenance, licences and digests
+  recipes/<name>.json             a recipe: how to make a pack that may not be redistributed
   <pack id>/<version>/<release>/  one pack
     pack.json                     the manifest
     cen/<version>/                the CEN/TC 434 EN 16931 Schematron, compiled to XSLT
@@ -42,7 +43,8 @@ every report.
 **`components`** is what the engine reads. One entry per artefact: its `role` (`xsd` or
 `schematron-xslt`), the `entry` file to load per document syntax, the files that belong to it,
 its `license`, the licence or notice file beside it, the URL it was published at and the
-archive it was taken from, and `unmodified`, which is always true.
+archive it was taken from, and `unmodified`, which is true for every file of a bundled pack and
+false only for a rule set a recipe compiled on the user's machine.
 
 **`levels`** is what each profile says about rules of those artefacts. An artefact flags each
 of its rules, and that flag is what it says about the rule in general; a core invoice usage
@@ -92,8 +94,12 @@ is judged on the flags of the artefacts alone.
 `esj --list-packs` prints what a build carries, component by component, with the licence of
 each. `esj validate --pack <directory|id>` overrides the choice: a directory holding a
 `pack.json`, which is how a release newer than a build reaches the engine, or the identity of a
-bundled pack. Nothing is ever fetched at run time, and a pack directory is a directory of files
-the tool will execute, so where it came from is the caller's business.
+pack. `--packs <directory>` and the environment variable `ESJ_PACKS` add **pack directories**,
+laid out as this one is, `<id>/<version>/<release>/pack.json`; their packs join the bundled ones
+and are chosen the same way. A pack there with the identity of a bundled one is refused, and so
+is a document whose profile a pack there and another pack both recognize: `--pack` chooses.
+Nothing is ever fetched at run time, and a pack directory is a directory of files the tool will
+execute, so where it came from is the caller's business.
 
 ## Adding a release
 
@@ -109,6 +115,51 @@ old digests stay valid for every report that ever named them. Adding one is:
    named rather than discovered;
 5. run `mvn -B -q verify`, which checks the digests, the inventory and that the index and
    the packaged packs are the same list.
+
+## Recipes
+
+Some artefacts may be used and not redistributed: the Peppol BIS Billing 3.0 validation
+artefacts, as published by OpenPeppol, carry no open-source licence. They are not in this
+directory, and a **recipe** takes their place — this project's own file, packaged into the jar
+like a pack and named in `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/bundled-recipes.json`.
+`esj packs fetch <recipe> --into <directory>` follows it on the machine that runs it.
+
+[`recipes/peppol-bis-billing-3.0.20.json`](recipes/peppol-bis-billing-3.0.20.json) names:
+
+- the identity of the pack it makes, `peppol-bis-billing/3.0/3.0.20`;
+- the release it takes the files from: repository, tag `v3.0.20`, the commit the tag named when
+  the recipe was written, and the base URL the files are fetched below;
+- each Schematron file, with its size, its SHA-256, the syntaxes and profiles its rule set
+  applies to, its licence and the directory of the pack it goes into;
+- the components it copies out of a bundled pack — the UBL 2.1 and CII D16B schema modules of
+  `xrechnung/3.0.2/2026-08-31`, whose notices permit it — so that the pack is complete;
+- `baseProfiles`, as a manifest has them.
+
+A file whose bytes are not the ones pinned is refused by name and nothing is written, so a
+release its publisher changed after the recipe was written needs a new recipe, not a new fetch.
+The Schematron files are compiled to XSLT in process with the ISO Schematron XSLT 2 skeleton of
+`esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/schematron/`, MIT-licensed, whose
+`README.md` records its origin and digests; a schema that includes a file the recipe does not
+name is refused.
+
+A fetched pack is a pack like any other and is read by the same code:
+
+```text
+<directory>/peppol-bis-billing/3.0/3.0.20/
+  pack.json                  the manifest this module reads, written by the fetch
+  NOTICE                     what the files are, where each came from, under which terms
+  cen/1.3.15/                the EN 16931 Schematron the release ships, and its compiled form
+  peppol/3.0.20/             the Peppol Schematron for UBL and for CII, and its compiled form
+  xsd/ubl-2.1/, xsd/cii-d16b/  copied from the bundled pack, with their notices
+```
+
+Its manifest has two members a bundled one has not: `note`, one line on the terms of the files,
+which `esj --list-packs` prints, and `recipe`, the recipe, the repository, the tag, the commit and
+what compiled the rule sets. A compiled rule set is a component with `unmodified` false, the
+source it was compiled from listed beside it, and the fetched source in `files` too, so that the
+pack can be reviewed on the machine that holds it. `retrieved` is the day of the fetch; everything
+else is a function of the recipe, the skeleton and the Schematron processor, so a second fetch
+writes the same files and leaves the pack alone.
 
 ## Size
 

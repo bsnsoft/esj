@@ -5,7 +5,8 @@ The four stylesheets in this directory are the XSLT 2 implementation of ISO Sche
 Taiwan. `esj packs fetch` compiles the Schematron files a recipe fetches with them, in the three
 stages the skeleton defines: `iso_dsdl_include.xsl`, `iso_abstract_expand.xsl`, then
 `iso_svrl_for_xslt2.xsl`, which imports `iso_schematron_skeleton_for_saxon.xsl`. The compiled
-artefacts of the bundled packs were produced by their publishers with the same skeleton.
+artefacts of the bundled packs are the output of an XSLT 2 skeleton of the same family, run by
+their publishers; which copy of it, the files do not say.
 
 | Item | Value |
 |---|---|
