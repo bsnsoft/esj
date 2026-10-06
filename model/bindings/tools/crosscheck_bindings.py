@@ -119,6 +119,14 @@ EXPLANATIONS = {
     " `cac:ProjectReference`, so BT-11 is bound to `cac:AdditionalDocumentReference`"
     " there, and the rule does not apply to this table. The CEN artefact holds the rules"
     " of both document types in one file.",
+    ("ubl-creditnote.json", "BG-DEX-06", "different node"): "The stylesheet matches the"
+    " sub line VAT group on `cac:SubCreditNoteLine/cac:ClassifiedTaxCategory`, an element"
+    " the line type of UBL 2.1 does not have; the category sits in `cac:Item`, where the"
+    " invoice stylesheet and the invoice table read it, so the stylesheet never emits the"
+    " group. The terms of a sub credit note line it reads from absolute paths of the"
+    " credit note line, so the XSLT import gives every sub line the values of the first"
+    " credit note line of the document and reads no nested sub line;"
+    " `conformance/readers.md` says where the two readers part.",
     ("cii.json", "BT-7", "hand-built"): "The stylesheet reads the tax point date inside"
     " a block that gathers distinct values, so the term has no template of its own.",
     ("cii.json", "BT-149", "hand-built"): "The stylesheet chooses between the gross and"

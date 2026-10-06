@@ -31,7 +31,7 @@ public record WriteNote(WriteNote.Kind kind, String path, String message, String
          * The binding table gives the term no place in this syntax. The terms of a registry
          * the syntax binding does not cover are the case of this release: the XRechnung
          * extension binds its own terms, and the core terms its sub invoice lines carry,
-         * for UBL Invoice alone, so a document that uses it cannot say those values in a
+         * for UBL alone, so a document that uses it cannot say those values in a
          * cross industry invoice.
          */
         TERM_NOT_BOUND,

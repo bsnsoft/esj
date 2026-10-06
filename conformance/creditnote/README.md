@@ -56,3 +56,47 @@ one whose code is 50. The stylesheet therefore reads the invoiced object identif
 supporting document as well, and the index of the real supporting document moves by one. The
 CEN validation artefact of `packs/` writes the exclusion of 130 that the table follows;
 `conformance/bindings/crosscheck.md` records the difference.
+
+## The extension: sub credit note lines
+
+`04.01a-CREDITNOTE_ubl.xml` is a modified copy of
+`../kosit/business-cases/extension/04.01a-INVOICE_ubl.xml` of the XRechnung test suite (KoSIT,
+Apache License 2.0, tag v2026-08-31; `NOTICE` carries the attribution). The changes, and
+nothing else:
+
+| Invoice | Credit note |
+|---|---|
+| `ubl:Invoice` in the Invoice namespace | `ubl:CreditNote` in the CreditNote namespace |
+| `cbc:InvoiceTypeCode` `380` | `cbc:CreditNoteTypeCode` `381` |
+| `cac:InvoiceLine` | `cac:CreditNoteLine` |
+| `cac:SubInvoiceLine` | `cac:SubCreditNoteLine` |
+| `cbc:InvoicedQuantity` | `cbc:CreditedQuantity` |
+
+plus a comment before the root element that says so. It validates against the UBL 2.1 XSD, the
+CEN Schematron and the XRechnung Schematron of `packs/` with no finding.
+`04.01a-CREDITNOTE_ubl.esj.json` is what the streaming reader builds from it.
+
+The tailoring model of the extension binds the sub invoice line for UBL Invoice only, so until
+0.9.4 `ubl-creditnote.json` left the thirteen sub lines of this document unread — 130 values,
+without an observation. Two corrections of that table carry them now
+(`../../model/bindings/README.md`, "Corrections").
+
+`CreditNoteExtensionTest` in `esj-bindings` asserts:
+
+- the streaming reader reads every sub line at both depths, quantity from `cbc:CreditedQuantity`;
+- the document says what the invoice of the corpus says — the two differ at `/BT-3` and nowhere
+  else;
+- the pretty form of what the streaming reader builds is the checked-in file;
+- written by `UblWriter`, the document is a UBL Credit Note with thirteen
+  `cac:SubCreditNoteLine` elements, the pack accepts it, and reading it gives the document back.
+
+### Where the XSLT path parts
+
+The vendored `ubl-creditnote-xr.xsl` of KoSIT matches `cac:SubCreditNoteLine`, but reads the
+terms of a sub line from absolute paths of the credit note line, so every sub line carries the
+values of the first credit note line of the document; it does not descend into a nested sub
+line, and it matches the sub line VAT group on `cac:SubCreditNoteLine/cac:ClassifiedTaxCategory`,
+an element the schema does not have. `esj convert --importer xslt` therefore reads 32 values
+inside the sub lines where the streaming reader reads 130, and 114 paths differ, every one of
+them inside `BG-DEX-01`. The stylesheet stays byte-identical to the KoSIT release and is not a
+source of the binding; `../bindings/crosscheck.md` records the difference for BG-DEX-06.

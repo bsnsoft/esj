@@ -456,7 +456,7 @@ class ValidateCommandTest {
      * A term the writer had no place for makes the row not applicable, not a verdict.
      *
      * <p>The extension instances of the corpus carry sub invoice lines of the XRechnung
-     * extension, which the source model binds for UBL Invoice alone. The cross industry
+     * extension, which the binding tables carry for UBL alone. The cross industry
      * invoice written from one of them is a different document — its amounts no longer add
      * up, which is what {@code conformance/writers/cii-roundtrip.md} records — so an
      * artefact's verdict over it would be about something else, and the run says so

@@ -69,7 +69,8 @@ $ ESJ_JAVA_OPTS='-Xmx2g' bin/esj convert --limits large big.xml
 
 The jar every other artefact is built from. It runs on any JRE from 17, which is the release
 the library is compiled for, and it is what to embed in an application that already has a
-virtual machine. `bin/esj` in the archive resolves the jar beside it and passes the same
+virtual machine. It carries Saxon-HE 13.0 unrelocated; an application with Saxon 12.x on the class
+path loses the HTML pages ([`java-api.md`](java-api.md)). `bin/esj` in the archive resolves the jar beside it and passes the same
 options of the process boundary, and the same `ESJ_JAVA_OPTS`, as the one in a checkout.
 
 ## Container image

@@ -125,6 +125,19 @@
       <scope>test</scope>
     </dependency>
 
+    <!--
+      The bill of materials, for one test only: MavenCoordinatesTest reads the flattened POM
+      that esj-bom deploys, and this dependency builds esj-bom before this module. Type pom
+      and test scope: it declares no dependency, and nothing of it reaches an artefact.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-bom</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

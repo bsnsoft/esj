@@ -208,6 +208,12 @@ class BindingTablesTest {
                 "/CreditNote/cac:AdditionalDocumentReference",
                 "/CreditNote/cac:AllowanceCharge",
                 "/CreditNote/cac:AllowanceCharge/cac:TaxCategory",
+                "/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine/cac:AllowanceCharge",
+                "/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine/cac:DocumentReference",
+                "/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine/cac:Item"
+                        + "/cac:ClassifiedTaxCategory",
+                "/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine/cac:Price"
+                        + "/cac:AllowanceCharge",
                 "/CreditNote/cac:CreditNoteLine/cac:AllowanceCharge",
                 "/CreditNote/cac:CreditNoteLine/cac:DocumentReference",
                 "/CreditNote/cac:CreditNoteLine/cac:Item/cac:ClassifiedTaxCategory",

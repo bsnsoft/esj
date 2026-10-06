@@ -130,7 +130,7 @@ warning: 130 values of the document have no place in this syntax and were not wr
 ...
 ```
 
-Those are the sub invoice lines of the XRechnung extension, which it binds for UBL Invoice alone.
+Those are the sub invoice lines of the XRechnung extension, which it binds for UBL alone.
 The `info:` line is the other half of a conversion: a core invoice usage specification states its
 levels per scenario, and a scenario is a profile *and* a syntax, so the file written here will be
 judged by the target syntax's table ([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-profile-as-an-artefacts-is)).

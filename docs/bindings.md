@@ -37,7 +37,8 @@ the document, so it costs minutes where the other costs seconds.
   differing path, every cause, what each reader reports that the other does not, and the one
   class of document where the streaming reader gives way.
 - [`conformance/creditnote/README.md`](../conformance/creditnote/README.md) — the corpus holds
-  no UBL Credit Note, so the credit note table is measured by one document written for it.
+  no UBL Credit Note, so the credit note table is measured by two documents written for it, one
+  of them with the sub credit note lines of the XRechnung extension.
 - [`cli.md`](cli.md), *Which reader* — the switch and what it changes.
 
 **Which registry each door starts from.** A reader can only represent the terms a registry

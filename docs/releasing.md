@@ -11,7 +11,7 @@ is published from a workstation.
 
 | Channel | Artefacts |
 |---|---|
-| Maven Central, `de.bsnsoft.esj` | the eleven modules a build can depend on, `esj-generator` among them, each with its source and Javadoc jar; the aggregator POM they inherit from; `esj-bom` |
+| Maven Central, `de.bsnsoft.esj` | the eleven modules a build can depend on, `esj-generator` among them, each with its source and Javadoc jar; the aggregator POM they inherit from; `esj-bom`, flattened (no parent, only these modules managed) |
 | GitHub release assets | the native executables, the runtime image, the release zip and their checksums ([`install.md`](install.md)) |
 | GitHub container registry, `ghcr.io/bsnsoft/esj` | the container image of `dist/Dockerfile` for linux/amd64 and linux/arm64: the tags `<version>` and `latest` name both platforms, `<version>-linux-amd64` and `<version>-linux-arm64` one each ([`install.md`](install.md#container-image)) |
 

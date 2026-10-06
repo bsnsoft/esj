@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -74,6 +75,48 @@ class MavenCoordinatesTest {
         }
 
         assertEquals(published, managed, THE_BOM + " has to manage every published module");
+    }
+
+    /**
+     * A build that imports the bill of materials takes over its whole dependencyManagement,
+     * the inherited part included. The POM esj-bom deploys is therefore the flattened one:
+     * no parent, no properties, and nothing managed but the modules of this project — not
+     * the JUnit, Saxon or PDFBox versions the aggregator manages for this build. It keeps
+     * the metadata Maven Central asks for.
+     */
+    @Test
+    void theBillOfMaterialsManagesNothingButThisProject() {
+        Path flattened = repository().resolve(THE_BOM).resolve("target").resolve(THE_BOM + ".pom");
+        assertTrue(Files.isRegularFile(flattened), flattened + " is written when esj-bom is built");
+        String pom = read(flattened);
+        assertFalse(pom.contains("<parent>"), "the deployed POM inherits nothing");
+        assertFalse(pom.contains("<properties>"), "the deployed POM sets no property");
+        assertFalse(pom.contains("<build>"), "the deployed POM carries no build");
+
+        String managed = block(pom, "dependencyManagement");
+        Matcher group = Pattern.compile("<groupId>([^<]+)</groupId>").matcher(managed);
+        Set<String> groups = new LinkedHashSet<>();
+        while (group.find()) {
+            groups.add(group.group(1));
+        }
+        assertEquals(Set.of("de.bsnsoft.esj"), groups, "managed groups");
+        assertFalse(managed.contains("<scope>import</scope>"), "no bill of materials of others");
+
+        Set<String> published = new LinkedHashSet<>(modules());
+        published.remove(THE_TOOL);
+        published.remove(THE_BOM);
+        Set<String> artifacts = new LinkedHashSet<>();
+        Matcher artifact = ARTIFACT_ID.matcher(managed);
+        while (artifact.find()) {
+            artifacts.add(artifact.group(1));
+        }
+        assertEquals(published, artifacts, "the deployed POM manages every published module");
+
+        for (String element : List.of("name", "description", "url", "licenses", "developers",
+                "scm")) {
+            assertTrue(pom.contains("<" + element + ">") || pom.contains("<" + element + " "),
+                    "Maven Central asks for <" + element + ">");
+        }
     }
 
     @Test

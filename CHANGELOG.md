@@ -37,6 +37,10 @@ still change; a change to it is named here under *Format*.
   (`not XML`, `application/json`, `Supplement`), `esj extract --attachment invoice.esj.json`
   hands out its bytes, and `esj validate` reports nothing about it. A PDF whose one attachment it
   is carries no invoice (exit code 2).
+- `docs/java-api.md` names Saxon-HE 13.0 as the minimum: with 12.x the XML Schema, Schematron
+  and XSLT path still run, and every HTML page of `esj-render`, the HTML report included, fails
+  with `AbstractMethodError` (`UnparsedTextURIResolver`). `docs/install.md` notes that the jar
+  carries Saxon-HE 13.0 unrelocated.
 
 ### Removed
 
@@ -56,6 +60,26 @@ still change; a change to it is named here under *Format*.
   `AttachmentKind.ESJ_DOCUMENT`, `ContainerFinding.Category.PDF_ESJ` and the three-argument
   `ContainerChecks.run`; in `esj-core` the phrases `Phrase.ROW_PDF_ESJ`, `ESJ_ATTACHMENT` and
   `ESJ_ATTACHMENT_PARTLY`.
+
+### Fixed
+
+- UBL Credit Notes keep the sub lines of the XRechnung extension. The extension's source binds
+  them for UBL Invoice only, so the streaming reader dropped every `cac:SubCreditNoteLine`
+  without an observation, and the writer had no place for BG-DEX-01. `ubl-creditnote.json` now
+  binds BG-DEX-01 to BG-DEX-08 and the 36 core terms a sub line reuses below
+  `cac:CreditNoteLine//cac:SubCreditNoteLine`, quantity from `cbc:CreditedQuantity` (two
+  corrections, `model/bindings/README.md`). BG-DEX-09 and BT-DEX-001 to BT-DEX-003 stay unbound:
+  UBL 2.1 gives the credit note no `cac:PrepaidPayment`. Measured on
+  `conformance/creditnote/04.01a-CREDITNOTE_ubl.xml`, the KoSIT extension instance 04.01a as a
+  credit note: read, written, read again and accepted by the pack, with the values of the
+  invoice. The XSLT path (`--importer xslt`) still gives every sub credit note line the values
+  of the first credit note line, a defect of the vendored KoSIT stylesheet
+  (`conformance/creditnote/README.md`).
+- `esj-bom` no longer hands on the versions the build of this project manages. The deployed POM
+  is flattened: no parent, no properties, and only the modules of this project in
+  `dependencyManagement`. Importing 0.9.0 to 0.9.3 also imported JUnit 6.1.3, Saxon-HE, PDFBox,
+  Jackson and the PostgreSQL test binaries, and so decided the JUnit version of the importing
+  build.
 
 ## [0.9.3] — 2026-09-29
 
