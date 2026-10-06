@@ -66,7 +66,7 @@ esj validate --extension xrechnung invoice.xml   # with the extension terms of X
 redistributed, so esj carries a recipe and makes the pack on the machine that runs it
 ([`validation.md`](validation.md#packs-made-on-this-machine)).
 ```sh
-esj packs fetch peppol-bis-billing-3.0.20 --into esj-packs   # once, over the network: SHA-256 checked, compiled here
+esj packs fetch peppol-bis-billing --into esj-packs   # once, over the network: release 3.0.21, SHA-256 checked, compiled here
 esj validate --packs esj-packs invoice.xml  # or ESJ_PACKS=esj-packs; the pack follows BT-24
 ```
 

@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -23,7 +24,8 @@ import java.util.regex.Pattern;
  * than compiled.
  *
  * <p>A recipe names four kinds of fact: the identity of the pack it makes; the release of
- * the publisher it takes the files from, by repository, tag and base URL; the Schematron
+ * the publisher it takes the files from, by repository, tag or commit and base URL; the
+ * Schematron
  * files, each with its size, its SHA-256, the syntaxes and profiles it applies to and its
  * licence; and the components it copies out of a bundled pack — the XML Schema modules of
  * the syntaxes, whose licences permit that — so that the pack it makes is complete.
@@ -40,6 +42,9 @@ public final class PackRecipe {
 
     private static final Pattern SHA256 = Pattern.compile("[0-9a-f]{64}");
 
+    /** A full Git commit identifier. */
+    private static final Pattern COMMIT = Pattern.compile("[0-9a-f]{40}");
+
     /** A path of a pack or of a publisher's repository: relative, no {@code ..}, no {@code \}. */
     private static final Pattern RELATIVE_PATH = Pattern.compile(
             "[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*");
@@ -53,6 +58,7 @@ public final class PackRecipe {
     private final String publisher;
     private final String repository;
     private final String tag;
+    private final String branch;
     private final String commit;
     private final String releaseName;
     private final String published;
@@ -72,11 +78,25 @@ public final class PackRecipe {
         this.release = segment(pack, "release", where);
         this.publisher = string(source, "publisher", where);
         this.repository = string(source, "repository", where);
-        this.tag = string(source, "tag", where);
+        this.tag = optionalString(source, "tag", where);
+        this.branch = optionalString(source, "branch", where);
         this.commit = string(source, "commit", where);
+        if (!COMMIT.matcher(commit).matches()) {
+            throw new PackException(where + " names the commit " + commit + ", which is not a"
+                    + " full commit identifier in lower case hexadecimal");
+        }
         this.releaseName = string(source, "release", where);
         this.published = string(source, "published", where);
         this.base = base(string(source, "base", where), where);
+        // The base is what the files are fetched below, so it is what pins them: below the
+        // tag where the release has one, and below the commit itself where it has none. A
+        // branch is never a base, because a branch moves.
+        String pinned = "/" + (tag != null ? tag : commit) + "/";
+        if (!base.toString().contains(pinned)) {
+            throw new PackException(where + " fetches below " + base + ", which is not below "
+                    + (tag != null ? "the tag " + tag : "the commit " + commit)
+                    + "; a recipe without a tag fetches below the commit it names");
+        }
         this.baseProfiles = strings(root, "baseProfiles", where);
         List<Copy> copied = new ArrayList<>();
         for (Object element : array(root, "copy", where)) {
@@ -310,23 +330,60 @@ public final class PackRecipe {
     }
 
     /**
-     * Returns the tag of the release the files are taken from.
+     * Returns the tag of the release the files are taken from, where the publisher tagged
+     * the release.
      *
-     * @return the tag
+     * @return the tag, or an empty optional where the release has none and the files are
+     *         fetched below the {@link #commit() commit}
      */
-    public String tag() {
-        return tag;
+    public Optional<String> tag() {
+        return Optional.ofNullable(tag);
     }
 
     /**
-     * Returns the commit the tag named when the recipe was written. The files are fetched by
-     * the tag and weighed against their digests; the commit is recorded so that a reader can
-     * find the same tree if the tag is ever moved.
+     * Returns the branch the commit was found on when the recipe was written, where the
+     * release has no tag. It is recorded for a reader; the files are never fetched by it.
      *
-     * @return the commit
+     * @return the branch, or an empty optional
+     */
+    public Optional<String> branch() {
+        return Optional.ofNullable(branch);
+    }
+
+    /**
+     * Returns the commit of the release. Where the release has a tag, it is the commit the
+     * tag named when the recipe was written: the files are fetched by the tag and weighed
+     * against their digests, and the commit is recorded so that a reader can find the same
+     * tree if the tag is ever moved. Where it has none, the files are fetched below the
+     * commit itself.
+     *
+     * @return the commit, forty lower case hexadecimal digits
      */
     public String commit() {
         return commit;
+    }
+
+    /**
+     * Returns what the files are fetched by, in words: {@code tag v3.0.20}, or
+     * {@code commit <forty digits> (branch <name>)} for a release without a tag.
+     *
+     * @return the revision
+     */
+    public String revision() {
+        if (tag != null) {
+            return "tag " + tag;
+        }
+        return "commit " + commit + (branch == null ? "" : " (branch " + branch + ")");
+    }
+
+    /**
+     * Returns the tag, or for a release without one the commit, as a path segment of the
+     * publisher's repository.
+     *
+     * @return the tag or the commit
+     */
+    public String treeish() {
+        return tag != null ? tag : commit;
     }
 
     /**
@@ -506,6 +563,18 @@ public final class PackRecipe {
             return text;
         }
         throw new PackException(where + " has no member " + name + " that is a JSON string");
+    }
+
+    private static String optionalString(Map<?, ?> object, String name, String where) {
+        Object value = object.get(name);
+        if (value == null && !object.containsKey(name)) {
+            return null;
+        }
+        if (value instanceof String text && !text.isEmpty()) {
+            return text;
+        }
+        throw new PackException(where + " has a member " + name + " that is not a non-empty"
+                + " JSON string");
     }
 
     private static List<?> array(Map<?, ?> object, String name, String where) {

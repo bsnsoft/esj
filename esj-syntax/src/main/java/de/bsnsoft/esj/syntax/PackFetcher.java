@@ -515,7 +515,12 @@ public final class PackFetcher {
             json.writeStringField("name", recipe.name());
             json.writeStringField("publisher", recipe.publisher());
             json.writeStringField("repository", recipe.repository());
-            json.writeStringField("tag", recipe.tag());
+            if (recipe.tag().isPresent()) {
+                json.writeStringField("tag", recipe.tag().get());
+            }
+            if (recipe.branch().isPresent()) {
+                json.writeStringField("branch", recipe.branch().get());
+            }
             json.writeStringField("commit", recipe.commit());
             json.writeStringField("compiledWith", SchematronCompiler.SKELETON + ", "
                     + net.sf.saxon.Version.getProductTitle() + ", " + tool);
@@ -535,7 +540,7 @@ public final class PackFetcher {
                 component(json, rule.name(), ComponentRole.SCHEMATRON_XSLT.token(),
                         rule.syntaxes(), rule.profiles(), entries,
                         List.of(rule.compiled(), rule.source()), rule.license(), NOTICE,
-                        recipe.repository() + "/tree/" + recipe.tag() + "/"
+                        recipe.repository() + "/tree/" + recipe.treeish() + "/"
                                 + rule.file().substring(0, rule.file().lastIndexOf('/') + 1),
                         recipe.url(rule.file()).toString(), false);
             }
@@ -612,7 +617,7 @@ public final class PackFetcher {
                 .append(" recipe ").append(recipe.name()).append(".\n")
                 .append(recipe.note()).append("\n\n");
         text.append("Fetched from ").append(recipe.publisher()).append(", ")
-                .append(recipe.repository()).append(", tag ").append(recipe.tag())
+                .append(recipe.repository()).append(", ").append(recipe.revision())
                 .append(" (").append(recipe.releaseName()).append(", published ")
                 .append(recipe.published()).append("), byte for byte and each weighed")
                 .append(" against the SHA-256 the recipe pins:\n\n");

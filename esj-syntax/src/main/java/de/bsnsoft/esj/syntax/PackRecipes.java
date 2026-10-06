@@ -4,6 +4,7 @@ import de.bsnsoft.esj.xr.XrSyntax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,11 +43,18 @@ public final class PackRecipes {
     }
 
     /**
-     * Returns one recipe by its name.
+     * Returns one recipe by its name, or by the identifier of the pack it makes.
      *
-     * @param name the name, for example {@code peppol-bis-billing-3.0.20}
+     * <p>A recipe's own name, for example {@code peppol-bis-billing-3.0.20}, names that
+     * recipe. The identifier of a pack, for example {@code peppol-bis-billing}, names the
+     * recipe of its newest release among the recipes this build carries, by the order of
+     * releases ({@code 3.0.9} before {@code 3.0.10}); a build that adds a newer release
+     * moves it there, and the recipe's own name keeps naming the older one.
+     *
+     * @param name the name of a recipe, or the identifier of a pack
      * @return the recipe
-     * @throws PackException        if no recipe of that name is carried
+     * @throws PackException        if no recipe of that name, and none of a pack of that
+     *                              identifier, is carried
      * @throws NullPointerException if {@code name} is {@code null}
      */
     public static PackRecipe named(String name) {
@@ -56,14 +64,35 @@ public final class PackRecipes {
                 return recipe;
             }
         }
+        Optional<PackRecipe> newest = bundled().stream()
+                .filter(recipe -> recipe.id().equals(name))
+                .max(Comparator.comparing(PackRecipe::version, Releases.ORDER)
+                        .thenComparing(PackRecipe::release, Releases.ORDER));
+        if (newest.isPresent()) {
+            return newest.get();
+        }
         throw new PackException("no recipe " + name + " is carried by this build; there "
                 + (bundled().size() == 1 ? "is " : "are ") + String.join(", ",
                         bundled().stream().map(PackRecipe::name).toList()));
     }
 
     /**
-     * Returns the first recipe whose pack brings the rules of the core invoice usage
-     * specification a document names, where one does.
+     * Tells whether a recipe is the one the identifier of its pack names: the newest release
+     * of that pack this build carries.
+     *
+     * @param recipe a recipe of this build
+     * @return whether {@code esj packs fetch <id>} follows it
+     * @throws NullPointerException if {@code recipe} is {@code null}
+     */
+    public static boolean isNewest(PackRecipe recipe) {
+        Objects.requireNonNull(recipe, "recipe");
+        return named(recipe.id()).name().equals(recipe.name());
+    }
+
+    /**
+     * Returns the recipe whose pack brings the rules of the core invoice usage
+     * specification a document names, where one does: of several releases of one pack, the
+     * newest.
      *
      * @param syntax          the syntax of the document
      * @param customizationId the customization identifier the document names in BT-24
@@ -74,9 +103,13 @@ public final class PackRecipes {
                                                         String customizationId) {
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");
-        return bundled().stream()
+        List<PackRecipe> bringing = bundled().stream()
                 .filter(recipe -> recipe.bringsRulesFor(syntax, customizationId))
-                .findFirst();
+                .toList();
+        return bringing.stream().findFirst().flatMap(first -> bringing.stream()
+                .filter(recipe -> recipe.id().equals(first.id()))
+                .max(Comparator.comparing(PackRecipe::version, Releases.ORDER)
+                        .thenComparing(PackRecipe::release, Releases.ORDER)));
     }
 
     /** Returns the names the index lists. */

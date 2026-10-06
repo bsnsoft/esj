@@ -79,15 +79,24 @@ it publishes. What esj carries instead is its own work: a recipe that names the 
 release with their SHA-256, and the command that follows it.
 
 ```text
-$ esj packs fetch peppol-bis-billing-3.0.20 --into ~/esj-packs
+$ esj packs fetch peppol-bis-billing --into ~/esj-packs
 $ esj validate --packs ~/esj-packs invoice.xml
 ```
 
-`esj packs fetch` downloads the four Schematron files of tag `v3.0.20` from the OpenPeppol
+This build carries two recipes: `peppol-bis-billing-3.0.21`, the May 2026 release that is
+mandatory from 2026-08-17, and `peppol-bis-billing-3.0.20`. `peppol-bis-billing`, the identifier
+of the pack, names the newest release this build carries; a recipe's own name names that
+release. OpenPeppol tagged 3.0.20 (`v3.0.20`) but not 3.0.21, so the 3.0.21 recipe fetches below
+the commit `806866bd2bd91d7e9623b68f08164e8fbe9e67a0` of the branch `2026-Q2-QA2` — never below a
+branch name, which moves. Its two UBL files were, when the recipe was written, byte for byte the
+ones OpenPeppol publishes under `docs.peppol.eu/poacc/billing/3.0/files/`; the CII files are
+published only in the repository.
+
+`esj packs fetch` downloads the four Schematron files of the release from the OpenPeppol
 repository over https, refuses any whose SHA-256 is not the one the recipe pins and then writes
 nothing, compiles each to XSLT in process with the ISO Schematron skeleton this build carries,
 copies the UBL and CII schema modules out of the bundled pack, and writes the pack to
-`<directory>/peppol-bis-billing/3.0/3.0.20` with a `pack.json` that records the source URLs, the
+`<directory>/peppol-bis-billing/3.0/<release>` with a `pack.json` that records the source URLs, the
 fetch date and the SHA-256 of every file it wrote. A second fetch into the same directory leaves an
 identical pack alone; a different one is refused unless `--replace` is given.
 
@@ -97,14 +106,19 @@ A **pack directory** is a directory of packs laid out as `<id>/<version>/<releas
 and is chosen the same way, by the profile the document names in BT-24. Two rules keep the
 choice unambiguous: a pack there with the identity of a bundled pack is refused by name, and a
 document whose profile two packs recognize, one of them from a pack directory, is refused with
-both named — `--pack <id>` chooses. A document of another profile is judged as without the
-directory. `esj --list-packs` and `esj packs list` print the origin of every pack, `bundled` or
+both named — `--pack <id>` chooses. The one exception is the order a publisher gives: where the
+packs that recognize the profile are all releases of one pack — the same id and version, as
+`peppol-bis-billing/3.0/3.0.20` and `peppol-bis-billing/3.0/3.0.21` fetched side by side are — the
+newest release is taken, compared part by part (3.0.9 before 3.0.10), and the report names it;
+`--pack peppol-bis-billing/3.0/3.0.20` runs the older one. A document of another profile is
+judged as without the directory. `esj --list-packs` and `esj packs list` print the origin of every pack, `bundled` or
 the directory, and for a rule set compiled on this machine the file it came from and the SHA-256
 of what came out; the recipes this build carries are listed after the packs. A container reads a
 pack directory from a mount ([`install.md`](install.md#container-image)).
 
 The pack carries the rule sets the release ships: the EN 16931 Schematron of CEN/TC 434 in the
-version OpenPeppol took into it — 1.3.15 of 2025-10-16 for 3.0.20, as the files state — and the
+version OpenPeppol took into it — 1.3.16 of 2026-04-10 for 3.0.21 and 1.3.15 of 2025-10-16 for
+3.0.20, as the files state — and the
 Peppol rules for UBL and for CII, each at the level its artefact flags: the build configuration of
 the release runs the schema, the CEN rules and the Peppol rules of a syntax together and levels no
 rule, so the pack has no level table. The Peppol rules run for
@@ -510,25 +524,32 @@ that re-runs this engine over the mutation set and pins every identifier it must
 A pack made by `esj packs fetch` is compiled on the machine that runs it, so the question is
 whether the compiled rule sets say what their publisher's tests say they say. Nothing of
 OpenPeppol is in this repository, so the evidence is fetched at test time: two tests run only with
-`-Desj.network=true`, fetch every file from tag `v3.0.20` and weigh it against the SHA-256
+`-Desj.network=true`, once for each release this build carries, fetch every file from the revision
+the recipe pins and weigh it against the SHA-256
 [`../conformance/peppol/README.md`](../conformance/peppol/README.md) records, and the continuous
 integration runs them in the JDK 21 job. Without the property they are skipped by name and the
 build stays offline.
 
-| | |
-|---|---|
-| Under test | the pack `peppol-bis-billing/3.0/3.0.20` as `esj packs fetch` makes it |
-| OpenPeppol's examples, `rules/examples/` | 9 of 9 `VALID`, exit 0 |
-| OpenPeppol's unit tests, `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` | 102 test sets (2 hold no test), 354 tests, 354 expectations over 58 rules |
-| Rules whose every expectation holds | 58 of 58 |
-| Rules with an expectation that does not hold | 0 |
+| | 3.0.21 | 3.0.20 |
+|---|---|---|
+| Under test | the pack `peppol-bis-billing/3.0/3.0.21` | the pack `peppol-bis-billing/3.0/3.0.20` |
+| OpenPeppol's examples, `rules/examples/` | 10 of 10 `VALID`, exit 0 | 9 of 9 `VALID`, exit 0 |
+| OpenPeppol's unit tests, `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` | 110 test sets (2 hold no test), 493 tests, 493 expectations over 62 rules | 102 test sets (2 hold no test), 354 tests, 354 expectations over 58 rules |
+| Rules whose every expectation holds | 62 of 62 | 58 of 58 |
+| Rules with an expectation that does not hold | 0 | 0 |
+
+3.0.21 adds the warnings `PEPPOL-COMMON-R054`, `-R055`, `-R056-1`, `-R056-2` and `-R057` (Dutch
+identifiers and VAT numbers), and in UBL `DE-R-T02`; it makes `PEPPOL-COMMON-R052` and `-R053`, and
+in UBL `DK-R-003` and `DK-R-017`, fatal; and it takes the EN 16931 rules in version 1.3.16, which
+withdraws `BR-CO-25` and adds `UBL-SR-56` and `CII-SR-467` to `CII-SR-494`. The table by rule set is in
+[`../conformance/peppol/README.md`](../conformance/peppol/README.md#from-3020-to-3021).
 
 A unit test is a fragment and the rules it expects to fire, or not to fire; the test runs the rule
 sets its configuration names over it — the Peppol rules of the syntax, with the EN 16931 rules
 where the configuration adds them — and compares rule identifier by rule identifier, with the
 flag and, where the test states one, the count.
 
-Four changes to `base-example.xml`, one at a time, each `INVALID` with exit 1:
+Four changes to `base-example.xml`, one at a time, each `INVALID` with exit 1 under either release:
 
 | Change | Rules that fire |
 |---|---|

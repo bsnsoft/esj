@@ -15,6 +15,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,8 @@ import org.junit.jupiter.api.Test;
 class PackRecipesTest {
 
     private static final String PEPPOL = "peppol-bis-billing-3.0.20";
+
+    private static final String PEPPOL_NEWEST = "peppol-bis-billing-3.0.21";
 
     private static final String PEPPOL_PROFILE =
             "urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0";
@@ -57,7 +60,8 @@ class PackRecipesTest {
         PackRecipe recipe = PackRecipes.named(PEPPOL);
 
         assertEquals("peppol-bis-billing/3.0/3.0.20", recipe.identity());
-        assertEquals("v3.0.20", recipe.tag());
+        assertEquals("v3.0.20", recipe.tag().orElseThrow());
+        assertEquals("tag v3.0.20", recipe.revision());
         assertEquals(URI.create("https://raw.githubusercontent.com/OpenPEPPOL/"
                 + "peppol-bis-invoice-3/v3.0.20/rules/sch/PEPPOL-EN16931-UBL.sch"),
                 recipe.url("rules/sch/PEPPOL-EN16931-UBL.sch"));
@@ -68,6 +72,40 @@ class PackRecipesTest {
                         .filter(rule -> rule.name().startsWith("peppol-"))
                         .allMatch(rule -> rule.license().equals("LicenseRef-OpenPeppol")),
                 "the Peppol rule sets are named as what they are: no open-source licence");
+    }
+
+    @Test
+    void carriesThePeppolRecipeOfAReleaseWithoutATagPinnedToItsCommit() {
+        PackRecipe recipe = PackRecipes.named(PEPPOL_NEWEST);
+
+        assertEquals("peppol-bis-billing/3.0/3.0.21", recipe.identity());
+        assertTrue(recipe.tag().isEmpty(), "OpenPeppol tagged no 3.0.21");
+        assertEquals("806866bd2bd91d7e9623b68f08164e8fbe9e67a0", recipe.commit());
+        assertEquals("commit 806866bd2bd91d7e9623b68f08164e8fbe9e67a0 (branch 2026-Q2-QA2)",
+                recipe.revision());
+        assertEquals(URI.create("https://raw.githubusercontent.com/OpenPEPPOL/"
+                + "peppol-bis-invoice-3/806866bd2bd91d7e9623b68f08164e8fbe9e67a0/rules/sch/"
+                + "PEPPOL-EN16931-CII.sch"), recipe.url("rules/sch/PEPPOL-EN16931-CII.sch"));
+        assertEquals(List.of("cen/1.3.16", "cen/1.3.16", "peppol/3.0.21", "peppol/3.0.21"),
+                recipe.schematron().stream().map(PackRecipe.Schematron::directory).toList());
+    }
+
+    @Test
+    void theIdentifierOfThePackNamesTheNewestRelease() {
+        assertEquals(PEPPOL_NEWEST, PackRecipes.named("peppol-bis-billing").name());
+        assertTrue(PackRecipes.isNewest(PackRecipes.named(PEPPOL_NEWEST)));
+        assertFalse(PackRecipes.isNewest(PackRecipes.named(PEPPOL)),
+                "the older release stays fetchable by its own name");
+        assertEquals(PEPPOL, PackRecipes.named(PEPPOL).name());
+    }
+
+    @Test
+    void ordersReleasesByTheirParts() {
+        List<String> releases = new ArrayList<>(List.of("3.0.21", "3.0.9", "3.0.10",
+                "3.0.20", "2026-10-15", "2026-08-31", "3.0"));
+        releases.sort(Releases.ORDER);
+        assertEquals(List.of("3.0", "3.0.9", "3.0.10", "3.0.20", "3.0.21", "2026-08-31",
+                "2026-10-15"), releases);
     }
 
     @Test
@@ -98,8 +136,11 @@ class PackRecipesTest {
                 assertTrue(recipe.url(rule.file()).toString().startsWith(
                         recipe.base().toString()), rule.file() + " stays below the base");
             }
-            assertTrue(recipe.base().toString().contains("/" + recipe.tag() + "/"),
-                    recipe + " fetches by its tag");
+            assertTrue(recipe.base().toString().contains("/" + recipe.treeish() + "/"),
+                    recipe + " fetches by its tag, or without one by its commit");
+            assertFalse(recipe.branch().isPresent() && recipe.base().toString()
+                            .contains("/" + recipe.branch().orElseThrow() + "/"),
+                    recipe + " never fetches by a branch");
         }
     }
 
@@ -113,8 +154,8 @@ class PackRecipesTest {
         assertFalse(recipe.bringsRulesFor(XrSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017"),
                 "the EN 16931 rules alone are what a bundled pack already brings");
         assertFalse(recipe.bringsRulesFor(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG));
-        assertEquals(PEPPOL, PackRecipes.bringingRulesFor(XrSyntax.UBL_INVOICE,
-                PEPPOL_PROFILE).orElseThrow().name());
+        assertEquals(PEPPOL_NEWEST, PackRecipes.bringingRulesFor(XrSyntax.UBL_INVOICE,
+                PEPPOL_PROFILE).orElseThrow().name(), "the newest release is the one named");
     }
 
     @Test
@@ -132,6 +173,23 @@ class PackRecipesTest {
         assertThrows(PackException.class, () -> PackRecipe.read(recipe.replace(
                 "bdcbb7b702cce55c7f8c789bef0cb9bebf6d376140c1776e683bd6d9bc0ad331", "abc")
                 .getBytes(StandardCharsets.UTF_8), "no digest"));
+    }
+
+    @Test
+    void refusesARecipeWithoutATagThatFetchesByABranch() {
+        String recipe = new String(Corpus.bytes("/" + Packs.ROOT + "/recipes/" + PEPPOL_NEWEST
+                + ".json"), StandardCharsets.UTF_8);
+        PackRecipe.read(recipe.getBytes(StandardCharsets.UTF_8), "as carried");
+
+        PackException refused = assertThrows(PackException.class, () -> PackRecipe.read(
+                recipe.replace("peppol-bis-invoice-3/806866bd2bd91d7e9623b68f08164e8fbe9e67a0/",
+                        "peppol-bis-invoice-3/2026-Q2-QA2/")
+                        .getBytes(StandardCharsets.UTF_8), "by branch"));
+        assertTrue(refused.getMessage().contains("below the commit"), refused.getMessage());
+        assertThrows(PackException.class, () -> PackRecipe.read(recipe.replace(
+                "\"commit\": \"806866bd2bd91d7e9623b68f08164e8fbe9e67a0\"",
+                "\"commit\": \"806866bd\"").getBytes(StandardCharsets.UTF_8),
+                "short commit"));
     }
 
     private static List<String> names(Path directory) throws IOException {

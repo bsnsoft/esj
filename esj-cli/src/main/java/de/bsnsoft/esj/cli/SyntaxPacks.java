@@ -103,12 +103,13 @@ final class SyntaxPacks {
         console.line("Recipes, for artefacts that may be used but not redistributed"
                 + " (esj packs fetch <recipe> --into <directory>):");
         for (PackRecipe recipe : recipes) {
-            console.line(recipe.name());
+            console.line(recipe.name() + (PackRecipes.isNewest(recipe)
+                    ? " (newest release; esj packs fetch " + recipe.id() + " follows it)" : ""));
             console.line("  " + recipe.title());
             boolean present = catalog.packs().stream()
                     .anyMatch(pack -> pack.directory().equals(recipe.identity()));
             console.line("  makes " + recipe.identity() + " from " + recipe.repository()
-                    + " at tag " + recipe.tag() + (present ? "; in a pack directory above"
+                    + " at " + recipe.revision() + (present ? "; in a pack directory above"
                             : "; not fetched into any pack directory of this run"));
         }
     }

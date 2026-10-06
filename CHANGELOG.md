@@ -11,7 +11,9 @@ still change; a change to it is named here under *Format*.
 - Pack directories: `esj validate` and `esj inspect` take `--packs <directory>` (repeatable) and
   read the environment variable `ESJ_PACKS` (a path list); every `<id>/<version>/<release>/pack.json`
   found there joins the bundled packs and is chosen by the profile of the document. A pack with the
-  identity of a bundled one, and a profile two packs recognize, are refused by name. Every report
+  identity of a bundled one, and a profile two packs recognize, are refused by name — except where
+  those packs are releases of one pack (same id and version): then the newest release is taken,
+  compared part by part (3.0.10 after 3.0.9), and `--pack` takes another. Every report
   names the origin of the pack beside its identity: `syntax.pack.source` is `directory` and the new
   `syntax.pack.location` the directory it was read from (`null` for a bundled pack), and
   `esj --list-packs` prints `origin` for every pack.
@@ -22,15 +24,24 @@ still change; a change to it is named here under *Format*.
   `esj-syntax`), copies the schema modules out of the bundled pack and writes a pack whose
   manifest records the source URLs, the fetch date and the SHA-256 of every file. It is the only
   command that opens a network connection.
-- The recipe `peppol-bis-billing-3.0.20`: the Peppol BIS Billing 3.0 validation artefacts, as
-  published by OpenPeppol, tag `v3.0.20` — the Peppol rules for UBL and CII and the EN 16931
-  Schematron 1.3.15 that release ships. None of those files is in this repository or in any
-  artefact; `esj validate` on a Peppol invoice without the pack names the command that makes it.
-  OpenPeppol's 9 examples validate `VALID` with the pack, and all 58 rules its own unit tests
-  cover fire as those tests expect (`conformance/peppol/README.md`, run with
-  `-Desj.network=true` and in the JDK 21 job of the continuous integration).
+- The recipes `peppol-bis-billing-3.0.21` and `peppol-bis-billing-3.0.20`: the Peppol BIS
+  Billing 3.0 validation artefacts, as published by OpenPeppol — the Peppol rules for UBL and CII
+  and the EN 16931 Schematron that release ships (1.3.16 and 1.3.15). 3.0.21 is the May 2026
+  release, mandatory from 2026-08-17; OpenPeppol tagged no 3.0.21, so its recipe fetches below
+  the commit `806866bd2bd91d7e9623b68f08164e8fbe9e67a0`, never by a branch name, and a recipe
+  without a tag may fetch only below the commit it names. `esj packs fetch peppol-bis-billing`
+  follows the newest recipe this build carries (3.0.21); `esj packs list` marks it. None of those
+  files is in this repository or in any artefact; `esj validate` on a Peppol invoice without the
+  pack names the command that makes it. With 3.0.21, OpenPeppol's 10 examples validate `VALID`
+  and all 62 rules its own unit tests cover fire as those tests expect; with 3.0.20, 9 examples
+  and 58 rules (`conformance/peppol/README.md`, run with `-Desj.network=true` and in the JDK 21
+  job of the continuous integration).
 
 ### Changed
+
+- A recipe's `source.tag` is optional, with a new optional `source.branch`; the manifest of a
+  fetched pack records them as the recipe has them, and `esj packs list` names the revision a
+  recipe fetches by (`at tag v3.0.20`, `at commit … (branch 2026-Q2-QA2)`).
 
 - A PDF written by 0.9.0 to 0.9.3 still carries `invoice.esj.json`. It is read as an attachment
   that is not the invoice, as a logo would be: `esj inspect` and `esj extract --list` list it

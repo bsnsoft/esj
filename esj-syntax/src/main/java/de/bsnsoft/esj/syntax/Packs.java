@@ -210,7 +210,7 @@ public final class Packs {
             }
             packs.add(pack);
         }
-        packs.sort(Comparator.comparing(Pack::release).reversed()
+        packs.sort(Comparator.comparing(Pack::release, Releases.ORDER).reversed()
                 .thenComparing(Pack::directory));
         return List.copyOf(packs);
     }

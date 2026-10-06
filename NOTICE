@@ -320,8 +320,9 @@ Validation packs (packs/)
 Pack recipes (packs/recipes/)
   A recipe is this project's own file: it names the files of one release of a
   publisher, with their SHA-256, that the command esj packs fetch downloads and
-  compiles on the machine that runs it. The recipe peppol-bis-billing-3.0.20
-  names the Peppol BIS Billing 3.0 validation artefacts, as published by
+  compiles on the machine that runs it. The recipes peppol-bis-billing-3.0.21
+  and peppol-bis-billing-3.0.20 name the Peppol BIS Billing 3.0 validation
+  artefacts, releases 3.0.21 and 3.0.20, as published by
   OpenPeppol AISBL at https://github.com/OpenPEPPOL/peppol-bis-invoice-3. Those
   artefacts carry no open-source licence, and OpenPeppol AISBL permits their
   modification, redistribution, sale or repackaging only with its prior consent,
