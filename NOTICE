@@ -240,6 +240,11 @@ XRechnung test suite instances (conformance/kosit/)
   Version 2.0, like the rest of this repository, and the attribution above covers the
   material they are derived from.
 
+  conformance/creditnote/04.01a-CREDITNOTE_ubl.xml is a modified copy of the instance
+  business-cases/extension/04.01a-INVOICE_ubl.xml: this project rewrote it as a UBL 2.1
+  Credit Note (root element, type code, line, sub line and quantity element names) and
+  says so in a comment at the top of the file.
+
 Validation packs (packs/)
   The directory packs/ carries the official validation artefacts of the profiles
   the syntax engine checks against, unmodified and each under its own licence.

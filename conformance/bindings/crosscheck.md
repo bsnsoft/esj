@@ -1,6 +1,6 @@
 # Binding tables — cross-check
 
-Generated on 2026-09-21 by `model/bindings/tools/crosscheck_bindings.py`; re-run it after any change to `model/bindings/`. Everything below is machine output apart from the explanation column, which is written for this repository and lives in the `EXPLANATIONS` table of that script.
+Generated on 2026-10-06 by `model/bindings/tools/crosscheck_bindings.py`; re-run it after any change to `model/bindings/`. Everything below is machine output apart from the explanation column, which is written for this repository and lives in the `EXPLANATIONS` table of that script.
 
 The binding tables come from one source. This report measures them against three others: the KoSIT visualization stylesheets vendored in `esj-xr` (Apache-2.0), the CEN validation artefacts of the shipped pack (EUPL-1.2) and the older, MIT licensed SeMoX model. Only identifiers, element names and paths are compared; no rule text, description or note of any source is read or reproduced.
 
@@ -11,7 +11,7 @@ Every term of `model/en16931/2017.json` and of `model/xrechnung/3.0.2.json` appe
 | Table | core terms | bound | not bound | extension terms | bound | reused terms | bound |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `ubl-invoice.json` | 196 | 194 | BG-1, BG-2 | 12 | 12 | 36 | 36 |
-| `ubl-creditnote.json` | 196 | 194 | BG-1, BG-2 | 12 | 0 | 36 | 0 |
+| `ubl-creditnote.json` | 196 | 194 | BG-1, BG-2 | 12 | 8 | 36 | 36 |
 | `cii.json` | 196 | 196 | — | 12 | 0 | 36 | 0 |
 
 ## b) The KoSIT visualization stylesheets
@@ -23,7 +23,7 @@ The predicates are compared separately, and in both directions: a term counts as
 | Table | stylesheet | agreeing | hand-built | different node | different predicate |
 |---|---|---:|---:|---:|---:|
 | `ubl-invoice.json` | `ubl-invoice-xr.xsl` | 201 | 5 | 0 | 7 |
-| `ubl-creditnote.json` | `ubl-creditnote-xr.xsl` | 189 | 5 | 0 | 6 |
+| `ubl-creditnote.json` | `ubl-creditnote-xr.xsl` | 196 | 5 | 1 | 6 |
 | `cii.json` | `cii-xr.xsl` | 192 | 3 | 1 | 33 |
 
 ## c) The CEN syntax rules
@@ -67,7 +67,7 @@ That model carries a UBL Invoice binding and a CII binding and no credit note bi
 | PaymentMeans/PaymentDueDate | rule over unbound element | — | `UBL-SR-45` bounds an element the core model does not use in an invoice: BT-9 is bound to `cbc:DueDate` at the document root. The credit note table binds it, which is why the same rule file is relevant to both. |
 | BT-82 | older model | Invoice/PaymentMeans/PaymentMeansCode/@name / Invoice/PaymentMeans/PaymentMeansCode/@Name | The older model spells the attribute `@Name`; UBL 2.1 declares it `@name`. The newer model and the stylesheet both use the lower case spelling, so the older one is a typing error and the table follows the newer source. |
 
-### `ubl-creditnote.json` — 12 differences
+### `ubl-creditnote.json` — 13 differences
 
 | Subject | Kind | Table / other source | Explanation |
 |---|---|---|---|
@@ -76,6 +76,7 @@ That model carries a UBL Invoice binding and a CII binding and no credit note bi
 | BT-23 | hand-built | CreditNote/ProfileID | Same hand-written process control block as in the invoice stylesheet. |
 | BT-24 | hand-built | CreditNote/CustomizationID | Same block as BT-23. |
 | BG-16 | hand-built | CreditNote/PaymentMeans | Same hand-written grouping of `cac:PaymentMeans` as in the invoice stylesheet. |
+| BG-DEX-06 | different node | CreditNote/CreditNoteLine/SubCreditNoteLine/Item/ClassifiedTaxCategory / SubCreditNoteLine/ClassifiedTaxCategory | The stylesheet matches the sub line VAT group on `cac:SubCreditNoteLine/cac:ClassifiedTaxCategory`, an element the line type of UBL 2.1 does not have; the category sits in `cac:Item`, where the invoice stylesheet and the invoice table read it, so the stylesheet never emits the group. The terms of a sub credit note line it reads from absolute paths of the credit note line, so the XSLT import gives every sub line the values of the first credit note line of the document and reads no nested sub line; `conformance/readers.md` says where the two readers part. |
 | BT-102 | different predicate | VAT, true / true | Same narrowing to the VAT scheme as in the invoice table. |
 | BG-24 | different predicate | 130, 50 / 50 | The table keeps the supporting document group, and the terms inside it, off the additional document references whose document type code is 130 or 50, because those occurrences carry the invoiced object identifier BT-18 and the project reference BT-11. The CEN validation artefact of `packs/` excludes 130 and the stylesheet excludes 50, and both are needed: a credit note that states either would otherwise gain a supporting document group whose only value is that reference read a second time as BT-122, and the occurrence indices of the real ones would shift. `corrections` records it. |
 | BT-122 | different predicate | 130, 50 / no predicate | The table keeps the supporting document group, and the terms inside it, off the additional document references whose document type code is 130 or 50, because those occurrences carry the invoiced object identifier BT-18 and the project reference BT-11. The CEN validation artefact of `packs/` excludes 130 and the stylesheet excludes 50, and both are needed: a credit note that states either would otherwise gain a supporting document group whose only value is that reference read a second time as BT-122, and the occurrence indices of the real ones would shift. `corrections` records it. |
@@ -137,4 +138,4 @@ That model carries a UBL Invoice binding and a CII binding and no credit note bi
 | TotalDiscountAmount | rule over unbound element | — | One of the amounts of the CII line summation that the core model has no term for; the rule bounds how often it may occur, and no table binds it. |
 | TotalRetailValueInformationAmount | rule over unbound element | — | One of the amounts of the CII line summation that the core model has no term for; the rule bounds how often it may occur, and no table binds it. |
 
-Total: 74 differences, every one of them explained above.
+Total: 75 differences, every one of them explained above.

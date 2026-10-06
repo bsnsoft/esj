@@ -76,10 +76,10 @@ at the entry, not as a statement of the standard.
 
 | Flag | What it means here | UBL Inv | UBL CN | CII |
 |---|---|---:|---:|---:|
-| `CAR-2` | The semantic model requires the term where the syntax leaves the element optional. | 36 | 30 | 37 |
-| `CAR-3` | The syntax lets the element repeat where the semantic model allows the term only once. | 57 | 55 | 46 |
+| `CAR-2` | The semantic model requires the term where the syntax leaves the element optional. | 36 | 32 | 37 |
+| `CAR-3` | The syntax lets the element repeat where the semantic model allows the term only once. | 57 | 57 | 46 |
 | `CAR-4` | The syntax bounds the element more narrowly than the semantic model bounds the term. | 0 | 0 | 1 |
-| `SEM-2` | The syntax element is semantically wider than the term; a predicate or a convention picks out the occurrence that carries it. | 23 | 21 | 1 |
+| `SEM-2` | The syntax element is semantically wider than the term; a predicate or a convention picks out the occurrence that carries it. | 23 | 23 | 1 |
 | `SEM-3` | The syntax element means something else in its own syntax, so the binding is a convention rather than a like-for-like match. | 1 | 1 | 0 |
 | `STR-2` | The syntax nests the element inside a group that the semantic model places it outside of. | 0 | 0 | 2 |
 | `STR-3` | No element of the syntax corresponds one to one to the term; it is reached through an element that stands for something else, or through more than one. | 0 | 0 | 7 |
@@ -89,7 +89,7 @@ at the entry, not as a statement of the standard.
 | `SYN-2` | The lexical form in the syntax is not the semantic value written plainly: it is prefixed, formatted or otherwise encoded. | 5 | 3 | 3 |
 | `code-list-2475` | The bound element states the code in UNTDID 2475, the list this syntax gives it, while the term's code list is UNTDID 2005; a reader and a writer translate between the two. | 0 | 0 | 1 |
 | `date-format-102` | The bound element is a CII date string whose format attribute is 102, so the value is written as ccyymmdd rather than as an ISO date. | 0 | 0 | 9 |
-| `extension-not-bound` | The extension that defines this term states a binding for other syntaxes only, so this table has no XPath for it. | 0 | 48 | 48 |
+| `extension-not-bound` | The extension that defines this term states a binding for other syntaxes only, so this table has no XPath for it. | 0 | 4 | 48 |
 | `not-represented` | The source model states that this syntax has no representation for the term, so the entry carries no XPath. | 2 | 2 | 0 |
 | `scheme-as-sibling-element` | The identification scheme is carried by a sibling element of the value rather than by an attribute of it. | 0 | 0 | 2 |
 | `subject-code-prefix` | The subject code is written into the text value as a `#CODE#` prefix instead of into an element of its own. | 1 | 1 | 0 |
@@ -117,7 +117,7 @@ Where the source states something about a syntax that the syntax does not do, th
 departs from it deliberately and writes what it changed, what it changed it from and why into
 the `corrections` member of the table. A later release of the source shows up as a diff there.
 
-Thirty-five corrections stand today, and all but seven of them are one shape: a term or a
+Thirty-seven corrections stand today, and all but nine of them are one shape: a term or a
 group bound to an element that the syntax also uses for something else, without the condition
 that tells the two apart. A binding like that does not lose a value, it stores a **wrong** one,
 and which one it stores depends on the order the document happens to write its elements in.
@@ -159,6 +159,16 @@ and which one it stores depends on the order the document happens to write its e
   note matches the XPath and the term is lost without a word. The UBL Invoice and CII bindings
   of the same source, the stylesheet and the CEN artefact all use `130`, which the correction
   writes.
+- **`ubl-creditnote.json`, the sub credit note line, two** — the tailoring model binds the
+  sub invoice line of the extension for UBL Invoice only, so a credit note that declares the
+  extension lost every sub line. The XRechnung Schematron of `packs/` recognises the extension
+  on `cn:CreditNote`, and UBL 2.1 gives `cac:CreditNoteLine` a repeatable
+  `cac:SubCreditNoteLine` of its own type. The first correction (member `extension`) takes the
+  sub line entries of `ubl-invoice.json` with the prefix
+  `/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine`; the second moves BT-129 and BT-130
+  to `cbc:CreditedQuantity`, the quantity element of a credit note line. BG-DEX-09 and
+  BT-DEX-001 to BT-DEX-003 stay unbound: UBL 2.1 gives the credit note no
+  `cac:PrepaidPayment`.
 - **`ubl-creditnote.json`, namespace** — the credit note binding of the source declares the
   UBL Invoice namespace as its default namespace although every XPath in it is rooted at the
   unprefixed step `CreditNote`, whose namespace in UBL 2.1 is the CreditNote namespace.
@@ -188,6 +198,9 @@ and which one it stores depends on the order the document happens to write its e
 
 A correction carries a `term` where the source binds two terms to the very same XPath, so that
 only the one named is rewritten.
+A correction with the member `extension` moves a prefix of the extension entries instead of
+one XPath, and takes an entry the source leaves unbound from the invoice table where every
+path of that entry lies below `from`.
 
 ## Conventions
 
@@ -215,16 +228,18 @@ conventional value beside a `cbc:SalesOrderID` would read a reference nobody mad
 A table carries the 196 core terms in `terms` and the 12 XRechnung extension terms in
 `extension.terms`, in the order of `model/xrechnung/3.0.2.json`: the core terms are the
 European standard, the extension terms are not, and a consumer that only wants the core reads
-one member. The extension binds its terms for UBL Invoice only, so the other two tables carry
-those twelve entries unbound, with `extension-not-bound`.
+one member. The extension binds its terms for UBL Invoice only. `ubl-creditnote.json` takes the
+eight sub line entries from it by a correction (see "Corrections") and carries the third party payment
+group and its three terms unbound, with `extension-not-bound`; `cii.json` carries all twelve
+unbound.
 
 A third member, `extension.reusedTerms`, carries the 36 core terms that the groups of the
 extension registry state in their `reusesTerms` member — a sub invoice line carries the terms
 of an invoice line, and the source binds each of them in one expression, both where the
 standard puts it and where it sits inside the group. The core entry takes the first place and
 this member the second. A consumer that does not load the extension registry reads `terms`
-and is unaffected. The two tables that bind no group of the extension carry these thirty-six
-entries unbound, like the twelve above them.
+and is unaffected. `ubl-creditnote.json` binds the thirty-six inside the sub credit note
+line; `cii.json`, which binds no group of the extension, carries them unbound.
 
 ## Where the facts come from
 

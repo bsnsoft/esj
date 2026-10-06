@@ -224,6 +224,14 @@ whose code is 50. The stylesheet therefore reads the invoiced object identifier 
 supporting document as well, and the index of the real one moves by one.
 `creditnote/README.md` prints the four paths.
 
+`creditnote/04.01a-CREDITNOTE_ubl.xml`, the extension instance 04.01a written as a credit note,
+adds a second cause, `sub-credit-note-line` (overcome, 114 paths): the stylesheet reads the terms
+of a `cac:SubCreditNoteLine` from absolute paths of the credit note line, so every sub line
+carries the values of the first line of the document, and it reads no nested sub line. The
+streaming reader reads the sub lines from the table, and the document it builds differs from the
+invoice instance at `/BT-3` alone. `creditnote/README.md` says more; `CreditNoteExtensionTest`
+holds it.
+
 ## Where the streaming reader gives way
 
 One class of document this reader refuses and the XSLT path reads; no instance of the corpus

@@ -15,8 +15,9 @@ binds, written by people who were not thinking about ESJ.
 
 What it is not is complete. Those 86 instances are 41 cross industry invoices and 45 UBL
 **Invoices**, and not one UBL Credit Note — so of the three binding tables of
-`model/bindings/` the corpus exercises two. `creditnote/` holds the one hand-written document
-that measures the third, and its README says what that gap cost before it was filled.
+`model/bindings/` the corpus exercises two. `creditnote/` holds the two documents that measure
+the third — one written by hand, one a credit note copy of an extension instance — and its
+README says what that gap cost before it was filled.
 
 ## Layout
 
@@ -70,6 +71,11 @@ conformance/
     credit-note_ubl.xml      one UBL 2.1 Credit Note, written for this repository, which
                              is the only document here that exercises ubl-creditnote.json
     credit-note_ubl.esj.json what the streaming reader builds from it, pretty form
+    04.01a-CREDITNOTE_ubl.xml
+                             the extension instance 04.01a of kosit/ written as a UBL
+                             2.1 Credit Note, with sub credit note lines
+    04.01a-CREDITNOTE_ubl.esj.json
+                             what the streaming reader builds from it, pretty form
   bindings/
     crosscheck.md            what the binding tables of model/bindings/ look like beside
                              the KoSIT visualization stylesheets, the CEN validation
@@ -92,8 +98,8 @@ conformance/
     matrix.json              those four verdicts per business case, and the totals
 ```
 
-`creditnote/` is the one place here that holds a document nobody else wrote: a table no test
-reaches is a table nobody has measured.
+`creditnote/` is the one place here that holds documents nobody else wrote, or wrote as an
+invoice: a table no test reaches is a table nobody has measured.
 
 `readers.md` and `readers.json` are about the corpus: every instance is read both ways and
 every differing semantic path is traced to a cause. `ReaderCorpusTest` in `esj-bindings`
@@ -117,11 +123,16 @@ they do not agree matches exactly one cause of `readers.json` with the recorded 
 asserts that layer L2 accepts every document that reader builds and that the observations it
 reports over the corpus are the recorded ones.
 
-`CreditNoteReaderTest` in `esj-bindings`, over the one document of `creditnote/`: the three
+`CreditNoteReaderTest` in `esj-bindings`, over `creditnote/credit-note_ubl.xml`: the three
 business terms the credit note table used to lose carry the values the document states; the
 pretty form of what the streaming reader builds is the checked-in file; layer L2 accepts it;
 and the paths at which the two readers differ are exactly the five that `creditnote/README.md`
 explains.
+
+`CreditNoteExtensionTest` in `esj-bindings`, over `creditnote/04.01a-CREDITNOTE_ubl.xml`: the
+sub credit note lines are read at both depths, the values are those of the invoice instance
+04.01a apart from BT-3, the writer writes them back as `cac:SubCreditNoteLine` elements that
+the pack accepts, and the XSLT path differs inside the sub lines only.
 
 `ConformanceCorpusTest` in `esj-xr`, for every instance:
 

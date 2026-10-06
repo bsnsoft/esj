@@ -50,12 +50,17 @@ SYNTAXES = [
     ("cii", "cii.json", "CII", "UN/CEFACT Cross Industry Invoice D16B"),
 ]
 
+#: The binding whose table, already built, supplies the extension entries a correction of
+#: the member `extension` takes over. The credit note takes the sub invoice line from the
+#: invoice, which is written first.
+SIBLINGS = {"ubl-cn": "ubl-inv"}
+
 #: Corrections this generator applies to the source, each with the reason for it. A
 #: correction is a deliberate, documented departure from the source file; it is written
 #: into the `corrections` member of the generated table so that a reader of the table
 #: sees it without reading this script.
 #:
-#: Seven kinds of correction are needed today. The two UBL bindings bind a party
+#: Eight kinds of correction are needed today. The two UBL bindings bind a party
 #: identifier to the element that also carries the bank assigned creditor identifier,
 #: without the condition that tells the two apart. They also bind four terms that are
 #: about value added tax to elements they share with other taxes, again without the
@@ -71,7 +76,10 @@ SYNTAXES = [
 #: its terms on the element that carries four different references, without the type
 #: code that tells them apart, and it binds the global identifier of four parties with
 #: the condition that the element carries a scheme, which loses the identifier of a
-#: conformant document that states none.
+#: conformant document that states none. The tailoring model of the extension binds the
+#: sub invoice line for `ubl-inv` alone, so the `ubl-cn` binding lost every sub line of a
+#: credit note; two corrections of the member `extension` take those entries from the
+#: invoice table and move them to the sub credit note line and its quantity element.
 #:
 #: A correction with a `from` and a `to` and the member `terms` rewrites that one XPath
 #: wherever it occurs: as the path of a term, as one of its alternatives, and as the
@@ -330,6 +338,38 @@ CORRECTIONS = {
             ),
         },
         *ubl_supporting_documents("CreditNote", ["130", "50"]),
+        {
+            "member": "extension",
+            "from": "/Invoice/cac:InvoiceLine//cac:SubInvoiceLine",
+            "to": "/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine",
+            "reason": (
+                "The tailoring model of the extension binds the sub invoice line for UBL"
+                " Invoice only, so the credit note lost every sub line of a document that"
+                " declares the extension. The extension is declared on credit notes as"
+                " well: the XRechnung Schematron of packs/ recognises its customization"
+                " identifier on cn:CreditNote, and the KoSIT visualization stylesheet maps"
+                " cac:SubCreditNoteLine to the sub invoice line group. In UBL 2.1"
+                " cac:SubCreditNoteLine is a repeatable child of cac:CreditNoteLine of the"
+                " same type, so it nests as cac:SubInvoiceLine does. The entries of the"
+                " sub invoice line, its groups and the core terms it reuses are those of"
+                " the UBL Invoice table with this prefix. The third party payment group"
+                " BG-DEX-09 and its terms stay unbound: UBL 2.1 gives the credit note no"
+                " cac:PrepaidPayment."
+            ),
+        },
+        {
+            "member": "extension",
+            "from": ("/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine"
+                     "/cbc:InvoicedQuantity"),
+            "to": ("/CreditNote/cac:CreditNoteLine//cac:SubCreditNoteLine"
+                   "/cbc:CreditedQuantity"),
+            "reason": (
+                "A credit note line states its quantity in cbc:CreditedQuantity; the line"
+                " type of UBL 2.1 Credit Note has no cbc:InvoicedQuantity. The core table"
+                " binds BT-129 and BT-130 of a credit note line to that element, and a sub"
+                " credit note line is of the same type."
+            ),
+        },
         {
             "member": "namespaces",
             "prefix": "",
@@ -799,6 +839,62 @@ def rewrite_path(entries, source, target, term=None):
         raise SystemExit("a correction names an XPath the source does not state: " + source)
 
 
+def under(path, prefix):
+    """Tells whether an XPath is a prefix path itself or lies below it, step by step."""
+    return path == prefix or path.startswith(prefix + "/")
+
+
+def entry_paths(entry):
+    """Returns every XPath an entry states: its own, its alternatives' and its anchors."""
+    paths = [entry["xpath"]] if entry.get("xpath") else []
+    paths += [alternative["xpath"] for alternative in entry.get("alternatives", [])]
+    paths += [component["anchor"] for component in entry.get("components", [])]
+    return paths
+
+
+def rewrite_prefix(entry, source, target):
+    """Replaces the prefix `source` of every XPath of one entry with `target`."""
+    def moved(path):
+        return target + path[len(source):] if under(path, source) else path
+
+    if entry.get("xpath"):
+        entry["xpath"] = moved(entry["xpath"])
+        if "instanceElement" in entry:
+            set_instance(entry, entry["xpath"])
+    for alternative in entry.get("alternatives", []):
+        alternative["xpath"] = moved(alternative["xpath"])
+    for component in entry.get("components", []):
+        component["anchor"] = moved(component["anchor"])
+
+
+def rewrite_extension(entries, sibling, source, target):
+    """Applies one correction of the member `extension` to the extension entries.
+
+    A correction of this member moves a prefix: every XPath of an extension entry that
+    lies at or below `source` is written below `target` instead. Where the source binds
+    an extension term for another syntax only, `sibling` — the extension entries of the
+    table that syntax has, after its own corrections — supplies the entry: an entry this
+    table leaves unbound takes the sibling's entry when every XPath of that one lies below
+    `source`, moved to `target`. That is how the credit note takes the sub invoice line the
+    tailoring model binds for UBL Invoice alone. Returns whether any entry was moved.
+    """
+    found = False
+    by_id = {entry["id"]: entry for entry in sibling}
+    for index, entry in enumerate(entries):
+        if not entry["bound"]:
+            other = by_id.get(entry["id"])
+            if other is None or not other["bound"]:
+                continue
+            if not all(under(path, source) for path in entry_paths(other)):
+                continue
+            entry = json.loads(json.dumps(other))
+            entries[index] = entry
+        if any(under(path, source) for path in entry_paths(entry)):
+            rewrite_prefix(entry, source, target)
+            found = True
+    return found
+
+
 def build_entry(identifier, elements, registry, exclude=()):
     """Builds one entry of a binding table from every term element that binds it.
 
@@ -986,7 +1082,7 @@ def build_reused_entries(tailoring, binding_id, registry, extension_registry, en
 
 
 def build_table(binding, raw, syntax, syntax_name, namespaces, registry, release,
-                source_file, extension=None):
+                source_file, extension=None, sibling=None):
     """Builds one binding table from one binding element of the source model."""
     order, grouped = collect_terms(binding)
     unbound = not_represented(raw)
@@ -1019,6 +1115,16 @@ def build_table(binding, raw, syntax, syntax_name, namespaces, registry, release
         elif correction["member"] == "terms":
             rewrite_path(all_entries, correction["from"], correction["to"],
                          correction.get("term"))
+        elif correction["member"] == "extension":
+            moved = False
+            for own, member in ((extension_entries, "terms"),
+                                (reused_entries, "reusedTerms")):
+                moved |= rewrite_extension(own, sibling[member] if sibling else [],
+                                           correction["from"], correction["to"])
+            if not moved:
+                raise SystemExit("an extension correction names a prefix no entry"
+                                 " states: " + correction["from"])
+    all_entries = entries + extension_entries + reused_entries
 
     used = set()
     for entry in all_entries:
@@ -1182,6 +1288,7 @@ def main(argv=None):
         extension_registry = {term["id"]: term for term in extension_file["terms"]}
 
     differences = 0
+    built = {}
     for binding_id, file_name, syntax, syntax_name in SYNTAXES:
         if binding_id not in bindings:
             raise SystemExit("the model file has no binding " + binding_id)
@@ -1207,7 +1314,9 @@ def main(argv=None):
             arguments.release,
             source_file,
             extension,
+            built.get(SIBLINGS.get(binding_id), {}).get("extension"),
         )
+        built[binding_id] = table
         text = json.dumps(table, indent=2, ensure_ascii=False) + "\n"
         target = Path(arguments.out) / file_name
         if arguments.check:

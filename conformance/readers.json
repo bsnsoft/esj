@@ -91,5 +91,13 @@
       "/BG-24/1/BT-123"
     ],
     "cause": "supporting-document-type-130"
+  },
+  "creditNoteExtension": {
+    "instance": "conformance/creditnote/04.01a-CREDITNOTE_ubl.xml",
+    "why": "the extension instance 04.01a written as a credit note, so the sub credit note lines of the credit note table are measured here",
+    "differingPaths": 114,
+    "pathPattern": "/BG-DEX-01/",
+    "cause": "sub-credit-note-line",
+    "kind": "overcome"
   }
 }

@@ -18,7 +18,7 @@ module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Ma
 | `esj-core` | paths, values, reader, writer, canonicalizer, structural validator | `jackson-core` |
 | `esj-typed` | the generated typed view and the typed editor | — |
 | `esj-bindings` | the table-driven streaming reader and the two writers | `esj-xr` |
-| `esj-xr` | the XSLT path for UBL 2.1 and CII D16B, and the XR export | Saxon-HE |
+| `esj-xr` | the XSLT path for UBL 2.1 and CII D16B, and the XR export | Saxon-HE 13.0 or newer |
 | `esj-syntax` | the official XSD and Schematron of a profile, run over an XML input | `esj-xr` |
 | `esj-rules` | the business rules of the standard over the semantic model | — |
 | `esj-invoice` | the domain API: invoice objects, code list enums, one `build()` | `esj-typed`, `esj-rules` |
@@ -28,6 +28,8 @@ module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Ma
 | `esj-generator` | generates the sources of `esj-typed` and the per-term schema, under `-Pgenerate` | — |
 | `esj-cli` | the `esj` command line tool | every module above but `esj-invoice`, picocli |
 | `esj-bom` | the version of every module above but `esj-cli`, which is not published | — |
+
+Saxon-HE 13.0 is the minimum: a build that forces 12.x keeps the XML Schema, Schematron and XSLT path working, and every HTML page of `esj-render` — the HTML report too — fails with `AbstractMethodError` (`UnparsedTextURIResolver`).
 
 Import the bill of materials once, then name a module of the table as a dependency without a
 version of its own; `esj-cli` is the tool and is on no repository ([`releasing.md`](releasing.md)).

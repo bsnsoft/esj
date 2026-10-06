@@ -79,4 +79,41 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <build>
+    <plugins>
+      <!--
+        The POM a build of someone else imports is the flattened one: no parent, and in
+        dependencyManagement only the modules above. Imported with its parent, it would
+        hand on every version the aggregator manages for this project's own build —
+        JUnit, Saxon, PDFBox, Jackson and the rest — and decide them for the importer.
+        The flattened POM keeps the metadata Maven Central asks for, resolved from the
+        parent; the release profile signs and deploys it in place of this file.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>${flatten-maven-plugin.version}</version>
+        <configuration>
+          <flattenMode>bom</flattenMode>
+          <updatePomFile>true</updatePomFile>
+          <outputDirectory>${project.build.directory}</outputDirectory>
+          <flattenedPomFilename>esj-bom.pom</flattenedPomFilename>
+          <pomElements>
+            <properties>remove</properties>
+            <dependencyManagement>keep</dependencyManagement>
+          </pomElements>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
