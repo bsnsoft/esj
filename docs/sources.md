@@ -142,15 +142,24 @@ is bound to UBL.
   null`), its `README.adoc` states none, the Peppol Schematron files name only CEN's
   permission, and the statement of copyright in the BIS document at
   <https://docs.peppol.eu/poacc/billing/3.0/bis/> is unchanged.
-- Validation artefacts: fetched by the user, never shipped. The recipe
-  [`../packs/recipes/peppol-bis-billing-3.0.20.json`](../packs/recipes/peppol-bis-billing-3.0.20.json)
-  names the four Schematron files of `rules/sch/` at tag `v3.0.20` (commit
-  `261c458474e27d58a25be629cccac28883171c92`, "BIS version 3.0.20: 2025 November Release",
-  published 2026-03-16) with their SHA-256, and `esj packs fetch` downloads and compiles them on
-  the machine that runs it ([`validation.md`](validation.md#packs-made-on-this-machine)). The
-  two CEN files of that release state version 1.3.15 of 2025-10-16 (its `rules/sch/README.md`
-  still names 1.3.14.1) and are under the EUPL 1.2; they are fetched with the rest, because the
-  pack is one release of one publisher. The examples and unit tests the evidence runs are fetched
+- Validation artefacts: fetched by the user, never shipped. Two recipes name the four Schematron
+  files of `rules/sch/` of one release each, with their SHA-256, and `esj packs fetch` downloads
+  and compiles them on the machine that runs it
+  ([`validation.md`](validation.md#packs-made-on-this-machine)):
+  [`../packs/recipes/peppol-bis-billing-3.0.21.json`](../packs/recipes/peppol-bis-billing-3.0.21.json),
+  release 3.0.21 ("2026 May release", published 2026-05-20, mandatory from 2026-08-17 according to
+  the release notes at <https://docs.peppol.eu/poacc/billing/3.0/release-notes/>, read
+  2026-10-06), which OpenPeppol did not tag: the files are fetched below commit
+  `806866bd2bd91d7e9623b68f08164e8fbe9e67a0` of the branch `2026-Q2-QA2` (2026-06-10), whose two
+  UBL files were on 2026-10-06 byte-identical to the ones published under
+  <https://docs.peppol.eu/poacc/billing/3.0/files/> (the CII files are published only in the
+  repository); and
+  [`../packs/recipes/peppol-bis-billing-3.0.20.json`](../packs/recipes/peppol-bis-billing-3.0.20.json),
+  tag `v3.0.20` (commit `261c458474e27d58a25be629cccac28883171c92`, "BIS version 3.0.20: 2025
+  November Release", published 2026-03-16). The two CEN files of 3.0.21 state version 1.3.16 of
+  2026-04-10, those of 3.0.20 version 1.3.15 of 2025-10-16 (its `rules/sch/README.md` still names
+  1.3.14.1); they are under the EUPL 1.2 and are fetched with the rest, because a pack is one
+  release of one publisher. The examples and unit tests the evidence runs are fetched
   at test time, listed with their digests in
   [`../conformance/peppol/README.md`](../conformance/peppol/README.md).
 - Two facts are taken from it and named where they are used: the value `NA` that document

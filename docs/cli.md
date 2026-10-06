@@ -374,12 +374,14 @@ profile ([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-pro
 A manifest writes its own identity, so a directory can call itself the release this build carries:
 the `Profile:` line then reads `supplied with --pack` and `syntax.pack.source` says `supplied`.
 A pack of a pack directory is named with the directory it was read from — `(pack
-peppol-bis-billing/3.0/3.0.20, from /home/me/esj-packs/peppol-bis-billing/3.0/3.0.20)` — and
+peppol-bis-billing/3.0/3.0.21, from /home/me/esj-packs/peppol-bis-billing/3.0/3.0.21)` — and
 `syntax.pack.source` says `directory`, with the directory in `syntax.pack.location`.
 `ESJ_PACKS` names pack directories as a path list, `:` between entries (`;` on Windows), before
 those of `--packs`. A directory that does not exist, a pack there with the identity of a bundled
 one, and a document whose profile a pack there and another pack both recognize are refused with
-exit code 2, naming what collides ([`validation.md`](validation.md#packs-made-on-this-machine)).
+exit code 2, naming what collides ([`validation.md`](validation.md#packs-made-on-this-machine)) —
+except where those packs are releases of one pack, same id and version: then the newest release
+is taken (3.0.21 before 3.0.20, 3.0.10 after 3.0.9) and `--pack <id/version/release>` takes another.
 Nothing is fetched at run time. `--no-syntax` leaves a component of the complete check out, so the
 run reaches no verdict: exit code 9 and `syntax-binding (skipped-by-caller)` in the last line and
 in `reasons` ([`validation.md`](validation.md#--no-syntax-and---rules)).
@@ -417,7 +419,7 @@ Where a recipe of this build brings the rules of the profile, one more line says
 
 ```text
   the rules of this profile are published under terms that allow no redistribution; esj packs
-  fetch peppol-bis-billing-3.0.20 --into <directory> makes their pack on this machine, and
+  fetch peppol-bis-billing-3.0.21 --into <directory> makes their pack on this machine, and
   --packs <directory> or ESJ_PACKS adds it
 ```
 
@@ -1237,6 +1239,9 @@ xrechnung/3.0.2/2026-08-31
   origin bundled
 ...
 Recipes, for artefacts that may be used but not redistributed (esj packs fetch <recipe> --into <directory>):
+peppol-bis-billing-3.0.21 (newest release; esj packs fetch peppol-bis-billing follows it)
+  Peppol BIS Billing 3.0 validation artefacts, as published by OpenPeppol, release 3.0.21
+  makes peppol-bis-billing/3.0/3.0.21 from https://github.com/OpenPEPPOL/peppol-bis-invoice-3 at commit 806866bd2bd91d7e9623b68f08164e8fbe9e67a0 (branch 2026-Q2-QA2); not fetched into any pack directory of this run
 peppol-bis-billing-3.0.20
   Peppol BIS Billing 3.0 validation artefacts, as published by OpenPeppol, release 3.0.20
   makes peppol-bis-billing/3.0/3.0.20 from https://github.com/OpenPEPPOL/peppol-bis-invoice-3 at tag v3.0.20; not fetched into any pack directory of this run
@@ -1254,14 +1259,14 @@ that opens a network connection, and it opens one only to the base URL of that r
 
 | Option | What it does |
 |---|---|
-| `<recipe>` | the name of the recipe, as `esj packs list` prints it: `peppol-bis-billing-3.0.20` |
+| `<recipe>` | the name of the recipe, as `esj packs list` prints it — `peppol-bis-billing-3.0.20` —, or the identifier of its pack, `peppol-bis-billing`, which names the newest release this build carries (3.0.21) |
 | `--into <directory>` | the pack directory the pack is written into, as `<id>/<version>/<release>`; made where it is not there |
 | `--replace` | replace a different pack of the same identity there; only files its own manifest lists are removed, and a pack with a file it does not list is refused |
 
 ```text
-$ esj packs fetch peppol-bis-billing-3.0.20 --into ~/esj-packs
-peppol-bis-billing/3.0/3.0.20 written to /home/me/esj-packs/peppol-bis-billing/3.0/3.0.20
-  4 files fetched from https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/v3.0.20/, each with the SHA-256 the recipe pins
+$ esj packs fetch peppol-bis-billing --into ~/esj-packs
+peppol-bis-billing/3.0/3.0.21 written to /home/me/esj-packs/peppol-bis-billing/3.0/3.0.21
+  4 files fetched from https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/806866bd2bd91d7e9623b68f08164e8fbe9e67a0/, each with the SHA-256 the recipe pins
   4 Schematron files compiled to XSLT on this machine
   copied from the bundled pack xrechnung/3.0.2/2026-08-31 ubl-2.1-xsd
   copied from the bundled pack xrechnung/3.0.2/2026-08-31 cii-d16b-xsd
