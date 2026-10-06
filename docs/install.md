@@ -92,7 +92,7 @@ and mounted read-only into every run that validates:
 
 ```console
 $ docker run --rm --user "$(id -u):$(id -g)" -v "$HOME/esj-packs:/packs" \
-      ghcr.io/bsnsoft/esj:latest packs fetch peppol-bis-billing-3.0.20 --into /packs
+      ghcr.io/bsnsoft/esj:latest packs fetch peppol-bis-billing --into /packs
 $ docker run --rm -i --memory 1g --network none -v "$PWD:/work:ro" -w /work \
       -v "$HOME/esj-packs:/packs:ro" -e ESJ_PACKS=/packs \
       ghcr.io/bsnsoft/esj:latest validate invoice.xml

@@ -66,7 +66,7 @@ esj validate --extension xrechnung invoice.xml   # zusätzlich die Erweiterungst
 weitergegeben werden, deshalb bringt esj ein Rezept mit und baut das Paket auf dem eigenen Rechner
 ([`validation.md`](validation.md#packs-made-on-this-machine)).
 ```sh
-esj packs fetch peppol-bis-billing-3.0.20 --into esj-packs   # einmal, über das Netz: SHA-256 geprüft, hier kompiliert
+esj packs fetch peppol-bis-billing --into esj-packs   # einmal, über das Netz: Release 3.0.21, SHA-256 geprüft, hier kompiliert
 esj validate --packs esj-packs invoice.xml  # oder ESJ_PACKS=esj-packs; das Paket folgt aus BT-24
 ```
 

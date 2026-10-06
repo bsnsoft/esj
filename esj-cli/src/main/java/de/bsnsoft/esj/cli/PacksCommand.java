@@ -125,7 +125,9 @@ final class PacksCommand implements Callable<Integer> {
         private final Console console;
 
         @Parameters(index = "0", paramLabel = "<recipe>",
-                description = "The name of the recipe, for example peppol-bis-billing-3.0.20.")
+                description = "The name of the recipe, for example peppol-bis-billing-3.0.21, or"
+                        + " the identifier of its pack, for example peppol-bis-billing, which"
+                        + " names the recipe of the newest release this build carries.")
         private String recipe;
 
         @Option(order = 10, names = "--into", paramLabel = "<directory>", required = true,

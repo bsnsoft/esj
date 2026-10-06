@@ -1,0 +1,98 @@
+{
+  "format": "esj-pack-recipe",
+  "formatVersion": "1",
+  "name": "peppol-bis-billing-3.0.21",
+  "title": "Peppol BIS Billing 3.0 validation artefacts, as published by OpenPeppol, release 3.0.21",
+  "note": "Fetched from the publisher and compiled on this machine by esj packs fetch; the Peppol files carry no open-source licence and OpenPeppol AISBL permits no redistribution without its consent.",
+  "pack": {
+    "id": "peppol-bis-billing",
+    "version": "3.0",
+    "release": "3.0.21"
+  },
+  "source": {
+    "publisher": "OpenPeppol AISBL",
+    "repository": "https://github.com/OpenPEPPOL/peppol-bis-invoice-3",
+    "branch": "2026-Q2-QA2",
+    "commit": "806866bd2bd91d7e9623b68f08164e8fbe9e67a0",
+    "release": "BIS version 3.0.21: 2026 May Release, mandatory from 2026-08-17",
+    "published": "2026-05-20",
+    "base": "https://raw.githubusercontent.com/OpenPEPPOL/peppol-bis-invoice-3/806866bd2bd91d7e9623b68f08164e8fbe9e67a0/"
+  },
+  "baseProfiles": [
+    "urn:cen.eu:en16931:2017"
+  ],
+  "copy": [
+    {
+      "pack": "xrechnung/3.0.2/2026-08-31",
+      "component": "ubl-2.1-xsd"
+    },
+    {
+      "pack": "xrechnung/3.0.2/2026-08-31",
+      "component": "cii-d16b-xsd"
+    }
+  ],
+  "schematron": [
+    {
+      "name": "en16931-ubl-schematron",
+      "file": "rules/sch/CEN-EN16931-UBL.sch",
+      "bytes": 309768,
+      "sha256": "268d4f7a2688676695e6c69cba6fba69a6802604fee12cb544a6b30ff09555a3",
+      "syntax": [
+        "ubl-invoice",
+        "ubl-creditnote"
+      ],
+      "profile": [
+        "urn:cen.eu:en16931:2017*"
+      ],
+      "license": "EUPL-1.2",
+      "about": "the EN 16931 UBL Schematron of CEN/TC 434 that this release ships, version 1.3.16 of 2026-04-10 as the file states; when this recipe was written, it was byte for byte the file OpenPeppol publishes at https://docs.peppol.eu/poacc/billing/3.0/files/CEN-EN16931-UBL.sch",
+      "directory": "cen/1.3.16"
+    },
+    {
+      "name": "en16931-cii-schematron",
+      "file": "rules/sch/CEN-EN16931-CII.sch",
+      "bytes": 240038,
+      "sha256": "54e0dc6d06cd7f17d268bb9696ff56f58d386ee28961c9bbef0a56718c400c89",
+      "syntax": [
+        "cii"
+      ],
+      "profile": [
+        "urn:cen.eu:en16931:2017*"
+      ],
+      "license": "EUPL-1.2",
+      "about": "the EN 16931 CII Schematron of CEN/TC 434 that this release ships, version 1.3.16 of 2026-04-10 as the file states",
+      "directory": "cen/1.3.16"
+    },
+    {
+      "name": "peppol-ubl-schematron",
+      "file": "rules/sch/PEPPOL-EN16931-UBL.sch",
+      "bytes": 94007,
+      "sha256": "62e5b67892f12755352d78b06f63229a02cc2eccc748677c56efbc8dbcb336e3",
+      "syntax": [
+        "ubl-invoice",
+        "ubl-creditnote"
+      ],
+      "profile": [
+        "urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0*"
+      ],
+      "license": "LicenseRef-OpenPeppol",
+      "about": "the Peppol BIS Billing 3.0 rules for UBL, as published by OpenPeppol, release 3.0.21; when this recipe was written, it was byte for byte the file OpenPeppol publishes at https://docs.peppol.eu/poacc/billing/3.0/files/PEPPOL-EN16931-UBL.sch",
+      "directory": "peppol/3.0.21"
+    },
+    {
+      "name": "peppol-cii-schematron",
+      "file": "rules/sch/PEPPOL-EN16931-CII.sch",
+      "bytes": 60970,
+      "sha256": "7678c3cd4a219095ef5d4f2ece17e5d447eb92655e57a7d52290b35acfdc9dd8",
+      "syntax": [
+        "cii"
+      ],
+      "profile": [
+        "urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0*"
+      ],
+      "license": "LicenseRef-OpenPeppol",
+      "about": "the Peppol BIS Billing 3.0 rules for CII, as published by OpenPeppol, release 3.0.21",
+      "directory": "peppol/3.0.21"
+    }
+  ]
+}

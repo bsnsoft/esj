@@ -124,11 +124,15 @@ directory, and a **recipe** takes their place — this project's own file, packa
 like a pack and named in `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/bundled-recipes.json`.
 `esj packs fetch <recipe> --into <directory>` follows it on the machine that runs it.
 
-[`recipes/peppol-bis-billing-3.0.20.json`](recipes/peppol-bis-billing-3.0.20.json) names:
+[`recipes/peppol-bis-billing-3.0.21.json`](recipes/peppol-bis-billing-3.0.21.json) and
+[`recipes/peppol-bis-billing-3.0.20.json`](recipes/peppol-bis-billing-3.0.20.json) each name:
 
-- the identity of the pack it makes, `peppol-bis-billing/3.0/3.0.20`;
-- the release it takes the files from: repository, tag `v3.0.20`, the commit the tag named when
-  the recipe was written, and the base URL the files are fetched below;
+- the identity of the pack it makes, `peppol-bis-billing/3.0/3.0.21` and `…/3.0.20`;
+- the release it takes the files from: repository, the tag where the publisher tagged the release
+  (`v3.0.20`) and the commit the tag named when the recipe was written, or for a release without a
+  tag (3.0.21) the commit alone and the branch it was found on; and the base URL the files are
+  fetched below, which is below the tag or, without one, below the commit — never below a branch,
+  which moves, and a recipe whose base is below neither is refused;
 - each Schematron file, with its size, its SHA-256, the syntaxes and profiles its rule set
   applies to, its licence and the directory of the pack it goes into;
 - the components it copies out of a bundled pack — the UBL 2.1 and CII D16B schema modules of
@@ -142,20 +146,25 @@ The Schematron files are compiled to XSLT in process with the ISO Schematron XSL
 `README.md` records its origin and digests; a schema that includes a file the recipe does not
 name is refused.
 
+The identifier of the pack, `esj packs fetch peppol-bis-billing`, names the recipe of the newest
+release in the index; a recipe's own name names its release. A recipe for a newer release is a new
+file and a new line in the index, and the older recipe stays.
+
 A fetched pack is a pack like any other and is read by the same code:
 
 ```text
-<directory>/peppol-bis-billing/3.0/3.0.20/
+<directory>/peppol-bis-billing/3.0/3.0.21/
   pack.json                  the manifest this module reads, written by the fetch
   NOTICE                     what the files are, where each came from, under which terms
-  cen/1.3.15/                the EN 16931 Schematron the release ships, and its compiled form
-  peppol/3.0.20/             the Peppol Schematron for UBL and for CII, and its compiled form
+  cen/1.3.16/                the EN 16931 Schematron the release ships, and its compiled form
+  peppol/3.0.21/             the Peppol Schematron for UBL and for CII, and its compiled form
   xsd/ubl-2.1/, xsd/cii-d16b/  copied from the bundled pack, with their notices
 ```
 
 Its manifest has two members a bundled one has not: `note`, one line on the terms of the files,
-which `esj --list-packs` prints, and `recipe`, the recipe, the repository, the tag, the commit and
-what compiled the rule sets. A compiled rule set is a component with `unmodified` false, the
+which `esj --list-packs` prints, and `recipe`, the recipe, the repository, the tag or branch as
+the recipe has it, the commit and what compiled the rule sets. A compiled rule set is a component
+with `unmodified` false, the
 source it was compiled from listed beside it, and the fetched source in `files` too, so that the
 pack can be reviewed on the machine that holds it. `retrieved` is the day of the fetch; everything
 else is a function of the recipe, the skeleton and the Schematron processor, so a second fetch

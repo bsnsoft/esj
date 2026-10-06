@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import de.bsnsoft.esj.syntax.PackFetcher;
+import de.bsnsoft.esj.syntax.PackRecipe;
 import de.bsnsoft.esj.syntax.PackRecipes;
 import java.io.IOException;
 import java.net.URI;
@@ -23,8 +24,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * The Peppol BIS Billing 3.0 pack end to end, through the command line: {@code esj packs
@@ -48,9 +50,13 @@ class PeppolPackTest {
 
     private static final String PROPERTY = "esj.network";
 
-    private static final String RECIPE = "peppol-bis-billing-3.0.20";
+    /** The examples each release publishes in {@code rules/examples/}. */
+    private static final Map<String, Integer> EXAMPLES = Map.of(
+            "peppol-bis-billing-3.0.20", 9,
+            "peppol-bis-billing-3.0.21", 10);
 
-    private static final String IDENTITY = "peppol-bis-billing/3.0/3.0.20";
+    /** The heading of the README under which the files of one recipe are listed. */
+    private static final Pattern HEADING = Pattern.compile("^### `([a-z0-9.-]+)`$");
 
     private static final String PEPPOL =
             "urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0";
@@ -64,53 +70,61 @@ class PeppolPackTest {
     @TempDir
     Path directory;
 
-    @Test
-    void fetchesThePackAndJudgesOpenPeppolsExamplesAndBrokenDocuments() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"peppol-bis-billing-3.0.20", "peppol-bis-billing-3.0.21"})
+    void fetchesThePackAndJudgesOpenPeppolsExamplesAndBrokenDocuments(String recipe)
+            throws Exception {
         assumeTrue(Boolean.getBoolean(PROPERTY), "skipped: this test fetches the Peppol BIS"
                 + " Billing 3.0 artefacts and OpenPeppol's examples at test time; run the"
                 + " build with -D" + PROPERTY + "=true to include it");
+        PackRecipe chosen = PackRecipes.named(recipe);
+        String identity = chosen.identity();
         Path packs = directory.resolve("packs");
         StringBuilder ledger = new StringBuilder();
 
+        // The newest release is fetched by the identifier of its pack, which is how the
+        // documentation fetches it; an older one by the name of its recipe.
+        String asked = PackRecipes.isNewest(chosen) ? chosen.id() : recipe;
         long start = System.nanoTime();
-        Cli.Run fetched = Cli.run("packs", "fetch", RECIPE, "--into", packs.toString());
+        Cli.Run fetched = Cli.run("packs", "fetch", asked, "--into", packs.toString());
         Duration fetchTime = Duration.ofNanos(System.nanoTime() - start);
         assertEquals(ExitCode.SUCCESS, fetched.exitCode(), fetched.text() + fetched.err());
-        assertTrue(fetched.text().startsWith(IDENTITY + " written to "), fetched.text());
+        assertTrue(fetched.text().startsWith(identity + " written to "), fetched.text());
         ledger.append("esj packs fetch ").append(fetchTime.toMillis()).append(" ms\n");
 
-        Cli.Run again = Cli.run("packs", "fetch", RECIPE, "--into", packs.toString());
+        Cli.Run again = Cli.run("packs", "fetch", recipe, "--into", packs.toString());
         assertEquals(ExitCode.SUCCESS, again.exitCode(), again.err());
-        assertTrue(again.text().startsWith(IDENTITY + " is already, unchanged, in "),
+        assertTrue(again.text().startsWith(identity + " is already, unchanged, in "),
                 again.text());
 
         Cli.Run listed = Cli.run("packs", "list", "--packs", packs.toString());
-        assertTrue(listed.text().contains(IDENTITY + System.lineSeparator()), listed.text());
+        assertTrue(listed.text().contains(identity + System.lineSeparator()), listed.text());
         assertTrue(listed.text().contains("peppol-ubl-schematron (schematron-xslt,"
                 + " LicenseRef-OpenPeppol)"), listed.text());
         assertTrue(listed.text().contains("; in a pack directory above"), listed.text());
 
         Map<String, Integer> verdicts = new TreeMap<>();
-        for (String example : files().keySet()) {
+        for (String example : files(recipe).keySet()) {
             if (!example.startsWith("rules/examples/")) {
                 continue;
             }
-            Path file = write(example, fetch(example));
+            Path file = write(example, fetch(recipe, example));
             long run = System.nanoTime();
             Cli.Run validated = Cli.run("validate", "--packs", packs.toString(),
                     file.toString());
             ledger.append(example).append(": exit ").append(validated.exitCode()).append(", ")
                     .append((System.nanoTime() - run) / 1_000_000).append(" ms\n");
-            assertTrue(validated.text().contains("(pack " + IDENTITY + ", from "),
+            assertTrue(validated.text().contains("(pack " + identity + ", from "),
                     example + " is judged by the Peppol pack: " + validated.text());
             verdicts.put(example, validated.exitCode());
             assertEquals(ExitCode.SUCCESS, validated.exitCode(),
                     example + " is valid by its publisher's rules and by this tool's:\n"
                             + validated.text() + validated.err());
         }
-        assertEquals(9, verdicts.size(), "every example of the release was run");
+        assertEquals(EXAMPLES.get(recipe), verdicts.size(),
+                "every example of the release was run");
 
-        String base = new String(fetch("rules/examples/base-example.xml"),
+        String base = new String(fetch(recipe, "rules/examples/base-example.xml"),
                 StandardCharsets.UTF_8);
         Map<String, String> mutations = new LinkedHashMap<>();
         // Each change is found by the structure of UBL rather than by the text of the
@@ -158,13 +172,13 @@ class PeppolPackTest {
         Files.writeString(unknownFile, unknown, StandardCharsets.UTF_8);
         Cli.Run automatic = Cli.run("validate", "--packs", packs.toString(),
                 unknownFile.toString());
-        Cli.Run named = Cli.run("validate", "--packs", packs.toString(), "--pack", IDENTITY,
+        Cli.Run named = Cli.run("validate", "--packs", packs.toString(), "--pack", identity,
                 unknownFile.toString());
         ledger.append("a specification identifier no pack knows (BT-24): exit ")
                 .append(automatic.exitCode()).append(" (")
                 .append(automatic.text().contains("(pack xrechnung/3.0.2/2026-08-31)")
                         ? "bundled pack" : "?")
-                .append("), with --pack ").append(IDENTITY).append(": exit ")
+                .append("), with --pack ").append(identity).append(": exit ")
                 .append(named.exitCode()).append('\n');
         assertEquals(ExitCode.INDETERMINATE, automatic.exitCode(), automatic.text());
         assertEquals(ExitCode.INDETERMINATE, named.exitCode(), named.text());
@@ -173,7 +187,8 @@ class PeppolPackTest {
 
         Path out = Path.of("target", "peppol-evidence");
         Files.createDirectories(out);
-        Files.writeString(out.resolve("cli.txt"), ledger.toString(), StandardCharsets.UTF_8);
+        Files.writeString(out.resolve("cli-" + recipe + ".txt"), ledger.toString(),
+                StandardCharsets.UTF_8);
         System.out.println(ledger);
     }
 
@@ -205,23 +220,32 @@ class PeppolPackTest {
         return file;
     }
 
-    /** Returns the files {@code conformance/peppol/README.md} lists, path to SHA-256. */
-    private static Map<String, String> files() {
+    /**
+     * Returns the files {@code conformance/peppol/README.md} lists for one recipe, path to
+     * SHA-256.
+     */
+    private static Map<String, String> files(String recipe) {
         Map<String, String> files = new TreeMap<>();
+        String current = null;
         for (String line : Fixtures.text("conformance/peppol/README.md").split("\\R")) {
+            Matcher heading = HEADING.matcher(line);
+            if (heading.matches()) {
+                current = heading.group(1);
+                continue;
+            }
             Matcher matcher = CHECKSUM.matcher(line);
-            if (matcher.matches()) {
+            if (matcher.matches() && recipe.equals(current)) {
                 files.put(matcher.group(2), matcher.group(1));
             }
         }
         return files;
     }
 
-    /** Fetches one listed file from the tag of the recipe and weighs it. */
-    private static byte[] fetch(String path) throws IOException {
-        String digest = files().get(path);
-        assertNotNull(digest, "conformance/peppol/README.md lists " + path);
-        URI url = PackRecipes.named(RECIPE).url(path);
+    /** Fetches one listed file from the tag or commit of the recipe and weighs it. */
+    private static byte[] fetch(String recipe, String path) throws IOException {
+        String digest = files(recipe).get(path);
+        assertNotNull(digest, "conformance/peppol/README.md lists " + path + " for " + recipe);
+        URI url = PackRecipes.named(recipe).url(path);
         byte[] bytes = PackFetcher.https("esj-test", Duration.ofSeconds(60))
                 .get(url, 8L * 1024 * 1024);
         assertEquals(digest, sha256(bytes), url + " is the file the README records");

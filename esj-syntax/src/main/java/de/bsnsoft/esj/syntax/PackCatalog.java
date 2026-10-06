@@ -32,7 +32,11 @@ import java.util.stream.Stream;
  * mean either of two sets of files names neither. And where more than one pack recognizes
  * the profile of a document and one of them came from a directory, the run is refused and
  * {@code --pack} names the one to take; a precedence rule would decide silently which rules
- * judge an invoice.
+ * judge an invoice. The one order the catalog does apply is the one a publisher gives:
+ * where every pack that recognizes the profile is a release of one pack — the same
+ * {@code id} and {@code version}, as two fetched releases of Peppol BIS Billing 3.0 are —
+ * the newest release is taken, its release compared part by part (3.0.9 before 3.0.10), as among
+ * bundled packs, and the report names it.
  *
  * <p>Where no pack recognizes the profile, the bundled packs are asked first, so a pack
  * directory changes nothing for a document of a profile none of its packs is written for.
@@ -152,18 +156,21 @@ public final class PackCatalog {
      * no profile note and applies something: every rule set it holds for the syntax
      * applies, and it holds one. Exactly one pack
      * that recognizes the profile is taken. Several bundled ones are a release of the same
-     * profile beside another, and the newest release is taken, as it always was; several
-     * of which one came from a pack directory are refused, naming them, because which of
-     * two sets of rules judges an invoice is the caller's decision and {@code --pack} is
-     * how it is made. Where none recognizes the profile, the first bundled pack is taken
-     * and its selection carries the note that says what did not run.
+     * profile beside another, and the newest release is taken, as it always was; so are
+     * several that are all releases of one pack, {@code id} and {@code version} alike,
+     * wherever they came from. Several of which one came from a pack directory and which
+     * are not releases of one pack are refused, naming them, because which of two sets of
+     * rules judges an invoice is the caller's decision and {@code --pack} is how it is made.
+     * Where none recognizes the profile, the first bundled pack is taken and its selection
+     * carries the note that says what did not run.
      *
      * @param syntax          the syntax of the document
      * @param customizationId the customization identifier the document names in BT-24,
      *                        empty where it names none
      * @return what applies, what does not, and why
      * @throws PackException        if no pack is available, or more than one pack from which
-     *                              a pack directory contributes recognizes the profile
+     *                              a pack directory contributes recognizes the profile and
+     *                              they are not all releases of one pack
      * @throws NullPointerException if an argument is {@code null}
      */
     public PackSelection select(XrSyntax syntax, String customizationId) {
@@ -188,6 +195,15 @@ public final class PackCatalog {
         }
         boolean fromDirectory = recognizing.stream()
                 .anyMatch(selection -> selection.pack().source() != PackSource.BUNDLED);
+        boolean releasesOfOne = recognizing.stream()
+                .map(selection -> selection.pack().id() + "/" + selection.pack().version())
+                .distinct().count() == 1;
+        if (recognizing.size() > 1 && releasesOfOne) {
+            return recognizing.stream()
+                    .max(Comparator.comparing((PackSelection selection) ->
+                            selection.pack().release(), Releases.ORDER))
+                    .orElseThrow();
+        }
         if (recognizing.size() > 1 && fromDirectory) {
             throw new PackException(recognizing.size() + " validation packs apply to "
                     + (customizationId.isEmpty() ? "a document that names no profile"

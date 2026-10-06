@@ -119,13 +119,33 @@ class PackCatalogTest {
     }
 
     @Test
+    void takesTheNewestOfTwoReleasesOfOnePack() {
+        byte[] schematron = ExamplePacks.schematron();
+        PackFetcher.Download download =
+                ExamplePacks.serving(Map.of(ExamplePacks.url(), schematron));
+        // 1.0.10 is newer than 1.0.9, which a comparison of characters would get wrong.
+        PackFetcher.fetch(ExamplePacks.recipe(schematron, "1.0", "1.0.10"), directory,
+                false, download, ExamplePacks.TODAY, "esj test");
+        PackFetcher.fetch(ExamplePacks.recipe(schematron, "1.0", "1.0.9"), directory,
+                false, download, ExamplePacks.TODAY, "esj test");
+        PackCatalog catalog = PackCatalog.withDirectories(List.of(directory));
+
+        assertEquals("example/1.0/1.0.10", catalog.select(XrSyntax.UBL_INVOICE,
+                ExamplePacks.PROFILE).pack().directory());
+        assertEquals("example/1.0/1.0.9", catalog.find("example/1.0/1.0.9").directory(),
+                "the older release is still there for --pack");
+        assertEquals(BUNDLED, catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
+                .pack().directory(), "a profile only one pack knows is still decided");
+    }
+
+    @Test
     void refusesToChooseBetweenTwoPacksOfOneProfile() {
         byte[] schematron = ExamplePacks.schematron();
         PackFetcher.Download download =
                 ExamplePacks.serving(Map.of(ExamplePacks.url(), schematron));
         PackFetcher.fetch(ExamplePacks.recipe(schematron, "1.0", "2026-09-30"), directory,
                 false, download, ExamplePacks.TODAY, "esj test");
-        PackFetcher.fetch(ExamplePacks.recipe(schematron, "1.0", "2026-10-15"), directory,
+        PackFetcher.fetch(ExamplePacks.recipe(schematron, "2.0", "2026-10-15"), directory,
                 false, download, ExamplePacks.TODAY, "esj test");
         PackCatalog catalog = PackCatalog.withDirectories(List.of(directory));
 

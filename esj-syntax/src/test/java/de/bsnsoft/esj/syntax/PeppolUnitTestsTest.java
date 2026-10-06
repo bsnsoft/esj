@@ -25,8 +25,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.Serializer;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * OpenPeppol's own Schematron unit tests, run through the pack {@code esj packs fetch}
@@ -52,9 +53,21 @@ class PeppolUnitTestsTest {
 
     private static final String VEFA = "http://difi.no/xsd/vefa/validator/1.0";
 
-    /** One row of the rule table of the README: identifier, expectations, result. */
+    /**
+     * One row of the rule table of the README: identifier, then for each release of
+     * {@link PeppolEvidence#RECIPES}, in that order, the expectations and the result, or a
+     * dash where the release has no test about the rule.
+     */
     private static final Pattern LEDGER_ROW = Pattern.compile(
-            "^\\| `([A-Z0-9-]+)` \\| (\\d+) \\| (identical|differing) \\|$", Pattern.MULTILINE);
+            "^\\| `([A-Z0-9-]+)` \\| ([^|]+?) \\| ([^|]+?) \\|$", Pattern.MULTILINE);
+
+    /** One cell of that table. */
+    private static final Pattern CELL = Pattern.compile("(\\d+) (identical|differing)");
+
+    /** What each release's run reads and runs: test sets, empty ones, tests, expectations, rules. */
+    private static final Map<String, List<Integer>> COUNTS = Map.of(
+            "peppol-bis-billing-3.0.20", List.of(102, 2, 354, 354, 58),
+            "peppol-bis-billing-3.0.21", List.of(110, 2, 493, 493, 62));
 
     /** The rule sets each configuration of the test sets runs, by component name. */
     private static final Map<String, List<String>> CONFIGURATIONS = Map.of(
@@ -72,24 +85,26 @@ class PeppolUnitTestsTest {
     @TempDir
     Path packs;
 
-    @Test
-    void theFetchedRuleSetsFireWhatOpenPeppolsOwnTestsExpect() throws IOException {
+    @ParameterizedTest
+    @ValueSource(strings = {"peppol-bis-billing-3.0.20", "peppol-bis-billing-3.0.21"})
+    void theFetchedRuleSetsFireWhatOpenPeppolsOwnTestsExpect(String recipe) throws IOException {
         PeppolEvidence.assumeNetwork();
+        assertTrue(PeppolEvidence.RECIPES.contains(recipe));
         long start = System.nanoTime();
-        PackFetcher.Result fetched = PackFetcher.fetch(PackRecipes.named(PeppolEvidence.RECIPE),
+        PackFetcher.Result fetched = PackFetcher.fetch(PackRecipes.named(recipe),
                 packs, false, PeppolEvidence.download(), LocalDate.now(ZoneOffset.UTC),
                 "esj test");
         Duration fetchAndCompile = Duration.ofNanos(System.nanoTime() - start);
         Pack pack = fetched.pack();
 
-        List<String> paths = PeppolEvidence.files().keySet().stream()
+        List<String> paths = PeppolEvidence.files(recipe).keySet().stream()
                 .filter(path -> path.startsWith("rules/unit-UBL-PEPPOL/")
                         || path.startsWith("rules/unit-CII-PEPPOL/"))
                 .toList();
         long fetchStart = System.nanoTime();
         // A hundred small files, each its own request: fetched side by side, they cost what
         // the slowest of them costs rather than the sum.
-        paths.parallelStream().forEach(PeppolEvidence::fetch);
+        paths.parallelStream().forEach(path -> PeppolEvidence.fetch(recipe, path));
         Duration fetchTests = Duration.ofNanos(System.nanoTime() - fetchStart);
 
         Map<String, Rule> rules = new TreeMap<>();
@@ -101,7 +116,7 @@ class PeppolUnitTestsTest {
         long runStart = System.nanoTime();
         for (String path : paths) {
             XdmNode testSet = XmlFrontDoor.rootElement(
-                    XmlFrontDoor.parse(PeppolEvidence.fetch(path)));
+                    XmlFrontDoor.parse(PeppolEvidence.fetch(recipe, path)));
             List<String> components = CONFIGURATIONS.get(testSet.attribute("configuration"));
             assertTrue(components != null, path + " names a configuration this test knows: "
                     + testSet.attribute("configuration"));
@@ -140,13 +155,14 @@ class PeppolUnitTestsTest {
 
         List<String> differing = rules.values().stream().filter(rule -> rule.failed > 0)
                 .map(rule -> rule.code).toList();
-        write(testSets, empty, tests, expectations, rules, failures, fetchAndCompile,
+        write(recipe, testSets, empty, tests, expectations, rules, failures, fetchAndCompile,
                 fetchTests, run);
-        assertEquals(102, testSets, "every test set of the two directories was read");
-        assertEquals(2, empty, "two of them hold no test");
-        assertEquals(354, tests, "the tests of the others were run");
-        assertEquals(354, expectations);
-        assertEquals(58, rules.size(), "the rules those tests are about");
+        List<Integer> counts = COUNTS.get(recipe);
+        assertEquals(counts.get(0), testSets, "every test set of the two directories was read");
+        assertEquals(counts.get(1), empty, "test sets that hold no test");
+        assertEquals(counts.get(2), tests, "the tests of the others were run");
+        assertEquals(counts.get(3), expectations);
+        assertEquals(counts.get(4), rules.size(), "the rules those tests are about");
         assertEquals(DIFFERING.keySet().stream().sorted().toList(), differing,
                 "the rules whose expectations do not all hold:\n"
                         + String.join("\n", failures));
@@ -154,18 +170,29 @@ class PeppolUnitTestsTest {
         Map<String, String> measured = new TreeMap<>();
         rules.values().forEach(rule -> measured.put(rule.code, rule.expectations + " "
                 + (rule.failed == 0 ? "identical" : "differing")));
-        assertEquals(recorded(), measured,
+        assertEquals(recorded(recipe), measured,
                 "conformance/peppol/README.md records every rule with its expectations");
         assertEquals(6, pack.components().size(), "two schema sets and four rule sets");
         assertEquals(30, pack.files().size(), "the files the pack writes besides its manifest");
     }
 
-    /** Returns the rules the table of {@code conformance/peppol/README.md} records. */
-    private static Map<String, String> recorded() {
+    /**
+     * Returns the rules the table of {@code conformance/peppol/README.md} records for one
+     * release.
+     */
+    private static Map<String, String> recorded(String recipe) {
+        int column = PeppolEvidence.RECIPES.indexOf(recipe);
         Map<String, String> recorded = new TreeMap<>();
         Matcher row = LEDGER_ROW.matcher(Corpus.text("/conformance/peppol/README.md"));
         while (row.find()) {
-            recorded.put(row.group(1), row.group(2) + " " + row.group(3));
+            String cell = row.group(2 + column).trim();
+            Matcher matcher = CELL.matcher(cell);
+            if (matcher.matches()) {
+                recorded.put(row.group(1), matcher.group(1) + " " + matcher.group(2));
+            } else {
+                assertEquals("—", cell, "a cell of the rule table is a count and a result,"
+                        + " or a dash");
+            }
         }
         return recorded;
     }
@@ -247,7 +274,7 @@ class PeppolUnitTestsTest {
     }
 
     /** Writes the ledger of this run where the build keeps what it made. */
-    private static void write(int testSets, int empty, int tests, int expectations,
+    private static void write(String recipe, int testSets, int empty, int tests, int expectations,
                               Map<String, Rule> rules, List<String> failures,
                               Duration fetchAndCompile, Duration fetchTests, Duration run)
             throws IOException {
@@ -272,7 +299,7 @@ class PeppolUnitTestsTest {
         failures.forEach(failure -> text.append(failure).append('\n'));
         Path out = Path.of("target", "peppol-evidence");
         Files.createDirectories(out);
-        Files.writeString(out.resolve("unit-tests.txt"), text.toString(),
+        Files.writeString(out.resolve("unit-tests-" + recipe + ".txt"), text.toString(),
                 StandardCharsets.UTF_8);
         System.out.println(text);
     }

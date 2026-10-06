@@ -54,6 +54,11 @@ class PackDirectoriesTest {
         assertTrue(run.text().contains("peppol-bis-billing-3.0.20" + System.lineSeparator()
                 + "  Peppol BIS Billing 3.0 validation artefacts, as published by OpenPeppol,"
                 + " release 3.0.20"), run.text());
+        assertTrue(run.text().contains("peppol-bis-billing-3.0.21 (newest release; esj packs"
+                + " fetch peppol-bis-billing follows it)" + System.lineSeparator()), run.text());
+        assertTrue(run.text().contains("at commit 806866bd2bd91d7e9623b68f08164e8fbe9e67a0"
+                + " (branch 2026-Q2-QA2)"), run.text());
+        assertTrue(run.text().contains("at tag v3.0.20"), run.text());
         assertTrue(run.text().contains("not fetched into any pack directory of this run"),
                 run.text());
     }
@@ -173,7 +178,7 @@ class PackDirectoriesTest {
         Cli.Run run = Cli.run("validate", invoice(PEPPOL));
 
         assertEquals(ExitCode.INDETERMINATE, run.exitCode(), run.text() + run.err());
-        assertTrue(run.text().contains("esj packs fetch peppol-bis-billing-3.0.20 --into"
+        assertTrue(run.text().contains("esj packs fetch peppol-bis-billing-3.0.21 --into"
                 + " <directory>"), run.text());
         assertFalse(Cli.run("validate", invoice(PROFILE)).text().contains("esj packs fetch"),
                 "a profile no recipe is written for gets no such line");
@@ -186,7 +191,8 @@ class PackDirectoriesTest {
         Cli.Run run = Cli.run("packs", "fetch", "peppol", "--into", into.toString());
 
         assertEquals(ExitCode.INPUT, run.exitCode());
-        assertTrue(run.err().contains("peppol-bis-billing-3.0.20"), run.err());
+        assertTrue(run.err().contains("peppol-bis-billing-3.0.21, peppol-bis-billing-3.0.20"),
+                run.err());
         assertFalse(Files.exists(into));
     }
 
