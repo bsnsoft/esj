@@ -141,6 +141,8 @@
       modules that are not compared at all (the two tools set it to true). Until 1.0.0 the
       check reports and does not fail; docs/releasing.md says how to read the report.
     -->
+    <!-- Packages the Javadoc leaves out: internal ones; without-edition-2026 adds the edition. -->
+    <esj.javadoc.excluded-packages>*.internal:*.internal.*</esj.javadoc.excluded-packages>
     <esj.api-baseline>0.9.4</esj.api-baseline>
     <esj.api-check.break>false</esj.api-check.break>
     <esj.api-check.skip>false</esj.api-check.skip>
@@ -365,7 +367,7 @@
               public because a module of this project needs it, not because a caller has
               business with it, and its documentation is the source.
             -->
-            <excludePackageNames>*.internal:*.internal.*</excludePackageNames>
+            <excludePackageNames>${esj.javadoc.excluded-packages}</excludePackageNames>
           </configuration>
         </plugin>
       </plugins>
@@ -559,6 +561,7 @@
         <esj.edition-2026.exclude-upgrade>en16931/upgrade-*</esj.edition-2026.exclude-upgrade>
         <esj.edition-2026.exclude-schema>esj-en16931-2026.schema.json</esj.edition-2026.exclude-schema>
         <esj.edition-2026.exclude-sources>**/v2026/**</esj.edition-2026.exclude-sources>
+        <esj.javadoc.excluded-packages>*.internal:*.internal.*:*.v2026:*.v2026.*</esj.javadoc.excluded-packages>
         <esj.edition-2026.exclude-rules>en16931-2026/**</esj.edition-2026.exclude-rules>
         <esj.edition-2026.exclude-conformance>rules-2026/**</esj.edition-2026.exclude-conformance>
         <esj.edition-2026.exclude-service>META-INF/services/de.bsnsoft.esj.rules.RulePackSource</esj.edition-2026.exclude-service>
