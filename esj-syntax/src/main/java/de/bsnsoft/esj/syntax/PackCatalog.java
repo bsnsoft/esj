@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -173,7 +173,7 @@ public final class PackCatalog {
      *                              they are not all releases of one pack
      * @throws NullPointerException if an argument is {@code null}
      */
-    public PackSelection select(XrSyntax syntax, String customizationId) {
+    public PackSelection select(InvoiceSyntax syntax, String customizationId) {
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");
         if (packs.isEmpty()) {
@@ -226,7 +226,7 @@ public final class PackCatalog {
      * @return the lookup
      * @throws NullPointerException if an argument is {@code null}
      */
-    public ProfileLevels levels(XrSyntax syntax, String customizationId) {
+    public ProfileLevels levels(InvoiceSyntax syntax, String customizationId) {
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");
         return first(pack -> ProfileLevels.of(pack, syntax, customizationId));

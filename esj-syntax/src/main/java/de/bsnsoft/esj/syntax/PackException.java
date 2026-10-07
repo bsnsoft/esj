@@ -1,5 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.EsjException;
+
 /**
  * Signals that a validation pack cannot be used: its manifest is not a manifest this
  * module reads, a file it names is not there, or a pack that was asked for by name is
@@ -9,7 +11,7 @@ package de.bsnsoft.esj.syntax;
  * the input, so a failure here is a failure of the installation and never an invalid
  * invoice.
  */
-public final class PackException extends RuntimeException {
+public final class PackException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

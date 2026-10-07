@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -100,7 +100,7 @@ public record PackComponent(String name,
      * @return whether the component names that syntax and has an entry file for it
      * @throws NullPointerException if {@code syntax} is {@code null}
      */
-    public boolean appliesToSyntax(XrSyntax syntax) {
+    public boolean appliesToSyntax(InvoiceSyntax syntax) {
         return appliesToSyntax(Syntaxes.token(Objects.requireNonNull(syntax, "syntax")));
     }
 

@@ -4,7 +4,7 @@ import de.bsnsoft.esj.syntax.PackException;
 import de.bsnsoft.esj.syntax.Packs;
 import de.bsnsoft.esj.syntax.ProfileLevels;
 import de.bsnsoft.esj.syntax.Severity;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -60,8 +60,8 @@ final class LevelShift {
      *         where the document names no profile
      * @throws CliException if a bundled pack cannot be read
      */
-    static List<String> stricterInTarget(Optional<XrSyntax> source,
-                                         XrSyntax target,
+    static List<String> stricterInTarget(Optional<InvoiceSyntax> source,
+                                         InvoiceSyntax target,
                                          String profile) {
         if (profile.isEmpty() || source.isEmpty() || source.orElseThrow() == target) {
             return List.of();
@@ -99,7 +99,7 @@ final class LevelShift {
     }
 
     /** Returns the levels a bundled pack gives a document of one syntax and one profile. */
-    private static ProfileLevels levels(XrSyntax syntax, String profile) {
+    private static ProfileLevels levels(InvoiceSyntax syntax, String profile) {
         try {
             return Packs.levels(syntax, profile);
         } catch (PackException e) {
@@ -120,7 +120,7 @@ final class LevelShift {
      * @param target the syntax this run wrote
      * @return the line, without the {@code info:} the console prefixes it with
      */
-    static String line(List<String> codes, XrSyntax source, XrSyntax target) {
+    static String line(List<String> codes, InvoiceSyntax source, InvoiceSyntax target) {
         return "the profile this document names levels " + String.join(", ", codes)
                 + " more strictly for " + describe(target) + " than for " + describe(source)
                 + ", so the file written here can be refused where the source was not;"
@@ -128,7 +128,7 @@ final class LevelShift {
     }
 
     /** Returns what a line calls a syntax, as the conversion commands call it. */
-    private static String describe(XrSyntax syntax) {
+    private static String describe(InvoiceSyntax syntax) {
         return switch (syntax) {
             case CII -> "a cross industry invoice";
             case UBL_INVOICE -> "a UBL invoice";

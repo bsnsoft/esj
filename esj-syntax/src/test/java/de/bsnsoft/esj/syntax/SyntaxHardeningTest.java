@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
@@ -81,8 +82,8 @@ class SyntaxHardeningTest {
     }
 
     /**
-     * A limit that was a time carries the time it was, and one that was a size carries no
-     * time at all.
+     * A limit that was a time names the time it was, and one that was a size names the
+     * size.
      *
      * <p>A caller that spends one bound of its own across several steps hands this module
      * what is left rather than what its user asked for, so the message it composes needs
@@ -92,17 +93,19 @@ class SyntaxHardeningTest {
      */
     @Test
     void namesTheBudgetOfARunThatOutlastedIt() {
-        SyntaxLimitException outOfTime = assertThrows(SyntaxLimitException.class,
+        EsjLimitException outOfTime = assertThrows(EsjLimitException.class,
                 () -> SyntaxValidator.validate(
                         Corpus.instance("business-cases/standard/01.01a-INVOICE_ubl.xml"),
                         SyntaxOptions.defaults().withMaxRuntime(Duration.ofMillis(1))));
-        assertEquals(Optional.of(Duration.ofMillis(1)), outOfTime.budget());
+        assertEquals(Optional.of(new EsjLimitException.Bound("maxRuntime", 1, "milliseconds")),
+                outOfTime.bound());
 
-        SyntaxLimitException tooLarge = assertThrows(SyntaxLimitException.class,
+        EsjLimitException tooLarge = assertThrows(EsjLimitException.class,
                 () -> SyntaxValidator.validate(
                         Corpus.instance("business-cases/standard/01.01a-INVOICE_ubl.xml"),
                         SyntaxOptions.defaults().withMaxInputBytes(16)));
-        assertEquals(Optional.empty(), tooLarge.budget(),
+        assertEquals(Optional.of(new EsjLimitException.Bound("maxInputBytes", 16, "bytes")),
+                tooLarge.bound(),
                 "a limit that was not a time names no time: " + tooLarge.getMessage());
     }
 
@@ -264,7 +267,7 @@ class SyntaxHardeningTest {
     void refusesADocumentLargerThanTheRunWasGiven() {
         byte[] document = Corpus.instance("business-cases/standard/01.01a-INVOICE_ubl.xml");
 
-        SyntaxLimitException refused = assertThrows(SyntaxLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> SyntaxValidator.validate(document,
                         SyntaxOptions.defaults().withMaxInputBytes(1024)));
 
@@ -276,7 +279,7 @@ class SyntaxHardeningTest {
     void refusesToAnswerWhenTheTimeRanOut() {
         byte[] document = Corpus.instance("business-cases/standard/01.01a-INVOICE_ubl.xml");
 
-        SyntaxLimitException refused = assertThrows(SyntaxLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> SyntaxValidator.validate(document,
                         SyntaxOptions.defaults().withMaxRuntime(Duration.ofNanos(1))));
 

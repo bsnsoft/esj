@@ -53,7 +53,7 @@ class FacturXTest {
         byte[] hybrid = FacturX.embed(Pdfs.pdfa3(), document, XRECHNUNG);
 
         byte[] expected = EsjWriter.canonical()
-                .toBytes(new XrImporter().importXml(CiiWriter.write(document)));
+                .toBytes(new XrImporter().read(CiiWriter.write(document)).document());
         assertArrayEquals(expected,
                 EsjWriter.canonical().toBytes(PdfInvoiceImporter.importPdf(hybrid).document()),
                 "the container gives back the invoice that was put into it");
@@ -497,6 +497,6 @@ class FacturXTest {
 
     /** The invoice of the corpus this class embeds, as an ESJ document. */
     private static SemanticDocument document() {
-        return new XrImporter().importXml(Conformance.instance(CII));
+        return new XrImporter().read(Conformance.instance(CII)).document();
     }
 }

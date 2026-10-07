@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -153,7 +154,7 @@ public final class FacturX {
      *                               embeds; see {@link EmbedRefusedException}
      * @throws PdfAccessException    if the input is encrypted
      * @throws PdfFormatException    if the input is no PDF this module reads
-     * @throws PdfLimitException     if a bound of the default limits was reached
+     * @throws EsjLimitException     if a bound of the default limits was reached
      * @throws NullPointerException  if an argument is {@code null}
      */
     public static byte[] embed(byte[] pdf, SemanticDocument document) {
@@ -172,7 +173,7 @@ public final class FacturX {
      *                               embeds; see {@link EmbedRefusedException}
      * @throws PdfAccessException    if the input is encrypted
      * @throws PdfFormatException    if the input is no PDF this module reads
-     * @throws PdfLimitException     if a bound of {@link EmbedOptions#limits()} was
+     * @throws EsjLimitException     if a bound of {@link EmbedOptions#limits()} was
      *                               reached, which is never a verdict on the invoice
      * @throws NullPointerException  if an argument is {@code null}
      */
@@ -192,7 +193,7 @@ public final class FacturX {
      *                               embeds; see {@link EmbedRefusedException}
      * @throws PdfAccessException    if the input is encrypted
      * @throws PdfFormatException    if the input is no PDF this module reads
-     * @throws PdfLimitException     if a bound of {@link EmbedOptions#limits()} was
+     * @throws EsjLimitException     if a bound of {@link EmbedOptions#limits()} was
      *                               reached, which is never a verdict on the invoice
      * @throws NullPointerException  if an argument is {@code null}
      */

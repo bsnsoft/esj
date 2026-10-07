@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -134,7 +134,7 @@ public final class Packs {
      * @throws PackException        if no pack is packaged
      * @throws NullPointerException if an argument is {@code null}
      */
-    public static PackSelection select(XrSyntax syntax, String customizationId) {
+    public static PackSelection select(InvoiceSyntax syntax, String customizationId) {
         return PackCatalog.bundled().select(syntax, customizationId);
     }
 
@@ -144,7 +144,7 @@ public final class Packs {
      * <p>It is the lookup {@link ProfileLevels} describes, over the packs this module
      * carries: the first bundled pack that levels anything for the profile answers, and
      * where none does the answer levels nothing. A pack a caller supplied is asked
-     * directly, through {@link ProfileLevels#of(Pack, XrSyntax, String)}.
+     * directly, through {@link ProfileLevels#of(Pack, InvoiceSyntax, String)}.
      *
      * @param syntax          the syntax of the document
      * @param customizationId the customization identifier the document names in BT-24,
@@ -152,7 +152,7 @@ public final class Packs {
      * @return the lookup
      * @throws NullPointerException if an argument is {@code null}
      */
-    public static ProfileLevels levels(XrSyntax syntax, String customizationId) {
+    public static ProfileLevels levels(InvoiceSyntax syntax, String customizationId) {
         return PackCatalog.bundled().levels(syntax, customizationId);
     }
 

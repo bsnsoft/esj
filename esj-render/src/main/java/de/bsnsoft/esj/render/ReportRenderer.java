@@ -1,12 +1,12 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.render.internal.ReportOptions;
 import de.bsnsoft.esj.xr.ExportNote;
-import de.bsnsoft.esj.xr.XrImporter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -87,7 +87,7 @@ public final class ReportRenderer {
 
     /** Creates a renderer that knows the core model and the XRechnung extension. */
     public ReportRenderer() {
-        this(XrImporter.defaultRegistry());
+        this(Registry.en16931WithXrechnung());
     }
 
     /**
@@ -128,7 +128,7 @@ public final class ReportRenderer {
         // invoice section says why it is empty instead. The PDF form is this project's own
         // layout and is driven by the registry of the document's own edition, so it needs
         // no such refusal.
-        Registry stylesheets = XrImporter.defaultRegistry();
+        Registry stylesheets = Registry.en16931WithXrechnung();
         if (!stylesheets.describes(document.semanticModel())) {
             return ReportHtml.of(outcome, options, ReportInvoice.refused(
                     "the vendored visualization renders " + stylesheets.semanticModel()
@@ -147,7 +147,7 @@ public final class ReportRenderer {
                     .renderWithReport(document, options.rendering())));
         } catch (IllegalArgumentException | RenderContentException e) {
             return ReportHtml.of(outcome, options, ReportInvoice.refused(refusal(e)));
-        } catch (RenderLimitException e) {
+        } catch (EsjLimitException e) {
             // The estimate above came out low enough to let the rendering begin and the
             // bound on an HTML rendering stopped it: the same answer as a document the
             // estimate had refused, because no rendering was made either way.
@@ -221,7 +221,7 @@ public final class ReportRenderer {
             pdf.save(bytes);
             return bytes.toByteArray();
         } catch (IOException e) {
-            throw new RenderException("the report could not be written as a PDF", e);
+            throw new RenderEngineException("the report could not be written as a PDF", e);
         }
     }
 

@@ -387,7 +387,7 @@ class StorageExamplesTest {
     /** Returns one instance of the corpus, read through the importer of this module. */
     private static SemanticDocument imported(String relativePath) {
         return IMPORTED.computeIfAbsent(relativePath,
-                path -> new XrImporter().importXml(Conformance.instance(path)));
+                path -> new XrImporter().read(Conformance.instance(path)).document());
     }
 
     /** Opens the database for one test. */

@@ -63,7 +63,7 @@ class XrRoundTripTest {
     @ParameterizedTest
     @MethodSource("corpus")
     void everyInstanceOfTheCorpusSurvivesTheRoundTrip(String instance) {
-        SemanticDocument imported = new XrImporter().importXml(Conformance.instance(instance));
+        SemanticDocument imported = new XrImporter().read(Conformance.instance(instance)).document();
 
         ExportResult exported = new XrExporter().toXrWithReport(imported);
 
@@ -77,7 +77,7 @@ class XrRoundTripTest {
     @ParameterizedTest
     @MethodSource("corpus")
     void everyInstanceOfTheCorpusIsWrittenTheSameWayTwice(String instance) {
-        SemanticDocument imported = new XrImporter().importXml(Conformance.instance(instance));
+        SemanticDocument imported = new XrImporter().read(Conformance.instance(instance)).document();
         XrExporter exporter = new XrExporter();
 
         assertArrayEquals(exporter.toXr(imported), exporter.toXr(imported),
@@ -144,7 +144,7 @@ class XrRoundTripTest {
     }
 
     private static SemanticDocument reread(ExportResult exported) {
-        ImportResult result = new XrImporter().fromXrWithReport(exported.xr());
+        ImportResult result = new XrImporter().readXr(exported.xr());
         assertEquals(List.of(), result.report().notes(),
                 "the XR document this exporter wrote reads back without a note");
         return result.document();

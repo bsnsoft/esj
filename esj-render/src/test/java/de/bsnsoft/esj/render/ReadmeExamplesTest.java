@@ -53,7 +53,7 @@ class ReadmeExamplesTest {
         Files.write(invoice, Corpus.bytes("/conformance/kosit/" + INSTANCE));
 
         // An import and both renderings, which no page prints as one snippet.
-        SemanticDocument document = new XrImporter().importXml(Files.readAllBytes(invoice));
+        SemanticDocument document = new XrImporter().read(Files.readAllBytes(invoice)).document();
 
         String html = new HtmlRenderer().render(document, RenderOptions.in(RenderLanguage.ENGLISH));
         byte[] pdf = new PdfRenderer().render(document, RenderOptions.defaults());

@@ -154,7 +154,7 @@ class XrElementsTest {
     }
 
     private static Registry registry() {
-        return XrImporter.defaultRegistry();
+        return Registry.en16931WithXrechnung();
     }
 
     private static String sha256(byte[] bytes) {

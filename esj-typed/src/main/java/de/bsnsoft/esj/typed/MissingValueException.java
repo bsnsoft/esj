@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.typed;
 
+import de.bsnsoft.esj.EsjException;
 import de.bsnsoft.esj.SemanticPath;
 import java.util.Objects;
 
@@ -12,7 +13,7 @@ import java.util.Objects;
  * every mandatory term is present is decided by validation layer L3 (specification,
  * section 9.3), which the typed view does not perform.
  */
-public final class MissingValueException extends RuntimeException {
+public final class MissingValueException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

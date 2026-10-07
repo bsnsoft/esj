@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.b2c;
 
+import de.bsnsoft.esj.EsjException;
 import de.bsnsoft.esj.SemanticPath;
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ import java.util.Objects;
  * that failed, the business term it is about and the group instance it sits in, so that the
  * caller goes to one place in the invoice and to one sentence of the policy's documentation.
  */
-public final class PolicyPreconditionException extends RuntimeException {
+public final class PolicyPreconditionException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

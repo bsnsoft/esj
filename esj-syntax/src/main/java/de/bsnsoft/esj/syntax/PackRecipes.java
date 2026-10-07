@@ -1,7 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
 import de.bsnsoft.esj.Preview;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -103,7 +103,7 @@ public final class PackRecipes {
      * @return the recipe, or an empty optional
      * @throws NullPointerException if an argument is {@code null}
      */
-    public static Optional<PackRecipe> bringingRulesFor(XrSyntax syntax,
+    public static Optional<PackRecipe> bringingRulesFor(InvoiceSyntax syntax,
                                                         String customizationId) {
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");

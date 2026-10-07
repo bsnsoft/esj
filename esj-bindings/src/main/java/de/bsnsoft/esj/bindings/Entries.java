@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.bindings;
 
 import de.bsnsoft.esj.model.Component;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +36,7 @@ final class Entries {
      */
     static List<BindingTable.Entry> parse(Object terms,
                                           Map<String, String> namespaces,
-                                          BindingSyntax syntax) {
+                                          InvoiceSyntax syntax) {
         List<BindingTable.Entry> entries = new ArrayList<>();
         if (!(terms instanceof List<?> items)) {
             return entries;
@@ -48,7 +49,7 @@ final class Entries {
 
     private static BindingTable.Entry entry(Object term,
                                             Map<String, String> namespaces,
-                                            BindingSyntax syntax) {
+                                            InvoiceSyntax syntax) {
         String id = Json.text(term, "id");
         String kind = Json.text(term, "kind");
         if (id == null || kind == null) {

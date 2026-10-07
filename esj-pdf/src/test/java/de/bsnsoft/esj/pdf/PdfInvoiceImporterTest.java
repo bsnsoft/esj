@@ -6,14 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjException;
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.bindings.StreamingReader;
+import de.bsnsoft.esj.imports.InvoiceReader;
 import de.bsnsoft.esj.json.Canonicalizer;
-import de.bsnsoft.esj.xr.XrException;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -134,30 +138,43 @@ class PdfInvoiceImporterTest {
         byte[] pdf = Pdfs.facturX(Pdfs.FACTUR_X, padded, "EN 16931");
         PdfLimits limits = PdfLimits.defaults().withMaxAttachmentBytes(16 * 1024);
 
-        PdfLimitException thrown = assertThrows(PdfLimitException.class,
+        EsjLimitException thrown = assertThrows(EsjLimitException.class,
                 () -> PdfInvoiceImporter.importPdf(pdf, limits, importer));
 
         assertTrue(thrown.getMessage().contains("16384"), thrown.getMessage());
     }
 
+    /**
+     * The container is not part of the answer, whichever reader is asked: the default one,
+     * the streaming reader, and a reader handed in, here the importer of {@code esj-xr}.
+     */
     @ParameterizedTest
     @MethodSource("corpus")
     void readsTheSameDocumentThroughAContainerAsOnItsOwn(String instance) {
         byte[] xml = Conformance.instance(instance);
         byte[] pdf = Pdfs.facturX("invoice.xml", xml, "EN 16931");
 
+        assertSameThroughTheContainer(instance, xml, new StreamingReader(),
+                () -> PdfInvoiceImporter.importPdf(pdf));
+        assertSameThroughTheContainer(instance, xml, importer,
+                () -> PdfInvoiceImporter.importPdf(pdf, importer));
+    }
+
+    private static void assertSameThroughTheContainer(String instance,
+                                                      byte[] xml,
+                                                      InvoiceReader reader,
+                                                      Supplier<PdfImportResult> container) {
         byte[] direct;
         try {
-            direct = canonical(importer.importXml(xml));
-        } catch (XrException e) {
-            // An instance the importer refuses is refused the same way through the
+            direct = canonical(reader.read(xml).document());
+        } catch (EsjException e) {
+            // An instance the reader refuses is refused the same way through the
             // container: the container is not part of the answer.
-            assertThrows(e.getClass(), () -> PdfInvoiceImporter.importPdf(pdf));
+            assertThrows(e.getClass(), container::get);
             return;
         }
 
-        assertArrayEquals(direct, canonical(PdfInvoiceImporter.importPdf(pdf).document()),
-                instance);
+        assertArrayEquals(direct, canonical(container.get().document()), instance);
     }
 
     static List<String> corpus() {

@@ -141,7 +141,7 @@ final class Fonts {
     private static byte[] bytes(String resource) {
         try (InputStream in = Fonts.class.getResourceAsStream(resource)) {
             if (in == null) {
-                throw new RenderException("the font " + resource + " is not on the classpath");
+                throw new RenderEngineException("the font " + resource + " is not on the classpath");
             }
             return in.readAllBytes();
         } catch (IOException e) {
@@ -168,7 +168,7 @@ final class Fonts {
                 return new Face(PDType0Font.load(document, ttf, true),
                         ttf.getUnicodeCmapLookup());
             } catch (IOException e) {
-                throw new RenderException("a vendored font could not be embedded", e);
+                throw new RenderEngineException("a vendored font could not be embedded", e);
             }
         }
 
@@ -263,7 +263,7 @@ final class Fonts {
             try {
                 return font.getStringWidth(text);
             } catch (IOException | IllegalArgumentException e) {
-                throw new RenderException("a text could not be measured: " + e.getMessage(), e);
+                throw new RenderEngineException("a text could not be measured: " + e.getMessage(), e);
             }
         }
 

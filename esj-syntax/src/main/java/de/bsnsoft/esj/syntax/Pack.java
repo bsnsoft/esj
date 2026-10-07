@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -275,7 +275,7 @@ public final class Pack {
      * @return what applies, what does not, at which levels, and why
      * @throws NullPointerException if an argument is {@code null}
      */
-    public PackSelection select(XrSyntax syntax, String customizationId) {
+    public PackSelection select(InvoiceSyntax syntax, String customizationId) {
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");
         String token = Syntaxes.token(syntax);

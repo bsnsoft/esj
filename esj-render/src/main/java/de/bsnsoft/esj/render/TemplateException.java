@@ -9,7 +9,7 @@ package de.bsnsoft.esj.render;
  * reads. A template belongs to the caller rather than to the sender of an invoice, so this
  * is a configuration error and the message names the member it is about.
  */
-public class TemplateException extends RenderException {
+public final class TemplateException extends RenderException {
 
     private static final long serialVersionUID = 1L;
 

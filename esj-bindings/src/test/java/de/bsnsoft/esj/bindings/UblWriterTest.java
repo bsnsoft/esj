@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.ExtensionValue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +67,8 @@ class UblWriterTest {
      */
     @Test
     void saysWhichEditionItWrites() {
-        String written = BindingTable.of(BindingSyntax.UBL_INVOICE).semanticModel();
-        assertEquals(written, BindingTable.of(BindingSyntax.UBL_CREDIT_NOTE).semanticModel());
+        String written = BindingTable.of(InvoiceSyntax.UBL_INVOICE).semanticModel();
+        assertEquals(written, BindingTable.of(InvoiceSyntax.UBL_CREDIT_NOTE).semanticModel());
         assertEquals(written, UblWriter.semanticModel());
         assertTrue(UblWriter.supports(written));
         assertFalse(UblWriter.supports("EN16931-1:2026"));
@@ -225,17 +227,17 @@ class UblWriterTest {
      */
     @Test
     void choosesTheDocumentTypeFromTheInvoiceTypeCode() {
-        assertEquals(BindingSyntax.UBL_INVOICE, syntaxOf("380"));
-        assertEquals(BindingSyntax.UBL_CREDIT_NOTE, syntaxOf("381"));
-        assertEquals(BindingSyntax.UBL_INVOICE, syntaxOf("81"),
+        assertEquals(InvoiceSyntax.UBL_INVOICE, syntaxOf("380"));
+        assertEquals(InvoiceSyntax.UBL_CREDIT_NOTE, syntaxOf("381"));
+        assertEquals(InvoiceSyntax.UBL_INVOICE, syntaxOf("81"),
                 "the artefact admits 81 on both documents, so it stays an invoice");
-        assertEquals(BindingSyntax.UBL_INVOICE,
+        assertEquals(InvoiceSyntax.UBL_INVOICE,
                 UblWriter.syntaxOf(SemanticDocument.builder().put("/BT-1", "RE-1").build(),
                         UblWriter.DocumentType.AUTO),
                 "a document with no invoice type code is an invoice");
-        assertEquals(BindingSyntax.UBL_INVOICE,
+        assertEquals(InvoiceSyntax.UBL_INVOICE,
                 UblWriter.syntaxOf(creditNote(), UblWriter.DocumentType.INVOICE));
-        assertEquals(BindingSyntax.UBL_CREDIT_NOTE,
+        assertEquals(InvoiceSyntax.UBL_CREDIT_NOTE,
                 UblWriter.syntaxOf(SemanticDocument.builder().put("/BT-3", "380").build(),
                         UblWriter.DocumentType.CREDIT_NOTE));
     }
@@ -485,7 +487,7 @@ class UblWriterTest {
     @Test
     void holdsToTheBoundOnTheOutput() {
         SemanticDocument document = SemanticDocument.builder().put("/BT-1", "RE-1").build();
-        assertThrows(BindingLimitException.class, () -> UblWriter.write(document,
+        assertThrows(EsjLimitException.class, () -> UblWriter.write(document,
                 WriterOptions.builder().maxOutputBytes(32).build()));
     }
 
@@ -507,7 +509,7 @@ class UblWriterTest {
                 .filter(note -> note.message().contains(fragment)).count();
     }
 
-    private static BindingSyntax syntaxOf(String code) {
+    private static InvoiceSyntax syntaxOf(String code) {
         return UblWriter.syntaxOf(SemanticDocument.builder().put("/BT-3", code).build(),
                 UblWriter.DocumentType.AUTO);
     }

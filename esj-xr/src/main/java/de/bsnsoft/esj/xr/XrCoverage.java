@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.xr;
 
 import de.bsnsoft.esj.imports.ImportNote;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -271,9 +272,9 @@ final class XrCoverage {
      * @param syntax the syntax it was read as
      * @return the notes, in document order, empty where the binding carried everything
      */
-    static List<ImportNote> notes(XdmNode root, XrSyntax syntax) {
+    static List<ImportNote> notes(XdmNode root, InvoiceSyntax syntax) {
         List<ImportNote> notes = new ArrayList<>();
-        for (Selection selection : syntax == XrSyntax.CII ? CII : UBL) {
+        for (Selection selection : syntax == InvoiceSyntax.CII ? CII : UBL) {
             for (XdmNode element : along(List.of(root), selection.path())) {
                 if (!classified(element, root, selection)) {
                     notes.add(new ImportNote(ImportNote.Kind.UNPLACEABLE, selection.group(),

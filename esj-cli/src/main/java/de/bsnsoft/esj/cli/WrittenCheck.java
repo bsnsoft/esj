@@ -1,8 +1,8 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.bindings.BindingSyntax;
 import de.bsnsoft.esj.bindings.WriteNote;
 import de.bsnsoft.esj.bindings.WriteReport;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -195,7 +195,7 @@ record WrittenCheck(String target,
      * @return {@code CII}, {@code UBL invoice} or {@code UBL credit note}
      * @throws NullPointerException if {@code syntax} is {@code null}
      */
-    static String target(BindingSyntax syntax) {
+    static String target(InvoiceSyntax syntax) {
         return switch (Objects.requireNonNull(syntax, "syntax")) {
             case CII -> "CII";
             case UBL_INVOICE -> "UBL invoice";

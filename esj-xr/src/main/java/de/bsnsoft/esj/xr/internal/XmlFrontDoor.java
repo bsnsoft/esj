@@ -1,7 +1,7 @@
 package de.bsnsoft.esj.xr.internal;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.XrFormatException;
-import de.bsnsoft.esj.xr.XrSyntax;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Objects;
@@ -191,23 +191,18 @@ public final class XmlFrontDoor {
     }
 
     /**
-     * Recognizes the syntax of a root element.
+     * Recognizes the syntax of a root element of a tree; {@link InvoiceSyntax#of} answers
+     * the same question for a name.
      *
      * @param root the root element
      * @return the syntax, or an empty optional if no syntax this project reads has that
      *         root element
      * @throws NullPointerException if {@code root} is {@code null}
      */
-    public static Optional<XrSyntax> detect(XdmNode root) {
+    public static Optional<InvoiceSyntax> detect(XdmNode root) {
         Objects.requireNonNull(root, "root");
-        String namespace = root.getNodeName().getNamespace();
-        String localName = root.getNodeName().getLocalName();
-        for (XrSyntax syntax : XrSyntax.values()) {
-            if (syntax.matches(namespace, localName)) {
-                return Optional.of(syntax);
-            }
-        }
-        return Optional.empty();
+        return InvoiceSyntax.of(root.getNodeName().getNamespace(),
+                root.getNodeName().getLocalName());
     }
 
     private static Processor newProcessor() {

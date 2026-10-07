@@ -159,7 +159,7 @@ final class Pdfa {
             }
             pdf.getDocumentCatalog().setMetadata(metadata);
         } catch (IOException e) {
-            throw new RenderException("the PDF/A declaration could not be written", e);
+            throw new RenderEngineException("the PDF/A declaration could not be written", e);
         }
     }
 
@@ -264,7 +264,7 @@ final class Pdfa {
     private static byte[] profileBytes() {
         try (InputStream in = Pdfa.class.getResourceAsStream(PROFILE)) {
             if (in == null) {
-                throw new RenderException("the ICC profile " + PROFILE
+                throw new RenderEngineException("the ICC profile " + PROFILE
                         + " is not on the classpath");
             }
             return in.readAllBytes();

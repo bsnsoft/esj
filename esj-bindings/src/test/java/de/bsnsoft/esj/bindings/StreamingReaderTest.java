@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -12,6 +13,7 @@ import de.bsnsoft.esj.json.Limits;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportResult;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -390,7 +392,7 @@ class StreamingReaderTest {
      */
     @Test
     void reachesASubInvoiceLineInsideASubInvoiceLine() {
-        MatchTrie.Node invoice = MatchTrie.of(BindingSyntax.UBL_INVOICE).root()
+        MatchTrie.Node invoice = MatchTrie.of(InvoiceSyntax.UBL_INVOICE).root()
                 .childrenNamed(Name.key(UBL_INVOICE_NAMESPACE, "Invoice")).get(0);
         MatchTrie.Node line = invoice
                 .childrenNamed(Name.key(UBL_AGGREGATE_NAMESPACE, "InvoiceLine")).get(0);
@@ -507,7 +509,7 @@ class StreamingReaderTest {
     void refusesAnInputLargerThanItReads() {
         StreamingReader small = new StreamingReader(ReaderOptions.builder()
                 .maxInputBytes(64).build());
-        assertThrows(BindingLimitException.class,
+        assertThrows(EsjLimitException.class,
                 () -> small.read(Documents.ubl("<cbc:ID>RE-4711</cbc:ID>")));
     }
 
@@ -515,7 +517,7 @@ class StreamingReaderTest {
     void refusesElementsNestedDeeperThanItWalks() {
         StreamingReader shallow = new StreamingReader(ReaderOptions.builder()
                 .maxElementDepth(3).build());
-        assertThrows(BindingLimitException.class, () -> shallow.read(Documents.ubl(
+        assertThrows(EsjLimitException.class, () -> shallow.read(Documents.ubl(
                 "<cac:InvoiceLine><cac:Item><cac:ClassifiedTaxCategory><cbc:ID>S</cbc:ID>"
                         + "</cac:ClassifiedTaxCategory></cac:Item></cac:InvoiceLine>")));
     }
@@ -524,7 +526,7 @@ class StreamingReaderTest {
     void refusesAnElementLargerThanItHolds() {
         StreamingReader small = new StreamingReader(ReaderOptions.builder()
                 .maxBufferedBytes(64).build());
-        assertThrows(BindingLimitException.class, () -> small.read(Documents.ubl(
+        assertThrows(EsjLimitException.class, () -> small.read(Documents.ubl(
                 "<cac:AllowanceCharge><cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         + "<cbc:AllowanceChargeReason>" + "x".repeat(200)
                         + "</cbc:AllowanceChargeReason></cac:AllowanceCharge>")));
@@ -540,7 +542,7 @@ class StreamingReaderTest {
     void refusesASubtreeLargerThanItHolds() {
         StreamingReader small = new StreamingReader(ReaderOptions.builder()
                 .maxBufferedBytes(64).build());
-        assertThrows(BindingLimitException.class, () -> small.read(Documents.ubl(
+        assertThrows(EsjLimitException.class, () -> small.read(Documents.ubl(
                 "<cac:AllowanceCharge><cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         + "<cbc:AllowanceChargeReason>x</cbc:AllowanceChargeReason>"
                                 .repeat(100)
@@ -556,7 +558,7 @@ class StreamingReaderTest {
     void refusesASubtreeWithMoreElementsThanItHolds() {
         StreamingReader small = new StreamingReader(ReaderOptions.builder()
                 .maxBufferedElements(16).build());
-        BindingLimitException refused = assertThrows(BindingLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> small.read(Documents.ubl(
                         "<cac:AllowanceCharge><cbc:ChargeIndicator>false"
                                 + "</cbc:ChargeIndicator>" + "<q/>".repeat(100)

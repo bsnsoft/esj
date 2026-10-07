@@ -1,6 +1,5 @@
 package de.bsnsoft.esj.validate;
 
-import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.PathSegment;
 import de.bsnsoft.esj.SemanticDocument;
@@ -8,6 +7,7 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.TermKind;
+import de.bsnsoft.esj.internal.Messages;
 import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
@@ -193,7 +193,7 @@ public final class StructuralValidator {
                                                    Set<ValidationLayer> layers) {
         Finding finding = Finding.ofDocument(FindingCode.ESJ_L2_EDITION_UNKNOWN,
                 "no registry for the edition "
-                        + Esj.forMessage(document.semanticModel(), MESSAGE_EXCERPT)
+                        + Messages.forMessage(document.semanticModel(), MESSAGE_EXCERPT)
                         + " was available, so the model layers were not checked");
         return ValidationResult.of(List.of(finding),
                 notEvaluated(layers, NotEvaluatedReason.EDITION_UNKNOWN),

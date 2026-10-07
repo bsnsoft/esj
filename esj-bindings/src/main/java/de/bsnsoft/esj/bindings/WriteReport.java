@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.bindings;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -31,7 +32,7 @@ import java.util.Set;
  * @param notes   one note per value that did not, and per part of the document that has no
  *                place in the syntax, in the canonical path order of the values
  */
-public record WriteReport(BindingSyntax syntax, int written, int dropped, List<WriteNote> notes) {
+public record WriteReport(InvoiceSyntax syntax, int written, int dropped, List<WriteNote> notes) {
 
     /**
      * Copies the notes and checks the counts.

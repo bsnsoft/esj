@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -103,8 +104,8 @@ class BoundedStreamTest {
                 .build();
 
         try (PdfContainer container = PdfContainer.open(pdf)) {
-            PdfLimitException refused =
-                    assertThrows(PdfLimitException.class, container::xmpPacket);
+            EsjLimitException refused =
+                    assertThrows(EsjLimitException.class, container::xmpPacket);
             assertTrue(refused.getMessage().contains("XMP packet"), refused.getMessage());
         }
     }
@@ -216,7 +217,7 @@ class BoundedStreamTest {
         dictionary.setItem(COSName.FILTER, COSName.FLATE_DECODE);
         dictionary.setItem(COSName.DECODE_PARMS, Pdfs.predictor(268435455));
 
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> BoundedStream.measure(new ByteArrayInputStream(new byte[8]),
                         dictionary, List.of(COSName.FLATE_DECODE), 1 << 20));
 
@@ -234,8 +235,8 @@ class BoundedStreamTest {
         try (PdfContainer container = PdfContainer.open(pdf)) {
             EmbeddedFile file = container.embeddedFiles().get(0);
 
-            PdfLimitException refused =
-                    assertThrows(PdfLimitException.class, () -> file.head(1024));
+            EsjLimitException refused =
+                    assertThrows(EsjLimitException.class, () -> file.head(1024));
             assertTrue(refused.getMessage().contains("predictor row"), refused.getMessage());
         }
     }
@@ -250,8 +251,8 @@ class BoundedStreamTest {
                 .build();
 
         try (PdfContainer container = PdfContainer.open(pdf)) {
-            PdfLimitException refused =
-                    assertThrows(PdfLimitException.class, container::xmpPacket);
+            EsjLimitException refused =
+                    assertThrows(EsjLimitException.class, container::xmpPacket);
             assertTrue(refused.getMessage().contains("predictor row"), refused.getMessage());
         }
     }

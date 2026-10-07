@@ -62,7 +62,7 @@ class ReaderCorpusTest {
         XrImporter importer = new XrImporter();
         for (String instance : Corpus.corpus()) {
             ImportResult result = reader.read(Corpus.instance(instance));
-            SemanticDocument stylesheets = importer.importXml(Corpus.instance(instance));
+            SemanticDocument stylesheets = importer.read(Corpus.instance(instance)).document();
             List<Difference> differences = compare(result.document(), stylesheets);
             if (differences.isEmpty()) {
                 identical++;
@@ -114,7 +114,7 @@ class ReaderCorpusTest {
                 + "<cbc:SalesOrderID>SO-1</cbc:SalesOrderID></cac:OrderReference>");
         List<Difference> differences =
                 compare(new StreamingReader().read(document).document(),
-                        new XrImporter().importXml(document));
+                        new XrImporter().read(document).document());
         List<?> recorded = Reports.array(report.get("beyondTheCorpus"));
         assertEquals(recorded.size(), differences.size(), differences.toString());
         for (int at = 0; at < recorded.size(); at++) {

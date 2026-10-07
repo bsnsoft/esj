@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ final class BoundedPdfParser extends PDFParser {
      * @param budget the budget of the container
      * @return the document, which the caller closes
      * @throws IOException        if the file cannot be read as a PDF
-     * @throws PdfLimitException  if the budget is spent while the file is opened
+     * @throws EsjLimitException  if the budget is spent while the file is opened
      * @throws PdfAccessException if the file is encrypted
      */
     static PDDocument load(RandomAccessRead source, DecodeBudget budget) throws IOException {

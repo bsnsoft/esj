@@ -1,7 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
-import de.bsnsoft.esj.xr.XmlBytes;
-import de.bsnsoft.esj.xr.XmlEncodingReport;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -22,7 +21,8 @@ import javax.xml.stream.XMLStreamReader;
  * can be classified without being decoded whole.
  *
  * <p>The bytes are decoded first and the parser is then given characters. The charset is
- * the one {@link XmlBytes} reads out of the byte order mark and the XML declaration, and
+ * the one {@link XmlEncodingReport#of(byte[])} reads out of the byte order mark and the XML
+ * declaration, and
  * anything that does not decode in it becomes a replacement character. That is the right
  * way round here for two reasons: an attachment is arbitrary bytes, and a parser handed
  * arbitrary bytes writes its own complaint about them to the error stream of the process
@@ -114,7 +114,7 @@ final class XmlRoot {
      * window that is not text at all answers it with nothing either way.
      */
     static String decode(byte[] bytes) {
-        XmlEncodingReport report = XmlBytes.inspect(bytes);
+        XmlEncodingReport report = XmlEncodingReport.of(bytes);
         Charset charset;
         try {
             charset = Charset.forName(report.assumed());

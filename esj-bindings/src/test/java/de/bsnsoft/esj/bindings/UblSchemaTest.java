@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -57,8 +58,8 @@ class UblSchemaTest {
 
     @Test
     void carriesBothDocumentElements() {
-        SchemaTable invoice = SchemaTable.of(BindingSyntax.UBL_INVOICE);
-        SchemaTable creditNote = SchemaTable.of(BindingSyntax.UBL_CREDIT_NOTE);
+        SchemaTable invoice = SchemaTable.of(InvoiceSyntax.UBL_INVOICE);
+        SchemaTable creditNote = SchemaTable.of(InvoiceSyntax.UBL_CREDIT_NOTE);
         assertEquals("Invoice", invoice.rootElement());
         assertEquals("CreditNote", creditNote.rootElement());
         assertNotNull(invoice.type(invoice.rootType()));
@@ -77,8 +78,8 @@ class UblSchemaTest {
      */
     @Test
     void agreesWithTheBindingTablesOnTheNamespaces() {
-        for (BindingSyntax syntax : List.of(BindingSyntax.UBL_INVOICE,
-                BindingSyntax.UBL_CREDIT_NOTE)) {
+        for (InvoiceSyntax syntax : List.of(InvoiceSyntax.UBL_INVOICE,
+                InvoiceSyntax.UBL_CREDIT_NOTE)) {
             Map<String, String> schema = SchemaTable.of(syntax).namespaces();
             for (Map.Entry<String, String> prefix
                     : BindingTable.of(syntax).namespaces().entrySet()) {
@@ -101,7 +102,7 @@ class UblSchemaTest {
      */
     @Test
     void namesTheTypesThatMayStandEmpty() {
-        SchemaTable schema = SchemaTable.of(BindingSyntax.UBL_INVOICE);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.UBL_INVOICE);
         assertTrue(schema.isSkeletal("cac:TaxSchemeType"));
         assertTrue(schema.isSkeletal("cac:PartyTaxSchemeType"));
         assertTrue(schema.isSkeletal("cac:TaxCategoryType"));
@@ -116,7 +117,7 @@ class UblSchemaTest {
 
     @Test
     void knowsTheAttributesTheValueTypesCarry() {
-        SchemaTable schema = SchemaTable.of(BindingSyntax.UBL_INVOICE);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.UBL_INVOICE);
         assertTrue(schema.type("cbc:AmountType").hasAttribute("currencyID"),
                 "the currency is an attribute inherited from the core component type");
         assertTrue(schema.type("cbc:InvoicedQuantityType").hasAttribute("unitCode"));
@@ -129,7 +130,7 @@ class UblSchemaTest {
 
     @Test
     void knowsWhichElementsMayRepeat() {
-        SchemaTable schema = SchemaTable.of(BindingSyntax.UBL_INVOICE);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.UBL_INVOICE);
         assertTrue(schema.type(schema.rootType()).child("cac:InvoiceLine").repeatable());
         assertTrue(schema.type(schema.rootType()).child("cac:TaxTotal").repeatable());
         assertTrue(schema.type("cac:TaxTotalType").child("cac:TaxSubtotal").repeatable());

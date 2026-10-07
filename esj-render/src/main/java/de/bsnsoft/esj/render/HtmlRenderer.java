@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.xr.ExportResult;
@@ -141,7 +142,7 @@ public final class HtmlRenderer {
      * @throws IllegalArgumentException if the document names an edition of the semantic
      *                                  model that the registry of this renderer does not
      *                                  describe
-     * @throws RenderLimitException     if the page reached the bound of the options,
+     * @throws EsjLimitException        if the page reached the bound of the options,
      *                                  {@link RenderOptions#maxHtmlBytes()}
      * @throws RenderException          if the rendering could not be produced
      * @throws NullPointerException     if an argument is {@code null}

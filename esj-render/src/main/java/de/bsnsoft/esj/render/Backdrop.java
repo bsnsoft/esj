@@ -105,7 +105,7 @@ final class Backdrop {
                         logoPlacement.width(), logoPlacement.height());
             }
         } catch (IOException e) {
-            throw new RenderException("the letterhead could not be drawn", e);
+            throw new RenderEngineException("the letterhead could not be drawn", e);
         }
     }
 

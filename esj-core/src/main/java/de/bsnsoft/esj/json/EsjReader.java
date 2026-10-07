@@ -11,11 +11,13 @@ import com.fasterxml.jackson.core.exc.StreamConstraintsException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.EsjFormatException;
+import de.bsnsoft.esj.EsjLimitException.Bound;
 import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.ExtensionValue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
+import de.bsnsoft.esj.internal.Messages;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
 import java.io.IOException;
@@ -251,6 +253,11 @@ public final class EsjReader {
         return new ReadResult(document, findings);
     }
 
+    /** Names the bound on the size of a document, in bytes. */
+    private static Bound documentBytes(long bound) {
+        return new Bound("maxDocumentBytes", bound, "bytes");
+    }
+
     /**
      * Reads a stream into one buffer that is never larger than the document limit plus the
      * one byte it takes to notice the overrun.
@@ -271,7 +278,7 @@ public final class EsjReader {
                 if (length == buffer.length) {
                     if (length > bound) {
                         throw new EsjLimitException("the document exceeds the bound of "
-                                + bound + " bytes", "", null);
+                                + bound + " bytes", documentBytes(bound), "", null);
                     }
                     buffer = Arrays.copyOf(buffer,
                             (int) Math.min(room, buffer.length * 2L));
@@ -283,7 +290,7 @@ public final class EsjReader {
                 length += read;
                 if (length > bound) {
                     throw new EsjLimitException("the document exceeds the bound of "
-                            + bound + " bytes", "", null);
+                            + bound + " bytes", documentBytes(bound), "", null);
                 }
             }
         } catch (IOException e) {
@@ -359,7 +366,7 @@ public final class EsjReader {
      * of the reader is covered by it and none of them has to remember the rule.
      */
     private static String excerpt(String value) {
-        return Esj.forMessage(value, MESSAGE_EXCERPT);
+        return Messages.forMessage(value, MESSAGE_EXCERPT);
     }
 
     /** A byte sequence and the number of its bytes that are the document. */
@@ -429,7 +436,7 @@ public final class EsjReader {
                 switch (node.step) {
                     case ROOT -> out.append(node.segment);
                     case INDEX -> out.append('[').append(node.segment).append(']');
-                    case MEMBER -> out.append("[\"").append(Esj.forSubject(node.segment))
+                    case MEMBER -> out.append("[\"").append(Messages.forSubject(node.segment))
                             .append("\"]");
                 }
             }
@@ -535,11 +542,15 @@ public final class EsjReader {
                     // a bound that nothing raises runs the same document again for the
                     // same answer.
                     String constraint = e.getMessage() == null ? "" : e.getMessage();
-                    throw limit((constraint.contains("nesting depth")
+                    boolean nesting = constraint.contains("nesting depth");
+                    throw limit((nesting
                             ? "a place in the document nests deeper than this reader accepts"
                             : "a token of the document is longer than this reader accepts")
                             + "; the reader stopped at byte " + stoppedAt(parser)
-                            + " of the document", "");
+                            + " of the document", nesting
+                            ? new Bound("maxExtensionDepth", limits.maxExtensionDepth(), "levels")
+                            : new Bound("maxStringBytes", Math.max(limits.maxStringBytes(),
+                                    limits.maxBinaryValueBytes()), "bytes"), "");
                 }
             } catch (StreamReadException e) {
                 throw malformed(e);
@@ -574,7 +585,7 @@ public final class EsjReader {
         private void checkEncoding() {
             if (length > limits.maxDocumentBytes()) {
                 throw limit("the document exceeds the bound of " + limits.maxDocumentBytes()
-                        + " bytes", "");
+                        + " bytes", documentBytes(limits.maxDocumentBytes()), "");
             }
             if (length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB
                     && (bytes[2] & 0xFF) == 0xBF) {
@@ -674,7 +685,7 @@ public final class EsjReader {
             String sha256 = null;
             while (parser.nextToken() == JsonToken.FIELD_NAME) {
                 String name = parser.currentName();
-                String where = "source." + Esj.forSubject(name);
+                String where = "source." + Messages.forSubject(name);
                 if (!seen.add(name)) {
                     throw duplicate(name, "source");
                 }
@@ -696,7 +707,7 @@ public final class EsjReader {
                 if (name.equals("syntax")) {
                     if (Texts.utf8Length(value) > limits.maxStringBytes()) {
                         throw limit("source.syntax is longer than " + limits.maxStringBytes()
-                                + " bytes", where);
+                                + " bytes", stringBytes(), where);
                     }
                     syntax = value;
                 } else {
@@ -730,11 +741,13 @@ public final class EsjReader {
                 }
                 if (++valueCount > limits.maxValues()) {
                     throw limit("values carries more than " + limits.maxValues() + " members",
+                            new Bound("maxValues", limits.maxValues(), "members"),
                             valuesWhere(name));
                 }
                 if (Texts.utf8Length(name) > limits.maxPathBytes()) {
                     throw limit("a semantic path is longer than " + limits.maxPathBytes()
-                            + " bytes", valuesWhere(name));
+                            + " bytes", new Bound("maxPathBytes", limits.maxPathBytes(), "bytes"),
+                            valuesWhere(name));
                 }
                 String where = valuesWhere(name);
                 SemanticPath path = readPath(name, where);
@@ -748,15 +761,15 @@ public final class EsjReader {
         }
 
         private String valuesWhere(String name) {
-            return "values[\"" + Esj.forSubject(name) + "\"]";
+            return "values[\"" + Messages.forSubject(name) + "\"]";
         }
 
         private String memberWhere(String where, String name) {
-            return where + "." + Esj.forSubject(name);
+            return where + "." + Messages.forSubject(name);
         }
 
         private String ownerWhere(String owner) {
-            return "extensions[\"" + Esj.forSubject(owner) + "\"]";
+            return "extensions[\"" + Messages.forSubject(owner) + "\"]";
         }
 
         private SemanticPath readPath(String name, String where) {
@@ -769,7 +782,9 @@ public final class EsjReader {
             }
             if (path.segments().size() > limits.maxPathSegments()) {
                 throw limit("a semantic path has more than " + limits.maxPathSegments()
-                        + " segments", where);
+                        + " segments",
+                        new Bound("maxPathSegments", limits.maxPathSegments(), "segments"),
+                        where);
             }
             return path;
         }
@@ -825,7 +840,9 @@ public final class EsjReader {
                 }
                 if (members.size() >= limits.maxValueMembers()) {
                     throw limit("a value object carries more than "
-                            + limits.maxValueMembers() + " members", where);
+                            + limits.maxValueMembers() + " members",
+                            new Bound("maxValueMembers", limits.maxValueMembers(), "members"),
+                            where);
                 }
                 component |= COMPONENT_MEMBERS.contains(name);
                 JsonToken token = parser.nextToken();
@@ -976,7 +993,9 @@ public final class EsjReader {
                 // message that called a base64 attachment a string value would send its
                 // reader to the wrong knob.
                 throw limit((binary ? "a binary value is longer than " : "a string value is"
-                        + " longer than ") + bound + " bytes", where);
+                        + " longer than ") + bound + " bytes",
+                        new Bound(binary ? "maxBinaryValueBytes" : "maxStringBytes", bound,
+                                "bytes"), where);
             }
             return value;
         }
@@ -992,7 +1011,9 @@ public final class EsjReader {
             long decoded = Texts.decodedBase64Length(content);
             if (binaryBytes + decoded > limits.maxTotalBinaryBytes()) {
                 throw limit("the decoded binary content of the document exceeds the bound of "
-                        + limits.maxTotalBinaryBytes() + " bytes", where);
+                        + limits.maxTotalBinaryBytes() + " bytes",
+                        new Bound("maxTotalBinaryBytes", limits.maxTotalBinaryBytes(), "bytes"),
+                        where);
             }
             binaryBytes += decoded;
         }
@@ -1046,7 +1067,8 @@ public final class EsjReader {
                     if (token == JsonToken.START_OBJECT || token == JsonToken.START_ARRAY) {
                         if (depth > limits.maxExtensionDepth()) {
                             throw limit("extensions is nested deeper than "
-                                    + limits.maxExtensionDepth() + " levels", where.text());
+                                    + limits.maxExtensionDepth() + " levels",
+                                    extensionDepth(), where.text());
                         }
                         open.push(new Container(token == JsonToken.START_OBJECT, where, depth));
                     } else {
@@ -1093,7 +1115,9 @@ public final class EsjReader {
         private void countExtensionNode(Where where) {
             if (++extensionNodes > limits.maxExtensionNodes()) {
                 throw limit("extensions carries more than " + limits.maxExtensionNodes()
-                        + " nodes", where.text());
+                        + " nodes",
+                        new Bound("maxExtensionNodes", limits.maxExtensionNodes(), "nodes"),
+                        where.text());
             }
         }
 
@@ -1120,7 +1144,7 @@ public final class EsjReader {
             }
             if (Texts.utf8Length(value) > limits.maxStringBytes()) {
                 throw limit("a string inside extensions is longer than " + limits.maxStringBytes()
-                        + " bytes", where.text());
+                        + " bytes", stringBytes(), where.text());
             }
         }
 
@@ -1134,7 +1158,7 @@ public final class EsjReader {
             String lexical = parser.getText();
             if (lexical.length() > limits.maxStringBytes()) {
                 throw limit("a number inside extensions is spelled in more than "
-                        + limits.maxStringBytes() + " bytes", where.text());
+                        + limits.maxStringBytes() + " bytes", stringBytes(), where.text());
             }
             String canonical = Decimals.canonicalize(lexical);
             if (canonical == null) {
@@ -1179,7 +1203,7 @@ public final class EsjReader {
                 if (current == JsonToken.START_OBJECT || current == JsonToken.START_ARRAY) {
                     if (depth > limits.maxExtensionDepth()) {
                         throw limit("a value nests deeper than "
-                                + limits.maxExtensionDepth() + " levels", where);
+                                + limits.maxExtensionDepth() + " levels", extensionDepth(), where);
                     }
                     open++;
                     depth++;
@@ -1199,11 +1223,19 @@ public final class EsjReader {
                     "the member name " + excerpt(name) + " occurs twice in one object");
         }
 
-        private EsjLimitException limit(String message, String where) {
+        private EsjLimitException limit(String message, Bound bound, String where) {
             if (collector != null) {
                 collector.add(finding(FindingCode.ESJ_L1_LIMIT, where, message));
             }
-            return new EsjLimitException(message, where, null);
+            return new EsjLimitException(message, bound, where, null);
+        }
+
+        private Bound stringBytes() {
+            return new Bound("maxStringBytes", limits.maxStringBytes(), "bytes");
+        }
+
+        private Bound extensionDepth() {
+            return new Bound("maxExtensionDepth", limits.maxExtensionDepth(), "levels");
         }
 
         /**
@@ -1323,7 +1355,7 @@ public final class EsjReader {
         private Finding finding(FindingCode code, String where, String message) {
             String text = where.isEmpty()
                     ? message
-                    : message + " (at " + Esj.abbreviated(where, LOCATION_EXCERPT) + ")";
+                    : message + " (at " + Messages.abbreviated(where, LOCATION_EXCERPT) + ")";
             SemanticPath path = currentPath == null ? SemanticPath.root() : currentPath;
             return Finding.about(path, where, code, text);
         }

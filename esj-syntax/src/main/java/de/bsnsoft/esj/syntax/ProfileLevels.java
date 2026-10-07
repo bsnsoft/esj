@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +70,7 @@ public final class ProfileLevels {
      * @return the lookup, which levels nothing where no table of the pack applies
      * @throws NullPointerException if an argument is {@code null}
      */
-    public static ProfileLevels of(Pack pack, XrSyntax syntax, String customizationId) {
+    public static ProfileLevels of(Pack pack, InvoiceSyntax syntax, String customizationId) {
         Objects.requireNonNull(pack, "pack");
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");

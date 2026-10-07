@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -36,7 +36,7 @@ class PackCatalogTest {
         PackCatalog catalog = PackCatalog.withDirectories(List.of(directory));
 
         assertEquals(Packs.bundled(), catalog.packs());
-        assertEquals(BUNDLED, catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.PROFILE)
+        assertEquals(BUNDLED, catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.PROFILE)
                 .pack().directory(), "a profile nobody knows falls back as it always did");
     }
 
@@ -56,12 +56,12 @@ class PackCatalogTest {
                 catalog.packs().stream().map(Pack::directory).toList(),
                 "the bundled packs come first, and a directory named twice is read once");
         assertEquals("example/1.0/2026-09-30",
-                catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.PROFILE).pack().directory());
-        assertEquals(BUNDLED, catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
+                catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.PROFILE).pack().directory());
+        assertEquals(BUNDLED, catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
                 .pack().directory());
-        assertEquals(BUNDLED, catalog.select(XrSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017")
+        assertEquals(BUNDLED, catalog.select(InvoiceSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017")
                 .pack().directory(), "a document of no CIUS keeps the pack it had");
-        assertEquals(BUNDLED, catalog.select(XrSyntax.CII, ExamplePacks.PROFILE)
+        assertEquals(BUNDLED, catalog.select(InvoiceSyntax.CII, ExamplePacks.PROFILE)
                 .pack().directory(), "the example pack has no rules for CII");
         assertEquals("example/1.0/2026-09-30",
                 catalog.find("example/1.0/2026-09-30").directory());
@@ -130,11 +130,11 @@ class PackCatalogTest {
                 false, download, ExamplePacks.TODAY, "esj test");
         PackCatalog catalog = PackCatalog.withDirectories(List.of(directory));
 
-        assertEquals("example/1.0/1.0.10", catalog.select(XrSyntax.UBL_INVOICE,
+        assertEquals("example/1.0/1.0.10", catalog.select(InvoiceSyntax.UBL_INVOICE,
                 ExamplePacks.PROFILE).pack().directory());
         assertEquals("example/1.0/1.0.9", catalog.find("example/1.0/1.0.9").directory(),
                 "the older release is still there for --pack");
-        assertEquals(BUNDLED, catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
+        assertEquals(BUNDLED, catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
                 .pack().directory(), "a profile only one pack knows is still decided");
     }
 
@@ -150,11 +150,11 @@ class PackCatalogTest {
         PackCatalog catalog = PackCatalog.withDirectories(List.of(directory));
 
         PackException refused = assertThrows(PackException.class,
-                () -> catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.PROFILE));
+                () -> catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.PROFILE));
         assertTrue(refused.getMessage().startsWith("2 validation packs apply to the profile "
                 + ExamplePacks.PROFILE), refused.getMessage());
         assertTrue(refused.getMessage().contains("--pack"), refused.getMessage());
-        assertEquals(BUNDLED, catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
+        assertEquals(BUNDLED, catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG)
                 .pack().directory(), "a profile only one pack knows is still decided");
     }
 

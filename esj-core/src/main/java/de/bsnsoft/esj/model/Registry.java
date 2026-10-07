@@ -8,10 +8,10 @@ import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.exc.StreamConstraintsException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
-import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.TermKind;
+import de.bsnsoft.esj.internal.Messages;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -225,6 +225,20 @@ public final class Registry {
     }
 
     /**
+     * Returns the registry of the 2017 edition of the core model combined with the
+     * XRechnung extension, built once and shared. It is the registry the readers of an XML
+     * invoice and the renderers use unless they are given another one, so that the
+     * extension terms of an XRechnung invoice are placed and shown rather than reported as
+     * unknown.
+     *
+     * @return {@link #en16931()} combined with {@link #xrechnungExtension()}
+     * @throws EsjFormatException if a registry file is missing or malformed
+     */
+    public static Registry en16931WithXrechnung() {
+        return XrechnungHolder.COMBINED;
+    }
+
+    /**
      * Returns the registry of the B2C extension, read once from the classpath and shared.
      * It carries the four terms that record the gross figures a consumer was shown or
      * agreed to, and is meant to be combined with {@link #en16931()} through
@@ -272,13 +286,13 @@ public final class Registry {
 
     /**
      * Returns a fragment of a registry file in the form a message may carry it: short, and
-     * escaped as {@link Esj#forMessage(String, int)} escapes a fragment of a document. A
+     * escaped as {@code Messages.forMessage} escapes a fragment of a document. A
      * registry travels between parties like a document does, so its content decides
      * neither how long a log line is nor what the line looks like on a terminal
      * (specification, section 12.6).
      */
     private static String excerpt(String value) {
-        return Esj.forMessage(value, MESSAGE_EXCERPT);
+        return Messages.forMessage(value, MESSAGE_EXCERPT);
     }
 
     private static JsonFactory factory() {
@@ -941,6 +955,13 @@ public final class Registry {
         static final Loaded LOADED = new Loaded(XRECHNUNG_RESOURCE);
 
         private ExtensionHolder() {
+        }
+    }
+
+    private static final class XrechnungHolder {
+        static final Registry COMBINED = en16931().withExtension(xrechnungExtension());
+
+        private XrechnungHolder() {
         }
     }
 

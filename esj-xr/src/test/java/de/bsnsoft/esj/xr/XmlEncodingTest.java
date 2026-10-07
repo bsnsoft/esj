@@ -10,6 +10,10 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportResult;
+import de.bsnsoft.esj.internal.XmlBytes;
+import de.bsnsoft.esj.xml.EncodingMode;
+import de.bsnsoft.esj.xml.XmlEncodingException;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -34,7 +38,7 @@ class XmlEncodingTest {
     private static final String UMLAUT = "Beispiel Grünhöfe GmbH";
 
     private final XrImporter repairing = new XrImporter();
-    private final XrImporter strict = new XrImporter().withEncodingMode(XrEncodingMode.STRICT);
+    private final XrImporter strict = new XrImporter().withEncodingMode(EncodingMode.STRICT);
 
     @Test
     void readsLatin1BytesThatDeclareUtf8() {
@@ -47,7 +51,7 @@ class XmlEncodingTest {
         assertFalse(report.consistent());
         assertTrue(report.repairable());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
         assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
         ImportNote note = result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).get(0);
@@ -60,8 +64,8 @@ class XmlEncodingTest {
     void refusesLatin1BytesThatDeclareUtf8WhenStrict() {
         byte[] document = encode(named(UMLAUT), "ISO-8859-1");
 
-        XrEncodingException thrown =
-                assertThrows(XrEncodingException.class, () -> strict.importUbl(document));
+        XmlEncodingException thrown =
+                assertThrows(XmlEncodingException.class, () -> strict.readUbl(document).document());
         assertEquals(Optional.of("UTF-8"), thrown.declared());
         assertEquals("ISO-8859-1", thrown.assumed());
     }
@@ -75,10 +79,10 @@ class XmlEncodingTest {
         assertEquals("UTF-8", report.assumed());
         assertFalse(report.consistent());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
         assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
-        assertThrows(XrEncodingException.class, () -> strict.importUbl(document));
+        assertThrows(XmlEncodingException.class, () -> strict.readUbl(document).document());
     }
 
     @Test
@@ -92,7 +96,7 @@ class XmlEncodingTest {
         assertEquals("windows-1252", report.assumed());
         assertFalse(report.consistent());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(quoted), value(result.document(), SELLER));
         assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
     }
@@ -107,7 +111,7 @@ class XmlEncodingTest {
         assertEquals("ISO-8859-1", report.assumed());
         assertFalse(report.consistent());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
         assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
 
@@ -127,7 +131,7 @@ class XmlEncodingTest {
 
         // A consistent document is handed to the parser as it stands, in either mode.
         for (XrImporter importer : List.of(repairing, strict)) {
-            ImportResult result = importer.importUblWithReport(document);
+            ImportResult result = importer.readUbl(document);
             assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
             assertEquals(List.of(), result.report().notes(ImportNote.Kind.ENCODING_REPAIRED));
         }
@@ -143,7 +147,7 @@ class XmlEncodingTest {
         assertEquals("UTF-16BE", report.assumed());
         assertFalse(report.consistent());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
         assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
     }
@@ -157,7 +161,7 @@ class XmlEncodingTest {
             byte[] document = encode(declaring(named(UMLAUT), charset), charset);
 
             XrFormatException thrown = assertThrows(XrFormatException.class,
-                    () -> repairing.importUblWithReport(document));
+                    () -> repairing.readUbl(document));
 
             assertTrue(thrown.getMessage().contains("UTF-32"), thrown.getMessage());
             assertFalse(thrown.getMessage().contains("well-formed"), thrown.getMessage());
@@ -169,7 +173,7 @@ class XmlEncodingTest {
         byte[] document = encode(declaring(named(PLAIN), "X-NO-SUCH-CHARSET"), "UTF-8");
 
         XrFormatException thrown = assertThrows(XrFormatException.class,
-                () -> repairing.importUblWithReport(document));
+                () -> repairing.readUbl(document));
 
         assertTrue(thrown.getMessage().contains("X-NO-SUCH-CHARSET"), thrown.getMessage());
         assertTrue(thrown.getMessage().contains("known to this runtime"),
@@ -188,7 +192,7 @@ class XmlEncodingTest {
         assertFalse(report.repairable());
         assertSame(document, XmlBytes.repair(document, report));
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(PLAIN), value(result.document(), SELLER));
         assertEquals(List.of(), result.report().notes(ImportNote.Kind.ENCODING_REPAIRED));
     }
@@ -206,7 +210,7 @@ class XmlEncodingTest {
     void keepsTheDigestOfTheBytesThatWereHandedOver() {
         byte[] document = encode(named(UMLAUT), "ISO-8859-1");
 
-        SemanticDocument imported = repairing.importUbl(document);
+        SemanticDocument imported = repairing.readUbl(document).document();
 
         assertEquals(Conformance.sha256(document),
                 imported.source().orElseThrow().sha256().orElseThrow());
@@ -246,8 +250,8 @@ class XmlEncodingTest {
         assertTrue(report.describe().contains("do not decode in " + charset), report.describe());
 
         for (XrImporter importer : List.of(repairing, strict)) {
-            XrEncodingException thrown = assertThrows(XrEncodingException.class,
-                    () -> importer.importUblWithReport(document));
+            XmlEncodingException thrown = assertThrows(XmlEncodingException.class,
+                    () -> importer.readUbl(document));
             assertFalse(thrown.repairable(), thrown.getMessage());
             assertEquals(Optional.of(charset), thrown.declared());
             assertTrue(thrown.getMessage().contains(charset), thrown.getMessage());
@@ -275,7 +279,7 @@ class XmlEncodingTest {
         assertTrue(report.decodes());
 
         for (XrImporter importer : List.of(repairing, strict)) {
-            ImportResult result = importer.importUblWithReport(document);
+            ImportResult result = importer.readUbl(document);
             assertEquals(SemanticValue.of(seller), value(result.document(), SELLER));
             assertEquals(List.of(), result.report().notes(ImportNote.Kind.ENCODING_REPAIRED));
         }
@@ -290,12 +294,12 @@ class XmlEncodingTest {
         assertFalse(report.consistent());
         assertTrue(report.repairable());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
         assertTrue(result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).get(0).message()
                 .contains("declared US-ASCII, read as UTF-8"));
-        XrEncodingException thrown =
-                assertThrows(XrEncodingException.class, () -> strict.importUbl(document));
+        XmlEncodingException thrown =
+                assertThrows(XmlEncodingException.class, () -> strict.readUbl(document).document());
         assertTrue(thrown.repairable());
     }
 
@@ -309,11 +313,11 @@ class XmlEncodingTest {
         assertFalse(report.consistent());
         assertTrue(report.repairable());
 
-        ImportResult result = repairing.importUblWithReport(document);
+        ImportResult result = repairing.readUbl(document);
         assertEquals(SemanticValue.of(PLAIN.replace(" ", " " + (char) 0x81)),
                 value(result.document(), SELLER));
         assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
-        assertThrows(XrEncodingException.class, () -> strict.importUbl(document));
+        assertThrows(XmlEncodingException.class, () -> strict.readUbl(document).document());
     }
 
     @Test
@@ -331,8 +335,8 @@ class XmlEncodingTest {
             assertFalse(report.decodes(), report.describe());
             assertFalse(report.consistent());
             for (XrImporter importer : List.of(repairing, strict)) {
-                XrEncodingException thrown = assertThrows(XrEncodingException.class,
-                        () -> importer.importUblWithReport(document));
+                XmlEncodingException thrown = assertThrows(XmlEncodingException.class,
+                        () -> importer.readUbl(document));
                 assertFalse(thrown.repairable(), thrown.getMessage());
             }
         }

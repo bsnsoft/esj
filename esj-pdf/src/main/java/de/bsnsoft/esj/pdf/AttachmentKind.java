@@ -1,7 +1,7 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.Optional;
-import de.bsnsoft.esj.xr.XrSyntax;
 
 /**
  * What an attachment of a PDF turned out to be, decided by its first bytes.
@@ -98,15 +98,15 @@ public enum AttachmentKind {
     }
 
     /**
-     * Returns the syntax the importer of {@code esj-xr} reads this kind as.
+     * Returns the syntax a reader reads this kind as.
      *
-     * @return the syntax, or an empty optional for a kind that importer does not read
+     * @return the syntax, or an empty optional for a kind no reader of this project reads
      */
-    public Optional<XrSyntax> syntax() {
+    public Optional<InvoiceSyntax> syntax() {
         return switch (this) {
-            case CII_INVOICE -> Optional.of(XrSyntax.CII);
-            case UBL_INVOICE -> Optional.of(XrSyntax.UBL_INVOICE);
-            case UBL_CREDIT_NOTE -> Optional.of(XrSyntax.UBL_CREDIT_NOTE);
+            case CII_INVOICE -> Optional.of(InvoiceSyntax.CII);
+            case UBL_INVOICE -> Optional.of(InvoiceSyntax.UBL_INVOICE);
+            case UBL_CREDIT_NOTE -> Optional.of(InvoiceSyntax.UBL_CREDIT_NOTE);
             default -> Optional.empty();
         };
     }

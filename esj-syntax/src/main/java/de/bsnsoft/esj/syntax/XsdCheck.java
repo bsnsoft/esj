@@ -1,7 +1,8 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
-import de.bsnsoft.esj.xr.XrSyntax;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -102,10 +103,10 @@ final class XsdCheck {
      * @param syntax    the syntax of the document, which names the category of a finding
      * @param budget    the time the whole validation was given
      * @return the outcome
-     * @throws SyntaxLimitException if the validation was still running at the deadline
+     * @throws EsjLimitException if the validation was still running at the deadline
      */
     static Result run(byte[] xml, Pack pack, PackComponent component, String entry,
-                      XrSyntax syntax, Budget budget) {
+                      InvoiceSyntax syntax, Budget budget) {
         long compileStart = System.nanoTime();
         boolean[] compiled = {false};
         Schema schema = COMPILED.computeIfAbsent(pack.cacheKey(entry), key -> {
@@ -150,7 +151,7 @@ final class XsdCheck {
     }
 
     private static void validate(byte[] xml, Schema schema, Pack pack,
-                                 PackComponent component, XrSyntax syntax,
+                                 PackComponent component, InvoiceSyntax syntax,
                                  List<SyntaxFinding> findings) {
         Validator validator = schema.newValidator();
         try {
@@ -204,7 +205,7 @@ final class XsdCheck {
     }
 
     private static SyntaxFinding finding(String message, int line, int column, Pack pack,
-                                         PackComponent component, XrSyntax syntax) {
+                                         PackComponent component, InvoiceSyntax syntax) {
         return new SyntaxFinding(Engine.XSD, Categories.ofSchema(syntax), Severity.FATAL,
                 Severity.FATAL, code(message), message, "", line, column, pack.id(),
                 pack.version(), pack.release(), component.name());
@@ -221,7 +222,7 @@ final class XsdCheck {
 
     /** Collects what the schema says about a document. Everything it says is fatal. */
     private record Collecting(List<SyntaxFinding> findings, Pack pack,
-                              PackComponent component, XrSyntax syntax)
+                              PackComponent component, InvoiceSyntax syntax)
             implements ErrorHandler {
 
         @Override

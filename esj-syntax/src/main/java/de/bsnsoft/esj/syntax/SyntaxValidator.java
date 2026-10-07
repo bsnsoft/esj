@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -55,8 +56,9 @@ import net.sf.saxon.s9api.XdmNode;
  *
  * <p>A run reaches a verdict or it raises an exception; it never reports a limit as an
  * invalid document. An input larger than {@link SyntaxOptions#maxInputBytes()} and a run
- * still going at {@link SyntaxOptions#maxRuntime()} both raise
- * {@link SyntaxLimitException}, and a document of a syntax no pack binds raises
+ * still going at {@link SyntaxOptions#maxRuntime()} both raise an
+ * {@link EsjLimitException}, which names the bound as {@code maxInputBytes} or
+ * {@code maxRuntime}, and a document of a syntax no pack binds raises
  * {@link SyntaxNotSupportedException}.
  *
  * <h2>Cost</h2>
@@ -78,7 +80,7 @@ public final class SyntaxValidator {
      *
      * @param xml the bytes of the document
      * @return the report
-     * @throws SyntaxLimitException        if a limit of {@link SyntaxOptions#defaults()}
+     * @throws EsjLimitException           if a limit of {@link SyntaxOptions#defaults()}
      *                                     was reached
      * @throws SyntaxNotSupportedException if no pack binds this document
      * @throws PackException               if a pack cannot be read or run
@@ -94,7 +96,7 @@ public final class SyntaxValidator {
      * @param xml     the bytes of the document
      * @param options what this run is allowed to do
      * @return the report
-     * @throws SyntaxLimitException        if a limit of the options was reached, in which
+     * @throws EsjLimitException           if a limit of the options was reached, in which
      *                                     case the document has no verdict
      * @throws SyntaxNotSupportedException if the root element belongs to no syntax the
      *                                     standard binds, or the pack carries nothing
@@ -106,9 +108,10 @@ public final class SyntaxValidator {
         Objects.requireNonNull(xml, "xml");
         Objects.requireNonNull(options, "options");
         if (xml.length > options.maxInputBytes()) {
-            throw new SyntaxLimitException("the document is " + xml.length + " bytes long,"
+            throw new EsjLimitException("the document is " + xml.length + " bytes long,"
                     + " and this run was given " + options.maxInputBytes()
-                    + ", so it has no verdict");
+                    + ", so it has no verdict", new EsjLimitException.Bound("maxInputBytes",
+                    options.maxInputBytes(), "bytes"));
         }
         long start = System.nanoTime();
         Budget budget = Budget.of(options.maxRuntime());
@@ -121,7 +124,7 @@ public final class SyntaxValidator {
 
         XdmNode document = parsed.document().get();
         XdmNode root = XmlFrontDoor.rootElement(document);
-        XrSyntax syntax = XmlFrontDoor.detect(root).orElseThrow(() ->
+        InvoiceSyntax syntax = XmlFrontDoor.detect(root).orElseThrow(() ->
                 new SyntaxNotSupportedException("the root element of this document is "
                         + root.getNodeName().getLocalName() + ", and the standard binds"
                         + " only UBL Invoice, UBL CreditNote and CrossIndustryInvoice"));
@@ -175,7 +178,7 @@ public final class SyntaxValidator {
     private static SyntaxReport report(List<SyntaxFinding> findings,
                                        List<ComponentRun> ran,
                                        List<SkippedComponent> skipped,
-                                       Optional<XrSyntax> syntax,
+                                       Optional<InvoiceSyntax> syntax,
                                        String customizationId,
                                        Optional<Pack> pack,
                                        Optional<String> profileNote,

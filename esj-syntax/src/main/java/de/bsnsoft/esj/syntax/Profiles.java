@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.Optional;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
@@ -32,7 +32,7 @@ final class Profiles {
      * @param syntax the syntax of the document
      * @return the identifier, trimmed, or the empty string where the document carries none
      */
-    static String customizationId(XdmNode root, XrSyntax syntax) {
+    static String customizationId(XdmNode root, InvoiceSyntax syntax) {
         Optional<XdmNode> element = switch (syntax) {
             case UBL_INVOICE, UBL_CREDIT_NOTE -> child(root, "CustomizationID");
             case CII -> child(root, "ExchangedDocumentContext")

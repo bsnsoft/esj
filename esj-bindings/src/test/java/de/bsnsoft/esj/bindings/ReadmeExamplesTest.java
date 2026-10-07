@@ -8,6 +8,7 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.json.Limits;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportResult;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -91,7 +92,7 @@ class ReadmeExamplesTest {
         assertTrue(new String(cii.xml(), StandardCharsets.UTF_8)
                 .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         assertTrue(new String(xml, StandardCharsets.UTF_8).contains("<Invoice "));
-        assertEquals(BindingSyntax.UBL_INVOICE, report.syntax());
+        assertEquals(InvoiceSyntax.UBL_INVOICE, report.syntax());
         assertTrue(report.isComplete(), report.notes().toString());
 
         // docs/java-api.md: Writing XML

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,8 +114,8 @@ final class KositHtml {
      * @param language the language the labels are written in
      * @param maxBytes how many bytes the HTML may have
      * @return the HTML, as the stylesheet's own serialization settings write it
-     * @throws RenderLimitException if the HTML reached the bound
-     * @throws RenderException      if the stylesheet raised an error
+     * @throws EsjLimitException if the HTML reached the bound
+     * @throws RenderException   if the stylesheet raised an error
      */
     static String transform(XdmNode xr, RenderLanguage language, long maxBytes) {
         Bounded html = new Bounded(maxBytes);
@@ -122,8 +123,9 @@ final class KositHtml {
             return transform(xr, language, html);
         } catch (RuntimeException e) {
             if (html.reached()) {
-                throw new RenderLimitException("the HTML rendering reached the bound of "
-                        + maxBytes + " bytes this run was given, so it was not written");
+                throw new EsjLimitException("the HTML rendering reached the bound of "
+                        + maxBytes + " bytes this run was given, so it was not written",
+                        new EsjLimitException.Bound("maxHtmlBytes", maxBytes, "bytes"));
             }
             throw e;
         }
@@ -153,7 +155,7 @@ final class KositHtml {
             throw new RenderContentException(
                     "the document could not be rendered as HTML", e);
         } catch (IllegalStateException e) {
-            throw new RenderException("the document could not be rendered as HTML", e);
+            throw new RenderEngineException("the document could not be rendered as HTML", e);
         }
     }
 
@@ -316,7 +318,7 @@ final class KositHtml {
         InputStream in = KositHtml.class.getResourceAsStream(
                 STYLESHEETS.getOrDefault(name, "kosit/" + name));
         if (in == null) {
-            throw new RenderException("the vendored file " + name + " is not on the classpath");
+            throw new RenderEngineException("the vendored file " + name + " is not on the classpath");
         }
         return in;
     }
@@ -336,7 +338,7 @@ final class KositHtml {
             try {
                 return compiler.compile(source(ENTRY_POINT));
             } catch (SaxonApiException e) {
-                throw new RenderException("the stylesheet " + ENTRY_POINT
+                throw new RenderEngineException("the stylesheet " + ENTRY_POINT
                         + " of this module could not be compiled", e);
             }
         }

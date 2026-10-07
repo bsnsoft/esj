@@ -69,13 +69,13 @@ class ReadmeExamplesTest {
 
         // docs/java-api.md: Reading UBL and CII
         XrImporter importer = new XrImporter();
-        SemanticDocument fromUbl = importer.importUbl(Files.readAllBytes(ublFile));
-        SemanticDocument fromCii = importer.importCii(Files.readAllBytes(ciiFile));
-        SemanticDocument either = importer.importXml(Files.readAllBytes(someFile));
+        SemanticDocument fromUbl = importer.readUbl(Files.readAllBytes(ublFile)).document();
+        SemanticDocument fromCii = importer.readCii(Files.readAllBytes(ciiFile)).document();
+        SemanticDocument either = importer.read(Files.readAllBytes(someFile)).document();
 
         assertEquals("UBL", syntaxOf(fromUbl));
         assertEquals("CII", syntaxOf(fromCii));
-        assertEquals(fromCii, either, "importXml reads the syntax off the root element");
+        assertEquals(fromCii, either, "read reads the syntax off the root element");
     }
 
     @Test
@@ -84,7 +84,7 @@ class ReadmeExamplesTest {
         Path invoice = ubl();
 
         // docs/java-api.md: Reading UBL and CII
-        ImportResult result = importer.importXmlWithReport(Files.readAllBytes(invoice));
+        ImportResult result = importer.read(Files.readAllBytes(invoice));
 
         SemanticDocument document = result.document();
         String syntax = document.source().orElseThrow().syntax().orElseThrow();
@@ -99,7 +99,7 @@ class ReadmeExamplesTest {
     @Test
     void validateAnImportedDocument() throws IOException {
         XrImporter importer = new XrImporter();
-        SemanticDocument document = importer.importUbl(Files.readAllBytes(ubl()));
+        SemanticDocument document = importer.readUbl(Files.readAllBytes(ubl())).document();
 
         // docs/java-api.md: Reading UBL and CII
         ValidationResult model = StructuralValidator.validate(
@@ -114,7 +114,7 @@ class ReadmeExamplesTest {
 
     @Test
     void writeADocumentBackAsAnXrDocument() throws IOException {
-        SemanticDocument document = new XrImporter().importUbl(Files.readAllBytes(ubl()));
+        SemanticDocument document = new XrImporter().readUbl(Files.readAllBytes(ubl())).document();
 
         // docs/java-api.md: Writing the XR representation
         XrExporter exporter = new XrExporter();
@@ -125,14 +125,14 @@ class ReadmeExamplesTest {
 
         assertEquals(List.of(), left, "this instance reaches the XR representation whole");
         assertTrue(new String(xr, StandardCharsets.UTF_8).contains("<xr:invoice"));
-        assertEquals(document.values(), new XrImporter().fromXr(xr).values());
+        assertEquals(document.values(), new XrImporter().readXr(xr).document().values());
     }
 
     @Test
     void canonicalizeAnImportedDocumentAndCompareTheTwoSyntaxes() throws IOException {
         XrImporter importer = new XrImporter();
-        SemanticDocument fromUbl = importer.importUbl(Files.readAllBytes(ubl()));
-        SemanticDocument fromCii = importer.importCii(Files.readAllBytes(cii()));
+        SemanticDocument fromUbl = importer.readUbl(Files.readAllBytes(ubl())).document();
+        SemanticDocument fromCii = importer.readCii(Files.readAllBytes(cii())).document();
         SemanticDocument document = fromUbl;
 
         // docs/java-api.md: Reading UBL and CII

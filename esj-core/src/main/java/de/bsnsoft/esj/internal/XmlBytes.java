@@ -1,6 +1,9 @@
-package de.bsnsoft.esj.xr;
+package de.bsnsoft.esj.internal;
 
 import de.bsnsoft.esj.imports.ImportNote;
+import de.bsnsoft.esj.xml.EncodingMode;
+import de.bsnsoft.esj.xml.XmlEncodingException;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -32,7 +35,7 @@ import java.util.regex.Pattern;
  * <p><strong>Repair is not validation.</strong> A document that had to be recoded was
  * defective, and the importer records that as the import note
  * {@link ImportNote.Kind#ENCODING_REPAIRED} rather than passing it over; an importer in
- * {@link XrEncodingMode#STRICT} refuses it outright. Nothing here decides which of the
+ * {@link EncodingMode#STRICT} refuses it outright. Nothing here decides which of the
  * two happens.
  *
  * <p>Four charsets are recoded and no others: UTF-8, UTF-16 in either byte order,
@@ -228,8 +231,9 @@ public final class XmlBytes {
      * @return the UTF-8 bytes, or {@code xml} itself where the report is consistent
      * @throws IllegalArgumentException if the report is inconsistent and not
      *                                  {@link XmlEncodingReport#repairable()}
-     * @throws XrFormatException        if the bytes do not decode in the charset the
-     *                                  report names
+     * @throws XmlEncodingException    if the bytes do not decode in the charset the
+     *                                  report names, which a report that was made of
+     *                                  these bytes rules out
      * @throws NullPointerException     if an argument is {@code null}
      */
     public static byte[] repair(byte[] xml, XmlEncodingReport report) {
@@ -242,7 +246,7 @@ public final class XmlBytes {
             throw new IllegalArgumentException("this module recodes UTF-8, UTF-16,"
                     + " ISO-8859-1 and Windows-1252, and the bytes are " + report.assumed());
         }
-        String text = decode(xml, Charset.forName(report.assumed()));
+        String text = decode(xml, report);
         if (!text.isEmpty() && text.charAt(0) == ZERO_WIDTH_NO_BREAK_SPACE) {
             text = text.substring(1);
         }
@@ -481,7 +485,8 @@ public final class XmlBytes {
     }
 
     /** Decodes the whole document, refusing anything the charset cannot spell. */
-    private static String decode(byte[] xml, Charset charset) {
+    private static String decode(byte[] xml, XmlEncodingReport report) {
+        Charset charset = Charset.forName(report.assumed());
         try {
             CharBuffer decoded = charset.newDecoder()
                     .onMalformedInput(CodingErrorAction.REPORT)
@@ -489,8 +494,12 @@ public final class XmlBytes {
                     .decode(ByteBuffer.wrap(xml));
             return decoded.toString();
         } catch (CharacterCodingException e) {
-            throw new XrFormatException("the document does not decode in " + charset.name()
-                    + ", which is the charset its bytes were taken for", e);
+            XmlEncodingException refused = new XmlEncodingException(
+                    "the document does not decode in " + charset.name()
+                            + ", which is the charset its bytes were taken for",
+                    report.documented(), report.assumed(), false);
+            refused.initCause(e);
+            throw refused;
         }
     }
 }

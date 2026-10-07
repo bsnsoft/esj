@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -36,7 +37,7 @@ class RenderBoundTest {
     void aRenderingThatRunsPastTheBoundIsRefusedAndNamesIt() {
         SemanticDocument document = Documents.withDetailedLines(300);
 
-        RenderLimitException refused = assertThrows(RenderLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> new PdfRenderer().render(document,
                         RenderOptions.defaults().withMaxPages(3)));
 
@@ -52,7 +53,7 @@ class RenderBoundTest {
     void oneEnormousValueIsWhatTheBoundIsFor() {
         SemanticDocument document = Documents.withALineNamedAtLength(4_000);
 
-        assertThrows(RenderLimitException.class, () -> new PdfRenderer().render(document,
+        assertThrows(EsjLimitException.class, () -> new PdfRenderer().render(document,
                 RenderOptions.defaults().withMaxPages(2)));
         assertTrue(Pdf.pages(new PdfRenderer().render(document)) > 2,
                 "and the same document renders where the bound allows it");
@@ -88,7 +89,7 @@ class RenderBoundTest {
         assertEquals(whole, new HtmlRenderer().render(document,
                         RenderOptions.defaults().withMaxHtmlBytes(bytes)),
                 "a page of the size of the bound is the same page");
-        RenderLimitException refused = assertThrows(RenderLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> new HtmlRenderer().render(document,
                         RenderOptions.defaults().withMaxHtmlBytes(bytes - 1)));
         assertTrue(refused.getMessage().contains((bytes - 1) + " bytes"),
@@ -109,7 +110,7 @@ class RenderBoundTest {
                 .getBytes(StandardCharsets.UTF_8).length;
 
         new HtmlRenderer().render(document, RenderOptions.defaults().withMaxHtmlBytes(bytes));
-        assertThrows(RenderLimitException.class, () -> new HtmlRenderer().render(document,
+        assertThrows(EsjLimitException.class, () -> new HtmlRenderer().render(document,
                 RenderOptions.defaults().withMaxHtmlBytes(bytes - 1)));
     }
 

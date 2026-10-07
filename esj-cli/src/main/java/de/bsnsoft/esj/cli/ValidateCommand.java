@@ -1,9 +1,9 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.bindings.BindingEditionException;
 import de.bsnsoft.esj.bindings.BindingFormatException;
-import de.bsnsoft.esj.bindings.BindingLimitException;
 import de.bsnsoft.esj.bindings.BindingSyntaxException;
 import de.bsnsoft.esj.bindings.CiiWriter;
 import de.bsnsoft.esj.bindings.UblWriter;
@@ -16,7 +16,6 @@ import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.render.RenderLanguage;
 import de.bsnsoft.esj.render.ReportRenderer;
 import de.bsnsoft.esj.render.internal.ReportOptions;
-import de.bsnsoft.esj.syntax.SyntaxLimitException;
 import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.ValidationLayer;
@@ -662,7 +661,9 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
             // it, and the run ends in the third state with the cause that says so.
             return WrittenCheck.notRun(Options.via(via), Coverage.Cause.NO_ARTEFACTS_FOR_EDITION,
                     "not run (no syntax binding is published for this edition)");
-        } catch (BindingLimitException e) {
+        } catch (EsjLimitException e) {
+            // Not a refusal of the command: the document written by this run was longer
+            // than the run allows, so the row of the official artefacts did not run.
             return WrittenCheck.notRun(Options.via(via), Coverage.Cause.WRITTEN_OVER_BOUND,
                     "not run (" + console.options().bounds()
                             .refusal("the document written as " + Options.via(via),
@@ -708,9 +709,8 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
      * <p>The engine reaches {@link ExitCode#LIMIT} for two bounds, and only one of them is
      * a bound on the written document: the other is the clock, which the whole command
      * shares and which leaves no verdict for any row to keep.
-     * {@link de.bsnsoft.esj.syntax.SyntaxLimitException#budget()} is what tells
-     * the two apart, and a limit the deadline itself raised carries no such exception at
-     * all.
+     * {@link LimitRefusal#outOfTime} is what tells the two apart, and a limit the deadline
+     * itself raised carries no library exception at all.
      *
      * <p>It is package-private so that a test can hold the two exceptions side by side
      * without having to make a document outlast a clock in the step this is asked in,
@@ -718,14 +718,14 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
      */
     static boolean overBound(CliException e) {
         return e.exitCode() == ExitCode.LIMIT
-                && e.getCause() instanceof SyntaxLimitException limit
-                && limit.budget().isEmpty();
+                && e.getCause() instanceof EsjLimitException limit
+                && !LimitRefusal.outOfTime(limit);
     }
 
     /**
      * Writes the document in the syntax {@code --via} names, within the bounds of this run.
      *
-     * @throws BindingLimitException if the written document is longer than
+     * @throws EsjLimitException     if the written document is longer than
      *                               {@code --max-output-bytes} allows this run, which the
      *                               caller reports as a row that did not run rather than as
      *                               the end of the command

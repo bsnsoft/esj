@@ -76,7 +76,7 @@ class ScaleGeneratorTest {
                 "--lines", String.valueOf(LINES), "--out", generated.toString()));
 
         assertTrue(Files.exists(generated), "the generator wrote the instance");
-        SemanticDocument document = new XrImporter().importXml(read(generated));
+        SemanticDocument document = new XrImporter().read(read(generated)).document();
         assertEquals(VALUES, document.values().size(), "the values of " + LINES + " lines");
         assertEquals(SemanticValue.ofDecimal(BT_106), value(document, "/BG-22/BT-106"),
                 "the sum of the line net amounts follows the lines");
@@ -102,7 +102,7 @@ class ScaleGeneratorTest {
                 "--lines", String.valueOf(LINES), "--text-bytes", String.valueOf(PADDING),
                 "--out", generated.toString()));
 
-        SemanticDocument document = new XrImporter().importXml(read(generated));
+        SemanticDocument document = new XrImporter().read(read(generated)).document();
         assertEquals(VALUES, document.values().size(),
                 "padding a value adds no value and drops none");
         assertEquals(SemanticValue.ofDecimal(BT_106), value(document, "/BG-22/BT-106"),

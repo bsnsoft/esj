@@ -1,5 +1,6 @@
 package de.bsnsoft.esj;
 
+import de.bsnsoft.esj.internal.Messages;
 import de.bsnsoft.esj.validate.FindingCode;
 import java.util.Optional;
 
@@ -96,7 +97,8 @@ public final class EsjFormatException extends EsjException {
     public EsjFormatException(String message, FindingCode code, String location, Throwable cause) {
         super(location == null || location.isEmpty()
                 ? message
-                : message + " (at " + Esj.abbreviated(location, LOCATION_IN_MESSAGE) + ")", cause);
+                : message + " (at " + Messages.abbreviated(location, LOCATION_IN_MESSAGE) + ")",
+                cause);
         this.code = code;
         this.location = location;
     }

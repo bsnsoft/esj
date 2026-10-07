@@ -1,10 +1,12 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
+import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.imports.ImportResult;
-import de.bsnsoft.esj.xr.XrImporter;
+import de.bsnsoft.esj.imports.InvoiceReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,9 +16,14 @@ import java.util.Optional;
  * Reads the electronic invoice out of a hybrid PDF.
  *
  * <p>Four steps, in this order: open the container, classify every attachment by its
- * bytes, take the one that is an invoice, and hand it to the importer of {@code esj-xr}.
- * From the fourth step on nothing is different from reading the same XML on its own, and
- * that is the point: the PDF is a container and the invoice inside it is the document.
+ * bytes, take the one that is an invoice, and hand it to an {@link InvoiceReader}. From the
+ * fourth step on nothing is different from reading the same XML on its own, and that is
+ * the point: the PDF is a container and the invoice inside it is the document.
+ *
+ * <p>The reader is the caller's choice. Unless one is named it is the
+ * {@link StreamingReader} with its default options, the reader the command line runs; the
+ * stylesheet importer of {@code esj-xr} is the other {@link InvoiceReader} and is handed
+ * in where a caller wants it.
  *
  * <p>Three of the steps can end without a document, and each of them ends differently,
  * because the three answers are not interchangeable for the caller that has to act on
@@ -40,15 +47,15 @@ public final class PdfInvoiceImporter {
     /**
      * Reads the invoice out of a PDF.
      *
-     * @param pdf      the bytes of the file
-     * @param limits   what this reader is willing to spend on it
-     * @param importer the importer the attachment is handed to, which decides the
-     *                 registry, the reader limits and what happens to a document whose
-     *                 bytes are not written in the encoding it declares
+     * @param pdf    the bytes of the file
+     * @param limits what this reader is willing to spend on it
+     * @param reader the reader the attachment is handed to, which decides the registry,
+     *               the reader limits and what happens to a document whose bytes are not
+     *               written in the encoding it declares
      * @return the invoice, the attachment it came from and what the container had to say
-     * @throws PdfLimitException                   if a bound of {@code limits} was
-     *                                             reached, which is never a verdict on
-     *                                             the invoice
+     * @throws EsjLimitException                   if a bound of {@code limits} or of the
+     *                                             reader was reached, which is never a
+     *                                             verdict on the invoice
      * @throws PdfAccessException                  if the file is encrypted, which is
      *                                             refused before anything is decrypted
      * @throws PdfFormatException                  if the bytes are no PDF this reader
@@ -56,12 +63,15 @@ public final class PdfInvoiceImporter {
      * @throws NoInvoiceAttachmentException        if no attachment spells an invoice
      * @throws AmbiguousInvoiceAttachmentException if more than one does
      * @throws UnsupportedInvoiceException         if the one that does is ZUGFeRD 1.0
+     * @throws de.bsnsoft.esj.EsjException         of the reader's module if the attachment
+     *                                             is not an XML document the reader can
+     *                                             read at all
      * @throws NullPointerException                if an argument is {@code null}
      */
-    public static PdfImportResult importPdf(byte[] pdf, PdfLimits limits, XrImporter importer) {
+    public static PdfImportResult importPdf(byte[] pdf, PdfLimits limits, InvoiceReader reader) {
         Objects.requireNonNull(pdf, "pdf");
         Objects.requireNonNull(limits, "limits");
-        Objects.requireNonNull(importer, "importer");
+        Objects.requireNonNull(reader, "reader");
         try (PdfContainer container = PdfContainer.open(pdf, limits)) {
             InvoiceAttachments located = InvoiceAttachments.locate(container);
             LocatedAttachment attachment = located.single();
@@ -73,12 +83,13 @@ public final class PdfInvoiceImporter {
             }
             AttachmentContent content = attachment.file().content();
             if (content.truncated()) {
-                throw new PdfLimitException("the attachment " + attachment + " decodes to"
+                throw new EsjLimitException("the attachment " + attachment + " decodes to"
                         + " more than the " + limits.maxAttachmentBytes() + " bytes this"
                         + " reader holds, so it was cut off and no invoice was read from"
-                        + " it");
+                        + " it", new EsjLimitException.Bound("maxAttachmentBytes",
+                        limits.maxAttachmentBytes(), "bytes"));
             }
-            ImportResult invoice = importer.importXmlWithReport(content.bytes());
+            ImportResult invoice = reader.read(content.bytes());
             return new PdfImportResult(invoice,
                     report(container, located, invoice.document()),
                     attachment,
@@ -89,27 +100,28 @@ public final class PdfInvoiceImporter {
     }
 
     /**
-     * Reads the invoice out of a PDF with an importer of the caller's choosing and the
+     * Reads the invoice out of a PDF with a reader of the caller's choosing and the
      * default limits.
      *
-     * @param pdf      the bytes of the file
-     * @param importer the importer the attachment is handed to
+     * @param pdf    the bytes of the file
+     * @param reader the reader the attachment is handed to
      * @return the invoice, the attachment it came from and what the container had to say
      * @throws NullPointerException if an argument is {@code null}
      */
-    public static PdfImportResult importPdf(byte[] pdf, XrImporter importer) {
-        return importPdf(pdf, PdfLimits.defaults(), importer);
+    public static PdfImportResult importPdf(byte[] pdf, InvoiceReader reader) {
+        return importPdf(pdf, PdfLimits.defaults(), reader);
     }
 
     /**
-     * Reads the invoice out of a PDF with the default limits and a default importer.
+     * Reads the invoice out of a PDF with the default limits and the
+     * {@link StreamingReader} with its default options.
      *
      * @param pdf the bytes of the file
      * @return the invoice, the attachment it came from and what the container had to say
      * @throws NullPointerException if {@code pdf} is {@code null}
      */
     public static PdfImportResult importPdf(byte[] pdf) {
-        return importPdf(pdf, PdfLimits.defaults(), new XrImporter());
+        return importPdf(pdf, PdfLimits.defaults(), new StreamingReader());
     }
 
     private static PdfReport report(PdfContainer container,

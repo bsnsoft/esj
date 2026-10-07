@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.xr.XmlBytes;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -511,7 +511,7 @@ final class InputDetector {
         private static java.io.Reader decoded(byte[] content, int start) {
             Charset charset;
             try {
-                charset = Charset.forName(XmlBytes.inspect(content).assumed());
+                charset = Charset.forName(XmlEncodingReport.of(content).assumed());
             } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
                 // A charset this runtime does not know; the importer names it. The root
                 // element of most such documents is still legible as ASCII.

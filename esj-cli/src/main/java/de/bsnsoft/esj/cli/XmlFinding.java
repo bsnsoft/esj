@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.xr.XrEncodingException;
+import de.bsnsoft.esj.xml.XmlEncodingException;
 import java.util.Objects;
 
 /**
@@ -60,7 +60,7 @@ record XmlFinding(String category, String code, String message) {
      * @return the finding
      * @throws NullPointerException if {@code refused} is {@code null}
      */
-    static XmlFinding encoding(XrEncodingException refused) {
+    static XmlFinding encoding(XmlEncodingException refused) {
         Objects.requireNonNull(refused, "refused");
         if (!refused.repairable()) {
             return new XmlFinding(XML, XML_ENCODING,

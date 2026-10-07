@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.xr;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.InputStream;
 import java.util.Map;
@@ -63,7 +64,7 @@ final class XrTransformer {
 
     private static final Processor PROCESSOR = XmlFrontDoor.processor();
 
-    private static final Map<XrSyntax, XsltExecutable> COMPILED = new ConcurrentHashMap<>();
+    private static final Map<InvoiceSyntax, XsltExecutable> COMPILED = new ConcurrentHashMap<>();
 
     private XrTransformer() {
         throw new AssertionError("no instances");
@@ -89,7 +90,7 @@ final class XrTransformer {
      * @return the document node of the XR representation
      * @throws XrFormatException if the transformation failed
      */
-    static XdmNode transform(XdmNode document, XrSyntax syntax) {
+    static XdmNode transform(XdmNode document, InvoiceSyntax syntax) {
         try {
             Xslt30Transformer transformer = executable(syntax).load30();
             transformer.setMessageHandler(message -> {
@@ -127,7 +128,7 @@ final class XrTransformer {
      * @return the syntax, or an empty optional if no syntax this module reads has that
      *         root element
      */
-    static Optional<XrSyntax> detect(XdmNode root) {
+    static Optional<InvoiceSyntax> detect(XdmNode root) {
         return XmlFrontDoor.detect(root);
     }
 
@@ -142,17 +143,26 @@ final class XrTransformer {
                 && XR_ROOT.equals(root.getNodeName().getLocalName());
     }
 
-    private static XsltExecutable executable(XrSyntax syntax) {
+    private static XsltExecutable executable(InvoiceSyntax syntax) {
         return COMPILED.computeIfAbsent(syntax, XrTransformer::compile);
     }
 
-    private static XsltExecutable compile(XrSyntax syntax) {
+    /** Returns the file name of the stylesheet that transforms a syntax into XR. */
+    static String stylesheet(InvoiceSyntax syntax) {
+        return switch (syntax) {
+            case UBL_INVOICE -> "ubl-invoice-xr.xsl";
+            case UBL_CREDIT_NOTE -> "ubl-creditnote-xr.xsl";
+            case CII -> "cii-xr.xsl";
+        };
+    }
+
+    private static XsltExecutable compile(InvoiceSyntax syntax) {
         XsltCompiler compiler = PROCESSOR.newXsltCompiler();
         compiler.setResourceResolver(XrTransformer::resolveStylesheet);
         try {
-            return compiler.compile(stylesheetSource(syntax.stylesheet()));
+            return compiler.compile(stylesheetSource(stylesheet(syntax)));
         } catch (SaxonApiException e) {
-            throw new XrFormatException("the stylesheet " + syntax.stylesheet()
+            throw new XrFormatException("the stylesheet " + stylesheet(syntax)
                     + " of this module could not be compiled", e);
         }
     }

@@ -191,7 +191,7 @@ A PDF is a larger attack surface than an XML document, and the module is written
   ordinary container and its streams stay ciphertext: an attachment of ciphertext decodes
   to nothing and is reported as one nothing was read from.
 * The XMP packet and every attachment window are parsed with a stream parser that refuses
-  document type definitions and external entities, as `esj-xr` does one module further on.
+  document type definitions and external entities, as the reader of the invoice does next.
 * Filenames and media types are reported and never trusted. A name is never used as a file
   system path (SPEC section 12.5).
 
@@ -200,7 +200,7 @@ A PDF is a larger attack surface than an XML document, and the module is written
 Configurable, and a policy of the reader rather than a property of the document: a file
 that outgrows one is refused because processing it would cost more than its recipient
 agreed to spend, which is not the same as calling it invalid (SPEC section 3.1).
-`PdfLimitException` is never a verdict on the invoice.
+An `EsjLimitException` is never a verdict on the invoice; its `bound()` names the `PdfLimits` setting.
 
 | Bound | Default | Measured in |
 |---|---|---|
@@ -365,8 +365,8 @@ knows: a check on either name would report a correct file.
 
 The dependency itself: **Apache PDFBox 3.x**, published by the Apache Software Foundation
 under the Apache License, Version 2.0. It is a dependency of `esj-pdf` and of `esj-render`,
-which writes the PDF rendering with it; `esj-core` still depends on jackson-core alone and
-Saxon stays in `esj-xr`. See `NOTICE`.
+which writes the PDF rendering with it; `esj-core` still depends on jackson-core alone, and
+`esj-pdf` needs neither `esj-xr` nor Saxon. See `NOTICE`.
 
 These facts about how that library reads a file are load-bearing for the bounds described
 under *Limits* and for the refusal of an encrypted file, and they were read out of its
@@ -391,17 +391,17 @@ pinned in the parent `pom.xml`.
 
 Both readers look at the bytes before the parser does, because a document whose bytes are in one
 charset and whose declaration names another is the commonest defect in the field.
-`XmlBytes.inspect` reports the byte order mark, the declared encoding and the charset the bytes
-are; `XmlBytes.repair` recodes into UTF-8 and rewrites the declaration. Four charsets are recoded
+`XmlEncodingReport.of` reports the byte order mark, the declared encoding and the charset the
+bytes are; a reader in `REPAIR` mode recodes into UTF-8 and rewrites the declaration. Four charsets are recoded
 and no others: UTF-8, UTF-16 in either byte order, ISO-8859-1 and Windows-1252. A sequence that
 is not valid UTF-8 where UTF-8 was claimed is read as Windows-1252 when it carries a byte between
 `0x80` and `0x9F` that Windows-1252 defines, and as ISO-8859-1 otherwise; the report says which.
 Any other declared charset is handed to the parser where the bytes decode in it, and refused in
-both modes (`XrEncodingException`, not `repairable()`) where they do not.
+both modes (`XmlEncodingException`, not `repairable()`) where they do not.
 
 **Repair is not validation**, and nothing is silent. `REPAIR`, the default, records the import
 note `ENCODING_REPAIRED` with what was declared and what was read; `STRICT` refuses with
-`XrEncodingException` carrying the same two facts. The digest in the provenance is over the bytes
+`XmlEncodingException` carrying the same two facts. The digest in the provenance is over the bytes
 that were handed over, so the note is also what tells a caller that the two differ, and a document
 that was already valid UTF-8 is returned as the same array.
 

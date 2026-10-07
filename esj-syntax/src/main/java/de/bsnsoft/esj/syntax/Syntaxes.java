@@ -1,12 +1,12 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 
 /**
  * The tokens a pack manifest names the document syntaxes with.
  *
  * <p>They are the manifest's vocabulary, not the importer's, so the translation lives
- * here rather than in {@link XrSyntax}: a pack is data this module reads, and the
+ * here rather than in {@link InvoiceSyntax}: a pack is data this module reads, and the
  * importer has no reason to learn the words a pack is written in.
  */
 final class Syntaxes {
@@ -30,7 +30,7 @@ final class Syntaxes {
      * @param syntax the syntax
      * @return the token
      */
-    static String token(XrSyntax syntax) {
+    static String token(InvoiceSyntax syntax) {
         return switch (syntax) {
             case UBL_INVOICE -> UBL_INVOICE;
             case UBL_CREDIT_NOTE -> UBL_CREDIT_NOTE;
@@ -44,7 +44,7 @@ final class Syntaxes {
      * @param syntax the syntax
      * @return the name in English
      */
-    static String title(XrSyntax syntax) {
+    static String title(InvoiceSyntax syntax) {
         return switch (syntax) {
             case UBL_INVOICE -> "UBL 2.1 Invoice";
             case UBL_CREDIT_NOTE -> "UBL 2.1 CreditNote";

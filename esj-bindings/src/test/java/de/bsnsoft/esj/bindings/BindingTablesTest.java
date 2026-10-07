@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +29,8 @@ import org.junit.jupiter.params.provider.EnumSource;
 class BindingTablesTest {
 
     @ParameterizedTest
-    @EnumSource(BindingSyntax.class)
-    void compiles(BindingSyntax syntax) {
+    @EnumSource(InvoiceSyntax.class)
+    void compiles(InvoiceSyntax syntax) {
         BindingTable table = BindingTable.of(syntax);
         assertEquals(syntax, table.syntax());
         assertFalse(table.termIds().isEmpty(), "the table carries terms");
@@ -45,8 +46,8 @@ class BindingTablesTest {
      * who guesses what it means.
      */
     @ParameterizedTest
-    @EnumSource(BindingSyntax.class)
-    void definesEveryFlagItUses(BindingSyntax syntax) {
+    @EnumSource(InvoiceSyntax.class)
+    void definesEveryFlagItUses(InvoiceSyntax syntax) {
         BindingTable table = BindingTable.of(syntax);
         assertEquals("2026-08-31", table.sourceRelease(),
                 "the release of the source the facts were taken from");
@@ -64,8 +65,8 @@ class BindingTablesTest {
     }
 
     @ParameterizedTest
-    @EnumSource(BindingSyntax.class)
-    void bindsEveryTermOrSaysWhyNot(BindingSyntax syntax) {
+    @EnumSource(InvoiceSyntax.class)
+    void bindsEveryTermOrSaysWhyNot(InvoiceSyntax syntax) {
         BindingTable table = BindingTable.of(syntax);
         for (String id : table.termIds()) {
             if (!table.isBound(id)) {
@@ -87,8 +88,8 @@ class BindingTablesTest {
      * not.
      */
     @ParameterizedTest
-    @EnumSource(BindingSyntax.class)
-    void statesEveryConventionAtAnElementTheSchemaDeclares(BindingSyntax syntax) {
+    @EnumSource(InvoiceSyntax.class)
+    void statesEveryConventionAtAnElementTheSchemaDeclares(InvoiceSyntax syntax) {
         BindingTable table = BindingTable.of(syntax);
         SchemaTable schema = SchemaTable.of(syntax);
         for (BindingTable.Convention convention : table.conventions()) {
@@ -116,7 +117,7 @@ class BindingTablesTest {
      */
     @Test
     void refusesAConventionWhoseConditionIsNotInTheVocabulary() {
-        BindingSyntax syntax = BindingSyntax.UBL_INVOICE;
+        InvoiceSyntax syntax = InvoiceSyntax.UBL_INVOICE;
         String table = new String(read(syntax), StandardCharsets.UTF_8)
                 .replace(BindingTable.Condition.PARENT_WRITTEN_ELEMENT_ABSENT.token(),
                         "parent-written-element-present");
@@ -137,8 +138,8 @@ class BindingTablesTest {
     }
 
     /** Returns the binding table of one syntax as the bytes the module ships. */
-    private static byte[] read(BindingSyntax syntax) {
-        try (InputStream in = BindingTable.class.getResourceAsStream(syntax.table())) {
+    private static byte[] read(InvoiceSyntax syntax) {
+        try (InputStream in = BindingTable.class.getResourceAsStream(BindingTable.file(syntax))) {
             assertFalse(in == null, syntax + " ships a binding table");
             return in.readAllBytes();
         } catch (IOException e) {
@@ -201,7 +202,7 @@ class BindingTablesTest {
                 "/Invoice/cac:OrderReference",
                 "/Invoice/cac:TaxRepresentativeParty/cac:PartyTaxScheme",
                 "/Invoice/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory"),
-                MatchTrie.of(BindingSyntax.UBL_INVOICE).bufferedPaths());
+                MatchTrie.of(InvoiceSyntax.UBL_INVOICE).bufferedPaths());
         assertEquals(List.of(
                 "/CreditNote/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme",
                 "/CreditNote/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme",
@@ -221,7 +222,7 @@ class BindingTablesTest {
                 "/CreditNote/cac:OrderReference",
                 "/CreditNote/cac:TaxRepresentativeParty/cac:PartyTaxScheme",
                 "/CreditNote/cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory"),
-                MatchTrie.of(BindingSyntax.UBL_CREDIT_NOTE).bufferedPaths());
+                MatchTrie.of(InvoiceSyntax.UBL_CREDIT_NOTE).bufferedPaths());
         String cii = "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction/ram:";
         String line = cii + "IncludedSupplyChainTradeLineItem/ram:SpecifiedLineTradeSettlement";
         assertEquals(List.of(
@@ -234,8 +235,8 @@ class BindingTablesTest {
                 line + "/ram:AdditionalReferencedDocument",
                 line + "/ram:ApplicableTradeTax",
                 line + "/ram:SpecifiedTradeAllowanceCharge"),
-                MatchTrie.of(BindingSyntax.CII).bufferedPaths());
-        for (BindingSyntax syntax : BindingSyntax.values()) {
+                MatchTrie.of(InvoiceSyntax.CII).bufferedPaths());
+        for (InvoiceSyntax syntax : InvoiceSyntax.values()) {
             String lines = BindingTable.of(syntax).xpaths("BG-25").get(0);
             for (String held : MatchTrie.of(syntax).bufferedPaths()) {
                 assertFalse(lines.equals(held) || lines.startsWith(held + "/"),

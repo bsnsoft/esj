@@ -71,7 +71,7 @@ final class Corpus {
 
     /** Reads one instance of the corpus into an ESJ document. */
     static SemanticDocument instance(String relativePath) {
-        return new XrImporter().importXml(bytes("/conformance/kosit/" + relativePath));
+        return new XrImporter().read(bytes("/conformance/kosit/" + relativePath)).document();
     }
 
     /** Reads one example of the repository. */

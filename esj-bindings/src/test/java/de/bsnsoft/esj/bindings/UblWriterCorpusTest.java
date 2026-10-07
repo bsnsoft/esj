@@ -11,6 +11,7 @@ import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.syntax.Engine;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -179,7 +180,7 @@ class UblWriterCorpusTest {
         int accepted = 0;
         int identical = 0;
         for (String instance : Corpus.corpus()) {
-            SemanticDocument source = importer.importXml(Corpus.instance(instance));
+            SemanticDocument source = importer.read(Corpus.instance(instance)).document();
             byte[] xml = UblWriter.write(source);
             if (SyntaxValidator.validate(xml).fatal().isEmpty()) {
                 accepted++;
@@ -247,7 +248,7 @@ class UblWriterCorpusTest {
         for (SemanticDocument document : documents) {
             WriteResult result =
                     UblWriter.writeWithReport(document, WriterOptions.defaults());
-            assertEquals(BindingSyntax.UBL_CREDIT_NOTE, result.report().syntax(),
+            assertEquals(InvoiceSyntax.UBL_CREDIT_NOTE, result.report().syntax(),
                     "the invoice type code 381 makes this a credit note");
             assertTrue(result.report().isComplete(), result.report().notes().toString());
             assertEquals(List.of(), SyntaxValidator.validate(result.xml()).fatal().stream()

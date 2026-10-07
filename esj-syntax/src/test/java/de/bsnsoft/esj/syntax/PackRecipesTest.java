@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -148,13 +148,13 @@ class PackRecipesTest {
     void thePeppolRecipeBringsRulesForThePeppolProfileOnly() {
         PackRecipe recipe = PackRecipes.named(PEPPOL);
 
-        assertTrue(recipe.bringsRulesFor(XrSyntax.UBL_INVOICE, PEPPOL_PROFILE));
-        assertTrue(recipe.bringsRulesFor(XrSyntax.UBL_CREDIT_NOTE, PEPPOL_PROFILE));
-        assertTrue(recipe.bringsRulesFor(XrSyntax.CII, PEPPOL_PROFILE));
-        assertFalse(recipe.bringsRulesFor(XrSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017"),
+        assertTrue(recipe.bringsRulesFor(InvoiceSyntax.UBL_INVOICE, PEPPOL_PROFILE));
+        assertTrue(recipe.bringsRulesFor(InvoiceSyntax.UBL_CREDIT_NOTE, PEPPOL_PROFILE));
+        assertTrue(recipe.bringsRulesFor(InvoiceSyntax.CII, PEPPOL_PROFILE));
+        assertFalse(recipe.bringsRulesFor(InvoiceSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017"),
                 "the EN 16931 rules alone are what a bundled pack already brings");
-        assertFalse(recipe.bringsRulesFor(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG));
-        assertEquals(PEPPOL_NEWEST, PackRecipes.bringingRulesFor(XrSyntax.UBL_INVOICE,
+        assertFalse(recipe.bringsRulesFor(InvoiceSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG));
+        assertEquals(PEPPOL_NEWEST, PackRecipes.bringingRulesFor(InvoiceSyntax.UBL_INVOICE,
                 PEPPOL_PROFILE).orElseThrow().name(), "the newest release is the one named");
     }
 

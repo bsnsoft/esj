@@ -1,7 +1,8 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.Preview;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -119,7 +120,7 @@ public final class InvoiceAttachments {
      *
      * @param container the container
      * @return the attachments and their classification
-     * @throws PdfLimitException    if classifying an attachment meets a bound of the
+     * @throws EsjLimitException    if classifying an attachment meets a bound of the
      *                              container that leaves this reader without an answer
      * @throws NullPointerException if {@code container} is {@code null}
      */
@@ -450,13 +451,13 @@ public final class InvoiceAttachments {
     }
 
     private static AttachmentKind kindOf(XmlRoot.Name name) {
-        if (XrSyntax.CII.matches(name.namespace(), name.localName())) {
+        if (InvoiceSyntax.CII.matches(name.namespace(), name.localName())) {
             return AttachmentKind.CII_INVOICE;
         }
-        if (XrSyntax.UBL_INVOICE.matches(name.namespace(), name.localName())) {
+        if (InvoiceSyntax.UBL_INVOICE.matches(name.namespace(), name.localName())) {
             return AttachmentKind.UBL_INVOICE;
         }
-        if (XrSyntax.UBL_CREDIT_NOTE.matches(name.namespace(), name.localName())) {
+        if (InvoiceSyntax.UBL_CREDIT_NOTE.matches(name.namespace(), name.localName())) {
             return AttachmentKind.UBL_CREDIT_NOTE;
         }
         // The namespace of ZUGFeRD 1.0 is not checked: the local name belongs to the

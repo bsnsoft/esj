@@ -1,5 +1,7 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.EsjException;
+
 /**
  * A rule pack that cannot be compiled.
  *
@@ -14,7 +16,7 @@ package de.bsnsoft.esj.rules;
  * {@link RuleFinding} ({@code SPEC.md} section 9.5), and a document with fifty problems
  * produces fifty findings in one pass.
  */
-public final class RulePackException extends RuntimeException {
+public final class RulePackException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

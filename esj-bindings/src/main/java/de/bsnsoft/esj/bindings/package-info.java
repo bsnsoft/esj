@@ -36,10 +36,11 @@
  * {@link de.bsnsoft.esj.imports.ImportReport} and
  * {@link de.bsnsoft.esj.imports.ImportResult} describe the outcome of reading
  * a document into the semantic model, whichever reader did the reading, and they are
- * declared in {@code esj-core} where every reader of this project reaches them. What this
- * module still takes from {@code esj-xr} is the front door both readers enter through:
- * {@link de.bsnsoft.esj.xr.XmlBytes} and the encoding mode beside it, so that
- * a document whose bytes are not written in the encoding it declares is answered the same
- * way whichever reader was asked.
+ * declared in {@code esj-core} where every reader of this project reaches them, together
+ * with {@link de.bsnsoft.esj.imports.InvoiceReader}, which both readers implement. The front
+ * door both readers enter through is there as well, in {@code de.bsnsoft.esj.xml}: the
+ * syntax a root element names and the encoding mode, so that a document whose bytes are not
+ * written in the encoding it declares is answered the same way whichever reader was asked.
+ * This module therefore needs neither {@code esj-xr} nor Saxon.
  */
 package de.bsnsoft.esj.bindings;

@@ -9,6 +9,7 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.bindings.CiiWriter;
+import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.json.EsjWriter;
 import de.bsnsoft.esj.pdf.ContainerChecks;
 import de.bsnsoft.esj.pdf.ContainerFinding;
@@ -21,7 +22,6 @@ import de.bsnsoft.esj.pdf.EmbeddedFile;
 import de.bsnsoft.esj.pdf.PdfImportResult;
 import de.bsnsoft.esj.pdf.InvoiceAttachments;
 import de.bsnsoft.esj.pdf.PdfInvoiceImporter;
-import de.bsnsoft.esj.xr.XrImporter;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -287,14 +287,15 @@ class HybridInvoiceTest {
 
     /**
      * The document read out of the PDF against the document read out of the same cross
-     * industry invoice on its own. Both go through the same importer, so what is compared
-     * is the container and not the mapping: a difference here would mean that putting the
-     * invoice into a PDF changed it.
+     * industry invoice on its own. Both go through the same reader, the streaming one the
+     * PDF importer hands an attachment to by default, so what is compared is the container
+     * and not the mapping: a difference here would mean that putting the invoice into a PDF
+     * changed it.
      */
     private static void assertReadsBack(String what, SemanticDocument document, byte[] hybrid) {
         byte[] invoice = CiiWriter.write(document);
         byte[] expected = EsjWriter.canonical()
-                .toBytes(new XrImporter().importXml(invoice));
+                .toBytes(new StreamingReader().read(invoice).document());
         byte[] read = EsjWriter.canonical()
                 .toBytes(PdfInvoiceImporter.importPdf(hybrid).document());
 

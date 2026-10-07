@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +43,7 @@ import java.util.Optional;
  * @param duration        how long the whole validation took
  */
 public record SyntaxReport(Verdict verdict,
-                           Optional<XrSyntax> syntax,
+                           Optional<InvoiceSyntax> syntax,
                            String customizationId,
                            Optional<Pack> pack,
                            List<SyntaxFinding> findings,

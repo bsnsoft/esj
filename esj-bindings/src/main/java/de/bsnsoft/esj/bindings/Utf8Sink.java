@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.bindings;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.util.Arrays;
 
 /**
@@ -134,8 +135,9 @@ final class Utf8Sink {
     /** Makes room for a number of bytes, and refuses where the bound is passed. */
     private void room(int more) {
         if (size + (long) more > bound) {
-            throw new BindingLimitException("the document is longer than the "
-                    + bound + " bytes this run was given, so it was not written");
+            throw new EsjLimitException("the document is longer than the "
+                    + bound + " bytes this run was given, so it was not written",
+                    new EsjLimitException.Bound("maxOutputBytes", bound, "bytes"));
         }
         if (size + more <= bytes.length) {
             return;

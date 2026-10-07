@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.bsnsoft.esj.SemanticDocument;
-import de.bsnsoft.esj.bindings.BindingSyntax;
 import de.bsnsoft.esj.bindings.CiiWriter;
 import de.bsnsoft.esj.bindings.WriteNote;
 import de.bsnsoft.esj.bindings.WriteReport;
 import de.bsnsoft.esj.bindings.WriterOptions;
 import de.bsnsoft.esj.json.EsjReader;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -83,7 +83,7 @@ class TransportTest {
     /** A note about the document as a whole that is a loss refuses the row as well. */
     @Test
     void refusesANoteThatNamesNoPath() {
-        WriteReport report = new WriteReport(BindingSyntax.CII, 4, 0,
+        WriteReport report = new WriteReport(InvoiceSyntax.CII, 4, 0,
                 List.of(new WriteNote(WriteNote.Kind.EXTENSIONS_DROPPED, "",
                         "data without a business term has no place in a syntax")));
 
@@ -114,7 +114,7 @@ class TransportTest {
 
     /** A write report of the given shape. */
     private static WriteReport report(int dropped, WriteNote... notes) {
-        return new WriteReport(BindingSyntax.CII, 12, dropped, List.of(notes));
+        return new WriteReport(InvoiceSyntax.CII, 12, dropped, List.of(notes));
     }
 
     /** The note a writer makes for a term its registry declares untransported. */

@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +33,7 @@ import java.util.Optional;
  *                        checked less thoroughly than it asked to be
  */
 public record PackSelection(Pack pack,
-                            XrSyntax syntax,
+                            InvoiceSyntax syntax,
                             String customizationId,
                             List<PackComponent> applied,
                             List<SkippedComponent> skipped,

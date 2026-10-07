@@ -17,7 +17,6 @@ import de.bsnsoft.esj.pdf.NoInvoiceAttachmentException;
 import de.bsnsoft.esj.pdf.PdfAccessException;
 import de.bsnsoft.esj.pdf.PdfContainer;
 import de.bsnsoft.esj.pdf.PdfException;
-import de.bsnsoft.esj.pdf.PdfLimitException;
 import de.bsnsoft.esj.pdf.PdfLimits;
 import de.bsnsoft.esj.pdf.PdfaIdentification;
 import de.bsnsoft.esj.pdf.UnsupportedInvoiceException;
@@ -124,15 +123,19 @@ final class Container {
     private static Container open(Input input, Console console, boolean decode) {
         Bounds bounds = console.options().bounds();
         PdfLimits limits = bounds.pdfLimits();
-        try (PdfContainer container = PdfContainer.open(input.bytes(), limits)) {
-            InvoiceAttachments located = InvoiceAttachments.locate(container);
-            Invoice invoice = decode ? decode(located, input, console, limits) : null;
-            return new Container(located.all(), located.duplicateNames(),
-                    ContainerChecks.run(container, located), container.facturX(),
-                    container.pdfaIdentification(), invoice);
-        } catch (PdfException e) {
-            throw refuse(e, input, bounds);
-        }
+        return LimitRefusal.during(limit -> bounds.refusal(input.name(), limit.getMessage()),
+                () -> {
+                    try (PdfContainer container = PdfContainer.open(input.bytes(), limits)) {
+                        InvoiceAttachments located = InvoiceAttachments.locate(container);
+                        Invoice invoice = decode ? decode(located, input, console, limits)
+                                : null;
+                        return new Container(located.all(), located.duplicateNames(),
+                                ContainerChecks.run(container, located), container.facturX(),
+                                container.pdfaIdentification(), invoice);
+                    } catch (PdfException e) {
+                        throw refuse(e, input);
+                    }
+                });
     }
 
     /**
@@ -572,17 +575,15 @@ final class Container {
     /**
      * Turns a failure of the reader into the exit code it means.
      *
-     * <p>They are kept apart because a caller acts differently on each of them: a bound of
-     * this run is answered with more resources, a container this project does not read
-     * with another tool, and a PDF without an invoice with a request for the invoice. The
+     * <p>They are kept apart because a caller acts differently on each of them: a container
+     * this project does not read is answered with another tool, and a PDF without an
+     * invoice with a request for the invoice. A bound of this run is answered with more
+     * resources and is no {@link PdfException}; {@link LimitRefusal} refuses it. The
      * container that carries several is refused in {@link #choose}, where the positions of
      * the candidates are still known.
      */
-    private static CliException refuse(PdfException e, Input input, Bounds bounds) {
+    private static CliException refuse(PdfException e, Input input) {
         String name = input.name();
-        if (e instanceof PdfLimitException) {
-            return CliException.limit(bounds.refusal(name, e.getMessage()), e);
-        }
         if (e instanceof UnsupportedInvoiceException unsupported) {
             return CliException.unsupported(name + " carries "
                     + describe(unsupported.attachment()) + ", which is no binding of"

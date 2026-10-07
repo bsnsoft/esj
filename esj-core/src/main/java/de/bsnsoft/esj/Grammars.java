@@ -1,5 +1,6 @@
 package de.bsnsoft.esj;
 
+import de.bsnsoft.esj.internal.Messages;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.OffsetTime;
@@ -44,7 +45,7 @@ final class Grammars {
      * @return the escaped, truncated fragment
      */
     static String excerpt(String value) {
-        return Esj.forMessage(value, MESSAGE_EXCERPT);
+        return Messages.forMessage(value, MESSAGE_EXCERPT);
     }
 
     /**

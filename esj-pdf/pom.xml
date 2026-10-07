@@ -29,14 +29,15 @@
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
-      <artifactId>esj-xr</artifactId>
+      <artifactId>esj-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!--
       The cross industry invoice this module embeds is written by esj-bindings. Embedding
       is the one direction in which this module writes rather than reads, and the XML it
       writes is the XML that project writes everywhere else: there is no second CII
-      writer here. The same module carries the reader the snippet of README.md and
+      writer here. The same module carries the streaming reader an attachment is handed to
+      unless the caller names another, and the reader the snippet of README.md and
       docs/getting-started.md uses, which GettingStartedExamplesTest runs.
     -->
     <dependency>
@@ -55,6 +56,17 @@
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
+    </dependency>
+
+    <!--
+      The other reader of an XML invoice, the XSLT path. An attachment is read with it
+      where a caller hands it in, so the tests hand it in; this module does not need it.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-xr</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

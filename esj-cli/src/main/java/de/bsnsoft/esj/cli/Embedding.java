@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -14,7 +15,6 @@ import de.bsnsoft.esj.pdf.HybridFlavour;
 import de.bsnsoft.esj.pdf.PdfAccessException;
 import de.bsnsoft.esj.pdf.PdfaCheck;
 import de.bsnsoft.esj.pdf.PdfException;
-import de.bsnsoft.esj.pdf.PdfLimitException;
 import java.util.Optional;
 
 /**
@@ -65,13 +65,12 @@ final class Embedding {
     static byte[] into(byte[] pdf, SemanticDocument document, EmbedOptions options,
                        Console console) {
         try {
-            EmbedResult result = FacturX.embedWithReport(pdf, document, options);
+            EmbedResult result = LimitRefusal.during(EsjLimitException::getMessage,
+                    () -> FacturX.embedWithReport(pdf, document, options));
             Reports.notPlaced(console, result.report());
             return result.pdf();
         } catch (BindingEditionException refused) {
             throw editionRefusal(document);
-        } catch (PdfLimitException e) {
-            throw CliException.limit(e.getMessage(), e);
         } catch (EmbedRefusedException e) {
             throw CliException.input("this invoice was not written into the file: "
                     + e.getMessage(), e);

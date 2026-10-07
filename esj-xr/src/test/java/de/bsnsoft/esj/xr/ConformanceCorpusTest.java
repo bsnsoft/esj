@@ -91,7 +91,7 @@ class ConformanceCorpusTest {
         assertEquals(Conformance.instances().get(instance), Conformance.sha256(xml),
                 "the instance is the one the attribution of the corpus records");
 
-        SemanticDocument document = importer.importXml(xml);
+        SemanticDocument document = importer.read(xml).document();
 
         assertFalse(document.values().isEmpty(), "the document carries values");
         assertEquals(instance.endsWith("_uncefact.xml") ? "CII" : "UBL",
@@ -137,7 +137,7 @@ class ConformanceCorpusTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("corpus")
     void leavesNothingOfAnyInstanceUnplaced(String instance) {
-        ImportReport report = importer.importXmlWithReport(Conformance.instance(instance)).report();
+        ImportReport report = importer.read(Conformance.instance(instance)).report();
 
         assertEquals(List.of(), report.notes(ImportNote.Kind.UNPLACEABLE),
                 "every element the stylesheets write has a place in the semantic model");
@@ -161,7 +161,7 @@ class ConformanceCorpusTest {
     void producesExactlyTheRecordedCardinalityFindings() {
         List<String> found = new ArrayList<>();
         for (Map.Entry<String, String> instance : Conformance.instances().entrySet()) {
-            SemanticDocument document = importer.importXml(Conformance.instance(instance.getKey()));
+            SemanticDocument document = importer.read(Conformance.instance(instance.getKey())).document();
             for (Finding finding : StructuralValidator.validate(
                     document, importer.registry(), CARDINALITY).findings()) {
                 assertEquals(ValidationLayer.L3, finding.code().layer(),
