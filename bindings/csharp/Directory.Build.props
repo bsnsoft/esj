@@ -10,6 +10,11 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <InvariantGlobalization>true</InvariantGlobalization>
     <RepositoryRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../../'))</RepositoryRoot>
+    <!-- The version is the one of the Maven project this checkout builds, read from its root
+         pom.xml: 0.9.5-SNAPSHOT is a SemVer 2.0 version as it stands, so the package follows
+         the project without a second place that names the number. -->
+    <EsjPom>$([System.IO.File]::ReadAllText('$(RepositoryRoot)pom.xml'))</EsjPom>
+    <Version>$([System.Text.RegularExpressions.Regex]::Replace($(EsjPom), '(?s)^.*?&lt;artifactId&gt;en16931-semantic-json&lt;/artifactId&gt;\s*&lt;version&gt;([^&lt;]+)&lt;/version&gt;.*$', '$1'))</Version>
   </PropertyGroup>
 
 </Project>

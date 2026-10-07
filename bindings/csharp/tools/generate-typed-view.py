@@ -22,7 +22,7 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 REPOSITORY = HERE.parent.parent.parent
-TARGET = HERE.parent / "En16931.SemanticJson" / "Typed"
+TARGET = HERE.parent / "BSNSoft.Esj" / "Typed"
 
 RESERVED = {
     "Document", "Instance", "Index", "Read", "ReadAll", "GroupPresent", "GroupList", "Step",
@@ -136,7 +136,7 @@ def accessors(terms, term, out, covered, names, enclosing):
 
 def generate(edition, model):
     terms = model["terms"]
-    namespace = "En16931.SemanticJson.Typed.V" + edition
+    namespace = "BSNSoft.Esj.Typed.V" + edition
     out = [
         "// Generated from model/en16931/%s.json by bindings/csharp/tools/generate-typed-view.py." % edition,
         "// The registry is the source of the terms; this file is checked in and a test holds it to it.",

@@ -1,8 +1,8 @@
 # EN16931 Semantic JSON — TypeScript
 
 *Part of [EN16931 Semantic JSON](../../README.md). The format is [`SPEC.md`](../../SPEC.md); this
-package is one implementation of it. Release candidate; format version 0.1. The package name below is
-provisional and nothing is published on a registry yet.*
+package is one implementation of it. Release candidate; format version 0.1. The package is
+`@bsnsoft/esj`, versioned with the project; nothing is published on a registry yet.*
 
 Reader, canonical form, digests, validator (L1–L3) and the semantic rule engine, in TypeScript,
 with no runtime dependency. It implements the specification rather than wrapping the Java
@@ -10,8 +10,8 @@ library: the same registries and the same rule pack are read as data, and the sh
 manifest measures both.
 
 ```ts
-import { readDocumentOrThrow, canonicalize, semanticDigest, validate } from 'en16931-semantic-json';
-import { registries } from 'en16931-semantic-json/node';
+import { readDocumentOrThrow, canonicalize, semanticDigest, validate } from '@bsnsoft/esj';
+import { registries } from '@bsnsoft/esj/node';
 
 const document = readDocumentOrThrow(await readFile('invoice.esj.json'));
 document.values.get('/BG-25/0/BT-131');           // { value: '1080' }
@@ -29,7 +29,7 @@ Generated from the registry, with the name stems the registry records, so an inv
 the names of the model and not by identifiers:
 
 ```ts
-import { invoiceOf } from 'en16931-semantic-json/generated/en16931-2017/view';
+import { invoiceOf } from '@bsnsoft/esj/generated/en16931-2017/view';
 
 const invoice = invoiceOf(document);
 invoice.seller().name();                           // string
@@ -46,8 +46,8 @@ The rules of EN 16931 are a layer of their own and never ESJ conformance
 ([`SPEC.md`](../../SPEC.md) section 9.4). The pack of the repository runs here unchanged:
 
 ```ts
-import { Structure } from 'en16931-semantic-json';
-import { registries, ruleEngine } from 'en16931-semantic-json/node';
+import { Structure } from '@bsnsoft/esj';
+import { registries, ruleEngine } from '@bsnsoft/esj/node';
 
 const carried = registries();
 const core = carried.find((registry) => registry.semanticModel === document.semanticModel)!;
@@ -67,7 +67,7 @@ language cannot express are `src/rules/native-2026.ts`, left out with that editi
 
 | Module | What it does |
 |---|---|
-| `src/json/parse.ts` | a JSON parser that keeps duplicate members and the spelling of a number, and enforces the limits while it reads |
+| `src/json/scanner.ts` | a JSON scanner that keeps duplicate members and the spelling of a number, walks past what the reader refuses without building it, and enforces the limits while it reads |
 | `src/reader.ts` | layer L1: the envelope, the paths, the shape of every value |
 | `src/canonical.ts` | the canonical form, the pretty form, the lexical canonical form of a number |
 | `src/digest.ts` | the semantic digest and the document digest, over canonical bytes |
@@ -103,7 +103,7 @@ npm run fixtures  # the manifest through the language-neutral runner
 `npm test` runs the whole fixture manifest of [`conformance/fixtures/`](../../conformance/fixtures/README.md)
 in process: 98 conformant documents with their two digests, their canonical byte length, the
 registries they were measured with and the 46 cardinality findings two of them draw;
-45 rows for the documents that have to be rejected, each with its finding code and the path it
+52 rows for the documents that have to be rejected, each with its finding code and the path it
 names; the canonical bytes of two scrambled documents; the accept and reject tables of the value
 grammars; 448 mutations of the conformance corpus against the rule pack, and 314 cases of the
 later edition's pack; and the rules of the pack that pins division. One document, one rejected

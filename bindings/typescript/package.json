@@ -1,6 +1,6 @@
 {
-  "name": "en16931-semantic-json",
-  "version": "0.9.0",
+  "name": "@bsnsoft/esj",
+  "version": "0.9.5-SNAPSHOT",
   "description": "EN16931 Semantic JSON: reader, canonical form, digests, validator and rule engine for the path-addressed JSON binding of the EN 16931 semantic invoice model.",
   "license": "Apache-2.0",
   "private": true,
@@ -37,6 +37,7 @@
   },
   "scripts": {
     "sync": "node scripts/sync-data.mjs",
+    "sync-version": "node scripts/sync-version.mjs",
     "generate": "node scripts/generate-typed.ts",
     "prebuild": "npm run sync && npm run generate",
     "build": "tsc -p tsconfig.json",

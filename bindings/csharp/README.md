@@ -1,8 +1,8 @@
 # EN16931 Semantic JSON — C# binding
 
 *Part of [EN16931 Semantic JSON](../../README.md). The format is [`../../SPEC.md`](../../SPEC.md);
-this page is the .NET implementation of it. The assembly and namespace name below is provisional
-and nothing is published on a package registry yet.*
+this page is the .NET implementation of it. Package id, assembly and namespace are `BSNSoft.Esj`,
+versioned with the project; nothing is published on a package registry yet.*
 
 Status: reader, canonicalizer, digests, structural validation (L1–L3), the JSON rule language of
 [`../../rules/README.md`](../../rules/README.md) and a generated read view, measured against the
@@ -12,7 +12,7 @@ where the counts of that material stand.
 ## Build and test
 
 ```console
-$ dotnet test bindings/csharp/En16931.SemanticJson.sln
+$ dotnet test bindings/csharp/BSNSoft.Esj.sln
 ```
 
 Without a .NET SDK installed, in the official image, with the checkout mounted:
@@ -27,9 +27,9 @@ another one.
 
 | Project | What it is |
 |---|---|
-| `En16931.SemanticJson` | the library: net8.0, no dependency beyond the base class library |
-| `En16931.SemanticJson.Tests` | xunit; every case of the fixture manifest is one test |
-| `En16931.SemanticJson.Fixtures` | the request protocol of `conformance/fixtures/run.py` |
+| `BSNSoft.Esj` | the library: net8.0, no dependency beyond the base class library |
+| `BSNSoft.Esj.Tests` | xunit; every case of the fixture manifest is one test |
+| `BSNSoft.Esj.Fixtures` | the request protocol of `conformance/fixtures/run.py` |
 
 ## Reading, digesting, validating
 
@@ -108,11 +108,11 @@ checked in, and a test holds their coverage to the registry, so a stale file fai
 
 ## The fixture manifest
 
-`En16931.SemanticJson.Fixtures` answers the six requests of `conformance/fixtures/run.py`, so the
+`BSNSoft.Esj.Fixtures` answers the six requests of `conformance/fixtures/run.py`, so the
 language-neutral runner measures this binding against the same material as the reference:
 
 ```console
-$ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
+$ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/csharp/BSNSoft.Esj.Fixtures -- .
 ```
 
 The same cases run as xunit tests, one test per case, which is what `dotnet test` reports.

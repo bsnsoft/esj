@@ -1959,6 +1959,18 @@
       "path": ""
     },
     {
+      "file": "examples/invalid/extension-number-exponent-overflow.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-EXT-NUMBER",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/extension-number-exponent-underflow.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-EXT-NUMBER",
+      "path": ""
+    },
+    {
       "file": "examples/invalid/extension-number-too-long.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-EXT-NUMBER",
@@ -2010,6 +2022,18 @@
       "file": "examples/invalid/path-leading-zero-index.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-PATH-SYNTAX",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/path-syntax-with-array-value.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-PATH-SYNTAX",
+      "path": ""
+    },
+    {
+      "file": "examples/invalid/path-syntax-with-array-value.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-JSON-TYPE",
       "path": ""
     },
     {
@@ -2103,6 +2127,18 @@
       "path": "/BT-999"
     },
     {
+      "file": "examples/invalid/value-depth-32.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-JSON-TYPE",
+      "path": "/BG-25/0/BT-129"
+    },
+    {
+      "file": "examples/invalid/value-depth-33.esj.json",
+      "layer": "limit",
+      "code": "ESJ-L1-LIMIT",
+      "path": "/BG-25/0/BT-129"
+    },
+    {
       "file": "examples/invalid/value-not-a-string.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-VALUE-SHAPE",
@@ -2113,6 +2149,12 @@
       "layer": "limit",
       "code": "ESJ-L1-LIMIT",
       "path": "/BT-1"
+    },
+    {
+      "file": "examples/invalid/values-deep-array.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-ENVELOPE-VALUE",
+      "path": ""
     }
   ],
   "canonicalOrder": [
