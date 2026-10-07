@@ -76,6 +76,7 @@ public class EsjLimitException extends EsjException {
      * @param value the value the bound had when it was reached
      * @param unit  what the value counts, in English and in the plural, such as
      *              {@code bytes}, {@code pages}, {@code levels} or {@code milliseconds}
+     * @serial exclude
      */
     public record Bound(String name, long value, String unit) implements Serializable {
 
