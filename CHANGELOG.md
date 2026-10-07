@@ -18,6 +18,16 @@ still change; a change to it is named here under *Format*.
   rendering and the report carried them as they stood, the PDF printed a question mark — and
   turns U+0085, U+2028 and U+2029 into line feeds in all of them; one class holds the sets for
   every form.
+- `dist/package.sh smoke` compares a container image only when `dist/package.sh docker` built it
+  from the jar it is compared with, and fails when the image that target built is gone or stale;
+  an older image of the same tag is named and not compared. `dist/smoke.sh` takes a relative path
+  in a command relative to the directory it was run from.
+- `bin/without-edition-2026.sh` makes its copy under `$TMPDIR` and removes it when it ends;
+  `--keep` keeps it.
+- `-Dsurefire.failIfNoSpecifiedTests=false` lets `mvn -Dtest=<class> -pl <module> -am` pass the
+  modules without that test; without it, a pattern that matches no test still fails.
+- `esj-render`'s sRGB profile is recorded as compared byte for byte with the file the
+  International Color Consortium publishes (`icc/README.md`, `docs/sources.md`).
 
 ### Fixed
 
@@ -47,6 +57,27 @@ still change; a change to it is named here under *Format*.
   (36 million pixels, a page at 600 dots per inch), and the template file itself is read to
   32 MiB at most. Each refusal names the file and leaves with exit code 2, as every template error
   does.
+
+### Security
+
+- The release archives and the container image carry a build provenance attestation, signed
+  through Sigstore and kept by GitHub: `gh attestation verify <archive> --repo bsnsoft/esj`, and
+  `gh attestation verify oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj` for the image.
+  `docs/install.md` ("Checking a download") and `SECURITY.md` name the fingerprint of the key the
+  artefacts on Maven Central are signed with, `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`, and say
+  that the macOS executable is signed ad hoc and not notarised.
+- The base images of `dist/Dockerfile` and `dist/Dockerfile.native` are pinned by digest beside
+  their tags, and Dependabot moves the digests; the image of a release names the base it was built on.
+- `docs/cli.md` names the veraPDF releases `--verapdf` should run — 1.30.2 or later, 1.31.71 or
+  later on veraPDF's development line; earlier ones have advisories for untrusted PDFs — and caps
+  its heap through `JAVA_OPTS`.
+- The workflows pin every action to a commit and keep no token in a checkout; the release and
+  publish jobs build without a Maven cache. A release tag stops the release before anything is
+  built unless it reads `v1.2.3` or `v1.2.3-rc.1` and names the version of the POM; `publish.yml`
+  takes its tag only in that form and checks it out as a tag. Every push to `main` submits the
+  resolved Maven dependency tree, so that Dependabot alerts cover the libraries the jar carries
+  through other ones (fontbox, pdfbox-io, commons-logging, xmlresolver).
+
 
 ## [0.9.4] — 2026-10-07
 

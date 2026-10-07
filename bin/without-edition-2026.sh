@@ -10,10 +10,12 @@
 #
 # It copies rather than deletes: the copy is assembled from the files that are not in
 # the list, so nothing of the checkout is ever removed. The copy goes into a fresh
-# directory from mktemp and is left behind for inspection.
+# directory under $TMPDIR (or /tmp), which this script made and which it removes when
+# it ends, however it ends; --keep leaves it behind for inspection.
 #
 #   bin/without-edition-2026.sh              the Maven build, then both bindings
 #   bin/without-edition-2026.sh --bindings   the two bindings alone, as the CI runs it
+#   bin/without-edition-2026.sh --keep       either of the two, and the copy is kept
 #
 # The bindings run where their toolchain is on the PATH: the TypeScript binding with
 # npm, the C# binding with dotnet, each with its tests and the fixture runner. Without
@@ -27,14 +29,17 @@
 set -eu
 
 mode=all
-case "${1:-}" in
-  --bindings) mode=bindings ;;
-  "") ;;
-  *)
-    echo "usage: $0 [--bindings]" >&2
-    exit 2
-    ;;
-esac
+keep=no
+for argument in "$@"; do
+  case "$argument" in
+    --bindings) mode=bindings ;;
+    --keep) keep=yes ;;
+    *)
+      echo "usage: $0 [--bindings] [--keep]" >&2
+      exit 2
+      ;;
+  esac
+done
 
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 root=$(CDPATH='' cd -- "$here/.." && pwd)
@@ -45,7 +50,15 @@ if [ ! -f "$list" ]; then
   exit 1
 fi
 
-copy=$(mktemp -d)
+# mktemp -d alone ignores TMPDIR on macOS. The directory is this run's own, and the
+# trap removes that one path and nothing else.
+temporary=${TMPDIR:-/tmp}
+copy=$(mktemp -d "${temporary%/}/esj-no2026.XXXXXX")
+if [ "$keep" = no ]; then
+  trap 'rm -rf -- "${copy:?}"' EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+fi
 echo "copying the tree without the files of EN 16931-1:2026 into $copy"
 
 # The excluded paths, without the comments and the blank lines. A line that names a
@@ -105,4 +118,8 @@ if command -v dotnet >/dev/null 2>&1; then
 else
   missing dotnet C#
 fi
-echo "green without EN 16931-1:2026; the copy is $copy"
+if [ "$keep" = yes ]; then
+  echo "green without EN 16931-1:2026; the copy is $copy"
+else
+  echo "green without EN 16931-1:2026"
+fi

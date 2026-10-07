@@ -25,7 +25,10 @@
 #                   with its checksum beside it; the platform-independent one,
 #                   esj-<version>.zip, carries fixed times, modes and order
 #   smoke           dist/smoke.sh against every artefact that has been built,
-#                   and a failure when none has
+#                   and a failure when none has; the container image only
+#                   when the docker target built it from the jar it is
+#                   compared with, and a failure when that target built one
+#                   that no longer is
 #
 # The reference build is JDK 25: $ESJ_JDK25_HOME or the JDK the script runs on.
 # GraalVM for the native image is $ESJ_GRAALVM_HOME, or a GraalVM found beside
@@ -100,7 +103,7 @@ release=$("$java" -version 2>&1 | sed -n '1s/.*"\([0-9][0-9]*\).*/\1/p')
 case $(uname -s) in
   Darwin) os=macos ;;
   Linux) os=linux ;;
-  *) os=$(uname -s | tr 'A-Z' 'a-z') ;;
+  *) os=$(uname -s | tr '[:upper:]' '[:lower:]') ;;
 esac
 case $(uname -m) in
   arm64|aarch64) arch=arm64 ;;
@@ -111,6 +114,15 @@ esac
 jar=$root/esj-cli/target/esj.jar
 # The name of the container image (see the header).
 image_name=${ESJ_IMAGE:-esj}
+# What the docker target built, for the smoke target of the same or a later run:
+# the image's name, version and identifier, and the SHA-256 of the jar inside it.
+image_record=$out/.esj-image
+
+# The SHA-256 of a file.
+sha256_of() {
+  if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi |
+    awk '{print $1}'
+}
 
 build_jar() {
   say "self-contained jar"
@@ -143,6 +155,8 @@ build_runtime_image() {
   # Recorded from inside the image and with a relative jar path: the cache
   # stores the class path it was trained with, and an absolute one would name
   # the build machine in every archive.
+  # The words of the training case are the arguments, one each.
+  # shellcheck disable=SC2046
   ( cd "$image" && bin/java -XX:+UseCompactObjectHeaders \
       -XX:AOTCacheOutput=app/esj.aot -jar app/esj.jar \
       $(esj_training_case "$root") ) > /dev/null 2>&1 ||
@@ -248,14 +262,26 @@ build_docker() {
   # the marker that says the tree it was built from carried changes that commit
   # does not have.
   revision=$(esj_revision "$root")
+  # A record of an earlier image is void from here on, whether or not this
+  # build completes.
+  : > "$image_record"
+  built_jar=$(sha256_of "$jar")
   ( cd "$root" && docker build --platform "$platform" -f dist/Dockerfile \
       --build-arg "ESJ_VERSION=$version" \
       --build-arg "ESJ_CREATED=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
       --build-arg "ESJ_REVISION=$revision" \
       -t "$image_name:$version" -t "$image_name:latest" . ) ||
     { fail "the image did not build"; return 0; }
+  printf 'name=%s\nversion=%s\nid=%s\njar=%s\n' "$image_name" "$version" \
+    "$(docker image inspect --format '{{.Id}}' "$image_name:$version")" "$built_jar" \
+    > "$image_record"
   docker image inspect "$image_name:$version" \
     --format "$image_name:$version {{.Os}}/{{.Architecture}}, {{.Size}} bytes"
+}
+
+# One value of the record of the docker target, empty when there is none.
+recorded() {
+  [ -f "$image_record" ] && sed -n "s/^$1=//p" "$image_record" | head -1
 }
 
 # The checksum of a release archive, beside it, named relative to it so that the
@@ -347,16 +373,37 @@ run_smoke() {
   # The container image, where the repository is its working directory: the cases
   # that write a file write one inside it, as the account that owns it. Its
   # ceiling is ESJ_MAX_HEAP, which cannot go below the -Xms the entry point
-  # passes, so the boundary check is not run against it. It is never pulled, so
-  # that what is compared is the image built here, and it runs on the platform
-  # it was built for, named, because after a cross-build that is not the host's
-  # and Docker would say so on the error stream of every case.
-  if command -v docker >/dev/null && docker image inspect "$image_name:$version" >/dev/null 2>&1; then
-    platform=$(docker image inspect "$image_name:$version" --format '{{.Os}}/{{.Architecture}}')
-    echo "-- $image_name:$version ($platform)"
-    container="docker run --rm -i --pull never --platform $platform --user $(id -u):$(id -g)"
-    smoke_run "$container -v $root:/work -w /work $image_name:$version"
-    compared=yes
+  # passes, so the boundary check is not run against it. It is never pulled, and
+  # it is compared only when the docker target built it from the jar it is
+  # compared with: an image of the same name and version left over from another
+  # tree answers for that tree and not for this one. It runs, by its identifier,
+  # on the platform it was built for, named, because after a cross-build that is
+  # not the host's and Docker would say so on the error stream of every case.
+  if command -v docker >/dev/null; then
+    built=
+    if [ "$(recorded name)" = "$image_name" ] && [ "$(recorded version)" = "$version" ]; then
+      built=$(recorded id)
+    fi
+    present=$(docker image inspect --format '{{.Id}}' "$image_name:$version" 2>/dev/null || true)
+    if [ -n "$built" ]; then
+      if [ "$present" != "$built" ]; then
+        fail "$image_name:$version is not the image dist/package.sh docker built ($built);" \
+          "it is ${present:-gone}. Run dist/package.sh docker smoke"
+      elif [ "$(recorded jar)" != "$(sha256_of "$jar")" ]; then
+        fail "$image_name:$version was built from another jar than $jar, which has been" \
+          "rebuilt since. Run dist/package.sh docker smoke"
+      else
+        platform=$(docker image inspect "$built" --format '{{.Os}}/{{.Architecture}}')
+        echo "-- $image_name:$version ($platform)"
+        container="docker run --rm -i --pull never --platform $platform --user $(id -u):$(id -g)"
+        smoke_run "$container -v $root:/work -w /work $built"
+        compared=yes
+      fi
+    elif [ -n "$present" ]; then
+      echo "-- $image_name:$version: not compared; dist/package.sh docker did not build it" \
+        "into $out (its revision label: $(docker image inspect "$present" \
+        --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' 2>/dev/null))"
+    fi
   fi
   # A comparison with nothing to compare is not a pass: the release job that
   # builds only the container image fails here when there is no image.
