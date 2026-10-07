@@ -2,7 +2,10 @@ package de.bsnsoft.esj.render;
 
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -45,9 +48,21 @@ import java.util.Set;
  *
  * <p>A reference is the name of a file beside the template, and it stays there: a name
  * that is absolute, that leaves the directory of the template or that is not a plain
- * relative path is refused rather than followed. {@link Files} is the interface behind
- * that, so a caller that keeps its templates somewhere other than in a directory — a
- * classpath, an archive, a database — answers the references itself.
+ * relative path is refused rather than followed, and so is one that reaches a file outside
+ * that directory through a symbolic link, or that names something other than a regular
+ * file — a device, a pipe, a directory. A file is measured before it is read and refused
+ * past 32 MiB, and an image is measured before it is decoded and refused past 36 million
+ * pixels, the size of a full page at 600 dots per inch: an image is decoded whole, at four
+ * bytes a pixel and more, so a small file that declares a vast picture would otherwise cost
+ * the heap of the run. {@link Files} is the interface behind the references, so a caller
+ * that keeps its templates somewhere other than in a directory — a classpath, an archive,
+ * a database — answers them itself; the bound on a file and the bound on an image hold for
+ * what it answers too.
+ *
+ * <p>A template is configuration of the party that renders, as trusted as the rest of its
+ * configuration, and these bounds do not make it anything else. They are there so that a
+ * mistake in one — a link that points somewhere else, a scan saved at the wrong resolution
+ * — is an error that names the file rather than a heap that runs out.
  *
  * <p>Instances are immutable and safe to share between threads.
  */
@@ -57,7 +72,17 @@ public final class RenderTemplate {
     private static final String FORMAT = "esj-render-template/0.1";
 
     /** The largest file a template may refer to, in bytes. */
-    private static final int MAX_REFERENCE_BYTES = 32 * 1024 * 1024;
+    static final int MAX_REFERENCE_BYTES = 32 * 1024 * 1024;
+
+    /**
+     * The largest image a template may bring, in pixels: a full page of A4 or of US letter
+     * at 600 dots per inch, which is twice the resolution print is made at.
+     */
+    static final long MAX_IMAGE_PIXELS = 36_000_000L;
+
+    /** The eight bytes every PNG begins with. */
+    private static final byte[] PNG_SIGNATURE =
+            {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'};
 
     /** The first bytes of a PDF. */
     private static final byte[] PDF_MAGIC = {'%', 'P', 'D', 'F', '-'};
@@ -144,7 +169,7 @@ public final class RenderTemplate {
     public static RenderTemplate read(Path file) {
         Objects.requireNonNull(file, "file");
         Path directory = file.toAbsolutePath().normalize().getParent();
-        return of(bytes(file), reference -> bytes(resolve(directory, reference)));
+        return of(bytes(file), reference -> referenced(directory, reference));
     }
 
     /**
@@ -432,6 +457,9 @@ public final class RenderTemplate {
         String reference = required(TemplateJson.text(sheet, "file", where), where + ": file");
         byte[] bytes = read(files, reference);
         Artwork.Kind kind = kind(bytes, reference);
+        if (kind == Artwork.Kind.IMAGE) {
+            measured(bytes, reference);
+        }
         Float page = TemplateJson.number(sheet, "page", where);
         int number = page == null ? 1 : Math.round(page);
         if (kind == Artwork.Kind.PDF && number < 1) {
@@ -446,11 +474,12 @@ public final class RenderTemplate {
             return null;
         }
         String where = "logo";
-        byte[] bytes = read(files,
-                required(TemplateJson.text(logo, "file", where), where + ": file"));
+        String reference = required(TemplateJson.text(logo, "file", where), where + ": file");
+        byte[] bytes = read(files, reference);
         if (kind(bytes, "the logo") != Artwork.Kind.IMAGE) {
             throw new TemplateException("logo: a logo is a PNG or a JPEG");
         }
+        measured(bytes, reference);
         float width = size(TemplateJson.number(logo, "width", where), where + ": width");
         float height = size(TemplateJson.number(logo, "height", where), where + ": height");
         Float x = TemplateJson.number(logo, "x", where);
@@ -556,6 +585,88 @@ public final class RenderTemplate {
         throw new TemplateException(what + " is neither a PDF nor a PNG nor a JPEG");
     }
 
+    /**
+     * Refuses an image that is larger than {@link #MAX_IMAGE_PIXELS}, from the size its
+     * header states, before anything decodes it.
+     *
+     * @param bytes     the image, a PNG or a JPEG
+     * @param reference the name the template gave it, for the message
+     * @throws TemplateException if it is larger, or if its header states no size
+     */
+    static void measured(byte[] bytes, String reference) {
+        long[] size = starts(bytes, PNG_MAGIC) ? pngSize(bytes) : jpegSize(bytes);
+        if (size == null || size[0] <= 0 || size[1] <= 0) {
+            throw new TemplateException("the render template refers to " + reference
+                    + ", an image whose header does not state its width and height");
+        }
+        if (size[0] * size[1] > MAX_IMAGE_PIXELS) {
+            throw new TemplateException("the render template refers to " + reference
+                    + ", an image of " + size[0] + " × " + size[1] + " pixels, larger than"
+                    + " the " + MAX_IMAGE_PIXELS + " pixels a template may bring");
+        }
+    }
+
+    /**
+     * Returns the width and the height a PNG states in its first chunk, which the format
+     * requires to be the header, or {@code null} where it is not there.
+     */
+    private static long[] pngSize(byte[] bytes) {
+        if (bytes.length < 24 || !starts(bytes, PNG_SIGNATURE)
+                || bytes[12] != 'I' || bytes[13] != 'H' || bytes[14] != 'D'
+                || bytes[15] != 'R') {
+            return null;
+        }
+        return new long[] {unsigned(bytes, 16), unsigned(bytes, 20)};
+    }
+
+    /**
+     * Returns the width and the height a JPEG states in its frame header, or {@code null}
+     * where the segments before the image data hold none. The segments are walked by the
+     * lengths they state, so nothing of the image data is read.
+     */
+    private static long[] jpegSize(byte[] bytes) {
+        int at = 2;
+        while (at + 3 < bytes.length) {
+            if ((bytes[at] & 0xff) != 0xff) {
+                return null;
+            }
+            int marker = bytes[at + 1] & 0xff;
+            if (marker == 0xff) {
+                at++;
+                continue;
+            }
+            if (marker == 0x01 || marker >= 0xd0 && marker <= 0xd8) {
+                at += 2;
+                continue;
+            }
+            if (marker == 0xd9 || marker == 0xda) {
+                return null;
+            }
+            int length = (bytes[at + 2] & 0xff) << 8 | bytes[at + 3] & 0xff;
+            if (length < 2) {
+                return null;
+            }
+            boolean frame = marker >= 0xc0 && marker <= 0xcf
+                    && marker != 0xc4 && marker != 0xc8 && marker != 0xcc;
+            if (frame) {
+                if (at + 8 >= bytes.length) {
+                    return null;
+                }
+                long height = (bytes[at + 5] & 0xff) << 8 | bytes[at + 6] & 0xff;
+                long width = (bytes[at + 7] & 0xff) << 8 | bytes[at + 8] & 0xff;
+                return new long[] {width, height};
+            }
+            at += 2 + length;
+        }
+        return null;
+    }
+
+    /** Returns four bytes at an offset as an unsigned big-endian number. */
+    private static long unsigned(byte[] bytes, int offset) {
+        return (bytes[offset] & 0xffL) << 24 | (bytes[offset + 1] & 0xffL) << 16
+                | (bytes[offset + 2] & 0xffL) << 8 | bytes[offset + 3] & 0xffL;
+    }
+
     private static boolean starts(byte[] bytes, byte[] magic) {
         if (bytes.length < magic.length) {
             return false;
@@ -590,6 +701,49 @@ public final class RenderTemplate {
     }
 
     /**
+     * Returns the bytes of a file a template refers to in the directory it stands in,
+     * refusing a name that leaves that directory, a link out of it, something that is not
+     * a regular file and a file past {@link #MAX_REFERENCE_BYTES} — each before a byte of
+     * it is read.
+     */
+    private static byte[] referenced(Path directory, String reference) {
+        Path file = resolve(directory, reference);
+        Path real;
+        Path home;
+        try {
+            real = file.toRealPath();
+            home = directory.toRealPath();
+        } catch (NoSuchFileException e) {
+            throw new TemplateException("the render template refers to " + reference
+                    + " and there is no such file", e);
+        } catch (IOException e) {
+            throw new TemplateException("the render template refers to " + reference
+                    + ", which could not be read: " + e.getMessage(), e);
+        }
+        if (!real.startsWith(home)) {
+            throw new TemplateException("a render template refers to a file beside it, and '"
+                    + reference + "' is a link to a file outside the directory of the"
+                    + " template");
+        }
+        if (!java.nio.file.Files.isRegularFile(real)) {
+            throw new TemplateException("the render template refers to " + reference
+                    + ", which is not a regular file");
+        }
+        try {
+            long size = java.nio.file.Files.size(real);
+            if (size > MAX_REFERENCE_BYTES) {
+                throw new TemplateException("the render template refers to " + reference
+                        + ", which is " + size + " bytes and larger than the "
+                        + MAX_REFERENCE_BYTES + " a template may bring");
+            }
+        } catch (IOException e) {
+            throw new TemplateException("the render template refers to " + reference
+                    + ", which could not be read: " + e.getMessage(), e);
+        }
+        return bounded(real, "the file " + reference + " the render template refers to");
+    }
+
+    /**
      * Returns the path a reference names beside a template, refusing one that would leave
      * the directory the template stands in.
      */
@@ -607,12 +761,38 @@ public final class RenderTemplate {
         return resolved;
     }
 
+    /**
+     * Reads the template file itself, as far as {@link #MAX_REFERENCE_BYTES} and one byte
+     * further: a template is a few kilobytes of JSON, and a name that turned out to be a
+     * device that never ends is refused at that bound rather than read into the heap.
+     */
     private static byte[] bytes(Path file) {
-        try {
-            return java.nio.file.Files.readAllBytes(file);
+        return bounded(file, "the render template file " + file.getFileName());
+    }
+
+    /**
+     * Reads a file, refusing it once it is past {@link #MAX_REFERENCE_BYTES}.
+     *
+     * @param file    the file
+     * @param subject what the messages call it
+     */
+    private static byte[] bounded(Path file, String subject) {
+        try (InputStream in = java.nio.file.Files.newInputStream(file)) {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            byte[] buffer = new byte[8192];
+            long total = 0;
+            int read;
+            while ((read = in.read(buffer)) >= 0) {
+                total += read;
+                if (total > MAX_REFERENCE_BYTES) {
+                    throw new TemplateException(subject + " is larger than the "
+                            + MAX_REFERENCE_BYTES + " bytes a template may bring");
+                }
+                bytes.write(buffer, 0, read);
+            }
+            return bytes.toByteArray();
         } catch (IOException e) {
-            throw new TemplateException("the render template file " + file.getFileName()
-                    + " could not be read: " + e.getMessage(), e);
+            throw new TemplateException(subject + " could not be read: " + e.getMessage(), e);
         }
     }
 }

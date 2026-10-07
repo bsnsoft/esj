@@ -10,8 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
@@ -266,6 +268,108 @@ class PaymentCodeTest {
     void anElementCarryingALineBreakGetsNoCode() {
         assertFalse(code(with("/BG-16/BT-83", "Invoice RE-2026-0042\nand more"))
                 .isPresent(), "a line break inside an element would shift every line after it");
+    }
+
+    // ---------------------------------------------------------------- the characters
+
+    /**
+     * Every character no element may carry: the seven ways of ending a line, which a
+     * reader that ends a line where Unicode does would read as one, the tabulator and the
+     * other controls of C0 and C1, U+007F, the characters that direct the reading order,
+     * and half of a surrogate pair, which UTF-8 cannot encode.
+     */
+    static Stream<String> notWritable() {
+        return Stream.of("\n", "\r", "\r\n", "\u000b", "\u000c", "\u0085", "\u2028",
+                "\u2029", "\t", "\u0000", "\u001b", "\u007f", "\u009b", "\u061c",
+                "\u200e", "\u202e", "\u2066", "\ud800");
+    }
+
+    /**
+     * The attack the strict payload is about: an account name that carries the line ends
+     * of a reader that splits where Unicode does, with an account and an amount of its own
+     * behind them. Such a reader would take the injected account for the IBAN and the
+     * injected figure for the amount, while the letter prints the seller's account beside
+     * the code. There is no code, and the letter is told why.
+     *
+     * @param character what separates the injected elements
+     */
+    @ParameterizedTest
+    @MethodSource("notWritable")
+    void aNameThatCarriesOneGetsNoCodeAndSaysWhy(String character) {
+        PaymentCode.Decision decision = PaymentCode.decide(with("/BG-16/BG-17/0/BT-85",
+                "Example GmbH" + character + "DE02120300000000202051" + character + "EUR1.00"));
+
+        assertFalse(decision.code().isPresent(), "no code rather than a code that misleads");
+        assertEquals(Optional.of(PaymentCode.Remark.NAME_NOT_WRITABLE), decision.withheld(),
+                "and the reason is the name");
+    }
+
+    /**
+     * The remittance information is withheld the same way. It is not replaced by the
+     * invoice number, as a text too long for the code is: the number would be a reference
+     * the payer did not see on the page where the text was meant to be.
+     *
+     * @param character what the text carries
+     */
+    @ParameterizedTest
+    @MethodSource("notWritable")
+    void aRemittanceTextThatCarriesOneGetsNoCodeAndSaysWhy(String character) {
+        PaymentCode.Decision decision = PaymentCode.decide(
+                with("/BG-16/BT-83", "Invoice" + character + "RE-2026-0042"));
+
+        assertFalse(decision.code().isPresent(), "no code");
+        assertEquals(Optional.of(PaymentCode.Remark.REMITTANCE_NOT_WRITABLE),
+                decision.withheld(), "and the reason is the remittance information");
+    }
+
+    /**
+     * And the invoice number, where it is what the code would carry as the reference:
+     * because the document states no remittance text, or one too long for the code.
+     *
+     * @param character what the number carries
+     */
+    @ParameterizedTest
+    @MethodSource("notWritable")
+    void anInvoiceNumberThatWouldBeTheReferenceAndCarriesOneGetsNoCode(String character) {
+        String number = "RE-2026" + character + "0042";
+        for (String stated : List.of("", "Reference ".repeat(19) + "Reference0")) {
+            PaymentCode.Decision decision =
+                    PaymentCode.decide(with("/BG-16/BT-83", stated, "/BT-1", number));
+
+            assertFalse(decision.code().isPresent(), "no code");
+            assertEquals(Optional.of(PaymentCode.Remark.NUMBER_NOT_WRITABLE),
+                    decision.withheld(), "and the reason is the invoice number");
+        }
+    }
+
+    /** An invoice number the code does not carry may say what it likes. */
+    @Test
+    void anInvoiceNumberTheCodeDoesNotCarryIsNoReason() {
+        PaymentCode.Decision decision = PaymentCode.decide(with("/BT-1", "RE-2026\n0042"));
+
+        assertTrue(decision.code().isPresent(), "the remittance text is the reference");
+        assertEquals(Optional.empty(), decision.withheld());
+    }
+
+    /**
+     * The other conditions of the guideline cost the code without a word, because they are
+     * what the document is and the letter has nothing to explain.
+     */
+    @Test
+    void aDocumentTheGuidelineIsNotForIsOwedNoReason() {
+        assertEquals(new PaymentCode.Decision(Optional.empty(), Optional.empty()),
+                PaymentCode.decide(with("/BG-16/BT-81", "59",
+                        "/BG-16/BG-17/0/BT-85", "Example\nGmbH")),
+                "a direct debit gets no code, whatever its account name carries");
+    }
+
+    /** What may stand in an element: every printable character of every script. */
+    @ParameterizedTest
+    @ValueSource(strings = {"Bäckerei Groß & Söhne KG", "Ελληνικά Α.Ε.", "株式会社例",
+        "O'Brien \"Quotes\" <tag>", "Example GmbH DE02120300000000202051 EUR1.00",
+        "Emoji \ud83d\ude00 GmbH", "non\u00a0breaking"})
+    void printableTextOfAnyScriptIsWritable(String text) {
+        assertTrue(PaymentCode.writable(text), text);
     }
 
     // ---------------------------------------------------------------- the lengths

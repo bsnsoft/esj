@@ -4,12 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -225,6 +234,170 @@ class RenderTemplateTest {
                 StandardCharsets.UTF_8);
 
         assertThrows(TemplateException.class, () -> RenderTemplate.read(template));
+    }
+
+    // ---------------------------------------------------------------- the files it reads
+
+    /**
+     * A plain name beside the template that is a symbolic link out of its directory is
+     * refused like a name that says {@code ../}: what is checked is the file the name
+     * reaches, not how the name is spelt.
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void aLinkOutOfTheDirectoryIsNotFollowed(@TempDir Path root) throws Exception {
+        Path home = Files.createDirectory(root.resolve("templates"));
+        Path outside = Files.write(root.resolve("elsewhere.pdf"), Corpus.bytes(
+                "/examples/templates/letterhead.pdf"));
+        Files.createSymbolicLink(home.resolve("letterhead.pdf"), outside);
+        Path template = letterheadTemplate(home, "letterhead.pdf");
+
+        TemplateException refused =
+                assertThrows(TemplateException.class, () -> RenderTemplate.read(template));
+        assertTrue(refused.getMessage().contains("'letterhead.pdf'")
+                        && refused.getMessage().contains("link"),
+                "the refusal names the file and says why: " + refused.getMessage());
+    }
+
+    /** A link that stays inside the directory is a file beside the template like another. */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void aLinkInsideTheDirectoryIsFollowed(@TempDir Path home) throws Exception {
+        Path art = Files.createDirectory(home.resolve("art"));
+        Path real = Files.write(art.resolve("paper.pdf"), Corpus.bytes(
+                "/examples/templates/letterhead.pdf"));
+        Files.createSymbolicLink(home.resolve("letterhead.pdf"), real);
+
+        assertTrue(RenderTemplate.read(letterheadTemplate(home, "letterhead.pdf"))
+                .letterheadFirst() != null, "the letterhead was read through the link");
+    }
+
+    /** A device the name reaches is not read, however it is reached. */
+    @Test
+    @EnabledOnOs({OS.LINUX, OS.MAC})
+    void aDeviceIsNotRead(@TempDir Path home) throws Exception {
+        Files.createSymbolicLink(home.resolve("letterhead.png"), Path.of("/dev/zero"));
+
+        assertThrows(TemplateException.class,
+                () -> RenderTemplate.read(letterheadTemplate(home, "letterhead.png")),
+                "a link to /dev/zero leaves the directory and is not followed");
+        TemplateException itself = assertThrows(TemplateException.class,
+                () -> RenderTemplate.read(Path.of("/dev/zero")),
+                "and a template file that never ends is refused at the bound");
+        assertTrue(itself.getMessage().contains("larger than"), itself.getMessage());
+    }
+
+    /** A directory is not a file, and is refused with a sentence that says so. */
+    @Test
+    void aDirectoryIsNotAFile(@TempDir Path home) throws Exception {
+        Files.createDirectory(home.resolve("letterhead.pdf"));
+
+        TemplateException refused = assertThrows(TemplateException.class,
+                () -> RenderTemplate.read(letterheadTemplate(home, "letterhead.pdf")));
+        assertTrue(refused.getMessage().contains("letterhead.pdf")
+                        && refused.getMessage().contains("not a regular file"),
+                refused.getMessage());
+    }
+
+    /**
+     * A file past the bound is refused by its size, before it is read. The file of the
+     * case is sparse: it has the size and none of the content, so a reader that read it
+     * anyway would be found out by the time it took and not only by the heap.
+     */
+    @Test
+    void aFilePastTheBoundIsRefusedBeforeItIsRead(@TempDir Path home) throws Exception {
+        try (RandomAccessFile file =
+                     new RandomAccessFile(home.resolve("letterhead.pdf").toFile(), "rw")) {
+            file.setLength(RenderTemplate.MAX_REFERENCE_BYTES + 1L);
+        }
+
+        TemplateException refused = assertThrows(TemplateException.class,
+                () -> RenderTemplate.read(letterheadTemplate(home, "letterhead.pdf")));
+        assertTrue(refused.getMessage().contains("letterhead.pdf")
+                        && refused.getMessage().contains("larger than"),
+                refused.getMessage());
+    }
+
+    /**
+     * An image is measured by the size its header states and refused before anything
+     * decodes it: a small file can declare a picture whose pixels are gigabytes. Both
+     * places an image may stand are measured, and so are both formats, whether the file
+     * comes from a directory or from a caller's own {@link RenderTemplate.Files}.
+     */
+    @Test
+    void anImageLargerThanTheBoundIsRefusedBeforeItIsDecoded() {
+        for (byte[] image : List.of(png(20_000, 20_000), jpeg(20_000, 20_000))) {
+            TemplateException letterhead = assertThrows(TemplateException.class,
+                    () -> Templates.of("{\"template\": \"esj-render-template/0.1\","
+                            + "\"letterhead\": {\"first\": {\"file\": \"vast\"}}}",
+                            "vast", image));
+            assertTrue(letterhead.getMessage().contains("vast")
+                            && letterhead.getMessage().contains("20000 × 20000 pixels"),
+                    letterhead.getMessage());
+            TemplateException logo = assertThrows(TemplateException.class,
+                    () -> Templates.of("{\"template\": \"esj-render-template/0.1\","
+                            + "\"logo\": {\"file\": \"vast\", \"width\": 50,"
+                            + " \"height\": 20}}", "vast", image));
+            assertTrue(logo.getMessage().contains("pixels"), logo.getMessage());
+        }
+    }
+
+    /** The bound is the size of a page at 600 dots per inch, and that size is allowed. */
+    @Test
+    void anImageAtTheBoundIsAllowed() {
+        RenderTemplate.measured(png(6000, 6000), "at.png");
+        RenderTemplate.measured(jpeg(6000, 6000), "at.jpg");
+        assertThrows(TemplateException.class,
+                () -> RenderTemplate.measured(png(6000, 6001), "past.png"));
+        assertThrows(TemplateException.class,
+                () -> RenderTemplate.measured(jpeg(6001, 6000), "past.jpg"));
+    }
+
+    /** Real images are measured as they are, the encoder's own JPEG among them. */
+    @Test
+    void realImagesAreMeasuredByTheirHeaders() throws Exception {
+        RenderTemplate.measured(Artwork.mark(), "mark.png");
+        BufferedImage picture = new BufferedImage(120, 40, BufferedImage.TYPE_INT_RGB);
+        ByteArrayOutputStream jpeg = new ByteArrayOutputStream();
+        assertTrue(ImageIO.write(picture, "jpg", jpeg), "the platform writes a JPEG");
+        RenderTemplate.measured(jpeg.toByteArray(), "logo.jpg");
+        assertThrows(TemplateException.class,
+                () -> RenderTemplate.measured(new byte[] {(byte) 0xff, (byte) 0xd8,
+                    (byte) 0xff, (byte) 0xd9}, "empty.jpg"),
+                "a JPEG that ends before it states a size is refused");
+    }
+
+    /** Writes a template into a directory that names one file as its letterhead. */
+    private static Path letterheadTemplate(Path home, String reference) throws IOException {
+        Path template = home.resolve("template.json");
+        Files.writeString(template, "{\"template\": \"esj-render-template/0.1\","
+                + "\"letterhead\": {\"first\": {\"file\": \"" + reference + "\"}}}",
+                StandardCharsets.UTF_8);
+        return template;
+    }
+
+    /** Returns the first bytes of a PNG that states a size: its signature and its header. */
+    private static byte[] png(int width, int height) {
+        ByteBuffer png = ByteBuffer.allocate(33);
+        png.put(new byte[] {(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'});
+        png.putInt(13).put(new byte[] {'I', 'H', 'D', 'R'}).putInt(width).putInt(height);
+        png.put(new byte[] {8, 6, 0, 0, 0}).putInt(0);
+        return png.array();
+    }
+
+    /**
+     * Returns the first bytes of a JPEG that states a size: the start of the image, an
+     * application segment the frame header has to be found behind, and the frame header.
+     */
+    private static byte[] jpeg(int width, int height) {
+        ByteBuffer jpeg = ByteBuffer.allocate(2 + 18 + 19);
+        jpeg.put(new byte[] {(byte) 0xff, (byte) 0xd8});
+        jpeg.put(new byte[] {(byte) 0xff, (byte) 0xe0}).putShort((short) 16)
+                .put(new byte[] {'J', 'F', 'I', 'F', 0, 1, 1, 0, 0, 1, 0, 1, 0, 0});
+        jpeg.put(new byte[] {(byte) 0xff, (byte) 0xc0}).putShort((short) 17).put((byte) 8)
+                .putShort((short) height).putShort((short) width).put((byte) 3)
+                .put(new byte[] {1, 0x11, 0, 2, 0x11, 1, 3, 0x11, 1});
+        return jpeg.array();
     }
 
     @Test

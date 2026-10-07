@@ -93,9 +93,14 @@ code is drawn and nothing is said: BT-81 is 30 or 58, BT-5 is `EUR`, BT-84 is a 
 by the check digits of ISO 13616, BT-115 is between 0.01 and 999999999.99, and the payload fits
 its bound. Three elements the payload can do without, and *Further details* says which gave way:
 a beneficiary over 70 characters is written to that length, a remittance information over 140
-gives way to the invoice number, a BT-86 that is not a BIC by ISO 9362 is left out. Where the
-document states more than one account or instruction, the caption names the one it pays into.
-A credit note or a self-billed invoice gets none ([below](#document-types)).
+gives way to the invoice number, a BT-86 that is not a BIC by ISO 9362 is left out. The payload
+is one element per line, so no element carries a line end of any kind — a reader that splits
+where Unicode does would read the next element one line too far down — nor another control
+character, a character that directs the reading order or half a surrogate pair: where the
+beneficiary, BT-83 or the invoice number standing in for it holds one, no code is drawn and
+*Further details* says which element it was. Where the document states more than one account or
+instruction, the caption names the one it pays into. A credit note or a self-billed invoice gets
+none ([below](#document-types)).
 
 ## Document types
 

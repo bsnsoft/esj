@@ -181,7 +181,7 @@ final class Bounds {
         return maxInputBytes;
     }
 
-    /** Returns the largest XML output this run writes, in bytes. */
+    /** Returns the largest XML output, or HTML page, this run writes, in bytes. */
     long maxOutputBytes() {
         return maxOutputBytes;
     }

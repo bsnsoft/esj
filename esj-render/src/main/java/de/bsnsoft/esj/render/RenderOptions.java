@@ -9,7 +9,9 @@ import java.util.Optional;
  * <p>There is deliberately little to decide. The language picks the labels, the number
  * picture and the date picture, and both renderers of this module honour it. The page size
  * is the paper the PDF rendering is laid out for; the HTML rendering has no pages and
- * ignores it. The page bound is what a rendering may cost.
+ * ignores it. The page bound is what a PDF rendering may cost, and the byte bound what an
+ * HTML rendering may: a page of HTML grows with the document rather than with a page, so it
+ * is measured in what it is written as.
  *
  * <p>The {@link Layout} is the one switch that moves values on the page, and it has two
  * settings, both of which show every term occurrence of the document: the letter layout,
@@ -38,10 +40,13 @@ import java.util.Optional;
  * @param paymentCode whether the letter layout draws the EPC QR code of a credit transfer
  *                    the document states, empty to leave the choice to the template and,
  *                    where that is silent, to drawing it
+ * @param maxHtmlBytes how many bytes an HTML rendering may have, in UTF-8, before it is
+ *                     refused
  */
 public record RenderOptions(RenderLanguage language, PageSize pageSize,
                             Optional<RenderTemplate> template, int maxPages,
-                            Optional<Layout> layout, Optional<Boolean> paymentCode) {
+                            Optional<Layout> layout, Optional<Boolean> paymentCode,
+                            long maxHtmlBytes) {
 
     /**
      * How many pages a rendering may have where the caller named no number.
@@ -64,7 +69,56 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
     public static final Layout DEFAULT_LAYOUT = Layout.LETTER;
 
     /**
+     * How many bytes an HTML rendering may have where the caller named no number: one
+     * gibibyte.
+     *
+     * <p>It is generous, as {@link #DEFAULT_MAX_PAGES} is: an invoice of ten thousand lines
+     * is about 130 megabytes of HTML, because the visualization writes every value of the
+     * document into the page together with the markup of its place, and an attachment is
+     * written into it whole. It is there because a page of HTML grows with the document and
+     * a heap does not: a rendering that reaches it is stopped where it stands rather than
+     * finished in memory and then found too large. A caller that renders documents from
+     * strangers sets a bound of its own, as the command line tool does.
+     */
+    public static final long DEFAULT_MAX_HTML_BYTES = 1024L * 1024L * 1024L;
+
+    /**
      * Checks the members.
+     *
+     * @param language the language the labels, the dates and the decimals are written in
+     * @param pageSize the paper a PDF rendering is laid out for
+     * @param template the branded template, empty for an unbranded rendering
+     * @param maxPages how many pages a PDF rendering may have before it is refused
+     * @param layout   the page layout the caller chose, empty to leave the choice to the
+     *                 template and then to {@link #DEFAULT_LAYOUT}
+     * @param paymentCode whether the letter layout draws the EPC QR code, empty to leave
+     *                    the choice to the template
+     * @param maxHtmlBytes how many bytes an HTML rendering may have, in UTF-8
+     * @throws NullPointerException     if an argument is {@code null}
+     * @throws IllegalArgumentException if {@code maxPages} or {@code maxHtmlBytes} is less
+     *                                  than one
+     */
+    public RenderOptions {
+        Objects.requireNonNull(language, "language");
+        Objects.requireNonNull(pageSize, "pageSize");
+        Objects.requireNonNull(template, "template");
+        Objects.requireNonNull(layout, "layout");
+        Objects.requireNonNull(paymentCode, "paymentCode");
+        if (maxPages < 1) {
+            throw new IllegalArgumentException(
+                    "a rendering has at least one page, and maxPages is " + maxPages);
+        }
+        if (maxHtmlBytes < 1) {
+            throw new IllegalArgumentException(
+                    "an HTML rendering has at least one byte, and maxHtmlBytes is "
+                            + maxHtmlBytes);
+        }
+    }
+
+    /**
+     * Creates options with the bound on an HTML rendering at
+     * {@link #DEFAULT_MAX_HTML_BYTES}: the members these options had before that bound was
+     * one of them.
      *
      * @param language the language the labels, the dates and the decimals are written in
      * @param pageSize the paper a PDF rendering is laid out for
@@ -77,16 +131,11 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      * @throws NullPointerException     if an argument is {@code null}
      * @throws IllegalArgumentException if {@code maxPages} is less than one
      */
-    public RenderOptions {
-        Objects.requireNonNull(language, "language");
-        Objects.requireNonNull(pageSize, "pageSize");
-        Objects.requireNonNull(template, "template");
-        Objects.requireNonNull(layout, "layout");
-        Objects.requireNonNull(paymentCode, "paymentCode");
-        if (maxPages < 1) {
-            throw new IllegalArgumentException(
-                    "a rendering has at least one page, and maxPages is " + maxPages);
-        }
+    public RenderOptions(RenderLanguage language, PageSize pageSize,
+                         Optional<RenderTemplate> template, int maxPages,
+                         Optional<Layout> layout, Optional<Boolean> paymentCode) {
+        this(language, pageSize, template, maxPages, layout, paymentCode,
+                DEFAULT_MAX_HTML_BYTES);
     }
 
     /**
@@ -99,7 +148,7 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      */
     public static RenderOptions defaults() {
         return new RenderOptions(RenderLanguage.GERMAN, PageSize.A4, Optional.empty(),
-                DEFAULT_MAX_PAGES, Optional.empty(), Optional.empty());
+                DEFAULT_MAX_PAGES, Optional.empty(), Optional.empty(), DEFAULT_MAX_HTML_BYTES);
     }
 
     /**
@@ -121,7 +170,8 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      * @throws NullPointerException if {@code value} is {@code null}
      */
     public RenderOptions withLanguage(RenderLanguage value) {
-        return new RenderOptions(value, pageSize, template, maxPages, layout, paymentCode);
+        return new RenderOptions(value, pageSize, template, maxPages, layout, paymentCode,
+                maxHtmlBytes);
     }
 
     /**
@@ -132,7 +182,8 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      * @throws NullPointerException if {@code size} is {@code null}
      */
     public RenderOptions on(PageSize size) {
-        return new RenderOptions(language, size, template, maxPages, layout, paymentCode);
+        return new RenderOptions(language, size, template, maxPages, layout, paymentCode,
+                maxHtmlBytes);
     }
 
     /**
@@ -145,7 +196,7 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
     public RenderOptions with(RenderTemplate value) {
         return new RenderOptions(language, pageSize,
                 Optional.of(Objects.requireNonNull(value, "value")), maxPages, layout,
-                paymentCode);
+                paymentCode, maxHtmlBytes);
     }
 
     /**
@@ -156,7 +207,8 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      * @throws IllegalArgumentException if {@code pages} is less than one
      */
     public RenderOptions withMaxPages(int pages) {
-        return new RenderOptions(language, pageSize, template, pages, layout, paymentCode);
+        return new RenderOptions(language, pageSize, template, pages, layout, paymentCode,
+                maxHtmlBytes);
     }
 
     /**
@@ -168,7 +220,7 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      */
     public RenderOptions layout(Layout value) {
         return new RenderOptions(language, pageSize, template, maxPages,
-                Optional.of(Objects.requireNonNull(value, "value")), paymentCode);
+                Optional.of(Objects.requireNonNull(value, "value")), paymentCode, maxHtmlBytes);
     }
 
     /**
@@ -183,6 +235,23 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      */
     public RenderOptions withPaymentCode(boolean value) {
         return new RenderOptions(language, pageSize, template, maxPages, layout,
-                Optional.of(value));
+                Optional.of(value), maxHtmlBytes);
+    }
+
+    /**
+     * Returns these options with another bound on the size of an HTML rendering.
+     *
+     * <p>The bound is on the rendering as it is written, in bytes of UTF-8, and it holds
+     * while the page is produced: a rendering that reaches it is stopped there, with a
+     * {@link RenderLimitException}, and nothing of it is returned. The PDF rendering is
+     * bounded by its pages and ignores this.
+     *
+     * @param bytes how many bytes an HTML rendering may have
+     * @return the options
+     * @throws IllegalArgumentException if {@code bytes} is less than one
+     */
+    public RenderOptions withMaxHtmlBytes(long bytes) {
+        return new RenderOptions(language, pageSize, template, maxPages, layout, paymentCode,
+                bytes);
     }
 }
