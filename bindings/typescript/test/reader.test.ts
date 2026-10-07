@@ -1,5 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { canonicalize, pretty } from '../src/canonical.ts';
 import { FindingCode } from '../src/codes.ts';
 import { EsjError } from '../src/errors.ts';
 import { readDocument, readDocumentOrThrow } from '../src/reader.ts';
@@ -150,3 +152,110 @@ test('a limit leaves the result indeterminate and never invalid', () => {
   assert.deepEqual(result.notEvaluated,
     [{ layer: 'L2', reason: 'LIMIT' }, { layer: 'L3', reason: 'LIMIT' }]);
 });
+
+/** A document whose `extensions` carry one owner with the given JSON text as its value. */
+function withExtension(json: string): string {
+  return '{"format":"EN16931-Semantic-JSON","version":"0.1",'
+    + '"semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"/BT-1":"X"},'
+    + '"extensions":{"de.example.vendor":' + json + '}}';
+}
+
+/** A document whose `values` carry `/BT-1` written as the given JSON text. */
+function withValue(json: string): string {
+  return '{"format":"EN16931-Semantic-JSON","version":"0.1",'
+    + '"semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"/BT-1":' + json + '}}';
+}
+
+function pairsOf(input: Uint8Array | string, limits?: Parameters<typeof readDocument>[1]): string[] {
+  return readDocument(input, limits).findings.map((entry) => entry.path + ' ' + entry.code);
+}
+
+test('a number whose canonical form is too long is refused before any of it is written out',
+  { timeout: 20_000 }, () => {
+    const spellings = [
+      '1e500000000', '1e-500000000', '1e999999999', '-1e-999999999',
+      '1e99999999999999999999', '1e-99999999999999999999', '1e' + '9'.repeat(400),
+      '0.' + '0'.repeat(1_000_000) + '1',
+    ];
+    for (const spelling of spellings) {
+      const started = performance.now();
+      assert.deepEqual(pairsOf(withExtension('[' + spelling + ']')), [' ESJ-L1-EXT-NUMBER'],
+        spelling.slice(0, 40));
+      assert.ok(performance.now() - started < 2_000, spelling.slice(0, 40) + ' took too long');
+    }
+  });
+
+test('a long spelling whose canonical form is short is a number like any other', () => {
+  const read = readDocumentOrThrow(withExtension('[0e999999999, 0.' + '0'.repeat(1000)
+    + '1e1001, 1' + '0'.repeat(1000) + 'e-1000, -0.0e-5]'));
+  assert.ok(read.extensions !== undefined);
+});
+
+test('a number token past the string bound is a limit wherever it stands', () => {
+  const token = '1'.repeat(1024 * 1024 + 1);
+  assert.deepEqual(pairsOf(withValue(token)), ['/BT-1 ESJ-L1-LIMIT']);
+  assert.deepEqual(pairsOf(withValue('1'.repeat(1024 * 1024))), ['/BT-1 ESJ-L1-JSON-TYPE']);
+});
+
+test('what the reader refuses inside values it walks past, bounded, without building it', () => {
+  const nested = (levels: number): string => '['.repeat(levels) + '0' + ']'.repeat(levels);
+  assert.deepEqual(pairsOf(withValue(nested(32))), ['/BT-1 ESJ-L1-JSON-TYPE']);
+  assert.deepEqual(pairsOf(withValue(nested(33))), ['/BT-1 ESJ-L1-LIMIT']);
+  assert.deepEqual(pairsOf(withValue('{"value":' + nested(31) + ',"scheme":"x"}')),
+    ['/BT-1 ESJ-L1-JSON-TYPE']);
+  assert.deepEqual(pairsOf(withValue('{"value":' + nested(32) + ',"scheme":"x"}')),
+    ['/BT-1 ESJ-L1-LIMIT']);
+});
+
+test('a member whose name is no path has its value judged all the same', () => {
+  const text = '{"format":"EN16931-Semantic-JSON","version":"0.1",'
+    + '"semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"BT 1":[1,[2]],"/BT-2":"X"}}';
+  assert.deepEqual(pairsOf(text), [' ESJ-L1-PATH-SYNTAX', ' ESJ-L1-JSON-TYPE']);
+});
+
+test('the reader reports in the order the text is written and stops where it must', () => {
+  const head = '{"format":"EN16931-Semantic-JSON","version":"0.1",'
+    + '"semanticModel":"EN16931-1:2017+A1:2019/AC:2020",';
+  assert.deepEqual(pairsOf(head + '"profile":1,"values":{,,}'), [' ESJ-L1-ENVELOPE-MEMBER'],
+    'an undefined envelope member ends the read before the broken text after it');
+  assert.deepEqual(pairsOf(head + '"values":{"BT 1":"x","/BT-2" "x"}}'),
+    [' ESJ-L1-PATH-SYNTAX', ' ESJ-L1-JSON'],
+    'a finding confined to one member stands before the defect that ends the read');
+  assert.deepEqual(pairsOf(head + '"values":' + '['.repeat(40) + ']'.repeat(40) + '}'),
+    [' ESJ-L1-ENVELOPE-VALUE'], 'an envelope member of the wrong type is refused at its first token');
+});
+
+test('a wide array where a string belongs costs the walk and no tree', () => {
+  // The process gets 128 MiB of heap: building the 32 million elements of this 64 MiB
+  // document into a tree took about 2.6 GiB, walking past them takes the text.
+  const reader = new URL('../src/reader.ts', import.meta.url).href;
+  const script = `
+    const { readDocument } = await import(${JSON.stringify(reader)});
+    const text = '{"format":"EN16931-Semantic-JSON","version":"0.1",'
+      + '"semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"/BT-1":['
+      + '0,'.repeat(32 * 1024 * 1024 - 100) + '0]}}';
+    const result = readDocument(text);
+    process.stdout.write(JSON.stringify(result.findings.map((f) => f.path + ' ' + f.code)));`;
+  const run = spawnSync(process.execPath, ['--max-old-space-size=128', '--input-type=module',
+    '-e', script], { encoding: 'utf8', timeout: 120_000 });
+  assert.equal(run.status, 0, run.stderr);
+  assert.deepEqual(JSON.parse(run.stdout), ['/BT-1 ESJ-L1-JSON-TYPE']);
+});
+
+test('a nesting bound a caller raised is answered with a document, never a stack overflow',
+  () => {
+    const levels = 60_000;
+    const nested = '['.repeat(levels) + '0' + ']'.repeat(levels);
+    const limits = { limits: { maxExtensionDepth: levels + 10 } };
+    const document = readDocumentOrThrow(withExtension(nested), limits);
+    const canonical = canonicalize(document);
+    assert.ok(canonical.includes('['.repeat(levels) + '0' + ']'.repeat(levels)));
+    // The pretty form indents every level, so its length grows with the square of the depth;
+    // a few thousand levels are what a string of the language holds.
+    const shallower = readDocumentOrThrow(withExtension(nested.slice(levels - 4000,
+      levels + 4001)), limits);
+    assert.ok(pretty(shallower).includes('[\n'));
+    assert.deepEqual(pairsOf(withValue(nested), limits), ['/BT-1 ESJ-L1-JSON-TYPE']);
+    assert.deepEqual(pairsOf(withExtension(nested)), [' ESJ-L1-LIMIT'],
+      'the default bound answers the same document with the limit');
+  });

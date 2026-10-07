@@ -190,7 +190,8 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
         SemanticDocument document = loaded.require(console);
         Registry registry = Editions.require(document, extensions);
         RenderOptions options = RenderOptions.in(language).on(size)
-                .withMaxPages(console.options().bounds().maxRenderPages());
+                .withMaxPages(console.options().bounds().maxRenderPages())
+                .withMaxHtmlBytes(console.options().bounds().maxOutputBytes());
         if (template != null && !html) {
             options = options.with(branded(template));
         }
@@ -274,7 +275,8 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
                     + stylesheets.semanticModel());
         }
         RenderResult result = render(() ->
-                new HtmlRenderer(registry).renderWithReport(document, options));
+                new HtmlRenderer(registry).renderWithReport(document, options),
+                Bound.OUTPUT_BYTES);
         reportExportNotes(result);
         console.warning("this page carries the content of a document somebody else wrote;"
                 + " open it as you would any file from a stranger. See docs/rendering.md");
@@ -282,7 +284,8 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
     }
 
     private byte[] pdfOf(SemanticDocument document, Registry registry, RenderOptions options) {
-        return render(() -> new PdfRenderer(registry).render(document, options));
+        return render(() -> new PdfRenderer(registry).render(document, options),
+                Bound.RENDER_PAGES);
     }
 
     /**
@@ -310,9 +313,11 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      * property of the input and not a defect of the tool, so it leaves with
      * {@link ExitCode#INPUT} and one line rather than as an internal error.
      *
-     * <p>A rendering that runs past the page bound of this run is the other way round: a
-     * bound of the run and no verdict on the document, so it leaves with
-     * {@link ExitCode#LIMIT} like every other limit, and nothing is written.
+     * <p>A rendering that runs past a bound of this run is the other way round — the pages
+     * of the PDF, or the bytes of the HTML page, which is held to {@code --max-output-bytes}
+     * as every other document this tool writes is: a bound of the run and no verdict on the
+     * document, so it leaves with {@link ExitCode#LIMIT} like every other limit, and nothing
+     * is written.
      *
      * <p>So is a value whose content is not of the shape its semantic data type asks for.
      * The HTML rendering is produced by a stylesheet that reads a typed value as the type
@@ -324,17 +329,18 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      *
      * @param <T>       what the rendering produces
      * @param rendering the rendering to run
+     * @param bound     the bound of this run the rendering is held to
      * @return what it produced
      */
-    private <T> T render(Supplier<T> rendering) {
+    private <T> T render(Supplier<T> rendering, Bound bound) {
         try {
             return rendering.get();
         } catch (RenderLimitException e) {
             // A bound of this run, and no statement about the invoice: the same document
-            // renders where more pages are allowed. The sentence that says how to raise it
-            // is the one every other bound of this tool uses.
+            // renders where more is allowed. The sentence that says how to raise it is the
+            // one every other bound of this tool uses.
             throw CliException.limit(e.getMessage()
-                    + console.options().bounds().hint(Bound.RENDER_PAGES), e);
+                    + console.options().bounds().hint(bound), e);
         } catch (TemplateException e) {
             throw CliException.input("cannot render this document on this template: "
                     + e.getMessage(), e);

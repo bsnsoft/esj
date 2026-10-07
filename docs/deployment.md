@@ -197,6 +197,7 @@ stops working, on one machine that is named there. The short form:
 | an ESJ document already converted | `512m` | `large` past 64 MiB | about a second for half a million values |
 | a PDF carrying one of those, up to 64 MiB | `512m` | `large` past 64 MiB | the file, then the attachment, then the row above it |
 | **writing** a cross industry invoice from tens of megabytes of XML | `2g` | `large` | five to nine seconds; `convert --to cii` builds the whole output tree, so it costs about three times what reading the same document costs |
+| **rendering** ten thousand lines as HTML | `1g` | `large` | three seconds and about 130 MB of HTML; the page is held to `--max-output-bytes` while it is written, so one past it leaves with 7 rather than with a heap that ran out |
 
 A PDF is read within two bounds of its own. `--max-pdf-bytes` (64 MiB by default, 512 MiB under
 `--limits large`) is the length of the file, refused before it is parsed; `--max-attachments`

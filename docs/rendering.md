@@ -94,10 +94,12 @@ and their attribution are untouched, because import precedence is what `xsl:impo
   double quotes. The three values are escaped for the string literal they stand in, so an
   apostrophe in a file name is an apostrophe in a file name.
 
-**Characters that direct the reading order** — the right-to-left override and its family, U+200E,
-U+200F, U+202A–U+202E, U+2066–U+2069 and U+FFF9–U+FFFB — are replaced by a space on the way in,
-as they are in the PDF rendering. They are invisible, and what they do is make a line read
-differently from the text the document stores.
+**Characters that direct the reading order** — the right-to-left override and its family,
+U+061C, U+200E, U+200F, U+202A–U+202E, U+2066–U+2069 and U+FFF9–U+FFFB — are replaced by a space
+on the way in, as they are in the PDF rendering and the report. They are invisible, and what they
+do is make a line read differently from the text the document stores. So are U+007F and the C1
+controls, and U+0085, U+2028 and U+2029 become line feeds; one class of `esj-render` holds these
+sets for every form.
 
 `UntrustedContentTest` asserts all of this, so that a newer tag of the stylesheet that changed
 something is a failing build rather than a surprise.
@@ -296,7 +298,9 @@ Less than to its HTML. The text is drawn as text and nothing of the document bec
 instruction of the file: the renderer writes no script, no action, no link, no form and no
 embedded file, whatever the invoice says, and BT-124 is printed as the text it is. A character
 the embedded faces cannot show becomes a question mark, a control character a space, and a
-character that directs the reading order a space as well.
+character that directs the reading order a space as well. A line end of any kind — CR LF, CR,
+VT, FF, U+0085, U+2028, U+2029 — breaks a block as a line feed does, and is a space on a line
+that has to stay one: the page footer, the head of a following page, a figure of the totals.
 
 ### What it costs
 
@@ -305,8 +309,9 @@ generator of `conformance/scale/`, renders in well under a second, and that is a
 *not* linear in the size of one value — a megabyte in a narrow column is close to three hundred
 pages, an invoice number of half a megabyte is two hundred, because BT-1 stands in the footer of
 every one. Both are inside every bound of `--limits default`, which are bounds on the input;
-`esj render` arms `--max-runtime` at five minutes and bounds the pages
-([`cli.md`](cli.md#limits), [measured](deployment-measurements.md#rendering)).
+`esj render` arms `--max-runtime` at five minutes and bounds the pages, and the HTML page by
+`--max-output-bytes` while it is written ([`cli.md`](cli.md#limits),
+[measured](deployment-measurements.md#rendering)).
 
 Never broken across a page: a section heading and the beginning of what it heads; a table
 heading, its column header and its first row; **a row together with everything hanging under

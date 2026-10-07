@@ -427,10 +427,32 @@ final class Sheet implements AutoCloseable {
     }
 
     /**
+     * Returns how wide the widest line of a text is. A text that carries line breaks of its
+     * own is as wide as its widest line and not as wide as all of them laid end to end,
+     * and a face has no glyph for a line break to measure anyway.
+     *
+     * @param text the text, already passed through the face
+     * @param face the face it will be written in
+     * @param size the type size
+     * @return the width in points
+     */
+    static float widestLine(String text, Fonts.Face face, float size) {
+        if (text.indexOf('\n') < 0) {
+            return face.width(text, size);
+        }
+        float widest = 0;
+        for (String line : text.split("\n", -1)) {
+            widest = Math.max(widest, face.width(line, size));
+        }
+        return widest;
+    }
+
+    /**
      * Writes one line of text. The whole line is one text-showing operation, so a reader
      * and a text extractor see it as one run.
      *
-     * @param text     the line
+     * @param text     the line, already passed through {@link Fonts.Face#showable(String)}
+     *                 or {@link Fonts.Face#line(String)}
      * @param x        where it starts
      * @param baseline the baseline it sits on
      * @param face     the face
@@ -441,12 +463,16 @@ final class Sheet implements AutoCloseable {
         if (text.isEmpty()) {
             return;
         }
+        // A line has no line feed in it. It is the one character a showable text keeps
+        // that the face has no glyph for, so one that got this far is written as the
+        // space it stands for on one line rather than handed to the font.
+        String line = text.indexOf('\n') < 0 ? text : text.replace('\n', ' ');
         try {
             stream.beginText();
             colour(ink);
             stream.setFont(face.font(), size);
             stream.newLineAtOffset(x, baseline);
-            stream.showText(text);
+            stream.showText(line);
             stream.endText();
         } catch (IOException e) {
             throw new RenderException("a line of text could not be written", e);
@@ -634,7 +660,7 @@ final class Sheet implements AutoCloseable {
      */
     float footerRoom(String pageOf) {
         Fonts.Face face = fonts.regular();
-        String widest = face.showable(
+        String widest = face.line(
                 String.format(Locale.ROOT, pageOf, pages.size(), pages.size()));
         float text = Math.min(size.width() - first.left() - first.right(),
                 size.width() - following.left() - following.right());
@@ -681,10 +707,10 @@ final class Sheet implements AutoCloseable {
         close();
         float size = FOOTER_SIZE;
         Fonts.Face face = fonts.regular();
-        String left = face.showable(identity);
+        String left = face.line(identity);
         for (int i = 0; i < pages.size(); i++) {
             margins = i == 0 ? first : following;
-            String right = face.showable(
+            String right = face.line(
                     String.format(Locale.ROOT, pageOf, i + 1, pages.size()));
             try (PDPageContentStream footer = new PDPageContentStream(document, pages.get(i),
                     PDPageContentStream.AppendMode.APPEND, true, true)) {
@@ -700,7 +726,7 @@ final class Sheet implements AutoCloseable {
                         palette.muted());
                 if (!written.isEmpty() && i > 0) {
                     float top = this.size.height() - margins.top();
-                    show(face.showable(written), left(), top - HEAD_SIZE, face, HEAD_SIZE,
+                    show(face.line(written), left(), top - HEAD_SIZE, face, HEAD_SIZE,
                             palette.muted());
                     rule(left(), right(),
                             top - lineHeight(HEAD_SIZE) - HEAD_RULE_GAP, palette.rule());

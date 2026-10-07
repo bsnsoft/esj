@@ -30,9 +30,11 @@ async function sha256(text: string): Promise<string> {
  * term does, because such a term is content of the invoice and lives in `values`.
  *
  * @param document the document
- * @return the digest, as 64 lowercase hexadecimal digits
+ * @return the digest, as 64 lowercase hexadecimal digits; a document with no canonical form,
+ *         such as one that carries a lone surrogate, rejects it with the `EsjError` of
+ *         `canonicalize`
  */
-export function semanticDigest(document: SemanticDocument): Promise<string> {
+export async function semanticDigest(document: SemanticDocument): Promise<string> {
   return sha256(canonicalSemanticContent(document));
 }
 
@@ -44,9 +46,10 @@ export function semanticDigest(document: SemanticDocument): Promise<string> {
  * file.
  *
  * @param document the document
- * @return the digest, as 64 lowercase hexadecimal digits
+ * @return the digest, as 64 lowercase hexadecimal digits; a document with no canonical form
+ *         rejects it with the `EsjError` of `canonicalize`
  */
-export function documentDigest(document: SemanticDocument): Promise<string> {
+export async function documentDigest(document: SemanticDocument): Promise<string> {
   return sha256(canonicalize(document));
 }
 
@@ -58,7 +61,8 @@ export function documentDigest(document: SemanticDocument): Promise<string> {
  * @return the digest, as 64 lowercase hexadecimal digits
  */
 export async function digestOfBytes(bytes: Uint8Array): Promise<string> {
-  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  // Web Crypto takes no view of a shared buffer, which a document is never read into.
+  const digest = await crypto.subtle.digest('SHA-256', bytes as Uint8Array<ArrayBuffer>);
   let out = '';
   for (const byte of new Uint8Array(digest)) {
     out += byte.toString(16).padStart(2, '0');

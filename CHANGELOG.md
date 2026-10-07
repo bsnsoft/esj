@@ -8,12 +8,42 @@ still change; a change to it is named here under *Format*.
 
 ### Added
 
+- Six negative fixtures under `examples/invalid/`, run by the fixture manifest over the Java, the
+  TypeScript and the C# reader: `extension-number-exponent-overflow` and `-underflow`
+  (`ESJ-L1-EXT-NUMBER`), `value-depth-32` and `value-depth-33` (`ESJ-L1-JSON-TYPE`, then
+  `ESJ-L1-LIMIT`: the walk past a structure inside `values`), `path-syntax-with-array-value`
+  (`ESJ-L1-PATH-SYNTAX` and `ESJ-L1-JSON-TYPE`) and `values-deep-array` (`ESJ-L1-ENVELOPE-VALUE`).
 - The rule files of both bundled packs, as their manifests name them, are validated against
   `rules/rule.schema.json` on every build; the 2026 pack's test is part of what
   `bin/without-edition-2026.sh` removes.
 
 ### Changed
 
+- `esj render --html` is held to `--max-output-bytes` (64 MiB, 1 GiB under `--limits large`), as
+  every XML document the tool writes is: the page is measured in bytes of UTF-8 while it is
+  written, and one past the bound leaves with exit code 7 and nothing written, rather than being
+  finished in memory first. In the library the bound is `RenderOptions.maxHtmlBytes()`
+  (`withMaxHtmlBytes(long)`, default `DEFAULT_MAX_HTML_BYTES`, 1 GiB) and is reached with a
+  `RenderLimitException`. `RenderOptions` has a seventh member; the constructor of six stays.
+- `esj-render` replaces U+007F and the C1 controls with a space in every form — the HTML
+  rendering and the report carried them as they stood, the PDF printed a question mark — and
+  turns U+0085, U+2028 and U+2029 into line feeds in all of them; one class holds the sets for
+  every form.
+- `dist/package.sh smoke` compares a container image only when `dist/package.sh docker` built it
+  from the jar it is compared with, and fails when the image that target built is gone or stale;
+  an older image of the same tag is named and not compared. `dist/smoke.sh` takes a relative path
+  in a command relative to the directory it was run from.
+- `bin/without-edition-2026.sh` makes its copy under `$TMPDIR` and removes it when it ends;
+  `--keep` keeps it.
+- `-Dsurefire.failIfNoSpecifiedTests=false` lets `mvn -Dtest=<class> -pl <module> -am` pass the
+  modules without that test; without it, a pattern that matches no test still fails.
+- `esj-render`'s sRGB profile is recorded as compared byte for byte with the file the
+  International Color Consortium publishes (`icc/README.md`, `docs/sources.md`).
+- The bindings carry their publisher's names and the project's version: the npm package is
+  `@bsnsoft/esj` (was `en16931-semantic-json`), the C# package, assembly and namespace
+  `BSNSoft.Esj` (was `En16931.SemanticJson`, projects under `bindings/csharp/BSNSoft.Esj*`). The C#
+  build reads the version from `pom.xml`; `npm run sync-version` writes it into `package.json` and
+  `package-lock.json`, and a test fails while they differ. Nothing is published yet.
 - One set of characters that steer a terminal, `Esj.steersATerminal(int)` and
   `Esj.isBidiControl(int)` in `esj-core`, is used by every text output: the messages of
   `esj-core`, `esj-rules` and `esj-pdf`, the lines of `esj list`, `esj inspect`, `esj diff`,
@@ -35,6 +65,57 @@ still change; a change to it is named here under *Format*.
 
 ### Fixed
 
+- `esj render` in the letter layout — the default since 0.9.2 — left with exit code 5, "internal
+  error", where the invoice number (BT-1) or the buyer reference (BT-10) carried a line feed,
+  which ESJ allows in every text; the generic layout left with 2 on the same invoice number. Both
+  layouts draw such a document now. A line end of any kind — CR LF, CR, VT, FF, U+0085, U+2028,
+  U+2029 — breaks a block as a line feed does and is a space on a line that has to stay one: the
+  page footer, the head of a following page, a figure of the totals, the footer of the PDF report.
+  No character the embedded faces have no glyph for reaches them.
+- U+061C ARABIC LETTER MARK reached the HTML rendering and the HTML report, although the
+  renderings replace the characters that direct the reading order with a space. HTML, PDF and
+  report now replace one set: U+061C, U+200E, U+200F, U+202A–U+202E, U+2066–U+2069 and
+  U+FFF9–U+FFFB.
+- The EPC QR code (GiroCode) of the letter dropped an element only where it carried a line feed
+  or a carriage return; U+2028, U+2029, U+0085, VT and FF passed into the payload, so a reader
+  that splits lines where Unicode does would read the account and the amount one line too far
+  down. No element carries a line end of any kind, another control character, a character that
+  directs the reading order or half a surrogate pair now: where the beneficiary, the remittance
+  information or the invoice number standing in for it holds one, the letter draws no code and
+  says under *Further details* which element it was.
+- Render templates: a reference was checked as a name, so a symbolic link beside the template
+  led out of its directory, and a link to `/dev/zero` or a small PNG that declares a vast picture
+  ran the heap out. A reference is now checked as the file it reaches — a link out of the
+  directory and anything that is not a regular file are refused — a file is refused by its size
+  before it is read (32 MiB), an image by the size its header states before it is decoded
+  (36 million pixels, a page at 600 dots per inch), and the template file itself is read to
+  32 MiB at most. Each refusal names the file and leaves with exit code 2, as every template error
+  does.
+- TypeScript: a number inside `extensions` whose canonical form is long (`1e500000000`,
+  `1e-500000000`, `1e999999999`, `0.` and a million zeros) cost up to 600 MiB, minutes, or an
+  uncaught `RangeError` from `readDocument`. The length of the canonical form is computed before
+  any digit is written, the exponent saturated, as in Java and C#: `ESJ-L1-EXT-NUMBER` at once.
+  `canonicalNumber` throws `EsjError` (`ESJ-L1-EXT-NUMBER`) for such a number.
+- TypeScript: the reader streams. It judges each member where the text reaches it and walks past
+  what it refuses without building it: 64 MiB of `[0,0,…]` where a string belongs cost 2.6 GiB and
+  ran out of memory under a 1 GiB heap, now 0.5 s and less than 300 MiB. Where its findings
+  differed from Java's they no longer do: the value under a name that is no path is judged, a
+  finding confined to one member stands before a JSON error after it, an undefined envelope member
+  ends the read before broken text behind it, a JSON error or a limit inside a member of `values`
+  names that member's path, and a member name is held to the larger of the string and path bound.
+- TypeScript: reader and canonical writer keep the containers they open on a stack. A raised
+  `maxExtensionDepth` reads and canonicalizes a document 60 000 levels deep, where the parser
+  overflowed the stack and `readDocument` turned that into `TypeError: value is not iterable`;
+  `readDocument` now passes on any error that is not a finding unchanged.
+- TypeScript: the canonical and the pretty form refuse a string with a lone surrogate with
+  `EsjError` (`ESJ-L1-SURROGATE`), as Java and C# do, instead of writing U+FFFD; `semanticDigest`
+  and `documentDigest` reject with it rather than throw.
+- TypeScript: `npm run build` type-checks again (TypeScript 7 loads no Node types unasked).
+- C#: the reader answers as the Java one where it did not. An envelope member of the wrong JSON
+  type is refused at its first token (a deep array there was `ESJ-L1-LIMIT`, now
+  `ESJ-L1-ENVELOPE-VALUE`); a number token longer than the string bound is `ESJ-L1-LIMIT` wherever
+  it stands (was `ESJ-L1-JSON-TYPE` inside `values`), and so is a member name longer than the
+  larger of the string and path bound.
 - A document whose bytes do not decode in the charset it declares and are none of UTF-8, UTF-16,
   ISO-8859-1 and Windows-1252 — Shift_JIS or EUC-JP over bytes that spell no character of it,
   US-ASCII over Latin-1 — was read with U+FFFD where the bytes did not decode, without the note
@@ -50,6 +131,26 @@ still change; a change to it is named here under *Format*.
 - `docs/cli.md`: `esj extract --out` follows a symbolic link at the path the caller names.
   `docs/validation-measurements.md`: the official Schematron is superlinear where a line-level
   assertion fails on every line.
+
+### Security
+
+- The release archives and the container image carry a build provenance attestation, signed
+  through Sigstore and kept by GitHub: `gh attestation verify <archive> --repo bsnsoft/esj`, and
+  `gh attestation verify oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj` for the image.
+  `docs/install.md` ("Checking a download") and `SECURITY.md` name the fingerprint of the key the
+  artefacts on Maven Central are signed with, `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`, and say
+  that the macOS executable is signed ad hoc and not notarised.
+- The base images of `dist/Dockerfile` and `dist/Dockerfile.native` are pinned by digest beside
+  their tags, and Dependabot moves the digests; the image of a release names the base it was built on.
+- `docs/cli.md` names the veraPDF releases `--verapdf` should run — 1.30.2 or later, 1.31.71 or
+  later on veraPDF's development line; earlier ones have advisories for untrusted PDFs — and caps
+  its heap through `JAVA_OPTS`.
+- The workflows pin every action to a commit and keep no token in a checkout; the release and
+  publish jobs build without a Maven cache. A release tag stops the release before anything is
+  built unless it reads `v1.2.3` or `v1.2.3-rc.1` and names the version of the POM; `publish.yml`
+  takes its tag only in that form and checks it out as a tag. Every push to `main` submits the
+  resolved Maven dependency tree, so that Dependabot alerts cover the libraries the jar carries
+  through other ones (fontbox, pdfbox-io, commons-logging, xmlresolver).
 
 ### Format
 

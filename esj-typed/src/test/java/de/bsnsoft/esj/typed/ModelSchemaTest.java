@@ -55,6 +55,7 @@ class ModelSchemaTest {
             "object-without-component",
             "owner-token-syntax",
             "path-leading-zero-index",
+            "path-syntax-with-array-value",
             "scheme-on-text-value",
             "scheme-version-without-scheme",
             "source-empty-syntax",
@@ -68,8 +69,11 @@ class ModelSchemaTest {
             "unknown-envelope-member",
             "unknown-object-member",
             "unknown-term",
+            "value-depth-32",
+            "value-depth-33",
             "value-object-members-17",
-            "value-not-a-string");
+            "value-not-a-string",
+            "values-deep-array");
 
     private static Schema schema;
 

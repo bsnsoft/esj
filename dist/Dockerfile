@@ -11,16 +11,21 @@
 #
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
+# The base image is named by its tag and pinned by the digest of its manifest
+# list, which Dependabot moves with the tag (.github/dependabot.yml): an image
+# built from a release names the base it was built on, and a tag moved upstream
+# reaches it only through a pull request.
+#
 # The ahead-of-time cache is recorded on the runtime it will be used on, by a
 # run that does what the tool is for. A cache from another build of the virtual
 # machine is ignored, so it is made here rather than shipped in.
-FROM eclipse-temurin:25-jre AS training
+FROM eclipse-temurin:25-jre@sha256:fcd7fd7b387f94bb2ac461478a7436ad8e349924c374ea8313919624dceae636 AS training
 COPY esj-cli/target/esj.jar /opt/esj/esj.jar
 COPY conformance/pdf/factur-x.pdf /opt/esj/training.pdf
 RUN java -XX:+UseCompactObjectHeaders -XX:AOTCacheOutput=/opt/esj/esj.aot \
       -jar /opt/esj/esj.jar validate /opt/esj/training.pdf > /dev/null
 
-FROM eclipse-temurin:25-jre
+FROM eclipse-temurin:25-jre@sha256:fcd7fd7b387f94bb2ac461478a7436ad8e349924c374ea8313919624dceae636
 # The base image labels itself, and its version and build date would be read as
 # this image's own, so both are set here from what dist/package.sh passes. The
 # source names the repository the image is built from, which is what ghcr.io

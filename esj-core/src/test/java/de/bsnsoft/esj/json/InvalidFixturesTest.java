@@ -41,7 +41,7 @@ class InvalidFixturesTest {
 
     /** The fixtures the reader refuses as a limit of the specification, section 12.2. */
     private static final Set<String> REJECTED_BY_A_LIMIT =
-            Set.of("extension-depth-33", "value-object-members-17");
+            Set.of("extension-depth-33", "value-depth-33", "value-object-members-17");
 
     /** The fixtures that pass layer L1 and fail against the registry. */
     private static final Map<String, String> REJECTED_BY_THE_VALIDATOR = rejectedByTheValidator();
@@ -62,12 +62,15 @@ class InvalidFixturesTest {
         table.put("empty-extensions", "ESJ-L1-ENVELOPE-VALUE");
         table.put("empty-string-value", "ESJ-L1-EMPTY-STRING");
         table.put("empty-string-with-missing-term", "ESJ-L1-EMPTY-STRING");
+        table.put("extension-number-exponent-overflow", "ESJ-L1-EXT-NUMBER");
+        table.put("extension-number-exponent-underflow", "ESJ-L1-EXT-NUMBER");
         table.put("extension-number-too-long", "ESJ-L1-EXT-NUMBER");
         table.put("lone-surrogate", "ESJ-L1-SURROGATE");
         table.put("number-instead-of-string", "ESJ-L1-JSON-TYPE");
         table.put("object-without-component", "ESJ-L1-VALUE-SHAPE");
         table.put("owner-token-syntax", "ESJ-L1-OWNER-TOKEN");
         table.put("path-leading-zero-index", "ESJ-L1-PATH-SYNTAX");
+        table.put("path-syntax-with-array-value", "ESJ-L1-PATH-SYNTAX");
         table.put("scheme-version-without-scheme", "ESJ-L1-VALUE-MEMBER");
         table.put("source-empty-syntax", "ESJ-L1-ENVELOPE-VALUE");
         table.put("source-lone-surrogate", "ESJ-L1-SURROGATE");
@@ -80,7 +83,9 @@ class InvalidFixturesTest {
         table.put("surrogate-in-source-member-name", "ESJ-L1-SURROGATE");
         table.put("unknown-envelope-member", "ESJ-L1-ENVELOPE-MEMBER");
         table.put("unknown-object-member", "ESJ-L1-VALUE-MEMBER");
+        table.put("value-depth-32", "ESJ-L1-JSON-TYPE");
         table.put("value-not-a-string", "ESJ-L1-VALUE-SHAPE");
+        table.put("values-deep-array", "ESJ-L1-ENVELOPE-VALUE");
         return Map.copyOf(table);
     }
 

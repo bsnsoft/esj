@@ -14,7 +14,7 @@ and live in [`bindings.md`](bindings.md).
 ## Build and test
 
 ```console
-$ dotnet test bindings/csharp/En16931.SemanticJson.sln
+$ dotnet test bindings/csharp/BSNSoft.Esj.sln
 ```
 
 Without a .NET SDK installed, in the official image, with the checkout mounted:
@@ -30,9 +30,9 @@ package's own page.
 
 | Project | What it is |
 |---|---|
-| `En16931.SemanticJson` | the library: net8.0, warnings as errors, nullable enabled |
-| `En16931.SemanticJson.Tests` | xunit; every case of the fixture manifest is one test |
-| `En16931.SemanticJson.Fixtures` | the request protocol of `conformance/fixtures/run.py` |
+| `BSNSoft.Esj` | the library and package id: net8.0, warnings as errors, nullable enabled; the version is read from `pom.xml` |
+| `BSNSoft.Esj.Tests` | xunit; every case of the fixture manifest is one test |
+| `BSNSoft.Esj.Fixtures` | the request protocol of `conformance/fixtures/run.py` |
 
 ## The API
 
@@ -107,10 +107,10 @@ are the Java implementation ([`cli.md`](cli.md)).
 ## The fixture manifest
 
 ```console
-$ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
+$ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/csharp/BSNSoft.Esj.Fixtures -- .
 ```
 
-`En16931.SemanticJson.Fixtures` answers the six requests of the runner over a pipe: the
+`BSNSoft.Esj.Fixtures` answers the six requests of the runner over a pipe: the
 digests, the canonical bytes, the findings and the rule identifiers of every case of the
 manifest. The same cases run as xunit tests, one test per case, which is what `dotnet test`
 reports, so a case that the reference implementation writes into the manifest fails here until

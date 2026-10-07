@@ -69,11 +69,11 @@ test('every import specifier of the README resolves through the package exports'
     fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8')) as {
       exports: Record<string, string | Record<string, string>>;
     }).exports;
-  const specifiers = [...README.matchAll(/from '(en16931-semantic-json[^']*)'/g)]
+  const specifiers = [...README.matchAll(/from '(@bsnsoft\/esj[^']*)'/g)]
     .map((match) => match[1]);
   assert.ok(specifiers.length >= 3, 'the README imports from the package');
   for (const specifier of specifiers) {
-    const target = resolve(exported, './' + specifier.slice('en16931-semantic-json'.length + 1)
+    const target = resolve(exported, './' + specifier.slice('@bsnsoft/esj'.length + 1)
       .replace(/^$/, ''));
     assert.ok(target !== undefined, specifier + ' matches no entry of the exports map');
     const source = path.join(fileURLToPath(new URL('..', import.meta.url)),

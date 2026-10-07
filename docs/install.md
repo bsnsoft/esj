@@ -16,14 +16,10 @@ write, the verdict they reach and the code they leave with.
 | Self-contained jar | a JRE 17 or newer | 13 MB | 1.41 s | 296 MiB |
 | Container image | a container runtime | 579 MB | 1.04 s | — |
 
-Measured on the machine and with the method of
-[`deployment-measurements.md`](deployment-measurements.md#start-up), at a one-minute load
-average between 8 and 40, which is the condition that costs a just-in-time compiler most and an
-executable that never warms up least: read the column as an order of magnitude and not as a
-ratio. The rows are the artefacts as they ship, with their own defaults. The container row is a
-whole `docker run` on a host where that starts a virtual machine, and the resident set of the
-container is not what the measurement sees; what the tool costs inside it is the runtime image
-row.
+Measured as in [`deployment-measurements.md`](deployment-measurements.md#start-up), each
+artefact with its own defaults, at a load average of 8 to 40: an order of magnitude, not a ratio.
+The container row is a whole `docker run` on a host where that starts a virtual machine; what the
+tool costs inside it is the runtime image row.
 
 ## Native executable
 
@@ -163,6 +159,20 @@ the subset, and `dist/package.sh smoke` runs it against every artefact that has 
 
 Beside each archive a `.sha256` file with its checksum, written by `dist/package.sh zip`. A
 tag builds all three on Linux (x64 and arm64) and macOS (arm64) and attaches them, with their
-checksums, to its release; from 0.9.2 on it also pushes the container image, for linux/amd64
-and linux/arm64, to `ghcr.io/bsnsoft/esj`. A Windows artefact is not built: `jpackage` and
-`native-image` produce one from the same jar on a Windows runner, and no one has run it.
+checksums, to its release. A Windows artefact is not built: `jpackage` and `native-image`
+produce one from the same jar on a Windows runner, and no one has run it.
+
+## Checking a download
+
+```console
+$ sha256sum -c <archive>.sha256            # shasum -a 256 -c on macOS
+$ gh attestation verify <archive> --repo bsnsoft/esj
+$ gh attestation verify oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj
+```
+
+The checksum catches a damaged download. From 0.9.5 on, the archives and the image carry a build
+provenance attestation, signed through Sigstore and kept by GitHub, that names the workflow, the
+commit and the tag they were built from. The artefacts on Maven Central are signed with the key
+`39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8` (BSNSoft Solutions GmbH). The macOS
+executable is signed ad hoc and not notarised: downloaded with a browser, Gatekeeper blocks it
+until `xattr -dr com.apple.quarantine` is run on its directory; Homebrew sets no quarantine flag.

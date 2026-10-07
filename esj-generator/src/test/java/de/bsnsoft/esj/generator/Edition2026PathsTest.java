@@ -90,7 +90,7 @@ class Edition2026PathsTest {
      */
     private static final List<String> TEST_SOURCES = List.of(
             "bindings/typescript/test",
-            "bindings/csharp/En16931.SemanticJson.Tests");
+            "bindings/csharp/BSNSoft.Esj.Tests");
 
     /**
      * The extensions of the files that are not text and are therefore not read. Everything

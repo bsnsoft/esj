@@ -97,11 +97,11 @@ final class Pdfa {
      *
      * <p>The same string becomes the {@code Title} of the information dictionary and the
      * {@code dc:title} of the XMP packet, and it is cleaned once here so that the two are
-     * the same string rather than two cleanings of one value. A control character becomes a
-     * space — XML carries none of them and a title is one line — a character that directs
-     * the reading order becomes a space for the reason {@link Characters} gives, and half of
-     * a surrogate pair that lost its other half becomes a question mark, the way an
-     * unprintable character does on the page.
+     * the same string rather than two cleanings of one value. A title is one line, so a
+     * line end becomes a space; so do the tabulator, a control character — XML carries
+     * none of them — and a character that directs the reading order, for the reasons
+     * {@link Characters} gives; and half of a surrogate pair that lost its other half
+     * becomes a question mark, the way an unprintable character does on the page.
      *
      * @param text the value of the document, which may be {@code null}
      * @return the title, or {@code null} where there is nothing to say
@@ -110,19 +110,20 @@ final class Pdfa {
         if (text == null) {
             return null;
         }
-        StringBuilder title = new StringBuilder(text.length());
+        String line = Characters.oneLine(text);
+        StringBuilder title = new StringBuilder(line.length());
         int i = 0;
-        while (i < text.length()) {
-            char unit = text.charAt(i);
-            if (Character.isHighSurrogate(unit) && i + 1 < text.length()
-                    && Character.isLowSurrogate(text.charAt(i + 1))) {
-                title.append(unit).append(text.charAt(i + 1));
+        while (i < line.length()) {
+            char unit = line.charAt(i);
+            if (Character.isHighSurrogate(unit) && i + 1 < line.length()
+                    && Character.isLowSurrogate(line.charAt(i + 1))) {
+                title.append(unit).append(line.charAt(i + 1));
                 i += 2;
                 continue;
             }
             if (Character.isSurrogate(unit)) {
                 title.append('?');
-            } else if (unit < ' ' || unit == 0x7f || Characters.directional(unit)) {
+            } else if (unit == '\t') {
                 title.append(' ');
             } else {
                 title.append(unit);

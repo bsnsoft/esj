@@ -47,6 +47,18 @@ import java.util.regex.Pattern;
  * that element rather than the whole code — and the letter says which element it was
  * ({@link #remarks()}), because a reader who compares the page with what the code carries
  * is owed the difference.
+ *
+ * <p>The payload is one element per line, and the guideline ends a line with a line feed.
+ * A reader that ends one wherever Unicode does — at a carriage return, a vertical
+ * tabulator, a form feed, U+0085, U+2028 or U+2029 — would read an element that carries
+ * one of those as two, and every element after it one line too far down: the name of the
+ * beneficiary as the account, the account as the amount. So no element carries a
+ * character that ends a line, nor any other control character or character that directs
+ * the reading order, which the letter prints as a space and the code would carry as it
+ * stands; nor half of a surrogate pair, which the character set the payload declares
+ * cannot encode. An element of the document that holds one gets no code rather than a
+ * code that reads differently from the page, and the letter says which element it was
+ * ({@link #decide(SemanticDocument)}).
  */
 final class PaymentCode {
 
@@ -129,7 +141,57 @@ final class PaymentCode {
          * none. The guideline allows the element to be empty in this version, and a
          * payment into a well-formed IBAN needs nothing else.
          */
-        BIC_LEFT_OUT
+        BIC_LEFT_OUT,
+
+        /**
+         * The name of the beneficiary holds a character no element of the payload may
+         * carry — a line end, another control character, a character that directs the
+         * reading order — so there is no code. The name is what a banking application
+         * shows its user as the recipient, and it is not cut short or changed here.
+         */
+        NAME_NOT_WRITABLE,
+
+        /**
+         * The remittance information holds such a character, so there is no code. It is
+         * not replaced by the invoice number as a reference too long is: a text that
+         * carries a line end is not a text the code was too short for.
+         */
+        REMITTANCE_NOT_WRITABLE,
+
+        /**
+         * The invoice number, which the code carries as the reference where the document
+         * states none it can carry, holds such a character, so there is no code.
+         */
+        NUMBER_NOT_WRITABLE
+    }
+
+    /**
+     * What the guideline makes of a document: the code, or nothing; and where a code is
+     * withheld only because an element of the document holds a character no element of
+     * the payload may carry, which element it was.
+     *
+     * <p>The other conditions of the guideline cost the code without a word, because they
+     * are what the document is — a direct debit, a currency that is not the euro — and the
+     * letter has nothing to explain. A character that would turn one element into two is
+     * a different matter: the document states a credit transfer the code is for, and a
+     * reader who looks for the code on the page is owed the reason it is not there.
+     *
+     * @param code     the code, empty where there is none
+     * @param withheld why a code the document otherwise meets the conditions for was
+     *                 withheld, empty where it was not
+     */
+    record Decision(Optional<PaymentCode> code, Optional<Remark> withheld) {
+
+        /** The decision of a document that gets no code and is owed no reason. */
+        private static final Decision NONE = new Decision(Optional.empty(), Optional.empty());
+
+        private static Decision withheld(Remark remark) {
+            return new Decision(Optional.empty(), Optional.of(remark));
+        }
+
+        private static Decision of(Optional<PaymentCode> code) {
+            return code.isEmpty() ? NONE : new Decision(code, Optional.empty());
+        }
     }
 
     private final String payload;
@@ -170,8 +232,19 @@ final class PaymentCode {
      * @return the code, or nothing where the document does not meet the guideline
      */
     static Optional<PaymentCode> of(SemanticDocument document) {
+        return decide(document).code();
+    }
+
+    /**
+     * Returns the code of a document as {@link #of(SemanticDocument)} does, and where a
+     * code is withheld over a character an element may not carry, which element it was.
+     *
+     * @param document the document
+     * @return the decision
+     */
+    static Decision decide(SemanticDocument document) {
         if (!EURO.equals(value(document, SemanticPath.of("/BT-5")))) {
-            return Optional.empty();
+            return Decision.NONE;
         }
         for (SemanticPath instruction
                 : InvoiceLayout.instances(document, SemanticPath.root(), "BG-16")) {
@@ -186,30 +259,36 @@ final class PaymentCode {
             }
             return of(document, instruction, accounts.get(0));
         }
-        return Optional.empty();
+        return Decision.NONE;
     }
 
     /** Returns the code of one credit transfer account, or nothing where it is not one. */
-    private static Optional<PaymentCode> of(SemanticDocument document,
-                                            SemanticPath instruction, SemanticPath account) {
+    private static Decision of(SemanticDocument document, SemanticPath instruction,
+                               SemanticPath account) {
         String iban = value(document, InvoiceLayout.path(account, "BT-84"))
                 .replace(" ", "");
         if (!isIban(iban)) {
-            return Optional.empty();
+            return Decision.NONE;
         }
         String amount = value(document, SemanticPath.of("/BG-22/BT-115"));
         if (!isAmount(amount)) {
-            return Optional.empty();
+            return Decision.NONE;
         }
         String beneficiary = first(value(document, InvoiceLayout.path(account, "BT-85")),
                 value(document, SemanticPath.of("/BG-10/BT-59")),
                 value(document, SemanticPath.of("/BG-4/BT-27")));
         if (beneficiary.isEmpty()) {
-            return Optional.empty();
+            return Decision.NONE;
+        }
+        if (!writable(beneficiary)) {
+            return Decision.withheld(Remark.NAME_NOT_WRITABLE);
         }
         String number = value(document, SemanticPath.of("/BT-1"));
-        String remittance = first(value(document, InvoiceLayout.path(instruction, "BT-83")),
-                number);
+        String stated = value(document, InvoiceLayout.path(instruction, "BT-83"));
+        if (!writable(stated)) {
+            return Decision.withheld(Remark.REMITTANCE_NOT_WRITABLE);
+        }
+        String remittance = first(stated, number);
         String bic = value(document, InvoiceLayout.path(account, "BT-86"));
         List<Remark> remarks = new ArrayList<>();
         if (!bic.isEmpty() && !BIC.matcher(bic).matches()) {
@@ -229,20 +308,49 @@ final class PaymentCode {
             // transmits and the seller cannot reconcile on. The invoice number is the
             // one they do reconcile on, and it is what the code carries instead.
             if (number.isEmpty() || codePoints(number) > REMITTANCE_LIMIT) {
-                return Optional.empty();
+                return Decision.NONE;
             }
             remittance = number;
             remarks.add(Remark.REMITTANCE_REPLACED);
         }
-        return payload(bic, beneficiary, iban, amount, remittance)
+        if (!writable(remittance)) {
+            // Only the invoice number can be left here: the stated text was asked above.
+            return Decision.withheld(Remark.NUMBER_NOT_WRITABLE);
+        }
+        return Decision.of(payload(bic, beneficiary, iban, amount, remittance)
                 .flatMap(payload -> encoded(payload, List.copyOf(remarks), instruction,
-                        account));
+                        account)));
+    }
+
+    /**
+     * Tells whether an element can stand in the payload as it is: whether it holds no
+     * character that ends a line, no other control character — the tabulator among
+     * them — no character that directs the reading order, and no half of a surrogate pair.
+     *
+     * @param element the element
+     * @return whether it can be written
+     */
+    static boolean writable(String element) {
+        int i = 0;
+        while (i < element.length()) {
+            int codePoint = element.codePointAt(i);
+            if (Characters.lineEnd(codePoint) || Characters.commanding(codePoint)
+                    || Characters.directional(codePoint) || codePoint == '\t'
+                    || (codePoint >= Character.MIN_SURROGATE
+                            && codePoint <= Character.MAX_SURROGATE)) {
+                return false;
+            }
+            i += Character.charCount(codePoint);
+        }
+        return true;
     }
 
     /**
      * Returns the payload: the elements of the guideline, one per line, with the trailing
      * empty ones left off. An element that carries a line break of its own would be two
-     * elements to whoever reads the code back, so it is no payload at all.
+     * elements to whoever reads the code back, so it is no payload at all; the elements of
+     * the document have been asked by now, and this is the check that holds whatever the
+     * caller asked.
      *
      * <p>The purpose and the structured creditor reference are empty here. The guideline
      * allows a structured reference or an unstructured text and never both, and what this
@@ -253,7 +361,7 @@ final class PaymentCode {
         List<String> elements = new ArrayList<>(List.of(SERVICE_TAG, VERSION, CHARACTER_SET,
                 IDENTIFICATION, bic, beneficiary, iban, EURO + amount, "", "", remittance));
         for (String element : elements) {
-            if (element.indexOf('\n') >= 0 || element.indexOf('\r') >= 0) {
+            if (!writable(element)) {
                 return Optional.empty();
             }
         }
