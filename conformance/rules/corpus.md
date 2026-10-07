@@ -74,7 +74,8 @@ terms of the model and nothing else. Now the sentence has figures behind it.
 Every term those rules ask for is optional in the model, so adding one would make the minimal
 document no longer minimal, which is the whole of what it demonstrates.
 `smallest-valid.esj.json` is where the trade is made instead: the same values plus the four terms
-these rules ask for, and this pack is silent about it.
+these rules ask for and the invoice total VAT amount, which the UBL syntax requires, and this
+pack is silent about it.
 
 One of the fifteen is a finding no other tool of this release reports. `BR-CO-25` is a rule the
 standard states in clause 6.4.2 and the validation artefacts of release 1.3.16 do not carry, so a

@@ -479,10 +479,10 @@
         "model/xrechnung/3.0.2.json",
         "model/b2c/0.1.json"
       ],
-      "values": 27,
-      "canonicalBytes": 775,
-      "semanticDigest": "1da9ad909f77c893e00b308634a7d789768f4c7da316d16851e1f4c65822ce74",
-      "documentDigest": "9e170680e744ef59fc67bd0211a8c6ea63e714475c3c59345066446f6ca5d730"
+      "values": 28,
+      "canonicalBytes": 795,
+      "semanticDigest": "8d119b1249d35e3d87a806eb2c87343b05374962f688d4e8f9de6341ef476a35",
+      "documentDigest": "9118836ee083d3e75bbbad25f6dc8f1d7c87d85a93e0156e7534be347ab15a5c"
     },
     {
       "file": "examples/standard-invoice.esj.json",

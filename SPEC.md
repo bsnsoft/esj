@@ -1740,12 +1740,14 @@ A message may quote the document it is about: the value that spells no date, the
 that is not defined. That fragment is content a stranger wrote (section 12.6), so a validator
 MUST escape it before putting it in a message: a backslash as `\\`, a quotation mark as `\"`, a
 line feed, a carriage return and a tab as `\n`, `\r` and `\t`, and every other C0 control, the
-delete character and the bidirectional formatting characters as `\uXXXX`. A message is then safe
-to write to a terminal or a log line as it stands, an escape sequence in a value cannot rewrite
-the line a reader sees, and a quotation mark in one cannot forge the rest of a location. The
-escaping is reversible, but a caller that wants the characters the document carries reads the
-document at the finding's `path` — or, where the path is empty, at the member its `subject` names
-— rather than parsing the message: `code`, `path` and `subject` are what a program reacts to, and
+delete character, every C1 control (U+0080 to U+009F), the line separator U+2028, the paragraph
+separator U+2029 and the bidirectional formatting characters (U+061C, U+200E, U+200F, U+202A to
+U+202E, U+2066 to U+2069) as `\uXXXX`. A message is then safe to write to a terminal or a log
+line as it stands, an escape sequence in a value cannot rewrite the line a reader sees, and a
+quotation mark in one cannot forge the rest of a location. The escaping is reversible, but a
+caller that wants the characters the document carries reads the document at the finding's
+`path` — or, where the path is empty, at the member its `subject` names — rather than parsing the
+message: `code`, `path` and `subject` are what a program reacts to, and
 the message is for a person. Only the message is held to an excerpt: `subject` is one of the
 three fields a program reacts to and carries its name whole.
 

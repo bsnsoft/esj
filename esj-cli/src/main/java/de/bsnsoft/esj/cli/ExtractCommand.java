@@ -28,7 +28,7 @@ import picocli.CommandLine.Parameters;
         description = "Write the electronic invoice of a PDF to a file or to the standard"
                 + " output, or list what the PDF carries.",
         sortOptions = false)
-final class ExtractCommand implements Callable<Integer> {
+final class ExtractCommand implements Callable<Integer>, ReadsADocument {
 
     @Mixin
     private final GlobalFlags flags;

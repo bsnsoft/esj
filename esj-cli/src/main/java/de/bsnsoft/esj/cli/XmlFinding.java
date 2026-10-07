@@ -62,6 +62,14 @@ record XmlFinding(String category, String code, String message) {
      */
     static XmlFinding encoding(XrEncodingException refused) {
         Objects.requireNonNull(refused, "refused");
+        if (!refused.repairable()) {
+            return new XmlFinding(XML, XML_ENCODING,
+                    "the bytes of this document are not written in the encoding it declares:"
+                            + " declared " + refused.declared().orElse("nothing")
+                            + ", and the bytes do not decode in it nor in a charset this tool"
+                            + " recodes from; the document is invalid as it stands, and no"
+                            + " recoding of it is offered");
+        }
         return new XmlFinding(XML, XML_ENCODING,
                 "the bytes of this document are not written in the encoding it declares:"
                         + " declared " + refused.declared().orElse("nothing")

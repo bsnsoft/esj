@@ -12,10 +12,12 @@ import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportResult;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
@@ -222,8 +224,149 @@ class XmlEncodingTest {
         assertFalse(report.repairable());
     }
 
+    /**
+     * Bytes that are not written in the charset the document names, and not in one this
+     * module recodes from either: a Japanese declaration over a lead byte that starts no
+     * character, the same in EUC-JP, and ASCII over a byte of Latin-1. A parser would read
+     * them in the declared charset with a replacement character where they do not decode,
+     * and say nothing; so neither mode hands them to one.
+     */
+    @ParameterizedTest
+    @MethodSource("undecodable")
+    void refusesBytesThatDecodeNeitherInTheirCharsetNorInOneItRecodes(String charset,
+                                                                      byte[] broken) {
+        byte[] document = spliced(declaring(named(PLAIN), charset), charset, broken);
+
+        XmlEncodingReport report = XmlBytes.inspect(document);
+        assertEquals(Optional.of(charset), report.declaration());
+        assertEquals(charset, report.assumed());
+        assertFalse(report.consistent());
+        assertFalse(report.decodes());
+        assertFalse(report.repairable());
+        assertTrue(report.describe().contains("do not decode in " + charset), report.describe());
+
+        for (XrImporter importer : List.of(repairing, strict)) {
+            XrEncodingException thrown = assertThrows(XrEncodingException.class,
+                    () -> importer.importUblWithReport(document));
+            assertFalse(thrown.repairable(), thrown.getMessage());
+            assertEquals(Optional.of(charset), thrown.declared());
+            assertTrue(thrown.getMessage().contains(charset), thrown.getMessage());
+            assertTrue(thrown.getMessage().contains("so it was not read"), thrown.getMessage());
+        }
+    }
+
+    static List<Arguments> undecodable() {
+        return List.of(
+                Arguments.of("Shift_JIS",
+                        new byte[] {(byte) 0x82, (byte) 0xFF}),
+                Arguments.of("EUC-JP",
+                        new byte[] {(byte) 0xA1, (byte) 0x20}),
+                Arguments.of("US-ASCII",
+                        new byte[] {(byte) 0xFC}));
+    }
+
+    @Test
+    void readsADocumentWrittenInTheJapaneseCharsetItDeclares() {
+        String seller = "株式会社 例";
+        byte[] document = encode(declaring(named(seller), "Shift_JIS"), "Shift_JIS");
+
+        XmlEncodingReport report = XmlBytes.inspect(document);
+        assertTrue(report.consistent(), report.describe());
+        assertTrue(report.decodes());
+
+        for (XrImporter importer : List.of(repairing, strict)) {
+            ImportResult result = importer.importUblWithReport(document);
+            assertEquals(SemanticValue.of(seller), value(result.document(), SELLER));
+            assertEquals(List.of(), result.report().notes(ImportNote.Kind.ENCODING_REPAIRED));
+        }
+    }
+
+    @Test
+    void readsUtf8BytesThatDeclareAnotherCharsetAsUtf8AndSaysSo() {
+        byte[] document = encode(declaring(named(UMLAUT), "US-ASCII"), "UTF-8");
+
+        XmlEncodingReport report = XmlBytes.inspect(document);
+        assertEquals("UTF-8", report.assumed());
+        assertFalse(report.consistent());
+        assertTrue(report.repairable());
+
+        ImportResult result = repairing.importUblWithReport(document);
+        assertEquals(SemanticValue.of(UMLAUT), value(result.document(), SELLER));
+        assertTrue(result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).get(0).message()
+                .contains("declared US-ASCII, read as UTF-8"));
+        XrEncodingException thrown =
+                assertThrows(XrEncodingException.class, () -> strict.importUbl(document));
+        assertTrue(thrown.repairable());
+    }
+
+    @Test
+    void readsAByteWindows1252LeavesUndefinedAsLatin1RatherThanReplacingIt() {
+        byte[] document = spliced(declaring(named(PLAIN), "windows-1252"), "windows-1252",
+                new byte[] {(byte) 0x81});
+
+        XmlEncodingReport report = XmlBytes.inspect(document);
+        assertEquals("ISO-8859-1", report.assumed());
+        assertFalse(report.consistent());
+        assertTrue(report.repairable());
+
+        ImportResult result = repairing.importUblWithReport(document);
+        assertEquals(SemanticValue.of(PLAIN.replace(" ", " " + (char) 0x81)),
+                value(result.document(), SELLER));
+        assertEquals(1, result.report().notes(ImportNote.Kind.ENCODING_REPAIRED).size());
+        assertThrows(XrEncodingException.class, () -> strict.importUbl(document));
+    }
+
+    @Test
+    void refusesBytesBehindAByteOrderMarkThatTheMarkDoesNotSpell() {
+        byte[] utf8 = spliced("﻿" + withoutDeclaration(named(PLAIN)), "UTF-8",
+                new byte[] {(byte) 0xC3, (byte) 0x28});
+        byte[] wide = encode(named(PLAIN), "UTF-16LE");
+        // A byte order mark, and one byte too many at the end: half a code unit.
+        byte[] utf16 = concat(new byte[] {(byte) 0xFF, (byte) 0xFE},
+                Arrays.copyOf(wide, wide.length + 1));
+
+        for (byte[] document : List.of(utf8, utf16)) {
+            XmlEncodingReport report = XmlBytes.inspect(document);
+            assertTrue(report.byteOrderMark().isPresent(), report.describe());
+            assertFalse(report.decodes(), report.describe());
+            assertFalse(report.consistent());
+            for (XrImporter importer : List.of(repairing, strict)) {
+                XrEncodingException thrown = assertThrows(XrEncodingException.class,
+                        () -> importer.importUblWithReport(document));
+                assertFalse(thrown.repairable(), thrown.getMessage());
+            }
+        }
+    }
+
+    @Test
+    void aConsistentReportOfBytesThatDoNotDecodeIsAContradiction() {
+        assertThrows(IllegalArgumentException.class, () -> new XmlEncodingReport(
+                Optional.empty(), Optional.of("Shift_JIS"), "Shift_JIS", true, false));
+        assertTrue(new XmlEncodingReport(Optional.empty(), Optional.empty(), "UTF-8", true)
+                .decodes(), "the report of the earlier shape decodes");
+    }
+
     static List<String> corpus() {
         return Conformance.corpus();
+    }
+
+    /**
+     * Returns a document in a charset with a byte sequence put into the seller name, after
+     * its first word, where the parser decodes it.
+     */
+    private static byte[] spliced(String document, String charset, byte[] sequence) {
+        String marker = "Example ";
+        int at = document.indexOf(marker);
+        Charset encoding = Charset.forName(charset);
+        byte[] before = document.substring(0, at + marker.length()).getBytes(encoding);
+        byte[] after = document.substring(at + marker.length()).getBytes(encoding);
+        return concat(concat(before, sequence), after);
+    }
+
+    private static byte[] concat(byte[] first, byte[] second) {
+        byte[] joined = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, joined, first.length, second.length);
+        return joined;
     }
 
     /** The credit note fixture with the seller name replaced by one that carries umlauts. */

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.exc.StreamConstraintsException;
 import com.fasterxml.jackson.core.exc.StreamReadException;
+import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.TermKind;
@@ -264,19 +265,14 @@ public final class Registry {
     }
 
     /**
-     * Returns a fragment of a registry file short enough to put into a message. A
-     * registry travels between parties like a document does, so its content does not get
-     * to decide how long a log line is (specification, section 12.6).
+     * Returns a fragment of a registry file in the form a message may carry it: short, and
+     * escaped as {@link Esj#forMessage(String, int)} escapes a fragment of a document. A
+     * registry travels between parties like a document does, so its content decides
+     * neither how long a log line is nor what the line looks like on a terminal
+     * (specification, section 12.6).
      */
     private static String excerpt(String value) {
-        if (value.length() <= MESSAGE_EXCERPT) {
-            return value;
-        }
-        int end = MESSAGE_EXCERPT;
-        if (Character.isHighSurrogate(value.charAt(end - 1))) {
-            end--;
-        }
-        return value.substring(0, end) + "...";
+        return Esj.forMessage(value, MESSAGE_EXCERPT);
     }
 
     private static JsonFactory factory() {

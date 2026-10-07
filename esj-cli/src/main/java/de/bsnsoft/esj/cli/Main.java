@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UncheckedIOException;
+import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.IntConsumer;
@@ -142,8 +144,29 @@ public final class Main {
      */
     static int run(String[] args, InputStream in, OutputStream out, OutputStream err,
                    IntConsumer halt, Map<String, String> environment) {
+        return run(args, in, out, err, halt, environment, GlobalOptions.DEFAULT_MAX_RUNTIME);
+    }
+
+    /**
+     * Runs the tool with a default deadline of the caller's choosing, for a test that
+     * watches the default fire without waiting five minutes for it.
+     *
+     * @param args              the command line
+     * @param in                the stream a file name of {@code -} reads from
+     * @param out               the stream a document is written to
+     * @param err               the stream diagnostics, warnings and errors are written to
+     * @param halt              what ends the process when the deadline passes
+     * @param environment       the environment variables the run reads its settings from
+     * @param defaultMaxRuntime the deadline of a command that reads a document where
+     *                          {@code --max-runtime} names none
+     * @return one of the codes of {@link ExitCode}
+     */
+    static int run(String[] args, InputStream in, OutputStream out, OutputStream err,
+                   IntConsumer halt, Map<String, String> environment,
+                   Duration defaultMaxRuntime) {
         GlobalOptions options = new GlobalOptions();
         options.environment(environment);
+        options.defaultMaxRuntime(defaultMaxRuntime);
         Console console = new Console(in, out, err, options);
         // Before anything opens a PDF: the diagnostics of the PDF library belong to this
         // tool's output and not to whatever the virtual machine was configured with.
@@ -166,6 +189,15 @@ public final class Main {
         command.setExecutionExceptionHandler(
                 (exception, line, parseResult) -> report(exception, console));
         command.setParameterExceptionHandler((exception, unused) -> usage(exception, console));
+        // Every command that reads a document holds a deadline, whether or not the caller
+        // wrote one: --max-runtime arms the watchdog as it is parsed, and where it named
+        // no number the default is armed here, after the parse and before the command.
+        command.setExecutionStrategy(parsed -> {
+            if (readsADocument(parsed)) {
+                options.armDefaultMaxRuntime();
+            }
+            return new picocli.CommandLine.RunLast().execute(parsed);
+        });
         RuntimeLimit deadline = new RuntimeLimit(console, halt);
         options.onRuntimeLimit(deadline::arm);
         long started = System.nanoTime();
@@ -189,6 +221,12 @@ public final class Main {
             console.flush();
             PdfBoxLogging.route(null);
         }
+    }
+
+    /** Tells whether the command a command line runs is one that reads a document. */
+    private static boolean readsADocument(picocli.CommandLine.ParseResult parsed) {
+        List<picocli.CommandLine> chain = parsed.asCommandLineList();
+        return chain.get(chain.size() - 1).getCommand() instanceof ReadsADocument;
     }
 
     /**

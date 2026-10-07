@@ -67,11 +67,11 @@ with `--memory=768m` gives a heap of about 460 MiB and leaves the rest for every
 outside the heap. Set one of the two, not two that disagree.
 
 The tool also has `--max-runtime <duration>` — `500ms`, `90s`, `5m` or a bare number of
-seconds — which leaves with exit code 7 when the deadline passes. `esj validate` spends the
-time step by step and stops itself, naming the step it ran out in; behind that, and for the
-commands that hold no deadline of their own, a watchdog ends the process half a second later
-whatever state it is in. It is a fallback for callers that cannot kill — a cron line, a shell
-without a timeout — and not the model.
+seconds, five minutes for every command that reads a document where none is given — which leaves
+with exit code 7 when the deadline passes. `esj validate` spends the time step by step and stops
+itself, naming the step it ran out in; behind that, and for every other command, a watchdog ends
+the process half a second later whatever state it is in. It is a fallback for callers that
+cannot kill — a cron line, a shell without a timeout — and not the model.
 
 ## Why a process and not a cancelled task
 
@@ -193,7 +193,7 @@ stops working, on one machine that is named there. The short form:
 |---|---|---|---|
 | the conformance corpus, up to a few hundred kilobytes | `256m` | default | well under a second |
 | up to a few megabytes of XML | `512m` | `large` past 4 MiB | well under a second; a few seconds under `--importer xslt` |
-| tens of megabytes of XML | `512m` to `1g`, by the number of values | `large` | two to four seconds; minutes under `--importer xslt` |
+| tens of megabytes of XML | `512m` to `1g`, by the number of values | `large` | two to four seconds; minutes under `--importer xslt`, past the five-minute default of `--max-runtime` from about 40 MB |
 | an ESJ document already converted | `512m` | `large` past 64 MiB | about a second for half a million values |
 | a PDF carrying one of those, up to 64 MiB | `512m` | `large` past 64 MiB | the file, then the attachment, then the row above it |
 | **writing** a cross industry invoice from tens of megabytes of XML | `2g` | `large` | five to nine seconds; `convert --to cii` builds the whole output tree, so it costs about three times what reading the same document costs |

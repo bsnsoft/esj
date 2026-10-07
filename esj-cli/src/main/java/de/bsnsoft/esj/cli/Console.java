@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.Esj;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -130,7 +132,7 @@ final class Console {
 
     /** Writes one line to the standard output. */
     void line(String text) {
-        print(text + "\n");
+        print(terminalSafe(text) + "\n");
     }
 
     /** Writes one empty line to the standard output. */
@@ -149,7 +151,7 @@ final class Console {
      */
     void diagnostic(String text) {
         flush(out);
-        write(err, (text + "\n").getBytes(StandardCharsets.UTF_8));
+        write(err, (terminalSafe(text) + "\n").getBytes(StandardCharsets.UTF_8));
         flush(err);
     }
 
@@ -170,8 +172,54 @@ final class Console {
      * @param text the line, without its line ending
      */
     void deadline(String text) {
-        write(err, (text + "\n").getBytes(StandardCharsets.UTF_8));
+        write(err, (terminalSafe(text) + "\n").getBytes(StandardCharsets.UTF_8));
         flush(err);
+    }
+
+    /**
+     * Returns a line of text with every character of {@link Esj#steersATerminal(int)}
+     * written as an escape, apart from the line feed and the tab, which are how this tool
+     * lays out what it writes.
+     *
+     * <p>This is the last guard and not the first. Whatever quotes a document escapes the
+     * fragment where it quotes it — {@link ValueText}, the messages of the validator — and
+     * that escaping is reversible because it escapes the backslash as well. What reaches
+     * this point unescaped is content no command chose to quote: a library naming the
+     * element it stopped at, an exception carrying a name out of a file. It is stopped
+     * here, so that no line this tool writes moves the cursor, starts a control sequence or
+     * reverses the reading order of what a person reads off a terminal. A carriage return
+     * becomes {@code \r}; every other such character becomes {@code \}{@code uXXXX}.
+     *
+     * @param text the line, possibly carrying line feeds of its own
+     * @return the line as it is written
+     */
+    static String terminalSafe(String text) {
+        int first = -1;
+        for (int i = 0; i < text.length(); i++) {
+            if (escapedHere(text.charAt(i))) {
+                first = i;
+                break;
+            }
+        }
+        if (first < 0) {
+            return text;
+        }
+        StringBuilder safe = new StringBuilder(text.length() + 16).append(text, 0, first);
+        for (int i = first; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (!escapedHere(c)) {
+                safe.append(c);
+            } else if (c == '\r') {
+                safe.append("\\r");
+            } else {
+                safe.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
+            }
+        }
+        return safe.toString();
+    }
+
+    private static boolean escapedHere(char c) {
+        return c != '\n' && c != '\t' && Esj.steersATerminal(c);
     }
 
     /** Writes a warning to the standard error stream. */

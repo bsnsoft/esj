@@ -68,7 +68,7 @@ import picocli.CommandLine.Parameters;
         description = "Read a UBL, CII or ESJ document, or a PDF carrying one of them, and"
                 + " write it as ESJ or as a cross industry invoice.",
         sortOptions = false)
-final class ConvertCommand implements Callable<Integer> {
+final class ConvertCommand implements Callable<Integer>, ReadsADocument {
 
     /** How many distinct warning lines the error stream carries without {@code --verbose}. */
     private static final int NOTE_LINES = 20;

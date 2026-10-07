@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.function.IntConsumer;
 
@@ -73,6 +74,18 @@ final class Cli {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         int code = Main.run(args, stdin, out, err, halt, environment);
+        return new Run(code, out.toByteArray(), err.toString(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Runs the tool with the deadline a command that reads a document holds where the
+     * caller names none shortened, so that a test can watch it fire.
+     */
+    static Run runWithDefaultMaxRuntime(Duration defaultMaxRuntime, InputStream stdin,
+                                        IntConsumer halt, String... args) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        int code = Main.run(args, stdin, out, err, halt, Map.of(), defaultMaxRuntime);
         return new Run(code, out.toByteArray(), err.toString(StandardCharsets.UTF_8));
     }
 

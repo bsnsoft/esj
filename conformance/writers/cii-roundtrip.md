@@ -129,7 +129,8 @@ never built to satisfy:
 The three documents are `minimal.esj.json` and the two built from its values, and
 `examples/README.md` names those rules as the ones a document of only the mandatory terms
 cannot satisfy. `smallest-valid.esj.json` is the same document with the four terms they ask
-for, and the artefacts report nothing about it.
+for and the invoice total VAT amount, which the UBL syntax requires, and the artefacts report
+nothing about it.
 
 ## Where the syntax draws a distinction the model does not
 

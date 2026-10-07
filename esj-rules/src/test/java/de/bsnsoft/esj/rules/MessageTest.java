@@ -100,6 +100,24 @@ class MessageTest {
         assertEquals("BT-1 carries RE\\t2026\\u202E0001\\n\\\"x\\\"\\\\.", message);
     }
 
+    /**
+     * The characters that steer a terminal and that are no C0 control: a C1 control (CSI,
+     * NEXT LINE), the line and paragraph separators, and the Arabic letter mark, which
+     * reorders a run of digits beside it. They are escaped like the rest, because this
+     * module asks the one question {@code esj-core} asks.
+     */
+    @Test
+    void aCharacterBeyondTheC0RangeThatSteersATerminalIsEscapedAsWell() {
+        String odd = "RE" + (char) 0x9b + "2K" + (char) 0x85 + "1" + (char) 0x2028 + "2"
+                + (char) 0x2029 + "3" + (char) 0x061c + "4" + (char) 0x7f;
+        SemanticDocument document = Documents.set(Documents.minimal(), "/BT-1", odd).build();
+
+        String message = messageOf(document, rule("{\"const\": false}", "BT-1 carries {/BT-1}."));
+
+        assertEquals("BT-1 carries RE\\u009B2K\\u00851\\u20282\\u20293\\u061C4\\u007F.",
+                message);
+    }
+
     @Test
     void aMessageThatNamesATermNobodyHasIsADefectOfThePack() {
         RulePackException refused = assertThrows(RulePackException.class,

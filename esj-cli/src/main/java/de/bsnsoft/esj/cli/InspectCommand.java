@@ -49,7 +49,7 @@ import picocli.CommandLine.Parameters;
                 + " to, and what validation says about it. For a PDF it also says what the"
                 + " container carries and what it declares about it.",
         sortOptions = false)
-final class InspectCommand implements Callable<Integer> {
+final class InspectCommand implements Callable<Integer>, ReadsADocument {
 
     /** The width the labels are padded to. */
     private static final int LABEL_WIDTH = 28;

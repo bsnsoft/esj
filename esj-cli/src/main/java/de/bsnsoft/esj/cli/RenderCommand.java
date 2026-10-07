@@ -18,7 +18,6 @@ import de.bsnsoft.esj.xr.XrImporter;
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -61,22 +60,10 @@ import picocli.CommandLine.Spec;
         description = "Write a document as a PDF, or with --html as one self-contained HTML"
                 + " page, for a human reader.",
         sortOptions = false)
-final class RenderCommand implements Callable<Integer> {
+final class RenderCommand implements Callable<Integer>, ReadsADocument {
 
     /** How many notes of the export report are printed before they are counted instead. */
     private static final int NOTE_LINES = 20;
-
-    /**
-     * How long a rendering may take where the caller named no number of its own.
-     *
-     * <p>A renderer draws until the document is drawn. The PDF rendering builds every
-     * page in memory before the first byte is written, so a document that is inside every
-     * bound of the input can still be one whose rendering is not: a value of a megabyte
-     * in a narrow column is four hundred pages, and fifty of them are a heap. A deadline
-     * is the bound that fits a command whose cost is in the drawing rather than in the
-     * reading, and this is the one it has when nobody chose another.
-     */
-    private static final Duration DEFAULT_MAX_RUNTIME = Duration.ofMinutes(5);
 
     @Mixin
     private final GlobalFlags flags;
@@ -196,7 +183,6 @@ final class RenderCommand implements Callable<Integer> {
                     + " this run embeds nothing; nothing was validated");
         }
 
-        console.options().defaultMaxRuntime(DEFAULT_MAX_RUNTIME);
         Deadline deadline = Deadline.of(console.options().maxRuntime());
         Input input = Input.read(file, console);
         Loaded loaded = Loaded.read(input, Options.from(from), extensions, console);

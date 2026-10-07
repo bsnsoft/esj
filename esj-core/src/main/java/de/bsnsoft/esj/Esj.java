@@ -136,8 +136,9 @@ public final class Esj {
      * terminal, break the line or close a quotation replaced by an escape.
      *
      * <p>A backslash becomes {@code \\}, a quotation mark {@code \"}, a line feed
-     * {@code \n}, a carriage return {@code \r} and a tab {@code \t}; every other C0
-     * control, the delete character and the bidirectional formatting characters become
+     * {@code \n}, a carriage return {@code \r} and a tab {@code \t}; every other character
+     * of {@link #steersATerminal(int)} — the C0 and C1 controls, the delete character, the
+     * line and paragraph separators and the bidirectional formatting characters — becomes
      * {@code \}{@code uXXXX}. That list is the one the specification, section 9.5
      * requires of a finding message, and section 12.6 is the reason for it: a value is
      * content a stranger wrote, an escape sequence inside one rewrites the line a
@@ -254,16 +255,54 @@ public final class Esj {
     }
 
     /**
-     * Tells whether a character steers a terminal rather than saying something: a C0
-     * control, the delete character, or one of the bidirectional formatting characters
-     * that reorder the text around them.
+     * Tells whether a character steers a terminal rather than saying something, which makes
+     * it a character that no text of this implementation writes out as it stands: a C0
+     * control, the delete character, a C1 control (U+0080 to U+009F, among them U+0085 NEXT
+     * LINE), the line separator U+2028, the paragraph separator U+2029, or one of the
+     * bidirectional formatting characters of {@link #isBidiControl(int)}.
+     *
+     * <p>This is the one definition of that set. The message escaping of
+     * {@link #forMessage(String, int)} and {@link #forSubject(String)} writes each of these
+     * characters as an escape (specification, section 9.5), and every other text this
+     * implementation writes a fragment of a document into — the messages of the rule engine
+     * and of the PDF container checks, the lines of the command line tool — asks the same
+     * question here, so that no output lets through what another one escapes. A C0 or C1
+     * control rewrites the line a terminal shows; the two separators and U+0085 start a new
+     * line where a reader of line-oriented output expects none; a bidirectional control
+     * reverses the reading order of the text around it, so that a number or an identifier
+     * reads differently from what the document carries.
+     *
+     * <p>The line feed, the carriage return and the tab belong to the set as well. An
+     * escaper writes those three by name ({@code \n}, {@code \r}, {@code \t}) rather than
+     * by code point, which is a matter of spelling and not of membership.
+     *
+     * @param codePoint a Unicode code point, or a UTF-16 code unit
+     * @return {@code true} if the character is written as an escape
      */
-    private static boolean steersATerminal(char c) {
-        return c < 0x20
-                || c == 0x7F
-                || c == '‎' || c == '‏'
-                || (c >= '‪' && c <= '‮')
-                || (c >= '⁦' && c <= '⁩');
+    public static boolean steersATerminal(int codePoint) {
+        return codePoint < 0x20
+                || (codePoint >= 0x7F && codePoint <= 0x9F)
+                || codePoint == 0x2028
+                || codePoint == 0x2029
+                || isBidiControl(codePoint);
+    }
+
+    /**
+     * Tells whether a character is one of the bidirectional formatting characters: U+061C
+     * ARABIC LETTER MARK, U+200E LEFT-TO-RIGHT MARK, U+200F RIGHT-TO-LEFT MARK, the
+     * embeddings and overrides U+202A to U+202E, and the isolates U+2066 to U+2069. They are
+     * the characters of the Unicode property {@code Bidi_Control}: invisible, and each of
+     * them changes the order in which the characters around it are displayed.
+     *
+     * @param codePoint a Unicode code point, or a UTF-16 code unit
+     * @return {@code true} if the character is a bidirectional formatting character
+     */
+    public static boolean isBidiControl(int codePoint) {
+        return codePoint == 0x061C
+                || codePoint == 0x200E
+                || codePoint == 0x200F
+                || (codePoint >= 0x202A && codePoint <= 0x202E)
+                || (codePoint >= 0x2066 && codePoint <= 0x2069);
     }
 
     /**

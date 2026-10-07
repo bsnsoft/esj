@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.networknt.schema.Error;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.Schema;
@@ -12,6 +15,7 @@ import com.networknt.schema.SpecificationVersion;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -168,17 +172,21 @@ class RuleSchemaTest {
         assertEquals(List.of(), validate(BundledPackTest.bundledPackFile()));
     }
 
-    /** The rule files of the bundled pack, as its manifest names them. */
+    /**
+     * The rule files of the bundled pack, as its manifest names them: read out of the
+     * manifest rather than written down here, so that a file the pack gains is a file this
+     * test checks.
+     */
     static List<String> bundledRuleFiles() {
-        return List.of("br.json", "br-cl.json", "br-co.json", "br-dec.json", "vat-ae.json",
-                "vat-e.json", "vat-g.json", "vat-ic.json", "vat-ig.json", "vat-ip.json",
-                "vat-o.json", "vat-s.json", "vat-z.json");
+        List<String> files = manifestFiles(BundledPackTest.bundledPackFile());
+        assertFalse(files.isEmpty(), "the manifest names no rule file");
+        return files;
     }
 
     @ParameterizedTest
     @MethodSource("bundledRuleFiles")
     void aRuleFileOfTheRepositoryValidatesAgainstItsOwnSchema(String name) {
-        String resource = "packs/en16931/1.3.16/rules/" + name;
+        String resource = "packs/en16931/1.3.16/" + name;
         try (InputStream in = RulePacks.class.getResourceAsStream(resource)) {
             assertTrue(in != null, "this build carries no " + resource);
             assertEquals(List.of(),
@@ -187,5 +195,33 @@ class RuleSchemaTest {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Returns the members of the {@code files} array of a pack manifest, the paths of its
+     * rule files relative to the manifest.
+     *
+     * @param manifest the text of a {@code pack.json}
+     * @return the paths, in the order the manifest names them
+     */
+    static List<String> manifestFiles(String manifest) {
+        List<String> files = new ArrayList<>();
+        try (JsonParser parser = new JsonFactory().createParser(manifest)) {
+            parser.nextToken();
+            while (parser.nextToken() == JsonToken.FIELD_NAME) {
+                String member = parser.currentName();
+                parser.nextToken();
+                if (!"files".equals(member)) {
+                    parser.skipChildren();
+                    continue;
+                }
+                while (parser.nextToken() == JsonToken.VALUE_STRING) {
+                    files.add(parser.getText());
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return files;
     }
 }

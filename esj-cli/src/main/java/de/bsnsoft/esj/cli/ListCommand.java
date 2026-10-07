@@ -37,7 +37,7 @@ import picocli.CommandLine.Parameters;
         description = "List every semantic path of a document with the semantic data type of"
                 + " its term and its content.",
         sortOptions = false)
-final class ListCommand implements Callable<Integer> {
+final class ListCommand implements Callable<Integer>, ReadsADocument {
 
     /** What stands in the datatype column for a term no loaded registry describes. */
     private static final String UNKNOWN_DATATYPE = "-";

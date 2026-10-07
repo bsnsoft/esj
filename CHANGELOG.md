@@ -6,6 +6,59 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.5] — unreleased
 
+### Added
+
+- The rule files of both bundled packs, as their manifests name them, are validated against
+  `rules/rule.schema.json` on every build; the 2026 pack's test is part of what
+  `bin/without-edition-2026.sh` removes.
+
+### Changed
+
+- One set of characters that steer a terminal, `Esj.steersATerminal(int)` and
+  `Esj.isBidiControl(int)` in `esj-core`, is used by every text output: the messages of
+  `esj-core`, `esj-rules` and `esj-pdf`, the lines of `esj list`, `esj inspect`, `esj diff`,
+  `esj extract --list` and of every report, and the error stream. The JSON reports write the same
+  characters as JSON escapes. Until now `list`, `inspect` and `diff` wrote C1 controls (CSI,
+  NEXT LINE), U+061C, U+2028 and U+2029 as they stood, and a message of a registry quoted its
+  content unescaped. `esj get` still writes a value raw.
+- Every command that reads a document holds the five-minute deadline where `--max-runtime` names
+  none: `convert`, `upgrade`, `inspect`, `extract`, `get`, `list`, `diff`, `canonicalize`, and
+  `embed` without `--verapdf`, as `validate` and `render` did. Exit code 7 and no verdict. Over
+  `conformance/scale` (80 MB of UBL and CII, rich and dense lines, `--limits large`) each of them
+  ends in 2 to 22 s; `--importer xslt` takes 2 minutes over 25 MB and needs a larger
+  `--max-runtime` from about 40 MB.
+- `examples/smallest-valid.esj.json` states BT-110 (0): it is `VALID` through both syntaxes, where
+  `--via ubl` said `INDETERMINATE` (exit code 9) because UBL requires the tax amount beside a VAT
+  breakdown. It has 28 terms, and removing any of them ends the verdict through one of the two.
+- `XmlEncodingReport` has `decodes()` and `XrEncodingException` has `repairable()`; the earlier
+  constructors stay.
+
+### Fixed
+
+- A document whose bytes do not decode in the charset it declares and are none of UTF-8, UTF-16,
+  ISO-8859-1 and Windows-1252 — Shift_JIS or EUC-JP over bytes that spell no character of it,
+  US-ASCII over Latin-1 — was read with U+FFFD where the bytes did not decode, without the note
+  `ENCODING_REPAIRED` and under `--strict` as well, by every command but `validate`. Both readers
+  now refuse it in either mode: exit code 2 naming the charset, and `XML-ENCODING` under
+  `esj validate`. The same holds behind a byte order mark whose charset the bytes do not spell.
+  Bytes that are UTF-8 under another declaration are read as UTF-8, and a byte Windows-1252
+  leaves undefined as ISO-8859-1, each with the note.
+- No XML parser of the platform is handed bytes it cannot decode, so none writes a line of its own
+  (`[Fatal Error] …`) to the error stream. A document declaring UTF-8 with such a byte before its
+  root element was refused by every command as being of no syntax this tool reads; it is now
+  recoded with the note, like any other.
+- `docs/cli.md`: `esj extract --out` follows a symbolic link at the path the caller names.
+  `docs/validation-measurements.md`: the official Schematron is superlinear where a line-level
+  assertion fails on every line.
+
+### Format
+
+- `SPEC.md` section 9.5 names every character a finding message and a `subject` escape as
+  `\uXXXX`: besides the C0 controls and DEL, every C1 control (U+0080–U+009F), U+2028, U+2029
+  and the bidirectional formatting characters, listed as U+061C, U+200E, U+200F, U+202A–U+202E
+  and U+2066–U+2069. The reference implementation let the C1 controls and the two separators
+  through, and U+061C in the messages of `esj-core`.
+
 ## [0.9.4] — 2026-10-07
 
 ### Added

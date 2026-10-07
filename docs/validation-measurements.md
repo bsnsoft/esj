@@ -77,27 +77,33 @@ Where the time went:
 | `en16931-ubl-schematron` | 5.7 s | 15.3 s |
 | `xrechnung-ubl-schematron` | 67.9 s | 6.6 s |
 
-Neither run came close to ten minutes, and neither needed more than about one and a half
-gigabytes of resident memory.
-
-The striking figure is the last column of the first row. The smaller document took three times
-as long as the larger one, because the two rows differ in what is *in* a line and not only in
-how many there are: the fat corpus line carries a note, an invoice period, an order line
-reference and a commodity classification, and several XRechnung rules have something to look at
-in each of them. **The cost of the Schematron path follows the content of the lines, not the
+The smaller document took three times as long as the larger one: the corpus line carries a note,
+an invoice period, an order line reference and a commodity classification, and several XRechnung
+rules look at each. **The cost of the Schematron path follows the content of the lines, not the
 size of the file.** A ceiling derived from megabytes alone will be wrong in both directions.
+
+**A rule that fails on every line makes the official Schematron superlinear**: it names the place
+of each failed assertion by counting the elements before it. `en16931-cii-schematron` from
+`esj --verbose --limits large validate --rules none`, dense CII lines, the line VAT rate set to 0
+so that `BR-S-05` fails on each, `-Xmx2g`, on a shared machine (load 13):
+
+| Lines | Bytes | valid | `BR-S-05` on every line |
+|---|---|---|---|
+| 5,000 | 4,765,727 | 1.1 s | 2.9 s |
+| 10,000 | 9,525,732 | 2.0 s | 8.9 s |
+| 20,000 | 19,045,734 | 5.8 s | 31.6 s |
+
+The artefacts run as published; the five-minute default of `--max-runtime` ends such a run with
+exit code 7, along this curve from about 60,000 failing lines.
 
 ## The semantic path on a very large ESJ document
 
-The table above is the syntax engine. This one is the other half: `esj validate --no-syntax`
-over an ESJ document that was never XML, which is the reader, the three structural layers and
-the 216 native business rules of the pack and nothing else. It is the combination a very large
-invoice is validated with, and it is the one an ESJ document has at all.
+`esj validate --no-syntax` over an ESJ document that was never XML: the reader, the three
+structural layers and the 216 native business rules of the pack, nothing else.
 
-The documents are synthetic and are the ones `ScaleValidationTest` of `esj-cli` generates: one
-invoice line repeated, the totals following from the count, and every term the business rules
-ask for present — so the run ends `VALID` with nothing to report, and what is measured is the
-full cost of checking rather than the cost of printing findings. The times are of
+The documents are the ones `ScaleValidationTest` of `esj-cli` generates: one invoice line
+repeated, the totals following from the count, every term the rules ask for present, so the run
+ends `VALID` with nothing to report. The times are of
 `java -Xmx… -jar esj.jar validate --no-syntax --limits large`, started cold on the document as a
 file, best of three runs at the smaller size and of six at the larger; the peak resident set is
 that process's.
@@ -107,22 +113,16 @@ that process's.
 | 100,000 | 25,289,507 | 1g | **3.8 s** | **6.6 s** | 1.22 GB |
 | 300,000 | 78,089,507 | 3g | **11.8 s** | **18.0 s** | 3.49 GB |
 
-Three things follow, and all three are the point of the numbers.
-
 **The rules are linear in the lines.** Three times the lines cost 3.1 times the time without
 the pack and 2.7 times with it. The engine indexes the document once and computes each document-wide
 aggregate once for the whole run; a scan per line would show here as a curve rather than a
 line, and the ratio is checked on every build by the linearity test of `esj-rules`.
 
-**And linear in the VAT breakdowns, which is a second count.** The documents in the table carry
-one VAT breakdown, so they do not measure the other axis: the rules that compare a breakdown
-with the invoice lines of its category have two counts to be linear in, and an invoice may
-carry many of both. The linearity test therefore crosses the two — 2,000 and 50,000 lines
-against 2,000 and 20,000 breakdowns, over the pack this build ships rather than over a
-synthetic one — and asserts that what a breakdown costs does not grow with the number of lines.
-Measured there over three runs: 18,000 more breakdowns cost 0.5 to 0.7 s over 2,000 lines and
-0.5 to 0.8 s over 50,000 — the same on both, within the noise, which is the whole claim. With
-the scan of the lines per breakdown put back, the two are 0.9 s and 3.6 s and the test fails.
+**And linear in the VAT breakdowns.** The table carries one breakdown; the linearity test crosses
+2,000 and 50,000 lines with 2,000 and 20,000 breakdowns over the pack this build ships and
+asserts that a breakdown costs the same at both line counts. Measured there over three runs:
+18,000 more breakdowns cost 0.5 to 0.7 s over 2,000 lines and 0.5 to 0.8 s over 50,000; with a
+scan of the lines per breakdown put back, 0.9 s and 3.6 s, and the test fails.
 
 **The rules are a third to a half of it, and they are optional.** The pack is 42 per cent of
 the wall clock at 100,000 lines and 34 per cent at 300,000. A caller who wants only the
