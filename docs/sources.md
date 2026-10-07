@@ -223,8 +223,8 @@ artefacts under `packs/` are recorded above.
 - **Liberation Sans**, regular and bold, in `fonts/` — SIL Open Font License 1.1, whose text is
   beside the files. Subset-embedded in every PDF.
 - **sRGB v2 ICC profile** `sRGB2014.icc`, in `icc/` — International Color Consortium,
-  <https://registry.color.org/profile-library/>, retrieved 2026-09-20. The ICC issues no
-  licence file; its profile-library terms are quoted in that `README.md` and in `NOTICE`.
+  <https://registry.color.org/rgb-registry/profiles/sRGB2014.icc>, byte-identical (SHA-256) on
+  2026-10-07. The ICC issues no licence file; its terms are quoted in that `README.md` and `NOTICE`.
 - **HTML visualization**, in `kosit/` — `xrechnung-html.xsl`, `common-xr.xsl`, `functions.xsl`,
   `xrechnung-viewer.css`, `xrechnung-viewer.js`, `l10n/de.xml` and `l10n/en.xml` from
   <https://github.com/itplr-kosit/xrechnung-visualization>, directory `src/xsl/`, tag

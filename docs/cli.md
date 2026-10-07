@@ -803,22 +803,22 @@ apart from the codes that say something about the document.
 
 `PDF/A-3 declared` is a declaration: it is read out of the XMP packet, and nothing in this build
 checks it. `--verapdf` closes that gap with a veraPDF installation of your own — the directory it
-was installed into, or its executable. It is never bundled and never downloaded: the reference
-validator is under a copyleft licence and is in no artefact this project publishes.
+was installed into, or its executable — which this project never bundles and never downloads.
 
 ```text
 $ esj validate invoice.pdf --verapdf /opt/verapdf
   PDF/A-3 declared           yes, PDF/A-3B — veraPDF 1.30.2, "PDF/A-3B validation profile": PASS
 ```
 
-The validator runs as a process of its own inside `--max-runtime`, and the row carries its
-version, the profile it ran and its verdict; `--output json` carries the same under
-`pdfaValidator`, beside `pdfa.validated`. A file it rejects is a container that is wrong about
-itself: `Container: INVALID`, exit code 1. A validator that was asked for and could not run
-leaves with 2, or with 7 where the clock ran out, and never with `VALID`. Without the switch the
-row reads `declared, not validated` and has no part in the verdict. The same switch is on
-[`embed`](#embed) and on `render --embed cii`, where it checks the file the invoice goes into
-before anything is written into it.
+The validator runs as a process of its own inside `--max-runtime`, and the row carries its version,
+the profile it ran and its verdict; `--output json` carries the same under `pdfaValidator`, beside
+`pdfa.validated`. A file it rejects is a container that is wrong about itself: `Container: INVALID`,
+exit code 1. A validator that was asked for and could not run leaves with 2, or with 7 where the
+clock ran out, and never with `VALID`. Without the switch the row reads `declared, not validated`
+and has no part in the verdict. It reads the input as it came: use veraPDF 1.30.2 or later, 1.31.71
+or later on its development line ([advisories](https://github.com/veraPDF/veraPDF-validation/security/advisories)
+of earlier releases), and cap its heap with `JAVA_OPTS`, which it inherits (`JAVA_OPTS=-Xmx1g`).
+The switch is also on [`embed`](#embed) and `render --embed cii`.
 
 ### The container in `--output json`
 

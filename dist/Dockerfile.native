@@ -11,7 +11,9 @@
 #
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
-FROM ghcr.io/graalvm/native-image-community:25 AS build
+# Both base images are pinned by the digest of their manifest list beside the
+# tag, which Dependabot moves with the tag (.github/dependabot.yml).
+FROM ghcr.io/graalvm/native-image-community:25@sha256:0d936f32bb8acb5bc60c41b33e05f064d7a6aaf36b726538296c54949bd4a3c0 AS build
 WORKDIR /src
 COPY . /src
 RUN dist/native-image.sh esj-cli/target/esj.jar /out \
@@ -25,7 +27,7 @@ COPY --from=build /artefact /
 
 # The same executable in an image that can run it: a base with the C library it
 # is linked against and nothing else to speak of.
-FROM gcr.io/distroless/base-debian12:nonroot AS image
+FROM gcr.io/distroless/base-debian12:nonroot@sha256:7f0c72cd138b442ae0deeb69c08b1acf5525439ba251a49ad93c320a061567e5 AS image
 COPY --from=build /out/esj /opt/esj/esj
 COPY --from=build /src/LICENSE /src/NOTICE /opt/esj/
 WORKDIR /work

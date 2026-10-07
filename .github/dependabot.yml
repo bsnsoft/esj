@@ -27,6 +27,9 @@ updates:
     groups:
       nuget:
         patterns: ["*"]
+  # dist/Dockerfile and dist/Dockerfile.native: each base image is pinned by
+  # its tag and the digest of that tag, and a pull request moves the digest
+  # when the tag moves.
   - package-ecosystem: docker
     directory: /dist
     schedule:

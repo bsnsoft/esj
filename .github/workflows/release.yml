@@ -8,15 +8,67 @@ on:
     tags: ['v*']
   workflow_dispatch:
 
-# Third-party actions are pinned to a commit. Only the job that attaches the
-# archives may write the repository, and only the two jobs that push the
-# container image may write packages.
+# Every action is pinned to a commit, with its release beside it for Dependabot.
+# Only the job that attaches the archives may write the repository, only the
+# two jobs that push the container image may write packages, and only the two
+# jobs that attest may ask for a signing identity: the job that attaches the
+# archives and the one that joins the image. Neither runs a build.
 permissions:
   contents: read
 
 jobs:
+  # Before anything is built: on a tag, the tag has the form of a release tag
+  # and names the version the POM carries, which is no snapshot. A tag on the
+  # wrong commit stops here rather than after a release has archives of another
+  # version attached. Started by hand on a branch, the workflow builds the
+  # version of that branch and attaches and pushes nothing.
+  version:
+    name: Tag and version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: corretto
+          java-version: '21'
+
+      - name: Compare the tag with the version of the POM
+        shell: bash
+        run: |
+          version=$(mvn -B -q -N -DforceStdout -Dexpression=project.version \
+              org.apache.maven.plugins:maven-help-plugin:3.5.2:evaluate)
+          if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::the POM carries no version of the form 1.2.3: $version"
+            exit 1
+          fi
+          case $GITHUB_REF in
+            refs/tags/*)
+              if [[ ! $GITHUB_REF_NAME =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+                echo "::error::not a release tag; one reads v1.2.3 or v1.2.3-rc.1"
+                exit 1
+              fi
+              case $version in
+                *-SNAPSHOT)
+                  echo "::error::$version is a snapshot; nothing is released"
+                  exit 1 ;;
+              esac
+              if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+                echo "::error::tag $GITHUB_REF_NAME does not name version $version of the POM"
+                exit 1
+              fi
+              echo "tag $GITHUB_REF_NAME, version $version" ;;
+            *)
+              echo "::notice::$GITHUB_REF is not a tag: version $version is built and compared, and nothing is attached or pushed" ;;
+          esac
+
   artefacts:
     name: ${{ matrix.label }}
+    needs: version
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -30,21 +82,30 @@ jobs:
             runner: macos-14
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       # Two JDKs, as on the packager's machine: GraalVM builds the native
       # executable and nothing else; the reference run and the runtime image
       # come from a standard JDK 25 (a runtime image linked from GraalVM
       # carries the JVMCI module the ahead-of-time cache does not expect).
+      # The assignment fails the step when the script does, which an echo
+      # around the same command substitution would not.
       - name: Set up the pinned GraalVM build (native executable only)
-        run: echo "ESJ_GRAALVM_HOME=$(sh dist/graalvm.sh "$RUNNER_TEMP/graalvm")" >> "$GITHUB_ENV"
+        run: |
+          home=$(sh dist/graalvm.sh "$RUNNER_TEMP/graalvm")
+          test -x "$home/bin/native-image"
+          echo "ESJ_GRAALVM_HOME=$home" >> "$GITHUB_ENV"
 
+      # No Maven cache in a release: the archives a release attests are built
+      # from what Maven Central serves, not from a local repository a run on
+      # another ref left behind.
       - name: Set up JDK 25 (reference runtime, runtime image)
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: corretto
           java-version: '25'
-          cache: maven
 
       - name: Test on the reference runtime
         run: mvn -B verify
@@ -67,7 +128,7 @@ jobs:
           mv "dist/out/esj-$version.zip" "dist/out/esj-$version.zip.sha256" "$RUNNER_TEMP/not-delivered/"
 
       - name: Keep the archives
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: esj-${{ matrix.label }}
           path: |
@@ -80,10 +141,12 @@ jobs:
     needs: artefacts
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # attach the archives to the release
+      id-token: write # a signing certificate for the attestation
+      attestations: write # store the attestation
     steps:
       - name: Collect the archives
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: archives
 
@@ -141,7 +204,22 @@ jobs:
               fi ;;
           esac
 
+      - name: Say that nothing is attached
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        run: echo "::notice::$GITHUB_REF is not a v* tag; the archives were built and checked, and nothing is attested or attached"
+
+      # A signed statement, kept by GitHub, that each archive was built by this
+      # workflow from this commit: gh attestation verify <archive> --repo
+      # bsnsoft/esj checks it (docs/install.md). It is made only for archives
+      # whose checksums have just been checked, and before anything is attached.
+      - name: Attest the provenance of the archives
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: assets/*.zip
+
       - name: Attach them
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: |
@@ -160,7 +238,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
-      packages: write
+      packages: write # push the image of this platform
     strategy:
       fail-fast: false
       matrix:
@@ -174,14 +252,15 @@ jobs:
       ESJ_PLATFORM: ${{ matrix.platform }}
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up JDK 25 (reference runtime)
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: corretto
           java-version: '25'
-          cache: maven
 
       # Without the tests: they ran on this commit in the artefacts job.
       - name: Build the jar
@@ -231,7 +310,9 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
-      packages: write
+      packages: write # join the two images, push the attestation beside them
+      id-token: write # a signing certificate for the attestation
+      attestations: write # store the attestation
     env:
       ESJ_IMAGE: ghcr.io/bsnsoft/esj
     steps:
@@ -263,3 +344,31 @@ jobs:
               fi
             done
           done
+
+      # The attestation is made for the manifest list the version and latest
+      # name, which is the digest a pull by either tag resolves, and is pushed
+      # beside the image: gh attestation verify
+      # oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj checks it. No
+      # storage record: that is metadata of the organisation, not part of what a
+      # reader verifies.
+      - name: Read the digest of the multi-platform image
+        id: digest
+        shell: bash
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          digest=$(docker buildx imagetools inspect "$ESJ_IMAGE:$version" --format '{{json .Manifest}}' |
+            jq -r .digest)
+          if [[ ! $digest =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "::error::$ESJ_IMAGE:$version has no digest the registry names"
+            exit 1
+          fi
+          echo "$ESJ_IMAGE:$version is $digest"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
+      - name: Attest the provenance of the image
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.ESJ_IMAGE }}
+          subject-digest: ${{ steps.digest.outputs.digest }}
+          push-to-registry: true
+          create-storage-record: false

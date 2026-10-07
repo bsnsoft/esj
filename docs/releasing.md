@@ -37,6 +37,8 @@ git push origin main v0.9.0
 ```
 
 The tag runs `release.yml`, which builds the archives and publishes the GitHub release with them.
+Its first job compares the tag with the version of the POM and stops a snapshot, a tag of another
+version and a tag not of the form `v1.2.3` or `v1.2.3-rc.1` before anything is built.
 That release fires no `release` event — GitHub raises none for a release a workflow created with
 its own token — so `publish.yml` is started by hand, on the tag, with the tag as its input
 (`gh workflow run publish.yml --ref v0.9.0 -f tag=v0.9.0`; the workflow file comes from `--ref`,
@@ -58,15 +60,17 @@ Each of the three packaging jobs of `release.yml` delivers the archives of its p
 well and leave it out of their upload. Before anything is attached, the release job checks every
 `.sha256` against the archive beside it: a checksum that does not match, a name two jobs
 delivered with different contents, or, on a tag, no `esj-<version>.zip` of the version the tag
-names stops the release.
+names stops the release. Then it attests the provenance of every archive and attaches them.
+Releases are immutable once published: an archive that turns out broken is fixed by the next
+patch release, never by replacing the asset.
 
 Beside the archives, on one Linux runner per processor, `release.yml` builds the container image
 natively, compares it with the jar and pushes it as `<version>-linux-amd64` and
 `<version>-linux-arm64`; once both are there, it joins them under `<version>` and `latest` and
-checks that both tags list both platforms. It pushes only from a `v*` tag that names the version
-of the jar — started by hand on a branch, it builds and compares the image and pushes nothing —
-and every run on a tag moves `latest` to that tag, so re-running the workflow of an older release
-moves `latest` back.
+checks that both tags list both platforms, and attests the provenance of the joined image. It
+pushes only from a `v*` tag that names the version of the jar — started by hand on a branch, it
+builds and compares the image and pushes nothing — and every run on a tag moves `latest` to that
+tag, so re-running the workflow of an older release moves `latest` back.
 
 ## Set up once
 
@@ -80,10 +84,12 @@ moves `latest` back.
    in `GPG_PRIVATE_KEY` and its passphrase in `GPG_PASSPHRASE`. The workflow imports that one
    key and signs with it, so the key needs no name in the POM.
 
-The four secrets are the whole configuration `publish.yml` reads. A deployment cannot be
-withdrawn once it is published, and a version cannot be published twice.
+The four secrets are the whole configuration `publish.yml` reads; they are organisation secrets
+that only this repository may read. A deployment cannot be withdrawn once it is published, and a
+version cannot be published twice.
 
-The container image needs no secret: `release.yml` pushes it with the token of the workflow run.
+The container image and the attestations need no secret: `release.yml` pushes the image with the
+token of the workflow run and signs the attestations with a certificate issued to that run.
 Once, after the first release that pushes it, check the package `esj` among the organisation's
 packages on GitHub. A package a workflow creates is private, whatever the visibility of the
 repository, until it is made public in its *Package settings*, under *Danger Zone*, *Change

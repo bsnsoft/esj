@@ -13,6 +13,7 @@ carry the profile that says it rather than name one the reader may or may not ha
 | Page | <https://registry.color.org/rgb-registry/srgbprofiles>, the v2 sRGB profile |
 | File | `sRGB2014.icc`, 3024 bytes |
 | SHA-256 | `384b832de3412066743b52a75ee906b6fb9fb8d9e09e936fc2c43223815c6e0a` |
+| Compared with | <https://registry.color.org/rgb-registry/profiles/sRGB2014.icc>, byte-identical, 2026-10-07 |
 | Profile version | ICC 2.0, device class `mntr`, data colour space `RGB`, PCS `XYZ` |
 | Copyright tag inside the file | `Copyright International Color Consortium, 2015` |
 | Modified | no |
