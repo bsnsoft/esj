@@ -96,8 +96,8 @@ final class ReportLayout {
      */
     String footer(float room) {
         Fonts.Face face = sheet.fonts().regular();
-        String name = face.showable(ReportWord.TITLE.in(language) + " — ");
-        String input = face.showable(ReportContent.plain(outcome.identity().input()));
+        String name = face.line(ReportWord.TITLE.in(language) + " — ");
+        String input = face.line(outcome.identity().input());
         return name + shortened(input, room - face.width(name, Sheet.FOOTER_SIZE), face);
     }
 
