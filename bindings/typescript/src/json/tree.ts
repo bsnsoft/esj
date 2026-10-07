@@ -66,26 +66,3 @@ export function member(node: JsonObject, name: string): JsonNode | undefined {
   }
   return undefined;
 }
-
-/** Turns a tree back into the plain JavaScript value a caller of the library expects. */
-export function toPlain(node: JsonNode): unknown {
-  switch (node.t) {
-    case 'object': {
-      const out: Record<string, unknown> = {};
-      for (const entry of node.members) {
-        out[entry.name] = toPlain(entry.value);
-      }
-      return out;
-    }
-    case 'array':
-      return node.items.map(toPlain);
-    case 'string':
-      return node.value;
-    case 'number':
-      return node.raw;
-    case 'boolean':
-      return node.value;
-    case 'null':
-      return null;
-  }
-}

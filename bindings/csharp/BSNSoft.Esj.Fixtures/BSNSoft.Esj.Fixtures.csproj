@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>BSNSoft.Esj.Fixtures</RootNamespace>
+    <AssemblyName>esj-fixtures</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Answers the request protocol of conformance/fixtures/run.py for this binding.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../BSNSoft.Esj/BSNSoft.Esj.csproj" />
+  </ItemGroup>
+
+</Project>

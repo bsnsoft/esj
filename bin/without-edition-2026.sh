@@ -99,9 +99,9 @@ else
 fi
 if command -v dotnet >/dev/null 2>&1; then
   echo "running the C# binding in $copy"
-  dotnet test bindings/csharp/En16931.SemanticJson.sln
+  dotnet test bindings/csharp/BSNSoft.Esj.sln
   python3 conformance/fixtures/run.py --binding \
-    dotnet run --no-build --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
+    dotnet run --no-build --project bindings/csharp/BSNSoft.Esj.Fixtures -- .
 else
   missing dotnet C#
 fi

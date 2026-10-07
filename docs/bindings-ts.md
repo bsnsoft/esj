@@ -19,25 +19,26 @@ npm run build     # the same, then tsc to dist/
 npm run fixtures  # the manifest through the language-neutral runner
 ```
 
-Node 22.18 or newer, TypeScript as the only development dependency. The package is `private`
-and nothing is published on a registry yet;
+Node 22.18 or newer, TypeScript as the only development dependency. The package is
+`@bsnsoft/esj`; its version is the project's, written from `pom.xml` by `npm run sync-version` and
+checked by `npm test`. It is `private` and nothing is published on a registry yet;
 [`bindings/typescript/README.md`](../bindings/typescript/README.md) is the package's own page.
 
 ## The API
 
 | Entry point | What it carries |
 |---|---|
-| `en16931-semantic-json` | `readDocument`, `readDocumentOrThrow`, `canonicalize`, `pretty`, `semanticDigest`, `documentDigest`, `validate`, `Registry`, `Structure`, `compile`, `RuleEngine`, `Decimal`, `FindingCode`, the path helpers and the value grammars |
-| `en16931-semantic-json/node` | `registries()`, `rulePack()`, `ruleEngine()`, `codeListDays()` — the files of this repository, read from disk |
-| `en16931-semantic-json/generated/<edition>/view` | the read view generated from that edition's registry |
+| `@bsnsoft/esj` | `readDocument`, `readDocumentOrThrow`, `canonicalize`, `pretty`, `semanticDigest`, `documentDigest`, `validate`, `Registry`, `Structure`, `compile`, `RuleEngine`, `Decimal`, `FindingCode`, the path helpers and the value grammars |
+| `@bsnsoft/esj/node` | `registries()`, `rulePack()`, `ruleEngine()`, `codeListDays()` — the files of this repository, read from disk |
+| `@bsnsoft/esj/generated/<edition>/view` | the read view generated from that edition's registry |
 
 Nothing in the first entry point touches a file system or an environment: a document, a
 registry and a rule pack are values the caller passes in, and the second entry point is the
 one place that reads them from disk.
 
 ```ts
-import { readDocumentOrThrow, canonicalize, semanticDigest, validate } from 'en16931-semantic-json';
-import { registries } from 'en16931-semantic-json/node';
+import { readDocumentOrThrow, canonicalize, semanticDigest, validate } from '@bsnsoft/esj';
+import { registries } from '@bsnsoft/esj/node';
 
 const document = readDocumentOrThrow(await readFile('invoice.esj.json'));
 document.values.get('/BG-25/0/BT-131');           // { value: '1080' }
@@ -56,7 +57,7 @@ is a finding with the code `ESJ-L1-LIMIT` and leaves the result indeterminate, n
 ## The typed view
 
 ```ts
-import { invoiceOf } from 'en16931-semantic-json/generated/en16931-2017/view';
+import { invoiceOf } from '@bsnsoft/esj/generated/en16931-2017/view';
 
 const invoice = invoiceOf(document);
 invoice.seller().name();                           // string
@@ -72,8 +73,8 @@ generated sources are checked in.
 ## Business rules
 
 ```ts
-import { Structure } from 'en16931-semantic-json';
-import { registries, ruleEngine } from 'en16931-semantic-json/node';
+import { Structure } from '@bsnsoft/esj';
+import { registries, ruleEngine } from '@bsnsoft/esj/node';
 
 const carried = registries();
 const core = carried.find((registry) => registry.semanticModel === document.semanticModel)!;
@@ -92,7 +93,7 @@ edition other than the one the pack was compiled against.
 
 | Class of `SPEC.md` section 3 | Here |
 |---|---|
-| Reader (3.2) | `src/json/parse.ts`, `src/reader.ts`, with the limits of section 12.2 |
+| Reader (3.2) | `src/reader.ts` on `src/json/scanner.ts`, streaming, with the limits of section 12.2 |
 | Writer (3.3) | `src/canonical.ts`: the canonical and the pretty form |
 | Canonicalizer (3.4) | `src/canonical.ts`, `src/digest.ts`: both digests over the canonical bytes |
 | Validator (3.5) | `src/validate.ts`: layers L1 to L3 and the tri-state result |
@@ -119,7 +120,7 @@ npm run fixtures
 
 starts `tools/fixture-binding.ts` and answers the six requests of
 `conformance/fixtures/run.py` over a pipe: the digests, the canonical bytes, the findings and
-the rule identifiers of every case of the manifest, 1083 of them where the part of the later
+the rule identifiers of every case of the manifest, 1089 of them where the part of the later
 edition is present. `npm test` runs the same manifest in process, so a case that the reference
 implementation writes into the manifest fails here until this binding answers it too. The job
 `bindings` of the CI runs `npm ci`, `npm test` and the runner on every push.

@@ -425,11 +425,30 @@ export function normalizeLineEndings(value: string): string {
   return value.replace(/\r\n?/g, '\n');
 }
 
-const UTF8 = new TextEncoder();
-
-/** The length of a string in the bytes of its UTF-8 encoding, which is how a limit counts. */
+/**
+ * The length of a string in the bytes of its UTF-8 encoding, which is how a limit counts.
+ *
+ * It is counted, never encoded, so measuring a long string costs no copy of it. A lone
+ * surrogate counts as the three bytes of the replacement character an encoder would write for
+ * it; such a string is refused for the surrogate wherever it matters (section 6.8).
+ */
 export function utf8Length(value: string): number {
-  return UTF8.encode(value).length;
+  let bytes = 0;
+  for (let i = 0; i < value.length; i++) {
+    const unit = value.charCodeAt(i);
+    if (unit < 0x80) {
+      bytes += 1;
+    } else if (unit < 0x800) {
+      bytes += 2;
+    } else if (unit >= 0xd800 && unit <= 0xdbff && i + 1 < value.length
+      && value.charCodeAt(i + 1) >= 0xdc00 && value.charCodeAt(i + 1) <= 0xdfff) {
+      bytes += 4;
+      i++;
+    } else {
+      bytes += 3;
+    }
+  }
+  return bytes;
 }
 
 /** How many Unicode code points a string has, which is what `len` counts in a rule. */
@@ -446,9 +465,14 @@ export function codePointCount(value: string): number {
  * section 9.5 requires and cut to the excerpt length of section 12.6.
  */
 export function forMessage(value: string, limit: number = MESSAGE_EXCERPT): string {
-  const cut = [...value].slice(0, limit).join('');
-  const escaped = escapeForMessage(cut);
-  return cut.length < value.length ? `${escaped}…` : escaped;
+  let end = 0;
+  for (let count = 0; count < limit && end < value.length; count++) {
+    const unit = value.charCodeAt(end);
+    end += unit >= 0xd800 && unit <= 0xdbff && end + 1 < value.length
+      && value.charCodeAt(end + 1) >= 0xdc00 && value.charCodeAt(end + 1) <= 0xdfff ? 2 : 1;
+  }
+  const escaped = escapeForMessage(value.slice(0, end));
+  return end < value.length ? `${escaped}…` : escaped;
 }
 
 /**

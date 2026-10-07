@@ -6,6 +6,50 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.5] — unreleased
 
+### Added
+
+- Six negative fixtures under `examples/invalid/`, run by the fixture manifest over the Java, the
+  TypeScript and the C# reader: `extension-number-exponent-overflow` and `-underflow`
+  (`ESJ-L1-EXT-NUMBER`), `value-depth-32` and `value-depth-33` (`ESJ-L1-JSON-TYPE`, then
+  `ESJ-L1-LIMIT`: the walk past a structure inside `values`), `path-syntax-with-array-value`
+  (`ESJ-L1-PATH-SYNTAX` and `ESJ-L1-JSON-TYPE`) and `values-deep-array` (`ESJ-L1-ENVELOPE-VALUE`).
+
+### Changed
+
+- The bindings carry their publisher's names and the project's version: the npm package is
+  `@bsnsoft/esj` (was `en16931-semantic-json`), the C# package, assembly and namespace
+  `BSNSoft.Esj` (was `En16931.SemanticJson`, projects under `bindings/csharp/BSNSoft.Esj*`). The C#
+  build reads the version from `pom.xml`; `npm run sync-version` writes it into `package.json` and
+  `package-lock.json`, and a test fails while they differ. Nothing is published yet.
+
+### Fixed
+
+- TypeScript: a number inside `extensions` whose canonical form is long (`1e500000000`,
+  `1e-500000000`, `1e999999999`, `0.` and a million zeros) cost up to 600 MiB, minutes, or an
+  uncaught `RangeError` from `readDocument`. The length of the canonical form is computed before
+  any digit is written, the exponent saturated, as in Java and C#: `ESJ-L1-EXT-NUMBER` at once.
+  `canonicalNumber` throws `EsjError` (`ESJ-L1-EXT-NUMBER`) for such a number.
+- TypeScript: the reader streams. It judges each member where the text reaches it and walks past
+  what it refuses without building it: 64 MiB of `[0,0,…]` where a string belongs cost 2.6 GiB and
+  ran out of memory under a 1 GiB heap, now 0.5 s and less than 300 MiB. Where its findings
+  differed from Java's they no longer do: the value under a name that is no path is judged, a
+  finding confined to one member stands before a JSON error after it, an undefined envelope member
+  ends the read before broken text behind it, a JSON error or a limit inside a member of `values`
+  names that member's path, and a member name is held to the larger of the string and path bound.
+- TypeScript: reader and canonical writer keep the containers they open on a stack. A raised
+  `maxExtensionDepth` reads and canonicalizes a document 60 000 levels deep, where the parser
+  overflowed the stack and `readDocument` turned that into `TypeError: value is not iterable`;
+  `readDocument` now passes on any error that is not a finding unchanged.
+- TypeScript: the canonical and the pretty form refuse a string with a lone surrogate with
+  `EsjError` (`ESJ-L1-SURROGATE`), as Java and C# do, instead of writing U+FFFD; `semanticDigest`
+  and `documentDigest` reject with it rather than throw.
+- TypeScript: `npm run build` type-checks again (TypeScript 7 loads no Node types unasked).
+- C#: the reader answers as the Java one where it did not. An envelope member of the wrong JSON
+  type is refused at its first token (a deep array there was `ESJ-L1-LIMIT`, now
+  `ESJ-L1-ENVELOPE-VALUE`); a number token longer than the string bound is `ESJ-L1-LIMIT` wherever
+  it stands (was `ESJ-L1-JSON-TYPE` inside `values`), and so is a member name longer than the
+  larger of the string and path bound.
+
 ## [0.9.4] — 2026-10-07
 
 ### Added
