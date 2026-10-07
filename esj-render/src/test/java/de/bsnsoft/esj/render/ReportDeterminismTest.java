@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.bsnsoft.esj.SemanticDocument;
-import de.bsnsoft.esj.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
+import de.bsnsoft.esj.render.internal.ReportOptions;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.model;
 
+import de.bsnsoft.esj.Preview;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -20,7 +21,11 @@ import java.util.OptionalInt;
  *
  * <p>A currency the snapshot gives no minor unit is answered with nothing. Nothing here
  * guesses a number: a caller that needs one refuses by the name of the currency.
+ *
+ * <p>The class is a preview: it serves the edition whose fraction digit bounds follow the
+ * currency, and it may change in any minor release.
  */
+@Preview
 public final class MinorUnits {
 
     /** The rule that bounds a term at the minor unit of the currency in use. */

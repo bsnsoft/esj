@@ -129,6 +129,24 @@ class EditionWiringTest {
         assertTrue(run.text().strip().endsWith("INVALID"), run.text());
     }
 
+    /**
+     * A document of an edition this project ships as a preview is said to be one in the
+     * text a person reads; the JSON output keeps the edition as the document names it.
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void saysThatTheEditionOfADocumentIsAPreview() {
+        Cli.Run validated = Cli.run(Fixtures.bytes(EDITION_2026), "validate", "-");
+        assertTrue(validated.text().contains("Semantic model:   EN16931-1:2026 (preview)"),
+                validated.text());
+        Cli.Run inspected = Cli.run(Fixtures.bytes(EDITION_2026), "inspect", "-");
+        assertTrue(inspected.text().contains("EN16931-1:2026 (preview)"), inspected.text());
+        Cli.Run json = Cli.run(Fixtures.bytes(EDITION_2026), "validate", "-", "--output", "json");
+        assertTrue(json.text().contains("\"semanticModel\": \"EN16931-1:2026\""), json.text());
+        Cli.Run standard = Cli.run(Fixtures.bytes(MINIMAL), "validate", "-");
+        assertFalse(standard.text().contains("(preview)"), standard.text());
+    }
+
     /** Left out by the caller, the row still names the pack the edition would have run. */
     @Test
     @EnabledIf("carries2026")
@@ -140,7 +158,10 @@ class EditionWiringTest {
         assertFalse(run.text().contains(RuleCheck.PACK), run.text());
     }
 
-    /** The listing names every rule pack this build carries, with its edition. */
+    /**
+     * The listing names every rule pack this build carries, with its edition, and marks the
+     * pack of an edition this project ships as a preview.
+     */
     @Test
     void theListingNamesTheRulePacksWithTheirEdition() {
         Cli.Run run = Cli.run("--list-packs");
@@ -148,7 +169,7 @@ class EditionWiringTest {
         assertTrue(run.text().contains(RuleCheck.PACK + System.lineSeparator() + "  "
                 + "EN 16931-1:2017+A1:2019/AC:2020; measured against"), run.text());
         if (carries2026()) {
-            assertTrue(run.text().contains("en16931-2026/0.1" + System.lineSeparator()
+            assertTrue(run.text().contains("en16931-2026/0.1 (preview)" + System.lineSeparator()
                     + "  EN 16931-1:2026; " + RuleCheck.UNCORROBORATED), run.text());
             assertTrue(run.text().contains(" downgrade, ") && run.text().contains(" cases"),
                     run.text());

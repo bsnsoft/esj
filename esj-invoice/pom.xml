@@ -21,6 +21,10 @@
     dated code list snapshots of the rule pack by esj-generator and are checked in.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.invoice</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>

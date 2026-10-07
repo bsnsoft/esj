@@ -2,7 +2,7 @@ package de.bsnsoft.esj.b2c;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
-import de.bsnsoft.esj.typed.runtime.TermPaths;
+import de.bsnsoft.esj.typed.internal.TermPaths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
  * <p>Everything else an accessor or a setter of a generated overlay does — building the
  * path of a child, reading a value of its semantic data type, writing one or taking it
  * away, listing the instances of a repeatable group — is the runtime of the typed view of
- * the core model, {@code de.bsnsoft.esj.typed.runtime}, and the overlay calls
+ * the core model, {@code de.bsnsoft.esj.typed.internal}, and the overlay calls
  * it rather than repeating it: a value written through the one is read through the other
  * exactly because both build the path the same way.
  *

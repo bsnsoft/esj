@@ -13,6 +13,23 @@ still change; a change to it is named here under *Format*.
   (`ESJ-L1-EXT-NUMBER`), `value-depth-32` and `value-depth-33` (`ESJ-L1-JSON-TYPE`, then
   `ESJ-L1-LIMIT`: the walk past a structure inside `values`), `path-syntax-with-array-value`
   (`ESJ-L1-PATH-SYNTAX` and `ESJ-L1-JSON-TYPE`) and `values-deep-array` (`ESJ-L1-ENVELOPE-VALUE`).
+- `de.bsnsoft.esj.Preview`, an annotation for what is published to be used and judged and may
+  change in any minor release. It marks the packages `…typed.v2026`, `…rules.en16931.v2026`,
+  `…upgrade` and `…b2c`, the types `MinorUnits`, `PackFetcher`, `PackRecipe`, `PackRecipes`,
+  `ContainerChecks`, `InvoiceAttachments` and `En16931V2026Pack`, and the method
+  `RulePackSource.currencyMinorUnits()`. The generator writes the package comment of the 2026
+  view with it.
+- `Registry.isPreview()`: whether a registry describes an edition this project ships as a preview.
+- `CiiWriter.semanticModel()`, `CiiWriter.supports(String)`, `UblWriter.semanticModel()` and
+  `UblWriter.supports(String)`.
+- Every jar names its module: `Automatic-Module-Name` is `de.bsnsoft.esj.` followed by the
+  artifact identifier without `esj-` (`de.bsnsoft.esj.core`, …); `MavenCoordinatesTest` holds every
+  published jar to it.
+- The Maven profile `api-check` compares the API of every library module with the release
+  `esj.api-baseline` names, with japicmp, leaving out internal packages, the preview packages and
+  everything marked `@Preview`. It reports and does not fail before 1.0.0; the CI job *API compared
+  with the last release* keeps the report (`docs/releasing.md`). Against 0.9.4 it names 70 classes
+  with incompatible changes, all of them the moves above and the preview marks.
 - The rule files of both bundled packs, as their manifests name them, are validated against
   `rules/rule.schema.json` on every build; the 2026 pack's test is part of what
   `bin/without-edition-2026.sh` removes.
@@ -51,6 +68,17 @@ still change; a change to it is named here under *Format*.
   `BSNSoft.Esj` (was `En16931.SemanticJson`, projects under `bindings/csharp/BSNSoft.Esj*`). The C#
   build reads the version from `pom.xml`; `npm run sync-version` writes it into `package.json` and
   `package-lock.json`, and a test fails while they differ. Nothing is published yet.
+- EN 16931-1:2026 is a preview, and says so: `esj --version` prints
+  `semantic model registries 2017, 2026 (preview)`, `esj inspect` and `esj validate` print
+  `Semantic model: EN16931-1:2026 (preview)`, the validation report writes *(preview)* or
+  *(Vorschau)* beside the edition, `esj upgrade` writes an `info:` line where the edition it reads
+  or writes is one, and `esj --list-packs` marks the pack `en16931-2026/0.1`. The JSON output is
+  unchanged. `README.md`, `SPEC.md` (section 1; the format stays 0.1), `docs/editions.md`,
+  `docs/java-api.md` and the FAQ say so too.
+- The Javadoc leaves out every package whose name contains `internal`.
+- `esj-syntax` and `esj-render` declare Saxon-HE, which they call directly; `esj-cli` takes
+  `esj-typed` in test scope only, so the self-contained jar no longer carries the typed view it
+  never loads.
 - One set of characters that steer a terminal, `Esj.steersATerminal(int)` and
   `Esj.isBidiControl(int)` in `esj-core`, is used by every text output: the messages of
   `esj-core`, `esj-rules` and `esj-pdf`, the lines of `esj list`, `esj inspect`, `esj diff`,
@@ -72,6 +100,10 @@ still change; a change to it is named here under *Format*.
   breakdown. It has 28 terms, and removing any of them ends the verdict through one of the two.
 - `XmlEncodingReport` has `decodes()` and `XrEncodingException` has `repairable()`; the earlier
   constructors stay.
+
+### Removed
+
+- `esj-generator` is no longer published on Maven Central and is no longer managed by `esj-bom`.
 
 ### Fixed
 
@@ -178,6 +210,26 @@ still change; a change to it is named here under *Format*.
   U+061C, U+200E, U+200F, U+202A–U+202E and U+2066–U+2069. The reference implementation let the
   C1 controls and the two separators through, and U+061C in the messages of `esj-core`; the
   section said `\uXXXX` and left the case of the digits open.
+
+### Migration from 0.9.4
+
+The API is cut before 1.0: what a caller is not meant to depend on moved into packages whose name
+contains `internal`, and what may still change is marked `@Preview`. Neither is covered by the
+compatibility promise. One row per package or type:
+
+| 0.9.4 | 0.9.5 |
+|---|---|
+| `de.bsnsoft.esj.rules.en16931.En16931` | `de.bsnsoft.esj.rules.en16931.En16931Pack` |
+| `de.bsnsoft.esj.rules.en16931.v2026.En16931V2026` | `de.bsnsoft.esj.rules.en16931.v2026.En16931V2026Pack`, a preview; the service declaration of `RulePackSource` names it |
+| `de.bsnsoft.esj.rules.en16931.Br*`, `SchemeIdentifier` | `de.bsnsoft.esj.rules.internal.en16931`, internal |
+| `de.bsnsoft.esj.rules.en16931.v2026.Br*` | `de.bsnsoft.esj.rules.internal.en16931.v2026`, internal |
+| `"class"` of `javaRules` in a rule pack manifest, `…rules.en16931.Br62` | `…rules.internal.en16931.Br62`; a manifest of a pack directory that names a rule of this build names it so |
+| `de.bsnsoft.esj.typed.runtime` | `de.bsnsoft.esj.typed.internal`, internal; generated views and the B2C overlay import it from there |
+| `de.bsnsoft.esj.xr.XmlFrontDoor` | `de.bsnsoft.esj.xr.internal.XmlFrontDoor`, internal |
+| `de.bsnsoft.esj.report` (`ValidationOutcome`, `Text`, `Phrase`) | `de.bsnsoft.esj.internal.report`, internal |
+| `de.bsnsoft.esj.render.ReportOptions` | `de.bsnsoft.esj.render.internal.ReportOptions`, internal |
+| `de.bsnsoft.esj.bindings.BindingTable` | no longer public; `CiiWriter.semanticModel()` and `supports(String)`, `UblWriter.semanticModel()` and `supports(String)` say which edition a writer writes |
+| `esj-generator` on Maven Central and in `esj-bom` | not published; it is the build tool of this repository |
 
 ## [0.9.4] — 2026-10-07
 

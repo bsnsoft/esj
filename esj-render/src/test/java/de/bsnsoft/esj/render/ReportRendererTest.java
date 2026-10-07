@@ -7,7 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
-import de.bsnsoft.esj.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.Phrase;
+import de.bsnsoft.esj.internal.report.Text;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
+import de.bsnsoft.esj.render.internal.ReportOptions;
 import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.validate.ValidationStatus;
 import java.util.ArrayList;
@@ -515,6 +518,29 @@ class ReportRendererTest {
         assertTrue(page.contains("… and 103 more findings of this block"), page);
         assertTrue(page.contains("The same rules were reported by an official artefact"),
                 "the overlap sentence stands even where the cut took findings it names");
+    }
+
+    /**
+     * An edition this project ships as a preview is said to be one, in the language of the
+     * report: the run names the sentence and the renderer holds its wording.
+     */
+    @Test
+    void saysThatAnEditionIsAPreviewInTheLanguageOfTheReport() {
+        ValidationOutcome.Identity identity = Outcomes.valid().identity();
+        ValidationOutcome outcome = new ValidationOutcome(
+                new ValidationOutcome.Identity(identity.input(), identity.syntax(),
+                        identity.reader(),
+                        Optional.of(Text.of(Phrase.EDITION_PREVIEW, "EN16931-1:2026")),
+                        identity.profile(), identity.inputSha256(),
+                        identity.semanticDigest(), identity.documentDigest(),
+                        identity.sourceSha256(), identity.packs(), identity.tool()),
+                List.of(), Optional.of(ValidationStatus.VALID), Optional.empty(), List.of(),
+                List.of());
+
+        assertTrue(renderer.html(outcome, null, ReportOptions.in(RenderLanguage.ENGLISH))
+                .contains("EN16931-1:2026 (preview)"));
+        assertTrue(renderer.html(outcome, null, ReportOptions.in(RenderLanguage.GERMAN))
+                .contains("EN16931-1:2026 (Vorschau)"));
     }
 
     /**

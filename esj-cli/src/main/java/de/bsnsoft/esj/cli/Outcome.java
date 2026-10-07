@@ -5,13 +5,13 @@ import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.pdf.ContainerFinding;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.pdf.PdfaIdentification;
-import de.bsnsoft.esj.report.Phrase;
-import de.bsnsoft.esj.report.Text;
-import de.bsnsoft.esj.report.ValidationOutcome;
-import de.bsnsoft.esj.report.ValidationOutcome.Block;
-import de.bsnsoft.esj.report.ValidationOutcome.Judged;
-import de.bsnsoft.esj.report.ValidationOutcome.Row;
-import de.bsnsoft.esj.report.ValidationOutcome.Subject;
+import de.bsnsoft.esj.internal.report.Phrase;
+import de.bsnsoft.esj.internal.report.Text;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.ValidationOutcome.Block;
+import de.bsnsoft.esj.internal.report.ValidationOutcome.Judged;
+import de.bsnsoft.esj.internal.report.ValidationOutcome.Row;
+import de.bsnsoft.esj.internal.report.ValidationOutcome.Subject;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.syntax.ComponentRun;
@@ -106,7 +106,7 @@ final class Outcome {
         return new ValidationOutcome.Identity(report.input(), syntaxLabel(report),
                 loaded.importer()
                         .map(importer -> Text.of(importer.description(), importer.token())),
-                Reports.semanticModel(report),
+                Reports.semanticModelText(report),
                 profile(report), Optional.of(sha256(input.bytes())),
                 document.map(Canonicalizer::semanticDigest),
                 document.map(Canonicalizer::documentDigest),

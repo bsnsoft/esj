@@ -144,6 +144,9 @@ final class UpgradeCommand implements Callable<Integer>, ReadsADocument {
                 console);
         SemanticDocument document = loaded.require(console);
         UpgradeResult result = upgrade(document, input, droppable);
+        if (!json) {
+            preview(document);
+        }
 
         UpgradeReport report = result.report();
         if (result.isUpgraded()) {
@@ -241,6 +244,20 @@ final class UpgradeCommand implements Callable<Integer>, ReadsADocument {
             return Path.of(argument);
         } catch (InvalidPathException e) {
             throw CliException.input("not a path this platform accepts: " + argument, e);
+        }
+    }
+
+    /**
+     * Says, on the error stream, that the edition the document is written from or to is one
+     * this project ships as a preview, where it is.
+     */
+    private void preview(SemanticDocument document) {
+        String target = Registry.forEdition(to).semanticModel();
+        for (String model : List.of(document.semanticModel(), target)) {
+            if (Editions.isPreview(model)) {
+                console.information(Editions.previewNotice(model));
+                return;
+            }
         }
     }
 

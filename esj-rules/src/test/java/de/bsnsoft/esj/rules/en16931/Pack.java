@@ -11,7 +11,7 @@ import de.bsnsoft.esj.rules.RuleEngine;
 final class Pack {
 
     /** The pack compiled against the registry of the edition it is written for. */
-    static final RuleEngine ENGINE = En16931.engine(Registry.en16931());
+    static final RuleEngine ENGINE = En16931Pack.engine(Registry.en16931());
 
     private Pack() {
     }

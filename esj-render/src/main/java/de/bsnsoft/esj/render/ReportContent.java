@@ -2,8 +2,9 @@ package de.bsnsoft.esj.render;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticValue;
-import de.bsnsoft.esj.report.Text;
-import de.bsnsoft.esj.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.Text;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
+import de.bsnsoft.esj.render.internal.ReportOptions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -183,7 +184,7 @@ final class ReportContent {
         add(lines, ReportWord.INPUT, language, Optional.of(identity.input()));
         say(lines, ReportWord.SYNTAX, language, Optional.of(identity.syntax()));
         say(lines, ReportWord.READER, language, identity.reader());
-        add(lines, ReportWord.SEMANTIC_MODEL, language, identity.semanticModel());
+        say(lines, ReportWord.SEMANTIC_MODEL, language, identity.semanticModel());
         add(lines, ReportWord.PROFILE, language, identity.profile());
         add(lines, ReportWord.INPUT_DIGEST, language, identity.inputSha256());
         add(lines, ReportWord.SEMANTIC_DIGEST, language, identity.semanticDigest());

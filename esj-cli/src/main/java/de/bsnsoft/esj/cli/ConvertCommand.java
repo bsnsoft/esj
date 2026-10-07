@@ -4,8 +4,6 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.bindings.BindingEditionException;
 import de.bsnsoft.esj.bindings.BindingException;
 import de.bsnsoft.esj.bindings.BindingLimitException;
-import de.bsnsoft.esj.bindings.BindingSyntax;
-import de.bsnsoft.esj.bindings.BindingTable;
 import de.bsnsoft.esj.bindings.CiiWriter;
 import de.bsnsoft.esj.bindings.UblWriter;
 import de.bsnsoft.esj.bindings.WriteNote;
@@ -249,10 +247,8 @@ final class ConvertCommand implements Callable<Integer>, ReadsADocument {
             // does not serve rather than an input it could not read, and the way out is
             // the one esj upgrade offers. Both tables bind one edition, so both refuse.
             throw Editions.refuse(document, target == Target.CII
-                    ? "the CII binding table binds "
-                            + BindingTable.of(BindingSyntax.CII).semanticModel()
-                    : "the UBL binding tables bind "
-                            + BindingTable.of(BindingSyntax.UBL_INVOICE).semanticModel());
+                    ? "the CII binding table binds " + CiiWriter.semanticModel()
+                    : "the UBL binding tables bind " + UblWriter.semanticModel());
         } catch (BindingException e) {
             throw CliException.input("cannot write " + target.description(form) + ": "
                     + e.getMessage(), e);

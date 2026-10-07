@@ -19,6 +19,12 @@
     registry. It is a build tool: nothing depends on it at runtime.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.generator</esj.automatic-module-name>
+    <!-- A tool and no library: the API check of the profile api-check passes it over. -->
+    <esj.api-check.skip>true</esj.api-check.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>

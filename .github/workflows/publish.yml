@@ -2,7 +2,7 @@ name: Publish to Maven Central
 
 # The libraries of a release go to Maven Central from here, and nothing else: the
 # archives of the command line tool are built and attached by release.yml, and the
-# module esj-cli is the one the deployment leaves out.
+# modules esj-cli and esj-generator are the two the deployment leaves out.
 on:
   release:
     types: [published]

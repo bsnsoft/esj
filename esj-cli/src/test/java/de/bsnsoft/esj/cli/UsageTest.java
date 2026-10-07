@@ -1,10 +1,13 @@
 package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.model.Registry;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -65,9 +68,18 @@ class UsageTest {
         assertTrue(lines[0].startsWith("esj "), lines[0]);
         assertEquals("ESJ format version " + Esj.VERSION, lines[1]);
         assertEquals("semantic model " + Esj.SEMANTIC_MODEL, lines[2]);
-        assertEquals("semantic model registries " + String.join(", ", Registry.editions()),
-                lines[3],
+        List<String> editions = new ArrayList<>();
+        for (String edition : Registry.editions()) {
+            editions.add(Registry.forEdition(edition).isPreview()
+                    ? edition + " (preview)" : edition);
+        }
+        assertEquals("semantic model registries " + String.join(", ", editions), lines[3],
                 "which editions a copy of the tool carries is a property of that copy");
+        assertFalse(lines[3].contains(Registry.DEFAULT_EDITION + " (preview)"),
+                "the default edition is no preview");
+        if (Registry.editions().contains("2026")) {
+            assertTrue(lines[3].contains("2026 (preview)"), lines[3]);
+        }
     }
 
     @Test

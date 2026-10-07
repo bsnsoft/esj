@@ -10,7 +10,7 @@ import de.bsnsoft.esj.rules.RulePackException;
 import de.bsnsoft.esj.rules.RulePackSource;
 import de.bsnsoft.esj.rules.RulePackSources;
 import de.bsnsoft.esj.rules.RuleSeverity;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.syntax.ProfileLevels;
 import de.bsnsoft.esj.syntax.Severity;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import java.util.concurrent.ConcurrentMap;
 record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) {
 
     /** The pack of the default edition, as it is written in a report. */
-    static final String PACK = En16931.PACK_ID + "/" + En16931.VERSION;
+    static final String PACK = En16931Pack.PACK_ID + "/" + En16931Pack.VERSION;
 
     /** The label of the row this check fills in the semantic block. */
     static final String LABEL = "EN 16931 business rules (native, pack " + PACK + ")";
@@ -179,7 +179,8 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
      * behind its rules, for {@code esj --list-packs}.
      *
      * <p>The oracles are counted from the manifest rather than stated, so the listing says
-     * of a pack no more than the pack says of itself. Which pack runs is not a choice of the
+     * of a pack no more than the pack says of itself. The pack of an edition this project
+     * ships as a preview is marked as one. Which pack runs is not a choice of the
      * caller: {@code --rules en16931} runs the one of the edition a document names.
      *
      * @param console where the lines go
@@ -197,7 +198,8 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
                         + e.getMessage(), e);
             }
             PackName name = PackName.of(pack);
-            console.line(name.name());
+            console.line(name.name()
+                    + (Editions.isPreviewEdition(pack.edition()) ? " (preview)" : ""));
             console.line("  " + pack.edition() + "; " + pack.verifiedAgainst()
                     .map(release -> "measured against the " + release)
                     .orElse(UNCORROBORATED));
@@ -317,7 +319,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
     record PackName(String name, String edition, boolean corroborated) {
 
         /** The pack of the default edition, which the artefacts of release 1.3.16 cover. */
-        static final PackName STANDING = new PackName(PACK, En16931.EDITION, true);
+        static final PackName STANDING = new PackName(PACK, En16931Pack.EDITION, true);
 
         /**
          * Refuses a missing member.

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.core.util.Separators;
+import de.bsnsoft.esj.Preview;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +53,11 @@ import java.util.stream.Stream;
  * already holds the same pack — every file with the digest the new manifest would record —
  * is left alone; one that holds a different pack is refused unless the caller asked to
  * replace it, and even then only files its own manifest lists are removed.
+ *
+ * <p>The class is a preview: making a pack from a recipe is new in this release line, and
+ * the class may change in any minor release.
  */
+@Preview
 public final class PackFetcher {
 
     /** The largest recipe file this module fetches, whatever a recipe says. */

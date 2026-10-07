@@ -59,6 +59,20 @@ class UblWriterTest {
                 report.byDesign());
     }
 
+    /**
+     * A caller asks the writer which edition it writes, rather than the binding tables, and
+     * the invoice and the credit note give one answer.
+     */
+    @Test
+    void saysWhichEditionItWrites() {
+        String written = BindingTable.of(BindingSyntax.UBL_INVOICE).semanticModel();
+        assertEquals(written, BindingTable.of(BindingSyntax.UBL_CREDIT_NOTE).semanticModel());
+        assertEquals(written, UblWriter.semanticModel());
+        assertTrue(UblWriter.supports(written));
+        assertFalse(UblWriter.supports("EN16931-1:2026"));
+        assertThrows(NullPointerException.class, () -> UblWriter.supports(null));
+    }
+
     @Test
     void writesTheDocumentElementAndTheNamespacesOfTheSyntax() {
         String xml = write(SemanticDocument.builder().put("/BT-1", "RE-1").build());

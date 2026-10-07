@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.xr;
 
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +21,7 @@ import net.sf.saxon.trans.XPathException;
 /**
  * Transforms a document into the XR representation with the vendored KoSIT stylesheets.
  *
- * <p>The document is parsed and the stylesheets are run through {@link XmlFrontDoor},
+ * <p>The document is parsed and the stylesheets are run through {@code XmlFrontDoor},
  * which is where this project's parser and processor settings live: no document type
  * declaration, no external entity, no XInclude, no extension function, no
  * {@code xsl:evaluate} and no protocol that may be dereferenced.

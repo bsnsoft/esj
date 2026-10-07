@@ -1,7 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XmlFrontDoor;
 import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import net.sf.saxon.s9api.XdmNode;
  * runs:
  *
  * <ol>
- *   <li><strong>XML.</strong> Well-formedness with the parser of {@link XmlFrontDoor} —
+ *   <li><strong>XML.</strong> Well-formedness with the parser of {@code XmlFrontDoor} —
  *       no document type declaration, no external entity, no XInclude — and the encoding
  *       the document declares against the bytes it carries. A document that is not
  *       well-formed has no elements to validate, and one whose encoding is not what it

@@ -23,6 +23,10 @@
     never presented as conformance to the ESJ format.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.rules</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>

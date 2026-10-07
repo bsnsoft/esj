@@ -9,9 +9,9 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.typed.EditorList;
 import de.bsnsoft.esj.typed.Identifier;
 import de.bsnsoft.esj.typed.SchemedIdentifierList;
-import de.bsnsoft.esj.typed.runtime.Editors;
-import de.bsnsoft.esj.typed.runtime.TermPaths;
-import de.bsnsoft.esj.typed.runtime.Writers;
+import de.bsnsoft.esj.typed.internal.Editors;
+import de.bsnsoft.esj.typed.internal.TermPaths;
+import de.bsnsoft.esj.typed.internal.Writers;
 import java.util.function.Consumer;
 
 /**

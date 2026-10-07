@@ -31,7 +31,7 @@ public interface INativeRule
     /// <summary>
     /// Returns the name the pack manifest declares this rule under, without the namespace the
     /// manifest may write before it: <c>Br62</c> for a rule a manifest names
-    /// <c>…rules.en16931.Br62</c>. A pack is data and names its rules in the words of whoever
+    /// <c>…rules.internal.en16931.Br62</c>. A pack is data and names its rules in the words of whoever
     /// wrote it; a binding carries its own implementation of each of them and is matched to
     /// the pack by the last segment of that name.
     /// </summary>

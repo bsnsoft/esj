@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.typed.InvoiceEditor;
-import de.bsnsoft.esj.typed.runtime.TermPaths;
+import de.bsnsoft.esj.typed.internal.TermPaths;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;

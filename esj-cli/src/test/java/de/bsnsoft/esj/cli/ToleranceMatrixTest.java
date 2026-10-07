@@ -9,7 +9,7 @@ import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleSeverity;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.util.List;
 import java.util.Locale;
@@ -72,7 +72,7 @@ class ToleranceMatrixTest {
             .build());
 
     /** The pack this build carries. */
-    private static final RuleEngine ENGINE = En16931.engine(XrImporter.defaultRegistry());
+    private static final RuleEngine ENGINE = En16931Pack.engine(XrImporter.defaultRegistry());
 
     /** The numbers the pages of this repository write out, as they write them. */
     private static final List<String> WRITTEN = List.of("no", "one", "two", "three", "four",

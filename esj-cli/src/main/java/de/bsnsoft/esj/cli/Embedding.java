@@ -4,8 +4,7 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.bindings.BindingEditionException;
-import de.bsnsoft.esj.bindings.BindingTable;
-import de.bsnsoft.esj.bindings.BindingSyntax;
+import de.bsnsoft.esj.bindings.CiiWriter;
 import de.bsnsoft.esj.pdf.EmbedOptions;
 import de.bsnsoft.esj.pdf.EmbedRefusedException;
 import de.bsnsoft.esj.pdf.EmbedResult;
@@ -138,7 +137,7 @@ final class Embedding {
      * @throws CliException always
      */
     private static void requireBindableEdition(SemanticDocument document) {
-        if (!BindingTable.of(BindingSyntax.CII).describes(document.semanticModel())) {
+        if (!CiiWriter.supports(document.semanticModel())) {
             throw editionRefusal(document);
         }
     }
@@ -146,7 +145,7 @@ final class Embedding {
     /** Returns the refusal both the check above and the writer below leave with. */
     private static CliException editionRefusal(SemanticDocument document) {
         return Editions.refuse(document, "the CII binding table of the attachment binds "
-                + BindingTable.of(BindingSyntax.CII).semanticModel());
+                + CiiWriter.semanticModel());
     }
 
     /**

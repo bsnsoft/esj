@@ -11,6 +11,7 @@ import de.bsnsoft.esj.json.EsjWriter;
 import de.bsnsoft.esj.json.ReadResult;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleFinding;
+import de.bsnsoft.esj.typed.En16931;
 import de.bsnsoft.esj.typed.InvoiceEditor;
 import de.bsnsoft.esj.typed.InvoiceLineEditor;
 import de.bsnsoft.esj.typed.Totals;
@@ -382,10 +383,7 @@ class DerivedInvoicesTest {
      * amount, so that a finding of the pack is about the derivation and about nothing else.
      */
     private static InvoiceEditor base() {
-        // Two classes of this repository are called En16931: the entry point of the typed
-        // editor, which is meant here, and the pack of this package. The name is written out
-        // rather than imported, so that neither has to give way to the other.
-        InvoiceEditor invoice = de.bsnsoft.esj.typed.En16931.newInvoice();
+        InvoiceEditor invoice = En16931.newInvoice();
         invoice.invoiceNumber("RE-2026-0001")
                 .issueDate(LocalDate.of(2026, 1, 15))
                 .typeCode("380")

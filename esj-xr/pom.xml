@@ -22,6 +22,10 @@
     business term identifiers of that representation are mapped to semantic paths.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.xr</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
@@ -29,7 +33,8 @@
       <version>${project.version}</version>
     </dependency>
     <!--
-      Saxon-HE is a runtime dependency of this module and of no other. It is licensed
+      Saxon-HE, configured once in this module; esj-syntax and esj-render, which run
+      stylesheets on the processor configured here, declare it as well. It is licensed
       under the Mozilla Public License 2.0; see the NOTICE file of the repository.
     -->
     <dependency>

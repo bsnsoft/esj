@@ -6,9 +6,9 @@ package de.bsnsoft.esj.typed;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
-import de.bsnsoft.esj.typed.runtime.Editors;
-import de.bsnsoft.esj.typed.runtime.TermPaths;
-import de.bsnsoft.esj.typed.runtime.Writers;
+import de.bsnsoft.esj.typed.internal.Editors;
+import de.bsnsoft.esj.typed.internal.TermPaths;
+import de.bsnsoft.esj.typed.internal.Writers;
 import java.util.Objects;
 
 /** Writes {@link SellerTaxRepresentativePostalAddressEditor} into a document builder. */

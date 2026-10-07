@@ -157,6 +157,46 @@ jobs:
           test -z "$(git status --porcelain -- esj-typed/src esj-invoice/src/main \
             schema/esj-en16931-2017.schema.json)"
 
+  # The public API of the libraries, compared with the last release on Maven Central
+  # (pom.xml, profile api-check; docs/releasing.md). Until 1.0.0 the comparison is a
+  # report: an incompatible change does not fail the job, the job is no required check,
+  # and the report is kept as an artifact with one line per module in the summary.
+  api:
+    name: API compared with the last release (report)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compare the API of every library module with the last release
+        run: mvn -B -Papi-check verify -DskipTests
+
+      - name: Summarise the comparison
+        run: |
+          {
+            echo '| Module | Against the last release |'
+            echo '|---|---|'
+            for report in */target/japicmp/api-check.md; do
+              level=$(grep -o -m1 'semver-[A-Z]*' "$report" | cut -d- -f2)
+              echo "| ${report%%/*} | $level |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: api-check
+          path: '*/target/japicmp/'
+
   # The packaged tool has to answer exactly as the jar does. dist/smoke.sh runs
   # every command of the tool with both and compares what they write, the
   # verdict they reach and the code they leave with.

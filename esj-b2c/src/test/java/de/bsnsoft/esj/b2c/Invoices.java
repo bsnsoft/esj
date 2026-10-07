@@ -34,7 +34,7 @@ final class Invoices {
 
     /** The rules of EN 16931-1, over the core registry with the B2C extension loaded. */
     private static final RuleEngine RULES =
-            de.bsnsoft.esj.rules.en16931.En16931.engine(B2c.registry());
+            de.bsnsoft.esj.rules.en16931.En16931Pack.engine(B2c.registry());
 
     private Invoices() {
     }

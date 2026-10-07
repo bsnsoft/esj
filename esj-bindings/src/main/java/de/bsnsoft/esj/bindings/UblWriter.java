@@ -58,6 +58,36 @@ public final class UblWriter {
     }
 
     /**
+     * Returns the edition of the semantic model this writer writes, in the spelling a
+     * document uses in its {@code semanticModel} member ({@code SPEC.md}, section 10). The
+     * binding tables of the invoice and of the credit note are written against the same
+     * edition.
+     *
+     * @return the edition, for example {@code EN16931-1:2017+A1:2019/AC:2020}
+     */
+    public static String semanticModel() {
+        return BindingTable.of(BindingSyntax.UBL_INVOICE).semanticModel();
+    }
+
+    /**
+     * Tells whether this writer writes a document that names an edition of the semantic
+     * model, as an invoice and as a credit note alike.
+     *
+     * <p>A path is an address relative to an edition, so a document of another edition is
+     * refused with a {@link BindingEditionException} rather than written short of the terms
+     * the binding tables do not know. A caller asks here before it writes, to say so in its
+     * own words.
+     *
+     * @param semanticModel the {@code semanticModel} member of a document
+     * @return {@code true} if both UBL binding tables were written against that edition
+     * @throws NullPointerException if {@code semanticModel} is {@code null}
+     */
+    public static boolean supports(String semanticModel) {
+        return BindingTable.of(BindingSyntax.UBL_INVOICE).describes(semanticModel)
+                && BindingTable.of(BindingSyntax.UBL_CREDIT_NOTE).describes(semanticModel);
+    }
+
+    /**
      * Writes a document with the default options, which choose the document type from
      * BT-3.
      *

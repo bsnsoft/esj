@@ -26,115 +26,115 @@
   },
   "javaRules": [
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br62",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br62",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br63",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br63",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br64",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br64",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br65",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br65",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrAe01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrAe01",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrAe08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrAe08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrAf08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrAf08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrAg08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrAg08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl07",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl07",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl10",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl10",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl11",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl11",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl13",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl13",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl21",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl21",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl24",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl24",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl25",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl25",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl26",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl26",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCo09",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCo09",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrE01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrE01",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrE08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrE08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrG01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrG01",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrG08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrG08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrIc01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrIc01",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrIc08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrIc08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrO01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrO01",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrO08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrO08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrS08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrS08",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrZ01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrZ01",
       "oracle": "artefact"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrZ08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrZ08",
       "oracle": "artefact"
     }
   ],

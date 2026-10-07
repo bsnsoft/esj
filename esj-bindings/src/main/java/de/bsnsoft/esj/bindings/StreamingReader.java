@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamReader;
  * {@link SemanticDocument} without building a tree of it.
  *
  * <p>The reader pulls the document one element at a time and matches the element against
- * the compiled binding table of its syntax (see {@link BindingTable}); where the table
+ * the compiled binding table of its syntax ({@code model/bindings}); where the table
  * gives a term that element, the content becomes a value and the value goes into the
  * document. What it holds while it works is one element and the values it has produced —
  * not the source document, not an intermediate tree, and not the invoice lines it has

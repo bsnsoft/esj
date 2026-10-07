@@ -36,7 +36,7 @@ class Edition2026LinearityTest {
 
     private static final Registry REGISTRY = Registry.forEdition("2026");
 
-    private static final RuleEngine ENGINE = new En16931V2026().engine(REGISTRY);
+    private static final RuleEngine ENGINE = new En16931V2026Pack().engine(REGISTRY);
 
     /**
      * The rules of the pack written in Java, compiled alone: the manifest with its code list
@@ -129,12 +129,12 @@ class Edition2026LinearityTest {
     }
 
     private static RuleEngine javaRulesAlone() {
-        RulePack pack = new En16931V2026().pack();
+        RulePack pack = new En16931V2026Pack().pack();
         RulePack javaOnly = new RulePack(pack.id(), pack.version(), pack.edition(),
                 pack.verifiedAgainst(), pack.description(), pack.codeLists(),
                 pack.codeListSources(), pack.javaRules(), List.of(), List.of(), List.of());
         return RuleEngine.compile(javaOnly, REGISTRY, CodeLists.bundled(pack),
-                En16931V2026.javaRules());
+                En16931V2026Pack.javaRules());
     }
 
     private static void evaluate(SemanticDocument document) {

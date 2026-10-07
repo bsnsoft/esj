@@ -10,7 +10,7 @@ import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.upgrade.EditionUpgrade;
 import de.bsnsoft.esj.upgrade.UpgradeOptions;
 import de.bsnsoft.esj.upgrade.UpgradeResult;
@@ -40,10 +40,10 @@ import java.util.regex.Pattern;
 final class Evidence2026 {
 
     /** The pack of this edition, compiled against the registry of this edition. */
-    static final RuleEngine ENGINE = new En16931V2026().engine(Registry.forEdition("2026"));
+    static final RuleEngine ENGINE = new En16931V2026Pack().engine(Registry.forEdition("2026"));
 
     /** The pack of the default edition, for the comparison the corpus measurement makes. */
-    static final RuleEngine DEFAULT_PACK = En16931.engine(Registry.en16931());
+    static final RuleEngine DEFAULT_PACK = En16931Pack.engine(Registry.en16931());
 
     /** The options every upgrade of these measurements is made with. */
     static final UpgradeOptions OPTIONS = UpgradeOptions.builder()
