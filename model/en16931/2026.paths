@@ -45,7 +45,7 @@ examples/edition-2026.canonical.esj.json
 examples/invalid/edition-2026-time-without-offset.esj.json
 conformance/editions
 conformance/fixtures/manifest-en16931-2026.json
-bindings/csharp/En16931.SemanticJson/Typed/Invoice2026.cs
+bindings/csharp/BSNSoft.Esj/Typed/Invoice2026.cs
 rules/en16931-2026
 conformance/rules-2026
 esj-rules/src/main/java/de/bsnsoft/esj/rules/en16931/v2026
@@ -55,4 +55,4 @@ esj-cli/src/test/java/de/bsnsoft/esj/cli/v2026
 esj-rules/src/main/resources/META-INF/services/de.bsnsoft.esj.rules.RulePackSource
 conformance/fixtures/cases-en16931-2026-0.1.json
 bindings/typescript/src/rules/native-2026.ts
-bindings/csharp/En16931.SemanticJson/Rules/En16931V2026
+bindings/csharp/BSNSoft.Esj/Rules/En16931V2026

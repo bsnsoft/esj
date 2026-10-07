@@ -147,6 +147,12 @@ public final class ReportRenderer {
                     .renderWithReport(document, options.rendering())));
         } catch (IllegalArgumentException | RenderContentException e) {
             return ReportHtml.of(outcome, options, ReportInvoice.refused(refusal(e)));
+        } catch (RenderLimitException e) {
+            // The estimate above came out low enough to let the rendering begin and the
+            // bound on an HTML rendering stopped it: the same answer as a document the
+            // estimate had refused, because no rendering was made either way.
+            return ReportHtml.of(outcome, options,
+                    ReportInvoice.tooLargeDocument(document.values().size()));
         }
     }
 

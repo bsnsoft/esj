@@ -12,7 +12,8 @@ on:
         description: The tag to publish, for example v0.9.0
         required: true
 
-# Third-party actions are pinned to a commit. Nothing here writes the repository.
+# Every action is pinned to a commit, with its release beside it for Dependabot.
+# Nothing here writes the repository.
 permissions:
   contents: read
 
@@ -21,21 +22,39 @@ jobs:
     name: Deploy the libraries to Maven Central
     runs-on: ubuntu-latest
     steps:
+      # The tag is a dispatch input or the name of a release, and either is text
+      # someone typed. It reaches a shell only through the environment, and is
+      # used only once it has the form of a release tag. The checkout names it as
+      # a tag, so that a branch of the same name cannot stand in for it.
+      - name: Check the form of the tag
+        id: tag
+        shell: bash
+        env:
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          if [[ ! $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::not a release tag; one reads v1.2.3 or v1.2.3-rc.1"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Check out the tag
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.tag || github.event.release.tag_name }}
+          ref: refs/tags/${{ steps.tag.outputs.tag }}
+          persist-credentials: false
 
       # The libraries are compiled for release 17 and run from Java 17 up; the
       # deployment is built once, on the everyday JDK of this project. setup-java
       # writes the settings.xml the publishing plugin reads its credentials from
-      # and imports the signing key into the keyring of the runner.
+      # and imports the signing key into the keyring of the runner. No cache: the
+      # job that holds the key builds from what Maven Central serves, not from a
+      # local repository another run left behind.
       - name: Set up JDK 21
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: corretto
           java-version: '21'
-          cache: maven
           server-id: central
           server-username: CENTRAL_USER
           server-password: CENTRAL_PASSWORD
@@ -45,10 +64,12 @@ jobs:
       # built: a snapshot is never published, and the tag has to name the version the
       # POM carries.
       - name: Refuse anything but the released version
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          version=$(mvn -B -q -DforceStdout -Dexpression=project.version \
+          version=$(mvn -B -q -N -DforceStdout -Dexpression=project.version \
               org.apache.maven.plugins:maven-help-plugin:3.5.2:evaluate)
-          tag='${{ inputs.tag || github.event.release.tag_name }}'
+          tag=$TAG
           echo "version $version, tag $tag"
           case "$version" in
             *-SNAPSHOT)

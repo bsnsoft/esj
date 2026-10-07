@@ -112,12 +112,12 @@ mvn -B -P without-edition-2026 verify
 bin/without-edition-2026.sh
 ```
 
-The script copies the tree without the listed files and runs `mvn -B -P without-edition-2026
-clean verify` over the copy, then the tests and the fixture runner of both bindings where npm
-and dotnet are on the PATH; `--bindings` runs the bindings alone, as the CI does on every push.
-The machinery is not in the list and is not separable: the reader, the registry loader,
-the generator, the upgrade engine and the command line work with whatever registries are
-present, and an edition is data they load rather than code they contain.
+The script copies the tree without the listed files and runs `mvn -B -P without-edition-2026 clean
+verify` over the copy, then the tests and the fixture runner of both bindings where npm and dotnet
+are on the PATH; `--bindings` runs the bindings alone, as the CI does on every push, and `--keep`
+keeps the copy, which is otherwise removed. The machinery is not in the list and is not separable:
+the reader, the registry loader, the generator, the upgrade engine and the command line work with
+whatever registries are present, and an edition is data they load rather than code they contain.
 
 ## What works for a 2026 document today
 

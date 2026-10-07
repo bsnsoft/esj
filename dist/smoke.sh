@@ -28,8 +28,9 @@
 #   --keep        keep the directory the outputs were written to
 #
 # A command word list may be given as one argument with spaces in it; no path in
-# it may contain a space. Run it from anywhere: the cases are read relative to
-# the repository this script lies in.
+# it may contain a space. Run it from anywhere: a path in a command is taken
+# relative to the directory the script was run from, and the cases are read
+# relative to the repository this script lies in.
 #
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
@@ -64,6 +65,25 @@ if [ -z "$artefact" ]; then
   echo "usage: dist/smoke.sh <artefact> [--reference <command>] [--full] [--keep]" >&2
   exit 2
 fi
+
+# The runs below are made from the repository, so every word of a command that
+# names a file or a directory relative to where the script was run from is made
+# absolute first. A word without a slash is a command looked up on the PATH, and
+# a word that names nothing here — an image, a platform — stays as it is.
+absolute() {
+  absolute_words=
+  for word in $1; do
+    case $word in
+      /*|-*) ;;
+      */*) if [ -e "$word" ]; then word=$PWD/$word; fi ;;
+    esac
+    absolute_words="$absolute_words${absolute_words:+ }$word"
+  done
+  echo "$absolute_words"
+}
+artefact=$(absolute "$artefact")
+reference=$(absolute "$reference")
+[ -z "$small_heap" ] || small_heap=$(absolute "$small_heap")
 
 work=$(mktemp -d)
 # What a case writes goes to a path inside the repository, named relative to it,
@@ -107,6 +127,8 @@ run() {
     args="$args $argument"
   done
   [ -z "$file" ] || rm -f "$root/$file"
+  # A command and a case are word lists, split here on purpose.
+  # shellcheck disable=SC2086
   set -- $runner $args
   # Every run is given the input it asks for and nothing else: an artefact that
   # reads the standard input when it was not asked to would otherwise eat the
@@ -126,7 +148,9 @@ echo "$cases" | while IFS= read -r line; do
   [ -n "$line" ] || continue
   name=${line%% *}
   rest=${line#* }
+  # shellcheck disable=SC2086
   run a "$artefact" "$name" $rest || true
+  # shellcheck disable=SC2086
   run b "$reference" "$name" $rest || true
   difference=
   for part in out err exit; do

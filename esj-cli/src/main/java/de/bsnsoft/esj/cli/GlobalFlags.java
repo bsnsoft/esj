@@ -122,10 +122,11 @@ final class GlobalFlags {
 
     @Option(order = 1090, names = "--max-output-bytes", paramLabel = "<bytes>",
             converter = Numbers.ByteCount.class,
-            description = "The largest XML output to write. A conversion produces a document"
-                    + " of a different size from the one it read — a cross industry invoice"
-                    + " runs to about three times the UBL invoice it came from — so this"
-                    + " bound is its own and not --max-input-bytes.")
+            description = "The largest XML output to write, and the largest HTML page of"
+                    + " esj render --html. A conversion produces a document of a different"
+                    + " size from the one it read — a cross industry invoice runs to about"
+                    + " three times the UBL invoice it came from — so this bound is its own"
+                    + " and not --max-input-bytes.")
     void maxOutputBytes(long value) {
         target.bound(Bound.OUTPUT_BYTES, value);
     }

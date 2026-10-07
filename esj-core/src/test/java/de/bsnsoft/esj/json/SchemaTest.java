@@ -34,7 +34,9 @@ class SchemaTest {
      *
      * <p>{@code value-object-members-17} is in the list although the reader refuses it as
      * a limit: a value object with seventeen members carries members the schema does not
-     * define, and the schema sees that rather than the count.
+     * define, and the schema sees that rather than the count. {@code value-depth-33} is there
+     * for the same kind of reason: the schema sees an array where a string belongs, and the
+     * reader the nesting bound it would have to walk past.
      */
     private static final List<String> REJECTED_BY_THE_SCHEMA = List.of(
             "duplicate-and-surrogate-in-value-object",
@@ -47,6 +49,7 @@ class SchemaTest {
             "object-without-component",
             "owner-token-syntax",
             "path-leading-zero-index",
+            "path-syntax-with-array-value",
             "scheme-version-without-scheme",
             "source-empty-syntax",
             "source-sha256-uppercase",
@@ -58,8 +61,11 @@ class SchemaTest {
             "surrogate-in-source-member-name",
             "unknown-envelope-member",
             "unknown-object-member",
+            "value-depth-32",
+            "value-depth-33",
             "value-object-members-17",
-            "value-not-a-string");
+            "value-not-a-string",
+            "values-deep-array");
 
     private static Schema schema;
 

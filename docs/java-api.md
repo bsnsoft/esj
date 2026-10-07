@@ -726,8 +726,9 @@ importer writes a new one when it reads the result back.
 
 ## Rendering an invoice for a reader
 
-`esj-render` has two renderers. Both take a `RenderOptions` — the language, and the page size,
-layout, template and page bound only the PDF one uses — and neither changes the document.
+`esj-render` has two renderers. Both take a `RenderOptions` — the language, the page size,
+layout, template and page bound only the PDF one uses, and the byte bound only the HTML one
+uses — and neither changes the document.
 
 ```java
 HtmlRenderer html = new HtmlRenderer();
@@ -752,8 +753,9 @@ layouts: `Layout.LETTER`, a business letter and the default (`RenderOptions.DEFA
 letterhead, a logo, colours, fonts, margins, places for the terms of a model extension and a
 layout of its own, which an explicit `layout(…)` overrules ([`templates.md`](templates.md));
 `withMaxPages(int)` bounds a rendering at 2 000 pages and throws `RenderLimitException` beyond
-it. Two runs give the same bytes, an edition the registry does not describe is refused with
-`IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
+it; `withMaxHtmlBytes(long)` bounds the HTML page at 1 GiB of UTF-8, counted while it is written,
+and throws the same. Two runs give the same bytes, an edition the registry does not describe is
+refused with `IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
 
 ## Validating against the official artefacts
 

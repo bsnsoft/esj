@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+# Every action is pinned to a commit, with its release beside it for Dependabot;
+# no checkout keeps the token of the run, and only the job that submits the
+# dependency tree may write.
 permissions:
   contents: read
 
@@ -28,17 +31,21 @@ jobs:
             network: -Desj.network=true
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
           cache: maven
 
       - name: Build and test
-        run: mvn -B verify ${{ matrix.network }}
+        env:
+          NETWORK: ${{ matrix.network }}
+        run: mvn -B verify ${NETWORK:+"$NETWORK"}
 
   # The format has three implementations, and one fixture manifest holds them
   # together (conformance/fixtures). The TypeScript and the C# binding run their
@@ -54,13 +61,13 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       # engines.node of the package, >=22.18: the version it requires.
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version-file: bindings/typescript/package.json
           package-manager-cache: false
@@ -79,34 +86,62 @@ jobs:
         run: npm run fixtures
 
       - name: Set up .NET 8
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '8.0.x'
 
       - name: Test the C# binding
-        run: dotnet test bindings/csharp/En16931.SemanticJson.sln
+        run: dotnet test bindings/csharp/BSNSoft.Esj.sln
 
       # --no-build: the test run above built the project, and a build would print
       # to the standard output the runner reads its answers from.
       - name: Run the fixture manifest over the C# binding
         run: >-
           python3 conformance/fixtures/run.py --binding
-          dotnet run --no-build --project bindings/csharp/En16931.SemanticJson.Fixtures -- .
+          dotnet run --no-build --project bindings/csharp/BSNSoft.Esj.Fixtures -- .
 
       # The later edition is separable (model/en16931/2026.paths): both bindings run
       # again over a copy of the tree without its files.
       - name: Run both bindings without the later edition
         run: bin/without-edition-2026.sh --bindings
 
+  # The dependency graph GitHub reads from the POMs holds the direct
+  # dependencies only, so Dependabot raises no alert for a library that comes in
+  # through another one — fontbox, pdfbox-io and commons-logging through PDFBox,
+  # xmlresolver through Saxon, all of them in the jar. Every push to main
+  # submits the tree Maven resolves for each module instead.
+  dependencies:
+    name: Submit the resolved dependency tree
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # the dependency submission API
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Submit the dependency tree of every module
+        uses: advanced-security/maven-dependency-submission-action@a64327a7329c9939cf675e458452febe1894a70c # v6.0.1
+
   generated:
     name: Generated sources are up to date
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: '25'
@@ -171,18 +206,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       # Two JDKs, as on the packager's machine: GraalVM builds the native
       # executable and nothing else; the runtime image and the reference run
       # come from a standard JDK 25. A runtime image linked from GraalVM
       # carries the JVMCI module, which the ahead-of-time cache does not
       # expect, and every run then writes an [aot] error before its output.
+      # The assignment fails the step when the script does, which an echo
+      # around the same command substitution would not.
       - name: Set up the pinned GraalVM build (native executable only)
-        run: echo "ESJ_GRAALVM_HOME=$(sh dist/graalvm.sh "$RUNNER_TEMP/graalvm")" >> "$GITHUB_ENV"
+        run: |
+          home=$(sh dist/graalvm.sh "$RUNNER_TEMP/graalvm")
+          test -x "$home/bin/native-image"
+          echo "ESJ_GRAALVM_HOME=$home" >> "$GITHUB_ENV"
 
       - name: Set up JDK 25 (reference runtime, runtime image)
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: corretto
           java-version: '25'

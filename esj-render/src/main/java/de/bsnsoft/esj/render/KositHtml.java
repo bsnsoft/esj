@@ -1,10 +1,11 @@
 package de.bsnsoft.esj.render;
 
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -101,14 +102,34 @@ final class KositHtml {
     }
 
     /**
-     * Transforms an XR document into the HTML of the visualization.
+     * Transforms an XR document into the HTML of the visualization, and stops where the
+     * HTML reaches a bound.
+     *
+     * <p>The bound is measured on what the serializer writes, in bytes of UTF-8, while it
+     * writes it: the page is held in memory until it is finished, and a page that is
+     * stopped where it reached the bound has cost no more than the bound.
      *
      * @param xr       the document node of the XR document
      * @param language the language the labels are written in
+     * @param maxBytes how many bytes the HTML may have
      * @return the HTML, as the stylesheet's own serialization settings write it
-     * @throws RenderException if the stylesheet raised an error
+     * @throws RenderLimitException if the HTML reached the bound
+     * @throws RenderException      if the stylesheet raised an error
      */
-    static String transform(XdmNode xr, RenderLanguage language) {
+    static String transform(XdmNode xr, RenderLanguage language, long maxBytes) {
+        Bounded html = new Bounded(maxBytes);
+        try {
+            return transform(xr, language, html);
+        } catch (RuntimeException e) {
+            if (html.reached()) {
+                throw new RenderLimitException("the HTML rendering reached the bound of "
+                        + maxBytes + " bytes this run was given, so it was not written");
+            }
+            throw e;
+        }
+    }
+
+    private static String transform(XdmNode xr, RenderLanguage language, Bounded html) {
         try {
             Xslt30Transformer transformer = Holder.EXECUTABLE.load30();
             transformer.setResourceResolver(KositHtml::resolveResource);
@@ -122,7 +143,6 @@ final class KositHtml {
             });
             transformer.setStylesheetParameters(
                     Map.<QName, XdmValue>of(LANG, new XdmAtomicValue(language.code())));
-            StringWriter html = new StringWriter();
             Serializer destination = processor().newSerializer(html);
             transformer.applyTemplates(xr, destination);
             return html.toString();
@@ -139,6 +159,89 @@ final class KositHtml {
 
     private static Processor processor() {
         return XmlFrontDoor.processor();
+    }
+
+    /**
+     * Where the serializer writes the page: a buffer that counts what it is given in bytes
+     * of UTF-8 and refuses to take more than its bound.
+     *
+     * <p>A character of the basic plane counts as the one, two or three bytes UTF-8 writes
+     * it in, and each half of a surrogate pair as two, so a pair is the four bytes it is
+     * written as. The refusal is an {@link IOException}, which the serializer reports as a
+     * failure of its destination, and the buffer remembers it so that the caller can tell
+     * that failure from an error of the stylesheet.
+     */
+    private static final class Bounded extends Writer {
+
+        private final StringBuilder text = new StringBuilder();
+        private final long bound;
+        private long bytes;
+        private boolean reached;
+
+        private Bounded(long bound) {
+            this.bound = bound;
+        }
+
+        @Override
+        public void write(char[] buffer, int offset, int length) throws IOException {
+            long more = 0;
+            for (int i = offset; i < offset + length; i++) {
+                more += weight(buffer[i]);
+            }
+            take(more);
+            text.append(buffer, offset, length);
+        }
+
+        @Override
+        public void write(String string, int offset, int length) throws IOException {
+            long more = 0;
+            for (int i = offset; i < offset + length; i++) {
+                more += weight(string.charAt(i));
+            }
+            take(more);
+            text.append(string, offset, offset + length);
+        }
+
+        @Override
+        public void write(int c) throws IOException {
+            take(weight((char) c));
+            text.append((char) c);
+        }
+
+        /** Returns how many bytes of UTF-8 a character of the page is, a half pair two. */
+        private static int weight(char c) {
+            return c < 0x80 ? 1 : c < 0x800 || Character.isSurrogate(c) ? 2 : 3;
+        }
+
+        /** Counts bytes that are about to be taken, or refuses them past the bound. */
+        private void take(long more) throws IOException {
+            if (reached || bytes + more > bound) {
+                reached = true;
+                throw new IOException("the HTML rendering reached the bound of " + bound
+                        + " bytes");
+            }
+            bytes += more;
+        }
+
+        @Override
+        public void flush() {
+            // Nothing is written anywhere until the page is finished.
+        }
+
+        @Override
+        public void close() {
+            // The text stays readable after the serializer is done with it.
+        }
+
+        /** Tells whether the page ran into the bound. */
+        boolean reached() {
+            return reached;
+        }
+
+        @Override
+        public String toString() {
+            return text.toString();
+        }
     }
 
     /**

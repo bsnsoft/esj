@@ -84,6 +84,12 @@
       to the date of the release being prepared (docs/releasing.md).
     -->
     <project.build.outputTimestamp>2026-10-07T08:20:49Z</project.build.outputTimestamp>
+    <!--
+      A -Dtest pattern that matches no test fails the module it ran in, so that a
+      misspelt name is not a green run. With -pl <module> -am the modules built for it
+      have none of its tests: -Dsurefire.failIfNoSpecifiedTests=false lets them pass.
+    -->
+    <surefire.failIfNoSpecifiedTests>true</surefire.failIfNoSpecifiedTests>
 
     <jackson.version>2.22.3</jackson.version>
     <picocli.version>4.7.7</picocli.version>
@@ -254,7 +260,7 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven-surefire-plugin.version}</version>
           <configuration>
-            <failIfNoSpecifiedTests>true</failIfNoSpecifiedTests>
+            <failIfNoSpecifiedTests>${surefire.failIfNoSpecifiedTests}</failIfNoSpecifiedTests>
           </configuration>
         </plugin>
         <!--
