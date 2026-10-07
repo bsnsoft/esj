@@ -60,6 +60,25 @@ jobs:
           server-password: CENTRAL_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
 
+      # The Maven of the runner image is not fixed: ubuntu24/20261004 moved it from
+      # 3.9.16 to 3.10.0, and with 3.10.0 central-publishing-maven-plugin 0.11.0 leaves
+      # the repository metadata of every artifact in the bundle, which the Portal
+      # refuses ("content that does NOT have a .pom file"). The deployment runs on the
+      # Maven it was proven with, checked against the digest Apache publishes.
+      - name: Use Maven 3.9.16
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=3.9.16
+          sha512=831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6
+          archive="$RUNNER_TEMP/apache-maven-$version-bin.tar.gz"
+          curl -fsSL -o "$archive" \
+              "https://archive.apache.org/dist/maven/maven-3/$version/binaries/apache-maven-$version-bin.tar.gz"
+          echo "$sha512  $archive" | sha512sum -c -
+          tar -xzf "$archive" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/apache-maven-$version/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/apache-maven-$version/bin/mvn" -v | head -1
+
       # A deployment cannot be taken back, so the version is read before anything is
       # built: a snapshot is never published, and the tag has to name the version the
       # POM carries.

@@ -55,7 +55,9 @@ git commit -am 'Back to a snapshot version'
 The same commit sets `esj.api-baseline` in `pom.xml` to the version just released.
 
 The same command repeats a deployment that failed; a version the Portal has published cannot be
-deployed again.
+deployed again. The deployment runs on Maven 3.9.16, which the workflow downloads and checks:
+with the Maven 3.10.0 of newer runner images, central-publishing-maven-plugin 0.11.0 bundles the
+repository metadata, and the Portal refuses the bundle.
 
 `mvn -B -Papi-check verify -DskipTests` compares the API of every library module with the release
 `esj.api-baseline` names (`pom.xml`) and writes `target/japicmp/api-check.html` per module; the CI

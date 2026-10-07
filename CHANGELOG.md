@@ -4,6 +4,15 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). Until 1.0 the format itself may
 still change; a change to it is named here under *Format*.
 
+## [0.9.6] — unreleased
+
+### Fixed
+
+- `publish.yml` deploys on Maven 3.9.16, downloaded and checked against Apache's digest: the
+  runner image moved to Maven 3.10.0, with which central-publishing-maven-plugin 0.11.0 put the
+  repository metadata of every artifact into the bundle, and the Portal refused the 0.9.5
+  deployment. The release itself was not affected.
+
 ## [0.9.5] — 2026-10-08
 
 ### Added
