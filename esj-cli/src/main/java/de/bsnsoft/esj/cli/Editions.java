@@ -23,7 +23,7 @@ import java.util.Optional;
  * <p>Which editions are there is a property of the build and not of this class. A registry
  * is data, a distribution may leave one out — {@code model/en16931/2026.paths} lists the
  * files of the 2026 edition and the Maven profile {@code without-edition-2026} builds
- * without them — so the set is read from {@link Registry#editions()} and nothing here
+ * without them — so the set is read from {@link Registry#editionKeys()} and nothing here
  * names an edition key.
  *
  * <p>An extension registry belongs to one edition too. The XRechnung extension and the
@@ -54,7 +54,7 @@ final class Editions {
     static List<Registry> registries(Extensions extension) {
         Objects.requireNonNull(extension, "extension");
         List<Registry> registries = new ArrayList<>();
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             registries.add(withExtensions(Registry.forEdition(edition), extension));
         }
         return List.copyOf(registries);
@@ -92,7 +92,7 @@ final class Editions {
         return forDocument(document, extension).orElseThrow(() ->
                 CliException.unsupported("this build carries no registry of the edition "
                         + document.semanticModel() + "; it carries "
-                        + String.join(", ", Registry.editions())));
+                        + String.join(", ", Registry.editionKeys())));
     }
 
     /**

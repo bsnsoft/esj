@@ -22,7 +22,7 @@ public final class SellerSteps {
     /**
      * The first step of the group BG-4: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits SellerBuild {
         /**
          * BT-27 Seller name. Full name of the seller as registered in the national register of
          * legal entities.
@@ -38,7 +38,7 @@ public final class SellerSteps {
     /**
      * The step of the group BG-4 that follows BT-27 Seller name.
      */
-    public interface WithName {
+    public sealed interface WithName permits SellerBuild {
         /**
          * BG-5 SELLER POSTAL ADDRESS. Group carrying the seller's postal address.
          *
@@ -57,7 +57,7 @@ public final class SellerSteps {
      * The terminal step of the group BG-4: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerBuild {
         /**
          * BT-28 Seller trading name. Name the seller is known by, where different from the
          * registered seller name.

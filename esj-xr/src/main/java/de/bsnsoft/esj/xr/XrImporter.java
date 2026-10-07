@@ -148,16 +148,8 @@ public final class XrImporter implements InvoiceReader {
      */
     public static final String XR_PROVENANCE = "XR";
 
-    /**
-     * The largest input this importer accepts by default, in bytes: four mebibytes.
-     *
-     * <p>An EN 16931 invoice is a small document. The largest instance of the
-     * conformance corpus, embedded attachment included, is under half a mebibyte, and
-     * this bound sits an order of magnitude above that rather than at the size a machine
-     * could hold, because the cost of reading a document does not grow with its size in
-     * a straight line; see {@link #maxInputBytes()}.
-     */
-    public static final long DEFAULT_MAX_INPUT_BYTES = 4L * 1024L * 1024L;
+    /** The largest input an importer accepts by default: four mebibytes. */
+    private static final long DEFAULT_MAX_INPUT_BYTES = 4L * 1024L * 1024L;
 
     /**
      * The normalizations an importer runs unless it is given others: every one of
@@ -191,8 +183,23 @@ public final class XrImporter implements InvoiceReader {
     private final EncodingMode encodingMode;
 
     /**
+     * Returns the largest input an importer accepts by default, in bytes: four mebibytes.
+     *
+     * <p>An EN 16931 invoice is a small document. The largest instance of the
+     * conformance corpus, embedded attachment included, is under half a mebibyte, and
+     * this bound sits an order of magnitude above that rather than at the size a machine
+     * could hold, because the cost of reading a document does not grow with its size in
+     * a straight line; see {@link #maxInputBytes()}.
+     *
+     * @return the bound
+     */
+    public static long defaultMaxInputBytes() {
+        return DEFAULT_MAX_INPUT_BYTES;
+    }
+
+    /**
      * Creates an importer that knows the core model and the XRechnung extension, accepts
-     * an input of up to {@link #DEFAULT_MAX_INPUT_BYTES} bytes, writes documents a reader
+     * an input of up to {@link #defaultMaxInputBytes()} bytes, writes documents a reader
      * with {@link Limits#defaults()} reads and runs the
      * {@link #DEFAULT_NORMALIZATIONS}.
      */

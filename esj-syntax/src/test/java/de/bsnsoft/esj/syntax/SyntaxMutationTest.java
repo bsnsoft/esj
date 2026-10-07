@@ -1,10 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
+import de.bsnsoft.esj.validate.ValidationStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +9,10 @@ import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What the engine says about documents that were broken on purpose.
@@ -85,7 +86,7 @@ class SyntaxMutationTest {
 
         SyntaxReport report = SyntaxValidator.validate(Corpus.instance(mutation.source()));
 
-        assertEquals(Verdict.VALID, report.verdict(),
+        assertEquals(ValidationStatus.VALID, report.verdict(),
                 id + " is made from " + mutation.source() + ", which is accepted");
     }
 
@@ -125,8 +126,8 @@ class SyntaxMutationTest {
 
         assertFalse(releveled.isEmpty(), "at least one mutation meets a rule its profile"
                 + " levels differently from the artefact");
-        assertTrue(releveled.stream().anyMatch(finding -> finding.flag() == Severity.FATAL
-                        && finding.severity() != Severity.FATAL),
+        assertTrue(releveled.stream().anyMatch(finding -> finding.flag() == Severity.ERROR
+                        && finding.severity() != Severity.ERROR),
                 "and one of them is a rule the profile levels down, which is the case that"
                         + " decides a verdict");
     }
@@ -135,9 +136,18 @@ class SyntaxMutationTest {
     private static List<String> lines(SyntaxReport report) {
         List<String> lines = new ArrayList<>();
         for (SyntaxFinding finding : report.findings()) {
-            lines.add(Mutations.line(finding.code(), finding.severity().token(),
-                    finding.flag().token(), finding.category().label()));
+            lines.add(Mutations.line(finding.code(), word(finding.severity()),
+                    word(finding.flag()), finding.category().label()));
         }
         return lines;
+    }
+
+    /** Returns the word an artefact flags a severity with, as the ledger records it. */
+    private static String word(Severity severity) {
+        return switch (severity) {
+            case ERROR -> "fatal";
+            case WARNING -> "warning";
+            case INFO -> "information";
+        };
     }
 }

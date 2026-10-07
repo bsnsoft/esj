@@ -152,7 +152,7 @@ class GrossAuthoringTest {
         assertEquals("BT-149", refused.term());
 
         Gross.on(invoice).derive(GrossAuthoring.GROSS_UNIT_AUTHORING.with(
-                AuthoringOptions.standard().withBaseQuantity(true)));
+                AuthoringOptions.defaults().withBaseQuantity(true)));
         SemanticDocument document = invoice.document();
 
         // 4.50 buys ten, so 3.781513 is the net price of ten and 3 of them come to 1.1344539.
@@ -176,7 +176,7 @@ class GrossAuthoringTest {
         assertEquals("BG-27", refused.term());
 
         gross.derive(GrossAuthoring.GROSS_UNIT_AUTHORING.with(
-                AuthoringOptions.standard().withLineAllowancesAndCharges(true)));
+                AuthoringOptions.defaults().withLineAllowancesAndCharges(true)));
         SemanticDocument document = invoice.document();
 
         // The gross figure is the price before the allowance: 84.025210 - 10.00 = 74.025210.
@@ -266,7 +266,7 @@ class GrossAuthoringTest {
 
         PolicyPreconditionException refused = assertThrows(PolicyPreconditionException.class,
                 () -> gross.derive(GrossAuthoring.GROSS_UNIT_AUTHORING.with(
-                        AuthoringOptions.standard()
+                        AuthoringOptions.defaults()
                                 .withMaxRoundingAmount(new BigDecimal("0.05")))));
         assertEquals("a rounding amount within the limit of this run", refused.precondition());
         assertEquals("BT-114", refused.term());
@@ -318,7 +318,7 @@ class GrossAuthoringTest {
         assertTrue(refused.getMessage().contains("withNetPriceScale"));
 
         gross.derive(GrossAuthoring.GROSS_LINE_AUTHORING.with(
-                AuthoringOptions.standard().withNetPriceScale(12)));
+                AuthoringOptions.defaults().withNetPriceScale(12)));
         assertEquals("11.34", Invoices.at(invoice.document(), "/BG-25/0/BT-131"));
     }
 
@@ -413,8 +413,8 @@ class GrossAuthoringTest {
     @Test
     void theOptionsRefuseAScaleBelowSixFractionDigits() {
         assertThrows(IllegalArgumentException.class,
-                () -> AuthoringOptions.standard().withNetPriceScale(2));
-        assertEquals(6, AuthoringOptions.standard().netPriceScale());
+                () -> AuthoringOptions.defaults().withNetPriceScale(2));
+        assertEquals(6, AuthoringOptions.defaults().netPriceScale());
         assertEquals("GROSS_UNIT_AUTHORING[netPriceScale=6, lineAllowancesAndCharges=false,"
                 + " baseQuantity=false]", GrossAuthoring.GROSS_UNIT_AUTHORING.toString());
     }

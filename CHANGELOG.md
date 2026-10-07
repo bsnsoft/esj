@@ -41,7 +41,7 @@ still change; a change to it is named here under *Format*.
 - The Maven profile `api-check` compares the API of every library module with the release
   `esj.api-baseline` names, with japicmp, leaving out internal packages, the preview packages and
   everything marked `@Preview`. It reports and does not fail before 1.0.0; the CI job *API compared
-  with the last release* keeps the report (`docs/releasing.md`). Against 0.9.4 it names 99 classes
+  with the last release* keeps the report (`docs/releasing.md`). Against 0.9.4 it names 124 classes
   with incompatible changes, all of them the moves, renames and removals of the migration table and
   the preview marks.
 - The rule files of both bundled packs, as their manifests name them, are validated against
@@ -54,6 +54,14 @@ still change; a change to it is named here under *Format*.
   the `subject` of a finding where section 9.5 requires one — where the path is empty, and on a
   finding of layer L3 — and `run.py` and the manifest tests of both bindings compare it there; a
   binding's `validate` answer carries `subject` beside `path` and `code`.
+- `docs/compatibility.md`: what a release may change from 1.0.0 — the format, the command line,
+  the Java libraries, the data they ship — and the rules the Java API keeps; `docs/java-api.md`
+  lists every public package as API, preview or internal.
+- `Registry.editionKey()`, `Registry.defaultEditionKey()` and `Registry.editionKeys()`: an edition
+  is named three ways and each has its method — the key (`2017`), `edition()` (the title) and
+  `semanticModel()` (the spelling of a document).
+- `de.bsnsoft.esj.render.PaymentCode` (`TEMPLATE`, `DRAW`, `OMIT`), what `RenderOptions` says
+  about the EPC QR code of the letter.
 
 ### Changed
 
@@ -61,8 +69,7 @@ still change; a change to it is named here under *Format*.
   every XML document the tool writes is: the page is measured in bytes of UTF-8 while it is
   written, and one past the bound leaves with exit code 7 and nothing written, rather than being
   finished in memory first. In the library the bound is `RenderOptions.maxHtmlBytes()`
-  (`withMaxHtmlBytes(long)`, default `DEFAULT_MAX_HTML_BYTES`, 1 GiB) and is reached with an
-  `EsjLimitException`. `RenderOptions` has a seventh member; the constructor of six stays.
+  (`withMaxHtmlBytes(long)`, 1 GiB by default) and is reached with an `EsjLimitException`.
 - `esj-render` replaces U+007F and the C1 controls with a space in every form — the HTML
   rendering and the report carried them as they stood, the PDF printed a question mark — and
   turns U+0085, U+2028 and U+2029 into line feeds in all of them; one class holds the sets for
@@ -137,6 +144,31 @@ still change; a change to it is named here under *Format*.
 - The command line turns a bound of any library into exit code 7 in one place. A bound met while
   the PDF validation report is drawn, or while `esj embed` writes the attachment, now leaves with
   7 where it left with 5, "internal error".
+- Options are final classes with one convention: `defaults()` and one `withX(…)` per setting,
+  `equals` and the accessors of before. That holds for `Limits`, `ReaderOptions`,
+  `WriterOptions`, `SyntaxOptions`, `PdfLimits`, `EmbedOptions`, `RenderOptions`,
+  `TotalsOptions`, `AuthoringOptions` and `UpgradeOptions`; none has a builder or a public
+  constructor any more.
+- A value that changes with a release is a method rather than a constant compiled into the
+  caller: the format version, the default edition, the version of a bundled rule pack and the
+  defaults of every options class.
+- One `Severity` (`ERROR`, `WARNING`, `INFO`) and one `ValidationStatus` in
+  `de.bsnsoft.esj.validate` for every check: the syntax engine, the rule engine, the container
+  checks of a PDF and the structural validator. The reports, the JSON output and the ledgers keep
+  the words of each source — `fatal` and `information` for an artefact, `fatal` and `info` for a
+  rule pack.
+- `Term` is a final class with the accessors of the record; a later release can give it a member
+  without breaking a caller.
+- An array a method of the API returns is a copy: `ExportResult.xr()`, `AttachmentContent.bytes()`
+  and `PdfContainer.xmpPacket()` handed out the array they hold.
+- The generated views, editors and step builders, `Coded` and the steps of `InvoiceSteps` are
+  sealed; `EditorList`, `ValueList`, `IdentifierList` and `SchemedIdentifierList` say they are not
+  for implementation.
+- The PDF engine of `esj-render` and the report renderer are in `de.bsnsoft.esj.render.internal`;
+  `PdfRenderer`, `HtmlRenderer`, `RenderOptions`, `RenderTemplate`, the enums and the exceptions
+  stay.
+- A PDF validation report that reaches its page bound says so — the 2 000 pages a report is drawn
+  within, which `--max-pages` does not move — where the line named `--max-pages`. Exit code 7.
 
 ### Removed
 
@@ -285,6 +317,28 @@ compatibility promise. One row per package or type:
 | `SyntaxLimitException.budget()` | `EsjLimitException.bound()`, the bound `maxRuntime` in milliseconds |
 | `new RenderException(…)` | `new RenderEngineException(…)`; `RenderException` is abstract |
 | `Esj.forMessage`, `Esj.forSubject`, `Esj.abbreviated` | `de.bsnsoft.esj.internal.Messages`, internal; `Esj.steersATerminal` and `Esj.isBidiControl` stay |
+| `Limits`, `PdfLimits`, `EmbedOptions`, `RenderOptions`, `TotalsOptions`, `AuthoringOptions` (records), `new X(…)` | final classes: `X.defaults().withY(…)` |
+| `Limits.builder()…build()`, `toBuilder()`, `Limits.Builder`; the same for `ReaderOptions`, `WriterOptions`, `UpgradeOptions` | `X.defaults().withY(…)`, setter `y(v)` → `withY(v)` |
+| `UpgradeOptions.Builder.drop(path)`, `extension(registry)`, `source(bytes)` | `withDroppable(paths)`, `withExtensions(registries)`, `withSource(bytes)` |
+| `RenderOptions.in(language)`, `.on(size)`, `.with(template)`, `.layout(layout)` | `RenderOptions.defaults().withLanguage(language)`, `.withPageSize(size)`, `.withTemplate(template)`, `.withLayout(layout)` |
+| `RenderOptions.withPaymentCode(boolean)`, `paymentCode()` as `Optional<Boolean>` | `withPaymentCode(PaymentCode.DRAW / OMIT / TEMPLATE)`, `paymentCode()` as `PaymentCode` |
+| `EmbedOptions.of(profile)`, `checkedWith(check)` | `EmbedOptions.defaults().withProfile(profile)`, `withCheck(check)` |
+| `TotalsOptions.standard()`, `AuthoringOptions.standard()` | `defaults()` |
+| `DEFAULT_MAX_*` of `RenderOptions`, `PdfLimits`, `ReaderOptions`, `WriterOptions`, `SyntaxOptions`; `WriterOptions.DEFAULT_TAX_REGISTRATION_SCHEME`, `AuthoringOptions.DEFAULT_NET_PRICE_SCALE` | the accessor of `defaults()`, e.g. `PdfLimits.defaults().maxPdfBytes()`; `RenderOptions.DEFAULT_LAYOUT` stays |
+| `XrImporter.DEFAULT_MAX_INPUT_BYTES` | `XrImporter.defaultMaxInputBytes()` |
+| `Esj.VERSION`, `Esj.SEMANTIC_MODEL` | `Esj.formatVersion()`, `Esj.defaultSemanticModel()` |
+| `En16931Pack.VERSION`, `En16931Pack.EDITION`, `En16931V2026Pack.VERSION` | `En16931Pack.version()`, `En16931Pack.edition()`, `En16931V2026Pack.version()` |
+| `Rules.PACK_VERSION`, `B2cConsistency.PACK_VERSION` | `Rules.packVersion()`, `B2cConsistency.packVersion()` |
+| `Registry.DEFAULT_EDITION`, `Registry.editions()` | `Registry.defaultEditionKey()`, `Registry.editionKeys()` |
+| `RulePackSources.forEdition(registry.edition())` | `RulePackSources.forRegistry(registry)` |
+| `de.bsnsoft.esj.syntax.Severity` (`FATAL`, `WARNING`, `INFORMATION`), `Severity.ofFlag` | `de.bsnsoft.esj.validate.Severity` (`ERROR`, `WARNING`, `INFO`) |
+| `de.bsnsoft.esj.rules.RuleSeverity` (`FATAL`, `WARNING`, `INFO`), `RuleSeverity.declared` | `de.bsnsoft.esj.validate.Severity`; `JavaRule.severity()` returns it |
+| `ContainerFinding.Severity` | `de.bsnsoft.esj.validate.Severity` |
+| `de.bsnsoft.esj.syntax.Verdict` | `de.bsnsoft.esj.validate.ValidationStatus` |
+| `Term` (record), `new Term(…)` | final class, made by `Registry` only |
+| `ExportResult`, `AttachmentContent` (records), `new …(…)` | final classes, made by the library only |
+| `de.bsnsoft.esj.render.ReportRenderer` | `de.bsnsoft.esj.render.internal.ReportRenderer`, internal |
+| `de.bsnsoft.esj.invoice.InvoiceSteps` (interface) | final class; its steps are sealed interfaces |
 
 ## [0.9.4] — 2026-10-07
 

@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
 import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
@@ -15,9 +16,9 @@ import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XdmDestination;
 import net.sf.saxon.s9api.XdmNode;
 import net.sf.saxon.s9api.XdmNodeKind;
+import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
-import net.sf.saxon.s9api.Xslt30Transformer;
 import net.sf.saxon.trans.XPathException;
 
 /**
@@ -139,8 +140,8 @@ final class SchematronCheck {
                                          ArtefactStopped failure) {
         return new SyntaxFinding(Engine.SCHEMATRON,
                 Categories.of(STOPPED),
-                Severity.FATAL,
-                Severity.FATAL,
+                Severity.ERROR,
+                Severity.ERROR,
                 STOPPED,
                 Text.normalize("the rule set " + entry + " of the pack " + pack.directory()
                         + " stopped over this document and reached no result of its own: "
@@ -247,7 +248,7 @@ final class SchematronCheck {
         if (code.isEmpty()) {
             code = UNIDENTIFIED;
         }
-        Severity flag = Severity.ofFlag(attribute(assertion, "flag"));
+        Severity flag = SchematronFlag.of(attribute(assertion, "flag"));
         String rule = code;
         Severity severity = levels.flatMap(table -> table.level(rule)).orElse(flag);
         return new SyntaxFinding(Engine.SCHEMATRON,

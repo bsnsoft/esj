@@ -100,9 +100,8 @@ esj diff invoice.xml invoice.pdf            # the same semantic digest: no diffe
 esj validate invoice.xml --output json      # invoice.ok, syntax.findings, rules.findings, reasons
 ```
 
-**How do I tell "invalid" from "could not be checked"?**
-By the exit code: 0 `VALID`, 1 `INVALID`, 9 `INDETERMINATE` with `reasons`, 7 a limit and no
-verdict ([`cli.md`](cli.md#exit-codes)).
+**How do I tell "invalid" from "could not be checked"?** By the exit code: 0 `VALID`, 1 `INVALID`, 9
+`INDETERMINATE` with `reasons`, 7 a limit and no verdict ([`cli.md`](cli.md#exit-codes)).
 
 **Which official artefacts run, in which version?**
 ```sh
@@ -285,9 +284,10 @@ WriteResult ubl = UblWriter.writeWithReport(document, WriterOptions.defaults());
 
 **How do I produce the hybrid PDF from Java?**
 ```java
-byte[] pages = new PdfRenderer().render(invoice, RenderOptions.in(RenderLanguage.ENGLISH));
+byte[] pages = new PdfRenderer().render(invoice,
+        RenderOptions.defaults().withLanguage(RenderLanguage.ENGLISH));
 EmbedResult hybrid = FacturX.embedWithReport(pages, invoice,
-        EmbedOptions.of(FacturXProfile.EN_16931));
+        EmbedOptions.defaults().withProfile(FacturXProfile.EN_16931));
 ```
 
 **How do I store from Java: the canonical bytes and the digests?**

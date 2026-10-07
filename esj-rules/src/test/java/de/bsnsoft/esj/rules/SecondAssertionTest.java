@@ -1,16 +1,16 @@
 package de.bsnsoft.esj.rules;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.validate.Severity;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The second assertion of a rule: {@code warn}.
@@ -68,7 +68,7 @@ class SecondAssertionTest {
         List<RuleFinding> findings = findings("150");
 
         assertEquals(1, findings.size(), findings.toString());
-        assertEquals(RuleSeverity.WARNING, findings.get(0).severity());
+        assertEquals(Severity.WARNING, findings.get(0).severity());
         assertEquals("WARNING at /BG-22/BT-106", findings.get(0).message());
     }
 
@@ -77,7 +77,7 @@ class SecondAssertionTest {
         List<RuleFinding> findings = findings("300");
 
         assertEquals(1, findings.size(), findings.toString());
-        assertEquals(RuleSeverity.FATAL, findings.get(0).severity());
+        assertEquals(Severity.ERROR, findings.get(0).severity());
         assertEquals("FAULT at /BG-22/BT-106", findings.get(0).message());
     }
 

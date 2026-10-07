@@ -1,9 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.ValidationStatus;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +10,9 @@ import java.util.Optional;
 import java.util.SortedSet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The snippets of the section "Validating against the official artefacts" of
@@ -45,11 +45,11 @@ class ReadmeExamplesTest {
         // docs/java-api.md: Validating against the official artefacts
         SyntaxReport report = SyntaxValidator.validate(Files.readAllBytes(invoice));
 
-        Verdict verdict = report.verdict();
+        ValidationStatus verdict = report.verdict();
         List<SyntaxFinding> fatal = report.fatal();
         List<SyntaxFinding> warnings = report.warnings();
 
-        assertEquals(Verdict.VALID, verdict);
+        assertEquals(ValidationStatus.VALID, verdict);
         assertEquals(List.of(), fatal);
         assertEquals(List.of("BR-DE-TMP-32"),
                 warnings.stream().map(SyntaxFinding::code).toList(),

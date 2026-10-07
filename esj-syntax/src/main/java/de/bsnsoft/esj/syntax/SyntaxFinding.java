@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -107,10 +108,10 @@ public record SyntaxFinding(Engine engine,
     /**
      * Tells whether this finding decides the verdict.
      *
-     * @return whether its severity is {@link Severity#FATAL}
+     * @return whether its severity is {@link Severity#ERROR}
      */
     public boolean fatal() {
-        return severity == Severity.FATAL;
+        return severity == Severity.ERROR;
     }
 
     /**

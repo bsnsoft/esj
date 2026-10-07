@@ -25,14 +25,14 @@ public final class DeliverySteps {
      * The first step of the group BG-13, which is its terminal step as well: the model declares
      * nothing in it mandatory that a caller has to state.
      */
-    public interface Start extends Buildable {
+    public sealed interface Start extends Buildable permits DeliveryBuild {
     }
 
     /**
      * The terminal step of the group BG-13: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits DeliveryBuild, Start {
         /**
          * BT-70 Deliver to party name. Name of the party the goods or services are delivered to,
          * where different from the buyer.

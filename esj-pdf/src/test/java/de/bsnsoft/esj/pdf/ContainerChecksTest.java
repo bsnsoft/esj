@@ -1,13 +1,13 @@
 package de.bsnsoft.esj.pdf;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** What the container says about the invoice, checked against the invoice. */
 class ContainerChecksTest {
@@ -25,7 +25,7 @@ class ContainerChecksTest {
         List<ContainerFinding> findings = check(pdf);
 
         assertEquals(List.of("PDF-STRUCTURE-PDFA"), codes(findings));
-        assertEquals(ContainerFinding.Severity.INFO, findings.get(0).severity());
+        assertEquals(Severity.INFO, findings.get(0).severity());
         assertTrue(findings.get(0).message().contains("was not validated"),
                 findings.get(0).message());
     }
@@ -42,7 +42,7 @@ class ContainerChecksTest {
         ContainerFinding finding = one(check(pdf), "PDF-AF-ABSENT");
 
         assertEquals(ContainerFinding.Category.PDF_AF, finding.category());
-        assertEquals(ContainerFinding.Severity.ERROR, finding.severity());
+        assertEquals(Severity.ERROR, finding.severity());
     }
 
     @Test
@@ -56,7 +56,7 @@ class ContainerChecksTest {
 
         ContainerFinding finding = one(check(pdf), "PDF-AF-RELATIONSHIP");
 
-        assertEquals(ContainerFinding.Severity.WARNING, finding.severity());
+        assertEquals(Severity.WARNING, finding.severity());
         assertTrue(finding.message().contains("Supplement"), finding.message());
     }
 
@@ -70,7 +70,7 @@ class ContainerChecksTest {
 
         assertFalse(codes(check(right)).contains("PDF-XMP-FILENAME"), codes(check(right)) + "");
         ContainerFinding finding = one(check(wrong), "PDF-XMP-FILENAME");
-        assertEquals(ContainerFinding.Severity.ERROR, finding.severity());
+        assertEquals(Severity.ERROR, finding.severity());
         assertTrue(finding.message().contains("somewhere-else.xml"), finding.message());
     }
 
@@ -81,7 +81,7 @@ class ContainerChecksTest {
         ContainerFinding finding = one(check(pdf), "PDF-XMP-ABSENT");
 
         assertEquals(ContainerFinding.Category.PDF_XMP, finding.category());
-        assertEquals(ContainerFinding.Severity.WARNING, finding.severity());
+        assertEquals(Severity.WARNING, finding.severity());
     }
 
     @Test
@@ -102,7 +102,7 @@ class ContainerChecksTest {
 
         ContainerFinding finding = one(check(pdf), "PDF-XMP-SCHEMA");
 
-        assertEquals(ContainerFinding.Severity.WARNING, finding.severity());
+        assertEquals(Severity.WARNING, finding.severity());
     }
 
     @Test
@@ -144,7 +144,7 @@ class ContainerChecksTest {
 
         ContainerFinding finding = one(check(pdf), "PDF-EMBEDDED-SEVERAL");
 
-        assertEquals(ContainerFinding.Severity.WARNING, finding.severity());
+        assertEquals(Severity.WARNING, finding.severity());
         assertTrue(finding.message().contains("2 attachments"), finding.message());
         assertTrue(finding.message().contains("xrechnung.xml"), finding.message());
     }
@@ -171,7 +171,7 @@ class ContainerChecksTest {
 
         ContainerFinding finding =
                 result.pdf().finding("PDF-XMP-CONFORMANCE-MISMATCH").orElseThrow();
-        assertEquals(ContainerFinding.Severity.ERROR, finding.severity());
+        assertEquals(Severity.ERROR, finding.severity());
         assertTrue(finding.message().contains("MINIMUM"), finding.message());
         // The instances of the corpus are XRechnung invoices, so the specification
         // identifier of this one names that profile and not the core of EN 16931.

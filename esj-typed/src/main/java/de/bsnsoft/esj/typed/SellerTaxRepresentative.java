@@ -15,7 +15,7 @@ import de.bsnsoft.esj.SemanticPath;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface SellerTaxRepresentative {
+public sealed interface SellerTaxRepresentative permits SellerTaxRepresentativeView {
 
     /**
      * Returns the document this view reads.

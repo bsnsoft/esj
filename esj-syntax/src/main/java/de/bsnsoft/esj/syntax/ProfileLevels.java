@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.Collections;

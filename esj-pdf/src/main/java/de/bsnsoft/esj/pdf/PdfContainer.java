@@ -264,12 +264,13 @@ public final class PdfContainer implements AutoCloseable {
      * that a caller can show it or hash it without this module having decided what it
      * means. It is read once and bounded by {@link PdfLimits#maxXmpBytes()}.
      *
-     * @return the packet, or an empty optional where the catalog carries no metadata
+     * @return a fresh copy of the packet, or an empty optional where the catalog carries no
+     *         metadata
      * @throws EsjLimitException if the packet is larger than the bound
      */
     public Optional<byte[]> xmpPacket() {
         readXmp();
-        return Optional.ofNullable(xmp);
+        return Optional.ofNullable(xmp).map(byte[]::clone);
     }
 
     /**
@@ -827,7 +828,7 @@ public final class PdfContainer implements AutoCloseable {
                     + limits.maxXmpBytes() + " bytes this reader holds",
                     new Bound("maxXmpBytes", limits.maxXmpBytes(), "bytes"));
         }
-        xmp = packet.bytes();
+        xmp = packet.array();
     }
 
     private static boolean startsWithHeader(byte[] pdf) {

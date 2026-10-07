@@ -27,7 +27,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The first step of the invoice: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits InvoiceBuildXrechnung {
         /**
          * BT-1 Invoice number. Unique identification of the invoice in the seller's systems; no
          * identification scheme is used.
@@ -56,7 +56,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BT-1 Invoice number.
      */
-    public interface WithInvoiceNumber {
+    public sealed interface WithInvoiceNumber permits InvoiceBuildXrechnung {
         /**
          * BT-2 Invoice issue date. Date on which the invoice was issued.
          *
@@ -71,7 +71,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BT-2 Invoice issue date.
      */
-    public interface WithIssueDate {
+    public sealed interface WithIssueDate permits InvoiceBuildXrechnung {
         /**
          * BT-3 Invoice type code. Code for the functional type of the invoice, taken from UNTDID
          * 1001.
@@ -87,7 +87,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BT-3 Invoice type code.
      */
-    public interface WithTypeCode {
+    public sealed interface WithTypeCode permits InvoiceBuildXrechnung {
         /**
          * BT-5 Invoice currency code. The currency of every amount in this invoice; BT-111 is the
          * one amount written in the accounting currency instead.
@@ -103,7 +103,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BT-5 Invoice currency code.
      */
-    public interface WithCurrencyCode {
+    public sealed interface WithCurrencyCode permits InvoiceBuildXrechnung {
         /**
          * BT-10 Buyer reference. Reference supplied by the buyer that lets the buyer route the
          * invoice internally.
@@ -120,7 +120,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BT-10 Buyer reference.
      */
-    public interface WithBuyerReference {
+    public sealed interface WithBuyerReference permits InvoiceBuildXrechnung {
         /**
          * BG-4 SELLER. Group carrying the information about the seller.
          *
@@ -138,7 +138,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BG-4 SELLER.
      */
-    public interface WithSeller {
+    public sealed interface WithSeller permits InvoiceBuildXrechnung {
         /**
          * BG-7 BUYER. Group carrying the information about the buyer.
          *
@@ -156,7 +156,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BG-7 BUYER.
      */
-    public interface WithBuyer {
+    public sealed interface WithBuyer permits InvoiceBuildXrechnung {
         /**
          * BG-16 PAYMENT INSTRUCTIONS. Group saying how the payment is expected to be made.
          *
@@ -176,7 +176,7 @@ public final class InvoiceStepsXrechnung {
     /**
      * The step of the invoice that follows BG-16 PAYMENT INSTRUCTIONS.
      */
-    public interface WithPaymentInstructions {
+    public sealed interface WithPaymentInstructions permits InvoiceBuildXrechnung {
         /**
          * BG-25 INVOICE LINE. Group carrying one invoice line.
          *
@@ -195,7 +195,7 @@ public final class InvoiceStepsXrechnung {
      * The terminal step of the invoice: every member the model declares mandatory in it has been
      * written, so what is left are the optional members, the derivation and the validation.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits InvoiceBuildXrechnung {
         /**
          * BT-6 VAT accounting currency code. Currency used for VAT accounting and reporting in the
          * seller's country.

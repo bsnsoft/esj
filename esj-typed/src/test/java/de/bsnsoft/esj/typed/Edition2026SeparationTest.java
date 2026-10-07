@@ -31,7 +31,7 @@ class Edition2026SeparationTest {
 
     @Test
     void theViewAndTheFilesOfTheEditionAreThereExactlyWhereTheRegistryIs() {
-        boolean carried = Registry.editions().contains("2026");
+        boolean carried = Registry.editionKeys().contains("2026");
         for (String file : FILES) {
             assertEquals(carried, Edition2026SeparationTest.class.getResource(file) != null,
                     file + " belongs to the 2026 edition and follows its registry");
@@ -52,7 +52,7 @@ class Edition2026SeparationTest {
     void whatIsSeparableIsTheEditionAndNotTheMachinery() {
         assertTrue(loads("de.bsnsoft.esj.typed.En16931"));
         assertTrue(loads("de.bsnsoft.esj.typed.internal.Views"));
-        assertTrue(Registry.editions().contains(Registry.DEFAULT_EDITION));
+        assertTrue(Registry.editionKeys().contains(Registry.defaultEditionKey()));
         assertThrows(Exception.class, () -> Registry.forEdition("1999"));
     }
 

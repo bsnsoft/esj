@@ -190,7 +190,7 @@ public final class EsjWriter {
         member(out, 1, true, "format");
         out.string(Esj.FORMAT);
         member(out, 1, false, "version");
-        out.string(Esj.VERSION);
+        out.string(Esj.formatVersion());
         member(out, 1, false, "semanticModel");
         out.string(document.semanticModel());
         member(out, 1, false, "values");

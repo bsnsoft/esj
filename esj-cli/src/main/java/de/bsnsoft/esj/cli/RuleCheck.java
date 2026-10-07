@@ -9,10 +9,9 @@ import de.bsnsoft.esj.rules.RulePack;
 import de.bsnsoft.esj.rules.RulePackException;
 import de.bsnsoft.esj.rules.RulePackSource;
 import de.bsnsoft.esj.rules.RulePackSources;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.syntax.ProfileLevels;
-import de.bsnsoft.esj.syntax.Severity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -57,7 +56,7 @@ import java.util.concurrent.ConcurrentMap;
 record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) {
 
     /** The pack of the default edition, as it is written in a report. */
-    static final String PACK = En16931Pack.PACK_ID + "/" + En16931Pack.VERSION;
+    static final String PACK = En16931Pack.PACK_ID + "/" + En16931Pack.version();
 
     /** The label of the row this check fills in the semantic block. */
     static final String LABEL = "EN 16931 business rules (native, pack " + PACK + ")";
@@ -169,7 +168,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
     static RuleCheck notRun(String reason, SemanticDocument document, Extensions extension) {
         return new RuleCheck(Optional.empty(), Optional.of(reason),
                 Editions.forDocument(document, extension)
-                        .flatMap(registry -> RulePackSources.forEdition(registry.edition()))
+                        .flatMap(RulePackSources::forRegistry)
                         .map(source -> PackName.of(source.pack()))
                         .orElse(PackName.STANDING));
     }
@@ -265,7 +264,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
         if (registry == null) {
             return notRun(NO_PACK_FOR_EDITION);
         }
-        RulePackSource source = RulePackSources.forEdition(registry.edition()).orElse(null);
+        RulePackSource source = RulePackSources.forRegistry(registry).orElse(null);
         if (source == null) {
             return notRun(NO_PACK_FOR_EDITION);
         }
@@ -319,7 +318,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
     record PackName(String name, String edition, boolean corroborated) {
 
         /** The pack of the default edition, which the artefacts of release 1.3.16 cover. */
-        static final PackName STANDING = new PackName(PACK, En16931Pack.EDITION, true);
+        static final PackName STANDING = new PackName(PACK, En16931Pack.edition(), true);
 
         /**
          * Refuses a missing member.
@@ -384,7 +383,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
         }
 
         /** Returns how many findings of one severity were made. */
-        long count(RuleSeverity severity) {
+        long count(Severity severity) {
             return findings.stream().filter(finding -> finding.severity() == severity).count();
         }
     }
@@ -410,7 +409,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
      * @param profile  the customization identifier of the profile that levelled it, empty
      *                 where the level is the rule's own
      */
-    record Levelled(RuleFinding finding, RuleSeverity severity, String profile) {
+    record Levelled(RuleFinding finding, Severity severity, String profile) {
 
         /** Creates a levelled finding. */
         Levelled {
@@ -427,20 +426,10 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
          * @return the finding with the level the verdict is made on
          */
         static Levelled of(RuleFinding finding, ProfileLevels levels) {
-            Optional<RuleSeverity> levelled = levels.level(finding.code())
-                    .map(Levelled::severityOf);
+            Optional<Severity> levelled = levels.level(finding.code());
             return levelled.filter(severity -> severity != finding.severity())
                     .map(severity -> new Levelled(finding, severity, levels.profile()))
                     .orElseGet(() -> new Levelled(finding, finding.severity(), ""));
-        }
-
-        /** Returns the level a validation pack writes as the level of a rule. */
-        private static RuleSeverity severityOf(Severity level) {
-            return switch (level) {
-                case FATAL -> RuleSeverity.FATAL;
-                case WARNING -> RuleSeverity.WARNING;
-                case INFORMATION -> RuleSeverity.INFO;
-            };
         }
 
         /** Tells whether the profile levels this rule other than the standard does. */
@@ -449,13 +438,13 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
         }
 
         /** Returns the level the rule declares, which is the level of the standard. */
-        RuleSeverity standard() {
+        Severity standard() {
             return finding.severity();
         }
 
         /** Tells whether this finding decides the verdict. */
         boolean fatal() {
-            return severity == RuleSeverity.FATAL;
+            return severity == Severity.ERROR;
         }
     }
 }

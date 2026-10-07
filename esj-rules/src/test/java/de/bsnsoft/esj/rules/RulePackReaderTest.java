@@ -1,12 +1,12 @@
 package de.bsnsoft.esj.rules;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The reader of a rule file, which is strict in the way the rest of this project is strict: a
@@ -30,7 +30,7 @@ class RulePackReaderTest {
         assertEquals("test/1", pack.name());
         assertEquals(List.of("BR-CO-10", "BR-CO-11"),
                 pack.rules().stream().map(RuleDefinition::id).toList());
-        assertEquals(RuleSeverity.FATAL, pack.rules().get(0).severity());
+        assertEquals(Severity.ERROR, pack.rules().get(0).severity());
         assertEquals("/", pack.rules().get(0).context());
         assertEquals(List.of("BT-1"), pack.rules().get(0).terms());
         assertEquals(RuleCategory.EN_BR, pack.rules().get(0).category());

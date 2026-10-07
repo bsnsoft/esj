@@ -230,11 +230,10 @@ final class ConvertCommand implements Callable<Integer>, ReadsADocument {
                               SemanticDocument document,
                               UblWriter.DocumentType type,
                               Extensions extensions) {
-        WriterOptions options = WriterOptions.builder()
-                .maxOutputBytes(console.options().bounds().maxOutputBytes())
-                .document(type)
-                .extensions(extensions.registries())
-                .build();
+        WriterOptions options = WriterOptions.defaults()
+                .withMaxOutputBytes(console.options().bounds().maxOutputBytes())
+                .withDocument(type)
+                .withExtensions(extensions.registries());
         try {
             return LimitRefusal.during(limit -> console.options().bounds()
                             .refusal(target.description(form), limit.getMessage()),

@@ -66,7 +66,7 @@ class ReadmeExamplesTest {
     void theOptionsSnippetSaysThatAPriceBaseQuantityIsMeant() {
         // docs/b2c.md: Options
         GrossAuthoring policy = GrossAuthoring.GROSS_UNIT_AUTHORING.with(
-                AuthoringOptions.standard().withBaseQuantity(true));
+                AuthoringOptions.defaults().withBaseQuantity(true));
 
         InvoiceEditor invoice = Invoices.consumer();
         Invoices.line(invoice, "3", "Sealing tape 12 m");

@@ -21,7 +21,7 @@ public final class PriceSteps {
     /**
      * The first step of the group BG-29: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits PriceBuild {
         /**
          * BT-146 Item net price. Price of one item unit excluding VAT, after subtracting the item
          * price discount.
@@ -39,7 +39,7 @@ public final class PriceSteps {
      * The terminal step of the group BG-29: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits PriceBuild {
         /**
          * BT-147 Item price discount. Discount subtracted from the item gross price to arrive at
          * the item net price.

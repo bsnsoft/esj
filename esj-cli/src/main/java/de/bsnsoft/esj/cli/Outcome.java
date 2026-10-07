@@ -13,13 +13,12 @@ import de.bsnsoft.esj.internal.report.ValidationOutcome.Judged;
 import de.bsnsoft.esj.internal.report.ValidationOutcome.Row;
 import de.bsnsoft.esj.internal.report.ValidationOutcome.Subject;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.syntax.ComponentRun;
 import de.bsnsoft.esj.syntax.Engine;
 import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.PackComponent;
 import de.bsnsoft.esj.syntax.PackSource;
-import de.bsnsoft.esj.syntax.Severity;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.syntax.SkippedComponent;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxReport;
@@ -200,7 +199,7 @@ final class Outcome {
             return new Row(Text.of(label), Row.Status.OK, 0, 0, Optional.ofNullable(detail));
         }
         int errors = (int) findings.stream()
-                .filter(finding -> finding.severity() == ContainerFinding.Severity.ERROR)
+                .filter(finding -> finding.severity() == Severity.ERROR)
                 .count();
         return new Row(Text.of(label), Row.Status.FOUND, errors, findings.size() - errors,
                 Optional.ofNullable(detail));
@@ -209,7 +208,7 @@ final class Outcome {
     /** Returns the findings a report speaks: everything the container did not note. */
     private static List<ContainerFinding> spoken(List<ContainerFinding> findings) {
         return findings.stream()
-                .filter(finding -> finding.severity() != ContainerFinding.Severity.INFO)
+                .filter(finding -> finding.severity() != Severity.INFO)
                 .toList();
     }
 
@@ -259,11 +258,8 @@ final class Outcome {
     }
 
     /** Returns the severity of a container finding in the vocabulary of a report. */
-    private static de.bsnsoft.esj.validate.Severity severity(
-            ContainerFinding finding) {
-        return finding.severity() == ContainerFinding.Severity.ERROR
-                ? de.bsnsoft.esj.validate.Severity.ERROR
-                : de.bsnsoft.esj.validate.Severity.WARNING;
+    private static Severity severity(ContainerFinding finding) {
+        return finding.severity() == Severity.ERROR ? Severity.ERROR : Severity.WARNING;
     }
 
     /**
@@ -282,7 +278,7 @@ final class Outcome {
             rows.add(Row.found(Text.of(Phrase.ROW_XML_BYTES), bytes.size(), 0));
             for (XmlFinding finding : bytes) {
                 findings.add(new ValidationOutcome.Finding(finding.category(),
-                        finding.code(), de.bsnsoft.esj.validate.Severity.ERROR,
+                        finding.code(), Severity.ERROR,
                         "parser", Optional.empty(), List.of(), finding.message()));
             }
         }
@@ -374,7 +370,7 @@ final class Outcome {
     /** Returns one finding of an official artefact, in the shape a report carries. */
     private static ValidationOutcome.Finding finding(SyntaxFinding finding) {
         return new ValidationOutcome.Finding(finding.category().label(),
-                finding.code(), severity(finding.severity()), flag(finding),
+                finding.code(), finding.severity(), flag(finding),
                 finding.engine().token(),
                 Optional.of(finding.packId() + "/" + finding.packVersion()),
                 location(finding), finding.message());
@@ -388,7 +384,8 @@ final class Outcome {
      * hide that the two publishers of the finding disagree about how much it weighs.
      */
     private static Optional<String> flag(SyntaxFinding finding) {
-        return finding.releveled() ? Optional.of(finding.flag().token()) : Optional.empty();
+        return finding.releveled()
+                ? Optional.of(SeverityWords.artefact(finding.flag())) : Optional.empty();
     }
 
     /**
@@ -441,9 +438,9 @@ final class Outcome {
 
     /** Returns the row of one artefact: what it found, counted by the level it found it at. */
     private static Row componentRow(Text label, List<SyntaxFinding> findings) {
-        int errors = count(findings, Severity.FATAL);
+        int errors = count(findings, Severity.ERROR);
         int warnings = count(findings, Severity.WARNING);
-        int notes = count(findings, Severity.INFORMATION);
+        int notes = count(findings, Severity.INFO);
         if (errors == 0 && warnings == 0) {
             return notes == 0 ? Row.ok(label)
                     : new Row(label, Row.Status.OK, 0, 0, Optional.of(notes(notes)));
@@ -462,15 +459,6 @@ final class Outcome {
     private static Text notes(int notes) {
         return notes == 1 ? Text.of(Phrase.NOTE, "1")
                 : Text.of(Phrase.NOTES, Integer.toString(notes));
-    }
-
-    /** Returns the level a finding of an official artefact is reported at. */
-    private static de.bsnsoft.esj.validate.Severity severity(Severity level) {
-        return switch (level) {
-            case FATAL -> de.bsnsoft.esj.validate.Severity.ERROR;
-            case WARNING -> de.bsnsoft.esj.validate.Severity.WARNING;
-            case INFORMATION -> de.bsnsoft.esj.validate.Severity.INFO;
-        };
     }
 
     /** Returns where an artefact found something, in the terms the artefact used. */
@@ -506,7 +494,7 @@ final class Outcome {
         List<ValidationOutcome.Finding> findings = new ArrayList<>();
         for (ImportNote note : lost) {
             findings.add(new ValidationOutcome.Finding(IMPORT_CATEGORY, note.kind().name(),
-                    de.bsnsoft.esj.validate.Severity.WARNING, IMPORTER_ENGINE,
+                    Severity.WARNING, IMPORTER_ENGINE,
                     Optional.empty(), place(note), note.message()));
         }
         structural(findings, report.l1());
@@ -515,8 +503,8 @@ final class Outcome {
         for (RuleCheck.Levelled levelled : report.ruleCheck().findings()) {
             RuleFinding finding = levelled.finding();
             findings.add(new ValidationOutcome.Finding(finding.category().token(),
-                    finding.code(), severity(levelled.severity()),
-                    levelled.levelled() ? Optional.of(levelled.standard().token())
+                    finding.code(), levelled.severity(),
+                    levelled.levelled() ? Optional.of(SeverityWords.rule(levelled.standard()))
                             : Optional.<String>empty(),
                     levelled.levelled() ? Optional.of(levelled.profile())
                             : Optional.<String>empty(),
@@ -661,9 +649,9 @@ final class Outcome {
             return Row.skipped(label, Text.words(bare(check.reason().orElseThrow())));
         }
         RuleCheck.Found ran = found.orElseThrow();
-        int errors = (int) ran.count(RuleSeverity.FATAL);
-        int warnings = (int) ran.count(RuleSeverity.WARNING);
-        int notes = (int) ran.count(RuleSeverity.INFO);
+        int errors = (int) ran.count(Severity.ERROR);
+        int warnings = (int) ran.count(Severity.WARNING);
+        int notes = (int) ran.count(Severity.INFO);
         Optional<Text> detail = notes == 0 ? Optional.empty() : Optional.of(notes(notes));
         if (errors == 0 && warnings == 0) {
             return new Row(label, Row.Status.OK, 0, 0, detail);
@@ -685,16 +673,6 @@ final class Outcome {
         int open = reason.indexOf(" (");
         return open > 0 && reason.endsWith(")")
                 ? reason.substring(open + 2, reason.length() - 1) : reason;
-    }
-
-    /** Returns the level a native rule finding is reported at. */
-    private static de.bsnsoft.esj.validate.Severity severity(
-            RuleSeverity severity) {
-        return switch (severity) {
-            case FATAL -> de.bsnsoft.esj.validate.Severity.ERROR;
-            case WARNING -> de.bsnsoft.esj.validate.Severity.WARNING;
-            case INFO -> de.bsnsoft.esj.validate.Severity.INFO;
-        };
     }
 
     /**

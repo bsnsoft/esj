@@ -22,14 +22,14 @@ public final class VatBreakdownSteps {
      * The first step of the group BG-23, which is its terminal step as well: the model declares
      * nothing in it mandatory that a caller has to state.
      */
-    public interface Start extends Buildable {
+    public sealed interface Start extends Buildable permits VatBreakdownBuild {
     }
 
     /**
      * The terminal step of the group BG-23: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits VatBreakdownBuild, Start {
         /**
          * BT-116 VAT category taxable amount. Sum of taxable amounts subject to one VAT category
          * and rate.

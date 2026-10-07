@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.util.Objects;
 
 /**
@@ -17,7 +18,11 @@ import java.util.Objects;
  *
  * @param category what part of the container the finding is about
  * @param code     a stable, machine-readable identifier of the kind of problem
- * @param severity how much the finding weighs
+ * @param severity how much the finding weighs: {@link Severity#ERROR} where the container is
+ *                 wrong about the document it carries, {@link Severity#WARNING} where it is
+ *                 not wrong and something about it is worth saying, {@link Severity#INFO}
+ *                 for a fact without judgement — what the file declares itself to be, and
+ *                 what this module did not check
  * @param message  human-readable English text, with any quoted fragment escaped
  */
 public record ContainerFinding(Category category,
@@ -76,22 +81,6 @@ public record ContainerFinding(Category category,
         public String id() {
             return id;
         }
-    }
-
-    /** How much a finding weighs. */
-    public enum Severity {
-
-        /** The container is wrong about the document it carries. */
-        ERROR,
-
-        /** The container is not wrong, and something about it is worth saying. */
-        WARNING,
-
-        /**
-         * A fact about the container, carrying no judgement at all — what the file
-         * declares itself to be, and what this module did not check.
-         */
-        INFO
     }
 
     /**

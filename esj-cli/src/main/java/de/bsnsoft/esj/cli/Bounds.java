@@ -144,23 +144,23 @@ final class Bounds {
     static Bounds profile(String name) {
         if (DEFAULT_PROFILE.equals(name)) {
             return new Bounds(DEFAULT_PROFILE, Limits.defaults(),
-                    XrImporter.DEFAULT_MAX_INPUT_BYTES,
-                    WriterOptions.DEFAULT_MAX_OUTPUT_BYTES,
-                    ReaderOptions.DEFAULT_MAX_BUFFERED_BYTES,
-                    ReaderOptions.DEFAULT_MAX_BUFFERED_ELEMENTS,
-                    PdfLimits.DEFAULT_MAX_PDF_BYTES,
-                    PdfLimits.DEFAULT_MAX_EMBEDDED_FILES,
-                    RenderOptions.DEFAULT_MAX_PAGES);
+                    XrImporter.defaultMaxInputBytes(),
+                    WriterOptions.defaults().maxOutputBytes(),
+                    ReaderOptions.defaults().maxBufferedBytes(),
+                    ReaderOptions.defaults().maxBufferedElements(),
+                    PdfLimits.defaults().maxPdfBytes(),
+                    PdfLimits.defaults().maxEmbeddedFiles(),
+                    RenderOptions.defaults().maxPages());
         }
         if (LARGE_PROFILE.equals(name)) {
-            return new Bounds(LARGE_PROFILE, Limits.defaults().toBuilder()
-                    .maxDocumentBytes(LARGE_DOCUMENT_BYTES)
-                    .maxValues(LARGE_VALUES)
-                    .maxExtensionNodes(LARGE_EXTENSION_NODES)
-                    .build(), LARGE_INPUT_BYTES, LARGE_OUTPUT_BYTES,
-                    ReaderOptions.DEFAULT_MAX_BUFFERED_BYTES,
-                    ReaderOptions.DEFAULT_MAX_BUFFERED_ELEMENTS,
-                    LARGE_PDF_BYTES, PdfLimits.DEFAULT_MAX_EMBEDDED_FILES,
+            return new Bounds(LARGE_PROFILE, Limits.defaults()
+                    .withMaxDocumentBytes(LARGE_DOCUMENT_BYTES)
+                    .withMaxValues(LARGE_VALUES)
+                    .withMaxExtensionNodes(LARGE_EXTENSION_NODES), LARGE_INPUT_BYTES,
+                            LARGE_OUTPUT_BYTES,
+                    ReaderOptions.defaults().maxBufferedBytes(),
+                    ReaderOptions.defaults().maxBufferedElements(),
+                    LARGE_PDF_BYTES, PdfLimits.defaults().maxEmbeddedFiles(),
                     LARGE_RENDER_PAGES);
         }
         throw CliException.input("--limits takes " + DEFAULT_PROFILE + " or " + LARGE_PROFILE
@@ -235,9 +235,9 @@ final class Bounds {
      * {@code --max-pdf-bytes}, which is the one that moves it.
      */
     private long objects() {
-        long ratio = Math.max(1L, maxPdfBytes / PdfLimits.DEFAULT_MAX_PDF_BYTES);
-        long room = Long.MAX_VALUE / PdfLimits.DEFAULT_MAX_OBJECT_STREAM_OBJECTS;
-        return PdfLimits.DEFAULT_MAX_OBJECT_STREAM_OBJECTS * Math.min(ratio, room);
+        long ratio = Math.max(1L, maxPdfBytes / PdfLimits.defaults().maxPdfBytes());
+        long room = Long.MAX_VALUE / PdfLimits.defaults().maxObjectStreamObjects();
+        return PdfLimits.defaults().maxObjectStreamObjects() * Math.min(ratio, room);
     }
 
     /**
@@ -250,9 +250,9 @@ final class Bounds {
      * caller would have met a bound it was never told about.
      */
     private long decoded(long attachments) {
-        long withXmp = attachments > Long.MAX_VALUE - PdfLimits.DEFAULT_MAX_XMP_BYTES
+        long withXmp = attachments > Long.MAX_VALUE - PdfLimits.defaults().maxXmpBytes()
                 ? Long.MAX_VALUE
-                : attachments + PdfLimits.DEFAULT_MAX_XMP_BYTES;
+                : attachments + PdfLimits.defaults().maxXmpBytes();
         return Math.max(maxPdfBytes, withXmp);
     }
 
@@ -310,20 +310,20 @@ final class Bounds {
                 case RENDER_PAGES -> new Bounds(profile, readerLimits, maxInputBytes,
                         maxOutputBytes, maxBufferedBytes, maxBufferedElements, maxPdfBytes,
                         maxEmbeddedFiles, count(bound, value));
-                case DOCUMENT_BYTES -> limits(readerLimits.toBuilder()
-                        .maxDocumentBytes(value).build());
-                case VALUES -> limits(readerLimits.toBuilder()
-                        .maxValues(count(bound, value)).build());
-                case STRING_BYTES -> limits(readerLimits.toBuilder()
-                        .maxStringBytes(value).build());
-                case BINARY_BYTES -> limits(readerLimits.toBuilder()
-                        .maxBinaryValueBytes(value)
-                        .maxTotalBinaryBytes(Math.max(value, readerLimits.maxTotalBinaryBytes()))
-                        .build());
-                case PATH_SEGMENTS -> limits(readerLimits.toBuilder()
-                        .maxPathSegments(count(bound, value)).build());
-                case EXTENSION_NODES -> limits(readerLimits.toBuilder()
-                        .maxExtensionNodes(count(bound, value)).build());
+                case DOCUMENT_BYTES -> limits(readerLimits
+                        .withMaxDocumentBytes(value));
+                case VALUES -> limits(readerLimits
+                        .withMaxValues(count(bound, value)));
+                case STRING_BYTES -> limits(readerLimits
+                        .withMaxStringBytes(value));
+                case BINARY_BYTES -> limits(readerLimits
+                        .withMaxBinaryValueBytes(value)
+                        .withMaxTotalBinaryBytes(Math.max(value,
+                                readerLimits.maxTotalBinaryBytes())));
+                case PATH_SEGMENTS -> limits(readerLimits
+                        .withMaxPathSegments(count(bound, value)));
+                case EXTENSION_NODES -> limits(readerLimits
+                        .withMaxExtensionNodes(count(bound, value)));
             };
         } catch (EsjException e) {
             // The reader refuses a configuration where it is given rather than when a

@@ -1,16 +1,17 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.validate.Severity;
+import de.bsnsoft.esj.validate.ValidationStatus;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What the engine does with bytes that were written to make a validator fetch, expand or
@@ -60,13 +61,13 @@ class SyntaxHardeningTest {
                 .filter(finding -> finding.code().equals("ARTEFACT-STOPPED")).toList();
         assertEquals(1, stopped.size(),
                 "the rule set that stopped is reported once: " + report.findings());
-        assertEquals(Severity.FATAL, stopped.get(0).severity(),
+        assertEquals(Severity.ERROR, stopped.get(0).severity(),
                 "a rule set that did not finish has checked nothing, so the document is"
                         + " not one this tool calls valid");
         assertEquals("en16931-ubl-schematron", stopped.get(0).component());
         assertTrue(stopped.get(0).message().contains("EN16931-UBL-validation.xslt"),
                 "the message names the rule set: " + stopped.get(0).message());
-        assertEquals(Verdict.INVALID, report.verdict());
+        assertEquals(ValidationStatus.INVALID, report.verdict());
 
         ComponentRun run = report.ran().stream()
                 .filter(each -> each.component().equals("en16931-ubl-schematron"))
@@ -195,7 +196,7 @@ class SyntaxHardeningTest {
                 + invoice("<xi:include href=\"" + UNREACHABLE + "secret\" parse=\"text\"/>",
                         " xmlns:xi=\"http://www.w3.org/2001/XInclude\""));
 
-        assertEquals(Verdict.INVALID, report.verdict());
+        assertEquals(ValidationStatus.INVALID, report.verdict());
         assertFalse(report.findings(Engine.XSD).isEmpty(),
                 "the element reaches the schema as an element");
         assertTrue(report.findings().stream().noneMatch(finding ->
@@ -228,7 +229,7 @@ class SyntaxHardeningTest {
 
         SyntaxReport report = SyntaxValidator.validate(latinInUtf8);
 
-        assertEquals(Verdict.INVALID, report.verdict());
+        assertEquals(ValidationStatus.INVALID, report.verdict());
         assertEquals(List.of(XmlCheck.ENCODING),
                 report.findings().stream().map(SyntaxFinding::code).toList());
         assertEquals(Engine.PARSER, report.findings().get(0).engine());
@@ -297,7 +298,7 @@ class SyntaxHardeningTest {
     private static void refusedByTheParser(String document) {
         SyntaxReport report = validate(document);
 
-        assertEquals(Verdict.INVALID, report.verdict());
+        assertEquals(ValidationStatus.INVALID, report.verdict());
         assertEquals(List.of(), report.ran(), "nothing ran over a document the parser"
                 + " refused");
         assertTrue(report.syntax().isEmpty(), "a document that was not parsed has no syntax");
@@ -305,7 +306,7 @@ class SyntaxHardeningTest {
         assertEquals(1, findings.size(), "the parser said one thing: " + findings);
         assertEquals(Engine.PARSER, findings.get(0).engine());
         assertEquals(FindingCategory.XML, findings.get(0).category());
-        assertEquals(Severity.FATAL, findings.get(0).severity());
+        assertEquals(Severity.ERROR, findings.get(0).severity());
     }
 
     private static SyntaxReport validate(String document) {

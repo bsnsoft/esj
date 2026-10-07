@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,7 +37,7 @@ import java.util.Optional;
 public final class RuleDefinition {
 
     private final String id;
-    private final RuleSeverity severity;
+    private final Severity severity;
     private final RuleOracle oracle;
     private final String context;
     private final List<String> terms;
@@ -69,7 +70,7 @@ public final class RuleDefinition {
     record NotDecided(Json condition, String message) {
     }
 
-    RuleDefinition(String id, RuleSeverity severity, RuleOracle oracle, String context,
+    RuleDefinition(String id, Severity severity, RuleOracle oracle, String context,
                    List<String> terms, Json assertion, Map<String, Json> bindings,
                    String message, String source, String note, Warning warning,
                    NotDecided notDecided) {
@@ -99,9 +100,9 @@ public final class RuleDefinition {
     /**
      * Returns how much a finding of this rule weighs.
      *
-     * @return {@link RuleSeverity#FATAL} or {@link RuleSeverity#WARNING}
+     * @return {@link Severity#ERROR} or {@link Severity#WARNING}
      */
-    public RuleSeverity severity() {
+    public Severity severity() {
         return severity;
     }
 

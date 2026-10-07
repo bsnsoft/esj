@@ -3,7 +3,7 @@ package de.bsnsoft.esj.rules.internal.en16931.v2026;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.rules.JavaRule;
 import de.bsnsoft.esj.rules.RuleContext;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,8 +47,8 @@ public final class Br68 implements JavaRule {
     }
 
     @Override
-    public RuleSeverity severity() {
-        return RuleSeverity.FATAL;
+    public Severity severity() {
+        return Severity.ERROR;
     }
 
     @Override

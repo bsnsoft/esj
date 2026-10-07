@@ -24,7 +24,7 @@ import java.math.BigDecimal;
  * of this editor: {@code VatEditor} checks a value against the grammar of its semantic data type
  * and nothing else.
  */
-public interface VatEditor {
+public sealed interface VatEditor permits VatEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

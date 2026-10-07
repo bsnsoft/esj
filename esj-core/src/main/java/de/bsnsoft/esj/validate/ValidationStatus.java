@@ -7,6 +7,10 @@ package de.bsnsoft.esj.validate;
  * wrong</em> and <em>I could not tell</em> — and a result that folds the two together is
  * read as the wrong one of them by whoever reads it next. The three states keep them
  * apart, and {@link ValidationResult} decides which one a result carries.
+ *
+ * <p>The syntax engine reaches the same three states ({@code SyntaxReport#verdict()});
+ * the documentation of each constant says what it means for the structural layers, and
+ * {@code SyntaxReport} says what it means for the official artefacts.
  */
 public enum ValidationStatus {
 

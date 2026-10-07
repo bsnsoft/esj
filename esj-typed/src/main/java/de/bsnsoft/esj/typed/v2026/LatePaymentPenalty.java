@@ -19,7 +19,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface LatePaymentPenalty {
+public sealed interface LatePaymentPenalty permits LatePaymentPenaltyView {
 
     /**
      * Returns the document this view reads.

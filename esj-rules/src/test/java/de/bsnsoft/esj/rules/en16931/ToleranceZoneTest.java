@@ -1,12 +1,11 @@
 package de.bsnsoft.esj.rules.en16931;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What the pack says inside the tolerance only one official artefact of release 1.3.16
@@ -39,7 +38,7 @@ class ToleranceZoneTest {
     private static void warns(Invoice invoice, String id, String strict) {
         RuleFinding finding = finding(invoice, id).orElseThrow(
                 () -> new AssertionError(id + " says nothing inside the zone"));
-        assertEquals(RuleSeverity.WARNING, finding.severity(), finding.message());
+        assertEquals(Severity.WARNING, finding.severity(), finding.message());
         assertTrue(finding.message().contains("official " + strict + " artefact"),
                 id + " does not name the artefact that faults the figure: " + finding.message());
     }
@@ -47,7 +46,7 @@ class ToleranceZoneTest {
     private static void faults(Invoice invoice, String id) {
         RuleFinding finding = finding(invoice, id).orElseThrow(
                 () -> new AssertionError(id + " says nothing beyond the tolerance"));
-        assertEquals(RuleSeverity.FATAL, finding.severity(), finding.message());
+        assertEquals(Severity.ERROR, finding.severity(), finding.message());
     }
 
     /** The UBL artefact grants the tolerance of BR-S-08, so the warning names the CII one. */

@@ -384,7 +384,8 @@ final class OverlaySources {
         String type = typeName(group);
 
         StringBuilder body = new StringBuilder(typeJavadoc(group, false));
-        body.append("public interface ").append(type).append(" {\n");
+        body.append("public sealed interface ").append(type)
+                .append(" permits ").append(Naming.viewName(type)).append(" {\n");
         body.append("\n");
         body.append("    /**\n");
         body.append("     * Returns the document this overlay reads.\n");
@@ -509,7 +510,8 @@ final class OverlaySources {
         String type = Naming.editorName(typeName(group));
 
         StringBuilder body = new StringBuilder(typeJavadoc(group, true));
-        body.append("public interface ").append(type).append(" {\n");
+        body.append("public sealed interface ").append(type)
+                .append(" permits ").append(Naming.editName(typeName(group))).append(" {\n");
         body.append("\n");
         body.append("    /**\n");
         body.append(JavaText.wrap("    ", " * ",

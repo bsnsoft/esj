@@ -44,7 +44,7 @@ public final class SemanticDocument {
 
     /**
      * Returns a builder for a document of the edition the bundled registry describes
-     * ({@link Esj#SEMANTIC_MODEL}).
+     * ({@link Esj#defaultSemanticModel()}).
      *
      * @return a new builder
      */
@@ -242,7 +242,7 @@ public final class SemanticDocument {
                 new TreeMap<>(SemanticPath.canonicalOrder());
         private final TreeMap<String, ExtensionValue> extensions =
                 new TreeMap<>(ExtensionValue.memberOrder());
-        private String semanticModel = Esj.SEMANTIC_MODEL;
+        private String semanticModel = Esj.defaultSemanticModel();
         private Source source;
 
         private Builder() {
@@ -250,7 +250,7 @@ public final class SemanticDocument {
 
         /**
          * Sets the edition of the semantic model the paths refer to. The default is
-         * {@link Esj#SEMANTIC_MODEL}, the edition the bundled registry describes.
+         * {@link Esj#defaultSemanticModel()}, the edition the bundled registry describes.
          *
          * <p>Any string that matches the edition grammar of the specification,
          * section 4.4 is accepted here. Whether a registry for that edition exists is a

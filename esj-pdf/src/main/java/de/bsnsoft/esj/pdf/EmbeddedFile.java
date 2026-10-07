@@ -307,7 +307,7 @@ public final class EmbeddedFile {
             return new byte[0];
         }
         if (content != null) {
-            byte[] decoded = content.bytes();
+            byte[] decoded = content.array();
             int length = Math.min(maxBytes, decoded.length);
             byte[] window = new byte[length];
             System.arraycopy(decoded, 0, window, 0, length);

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;

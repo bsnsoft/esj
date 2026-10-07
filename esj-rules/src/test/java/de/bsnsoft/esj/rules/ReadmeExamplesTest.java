@@ -54,7 +54,7 @@ class ReadmeExamplesTest {
     @Test
     void compileThePackFromItsThreeParts() {
         // docs/java-api.md: Checking the business rules
-        RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.VERSION);
+        RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.version());
         RuleEngine other = RuleEngine.compile(pack, Registry.en16931(),
                 CodeLists.bundled(pack), En16931Pack.javaRules());
 

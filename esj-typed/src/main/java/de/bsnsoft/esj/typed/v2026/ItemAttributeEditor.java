@@ -22,7 +22,7 @@ import de.bsnsoft.esj.typed.internal.Writers;
  * of this editor: {@code ItemAttributeEditor} checks a value against the grammar of its semantic
  * data type and nothing else.
  */
-public interface ItemAttributeEditor {
+public sealed interface ItemAttributeEditor permits ItemAttributeEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

@@ -17,7 +17,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface BuyerPostalAddress {
+public sealed interface BuyerPostalAddress permits BuyerPostalAddressView {
 
     /**
      * Returns the document this view reads.

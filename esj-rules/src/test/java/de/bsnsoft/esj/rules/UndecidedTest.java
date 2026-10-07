@@ -1,11 +1,11 @@
 package de.bsnsoft.esj.rules;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What the engine does with a value that does not spell what its semantic data type requires,
@@ -29,7 +29,7 @@ class UndecidedTest {
 
         assertEquals(1, findings.size());
         RuleFinding finding = findings.get(0);
-        assertEquals(RuleSeverity.INFO, finding.severity());
+        assertEquals(Severity.INFO, finding.severity());
         assertEquals("BR-TEST", finding.code());
         assertTrue(finding.message().startsWith("not decided:"), finding.message());
         assertTrue(finding.message().contains("/BG-22/BT-106"), finding.message());
@@ -51,7 +51,7 @@ class UndecidedTest {
                 Packs.rule("BR-B", "{\"exists\": \"/BT-9\"}")))
                 .evaluate(withABrokenAmount());
 
-        assertEquals(List.of(RuleSeverity.INFO, RuleSeverity.FATAL),
+        assertEquals(List.of(Severity.INFO, Severity.ERROR),
                 findings.stream().map(RuleFinding::severity).toList());
         assertEquals(List.of("BR-A", "BR-B"), findings.stream().map(RuleFinding::code).toList());
     }
@@ -67,7 +67,7 @@ class UndecidedTest {
                 "{\"gt\": [{\"value\": \"/BT-131\"}, {\"const\": \"150\"}]}");
 
         assertEquals(3, findings.size());
-        assertEquals(List.of(RuleSeverity.FATAL, RuleSeverity.INFO, RuleSeverity.FATAL),
+        assertEquals(List.of(Severity.ERROR, Severity.INFO, Severity.ERROR),
                 findings.stream().map(RuleFinding::severity).toList());
     }
 
@@ -81,7 +81,7 @@ class UndecidedTest {
                 "{\"eq\": [{\"sum\": \"/BG-25/*/BT-131\"}, {\"const\": \"200\"}]}");
 
         assertEquals(1, findings.size());
-        assertEquals(RuleSeverity.INFO, findings.get(0).severity());
+        assertEquals(Severity.INFO, findings.get(0).severity());
     }
 
     /**
@@ -107,7 +107,7 @@ class UndecidedTest {
 
         assertEquals(1, findings.size());
         RuleFinding finding = findings.get(0);
-        assertEquals(RuleSeverity.INFO, finding.severity());
+        assertEquals(Severity.INFO, finding.severity());
         assertEquals("BR-TEST", finding.code());
         assertEquals("not decided: the quantity at /BG-25/0/BT-129 is 0, and a price per unit of"
                 + " no units is no number", finding.message());
@@ -117,7 +117,7 @@ class UndecidedTest {
     @Test
     void whereTheCaseDoesNotHoldTheAssertionDecides() {
         assertEquals(List.of(), perUnit("1", "100"));
-        assertEquals(List.of(RuleSeverity.FATAL),
+        assertEquals(List.of(Severity.ERROR),
                 perUnit("2", "100").stream().map(RuleFinding::severity).toList());
     }
 

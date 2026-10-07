@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  * value, exactly as in the core editor. A group comes into being when a value is written into it
  * (specification, section 4.5); this overlay appends no instance of a core group and removes none.
  */
-public interface B2cInvoiceEditor {
+public sealed interface B2cInvoiceEditor permits B2cInvoiceEdit {
 
     /**
      * Returns the builder this overlay writes into, which is the builder the typed editor of the

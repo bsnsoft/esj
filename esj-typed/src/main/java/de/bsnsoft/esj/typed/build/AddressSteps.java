@@ -20,7 +20,7 @@ public final class AddressSteps {
     /**
      * The first step of the group BG-15: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits AddressBuild {
         /**
          * BT-80 Deliver to country code. Country code of the deliver-to address, from ISO 3166-1
          * alpha-2.
@@ -37,7 +37,7 @@ public final class AddressSteps {
      * The terminal step of the group BG-15: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits AddressBuild {
         /**
          * BT-75 Deliver to address line 1. First line of the deliver-to address.
          *

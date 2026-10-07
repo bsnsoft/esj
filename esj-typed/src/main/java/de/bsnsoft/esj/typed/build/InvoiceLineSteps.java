@@ -23,7 +23,7 @@ public final class InvoiceLineSteps {
     /**
      * The first step of the group BG-25: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits InvoiceLineBuild {
         /**
          * BT-126 Invoice line identifier. Identifier of the invoice line, unique within the
          * invoice.
@@ -52,7 +52,7 @@ public final class InvoiceLineSteps {
     /**
      * The step of the group BG-25 that follows BT-126 Invoice line identifier.
      */
-    public interface WithIdentifier {
+    public sealed interface WithIdentifier permits InvoiceLineBuild {
         /**
          * BT-129 Invoiced quantity. Quantity of items invoiced on this line.
          *
@@ -69,7 +69,7 @@ public final class InvoiceLineSteps {
     /**
      * The step of the group BG-25 that follows BT-129 Invoiced quantity.
      */
-    public interface WithQuantity {
+    public sealed interface WithQuantity permits InvoiceLineBuild {
         /**
          * BG-29 PRICE DETAILS. Group carrying the price information for the item on this invoice
          * line.
@@ -87,7 +87,7 @@ public final class InvoiceLineSteps {
     /**
      * The step of the group BG-25 that follows BG-29 PRICE DETAILS.
      */
-    public interface WithPrice {
+    public sealed interface WithPrice permits InvoiceLineBuild {
         /**
          * BG-30 LINE VAT INFORMATION. Group carrying the VAT information that applies to the item
          * on this invoice line.
@@ -105,7 +105,7 @@ public final class InvoiceLineSteps {
     /**
      * The step of the group BG-25 that follows BG-30 LINE VAT INFORMATION.
      */
-    public interface WithVat {
+    public sealed interface WithVat permits InvoiceLineBuild {
         /**
          * BG-31 ITEM INFORMATION. Group describing the goods or services invoiced on this line.
          *
@@ -123,7 +123,7 @@ public final class InvoiceLineSteps {
      * The terminal step of the group BG-25: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits InvoiceLineBuild {
         /**
          * BT-127 Invoice line note. Free-text note about the invoice line.
          *

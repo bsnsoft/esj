@@ -22,14 +22,14 @@ public final class DocumentTotalsSteps {
      * The first step of the group BG-22, which is its terminal step as well: the model declares
      * nothing in it mandatory that a caller has to state.
      */
-    public interface Start extends Buildable {
+    public sealed interface Start extends Buildable permits DocumentTotalsBuild {
     }
 
     /**
      * The terminal step of the group BG-22: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits DocumentTotalsBuild, Start {
         /**
          * BT-106 Sum of Invoice line net amount. Total of the net amounts of all invoice lines.
          *

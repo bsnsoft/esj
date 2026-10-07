@@ -5,6 +5,7 @@ import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.render.HtmlRenderer;
 import de.bsnsoft.esj.render.Layout;
 import de.bsnsoft.esj.render.PageSize;
+import de.bsnsoft.esj.render.PaymentCode;
 import de.bsnsoft.esj.render.PdfRenderer;
 import de.bsnsoft.esj.render.RenderContentException;
 import de.bsnsoft.esj.render.RenderLanguage;
@@ -187,17 +188,17 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
         loaded.reportNotes(console);
         SemanticDocument document = loaded.require(console);
         Registry registry = Editions.require(document, extensions);
-        RenderOptions options = RenderOptions.in(language).on(size)
+        RenderOptions options = RenderOptions.defaults().withLanguage(language).withPageSize(size)
                 .withMaxPages(console.options().bounds().maxRenderPages())
                 .withMaxHtmlBytes(console.options().bounds().maxOutputBytes());
         if (template != null && !html) {
-            options = options.with(branded(template));
+            options = options.withTemplate(branded(template));
         }
         if (layout != null && !html) {
-            options = options.layout(layout(layout));
+            options = options.withLayout(layout(layout));
         }
         if (noPaymentCode && !html) {
-            options = options.withPaymentCode(false);
+            options = options.withPaymentCode(PaymentCode.OMIT);
         }
 
         byte[] rendering = html

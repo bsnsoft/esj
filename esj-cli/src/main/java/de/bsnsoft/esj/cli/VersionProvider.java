@@ -31,8 +31,8 @@ final class VersionProvider implements picocli.CommandLine.IVersionProvider {
     public String[] getVersion() {
         return new String[] {
             "esj " + artifactVersion(),
-            "ESJ format version " + Esj.VERSION,
-            "semantic model " + Esj.SEMANTIC_MODEL,
+            "ESJ format version " + Esj.formatVersion(),
+            "semantic model " + Esj.defaultSemanticModel(),
             "semantic model registries " + registries()};
     }
 
@@ -43,7 +43,7 @@ final class VersionProvider implements picocli.CommandLine.IVersionProvider {
      * @return the keys, in the order the editions were published
      */
     static String registries() {
-        return String.join(", ", Registry.editions().stream()
+        return String.join(", ", Registry.editionKeys().stream()
                 .map(edition -> Registry.forEdition(edition).isPreview()
                         ? edition + " (preview)" : edition)
                 .toList());

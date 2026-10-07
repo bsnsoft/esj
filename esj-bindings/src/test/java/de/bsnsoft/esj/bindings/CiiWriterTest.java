@@ -333,8 +333,8 @@ class CiiWriterTest {
     @Test
     void namesTheTermsOfAnUntransportedRegistryAsLeftBehindByDesign() {
         SemanticDocument document = EsjReader.strict().read(Examples.bytes("b2c-gross"));
-        WriterOptions options = WriterOptions.builder()
-                .extensions(List.of(Registry.b2cExtension())).build();
+        WriterOptions options = WriterOptions.defaults()
+                .withExtensions(List.of(Registry.b2cExtension()));
 
         WriteResult result = CiiWriter.writeWithReport(document, options);
         WriteReport report = result.report();
@@ -362,8 +362,8 @@ class CiiWriterTest {
      */
     @Test
     void aRegistryThatDeclaresNothingLeavesALossALoss() {
-        WriterOptions options = WriterOptions.builder()
-                .extensions(List.of(Registry.xrechnungExtension())).build();
+        WriterOptions options = WriterOptions.defaults()
+                .withExtensions(List.of(Registry.xrechnungExtension()));
 
         WriteResult result = CiiWriter.writeWithReport(SemanticDocument.builder()
                 .put("/BT-XYZ-1", "something").build(), options);
@@ -528,7 +528,7 @@ class CiiWriterTest {
     void writesOneLineWhereTheOptionsAskForIt() {
         SemanticDocument document = SemanticDocument.builder().put("/BT-1", "RE-1").build();
         String xml = new String(CiiWriter.write(document,
-                WriterOptions.builder().indent(false).build()), StandardCharsets.UTF_8);
+                WriterOptions.defaults().withIndent(false)), StandardCharsets.UTF_8);
         assertEquals(1, xml.lines().count(), xml);
         assertContains(xml, "<ram:ID>RE-1</ram:ID>");
     }
@@ -580,32 +580,32 @@ class CiiWriterTest {
     void refusesToWriteMoreThanTheOptionsAllow() {
         SemanticDocument document = SemanticDocument.builder().put("/BT-1", "RE-1").build();
         EsjLimitException refused = assertThrows(EsjLimitException.class, () ->
-                CiiWriter.write(document, WriterOptions.builder().maxOutputBytes(64).build()));
+                CiiWriter.write(document, WriterOptions.defaults().withMaxOutputBytes(64)));
         assertContains(refused.getMessage(), "the 64 bytes this run was given");
     }
 
     @Test
     void carriesOneSettingOverIntoAnother() {
-        WriterOptions options = WriterOptions.defaults().toBuilder().indent(false).build();
+        WriterOptions options = WriterOptions.defaults().withIndent(false);
         assertFalse(options.indent());
-        assertEquals(WriterOptions.DEFAULT_MAX_OUTPUT_BYTES, options.maxOutputBytes());
-        assertTrue(options.toBuilder().maxOutputBytes(1024).build().maxOutputBytes() == 1024);
-        assertFalse(options.toBuilder().build().indent());
-        WriterOptions handed = options.toBuilder()
-                .extensions(List.of(Registry.b2cExtension())).build();
-        assertEquals(List.of(Registry.b2cExtension()), handed.toBuilder().build().extensions());
+        assertEquals(WriterOptions.defaults().maxOutputBytes(), options.maxOutputBytes());
+        assertTrue(options.withMaxOutputBytes(1024).maxOutputBytes() == 1024);
+        assertFalse(options.indent());
+        WriterOptions handed = options.withExtensions(List.of(Registry.b2cExtension()));
+        assertEquals(List.of(Registry.b2cExtension()), handed.extensions());
         assertEquals(List.of(), WriterOptions.defaults().extensions());
     }
 
     @Test
     void describesItsOptionsAndItsResult() {
         assertEquals("WriterOptions[indent=true, maxOutputBytes="
-                + WriterOptions.DEFAULT_MAX_OUTPUT_BYTES + ", document=AUTO,"
+                + WriterOptions.defaults().maxOutputBytes() + ", document=AUTO,"
                 + " taxRegistrationScheme="
-                + WriterOptions.DEFAULT_TAX_REGISTRATION_SCHEME + ", extensions=[]]",
+                + WriterOptions.defaults().taxRegistrationScheme() + ", extensions=[]]",
                 WriterOptions.defaults().toString());
-        assertContains(WriterOptions.builder().extensions(List.of(Registry.b2cExtension()))
-                .build().toString(), "extensions=[ESJ-B2C 0.1]");
+        assertContains(WriterOptions.defaults()
+                .withExtensions(List.of(Registry.b2cExtension())).toString(),
+                "extensions=[ESJ-B2C 0.1]");
         WriteResult result = CiiWriter.writeWithReport(
                 SemanticDocument.builder().put("/BT-1", "RE-1").build(),
                 WriterOptions.defaults());

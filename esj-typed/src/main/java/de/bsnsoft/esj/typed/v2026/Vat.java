@@ -19,7 +19,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface Vat {
+public sealed interface Vat permits VatView {
 
     /**
      * Returns the document this view reads.

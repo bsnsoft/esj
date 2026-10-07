@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,11 +58,11 @@ public record PdfReport(List<LocatedAttachment> attachments,
      * in its report which of the two it was.
      *
      * @return {@code true} if a finding has the severity
-     *         {@link ContainerFinding.Severity#ERROR}
+     *         {@link Severity#ERROR}
      */
     public boolean hasErrors() {
         return findings.stream()
-                .anyMatch(finding -> finding.severity() == ContainerFinding.Severity.ERROR);
+                .anyMatch(finding -> finding.severity() == Severity.ERROR);
     }
 
     /**

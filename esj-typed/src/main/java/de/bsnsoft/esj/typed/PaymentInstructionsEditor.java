@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * of this editor: {@code PaymentInstructionsEditor} checks a value against the grammar of its
  * semantic data type and nothing else.
  */
-public interface PaymentInstructionsEditor {
+public sealed interface PaymentInstructionsEditor permits PaymentInstructionsEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

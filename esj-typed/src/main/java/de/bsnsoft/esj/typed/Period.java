@@ -16,7 +16,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface Period {
+public sealed interface Period permits PeriodView {
 
     /**
      * Returns the document this view reads.

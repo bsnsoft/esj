@@ -1,11 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +12,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * {@code esj packs fetch} without the network: the example recipe of {@link ExamplePacks},
@@ -66,7 +66,7 @@ class PackFetcherTest {
 
         SyntaxReport valid = SyntaxValidator.validate(
                 ExamplePacks.invoice(ExamplePacks.PROFILE), options);
-        assertEquals(Verdict.VALID, valid.verdict(), valid.findings().toString());
+        assertEquals(ValidationStatus.VALID, valid.verdict(), valid.findings().toString());
         assertEquals("example/1.0/2026-09-30", valid.pack().orElseThrow().directory());
 
         byte[] longNumber = new String(ExamplePacks.invoice(ExamplePacks.PROFILE),
@@ -75,7 +75,7 @@ class PackFetcherTest {
                         "<cbc:ID>123456XX-123456XX-123456XX</cbc:ID>")
                 .getBytes(StandardCharsets.UTF_8);
         SyntaxReport invalid = SyntaxValidator.validate(longNumber, options);
-        assertEquals(Verdict.INVALID, invalid.verdict());
+        assertEquals(ValidationStatus.INVALID, invalid.verdict());
         assertEquals(List.of("EXAMPLE-01"),
                 invalid.fatal().stream().map(SyntaxFinding::code).toList());
     }

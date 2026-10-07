@@ -3,7 +3,7 @@ package de.bsnsoft.esj.cli;
 import de.bsnsoft.esj.syntax.PackException;
 import de.bsnsoft.esj.syntax.Packs;
 import de.bsnsoft.esj.syntax.ProfileLevels;
-import de.bsnsoft.esj.syntax.Severity;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Optional;

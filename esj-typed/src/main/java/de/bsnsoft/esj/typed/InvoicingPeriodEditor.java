@@ -23,7 +23,7 @@ import java.time.LocalDate;
  * of this editor: {@code InvoicingPeriodEditor} checks a value against the grammar of its semantic
  * data type and nothing else.
  */
-public interface InvoicingPeriodEditor {
+public sealed interface InvoicingPeriodEditor permits InvoicingPeriodEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

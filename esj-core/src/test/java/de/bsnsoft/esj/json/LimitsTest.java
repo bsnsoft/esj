@@ -10,6 +10,7 @@ import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -37,12 +38,12 @@ class LimitsTest {
     @Test
     void theDefaultsAreOneSharedValue() {
         assertSame(Limits.defaults(), Limits.defaults());
-        assertEquals(Limits.defaults(), Limits.builder().build());
+        assertEquals(Limits.defaults(), Limits.defaults());
     }
 
     @Test
-    void aBuilderChangesOneBoundAndKeepsTheRest() {
-        Limits changed = Limits.defaults().toBuilder().maxValues(7).build();
+    void aWithMethodChangesOneBoundAndKeepsTheRest() {
+        Limits changed = Limits.defaults().withMaxValues(7);
         assertEquals(7, changed.maxValues());
         assertEquals(Limits.defaults().maxDocumentBytes(), changed.maxDocumentBytes());
         assertNotEquals(Limits.defaults(), changed);
@@ -50,41 +51,49 @@ class LimitsTest {
 
     @Test
     void everyBoundCanBeSet() {
-        Limits limits = Limits.builder()
-                .maxDocumentBytes(1)
-                .maxValues(2)
-                .maxValueMembers(3)
-                .maxPathSegments(4)
-                .maxPathBytes(5)
-                .maxStringBytes(6)
-                .maxBinaryValueBytes(7)
-                .maxTotalBinaryBytes(8)
-                .maxExtensionDepth(9)
-                .maxExtensionNodes(10)
-                .build();
-        assertEquals(new Limits(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), limits);
+        Limits limits = Limits.defaults()
+                .withMaxDocumentBytes(1)
+                .withMaxValues(2)
+                .withMaxValueMembers(3)
+                .withMaxPathSegments(4)
+                .withMaxPathBytes(5)
+                .withMaxStringBytes(6)
+                .withMaxBinaryValueBytes(7)
+                .withMaxTotalBinaryBytes(8)
+                .withMaxExtensionDepth(9)
+                .withMaxExtensionNodes(10);
+        assertEquals(List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L), List.of(
+                limits.maxDocumentBytes(), (long) limits.maxValues(),
+                (long) limits.maxValueMembers(), (long) limits.maxPathSegments(),
+                (long) limits.maxPathBytes(), limits.maxStringBytes(),
+                limits.maxBinaryValueBytes(), limits.maxTotalBinaryBytes(),
+                (long) limits.maxExtensionDepth(), (long) limits.maxExtensionNodes()));
+        assertEquals(limits, Limits.defaults().withMaxDocumentBytes(1).withMaxValues(2)
+                .withMaxValueMembers(3).withMaxPathSegments(4).withMaxPathBytes(5)
+                .withMaxStringBytes(6).withMaxBinaryValueBytes(7).withMaxTotalBinaryBytes(8)
+                .withMaxExtensionDepth(9).withMaxExtensionNodes(10), "limits are values");
     }
 
     @Test
     void aBoundThatIsNotPositiveIsRefused() {
-        assertThrows(EsjFormatException.class, () -> Limits.builder().maxValues(0).build());
+        assertThrows(EsjFormatException.class, () -> Limits.defaults().withMaxValues(0));
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxValueMembers(0).build());
-        assertThrows(EsjFormatException.class, () -> Limits.builder().maxDocumentBytes(-1).build());
+                () -> Limits.defaults().withMaxValueMembers(0));
+        assertThrows(EsjFormatException.class, () -> Limits.defaults().withMaxDocumentBytes(-1));
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxExtensionDepth(-3).build());
+                () -> Limits.defaults().withMaxExtensionDepth(-3));
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxExtensionNodes(0).build());
+                () -> Limits.defaults().withMaxExtensionNodes(0));
     }
 
     @Test
     void aDocumentBoundLargerThanAByteArrayIsRefused() {
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxDocumentBytes(Long.MAX_VALUE).build());
+                () -> Limits.defaults().withMaxDocumentBytes(Long.MAX_VALUE));
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxDocumentBytes(Limits.MAX_DOCUMENT_BYTES + 1).build());
+                () -> Limits.defaults().withMaxDocumentBytes(Limits.MAX_DOCUMENT_BYTES + 1));
         assertEquals(Limits.MAX_DOCUMENT_BYTES,
-                Limits.builder().maxDocumentBytes(Limits.MAX_DOCUMENT_BYTES).build()
+                Limits.defaults().withMaxDocumentBytes(Limits.MAX_DOCUMENT_BYTES)
                         .maxDocumentBytes());
     }
 
@@ -98,11 +107,11 @@ class LimitsTest {
     @Test
     void anExtensionDepthLargerThanAParserCanBeGivenIsRefused() {
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxExtensionDepth(Integer.MAX_VALUE).build());
+                () -> Limits.defaults().withMaxExtensionDepth(Integer.MAX_VALUE));
         assertThrows(EsjFormatException.class,
-                () -> Limits.builder().maxExtensionDepth(Limits.MAX_EXTENSION_DEPTH + 1).build());
+                () -> Limits.defaults().withMaxExtensionDepth(Limits.MAX_EXTENSION_DEPTH + 1));
         assertEquals(Limits.MAX_EXTENSION_DEPTH,
-                Limits.builder().maxExtensionDepth(Limits.MAX_EXTENSION_DEPTH).build()
+                Limits.defaults().withMaxExtensionDepth(Limits.MAX_EXTENSION_DEPTH)
                         .maxExtensionDepth());
     }
 
@@ -114,7 +123,7 @@ class LimitsTest {
     @Test
     @Timeout(value = 30)
     void aReaderIsBuiltWithTheLargestExtensionDepthThereIs() {
-        Limits limits = Limits.builder().maxExtensionDepth(Limits.MAX_EXTENSION_DEPTH).build();
+        Limits limits = Limits.defaults().withMaxExtensionDepth(Limits.MAX_EXTENSION_DEPTH);
         SemanticDocument document = EsjReader.withLimits(limits)
                 .read(DOCUMENT.getBytes(StandardCharsets.UTF_8));
         assertEquals(1, document.values().size());
@@ -131,7 +140,7 @@ class LimitsTest {
     void aStreamIsReadWithTheLargestBoundsThereAre() {
         for (long bound : new long[] {
                 1L << 30, Limits.MAX_DOCUMENT_BYTES - 1, Limits.MAX_DOCUMENT_BYTES}) {
-            Limits limits = Limits.builder().maxDocumentBytes(bound).build();
+            Limits limits = Limits.defaults().withMaxDocumentBytes(bound);
             SemanticDocument document = EsjReader.withLimits(limits).read(
                     new ByteArrayInputStream(DOCUMENT.getBytes(StandardCharsets.UTF_8)));
             assertEquals(1, document.values().size(), Long.toString(bound));
@@ -140,7 +149,7 @@ class LimitsTest {
 
     @Test
     void aStreamLongerThanTheBoundIsRefused() {
-        Limits limits = Limits.builder().maxDocumentBytes(DOCUMENT.length() - 1L).build();
+        Limits limits = Limits.defaults().withMaxDocumentBytes(DOCUMENT.length() - 1L);
         assertThrows(EsjLimitException.class, () -> EsjReader.withLimits(limits).read(
                 new ByteArrayInputStream(DOCUMENT.getBytes(StandardCharsets.UTF_8))));
     }

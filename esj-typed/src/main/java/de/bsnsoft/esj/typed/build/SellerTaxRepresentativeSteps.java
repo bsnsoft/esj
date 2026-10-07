@@ -23,7 +23,7 @@ public final class SellerTaxRepresentativeSteps {
     /**
      * The first step of the group BG-11: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits SellerTaxRepresentativeBuild {
         /**
          * BT-62 Seller tax representative name. Name of the seller's tax representative.
          *
@@ -38,7 +38,7 @@ public final class SellerTaxRepresentativeSteps {
     /**
      * The step of the group BG-11 that follows BT-62 Seller tax representative name.
      */
-    public interface WithName {
+    public sealed interface WithName permits SellerTaxRepresentativeBuild {
         /**
          * BT-63 Seller tax representative VAT identifier. The VAT identifier of the representative
          * that BG-11 names for the seller.
@@ -67,7 +67,7 @@ public final class SellerTaxRepresentativeSteps {
     /**
      * The step of the group BG-11 that follows BT-63 Seller tax representative VAT identifier.
      */
-    public interface WithVatIdentifier {
+    public sealed interface WithVatIdentifier permits SellerTaxRepresentativeBuild {
         /**
          * BG-12 SELLER TAX REPRESENTATIVE POSTAL ADDRESS. Group carrying the postal address of the
          * seller's tax representative.
@@ -88,7 +88,7 @@ public final class SellerTaxRepresentativeSteps {
      * The terminal step of the group BG-11: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerTaxRepresentativeBuild {
         /**
          * Returns the typed editor of this instance of BG-11. It is the way to anything this
          * builder does not offer, an extension term above all, and it writes into the same

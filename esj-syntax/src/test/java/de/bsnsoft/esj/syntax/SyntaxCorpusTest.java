@@ -1,14 +1,14 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Runs every instance of the conformance corpus through the whole engine and compares the
@@ -86,8 +86,8 @@ class SyntaxCorpusTest {
         List<String> lines = new ArrayList<>();
         for (SyntaxFinding finding : report.findings()) {
             lines.add(line(finding.engine().token(), finding.component(),
-                    finding.category().label(), finding.severity().token(),
-                    finding.flag().token(), finding.code(), finding.location()));
+                    finding.category().label(), word(finding.severity()),
+                    word(finding.flag()), finding.code(), finding.location()));
         }
         return lines;
     }
@@ -129,5 +129,14 @@ class SyntaxCorpusTest {
 
     private static String text(Map<?, ?> object, String member) {
         return (String) object.get(member);
+    }
+
+    /** Returns the word an artefact flags a severity with, as the ledger records it. */
+    private static String word(Severity severity) {
+        return switch (severity) {
+            case ERROR -> "fatal";
+            case WARNING -> "warning";
+            case INFO -> "information";
+        };
     }
 }

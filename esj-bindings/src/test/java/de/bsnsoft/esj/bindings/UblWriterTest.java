@@ -51,8 +51,8 @@ class UblWriterTest {
     void leavesTheTermsOfAnUntransportedRegistryBehindByDesign() {
         SemanticDocument document = EsjReader.strict().read(Examples.bytes("b2c-gross"));
 
-        WriteReport report = UblWriter.writeWithReport(document, WriterOptions.builder()
-                .extensions(List.of(Registry.b2cExtension())).build()).report();
+        WriteReport report = UblWriter.writeWithReport(document, WriterOptions.defaults()
+                .withExtensions(List.of(Registry.b2cExtension()))).report();
 
         assertEquals(0, report.dropped());
         assertTrue(report.isComplete(), report.toString());
@@ -425,14 +425,14 @@ class UblWriterTest {
     void writesTheTaxRegistrationSchemeTheCallerAsksFor() {
         SemanticDocument document =
                 SemanticDocument.builder().put("/BG-4/BT-32", "123/4567/8901").build();
-        assertContains(new String(UblWriter.write(document, WriterOptions.builder()
-                        .taxRegistrationScheme("TAX").build()), StandardCharsets.UTF_8),
+        assertContains(new String(UblWriter.write(document, WriterOptions.defaults()
+                        .withTaxRegistrationScheme("TAX")), StandardCharsets.UTF_8),
                 "<cbc:ID>TAX</cbc:ID>");
         assertThrows(IllegalArgumentException.class,
-                () -> WriterOptions.builder().taxRegistrationScheme("VAT"),
+                () -> WriterOptions.defaults().withTaxRegistrationScheme("VAT"),
                 "VAT is the scheme of BT-31");
         assertThrows(IllegalArgumentException.class,
-                () -> WriterOptions.builder().taxRegistrationScheme(" "));
+                () -> WriterOptions.defaults().withTaxRegistrationScheme(" "));
     }
 
     /**
@@ -488,13 +488,13 @@ class UblWriterTest {
     void holdsToTheBoundOnTheOutput() {
         SemanticDocument document = SemanticDocument.builder().put("/BT-1", "RE-1").build();
         assertThrows(EsjLimitException.class, () -> UblWriter.write(document,
-                WriterOptions.builder().maxOutputBytes(32).build()));
+                WriterOptions.defaults().withMaxOutputBytes(32)));
     }
 
     @Test
     void writesOneLineWhenAskedTo() {
         byte[] xml = UblWriter.write(SemanticDocument.builder().put("/BT-1", "RE-1").build(),
-                WriterOptions.builder().indent(false).build());
+                WriterOptions.defaults().withIndent(false));
         assertFalse(new String(xml, StandardCharsets.UTF_8).contains("\n  "));
     }
 

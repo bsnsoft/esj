@@ -1,13 +1,11 @@
 package de.bsnsoft.esj.rules.en16931.v2026;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleOracle;
 import de.bsnsoft.esj.upgrade.UpgradeNote;
 import de.bsnsoft.esj.upgrade.UpgradeResult;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -18,6 +16,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What this pack says about the conformance corpus written up to this edition.
@@ -88,7 +88,7 @@ class Edition2026CorpusTest {
         for (String name : Evidence2026.corpus()) {
             SemanticDocument document = Evidence2026.upgraded(name);
             for (RuleFinding finding : Evidence2026.ENGINE.evaluate(document)) {
-                rows.add(new Row(name, finding.code(), finding.severity().token(),
+                rows.add(new Row(name, finding.code(), word(finding.severity()),
                         finding.paths()));
             }
         }
@@ -213,5 +213,14 @@ class Edition2026CorpusTest {
             assertTrue(page.contains(code),
                     "conformance/rules-2026/ledger.md does not name " + code);
         }
+    }
+
+    /** Returns the word a rule pack writes a severity with, as the ledger records it. */
+    private static String word(Severity severity) {
+        return switch (severity) {
+            case ERROR -> "fatal";
+            case WARNING -> "warning";
+            case INFO -> "info";
+        };
     }
 }

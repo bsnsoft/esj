@@ -20,6 +20,7 @@ import de.bsnsoft.esj.pdf.PdfException;
 import de.bsnsoft.esj.pdf.PdfLimits;
 import de.bsnsoft.esj.pdf.PdfaIdentification;
 import de.bsnsoft.esj.pdf.UnsupportedInvoiceException;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -380,7 +381,7 @@ final class Container {
      */
     boolean hasErrors() {
         return findings.stream()
-                .anyMatch(finding -> finding.severity() == ContainerFinding.Severity.ERROR);
+                .anyMatch(finding -> finding.severity() == Severity.ERROR);
     }
 
     /**

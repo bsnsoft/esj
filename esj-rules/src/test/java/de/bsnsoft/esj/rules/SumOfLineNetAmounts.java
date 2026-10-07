@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +30,8 @@ final class SumOfLineNetAmounts implements JavaRule {
     }
 
     @Override
-    public RuleSeverity severity() {
-        return RuleSeverity.FATAL;
+    public Severity severity() {
+        return Severity.ERROR;
     }
 
     @Override

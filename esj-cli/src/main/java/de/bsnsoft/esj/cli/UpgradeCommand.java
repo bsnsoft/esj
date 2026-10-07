@@ -4,6 +4,7 @@ import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.json.EsjWriter;
+import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RulePackSource;
 import de.bsnsoft.esj.rules.RulePackSources;
@@ -175,30 +176,28 @@ final class UpgradeCommand implements Callable<Integer>, ReadsADocument {
         if (!EditionUpgrade.isAvailable(document.semanticModel(), to)) {
             throw refusalOf(document, input);
         }
-        UpgradeOptions.Builder options = UpgradeOptions.builder()
-                .source(input.bytes())
-                .strict(refuseOpenPoints)
-                .partial(partial);
+        UpgradeOptions options = UpgradeOptions.defaults()
+                .withSource(input.bytes())
+                .withStrict(refuseOpenPoints)
+                .withPartial(partial)
+                .withDroppable(droppable)
+                .withExtensions(Options.extension(extension).registries());
         if (specification != null) {
-            options.specification(specification);
+            options = options.withSpecification(specification);
         }
-        for (SemanticPath path : droppable) {
-            options.drop(path);
+        MinorUnits units = RulePackSources.forRegistry(Registry.forEdition(to))
+                .flatMap(RulePackSource::currencyMinorUnits).orElse(null);
+        if (units != null) {
+            options = options.withMinorUnits(units);
         }
-        for (Registry registry : Options.extension(extension).registries()) {
-            options.extension(registry);
-        }
-        RulePackSources.forEdition(Registry.forEdition(to).edition())
-                .flatMap(RulePackSource::currencyMinorUnits)
-                .ifPresent(options::minorUnits);
-        return EditionUpgrade.apply(document, to, options.build());
+        return EditionUpgrade.apply(document, to, options);
     }
 
     /** Says why this build cannot write that document as that edition. */
     private CliException refusalOf(SemanticDocument document, Input input) {
-        if (!Registry.editions().contains(to)) {
+        if (!Registry.editionKeys().contains(to)) {
             return CliException.unsupported("this build carries no registry of the edition "
-                    + to + "; --to takes " + Registry.editions());
+                    + to + "; --to takes " + Registry.editionKeys());
         }
         if (Registry.forEdition(to).describes(document.semanticModel())) {
             return CliException.input(input.name() + " already names the edition "

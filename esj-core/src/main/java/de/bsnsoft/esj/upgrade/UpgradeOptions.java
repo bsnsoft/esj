@@ -5,7 +5,7 @@ import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +25,8 @@ import java.util.Optional;
  */
 public final class UpgradeOptions {
 
-    private static final UpgradeOptions DEFAULTS = builder().build();
+    private static final UpgradeOptions DEFAULTS = new UpgradeOptions(null, List.of(),
+            false, false, null, List.of(), null);
 
     private final String specification;
     private final List<SemanticPath> droppable;
@@ -35,14 +36,16 @@ public final class UpgradeOptions {
     private final List<Registry> extensions;
     private final MinorUnits minorUnits;
 
-    private UpgradeOptions(Builder builder) {
-        this.specification = builder.specification;
-        this.droppable = List.copyOf(builder.droppable);
-        this.strict = builder.strict;
-        this.partial = builder.partial;
-        this.sourceDigest = builder.sourceDigest;
-        this.extensions = List.copyOf(builder.extensions);
-        this.minorUnits = builder.minorUnits;
+    private UpgradeOptions(String specification, List<SemanticPath> droppable, boolean strict,
+                           boolean partial, String sourceDigest, List<Registry> extensions,
+                           MinorUnits minorUnits) {
+        this.specification = specification;
+        this.droppable = List.copyOf(droppable);
+        this.strict = strict;
+        this.partial = partial;
+        this.sourceDigest = sourceDigest;
+        this.extensions = List.copyOf(extensions);
+        this.minorUnits = minorUnits;
     }
 
     /**
@@ -52,15 +55,6 @@ public final class UpgradeOptions {
      */
     public static UpgradeOptions defaults() {
         return DEFAULTS;
-    }
-
-    /**
-     * Returns a builder.
-     *
-     * @return a builder holding the defaults
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**
@@ -145,146 +139,167 @@ public final class UpgradeOptions {
         return false;
     }
 
-    /** Collects the decisions of one caller. */
-    public static final class Builder {
+    /**
+     * Returns these options with the specification identifier the result carries at
+     * BT-24, in place of the one the source document carries.
+     *
+     * @param identifier the identifier of the specification the result claims
+     * @return the options
+     * @throws NullPointerException if {@code identifier} is {@code null}
+     */
+    public UpgradeOptions withSpecification(String identifier) {
+        return new UpgradeOptions(Objects.requireNonNull(identifier, "identifier"), droppable,
+                strict, partial, sourceDigest, extensions, minorUnits);
+    }
 
-        private final List<SemanticPath> droppable = new ArrayList<>();
-        private String specification;
-        private boolean strict;
-        private boolean partial;
-        private String sourceDigest;
-        private final List<Registry> extensions = new ArrayList<>();
-        private MinorUnits minorUnits;
+    /**
+     * Returns these options with the paths the run may drop the values at and under,
+     * replacing any named before.
+     *
+     * @param paths value paths, or group paths covering everything under them
+     * @return the options
+     * @throws NullPointerException if {@code paths} is or holds {@code null}
+     */
+    public UpgradeOptions withDroppable(Collection<SemanticPath> paths) {
+        return new UpgradeOptions(specification,
+                List.copyOf(Objects.requireNonNull(paths, "paths")), strict, partial,
+                sourceDigest, extensions, minorUnits);
+    }
 
-        private Builder() {
+    /**
+     * Returns these options asking, or not asking, for a refusal where the run leaves an
+     * open point.
+     *
+     * @param value whether an open point is a refusal
+     * @return the options
+     */
+    public UpgradeOptions withStrict(boolean value) {
+        return new UpgradeOptions(specification, droppable, value, partial, sourceDigest,
+                extensions, minorUnits);
+    }
+
+    /**
+     * Returns these options allowing, or not allowing, a result that does not satisfy the
+     * model of the target edition for a reason the mapping does not explain.
+     *
+     * @param value whether such a result is written rather than refused
+     * @return the options
+     */
+    public UpgradeOptions withPartial(boolean value) {
+        return new UpgradeOptions(specification, droppable, strict, value, sourceDigest,
+                extensions, minorUnits);
+    }
+
+    /**
+     * Returns these options recording the provenance of the result: the digest of the
+     * bytes it was derived from (specification, section 4.7).
+     *
+     * @param bytes the bytes of the source document
+     * @return the options
+     * @throws NullPointerException if {@code bytes} is {@code null}
+     */
+    public UpgradeOptions withSource(byte[] bytes) {
+        return withSourceDigest(sha256(Objects.requireNonNull(bytes, "bytes")));
+    }
+
+    /**
+     * Returns these options recording the provenance of the result from a digest that was
+     * computed elsewhere.
+     *
+     * @param sha256 the SHA-256 of the bytes of the source document, as 64 lowercase
+     *               hexadecimal digits
+     * @return the options
+     * @throws NullPointerException if {@code sha256} is {@code null}
+     */
+    public UpgradeOptions withSourceDigest(String sha256) {
+        return new UpgradeOptions(specification, droppable, strict, partial,
+                Objects.requireNonNull(sha256, "sha256"), extensions, minorUnits);
+    }
+
+    /**
+     * Returns these options with the extension registries the result is checked with,
+     * replacing any named before. Each of them is combined where it fits the target
+     * edition.
+     *
+     * @param registries the registries of the extensions
+     * @return the options
+     * @throws NullPointerException if {@code registries} is or holds {@code null}
+     */
+    public UpgradeOptions withExtensions(Collection<Registry> registries) {
+        return new UpgradeOptions(specification, droppable, strict, partial, sourceDigest,
+                List.copyOf(Objects.requireNonNull(registries, "registries")), minorUnits);
+    }
+
+    /**
+     * Returns these options with the minor units a bound that follows the currency in use
+     * is evaluated with. A registry may bound the fraction digits of a term by the minor
+     * unit of the currency rather than by a constant; which minor unit a currency has is a
+     * fact of a dated snapshot a rule pack carries, and the run evaluates such a bound only
+     * with one in hand. Nothing is rounded either way.
+     *
+     * @param units the minor units, with the snapshot they were read from as their source
+     * @return the options
+     * @throws NullPointerException if {@code units} is {@code null}
+     */
+    public UpgradeOptions withMinorUnits(MinorUnits units) {
+        return new UpgradeOptions(specification, droppable, strict, partial, sourceDigest,
+                extensions, Objects.requireNonNull(units, "units"));
+    }
+
+    /**
+     * Tells whether another object is options with the same decisions.
+     *
+     * @param other the object to compare with
+     * @return {@code true} if every decision is equal
+     */
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof UpgradeOptions that
+                && Objects.equals(specification, that.specification)
+                && droppable.equals(that.droppable)
+                && strict == that.strict
+                && partial == that.partial
+                && Objects.equals(sourceDigest, that.sourceDigest)
+                && extensions.equals(that.extensions)
+                && Objects.equals(minorUnits, that.minorUnits);
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(specification, droppable, strict, partial, sourceDigest,
+                extensions, minorUnits);
+    }
+
+    /**
+     * Returns the decisions as one line.
+     *
+     * @return a one-line description
+     */
+    @Override
+    public String toString() {
+        return "UpgradeOptions[specification=" + specification + ", droppable=" + droppable
+                + ", strict=" + strict + ", partial=" + partial + ", sourceDigest="
+                + sourceDigest + ", extensions=" + extensions.size() + ", minorUnits="
+                + (minorUnits != null) + "]";
+    }
+
+    private static String sha256(byte[] bytes) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("every Java runtime implements SHA-256", e);
         }
-
-        /**
-         * Sets the specification identifier the result carries at BT-24, in place of the
-         * one the source document carries.
-         *
-         * @param identifier the identifier of the specification the result claims
-         * @return this builder
-         * @throws NullPointerException if {@code identifier} is {@code null}
-         */
-        public Builder specification(String identifier) {
-            this.specification = Objects.requireNonNull(identifier, "identifier");
-            return this;
+        StringBuilder text = new StringBuilder(64);
+        for (byte b : digest.digest(bytes)) {
+            text.append(Character.forDigit((b >> 4) & 0xF, 16))
+                    .append(Character.forDigit(b & 0xF, 16));
         }
-
-        /**
-         * Allows the run to drop the values at a path and under it.
-         *
-         * @param path a value path, or a group path covering everything under it
-         * @return this builder
-         * @throws NullPointerException if {@code path} is {@code null}
-         */
-        public Builder drop(SemanticPath path) {
-            droppable.add(Objects.requireNonNull(path, "path"));
-            return this;
-        }
-
-        /**
-         * Asks for a refusal where the run leaves an open point.
-         *
-         * @param strict whether an open point is a refusal
-         * @return this builder
-         */
-        public Builder strict(boolean strict) {
-            this.strict = strict;
-            return this;
-        }
-
-        /**
-         * Allows a result that does not satisfy the model of the target edition for a
-         * reason the mapping does not explain.
-         *
-         * @param partial whether such a result is written rather than refused
-         * @return this builder
-         */
-        public Builder partial(boolean partial) {
-            this.partial = partial;
-            return this;
-        }
-
-        /**
-         * Records the provenance of the result: the digest of the bytes it was derived
-         * from (specification, section 4.7).
-         *
-         * @param bytes the bytes of the source document
-         * @return this builder
-         * @throws NullPointerException if {@code bytes} is {@code null}
-         */
-        public Builder source(byte[] bytes) {
-            this.sourceDigest = sha256(Objects.requireNonNull(bytes, "bytes"));
-            return this;
-        }
-
-        /**
-         * Records the provenance of the result from a digest that was computed elsewhere.
-         *
-         * @param sha256 the SHA-256 of the bytes of the source document, as 64 lowercase
-         *               hexadecimal digits
-         * @return this builder
-         * @throws NullPointerException if {@code sha256} is {@code null}
-         */
-        public Builder sourceDigest(String sha256) {
-            this.sourceDigest = Objects.requireNonNull(sha256, "sha256");
-            return this;
-        }
-
-        /**
-         * Names an extension registry the result is checked with, where the target
-         * edition has one. Calling it more than once names more than one extension, and
-         * each of them is combined where it fits the target edition.
-         *
-         * @param registry the registry of the extension
-         * @return this builder
-         * @throws NullPointerException if {@code registry} is {@code null}
-         */
-        public Builder extension(Registry registry) {
-            this.extensions.add(Objects.requireNonNull(registry, "registry"));
-            return this;
-        }
-
-        /**
-         * Hands over the minor units a bound that follows the currency in use is evaluated
-         * with. A registry may bound the fraction digits of a term by the minor unit of the
-         * currency rather than by a constant; which minor unit a currency has is a fact of a
-         * dated snapshot a rule pack carries, and the run evaluates such a bound only with
-         * one in hand. Nothing is rounded either way.
-         *
-         * @param units the minor units, with the snapshot they were read from as their source
-         * @return this builder
-         * @throws NullPointerException if {@code units} is {@code null}
-         */
-        public Builder minorUnits(MinorUnits units) {
-            this.minorUnits = Objects.requireNonNull(units, "units");
-            return this;
-        }
-
-        /**
-         * Builds the options.
-         *
-         * @return the options
-         */
-        public UpgradeOptions build() {
-            return new UpgradeOptions(this);
-        }
-
-        private static String sha256(byte[] bytes) {
-            MessageDigest digest;
-            try {
-                digest = MessageDigest.getInstance("SHA-256");
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("every Java runtime implements SHA-256", e);
-            }
-            StringBuilder text = new StringBuilder(64);
-            for (byte b : digest.digest(bytes)) {
-                text.append(Character.forDigit((b >> 4) & 0xF, 16))
-                        .append(Character.forDigit(b & 0xF, 16));
-            }
-            return text.toString();
-        }
+        return text.toString();
     }
 }

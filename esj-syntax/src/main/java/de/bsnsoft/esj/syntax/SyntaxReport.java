@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.time.Duration;
 import java.util.List;
@@ -30,8 +31,9 @@ import java.util.Optional;
  * @param profileNote     a note in English where the document names a profile no
  *                        component of the pack recognizes
  * @param profileRulesSkipped whether a rule set of the pack was left out because of the
- *                        profile the document names. A verdict of {@link Verdict#VALID}
- *                        that follows it was reached without those rules, so a caller
+ *                        profile the document names. A verdict of
+ *                        {@link ValidationStatus#VALID} that follows it was reached
+ *                        without those rules, so a caller
  *                        that must know what a verdict covers reads this rather than the
  *                        note, which is a sentence for a person
  * @param profileRulesMissing whether the rule set that was left out was left out for a
@@ -42,7 +44,7 @@ import java.util.Optional;
  *                        unused for a document that named one is a gap
  * @param duration        how long the whole validation took
  */
-public record SyntaxReport(Verdict verdict,
+public record SyntaxReport(ValidationStatus verdict,
                            Optional<InvoiceSyntax> syntax,
                            String customizationId,
                            Optional<Pack> pack,
@@ -70,8 +72,9 @@ public record SyntaxReport(Verdict verdict,
      * @param profileNote     a note in English where the document names a profile no
      *                        component of the pack recognizes
      * @param profileRulesSkipped whether a rule set of the pack was left out because of the
-     *                        profile the document names. A verdict of {@link Verdict#VALID}
-     *                        that follows it was reached without those rules, so a caller
+     *                        profile the document names. A verdict of
+     *                        {@link ValidationStatus#VALID} that follows it was reached
+     *                        without those rules, so a caller
      *                        that must know what a verdict covers reads this rather than the
      *                        note, which is a sentence for a person
      * @param profileRulesMissing whether the rule set that was left out was left out for a

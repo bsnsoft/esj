@@ -12,44 +12,25 @@ import java.util.Optional;
  * and the exchange rate that carries the invoice total VAT amount (BT-110) into the VAT
  * accounting currency (BT-6) as the invoice total VAT amount in accounting currency (BT-111).
  *
- * @param overwriteLines whether a line that already carries an invoice line net amount
- *                       (BT-131) is recomputed from its price, quantity, charges and
- *                       allowances. With the default {@code false} such a line keeps the
- *                       amount it was given, and a derivation that computes a different one
- *                       refuses rather than overwrite it
- * @param vatAccountingCurrencyRate the rate that multiplies the invoice total VAT amount
- *                       (BT-110) into the VAT accounting currency (BT-6), or an empty
- *                       optional to leave the invoice total VAT amount in accounting currency
- *                       (BT-111) untouched. The rate is a plain multiplier: one unit of the
- *                       invoice currency (BT-5) in units of the accounting currency
+ * <p>Instances are immutable; every {@code with} method returns new options.
  */
-public record TotalsOptions(boolean overwriteLines, Optional<BigDecimal> vatAccountingCurrencyRate) {
+public final class TotalsOptions {
 
-    private static final TotalsOptions STANDARD = new TotalsOptions(false, Optional.empty());
+    private static final TotalsOptions DEFAULTS = new TotalsOptions(false, Optional.empty());
 
-    /**
-     * Checks the arguments.
-     *
-     * @param overwriteLines whether a line that already carries an invoice line net amount
-     *                       (BT-131) is recomputed from its price, quantity, charges and
-     *                       allowances. With the default {@code false} such a line keeps the
-     *                       amount it was given, and a derivation that computes a different one
-     *                       refuses rather than overwrite it
-     * @param vatAccountingCurrencyRate the rate that multiplies the invoice total VAT amount
-     *                       (BT-110) into the VAT accounting currency (BT-6), or an empty
-     *                       optional to leave the invoice total VAT amount in accounting currency
-     *                       (BT-111) untouched. The rate is a plain multiplier: one unit of the
-     *                       invoice currency (BT-5) in units of the accounting currency
-     * @throws IllegalArgumentException if the exchange rate is not positive
-     * @throws NullPointerException     if {@code vatAccountingCurrencyRate} is {@code null}
-     */
-    public TotalsOptions {
+    private final boolean overwriteLines;
+    private final Optional<BigDecimal> vatAccountingCurrencyRate;
+
+    private TotalsOptions(boolean overwriteLines,
+                          Optional<BigDecimal> vatAccountingCurrencyRate) {
         Objects.requireNonNull(vatAccountingCurrencyRate, "vatAccountingCurrencyRate");
         if (vatAccountingCurrencyRate.isPresent()
                 && vatAccountingCurrencyRate.get().signum() <= 0) {
             throw new IllegalArgumentException("an exchange rate is positive, not "
                     + vatAccountingCurrencyRate.get().toPlainString());
         }
+        this.overwriteLines = overwriteLines;
+        this.vatAccountingCurrencyRate = vatAccountingCurrencyRate;
     }
 
     /**
@@ -58,8 +39,8 @@ public record TotalsOptions(boolean overwriteLines, Optional<BigDecimal> vatAcco
      *
      * @return the default options
      */
-    public static TotalsOptions standard() {
-        return STANDARD;
+    public static TotalsOptions defaults() {
+        return DEFAULTS;
     }
 
     /**
@@ -82,5 +63,68 @@ public record TotalsOptions(boolean overwriteLines, Optional<BigDecimal> vatAcco
      */
     public TotalsOptions withVatAccountingCurrencyRate(BigDecimal rate) {
         return new TotalsOptions(overwriteLines, Optional.ofNullable(rate));
+    }
+
+    /**
+     * Returns whether a line that already carries an invoice line net amount (BT-131) is
+     * recomputed from its price, quantity, charges and allowances. With the default {@code
+     * false} such a line keeps the amount it was given, and a derivation that computes a
+     * different one refuses rather than overwrite it.
+     *
+     * @return whether a line that already carries an invoice line net amount (BT-131) is
+     */
+    public boolean overwriteLines() {
+        return overwriteLines;
+    }
+
+    /**
+     * Returns the rate that multiplies the invoice total VAT amount (BT-110) into the VAT
+     * accounting currency (BT-6), or an empty optional to leave the invoice total VAT
+     * amount in accounting currency (BT-111) untouched. The rate is a plain multiplier:
+     * one unit of the invoice currency (BT-5) in units of the accounting currency.
+     *
+     * @return the rate that multiplies the invoice total VAT amount (BT-110) into the VAT
+     */
+    public Optional<BigDecimal> vatAccountingCurrencyRate() {
+        return vatAccountingCurrencyRate;
+    }
+
+    /**
+     * Tells whether another object is of this class and has equal components.
+     *
+     * @param other the object to compare with
+     * @return {@code true} if every component is equal
+     */
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof TotalsOptions that
+                && overwriteLines == that.overwriteLines
+                && Objects.equals(vatAccountingCurrencyRate, that.vatAccountingCurrencyRate);
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}, combined as a record
+     * combines the hash codes of its components.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash = 31 * hash + Boolean.hashCode(overwriteLines);
+        hash = 31 * hash + Objects.hashCode(vatAccountingCurrencyRate);
+        return hash;
+    }
+
+    /**
+     * Returns the components as one line, in the form a record writes itself.
+     *
+     * @return a one-line description
+     */
+    @Override
+    public String toString() {
+        return "TotalsOptions[overwriteLines=" + overwriteLines
+                + ", vatAccountingCurrencyRate=" + vatAccountingCurrencyRate
+                + "]";
     }
 }

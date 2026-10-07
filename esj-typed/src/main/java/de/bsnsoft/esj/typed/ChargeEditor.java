@@ -23,7 +23,7 @@ import java.math.BigDecimal;
  * of this editor: {@code ChargeEditor} checks a value against the grammar of its semantic data type
  * and nothing else.
  */
-public interface ChargeEditor {
+public sealed interface ChargeEditor permits ChargeEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

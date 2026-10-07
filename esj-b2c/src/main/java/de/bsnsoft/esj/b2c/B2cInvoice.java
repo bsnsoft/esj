@@ -19,7 +19,7 @@ import java.util.Optional;
  * of the extension and nothing else. Nothing is copied and nothing is resolved before it is asked
  * for.
  */
-public interface B2cInvoice {
+public sealed interface B2cInvoice permits B2cInvoiceView {
 
     /**
      * Returns the document this overlay reads.

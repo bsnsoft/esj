@@ -54,7 +54,7 @@ import java.util.stream.Stream;
  * </pre>
  *
  * <p>{@code --edition} names one of the core registries the build carries
- * ({@code Registry.editions()}), and one run writes the artefacts of one edition. The
+ * ({@code Registry.editionKeys()}), and one run writes the artefacts of one edition. The
  * repository checks in a typed view per edition, each in a package of its own, so a run
  * over another edition names that package with {@code --typed-package}; a run that writes
  * a model schema alone is left without {@code --typed}.
@@ -367,7 +367,7 @@ public final class Generate {
             Path schema = required(values, "--schema");
             Path formatSchema = required(values, "--format-schema");
             String edition = Optional.ofNullable(values.remove("--edition"))
-                    .orElse(Registry.DEFAULT_EDITION);
+                    .orElse(Registry.defaultEditionKey());
             Optional<Path> derivable = optional(values, "--derivable");
             Optional<Path> profiles = optional(values, "--profiles");
             Optional<Path> enums = optional(values, "--enums");

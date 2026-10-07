@@ -156,7 +156,7 @@ than at a file.
 
 ### Two layouts
 
-`RenderOptions.layout(Layout)`, template member `"layout"`, `esj render --layout`. Default
+`RenderOptions.withLayout(Layout)`, template member `"layout"`, `esj render --layout`. Default
 `letter` (`RenderOptions.DEFAULT_LAYOUT`); a layout the caller names wins over one the template
 names. The validation report draws the invoice it carries in the generic layout.
 

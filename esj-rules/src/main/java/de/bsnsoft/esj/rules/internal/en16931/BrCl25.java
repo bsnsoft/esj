@@ -5,7 +5,7 @@ import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.rules.CodeList;
 import de.bsnsoft.esj.rules.JavaRule;
 import de.bsnsoft.esj.rules.RuleContext;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,8 +38,8 @@ public final class BrCl25 implements JavaRule {
     }
 
     @Override
-    public RuleSeverity severity() {
-        return RuleSeverity.FATAL;
+    public Severity severity() {
+        return Severity.ERROR;
     }
 
     @Override

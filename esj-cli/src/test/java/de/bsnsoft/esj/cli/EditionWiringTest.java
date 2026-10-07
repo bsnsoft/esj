@@ -46,7 +46,7 @@ class EditionWiringTest {
     private Path directory;
 
     static boolean carries2026() {
-        return Registry.editions().contains("2026");
+        return Registry.editionKeys().contains("2026");
     }
 
     @Test

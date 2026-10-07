@@ -45,7 +45,8 @@ class FacturXTest {
     private static final String CII = "business-cases/standard/01.01a-INVOICE_uncefact.xml";
 
     /** The specification identifier of an invoice of the profile XRECHNUNG, as the corpus writes it. */
-    private static final EmbedOptions XRECHNUNG = EmbedOptions.of(FacturXProfile.XRECHNUNG);
+    private static final EmbedOptions XRECHNUNG = EmbedOptions.defaults()
+            .withProfile(FacturXProfile.XRECHNUNG);
 
     @Test
     void theInvoiceGoesInAndTheSameDocumentComesBackOut() {
@@ -175,7 +176,7 @@ class FacturXTest {
      */
     @Test
     void aValidatorTheCallerLendsCanRefuseAFileThatOnlyDeclaresIt() {
-        EmbedOptions checked = XRECHNUNG.checkedWith(
+        EmbedOptions checked = XRECHNUNG.withCheck(
                 pdf -> Optional.of("the page draws in a colour space the file does not carry"));
 
         EmbedRefusedException refused = assertThrows(EmbedRefusedException.class,
@@ -189,7 +190,7 @@ class FacturXTest {
     @Test
     void aValidatorThatPassesLeavesTheResultAsItWas() {
         byte[] input = Pdfs.pdfa3();
-        EmbedOptions checked = XRECHNUNG.checkedWith(pdf -> Optional.empty());
+        EmbedOptions checked = XRECHNUNG.withCheck(pdf -> Optional.empty());
 
         assertArrayEquals(FacturX.embed(input, document(), XRECHNUNG),
                 FacturX.embed(input, document(), checked));
@@ -208,7 +209,7 @@ class FacturXTest {
     void refusesAProfileThatIsNoEn16931Invoice() {
         for (FacturXProfile profile : List.of(FacturXProfile.MINIMUM, FacturXProfile.BASIC_WL)) {
             IllegalArgumentException refused = assertThrows(IllegalArgumentException.class,
-                    () -> EmbedOptions.of(profile));
+                    () -> EmbedOptions.defaults().withProfile(profile));
 
             assertTrue(refused.getMessage().contains("EN 16931 invoice"),
                     refused.getMessage());
@@ -382,15 +383,11 @@ class FacturXTest {
                 .withProfile(FacturXProfile.XRECHNUNG)
                 .withFlavour(HybridFlavour.ZUGFERD_2_0)
                 .withLimits(PdfLimits.defaults())
-                .checkedWith(pdf -> Optional.empty());
+                .withCheck(pdf -> Optional.empty());
 
         assertEquals(b2c, options.extensions());
         assertEquals(List.of(), EmbedOptions.defaults().extensions(),
                 "the defaults hand the writer no registry");
-        assertEquals(List.of(), new EmbedOptions(FacturXProfile.EN_16931,
-                        HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty())
-                        .extensions(),
-                "and neither do the four members without them");
     }
 
     /** A document whose every value reached the syntax says exactly that. */

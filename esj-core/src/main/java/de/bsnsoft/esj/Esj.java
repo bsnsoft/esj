@@ -9,32 +9,22 @@ import java.util.Objects;
  * specification, section 4.4 and the characters the message escaping of section 9.5
  * escapes.
  *
- * <p>Every ESJ document carries {@link #FORMAT} and {@link #VERSION}. The third fixed
- * string, {@link #SEMANTIC_MODEL}, is the edition this implementation ships a registry
- * for and therefore the edition it reads and writes by default; it is not the only value
- * the format defines for that member.
+ * <p>Every ESJ document carries {@link #FORMAT} and the {@link #formatVersion()} of the
+ * implementation that wrote it. {@link #defaultSemanticModel()} is the edition this
+ * implementation writes by default; it is not the only value the format defines for that
+ * member. The two are methods rather than constants because their values change with a
+ * release, and a constant would be compiled into the caller.
  */
 public final class Esj {
 
     /** Value of the {@code format} member of every ESJ document. */
     public static final String FORMAT = "EN16931-Semantic-JSON";
 
-    /** Value of the {@code version} member produced by this implementation. */
-    public static final String VERSION = "0.1";
+    /** The value {@link #formatVersion()} returns. */
+    private static final String VERSION = "0.1";
 
-    /**
-     * The default edition of the semantic model: the one the bundled registry describes
-     * (specification, sections 4.4 and 10).
-     *
-     * <p>A document names an edition in its {@code semanticModel} member, and which
-     * editions an implementation holds a registry for is a property of the implementation
-     * rather than of the format. This one ships one registry, so this is the edition it
-     * writes and the one it can validate against. It is not the only edition it reads: a
-     * reader asks of {@code semanticModel} the grammar of section 4.4 and nothing more,
-     * and a validator with no registry for the edition a document names reports that the
-     * model layers were not checked (section 9.2).
-     */
-    public static final String SEMANTIC_MODEL = "EN16931-1:2017+A1:2019/AC:2020";
+    /** The value {@link #defaultSemanticModel()} returns. */
+    private static final String SEMANTIC_MODEL = "EN16931-1:2017+A1:2019/AC:2020";
 
     /** The provisional, unregistered media type of an ESJ document. */
     public static final String MEDIA_TYPE = "application/vnd.en16931-semantic+json";
@@ -44,6 +34,33 @@ public final class Esj {
 
     private Esj() {
         throw new AssertionError("no instances");
+    }
+
+    /**
+     * Returns the value of the {@code version} member this implementation writes and the
+     * only one its reader accepts: {@code 0.1} in this release.
+     *
+     * @return the format version
+     */
+    public static String formatVersion() {
+        return VERSION;
+    }
+
+    /**
+     * Returns the default edition of the semantic model: the one a document is written in
+     * where its writer names no other (specification, sections 4.4 and 10), in the
+     * spelling of the {@code semanticModel} member.
+     *
+     * <p>A document names an edition in its {@code semanticModel} member, and which
+     * editions an implementation holds a registry for is a property of the implementation
+     * rather than of the format. A reader asks of {@code semanticModel} the grammar of
+     * section 4.4 and nothing more, and a validator with no registry for the edition a
+     * document names reports that the model layers were not checked (section 9.2).
+     *
+     * @return {@code EN16931-1:2017+A1:2019/AC:2020} in this release
+     */
+    public static String defaultSemanticModel() {
+        return SEMANTIC_MODEL;
     }
 
     /**
@@ -83,7 +100,7 @@ public final class Esj {
     /**
      * Tells whether a string is an edition of the semantic model, as the grammar of the
      * specification, section 4.4 writes it: a model token and a year, optionally followed
-     * by amendments and corrigenda, with no spaces. {@link #SEMANTIC_MODEL} is one such
+     * by amendments and corrigenda, with no spaces. {@link #defaultSemanticModel()} is one such
      * string, and so is {@code EN16931-1:2026}.
      *
      * <p>The grammar is checked by hand rather than by a regular expression, so that a

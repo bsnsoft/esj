@@ -66,14 +66,15 @@ public record ReportOptions(RenderLanguage language, boolean includeInvoice,
     }
 
     /**
-     * Returns the options of a report in a language, otherwise the defaults.
+     * Returns these options in another language.
      *
-     * @param language the language
+     * @param value the language of the labels of the report and of the rendered invoice
      * @return the options
-     * @throws NullPointerException if {@code language} is {@code null}
+     * @throws NullPointerException if {@code value} is {@code null}
      */
-    public static ReportOptions in(RenderLanguage language) {
-        return new ReportOptions(language, true, Optional.empty(), PageSize.A4);
+    public ReportOptions withLanguage(RenderLanguage value) {
+        return new ReportOptions(Objects.requireNonNull(value, "language"), includeInvoice,
+                time, pageSize);
     }
 
     /**
@@ -93,7 +94,7 @@ public record ReportOptions(RenderLanguage language, boolean includeInvoice,
      * @return the options
      * @throws NullPointerException if {@code moment} is {@code null}
      */
-    public ReportOptions at(String moment) {
+    public ReportOptions withTime(String moment) {
         return new ReportOptions(language, includeInvoice,
                 Optional.of(Objects.requireNonNull(moment, "moment")), pageSize);
     }
@@ -105,7 +106,7 @@ public record ReportOptions(RenderLanguage language, boolean includeInvoice,
      * @return the options
      * @throws NullPointerException if {@code size} is {@code null}
      */
-    public ReportOptions on(PageSize size) {
+    public ReportOptions withPageSize(PageSize size) {
         return new ReportOptions(language, includeInvoice, time,
                 Objects.requireNonNull(size, "size"));
     }
@@ -122,6 +123,7 @@ public record ReportOptions(RenderLanguage language, boolean includeInvoice,
      * @return the render options
      */
     public RenderOptions rendering() {
-        return RenderOptions.in(language).on(pageSize).layout(Layout.GENERIC);
+        return RenderOptions.defaults().withLanguage(language).withPageSize(pageSize)
+                .withLayout(Layout.GENERIC);
     }
 }

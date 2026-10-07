@@ -22,7 +22,7 @@ public final class VatSteps {
     /**
      * The first step of the group BG-30: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits VatBuild {
         /**
          * BT-151 Invoiced item VAT category code. VAT category code that applies to the invoiced
          * item, from UNTDID 5305.
@@ -39,7 +39,7 @@ public final class VatSteps {
      * The terminal step of the group BG-30: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits VatBuild {
         /**
          * BT-152 Invoiced item VAT rate. VAT rate that applies to the invoiced item, as a
          * percentage.

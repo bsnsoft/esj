@@ -23,7 +23,7 @@ import java.math.BigDecimal;
  * of this editor: {@code AllowanceEditor} checks a value against the grammar of its semantic data
  * type and nothing else.
  */
-public interface AllowanceEditor {
+public sealed interface AllowanceEditor permits AllowanceEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

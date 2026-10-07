@@ -1,17 +1,17 @@
 package de.bsnsoft.esj.rules;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.validate.Severity;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The promise of {@link JavaRule}: a rule written in the rule language and the same rule
@@ -124,8 +124,8 @@ class JavaRuleTest {
             }
 
             @Override
-            public RuleSeverity severity() {
-                return RuleSeverity.FATAL;
+            public Severity severity() {
+                return Severity.ERROR;
             }
 
             @Override

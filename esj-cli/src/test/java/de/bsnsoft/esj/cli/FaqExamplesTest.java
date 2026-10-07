@@ -487,7 +487,7 @@ class FaqExamplesTest {
         String[] tokens = withoutComment(line).split("\\s+");
         for (int i = 0; i + 1 < tokens.length; i++) {
             if (TO_EDITION.equals(tokens[i]) && tokens[i + 1].matches("\\d{4}")) {
-                return !Registry.editions().contains(tokens[i + 1]);
+                return !Registry.editionKeys().contains(tokens[i + 1]);
             }
         }
         return false;

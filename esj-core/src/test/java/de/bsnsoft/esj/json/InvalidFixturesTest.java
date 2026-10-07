@@ -175,7 +175,7 @@ class InvalidFixturesTest {
     @Test
     void theMemberBoundStopsAValueObjectBeforeItIsJudged() {
         EsjReader small = EsjReader.withLimits(
-                Limits.builder().maxValueMembers(2).build());
+                Limits.defaults().withMaxValueMembers(2));
 
         EsjLimitException thrown = assertThrows(EsjLimitException.class,
                 () -> small.read(Examples.invalid("value-object-members-17")));

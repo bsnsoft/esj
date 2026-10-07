@@ -42,7 +42,7 @@ class UpgradeCorpusTest {
             List.of("BT-29", "BT-30", "BT-46", "BT-47", "BT-60", "BT-61", "BT-71");
 
     static boolean carries2026() {
-        return Registry.editions().contains("2026") && Corpus.has(LEDGER);
+        return Registry.editionKeys().contains("2026") && Corpus.has(LEDGER);
     }
 
     @Test
@@ -105,10 +105,8 @@ class UpgradeCorpusTest {
     private static Measurement measure() {
         Measurement measurement = new Measurement();
         Registry target = Registry.forEdition("2026");
-        UpgradeOptions options = UpgradeOptions.builder()
-                .extension(Registry.xrechnungExtension())
-                .extension(Registry.b2cExtension())
-                .build();
+        UpgradeOptions options = UpgradeOptions.defaults().withExtensions(
+                List.of(Registry.xrechnungExtension(), Registry.b2cExtension()));
         List<String> names = new ArrayList<>(Corpus.corpus());
         measurement.instances = names.size();
         List<String> examples = new ArrayList<>();

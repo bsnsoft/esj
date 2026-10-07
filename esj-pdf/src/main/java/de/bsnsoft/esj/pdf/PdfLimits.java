@@ -1,5 +1,7 @@
 package de.bsnsoft.esj.pdf;
 
+import java.util.Objects;
+
 /**
  * What a reader of a PDF container is willing to spend on one file.
  *
@@ -16,41 +18,21 @@ package de.bsnsoft.esj.pdf;
  * with the invoice, while the bound on a decoded attachment is the bound the XML importer
  * already runs, because the attachment is the input of that importer and a larger one
  * would only be refused one step later.
- *
- * @param maxPdfBytes             the largest PDF to open, in bytes of the file
- * @param maxEmbeddedFiles        how many attachments are enumerated at all
- * @param maxAttachmentBytes      the largest attachment to decode, in bytes after the
- *                                stream filters have run
- * @param maxTotalAttachmentBytes how much decoded attachment content one container may
- *                                produce in total
- * @param maxXmpBytes             the largest XMP packet to read, in bytes
- * @param maxDecodedBytes         how many decoded bytes one container may produce in
- *                                total, counting the streams the library decodes to find
- *                                the objects of the file and the streams this reader
- *                                decodes itself
- * @param maxObjectStreamObjects  how many objects the object streams of one container may
- *                                declare together
  */
-public record PdfLimits(long maxPdfBytes,
-                        int maxEmbeddedFiles,
-                        long maxAttachmentBytes,
-                        long maxTotalAttachmentBytes,
-                        long maxXmpBytes,
-                        long maxDecodedBytes,
-                        long maxObjectStreamObjects) {
+public final class PdfLimits {
 
     /** The default bound on the PDF itself: 64 mebibytes. */
-    public static final long DEFAULT_MAX_PDF_BYTES = 64L * 1024L * 1024L;
+    private static final long DEFAULT_MAX_PDF_BYTES = 64L * 1024L * 1024L;
 
     /** The default number of attachments enumerated: 64. */
-    public static final int DEFAULT_MAX_EMBEDDED_FILES = 64;
+    private static final int DEFAULT_MAX_EMBEDDED_FILES = 64;
 
     /**
      * The default bound on one decoded attachment: four mebibytes, the bound the
      * stylesheet importer of {@code esj-xr} and the command line read an XML invoice
      * within, because a reader is where the attachment goes.
      */
-    public static final long DEFAULT_MAX_ATTACHMENT_BYTES = 4L * 1024L * 1024L;
+    private static final long DEFAULT_MAX_ATTACHMENT_BYTES = 4L * 1024L * 1024L;
 
     /**
      * The default bound on all decoded attachments of one container together: four times
@@ -58,11 +40,11 @@ public record PdfLimits(long maxPdfBytes,
      * sometimes a handful of small ones beside it; a file that decodes four full-size
      * attachments is not one.
      */
-    public static final long DEFAULT_MAX_TOTAL_ATTACHMENT_BYTES =
+    private static final long DEFAULT_MAX_TOTAL_ATTACHMENT_BYTES =
             4L * DEFAULT_MAX_ATTACHMENT_BYTES;
 
     /** The default bound on the XMP packet: one mebibyte. */
-    public static final long DEFAULT_MAX_XMP_BYTES = 1024L * 1024L;
+    private static final long DEFAULT_MAX_XMP_BYTES = 1024L * 1024L;
 
     /**
      * The default bound on everything one container decodes: the bound on the file
@@ -73,7 +55,7 @@ public record PdfLimits(long maxPdfBytes,
      * decodes to more than the whole file is allowed to be is not an invoice, so the two
      * bounds are the same number by default.
      */
-    public static final long DEFAULT_MAX_DECODED_BYTES = DEFAULT_MAX_PDF_BYTES;
+    private static final long DEFAULT_MAX_DECODED_BYTES = DEFAULT_MAX_PDF_BYTES;
 
     /**
      * The default bound on the objects the object streams of one container declare
@@ -90,7 +72,7 @@ public record PdfLimits(long maxPdfBytes,
      * a few hundred pages holds indirect objects in the thousands — and far below what a
      * file inside the byte bound can declare.
      */
-    public static final long DEFAULT_MAX_OBJECT_STREAM_OBJECTS = 250_000L;
+    private static final long DEFAULT_MAX_OBJECT_STREAM_OBJECTS = 250_000L;
 
     private static final PdfLimits DEFAULTS = new PdfLimits(
             DEFAULT_MAX_PDF_BYTES,
@@ -101,29 +83,21 @@ public record PdfLimits(long maxPdfBytes,
             DEFAULT_MAX_DECODED_BYTES,
             DEFAULT_MAX_OBJECT_STREAM_OBJECTS);
 
-    /**
-     * Checks that every bound is positive.
-     *
-     * <p>A bound of zero or less describes no container at all, so it is a defect in the
-     * call rather than in any file, and it is refused where it is given rather than when
-     * a document arrives (specification, section 12.2).
-     *
-     * @param maxPdfBytes             the largest PDF to open, in bytes of the file
-     * @param maxEmbeddedFiles        how many attachments are enumerated at all
-     * @param maxAttachmentBytes      the largest attachment to decode, in bytes after the
-     *                                stream filters have run
-     * @param maxTotalAttachmentBytes how much decoded attachment content one container may
-     *                                produce in total
-     * @param maxXmpBytes             the largest XMP packet to read, in bytes
-     * @param maxDecodedBytes         how many decoded bytes one container may produce in
-     *                                total, counting the streams the library decodes to find
-     *                                the objects of the file and the streams this reader
-     *                                decodes itself
-     * @param maxObjectStreamObjects  how many objects the object streams of one container may
-     *                                declare together
-     * @throws IllegalArgumentException if a bound is not positive
-     */
-    public PdfLimits {
+    private final long maxPdfBytes;
+    private final int maxEmbeddedFiles;
+    private final long maxAttachmentBytes;
+    private final long maxTotalAttachmentBytes;
+    private final long maxXmpBytes;
+    private final long maxDecodedBytes;
+    private final long maxObjectStreamObjects;
+
+    private PdfLimits(long maxPdfBytes,
+                      int maxEmbeddedFiles,
+                      long maxAttachmentBytes,
+                      long maxTotalAttachmentBytes,
+                      long maxXmpBytes,
+                      long maxDecodedBytes,
+                      long maxObjectStreamObjects) {
         positive(maxPdfBytes, "maxPdfBytes");
         positive(maxEmbeddedFiles, "maxEmbeddedFiles");
         positive(maxAttachmentBytes, "maxAttachmentBytes");
@@ -131,10 +105,19 @@ public record PdfLimits(long maxPdfBytes,
         positive(maxXmpBytes, "maxXmpBytes");
         positive(maxDecodedBytes, "maxDecodedBytes");
         positive(maxObjectStreamObjects, "maxObjectStreamObjects");
+        this.maxPdfBytes = maxPdfBytes;
+        this.maxEmbeddedFiles = maxEmbeddedFiles;
+        this.maxAttachmentBytes = maxAttachmentBytes;
+        this.maxTotalAttachmentBytes = maxTotalAttachmentBytes;
+        this.maxXmpBytes = maxXmpBytes;
+        this.maxDecodedBytes = maxDecodedBytes;
+        this.maxObjectStreamObjects = maxObjectStreamObjects;
     }
 
     /**
-     * Returns the defaults, which are the constants of this class.
+     * Returns the defaults: 64 MiB per PDF, 64 attachments, 4 MiB per decoded attachment
+     * and 16 MiB for all of them, 1 MiB of XMP, 64 MiB decoded in total and 250 000
+     * objects in object streams. The accessors say why.
      *
      * @return the default limits
      */
@@ -234,5 +217,125 @@ public record PdfLimits(long maxPdfBytes,
         if (value <= 0) {
             throw new IllegalArgumentException(name + " is a positive number of bytes");
         }
+    }
+
+    /**
+     * Returns the largest PDF to open, in bytes of the file.
+     *
+     * @return the largest PDF to open, in bytes of the file
+     */
+    public long maxPdfBytes() {
+        return maxPdfBytes;
+    }
+
+    /**
+     * Returns how many attachments are enumerated at all.
+     *
+     * @return how many attachments are enumerated at all
+     */
+    public int maxEmbeddedFiles() {
+        return maxEmbeddedFiles;
+    }
+
+    /**
+     * Returns the largest attachment to decode, in bytes after the stream filters have
+     * run.
+     *
+     * @return the largest attachment to decode, in bytes after the stream filters have run
+     */
+    public long maxAttachmentBytes() {
+        return maxAttachmentBytes;
+    }
+
+    /**
+     * Returns how much decoded attachment content one container may produce in total.
+     *
+     * @return how much decoded attachment content one container may produce in total
+     */
+    public long maxTotalAttachmentBytes() {
+        return maxTotalAttachmentBytes;
+    }
+
+    /**
+     * Returns the largest XMP packet to read, in bytes.
+     *
+     * @return the largest XMP packet to read, in bytes
+     */
+    public long maxXmpBytes() {
+        return maxXmpBytes;
+    }
+
+    /**
+     * Returns how many decoded bytes one container may produce in total, counting the
+     * streams the library decodes to find the objects of the file and the streams this
+     * reader decodes itself.
+     *
+     * @return how many decoded bytes one container may produce in total, counting the streams
+     */
+    public long maxDecodedBytes() {
+        return maxDecodedBytes;
+    }
+
+    /**
+     * Returns how many objects the object streams of one container may declare together.
+     *
+     * @return how many objects the object streams of one container may declare together
+     */
+    public long maxObjectStreamObjects() {
+        return maxObjectStreamObjects;
+    }
+
+    /**
+     * Tells whether another object is of this class and has equal components.
+     *
+     * @param other the object to compare with
+     * @return {@code true} if every component is equal
+     */
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof PdfLimits that
+                && maxPdfBytes == that.maxPdfBytes
+                && maxEmbeddedFiles == that.maxEmbeddedFiles
+                && maxAttachmentBytes == that.maxAttachmentBytes
+                && maxTotalAttachmentBytes == that.maxTotalAttachmentBytes
+                && maxXmpBytes == that.maxXmpBytes
+                && maxDecodedBytes == that.maxDecodedBytes
+                && maxObjectStreamObjects == that.maxObjectStreamObjects;
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}, combined as a record
+     * combines the hash codes of its components.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash = 31 * hash + Long.hashCode(maxPdfBytes);
+        hash = 31 * hash + Integer.hashCode(maxEmbeddedFiles);
+        hash = 31 * hash + Long.hashCode(maxAttachmentBytes);
+        hash = 31 * hash + Long.hashCode(maxTotalAttachmentBytes);
+        hash = 31 * hash + Long.hashCode(maxXmpBytes);
+        hash = 31 * hash + Long.hashCode(maxDecodedBytes);
+        hash = 31 * hash + Long.hashCode(maxObjectStreamObjects);
+        return hash;
+    }
+
+    /**
+     * Returns the components as one line, in the form a record writes itself.
+     *
+     * @return a one-line description
+     */
+    @Override
+    public String toString() {
+        return "PdfLimits[maxPdfBytes=" + maxPdfBytes
+                + ", maxEmbeddedFiles=" + maxEmbeddedFiles
+                + ", maxAttachmentBytes=" + maxAttachmentBytes
+                + ", maxTotalAttachmentBytes=" + maxTotalAttachmentBytes
+                + ", maxXmpBytes=" + maxXmpBytes
+                + ", maxDecodedBytes=" + maxDecodedBytes
+                + ", maxObjectStreamObjects=" + maxObjectStreamObjects
+                + "]";
     }
 }

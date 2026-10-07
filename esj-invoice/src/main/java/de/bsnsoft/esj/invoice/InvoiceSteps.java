@@ -28,11 +28,18 @@ import java.util.function.Consumer;
  * repeated at all, and {@link Buildable#draft()} refuses a second seller, buyer, payee,
  * delivery, invoicing period or set of payment instructions rather than merging it into
  * the first.
+ *
+ * <p>Every step is sealed: the domain API implements it, and a later release may add
+ * methods to it.
  */
-public interface InvoiceSteps {
+public final class InvoiceSteps {
+
+    private InvoiceSteps() {
+        throw new AssertionError("no instances");
+    }
 
     /** The step an invoice starts at. */
-    interface Start {
+    public sealed interface Start permits InvoiceBuild {
 
         /**
          * Writes the invoice number (BT-1).
@@ -46,7 +53,7 @@ public interface InvoiceSteps {
     }
 
     /** The step after the invoice number. */
-    interface WithNumber {
+    public sealed interface WithNumber permits InvoiceBuild {
 
         /**
          * Writes the issue date (BT-2).
@@ -59,7 +66,7 @@ public interface InvoiceSteps {
     }
 
     /** The step after the issue date. */
-    interface WithIssueDate {
+    public sealed interface WithIssueDate permits InvoiceBuild {
 
         /**
          * Writes the currency of the invoice (BT-5).
@@ -81,7 +88,7 @@ public interface InvoiceSteps {
     }
 
     /** The step after the currency. */
-    interface WithCurrency {
+    public sealed interface WithCurrency permits InvoiceBuild {
 
         /**
          * Writes the seller (BG-4).
@@ -94,7 +101,7 @@ public interface InvoiceSteps {
     }
 
     /** The step after the seller. */
-    interface WithSeller {
+    public sealed interface WithSeller permits InvoiceBuild {
 
         /**
          * Writes the buyer (BG-7).
@@ -112,7 +119,7 @@ public interface InvoiceSteps {
      * The step after the buyer: everything EN 16931-1 leaves optional, and the first
      * invoice line, which is what opens {@link Buildable}.
      */
-    interface WithBuyer {
+    public sealed interface WithBuyer permits Buildable {
 
         /**
          * Writes one invoice line (BG-25), numbered by its position where it states no
@@ -322,7 +329,7 @@ public interface InvoiceSteps {
      * The terminal step: an invoice that states everything EN 16931-1 asks of every
      * invoice, and can therefore be derived, checked and handed over.
      */
-    interface Buildable extends WithBuyer {
+    public sealed interface Buildable extends WithBuyer permits InvoiceBuild {
 
         @Override
         Buildable line(Line line);

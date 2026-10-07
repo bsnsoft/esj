@@ -15,6 +15,9 @@ import java.util.function.Consumer;
  * the same position — which is why the usual way to append is {@link #add(Consumer)},
  * where the block writes before the next call.
  *
+ * <p>Not for implementation: the editors return the implementation of this library, and a
+ * later release may add methods to this interface.
+ *
  * @param <E> the editor type of one instance
  */
 public interface EditorList<E> {

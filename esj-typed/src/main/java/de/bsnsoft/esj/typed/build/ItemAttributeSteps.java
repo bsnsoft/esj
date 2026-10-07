@@ -20,7 +20,7 @@ public final class ItemAttributeSteps {
     /**
      * The first step of the group BG-32: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits ItemAttributeBuild {
         /**
          * BT-160 Item attribute name. Name of the item attribute.
          *
@@ -35,7 +35,7 @@ public final class ItemAttributeSteps {
     /**
      * The step of the group BG-32 that follows BT-160 Item attribute name.
      */
-    public interface WithName {
+    public sealed interface WithName permits ItemAttributeBuild {
         /**
          * BT-161 Item attribute value. Value of the item attribute.
          *
@@ -51,7 +51,7 @@ public final class ItemAttributeSteps {
      * The terminal step of the group BG-32: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits ItemAttributeBuild {
         /**
          * Returns the typed editor of this instance of BG-32. It is the way to anything this
          * builder does not offer, an extension term above all, and it writes into the same

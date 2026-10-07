@@ -14,6 +14,9 @@ import de.bsnsoft.esj.EsjFormatException;
  * layer L2, as it is for a document written any other way. The one overload this
  * interface adds to {@link SchemedIdentifierList} is the one that appends a bare
  * identifier, which a term with a mandatory scheme does not offer.
+ *
+ * <p>Not for implementation: the editors return the implementation of this library, and a
+ * later release may add methods to this interface.
  */
 public interface IdentifierList extends SchemedIdentifierList {
 

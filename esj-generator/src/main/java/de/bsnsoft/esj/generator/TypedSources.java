@@ -326,7 +326,8 @@ final class TypedSources {
         imports.add(PATH_TYPE);
 
         body.append(typeJavadoc(group));
-        body.append("public interface ").append(group.typeName()).append(" {\n");
+        body.append("public sealed interface ").append(group.typeName())
+                .append(" permits ").append(Naming.viewName(group.typeName())).append(" {\n");
         body.append("\n");
         body.append("    /**\n");
         body.append("     * Returns the document this view reads.\n");
@@ -580,7 +581,8 @@ final class TypedSources {
 
         String type = Naming.editorName(group.typeName());
         body.append(editorJavadoc(group, type));
-        body.append("public interface ").append(type).append(" {\n");
+        body.append("public sealed interface ").append(type)
+                .append(" permits ").append(Naming.editName(group.typeName())).append(" {\n");
         body.append("\n");
         body.append("    /**\n");
         body.append(JavaText.wrap("    ", " * ",

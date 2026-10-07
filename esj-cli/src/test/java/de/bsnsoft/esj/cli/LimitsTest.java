@@ -46,8 +46,8 @@ class LimitsTest {
     void theDefaultProfileIsTheReferenceConfiguration() {
         Bounds bounds = Bounds.profile(Bounds.DEFAULT_PROFILE);
         assertEquals(Limits.defaults(), bounds.readerLimits());
-        assertEquals(XrImporter.DEFAULT_MAX_INPUT_BYTES, bounds.maxInputBytes());
-        assertEquals(WriterOptions.DEFAULT_MAX_OUTPUT_BYTES, bounds.maxOutputBytes());
+        assertEquals(XrImporter.defaultMaxInputBytes(), bounds.maxInputBytes());
+        assertEquals(WriterOptions.defaults().maxOutputBytes(), bounds.maxOutputBytes());
     }
 
     @Test

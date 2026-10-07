@@ -22,7 +22,7 @@ public final class DocumentLevelAllowanceSteps {
     /**
      * The first step of the group BG-20: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits DocumentLevelAllowanceBuild {
         /**
          * BT-92 Document level allowance amount. Amount of the document level allowance, without
          * VAT.
@@ -38,7 +38,7 @@ public final class DocumentLevelAllowanceSteps {
     /**
      * The step of the group BG-20 that follows BT-92 Document level allowance amount.
      */
-    public interface WithAmount {
+    public sealed interface WithAmount permits DocumentLevelAllowanceBuild {
         /**
          * BT-95 Document level allowance VAT category code. VAT category code that applies to the
          * document level allowance.
@@ -55,7 +55,7 @@ public final class DocumentLevelAllowanceSteps {
      * The terminal step of the group BG-20: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits DocumentLevelAllowanceBuild {
         /**
          * BT-93 Document level allowance base amount. Base amount the document level allowance
          * percentage is applied to.

@@ -931,4 +931,31 @@ class ValidateCommandTest {
         }
         return names;
     }
+
+    /**
+     * A PDF report that reaches its page bound says which bound it was. The report is drawn
+     * within a bound of its own, which {@code --max-pages} does not move, so the line names
+     * that bound rather than the switch, and the run leaves with the code of a limit.
+     */
+    @Test
+    void aReportThatReachesItsPageBoundNamesThatBoundAndNotTheSwitch() {
+        EsjLimitException reached = new EsjLimitException(
+                "this rendering reached the bound of 2000 pages this run allows",
+                new EsjLimitException.Bound("maxPages", 2000, "pages"));
+
+        CliException refused = ValidateCommand.reportPagesReached(reached, 2000);
+
+        assertEquals(ExitCode.LIMIT, refused.exitCode());
+        assertTrue(refused.getMessage().startsWith("no report was written: the PDF report"
+                + " reached the 2000 pages a report is drawn within"), refused.getMessage());
+        assertTrue(refused.getMessage().contains("--max-pages does not move"),
+                refused.getMessage());
+        assertFalse(refused.getMessage().contains("raises it"), refused.getMessage());
+
+        EsjLimitException other = new EsjLimitException("a different bound",
+                new EsjLimitException.Bound("maxHtmlBytes", 1, "bytes"));
+        assertEquals(other, assertThrows(EsjLimitException.class,
+                () -> ValidateCommand.reportPagesReached(other, 2000)),
+                "another bound is left to the one place every bound is worded");
+    }
 }

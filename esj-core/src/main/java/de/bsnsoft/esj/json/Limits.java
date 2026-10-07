@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.json;
 
 import de.bsnsoft.esj.EsjFormatException;
+import java.util.Objects;
 
 /**
  * The resource bounds a reader enforces while it parses (specification, section 12.2).
@@ -19,35 +20,9 @@ import de.bsnsoft.esj.EsjFormatException;
  * than a configurable limit, and a decimal that exceeds it is reported as
  * {@code ESJ-L2-DECIMAL} rather than as {@code ESJ-L1-LIMIT}.
  *
- * @param maxDocumentBytes    the largest document, in bytes of the encoded document, at
- *                            most {@link #MAX_DOCUMENT_BYTES}
- * @param maxValues           the largest number of members of {@code values}
- * @param maxValueMembers     the largest number of members of one value object
- * @param maxPathSegments     the largest number of segments of one semantic path,
- *                            counting index segments
- * @param maxPathBytes        the largest semantic path, in bytes of its UTF-8 encoding
- * @param maxStringBytes      the largest string value, in bytes of the UTF-8 encoding of
- *                            the normalized value
- * @param maxBinaryValueBytes the largest content of a value carrying a binary
- *                            component, in bytes of its base64 encoding
- * @param maxTotalBinaryBytes the largest sum of binary content of one document, in bytes
- *                            after base64 decoding
- * @param maxExtensionDepth   the deepest nesting inside {@code extensions}, in levels of
- *                            object or array below an owner token, at most
- *                            {@link #MAX_EXTENSION_DEPTH}
- * @param maxExtensionNodes   the largest number of nodes inside {@code extensions},
- *                            counting every scalar and every container
+ * <p>Instances are immutable; every {@code with} method returns new limits.
  */
-public record Limits(long maxDocumentBytes,
-                     int maxValues,
-                     int maxValueMembers,
-                     int maxPathSegments,
-                     int maxPathBytes,
-                     long maxStringBytes,
-                     long maxBinaryValueBytes,
-                     long maxTotalBinaryBytes,
-                     int maxExtensionDepth,
-                     int maxExtensionNodes) {
+public final class Limits {
 
     /** One mebibyte, the unit the string bounds of the specification are stated in. */
     private static final long MIB = 1024L * 1024L;
@@ -82,35 +57,27 @@ public record Limits(long maxDocumentBytes,
     private static final Limits DEFAULTS = new Limits(
             64L * MIB, 100_000, 16, 16, 256, MIB, 32L * MIB, 48L * MIB, 32, 100_000);
 
-    /**
-     * Checks that every bound is positive and that the document bound is one a reader can
-     * hold.
-     *
-     * @param maxDocumentBytes    the largest document, in bytes of the encoded document, at
-     *                            most {@link #MAX_DOCUMENT_BYTES}
-     * @param maxValues           the largest number of members of {@code values}
-     * @param maxValueMembers     the largest number of members of one value object
-     * @param maxPathSegments     the largest number of segments of one semantic path,
-     *                            counting index segments
-     * @param maxPathBytes        the largest semantic path, in bytes of its UTF-8 encoding
-     * @param maxStringBytes      the largest string value, in bytes of the UTF-8 encoding of
-     *                            the normalized value
-     * @param maxBinaryValueBytes the largest content of a value carrying a binary
-     *                            component, in bytes of its base64 encoding
-     * @param maxTotalBinaryBytes the largest sum of binary content of one document, in bytes
-     *                            after base64 decoding
-     * @param maxExtensionDepth   the deepest nesting inside {@code extensions}, in levels of
-     *                            object or array below an owner token, at most
-     *                            {@link #MAX_EXTENSION_DEPTH}
-     * @param maxExtensionNodes   the largest number of nodes inside {@code extensions},
-     *                            counting every scalar and every container
-     * @throws EsjFormatException if a bound is zero or negative, if
-     *                            {@code maxDocumentBytes} exceeds
-     *                            {@link #MAX_DOCUMENT_BYTES}, or if
-     *                            {@code maxExtensionDepth} exceeds
-     *                            {@link #MAX_EXTENSION_DEPTH}
-     */
-    public Limits {
+    private final long maxDocumentBytes;
+    private final int maxValues;
+    private final int maxValueMembers;
+    private final int maxPathSegments;
+    private final int maxPathBytes;
+    private final long maxStringBytes;
+    private final long maxBinaryValueBytes;
+    private final long maxTotalBinaryBytes;
+    private final int maxExtensionDepth;
+    private final int maxExtensionNodes;
+
+    private Limits(long maxDocumentBytes,
+                   int maxValues,
+                   int maxValueMembers,
+                   int maxPathSegments,
+                   int maxPathBytes,
+                   long maxStringBytes,
+                   long maxBinaryValueBytes,
+                   long maxTotalBinaryBytes,
+                   int maxExtensionDepth,
+                   int maxExtensionNodes) {
         positive(maxDocumentBytes, "maxDocumentBytes");
         positive(maxValues, "maxValues");
         positive(maxValueMembers, "maxValueMembers");
@@ -130,6 +97,16 @@ public record Limits(long maxDocumentBytes,
                     + ", because a reader adds the nesting of the envelope to it before it"
                     + " configures its parser, not " + maxExtensionDepth);
         }
+        this.maxDocumentBytes = maxDocumentBytes;
+        this.maxValues = maxValues;
+        this.maxValueMembers = maxValueMembers;
+        this.maxPathSegments = maxPathSegments;
+        this.maxPathBytes = maxPathBytes;
+        this.maxStringBytes = maxStringBytes;
+        this.maxBinaryValueBytes = maxBinaryValueBytes;
+        this.maxTotalBinaryBytes = maxTotalBinaryBytes;
+        this.maxExtensionDepth = maxExtensionDepth;
+        this.maxExtensionNodes = maxExtensionNodes;
     }
 
     /**
@@ -146,185 +123,290 @@ public record Limits(long maxDocumentBytes,
     }
 
     /**
-     * Returns a builder seeded with the defaults.
+     * Returns the largest document, in bytes of the encoded document, at most
+     * {@link #MAX_DOCUMENT_BYTES}.
      *
-     * @return a new builder
+     * @return the bound
      */
-    public static Builder builder() {
-        return new Builder(DEFAULTS);
+    public long maxDocumentBytes() {
+        return maxDocumentBytes;
     }
 
     /**
-     * Returns a builder seeded with these limits, for changing one of them.
+     * Returns the largest number of members of {@code values}.
      *
-     * @return a new builder
+     * @return the bound
      */
-    public Builder toBuilder() {
-        return new Builder(this);
+    public int maxValues() {
+        return maxValues;
+    }
+
+    /**
+     * Returns the largest number of members of one value object.
+     *
+     * @return the bound
+     */
+    public int maxValueMembers() {
+        return maxValueMembers;
+    }
+
+    /**
+     * Returns the largest number of segments of one semantic path, counting index
+     * segments.
+     *
+     * @return the bound
+     */
+    public int maxPathSegments() {
+        return maxPathSegments;
+    }
+
+    /**
+     * Returns the largest semantic path, in bytes of its UTF-8 encoding.
+     *
+     * @return the bound
+     */
+    public int maxPathBytes() {
+        return maxPathBytes;
+    }
+
+    /**
+     * Returns the largest string value, in bytes of the UTF-8 encoding of the normalized
+     * value.
+     *
+     * @return the bound
+     */
+    public long maxStringBytes() {
+        return maxStringBytes;
+    }
+
+    /**
+     * Returns the largest content of a value carrying a binary component, in bytes of its
+     * base64 encoding.
+     *
+     * @return the bound
+     */
+    public long maxBinaryValueBytes() {
+        return maxBinaryValueBytes;
+    }
+
+    /**
+     * Returns the largest sum of binary content of one document, in bytes after base64
+     * decoding.
+     *
+     * @return the bound
+     */
+    public long maxTotalBinaryBytes() {
+        return maxTotalBinaryBytes;
+    }
+
+    /**
+     * Returns the deepest nesting inside {@code extensions}, in levels of object or array
+     * below an owner token, at most {@link #MAX_EXTENSION_DEPTH}.
+     *
+     * @return the bound
+     */
+    public int maxExtensionDepth() {
+        return maxExtensionDepth;
+    }
+
+    /**
+     * Returns the largest number of nodes inside {@code extensions}, counting every scalar
+     * and every container.
+     *
+     * @return the bound
+     */
+    public int maxExtensionNodes() {
+        return maxExtensionNodes;
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxDocumentBytes()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative,
+     *                            or exceeds {@link #MAX_DOCUMENT_BYTES}
+     */
+    public Limits withMaxDocumentBytes(long value) {
+        return new Limits(value, maxValues, maxValueMembers, maxPathSegments, maxPathBytes,
+                maxStringBytes, maxBinaryValueBytes, maxTotalBinaryBytes,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxValues()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxValues(int value) {
+        return new Limits(maxDocumentBytes, value, maxValueMembers, maxPathSegments,
+                maxPathBytes, maxStringBytes, maxBinaryValueBytes,
+                maxTotalBinaryBytes, maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxValueMembers()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxValueMembers(int value) {
+        return new Limits(maxDocumentBytes, maxValues, value, maxPathSegments, maxPathBytes,
+                maxStringBytes, maxBinaryValueBytes, maxTotalBinaryBytes,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxPathSegments()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxPathSegments(int value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, value, maxPathBytes,
+                maxStringBytes, maxBinaryValueBytes, maxTotalBinaryBytes,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxPathBytes()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxPathBytes(int value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments, value,
+                maxStringBytes, maxBinaryValueBytes, maxTotalBinaryBytes,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxStringBytes()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxStringBytes(long value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
+                maxPathBytes, value, maxBinaryValueBytes, maxTotalBinaryBytes,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxBinaryValueBytes()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxBinaryValueBytes(long value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
+                maxPathBytes, maxStringBytes, value, maxTotalBinaryBytes,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxTotalBinaryBytes()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxTotalBinaryBytes(long value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
+                maxPathBytes, maxStringBytes, maxBinaryValueBytes, value,
+                maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxExtensionDepth()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative,
+     *                            or exceeds {@link #MAX_EXTENSION_DEPTH}
+     */
+    public Limits withMaxExtensionDepth(int value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
+                maxPathBytes, maxStringBytes, maxBinaryValueBytes,
+                maxTotalBinaryBytes, value, maxExtensionNodes);
+    }
+
+    /**
+     * Returns these limits with another value of {@link #maxExtensionNodes()}.
+     *
+     * @param value the bound
+     * @return the limits
+     * @throws EsjFormatException if {@code value} is zero or negative
+     */
+    public Limits withMaxExtensionNodes(int value) {
+        return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
+                maxPathBytes, maxStringBytes, maxBinaryValueBytes,
+                maxTotalBinaryBytes, maxExtensionDepth, value);
+    }
+
+    /**
+     * Tells whether another object is limits with the same bounds.
+     *
+     * @param other the object to compare with
+     * @return {@code true} if every bound is equal
+     */
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Limits that
+                && maxDocumentBytes == that.maxDocumentBytes
+                && maxValues == that.maxValues
+                && maxValueMembers == that.maxValueMembers
+                && maxPathSegments == that.maxPathSegments
+                && maxPathBytes == that.maxPathBytes
+                && maxStringBytes == that.maxStringBytes
+                && maxBinaryValueBytes == that.maxBinaryValueBytes
+                && maxTotalBinaryBytes == that.maxTotalBinaryBytes
+                && maxExtensionDepth == that.maxExtensionDepth
+                && maxExtensionNodes == that.maxExtensionNodes;
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
+                maxPathBytes, maxStringBytes, maxBinaryValueBytes,
+                maxTotalBinaryBytes, maxExtensionDepth, maxExtensionNodes);
+    }
+
+    /**
+     * Returns the bounds as one line, in the form a record writes itself.
+     *
+     * @return a one-line description
+     */
+    @Override
+    public String toString() {
+        return "Limits[maxDocumentBytes=" + maxDocumentBytes
+                + ", maxValues=" + maxValues
+                + ", maxValueMembers=" + maxValueMembers
+                + ", maxPathSegments=" + maxPathSegments
+                + ", maxPathBytes=" + maxPathBytes
+                + ", maxStringBytes=" + maxStringBytes
+                + ", maxBinaryValueBytes=" + maxBinaryValueBytes
+                + ", maxTotalBinaryBytes=" + maxTotalBinaryBytes
+                + ", maxExtensionDepth=" + maxExtensionDepth
+                + ", maxExtensionNodes=" + maxExtensionNodes
+                + "]";
     }
 
     private static void positive(long value, String what) {
         if (value <= 0) {
             throw new EsjFormatException(what + " is a positive number, not " + value);
-        }
-    }
-
-    /** Builds a {@link Limits}. A builder is not thread safe and is reusable. */
-    public static final class Builder {
-
-        private long maxDocumentBytes;
-        private int maxValues;
-        private int maxValueMembers;
-        private int maxPathSegments;
-        private int maxPathBytes;
-        private long maxStringBytes;
-        private long maxBinaryValueBytes;
-        private long maxTotalBinaryBytes;
-        private int maxExtensionDepth;
-        private int maxExtensionNodes;
-
-        private Builder(Limits seed) {
-            this.maxDocumentBytes = seed.maxDocumentBytes;
-            this.maxValues = seed.maxValues;
-            this.maxValueMembers = seed.maxValueMembers;
-            this.maxPathSegments = seed.maxPathSegments;
-            this.maxPathBytes = seed.maxPathBytes;
-            this.maxStringBytes = seed.maxStringBytes;
-            this.maxBinaryValueBytes = seed.maxBinaryValueBytes;
-            this.maxTotalBinaryBytes = seed.maxTotalBinaryBytes;
-            this.maxExtensionDepth = seed.maxExtensionDepth;
-            this.maxExtensionNodes = seed.maxExtensionNodes;
-        }
-
-        /**
-         * Sets the largest document, in bytes, at most
-         * {@link Limits#MAX_DOCUMENT_BYTES}.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxDocumentBytes(long value) {
-            this.maxDocumentBytes = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest number of members of {@code values}.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxValues(int value) {
-            this.maxValues = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest number of members of one value object.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxValueMembers(int value) {
-            this.maxValueMembers = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest number of segments of one semantic path.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxPathSegments(int value) {
-            this.maxPathSegments = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest semantic path, in bytes of its UTF-8 encoding.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxPathBytes(int value) {
-            this.maxPathBytes = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest string value, in bytes of the UTF-8 encoding of the normalized
-         * value.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxStringBytes(long value) {
-            this.maxStringBytes = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest content of a value carrying a binary component, in bytes of
-         * its base64 encoding.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxBinaryValueBytes(long value) {
-            this.maxBinaryValueBytes = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest sum of decoded binary content of one document, in bytes.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxTotalBinaryBytes(long value) {
-            this.maxTotalBinaryBytes = value;
-            return this;
-        }
-
-        /**
-         * Sets the deepest nesting inside {@code extensions}, in levels of object or
-         * array below an owner token, at most {@link Limits#MAX_EXTENSION_DEPTH}.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxExtensionDepth(int value) {
-            this.maxExtensionDepth = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest number of nodes inside {@code extensions}, counting every
-         * scalar and every container.
-         *
-         * @param value the bound
-         * @return this builder
-         */
-        public Builder maxExtensionNodes(int value) {
-            this.maxExtensionNodes = value;
-            return this;
-        }
-
-        /**
-         * Builds the limits.
-         *
-         * @return the limits
-         * @throws EsjFormatException if a bound is zero or negative, if
-         *                            {@code maxDocumentBytes} exceeds
-         *                            {@link Limits#MAX_DOCUMENT_BYTES}, or if
-         *                            {@code maxExtensionDepth} exceeds
-         *                            {@link Limits#MAX_EXTENSION_DEPTH}
-         */
-        public Limits build() {
-            return new Limits(maxDocumentBytes, maxValues, maxValueMembers, maxPathSegments,
-                    maxPathBytes, maxStringBytes, maxBinaryValueBytes, maxTotalBinaryBytes,
-                    maxExtensionDepth, maxExtensionNodes);
         }
     }
 }

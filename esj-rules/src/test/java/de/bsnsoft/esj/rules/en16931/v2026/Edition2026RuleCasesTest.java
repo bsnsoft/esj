@@ -1,24 +1,23 @@
 package de.bsnsoft.esj.rules.en16931.v2026;
 
-import static de.bsnsoft.esj.rules.en16931.v2026.Documents2026.minimal;
-import static de.bsnsoft.esj.rules.en16931.v2026.Documents2026.set;
-import static de.bsnsoft.esj.rules.en16931.v2026.Documents2026.with;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import static de.bsnsoft.esj.rules.en16931.v2026.Documents2026.minimal;
+import static de.bsnsoft.esj.rules.en16931.v2026.Documents2026.set;
+import static de.bsnsoft.esj.rules.en16931.v2026.Documents2026.with;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * A case for every rule this pack writes out rather than takes over: a document the rule is
@@ -69,7 +68,7 @@ class Edition2026RuleCasesTest {
 
     private static boolean spoke(String id, SemanticDocument document) {
         for (RuleFinding finding : ENGINE.evaluate(document)) {
-            if (finding.code().equals(id) && finding.severity() != RuleSeverity.INFO) {
+            if (finding.code().equals(id) && finding.severity() != Severity.INFO) {
                 return true;
             }
         }

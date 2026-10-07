@@ -24,7 +24,7 @@ import java.math.BigDecimal;
  * of this editor: {@code DocumentLevelChargeEditor} checks a value against the grammar of its
  * semantic data type and nothing else.
  */
-public interface DocumentLevelChargeEditor {
+public sealed interface DocumentLevelChargeEditor permits DocumentLevelChargeEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

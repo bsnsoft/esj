@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * of this editor: {@code ItemEditor} checks a value against the grammar of its semantic data type
  * and nothing else.
  */
-public interface ItemEditor {
+public sealed interface ItemEditor permits ItemEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

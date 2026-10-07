@@ -26,30 +26,11 @@ import java.util.Objects;
  * declare that its terms belong to no transport syntax, and a writer that knows the registry
  * reports a value of such a term as left behind by design rather than as a loss.
  *
- * <p>Instances are immutable. {@link #defaults()} is the one a caller who has no opinion
- * gets, and it is the one the tests of this module measure.
+ * <p>Instances are immutable; every {@code with} method returns new options.
+ * {@link #defaults()} is the one a caller who has no opinion gets, and it is the one the
+ * tests of this module measure.
  */
 public final class WriterOptions {
-
-    /**
-     * The largest document a writer produces by default, in bytes.
-     *
-     * <p>Sixty-four mebibytes is the size of the largest semantic document the reader
-     * limits of the specification, section 12.2 accept by default. A cross industry
-     * invoice is longer than the semantic document it carries, so this bound is generous
-     * rather than tight; it is there to stop a runaway rather than to size a buffer.
-     */
-    public static final long DEFAULT_MAX_OUTPUT_BYTES = 64L * 1024L * 1024L;
-
-    /**
-     * The tax registration scheme identifier the UBL writer states for BT-32 unless the
-     * caller names another one.
-     *
-     * <p>{@code FC} is the UNTDID 1153 code for a fiscal number and it is what the cross
-     * industry invoice binding of the same source model fixes for this term, so a document
-     * converted from that syntax says the same thing in both.
-     */
-    public static final String DEFAULT_TAX_REGISTRATION_SCHEME = "FC";
 
     /**
      * The scheme identifier BT-31 is written with, which BT-32 is by definition not and
@@ -59,6 +40,9 @@ public final class WriterOptions {
 
     /** The name a binding table calls the setting {@link #taxRegistrationScheme()} by. */
     private static final String TAX_REGISTRATION_SCHEME = "taxRegistrationScheme";
+
+    private static final WriterOptions DEFAULTS = new WriterOptions(true,
+            64L * 1024L * 1024L, UblWriter.DocumentType.AUTO, "FC", List.of());
 
     private final boolean indent;
     private final long maxOutputBytes;
@@ -79,46 +63,32 @@ public final class WriterOptions {
     }
 
     /**
-     * Returns the options a caller with no opinion gets: an indented document and the
-     * default bound on its size.
+     * Returns the options a caller with no opinion gets: an indented document, the default
+     * bound on its size, the UBL document chosen by the invoice type code, {@code FC} for
+     * BT-32 and no extension registries.
      *
      * @return the defaults
      */
     public static WriterOptions defaults() {
-        return Defaults.INSTANCE;
-    }
-
-    /**
-     * Returns a builder with the defaults set.
-     *
-     * @return a new builder
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /**
-     * Returns a builder that starts from these options.
-     *
-     * @return a new builder
-     */
-    public Builder toBuilder() {
-        return new Builder().indent(indent).maxOutputBytes(maxOutputBytes)
-                .document(document).taxRegistrationScheme(taxRegistrationScheme)
-                .extensions(extensions);
+        return DEFAULTS;
     }
 
     /**
      * Tells whether the document is written one element to a line.
      *
-     * @return {@code true} if the output is indented
+     * @return {@code true} if the output is indented, as it is by default
      */
     public boolean indent() {
         return indent;
     }
 
     /**
-     * Returns the largest document this run may produce.
+     * Returns the largest document this run may produce; sixty-four mebibytes by default.
+     *
+     * <p>Sixty-four mebibytes is the size of the largest semantic document the reader
+     * limits of the specification, section 12.2 accept by default. A cross industry
+     * invoice is longer than the semantic document it carries, so this bound is generous
+     * rather than tight; it is there to stop a runaway rather than to size a buffer.
      *
      * @return the bound in bytes
      */
@@ -139,7 +109,11 @@ public final class WriterOptions {
     /**
      * Returns the tax registration scheme identifier the UBL writer states for BT-32.
      *
-     * @return the identifier, {@link #DEFAULT_TAX_REGISTRATION_SCHEME} by default
+     * <p>{@code FC}, the default, is the UNTDID 1153 code for a fiscal number and it is
+     * what the cross industry invoice binding of the same source model fixes for this
+     * term, so a document converted from that syntax says the same thing in both.
+     *
+     * @return the identifier
      */
     public String taxRegistrationScheme() {
         return taxRegistrationScheme;
@@ -160,6 +134,91 @@ public final class WriterOptions {
      */
     public List<Registry> extensions() {
         return extensions;
+    }
+
+    /**
+     * Returns these options writing one element to a line, or the whole document as one
+     * line.
+     *
+     * @param value {@code true} to indent
+     * @return the options
+     */
+    public WriterOptions withIndent(boolean value) {
+        return new WriterOptions(value, maxOutputBytes, document, taxRegistrationScheme,
+                extensions);
+    }
+
+    /**
+     * Returns these options with another bound on the document this run may produce.
+     *
+     * @param value the bound in bytes
+     * @return the options
+     * @throws IllegalArgumentException if the bound is not positive
+     */
+    public WriterOptions withMaxOutputBytes(long value) {
+        if (value <= 0) {
+            throw new IllegalArgumentException("a bound on the output is positive: " + value);
+        }
+        return new WriterOptions(indent, value, document, taxRegistrationScheme, extensions);
+    }
+
+    /**
+     * Returns these options writing one of the two UBL documents.
+     *
+     * @param value the document type
+     * @return the options
+     * @throws NullPointerException if {@code value} is {@code null}
+     */
+    public WriterOptions withDocument(UblWriter.DocumentType value) {
+        return new WriterOptions(indent, maxOutputBytes,
+                Objects.requireNonNull(value, "document"), taxRegistrationScheme, extensions);
+    }
+
+    /**
+     * Returns these options with another tax registration scheme identifier for BT-32 in
+     * UBL.
+     *
+     * <p>The semantic model says of BT-32 only that it is not the value added tax
+     * identifier, and UBL requires every party tax scheme to name the tax it belongs to,
+     * so a code is stated. {@code VAT} is refused: an element that carries it is BT-31 to
+     * every reader of that syntax, and writing BT-32 into it would say something the
+     * document does not.
+     *
+     * @param value the identifier
+     * @return the options
+     * @throws IllegalArgumentException if the identifier is blank or is {@code VAT}
+     * @throws NullPointerException     if {@code value} is {@code null}
+     */
+    public WriterOptions withTaxRegistrationScheme(String value) {
+        Objects.requireNonNull(value, "taxRegistrationScheme");
+        if (value.isBlank()) {
+            throw new IllegalArgumentException(
+                    "a tax registration scheme identifier is not blank");
+        }
+        if (VAT.equals(value)) {
+            throw new IllegalArgumentException("VAT is the scheme of BT-31, the value"
+                    + " added tax identifier, and BT-32 is by definition a"
+                    + " registration for another tax");
+        }
+        return new WriterOptions(indent, maxOutputBytes, document, value, extensions);
+    }
+
+    /**
+     * Returns these options with the extension registries the terms of the document may
+     * come from, replacing any named before.
+     *
+     * <p>Hand over the extension registries themselves, as {@code Registry.b2cExtension()}
+     * returns one, and not a registry combined with them: the declaration that terms do
+     * not travel belongs to the file that defines them, and a combination declares
+     * nothing of its own.
+     *
+     * @param value the registries
+     * @return the options
+     * @throws NullPointerException if {@code value} is or holds {@code null}
+     */
+    public WriterOptions withExtensions(Collection<Registry> value) {
+        return new WriterOptions(indent, maxOutputBytes, document, taxRegistrationScheme,
+                List.copyOf(Objects.requireNonNull(value, "extensions")));
     }
 
     /**
@@ -184,6 +243,33 @@ public final class WriterOptions {
     }
 
     /**
+     * Tells whether another object is options with the same members.
+     *
+     * @param other the object to compare with
+     * @return {@code true} if every member is equal
+     */
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof WriterOptions that
+                && indent == that.indent
+                && maxOutputBytes == that.maxOutputBytes
+                && document == that.document
+                && taxRegistrationScheme.equals(that.taxRegistrationScheme)
+                && extensions.equals(that.extensions);
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(indent, maxOutputBytes, document, taxRegistrationScheme,
+                extensions);
+    }
+
+    /**
      * Returns the options as one line, which is what a message about them needs.
      *
      * @return a one-line description
@@ -197,123 +283,5 @@ public final class WriterOptions {
         return "WriterOptions[indent=" + indent + ", maxOutputBytes=" + maxOutputBytes
                 + ", document=" + document + ", taxRegistrationScheme="
                 + taxRegistrationScheme + ", extensions=" + editions + "]";
-    }
-
-    private static final class Defaults {
-
-        private static final WriterOptions INSTANCE = builder().build();
-
-        private Defaults() {
-            throw new AssertionError("no instances");
-        }
-    }
-
-    /** Builds {@link WriterOptions}. */
-    public static final class Builder {
-
-        private boolean indent = true;
-        private long maxOutputBytes = DEFAULT_MAX_OUTPUT_BYTES;
-        private UblWriter.DocumentType document = UblWriter.DocumentType.AUTO;
-        private String taxRegistrationScheme = DEFAULT_TAX_REGISTRATION_SCHEME;
-        private List<Registry> extensions = List.of();
-
-        private Builder() {
-        }
-
-        /**
-         * Sets whether the document is written one element to a line.
-         *
-         * @param value {@code true} to indent
-         * @return this builder
-         */
-        public Builder indent(boolean value) {
-            this.indent = value;
-            return this;
-        }
-
-        /**
-         * Sets the largest document this run may produce.
-         *
-         * @param value the bound in bytes
-         * @return this builder
-         * @throws IllegalArgumentException if the bound is not positive
-         */
-        public Builder maxOutputBytes(long value) {
-            if (value <= 0) {
-                throw new IllegalArgumentException("a bound on the output is positive: "
-                        + value);
-            }
-            this.maxOutputBytes = value;
-            return this;
-        }
-
-        /**
-         * Sets which of the two UBL documents to write.
-         *
-         * @param value the document type
-         * @return this builder
-         * @throws NullPointerException if {@code value} is {@code null}
-         */
-        public Builder document(UblWriter.DocumentType value) {
-            this.document = Objects.requireNonNull(value, "document");
-            return this;
-        }
-
-        /**
-         * Sets the tax registration scheme identifier the UBL writer states for BT-32.
-         *
-         * <p>The semantic model says of BT-32 only that it is not the value added tax
-         * identifier, and UBL requires every party tax scheme to name the tax it belongs
-         * to, so a code is stated. {@code VAT} is refused: an element that carries it is
-         * BT-31 to every reader of that syntax, and writing BT-32 into it would say
-         * something the document does not.
-         *
-         * @param value the identifier
-         * @return this builder
-         * @throws IllegalArgumentException if the identifier is blank or is {@code VAT}
-         * @throws NullPointerException     if {@code value} is {@code null}
-         */
-        public Builder taxRegistrationScheme(String value) {
-            Objects.requireNonNull(value, "taxRegistrationScheme");
-            if (value.isBlank()) {
-                throw new IllegalArgumentException(
-                        "a tax registration scheme identifier is not blank");
-            }
-            if (VAT.equals(value)) {
-                throw new IllegalArgumentException("VAT is the scheme of BT-31, the value"
-                        + " added tax identifier, and BT-32 is by definition a"
-                        + " registration for another tax");
-            }
-            this.taxRegistrationScheme = value;
-            return this;
-        }
-
-        /**
-         * Sets the extension registries the terms of the document may come from, replacing
-         * any set before.
-         *
-         * <p>Hand over the extension registries themselves, as {@code Registry.b2cExtension()}
-         * returns one, and not a registry combined with them: the declaration that terms do
-         * not travel belongs to the file that defines them, and a combination declares
-         * nothing of its own.
-         *
-         * @param value the registries
-         * @return this builder
-         * @throws NullPointerException if {@code value} is or holds {@code null}
-         */
-        public Builder extensions(Collection<Registry> value) {
-            this.extensions = List.copyOf(Objects.requireNonNull(value, "extensions"));
-            return this;
-        }
-
-        /**
-         * Builds the options.
-         *
-         * @return the options
-         */
-        public WriterOptions build() {
-            return new WriterOptions(indent, maxOutputBytes, document,
-                    taxRegistrationScheme, extensions);
-        }
     }
 }

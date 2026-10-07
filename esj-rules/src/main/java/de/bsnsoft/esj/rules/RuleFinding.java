@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +39,7 @@ import java.util.Objects;
  */
 public record RuleFinding(String code,
                           RuleCategory category,
-                          RuleSeverity severity,
+                          Severity severity,
                           String message,
                           List<String> paths,
                           String packId,
@@ -90,10 +91,10 @@ public record RuleFinding(String code,
     /**
      * Tells whether this finding decides the verdict.
      *
-     * @return whether the severity is {@link RuleSeverity#FATAL}
+     * @return whether the severity is {@link Severity#ERROR}
      */
     public boolean fatal() {
-        return severity == RuleSeverity.FATAL;
+        return severity == Severity.ERROR;
     }
 
     /**
@@ -113,6 +114,6 @@ public record RuleFinding(String code,
      */
     @Override
     public String toString() {
-        return category.token() + " " + code + " [" + severity.token() + "] " + message;
+        return category.token() + " " + code + " [" + RuleLevel.word(severity) + "] " + message;
     }
 }

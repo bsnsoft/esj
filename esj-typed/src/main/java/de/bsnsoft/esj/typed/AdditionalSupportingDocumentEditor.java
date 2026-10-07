@@ -23,7 +23,7 @@ import de.bsnsoft.esj.typed.internal.Writers;
  * of this editor: {@code AdditionalSupportingDocumentEditor} checks a value against the grammar of
  * its semantic data type and nothing else.
  */
-public interface AdditionalSupportingDocumentEditor {
+public sealed interface AdditionalSupportingDocumentEditor permits AdditionalSupportingDocumentEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

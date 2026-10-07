@@ -21,7 +21,7 @@ public final class CreditTransferSteps {
     /**
      * The first step of the group BG-17: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits CreditTransferBuild {
         /**
          * BT-84 Payment account identifier. Identifier of the account the payment is to be credited
          * to, e.g. an IBAN.
@@ -51,7 +51,7 @@ public final class CreditTransferSteps {
      * The terminal step of the group BG-17: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits CreditTransferBuild {
         /**
          * BT-85 Payment account name. Name of the account holder of the payment account.
          *

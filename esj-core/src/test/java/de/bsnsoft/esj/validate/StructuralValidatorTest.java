@@ -611,7 +611,7 @@ class StructuralValidatorTest {
     }
 
     static boolean carriesEdition2026() {
-        return Registry.editions().contains("2026");
+        return Registry.editionKeys().contains("2026");
     }
 
     private static byte[] example(String name) {

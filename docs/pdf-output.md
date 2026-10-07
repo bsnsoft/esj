@@ -35,7 +35,7 @@ and fonts into the file, so what it brought is part of the conformance ([`templa
 ```java
 byte[] rendering = new PdfRenderer().render(document);
 byte[] hybrid = FacturX.embed(rendering, document,
-        EmbedOptions.of(FacturXProfile.EN_16931));
+        EmbedOptions.defaults().withProfile(FacturXProfile.EN_16931));
 ```
 
 `EmbedOptions` carries the profile, the `HybridFlavour`, the `PdfLimits` the input is opened
@@ -75,7 +75,7 @@ flavour. The profiles, and which of them are EN 16931 invoices, are in [`pdf-inp
 **Nothing is converted.** The input has to be a PDF/A-3 file, which is what a rendering of
 `esj-render` is: part 3 is the part of ISO 19005 that allows a file of any type to be embedded.
 By default that is read from the input's own packet; a caller who wants more than a declaration
-passes a validator through `EmbedOptions.checkedWith(…)`, which is what `--verapdf` is on the
+passes a validator through `EmbedOptions.withCheck(…)`, which is what `--verapdf` is on the
 command line. `EmbedRefusedException` says which of these it was:
 
 | Refused | Because |

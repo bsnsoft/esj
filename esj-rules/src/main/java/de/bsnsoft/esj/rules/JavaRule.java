@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.rules;
 
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +37,10 @@ public interface JavaRule {
     /**
      * Returns how much a finding of this rule weighs.
      *
-     * @return {@link RuleSeverity#FATAL} or {@link RuleSeverity#WARNING}; never
-     *         {@link RuleSeverity#INFO}, which is the engine's
+     * @return {@link Severity#ERROR} or {@link Severity#WARNING}; never
+     *         {@link Severity#INFO}, which is the engine's
      */
-    RuleSeverity severity();
+    Severity severity();
 
     /**
      * Returns the context the rule is evaluated in: a business group path pattern such as

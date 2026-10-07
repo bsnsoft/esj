@@ -1,9 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +25,9 @@ import net.sf.saxon.s9api.XdmNodeKind;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * OpenPeppol's own Schematron unit tests, run through the pack {@code esj packs fetch}
@@ -221,7 +221,7 @@ class PeppolUnitTestsTest {
         return switch (kind) {
             case "success" -> fired.isEmpty();
             case "error", "warning" -> {
-                Severity level = kind.equals("error") ? Severity.FATAL : Severity.WARNING;
+                Severity level = kind.equals("error") ? Severity.ERROR : Severity.WARNING;
                 long count = fired.stream().filter(flag -> flag == level).count();
                 yield number == null ? count > 0 : count == Long.parseLong(number.trim());
             }

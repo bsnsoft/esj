@@ -46,9 +46,8 @@ final class Evidence2026 {
     static final RuleEngine DEFAULT_PACK = En16931Pack.engine(Registry.en16931());
 
     /** The options every upgrade of these measurements is made with. */
-    static final UpgradeOptions OPTIONS = UpgradeOptions.builder()
-            .extension(Registry.xrechnungExtension())
-            .build();
+    static final UpgradeOptions OPTIONS = UpgradeOptions.defaults()
+            .withExtensions(List.of(Registry.xrechnungExtension()));
 
     private Evidence2026() {
         throw new AssertionError("no instances");
