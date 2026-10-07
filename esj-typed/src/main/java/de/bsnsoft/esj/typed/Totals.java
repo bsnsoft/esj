@@ -71,7 +71,7 @@ import java.util.Optional;
  * price, where an allowance states no category, or where the invoice has no line at all, it
  * throws {@link DerivationException} naming the term and the group instance. Where a line
  * already carries a net amount, the standard policy keeps it and refuses if the formula gives
- * a different one; {@code TotalsOptions.standard().withOverwriteLines(true)} replaces it
+ * a different one; {@code TotalsOptions.defaults().withOverwriteLines(true)} replaces it
  * instead. Annex A.1.1 does not enforce the line calculation, so that refusal is this
  * policy's own strictness and not a rule of the standard: it is there because an invoice
  * whose lines and totals disagree is a mistake worth stopping at, and the option is the way
@@ -112,7 +112,7 @@ public final class Totals {
      * The policy of EN 16931-1 with nothing varied: hand-written invoice line net amounts are
      * kept, and the invoice total VAT amount in accounting currency (BT-111) is left alone.
      */
-    public static final Totals STANDARD = new Totals(TotalsOptions.standard());
+    public static final Totals STANDARD = new Totals(TotalsOptions.defaults());
 
     private final TotalsOptions options;
 

@@ -4,7 +4,7 @@
 
 ```java
 RenderTemplate template = RenderTemplate.read(templateFile);
-byte[] pdf = new PdfRenderer().render(document, RenderOptions.defaults().with(template));
+byte[] pdf = new PdfRenderer().render(document, RenderOptions.defaults().withTemplate(template));
 ```
 
 From the command line it is `esj render --template`, [`cli.md`](cli.md#render).

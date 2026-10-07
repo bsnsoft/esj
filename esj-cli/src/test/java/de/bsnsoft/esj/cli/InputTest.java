@@ -144,7 +144,7 @@ class InputTest {
     /** Returns an XML document past the importer's bound, written in UTF-16 with a mark. */
     private static byte[] oversizeWideXml() {
         StringBuilder text = new StringBuilder("\uFEFF<?xml version=\"1.0\"?><a>");
-        while (text.length() * 2 < XrImporter.DEFAULT_MAX_INPUT_BYTES + 1024) {
+        while (text.length() * 2 < XrImporter.defaultMaxInputBytes() + 1024) {
             text.append('x');
         }
         return text.toString().getBytes(StandardCharsets.UTF_16LE);
@@ -152,7 +152,7 @@ class InputTest {
 
     /** Returns an XML document past the importer's bound, behind the given prefix. */
     private static byte[] oversizeXml(byte[] prefix) {
-        int length = (int) XrImporter.DEFAULT_MAX_INPUT_BYTES + 1024;
+        int length = (int) XrImporter.defaultMaxInputBytes() + 1024;
         byte[] content = new byte[prefix.length + length];
         System.arraycopy(prefix, 0, content, 0, prefix.length);
         byte[] head = "<?xml version=\"1.0\"?><a>".getBytes(StandardCharsets.UTF_8);

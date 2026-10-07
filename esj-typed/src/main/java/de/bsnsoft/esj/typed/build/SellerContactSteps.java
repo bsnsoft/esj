@@ -21,14 +21,14 @@ public final class SellerContactSteps {
      * The first step of the group BG-6, which is its terminal step as well: the model declares
      * nothing in it mandatory that a caller has to state.
      */
-    public interface Start extends Buildable {
+    public sealed interface Start extends Buildable permits SellerContactBuild {
     }
 
     /**
      * The terminal step of the group BG-6: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerContactBuild, Start {
         /**
          * BT-41 Seller contact point. Name of the contact point or department at the seller.
          *

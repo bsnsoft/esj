@@ -3,6 +3,7 @@ package de.bsnsoft.esj.rules;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -210,7 +211,7 @@ public final class RuleEngine {
                                 message.expand(evaluation, base)));
                     }
                     if (second != null && !holds(second, evaluation, base)) {
-                        return Optional.of(new CompiledRule.Outcome(RuleSeverity.WARNING,
+                        return Optional.of(new CompiledRule.Outcome(Severity.WARNING,
                                 secondMessage.expand(evaluation, base)));
                     }
                     return Optional.empty();
@@ -245,7 +246,7 @@ public final class RuleEngine {
 
     private static CompiledRule java(JavaRule rule, Compiler compiler, Registry registry, String className) {
         String where = "the Java rule " + className;
-        if (rule.severity() == RuleSeverity.INFO) {
+        if (rule.severity() == Severity.INFO) {
             throw new RulePackException(where + " declares the severity info, which is the engine's");
         }
         PathPattern context = context(rule.context(), compiler, registry, where);
@@ -265,7 +266,7 @@ public final class RuleEngine {
                                 new CompiledRule.Outcome(rule.severity(), text));
                     }
                     return rule.warn(ruleContext).map(text ->
-                            new CompiledRule.Outcome(RuleSeverity.WARNING, text));
+                            new CompiledRule.Outcome(Severity.WARNING, text));
                 });
     }
 
@@ -381,7 +382,7 @@ public final class RuleEngine {
      *
      * <p>One exception of a rule is caught here and turned into a finding: the internal
      * signal a context accessor raises when a value does not spell what its semantic data
-     * type requires. That is reported at {@link RuleSeverity#INFO} as a rule that was not
+     * type requires. That is reported at {@link Severity#INFO} as a rule that was not
      * decided, because the defect belongs to the value and a structural layer has already
      * named it. A rule whose {@code undecided} case holds, and a code list that gives a code
      * no number of fraction digits, end the same way.
@@ -426,7 +427,7 @@ public final class RuleEngine {
                     rule.check(evaluation, base).ifPresent(outcome -> findings.add(
                             finding(rule, outcome.severity(), outcome.message(), evaluation.reads())));
                 } catch (Undecided undecided) {
-                    findings.add(finding(rule, RuleSeverity.INFO,
+                    findings.add(finding(rule, Severity.INFO,
                             "not decided: " + undecided.getMessage(), evaluation.reads()));
                 }
             }
@@ -441,7 +442,7 @@ public final class RuleEngine {
                 : evaluation.instances(rule.context(), SemanticPath.root());
     }
 
-    private RuleFinding finding(CompiledRule rule, RuleSeverity severity, String message,
+    private RuleFinding finding(CompiledRule rule, Severity severity, String message,
                                 List<String> paths) {
         return new RuleFinding(rule.id(), RuleCategory.of(rule.id()), severity, message, paths,
                 pack.id(), pack.version(), RuleFinding.NATIVE_ENGINE);

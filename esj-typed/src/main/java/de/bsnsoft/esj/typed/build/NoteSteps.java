@@ -21,7 +21,7 @@ public final class NoteSteps {
     /**
      * The first step of the group BG-1: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits NoteBuild {
         /**
          * BT-22 Invoice note. A free text remark about the whole document rather than about one
          * line of it.
@@ -38,7 +38,7 @@ public final class NoteSteps {
      * The terminal step of the group BG-1: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits NoteBuild {
         /**
          * BT-21 Invoice note subject code. Code identifying the subject of the accompanying invoice
          * note, from UNTDID 4451.

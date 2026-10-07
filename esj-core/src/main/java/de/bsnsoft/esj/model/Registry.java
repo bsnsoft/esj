@@ -41,14 +41,14 @@ import java.util.OptionalInt;
  */
 public final class Registry {
 
-    /** The edition key of the core model a build ships unless it ships none. */
-    public static final String DEFAULT_EDITION = "2017";
+    /** The value {@link #defaultEditionKey()} returns. */
+    private static final String DEFAULT_EDITION = "2017";
 
     /**
      * The edition keys of the core model this reader looks for, newest last. A key is the
      * stem of the registry file name under {@code model/en16931/}; which of them a build
      * actually carries is a question about the classpath and is answered by
-     * {@link #editions()}, because a registry is data a build may leave out.
+     * {@link #editionKeys()}, because a registry is data a build may leave out.
      */
     private static final List<String> CORE_EDITION_KEYS = List.of("2017", "2026");
 
@@ -155,27 +155,40 @@ public final class Registry {
     }
 
     /**
+     * Returns the edition key of the core model this build writes unless a caller asks
+     * for another: {@code 2017} in this release. It is a method rather than a constant
+     * because the default edition may change with a release.
+     *
+     * @return the edition key {@link #en16931()} is read by
+     */
+    public static String defaultEditionKey() {
+        return DEFAULT_EDITION;
+    }
+
+    /**
      * Returns the registry of one edition of the core model, read once from the classpath
      * and shared.
      *
      * <p>An edition key is the stem of the registry file name under
      * {@code model/en16931/}, for example {@code 2017} or {@code 2026}. Which keys a
      * build carries is a property of the build and not of this class: a registry is data,
-     * a distribution may leave one out, and {@link #editions()} says which ones are
-     * there.
+     * a distribution may leave one out, and {@link #editionKeys()} says which ones are
+     * there. The key is not the {@link #edition()} a registry names nor the
+     * {@link #semanticModel()} a document names; {@link #editionKey()} maps back.
      *
-     * @param edition the edition key
+     * @param editionKey the edition key
      * @return the registry of that edition
      * @throws EsjFormatException   if this build carries no registry for that edition, or
      *                              if the registry file is malformed
-     * @throws NullPointerException if {@code edition} is {@code null}
+     * @throws NullPointerException if {@code editionKey} is {@code null}
      */
-    public static Registry forEdition(String edition) {
-        Objects.requireNonNull(edition, "edition");
-        Loaded loaded = CoreHolder.BY_EDITION.get(edition);
+    public static Registry forEdition(String editionKey) {
+        Objects.requireNonNull(editionKey, "editionKey");
+        Loaded loaded = CoreHolder.BY_EDITION.get(editionKey);
         if (loaded == null) {
             throw new EsjFormatException("this build carries no registry of the edition "
-                    + excerpt(edition) + "; it carries " + String.join(", ", editions()));
+                    + excerpt(editionKey) + "; it carries "
+                    + String.join(", ", editionKeys()));
         }
         return loaded.get();
     }
@@ -186,7 +199,7 @@ public final class Registry {
      *
      * @return the edition keys, possibly empty
      */
-    public static List<String> editions() {
+    public static List<String> editionKeys() {
         return CoreHolder.KEYS;
     }
 
@@ -203,7 +216,7 @@ public final class Registry {
      */
     public static Optional<Registry> forSemanticModel(String semanticModel) {
         Objects.requireNonNull(semanticModel, "semanticModel");
-        for (String edition : editions()) {
+        for (String edition : editionKeys()) {
             Registry registry = forEdition(edition);
             if (registry.describes(semanticModel)) {
                 return Optional.of(registry);
@@ -464,6 +477,24 @@ public final class Registry {
     }
 
     /**
+     * Returns the edition key of the core model this registry describes: the key
+     * {@link #forEdition(String)} reads it by, {@code 2017} or {@code 2026}. A combination
+     * of a core registry with an extension has the key of its core.
+     *
+     * @return the key, or an empty optional for a registry that describes no edition of the
+     *         core model this build carries, an extension registry among them
+     */
+    public Optional<String> editionKey() {
+        for (String key : editionKeys()) {
+            Registry core = forEdition(key);
+            if (core.semanticModel.equals(semanticModel) && core.model.equals(model)) {
+                return Optional.of(key);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Tells whether this registry describes an edition of the core model that this project
      * ships as a preview.
      *
@@ -478,7 +509,7 @@ public final class Registry {
      */
     public boolean isPreview() {
         for (String key : PREVIEW_EDITION_KEYS) {
-            if (editions().contains(key) && forEdition(key).semanticModel.equals(semanticModel)
+            if (editionKeys().contains(key) && forEdition(key).semanticModel.equals(semanticModel)
                     && forEdition(key).model.equals(model)) {
                 return true;
             }

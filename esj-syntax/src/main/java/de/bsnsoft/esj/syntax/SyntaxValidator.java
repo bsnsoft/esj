@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
 import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.time.Duration;
@@ -202,10 +203,11 @@ public final class SyntaxValidator {
      * not looked at what that specification requires, and a caller that read the affirmative
      * would be told that rules nobody ran were satisfied.
      */
-    private static Verdict verdict(List<SyntaxFinding> findings, boolean profileRulesMissing) {
+    private static ValidationStatus verdict(List<SyntaxFinding> findings,
+            boolean profileRulesMissing) {
         if (findings.stream().anyMatch(SyntaxFinding::fatal)) {
-            return Verdict.INVALID;
+            return ValidationStatus.INVALID;
         }
-        return profileRulesMissing ? Verdict.INDETERMINATE : Verdict.VALID;
+        return profileRulesMissing ? ValidationStatus.INDETERMINATE : ValidationStatus.VALID;
     }
 }

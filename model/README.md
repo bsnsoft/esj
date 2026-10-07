@@ -26,14 +26,14 @@ The `edition` member carries the full edition string in the spelling the standar
 writes that string with every space removed in its `semanticModel` member; `SPEC.md`
 sections 4.4 and 10 give the mapping. A later edition arrives as a new file beside the older
 one and never as a rewrite of it, and a file is self-contained: no registry imports another
-core registry and neither carries a delta of the other. `Registry.editions()` lists the
+core registry and neither carries a delta of the other. `Registry.editionKeys()` lists the
 editions a build carries, `Registry.forEdition(key)` reads one and
 `Registry.forSemanticModel(string)` finds the one a document is measured against; 2017 stays
 the edition everything writes unless a caller asks for another.
 
 The files of the 2026 edition are **separable**: `en16931/2026.paths` lists what a
 distribution leaves out when that edition is not shipped, and the Maven profile
-`without-edition-2026` builds without them, with `Registry.editions()` reporting `2017`
+`without-edition-2026` builds without them, with `Registry.editionKeys()` reporting `2017`
 alone. Prose that states facts of the edition, this page among it, is not separable.
 `../docs/editions.md` has the rest, and what no build does for that edition.
 

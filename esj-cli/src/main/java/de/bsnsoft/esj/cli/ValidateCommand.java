@@ -14,7 +14,7 @@ import de.bsnsoft.esj.bindings.WriterOptions;
 import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.render.RenderLanguage;
-import de.bsnsoft.esj.render.ReportRenderer;
+import de.bsnsoft.esj.render.internal.ReportRenderer;
 import de.bsnsoft.esj.render.internal.ReportOptions;
 import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.validate.Finding;
@@ -390,6 +390,33 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
     }
 
     /**
+     * Returns the refusal of a PDF report that reached its bound on pages, or the limit
+     * itself where it is another bound, which {@link Main} words.
+     *
+     * <p>The report is drawn within the page bound of {@link ReportOptions#rendering()},
+     * which {@code --max-pages} does not move: that switch bounds {@code esj render}. The
+     * line therefore names the bound of the report rather than the switch {@link Bounds}
+     * would name for a page bound, and the code is {@link ExitCode#LIMIT}, as for any
+     * bound. The verdict was printed before the report was drawn.
+     *
+     * @param limit what the renderer raised
+     * @param pages the page bound the report is drawn within
+     * @return the condition the run leaves with
+     * @throws EsjLimitException the limit itself where its bound is not the page bound
+     */
+    static CliException reportPagesReached(EsjLimitException limit, int pages) {
+        boolean onPages = limit.bound()
+                .map(bound -> "maxPages".equals(bound.name())).orElse(false);
+        if (!onPages) {
+            throw limit;
+        }
+        return CliException.limit("no report was written: the PDF report reached the "
+                + pages + " pages a report is drawn within, a bound of this tool that"
+                + " --max-pages does not move, since that switch bounds esj render. The"
+                + " verdict was reached before that and is printed above.", limit);
+    }
+
+    /**
      * Writes the report.
      *
      * <p>The report is written after the lines, so that a caller who is watching the run
@@ -448,6 +475,8 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
                         : renderer.html(outcome, document, options)
                                 .getBytes(StandardCharsets.UTF_8);
             });
+        } catch (EsjLimitException e) {
+            throw reportPagesReached(e, options.rendering().maxPages());
         } catch (CliException e) {
             if (e.exitCode() != ExitCode.LIMIT) {
                 throw e;
@@ -732,10 +761,9 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
      */
     private WriteResult write(SemanticDocument document, Extensions extensions) {
         String target = Options.via(via);
-        WriterOptions options = WriterOptions.builder()
-                .maxOutputBytes(console.options().bounds().maxOutputBytes())
-                .extensions(extensions.registries())
-                .build();
+        WriterOptions options = WriterOptions.defaults()
+                .withMaxOutputBytes(console.options().bounds().maxOutputBytes())
+                .withExtensions(extensions.registries());
         try {
             return Options.VIA_UBL.equals(target)
                     ? UblWriter.writeWithReport(document, options)

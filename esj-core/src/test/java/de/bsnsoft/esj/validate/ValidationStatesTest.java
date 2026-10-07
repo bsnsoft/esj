@@ -61,9 +61,8 @@ class ValidationStatesTest {
      */
     @Test
     void aDocumentOverALimitLeavesTheRunWithoutAVerdict() {
-        EsjReader narrow = EsjReader.withLimits(Limits.defaults().toBuilder()
-                .maxValues(3)
-                .build());
+        EsjReader narrow = EsjReader.withLimits(Limits.defaults()
+                .withMaxValues(3));
 
         ReadResult read = narrow.readWithFindings(bytes(Fixtures.minimalInvoice().build()));
         ValidationResult result = read.validation();

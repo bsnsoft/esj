@@ -34,7 +34,7 @@ class SemanticDocumentTest {
     void anEmptyDocumentCarriesTheFixedEnvelopeOnly() {
         SemanticDocument document = SemanticDocument.builder().build();
 
-        assertEquals(Esj.SEMANTIC_MODEL, document.semanticModel());
+        assertEquals(Esj.defaultSemanticModel(), document.semanticModel());
         assertTrue(document.values().isEmpty());
         assertTrue(document.extensions().isEmpty());
         assertEquals(Optional.empty(), document.source());
@@ -158,9 +158,10 @@ class SemanticDocumentTest {
      */
     @Test
     void theEditionDefaultsToTheBundledOneAndIsHeldToItsGrammar() {
-        assertEquals(Esj.SEMANTIC_MODEL, SemanticDocument.builder().build().semanticModel());
-        assertEquals(Esj.SEMANTIC_MODEL, SemanticDocument.builder()
-                .semanticModel(Esj.SEMANTIC_MODEL).build().semanticModel());
+        assertEquals(Esj.defaultSemanticModel(),
+                SemanticDocument.builder().build().semanticModel());
+        assertEquals(Esj.defaultSemanticModel(), SemanticDocument.builder()
+                .semanticModel(Esj.defaultSemanticModel()).build().semanticModel());
         assertEquals("EN16931-1:2026", SemanticDocument.builder()
                 .semanticModel("EN16931-1:2026").build().semanticModel());
         assertThrows(EsjFormatException.class,

@@ -1,8 +1,5 @@
 package de.bsnsoft.esj.b2c;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -10,9 +7,9 @@ import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.json.EsjWriter;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.typed.En16931;
 import de.bsnsoft.esj.typed.InvoiceEditor;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.validate.StructuralValidator;
 import de.bsnsoft.esj.validate.ValidationLayer;
 import java.math.BigDecimal;
@@ -21,6 +18,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The invoices the policy tests are run over, written through the typed editor of the core
@@ -156,7 +155,7 @@ final class Invoices {
     static List<String> fatal(SemanticDocument document) {
         List<String> lines = new ArrayList<>();
         for (RuleFinding finding : RULES.evaluate(document)) {
-            if (finding.severity() == RuleSeverity.FATAL) {
+            if (finding.severity() == Severity.ERROR) {
                 lines.add(finding.toString());
             }
         }

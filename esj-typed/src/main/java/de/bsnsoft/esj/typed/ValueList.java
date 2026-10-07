@@ -10,6 +10,9 @@ import de.bsnsoft.esj.EsjFormatException;
  * <p>The occurrence indices stay dense: removing one occurrence moves every later one
  * down (specification, section 5.4).
  *
+ * <p>Not for implementation: the editors return the implementation of this library, and a
+ * later release may add methods to this interface.
+ *
  * @param <T> the Java type of one value, as the semantic data type of the term maps it
  */
 public interface ValueList<T> {

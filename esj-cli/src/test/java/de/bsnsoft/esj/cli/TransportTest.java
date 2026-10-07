@@ -101,8 +101,8 @@ class TransportTest {
         SemanticDocument document = EsjReader.strict()
                 .read(Fixtures.bytes("examples/b2c-gross.esj.json"));
 
-        WriteReport handed = CiiWriter.writeWithReport(document, WriterOptions.builder()
-                .extensions(B2C.registries()).build()).report();
+        WriteReport handed = CiiWriter.writeWithReport(document, WriterOptions.defaults()
+                .withExtensions(B2C.registries())).report();
         WriteReport unhanded = CiiWriter.writeWithReport(document,
                 WriterOptions.defaults()).report();
 

@@ -22,14 +22,14 @@ public final class ProcessControlSteps {
      * The first step of the group BG-2, which is its terminal step as well: the model declares
      * nothing in it mandatory that a caller has to state.
      */
-    public interface Start extends Buildable {
+    public sealed interface Start extends Buildable permits ProcessControlBuild {
     }
 
     /**
      * The terminal step of the group BG-2: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits ProcessControlBuild, Start {
         /**
          * BT-23 Business process type. Names the business process this invoice takes part in.
          *

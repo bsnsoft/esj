@@ -1,27 +1,26 @@
 package de.bsnsoft.esj.rules.en16931.v2026;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.typed.DerivationException;
 import de.bsnsoft.esj.typed.DerivationReport;
 import de.bsnsoft.esj.typed.v2026.En16931;
 import de.bsnsoft.esj.typed.v2026.InvoiceEditor;
 import de.bsnsoft.esj.typed.v2026.Totals;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The totals derivation of the typed view of EN 16931-1:2026, over the minor units of this
@@ -265,7 +264,7 @@ class Edition2026TotalsTest {
 
     private static void assertNoFatalFinding(SemanticDocument document) {
         List<RuleFinding> fatal = ENGINE.evaluate(document).stream()
-                .filter(finding -> finding.severity() == RuleSeverity.FATAL)
+                .filter(finding -> finding.severity() == Severity.ERROR)
                 .toList();
         assertEquals(Map.of(), fatal.stream().collect(Collectors.toMap(
                 RuleFinding::code, RuleFinding::message, (one, other) -> one)),

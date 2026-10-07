@@ -113,14 +113,14 @@ final class Embedding {
         // all, and the answer is that refusal with its way out rather than a sentence
         // about the profile its BT-24 names.
         requireBindableEdition(document);
-        EmbedOptions options = EmbedOptions.of(profile(profile, document))
+        EmbedOptions options = EmbedOptions.defaults().withProfile(profile(profile, document))
                 .withLimits(console.options().bounds().pdfLimits())
                 .withExtensions(extensions.registries());
         if (name != null) {
             options = options.withFlavour(flavour(name));
         }
         return verapdf == null ? options
-                : options.checkedWith(validator(verapdf, console, deadline));
+                : options.withCheck(validator(verapdf, console, deadline));
     }
 
     /**

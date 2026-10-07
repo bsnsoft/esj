@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -219,7 +220,7 @@ class OperatorTest {
 
     private static void assertDecidesDecimals(String context, String path) {
         assertFalse(Packs.run(MINIMAL, context, "{\"decimals\": [\"" + path + "\", 2]}")
-                .stream().anyMatch(finding -> finding.severity() == RuleSeverity.FATAL));
+                .stream().anyMatch(finding -> finding.severity() == Severity.ERROR));
     }
 
     @Test

@@ -1,14 +1,14 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.validate.Severity;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import de.bsnsoft.esj.EsjLimitException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * A name tree that lists two files under one name.
@@ -132,14 +132,14 @@ class DuplicateNamesTest {
 
             List<ContainerFinding> findings = ContainerChecks.run(container, located);
             ContainerFinding duplicate = finding(findings, DUPLICATE);
-            assertEquals(ContainerFinding.Severity.ERROR, duplicate.severity());
+            assertEquals(Severity.ERROR, duplicate.severity());
             assertTrue(duplicate.message().contains("\"invoice.esj.json\""), duplicate.message());
             assertTrue(duplicate.message().contains(" 2 \"invoice.esj.json\" (not XML, "),
                     duplicate.message());
             assertTrue(duplicate.message().contains(" 3 \"invoice.esj.json\" (not XML, "),
                     duplicate.message());
             assertEquals(List.of(DUPLICATE), findings.stream()
-                    .filter(finding -> finding.severity() == ContainerFinding.Severity.ERROR)
+                    .filter(finding -> finding.severity() == Severity.ERROR)
                     .map(ContainerFinding::code).toList());
         }
     }
@@ -221,7 +221,7 @@ class DuplicateNamesTest {
         EmbedRefusedException refused = assertThrows(EmbedRefusedException.class,
                 () -> FacturX.embed(pdf, new de.bsnsoft.esj.xr.XrImporter()
                                 .read(Conformance.instance(CII)).document(),
-                        EmbedOptions.of(FacturXProfile.XRECHNUNG)));
+                        EmbedOptions.defaults().withProfile(FacturXProfile.XRECHNUNG)));
 
         assertTrue(refused.getMessage().contains("\"terms.txt\""), refused.getMessage());
     }
@@ -247,7 +247,7 @@ class DuplicateNamesTest {
 
             ContainerFinding duplicate = finding(ContainerChecks.run(container, located),
                     DUPLICATE);
-            assertEquals(ContainerFinding.Severity.ERROR, duplicate.severity());
+            assertEquals(Severity.ERROR, duplicate.severity());
             assertEquals(ContainerFinding.Category.PDF_EMBEDDED, duplicate.category());
             String message = duplicate.message();
             assertTrue(message.contains("under the name \"factur-x.xml\""), message);

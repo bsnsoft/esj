@@ -338,8 +338,8 @@ class StreamingReaderTest {
 
     @Test
     void leavesTheNoteAloneWhenNoCorrectionIsAskedFor() {
-        StreamingReader strict = new StreamingReader(ReaderOptions.builder()
-                .mode(ReaderMode.STRICT).build());
+        StreamingReader strict = new StreamingReader(ReaderOptions.defaults()
+                .withMode(ReaderMode.STRICT));
         SemanticDocument document = strict
                 .read(Documents.ubl("<cbc:Note>#AAC#Delivery on Monday</cbc:Note>"))
                 .document();
@@ -443,8 +443,8 @@ class StreamingReaderTest {
 
     @Test
     void endsTheReadOnSuchAValueWhenAskedToBeStrict() {
-        StreamingReader strict = new StreamingReader(ReaderOptions.builder()
-                .mode(ReaderMode.STRICT).build());
+        StreamingReader strict = new StreamingReader(ReaderOptions.defaults()
+                .withMode(ReaderMode.STRICT));
         byte[] document = Documents.ubl(
                 "<cac:LegalMonetaryTotal><cbc:PayableAmount currencyID=\"EUR\">ten"
                         + "</cbc:PayableAmount></cac:LegalMonetaryTotal>");
@@ -456,8 +456,8 @@ class StreamingReaderTest {
 
     @Test
     void turnsAnExtensionTermIntoANoteWithoutTheExtensionRegistry() {
-        StreamingReader core = new StreamingReader(ReaderOptions.builder()
-                .registry(Registry.en16931()).build());
+        StreamingReader core = new StreamingReader(ReaderOptions.defaults()
+                .withRegistry(Registry.en16931()));
         ImportResult result = core.read(Documents.ubl(
                 "<cac:InvoiceLine><cbc:ID>1</cbc:ID><cac:SubInvoiceLine>"
                         + "<cac:Item><cbc:Description>x</cbc:Description></cac:Item>"
@@ -507,16 +507,16 @@ class StreamingReaderTest {
 
     @Test
     void refusesAnInputLargerThanItReads() {
-        StreamingReader small = new StreamingReader(ReaderOptions.builder()
-                .maxInputBytes(64).build());
+        StreamingReader small = new StreamingReader(ReaderOptions.defaults()
+                .withMaxInputBytes(64));
         assertThrows(EsjLimitException.class,
                 () -> small.read(Documents.ubl("<cbc:ID>RE-4711</cbc:ID>")));
     }
 
     @Test
     void refusesElementsNestedDeeperThanItWalks() {
-        StreamingReader shallow = new StreamingReader(ReaderOptions.builder()
-                .maxElementDepth(3).build());
+        StreamingReader shallow = new StreamingReader(ReaderOptions.defaults()
+                .withMaxElementDepth(3));
         assertThrows(EsjLimitException.class, () -> shallow.read(Documents.ubl(
                 "<cac:InvoiceLine><cac:Item><cac:ClassifiedTaxCategory><cbc:ID>S</cbc:ID>"
                         + "</cac:ClassifiedTaxCategory></cac:Item></cac:InvoiceLine>")));
@@ -524,8 +524,8 @@ class StreamingReaderTest {
 
     @Test
     void refusesAnElementLargerThanItHolds() {
-        StreamingReader small = new StreamingReader(ReaderOptions.builder()
-                .maxBufferedBytes(64).build());
+        StreamingReader small = new StreamingReader(ReaderOptions.defaults()
+                .withMaxBufferedBytes(64));
         assertThrows(EsjLimitException.class, () -> small.read(Documents.ubl(
                 "<cac:AllowanceCharge><cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         + "<cbc:AllowanceChargeReason>" + "x".repeat(200)
@@ -540,8 +540,8 @@ class StreamingReaderTest {
      */
     @Test
     void refusesASubtreeLargerThanItHolds() {
-        StreamingReader small = new StreamingReader(ReaderOptions.builder()
-                .maxBufferedBytes(64).build());
+        StreamingReader small = new StreamingReader(ReaderOptions.defaults()
+                .withMaxBufferedBytes(64));
         assertThrows(EsjLimitException.class, () -> small.read(Documents.ubl(
                 "<cac:AllowanceCharge><cbc:ChargeIndicator>false</cbc:ChargeIndicator>"
                         + "<cbc:AllowanceChargeReason>x</cbc:AllowanceChargeReason>"
@@ -556,8 +556,8 @@ class StreamingReaderTest {
      */
     @Test
     void refusesASubtreeWithMoreElementsThanItHolds() {
-        StreamingReader small = new StreamingReader(ReaderOptions.builder()
-                .maxBufferedElements(16).build());
+        StreamingReader small = new StreamingReader(ReaderOptions.defaults()
+                .withMaxBufferedElements(16));
         EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> small.read(Documents.ubl(
                         "<cac:AllowanceCharge><cbc:ChargeIndicator>false"
@@ -594,8 +594,8 @@ class StreamingReaderTest {
      */
     @Test
     void reportsAValueTooLongInsteadOfBuildingIt() {
-        StreamingReader bounded = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxStringBytes(64).build()).build());
+        StreamingReader bounded = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxStringBytes(64)));
         ImportResult result = bounded.read(Documents.ubl(
                 "<cbc:Note>" + "x".repeat(4096) + "</cbc:Note>"));
         assertTrue(result.document().value(SemanticPath.of("/BG-1/0/BT-22")).isEmpty());
@@ -607,9 +607,8 @@ class StreamingReaderTest {
 
     @Test
     void reportsAValueTooLongInsideAnElementItHoldsWhole() {
-        StreamingReader bounded = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxStringBytes(64).maxBinaryValueBytes(64).build())
-                .build());
+        StreamingReader bounded = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxStringBytes(64).withMaxBinaryValueBytes(64)));
         ImportResult result = bounded.read(Documents.ubl(
                 "<cac:AdditionalDocumentReference><cbc:ID>ATT-1</cbc:ID>"
                         + "<cbc:DocumentTypeCode>916</cbc:DocumentTypeCode>"
@@ -635,8 +634,8 @@ class StreamingReaderTest {
      */
     @Test
     void keepsTheTermOnAnAttributeOfAnElementWhoseContentIsTooLong() {
-        StreamingReader bounded = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxStringBytes(64).build()).build());
+        StreamingReader bounded = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxStringBytes(64)));
         ImportResult result = bounded.read(Documents.ubl(
                 "<cac:InvoiceLine><cbc:ID>1</cbc:ID><cac:Price>"
                         + "<cbc:BaseQuantity unitCode=\"H87\">" + "1".repeat(4096)
@@ -680,8 +679,8 @@ class StreamingReaderTest {
 
     @Test
     void holdsNothingWhereNoPredicateStands() {
-        StreamingReader small = new StreamingReader(ReaderOptions.builder()
-                .maxBufferedBytes(64).build());
+        StreamingReader small = new StreamingReader(ReaderOptions.defaults()
+                .withMaxBufferedBytes(64));
         SemanticDocument document = small.read(Documents.ubl(
                 "<cbc:Note>" + "x".repeat(4096) + "</cbc:Note>")).document();
         assertEquals(4096, content(document, "/BG-1/0/BT-22").length(),
@@ -690,8 +689,8 @@ class StreamingReaderTest {
 
     @Test
     void stopsWhereTheDocumentReachesItsBound() {
-        StreamingReader bounded = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxValues(2).build()).build());
+        StreamingReader bounded = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxValues(2)));
         ImportResult result = bounded.read(Documents.ubl(
                 "<cac:InvoiceLine><cbc:ID>1</cbc:ID></cac:InvoiceLine>"
                         + "<cac:InvoiceLine><cbc:ID>2</cbc:ID></cac:InvoiceLine>"
@@ -703,8 +702,8 @@ class StreamingReaderTest {
 
     @Test
     void leavesOutAPathLongerThanItWrites() {
-        StreamingReader bounded = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxPathSegments(3).build()).build());
+        StreamingReader bounded = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxPathSegments(3)));
         ImportResult result = bounded.read(Documents.ubl(
                 "<cbc:ID>RE-4711</cbc:ID>"
                         + "<cac:InvoiceLine><cbc:ID>1</cbc:ID><cac:Item><cbc:Name>x"
@@ -733,7 +732,7 @@ class StreamingReaderTest {
         assertEquals(ReaderMode.REPAIR, reader.options().mode());
         assertFalse(ReaderOptions.defaults().toString().isEmpty());
         assertThrows(IllegalArgumentException.class,
-                () -> ReaderOptions.builder().maxInputBytes(0));
+                () -> ReaderOptions.defaults().withMaxInputBytes(0));
     }
 
     private SemanticDocument document(byte[] source) {

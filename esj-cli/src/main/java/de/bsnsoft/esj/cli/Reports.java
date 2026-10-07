@@ -16,13 +16,12 @@ import de.bsnsoft.esj.syntax.Engine;
 import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.PackComponent;
 import de.bsnsoft.esj.syntax.PackRecipes;
-import de.bsnsoft.esj.syntax.Severity;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.syntax.SkippedComponent;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.imports.ImportNote;
@@ -384,7 +383,7 @@ final class Reports {
                             List<ContainerFinding> findings,
                             String detail) {
         List<ContainerFinding> spoken = findings.stream()
-                .filter(finding -> finding.severity() != ContainerFinding.Severity.INFO)
+                .filter(finding -> finding.severity() != Severity.INFO)
                 .toList();
         console.line(row(label) + status(spoken, detail));
         for (ContainerFinding finding : spoken) {
@@ -393,7 +392,7 @@ final class Reports {
         }
         if (console.options().verbose()) {
             for (ContainerFinding finding : findings) {
-                if (finding.severity() == ContainerFinding.Severity.INFO) {
+                if (finding.severity() == Severity.INFO) {
                     console.verbose(finding.code() + ": " + finding.message());
                 }
             }
@@ -406,7 +405,7 @@ final class Reports {
             return detail == null ? "OK" : "OK (" + detail + ")";
         }
         long errors = spoken.stream()
-                .filter(finding -> finding.severity() == ContainerFinding.Severity.ERROR)
+                .filter(finding -> finding.severity() == Severity.ERROR)
                 .count();
         return errors > 0
                 ? errors + (errors == 1 ? " error" : " errors")
@@ -706,9 +705,10 @@ final class Reports {
      */
     private static String level(RuleCheck.Levelled levelled) {
         if (!levelled.levelled()) {
-            return levelled.severity().token();
+            return SeverityWords.rule(levelled.severity());
         }
-        return levelled.severity().token() + ", " + levelled.standard().token()
+        return SeverityWords.rule(levelled.severity()) + ", "
+                + SeverityWords.rule(levelled.standard())
                 + " by the standard, levelled by the profile "
                 + ValueText.oneLine(levelled.profile());
     }
@@ -741,16 +741,16 @@ final class Reports {
             return check.reason().orElseThrow();
         }
         StringBuilder status = new StringBuilder();
-        count(status, found.orElseThrow(), RuleSeverity.FATAL, "error", "errors");
-        count(status, found.orElseThrow(), RuleSeverity.WARNING, "warning", "warnings");
-        count(status, found.orElseThrow(), RuleSeverity.INFO, "note", "notes");
+        count(status, found.orElseThrow(), Severity.ERROR, "error", "errors");
+        count(status, found.orElseThrow(), Severity.WARNING, "warning", "warnings");
+        count(status, found.orElseThrow(), Severity.INFO, "note", "notes");
         return status.length() == 0 ? "OK" : status.toString();
     }
 
     /** Appends "n things" for one severity, or nothing where there is none of it. */
     private static void count(StringBuilder status,
                               RuleCheck.Found found,
-                              RuleSeverity severity,
+                              Severity severity,
                               String one,
                               String many) {
         long made = found.count(severity);
@@ -1035,8 +1035,8 @@ final class Reports {
             generator.writeStartObject();
             generator.writeStringField("engine", finding.engine());
             generator.writeStringField("category", finding.category().token());
-            generator.writeStringField("severity", levelled.severity().token());
-            generator.writeStringField("flag", levelled.standard().token());
+            generator.writeStringField("severity", SeverityWords.rule(levelled.severity()));
+            generator.writeStringField("flag", SeverityWords.rule(levelled.standard()));
             generator.writeStringField("code", finding.code());
             generator.writeStringField("message", finding.message());
             generator.writeArrayFieldStart("paths");
@@ -1226,8 +1226,8 @@ final class Reports {
         generator.writeStartObject();
         generator.writeStringField("engine", finding.engine().token());
         generator.writeStringField("category", finding.category().label());
-        generator.writeStringField("severity", finding.severity().token());
-        generator.writeStringField("flag", finding.flag().token());
+        generator.writeStringField("severity", SeverityWords.artefact(finding.severity()));
+        generator.writeStringField("flag", SeverityWords.artefact(finding.flag()));
         generator.writeStringField("code", finding.code());
         generator.writeStringField("message", finding.message());
         generator.writeStringField("location", finding.location());
@@ -1625,9 +1625,9 @@ final class Reports {
      */
     private static String status(List<SyntaxFinding> findings) {
         StringBuilder status = new StringBuilder();
-        count(status, findings, Severity.FATAL, "error", "errors");
+        count(status, findings, Severity.ERROR, "error", "errors");
         count(status, findings, Severity.WARNING, "warning", "warnings");
-        count(status, findings, Severity.INFORMATION, "note", "notes");
+        count(status, findings, Severity.INFO, "note", "notes");
         return status.length() == 0 ? "OK" : status.toString();
     }
 
@@ -1661,8 +1661,8 @@ final class Reports {
         listed(console, findings, finding -> {
             String location = finding.location().isEmpty()
                     ? "" : " " + ValueText.oneLine(finding.location());
-            String level = finding.severity().token()
-                    + (finding.releveled() ? ", flagged " + finding.flag().token()
+            String level = SeverityWords.artefact(finding.severity())
+                    + (finding.releveled() ? ", flagged " + SeverityWords.artefact(finding.flag())
                             + " by the artefact" : "");
             return finding.code() + " [" + level + "]"
                     + location + ": " + ValueText.oneLine(finding.message());

@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  * of this editor: {@code PaymentTermEditor} checks a value against the grammar of its semantic data
  * type and nothing else.
  */
-public interface PaymentTermEditor {
+public sealed interface PaymentTermEditor permits PaymentTermEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

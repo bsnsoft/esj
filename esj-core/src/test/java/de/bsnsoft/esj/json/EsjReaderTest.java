@@ -535,7 +535,7 @@ class EsjReaderTest {
 
     @Test
     void theDocumentSizeLimitIsEnforcedOnBytesAndOnStreams() {
-        Limits tiny = Limits.builder().maxDocumentBytes(10).build();
+        Limits tiny = Limits.defaults().withMaxDocumentBytes(10);
         byte[] document = oneValue("/BT-1", "\"RE-1\"");
         assertThrows(EsjLimitException.class, () -> EsjReader.withLimits(tiny).read(document));
         assertThrows(EsjLimitException.class, () -> EsjReader.withLimits(tiny)
@@ -544,7 +544,7 @@ class EsjReaderTest {
 
     @Test
     void theNumberOfValuesIsLimited() {
-        Limits one = Limits.builder().maxValues(1).build();
+        Limits one = Limits.defaults().withMaxValues(1);
         byte[] document = envelope("\"values\":{"
                 + "\"/BT-1\":\"a\","
                 + "\"/BT-2\":{\"type\":\"date\",\"value\":\"2026-01-15\"}}");
@@ -558,14 +558,14 @@ class EsjReaderTest {
         byte[] document = oneValue("/BG-25/0/BG-31/BT-158/0",
                 "{\"value\":\"a\",\"scheme\":\"s\"}");
         assertThrows(EsjLimitException.class,
-                () -> EsjReader.withLimits(Limits.builder().maxPathBytes(8).build()).read(document));
+                () -> EsjReader.withLimits(Limits.defaults().withMaxPathBytes(8)).read(document));
         assertThrows(EsjLimitException.class, () -> EsjReader
-                .withLimits(Limits.builder().maxPathSegments(2).build()).read(document));
+                .withLimits(Limits.defaults().withMaxPathSegments(2)).read(document));
     }
 
     @Test
     void theLengthOfAStringValueIsLimitedInUtf8Bytes() {
-        Limits three = Limits.builder().maxStringBytes(3).build();
+        Limits three = Limits.defaults().withMaxStringBytes(3);
         byte[] ascii = oneValue("/BG-4/BT-27", "\"abc\"");
         byte[] wide = oneValue("/BG-4/BT-27", "\"中中\"");
         assertEquals(1, EsjReader.withLimits(three).read(ascii).values().size());
@@ -574,7 +574,7 @@ class EsjReaderTest {
 
     @Test
     void theDecodedBinaryContentOfADocumentIsLimited() {
-        Limits small = Limits.builder().maxTotalBinaryBytes(3).build();
+        Limits small = Limits.defaults().withMaxTotalBinaryBytes(3);
         byte[] document = oneValue("/BG-24/0/BT-125",
                 "{\"value\":\"QUJDRQ==\",\"mimeCode\":\"application/pdf\","
                         + "\"filename\":\"a.pdf\"}");
@@ -594,7 +594,7 @@ class EsjReaderTest {
         byte[] document = envelope(
                 "\"values\":{},\"extensions\":{\"de.example.vendor\":" + deep + "}");
         assertThrows(EsjLimitException.class, () -> reader.read(document));
-        assertEquals(1, EsjReader.withLimits(Limits.builder().maxExtensionDepth(40).build())
+        assertEquals(1, EsjReader.withLimits(Limits.defaults().withMaxExtensionDepth(40))
                 .read(document).extensions().size());
     }
 
@@ -659,7 +659,7 @@ class EsjReaderTest {
 
     @Test
     void aTokenLongerThanTheStringBoundIsRefusedByTheParserAsALimit() {
-        Limits small = Limits.builder().maxStringBytes(1024).build();
+        Limits small = Limits.defaults().withMaxStringBytes(1024);
         String huge = "x".repeat(4096);
         assertThrows(EsjLimitException.class, () -> EsjReader.withLimits(small)
                 .read(oneValue("/BT-1", "\"" + huge + "\"")));
@@ -676,7 +676,7 @@ class EsjReaderTest {
      */
     @Test
     void aMemberNameTooLongForTheParserIsLocatedByAByteOffset() {
-        Limits small = Limits.builder().maxStringBytes(1024).build();
+        Limits small = Limits.defaults().withMaxStringBytes(1024);
         byte[] document = envelope("\"values\":{\"" + "x".repeat(4096) + "\":\"1\"}");
 
         ReadResult result = EsjReader.withLimits(small).readWithFindings(document);
@@ -694,7 +694,7 @@ class EsjReaderTest {
 
     @Test
     void readWithFindingsReportsALimitInsteadOfThrowing() {
-        Limits two = Limits.builder().maxValues(2).build();
+        Limits two = Limits.defaults().withMaxValues(2);
         byte[] document = envelope("""
                 "values":{\
                 "/BT-1":"RE-1",\
@@ -711,7 +711,7 @@ class EsjReaderTest {
 
     @Test
     void readWithFindingsReportsALimitMetWhileTheStreamIsRead() {
-        Limits tiny = Limits.builder().maxDocumentBytes(16).build();
+        Limits tiny = Limits.defaults().withMaxDocumentBytes(16);
         ReadResult result = EsjReader.withLimits(tiny).readWithFindings(
                 new ByteArrayInputStream(oneValue("/BT-1",
                         "\"RE-1\"")));
@@ -840,7 +840,7 @@ class EsjReaderTest {
 
     @Test
     void aSourceSyntaxLongerThanTheStringBoundIsALimit() {
-        EsjReader small = EsjReader.withLimits(Limits.builder().maxStringBytes(8).build());
+        EsjReader small = EsjReader.withLimits(Limits.defaults().withMaxStringBytes(8));
         byte[] document = envelope("\"values\":{},\"source\":{\"syntax\":\"UBL-and-then-some\"}");
         EsjLimitException thrown =
                 assertThrows(EsjLimitException.class, () -> small.read(document));
@@ -850,7 +850,7 @@ class EsjReaderTest {
 
     @Test
     void extensionsWithMoreNodesThanTheBoundAllowsIsALimit() {
-        EsjReader small = EsjReader.withLimits(Limits.builder().maxExtensionNodes(4).build());
+        EsjReader small = EsjReader.withLimits(Limits.defaults().withMaxExtensionNodes(4));
         byte[] document = envelope(
                 "\"values\":{},\"extensions\":{\"de.example\":[1,2,3,4,5]}");
         EsjLimitException thrown =
@@ -861,7 +861,7 @@ class EsjReaderTest {
 
     @Test
     void extensionsAtTheNodeBoundIsStillRead() {
-        EsjReader small = EsjReader.withLimits(Limits.builder().maxExtensionNodes(6).build());
+        EsjReader small = EsjReader.withLimits(Limits.defaults().withMaxExtensionNodes(6));
         byte[] document = envelope(
                 "\"values\":{},\"extensions\":{\"de.example\":[1,2,3,4,5]}");
         assertEquals(1, small.read(document).extensions().size());
@@ -876,10 +876,9 @@ class EsjReaderTest {
     @Timeout(value = 60)
     void aDeepExtensionTreeIsReadWithoutTheStack() {
         int depth = 20_000;
-        EsjReader deep = EsjReader.withLimits(Limits.builder()
-                .maxExtensionDepth(depth + 1)
-                .maxExtensionNodes(depth + 1)
-                .build());
+        EsjReader deep = EsjReader.withLimits(Limits.defaults()
+                .withMaxExtensionDepth(depth + 1)
+                .withMaxExtensionNodes(depth + 1));
         byte[] document = envelope("\"values\":{},\"extensions\":{\"de.example\":"
                 + "[".repeat(depth) + "]".repeat(depth) + "}");
         assertEquals(1, deep.read(document).extensions().size());
@@ -902,7 +901,7 @@ class EsjReaderTest {
         tree.append("1").append("}".repeat(30));
         byte[] document =
                 envelope("\"values\":{},\"extensions\":{\"de.example\":" + tree + "}");
-        EsjReader small = EsjReader.withLimits(Limits.builder().maxExtensionDepth(20).build());
+        EsjReader small = EsjReader.withLimits(Limits.defaults().withMaxExtensionDepth(20));
         EsjLimitException thrown =
                 assertThrows(EsjLimitException.class, () -> small.read(document));
         assertTrue(thrown.getMessage().length() < 1024,

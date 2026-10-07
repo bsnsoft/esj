@@ -17,7 +17,7 @@ import java.util.Optional;
  * <p>A view over a semantic document. Nothing is copied and nothing is resolved before it is asked
  * for: every accessor reads the document the view was built over.
  */
-public interface Invoice {
+public sealed interface Invoice permits InvoiceView {
 
     /**
      * Returns the document this view reads.

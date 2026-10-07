@@ -534,14 +534,13 @@ record Loaded(String name,
      */
     private static ImportResult stream(Input input, Bounds bounds, Registry registry,
                                        EncodingMode mode) {
-        StreamingReader reader = new StreamingReader(ReaderOptions.builder()
-                .registry(registry)
-                .limits(bounds.readerLimits())
-                .encodingMode(mode)
-                .maxInputBytes(bounds.maxInputBytes())
-                .maxBufferedBytes(bounds.maxBufferedBytes())
-                .maxBufferedElements(bounds.maxBufferedElements())
-                .build());
+        StreamingReader reader = new StreamingReader(ReaderOptions.defaults()
+                .withRegistry(registry)
+                .withLimits(bounds.readerLimits())
+                .withEncodingMode(mode)
+                .withMaxInputBytes(bounds.maxInputBytes())
+                .withMaxBufferedBytes(bounds.maxBufferedBytes())
+                .withMaxBufferedElements(bounds.maxBufferedElements()));
         try {
             return LimitRefusal.during(limit -> bounds.refusal(input.name(), limit.getMessage()),
                     () -> reader.read(input.bytes()));

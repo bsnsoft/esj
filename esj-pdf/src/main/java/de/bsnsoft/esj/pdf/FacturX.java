@@ -71,7 +71,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
  * allows a file of any type to be embedded, and because the result is supposed to be one:
  * a rendering of {@code esj-render} is one, and by default that is read from what the
  * input declares about itself in its XMP packet. A caller that wants the stronger
- * statement lends a validator through {@link EmbedOptions#checkedWith(PdfaCheck)}.
+ * statement lends a validator through {@link EmbedOptions#withCheck(PdfaCheck)}.
  *
  * <p><strong>Nothing is converted.</strong> A PDF/A-1 or PDF/A-2 input is refused and the
  * message says so: moving a document between parts of ISO 19005 means changing what its
@@ -205,7 +205,7 @@ public final class FacturX {
         Objects.requireNonNull(options, "options");
         requireProfile(document, options);
         WriteResult invoice = CiiWriter.writeWithReport(document,
-                WriterOptions.builder().extensions(options.extensions()).build());
+                WriterOptions.defaults().withExtensions(options.extensions()));
         try (PdfContainer container = PdfContainer.open(pdf, options.limits())) {
             requirePdfa3(container, pdf, options);
             requireNoInvoiceYet(container);

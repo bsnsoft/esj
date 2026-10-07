@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -122,8 +123,8 @@ final class PackManifest {
         for (Map.Entry<?, ?> member : given.entrySet()) {
             String code = asString(member.getKey(), where);
             String level = asString(member.getValue(), where);
-            Severity severity = Severity.ofFlag(level);
-            if (!severity.token().equals(level)) {
+            Severity severity = SchematronFlag.of(level);
+            if (!SchematronFlag.word(severity).equals(level)) {
                 throw new PackException(where + " levels " + code + " as " + level
                         + ", and a level is one of fatal, warning and information");
             }

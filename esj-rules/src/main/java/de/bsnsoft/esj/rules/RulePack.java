@@ -11,7 +11,7 @@ import java.util.Optional;
  * snapshots its rules ask about, the Java rules it carries, the rule files and the shared
  * rules of other packs it is made of, and the rules themselves.
  *
- * <p>{@code edition} is the edition of the semantic model the rules are addresses in. A path
+ * <p>{@code edition} is the edition of the semantic model the rules are addressed in. A path
  * is an address relative to an edition, the business rules of a standard are renumbered,
  * added to and withdrawn between editions, and running the pack of one edition over a
  * document of another would report arithmetic about terms the document does not have. The

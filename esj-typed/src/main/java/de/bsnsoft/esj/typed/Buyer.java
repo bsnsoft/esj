@@ -15,7 +15,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface Buyer {
+public sealed interface Buyer permits BuyerView {
 
     /**
      * Returns the document this view reads.

@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.rules;
 
 import de.bsnsoft.esj.SemanticPath;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ final class CompiledRule {
      * declare; a rule that carries a second assertion answers at the warning level where
      * the first assertion holds and the second does not.
      */
-    record Outcome(RuleSeverity severity, String message) {
+    record Outcome(Severity severity, String message) {
     }
 
     /** The one question a rule answers about one business group instance. */
@@ -34,13 +35,13 @@ final class CompiledRule {
     }
 
     private final String id;
-    private final RuleSeverity severity;
+    private final Severity severity;
     private final PathPattern context;
     private final List<String> terms;
     private final String source;
     private final Check check;
 
-    CompiledRule(String id, RuleSeverity severity, PathPattern context, List<String> terms,
+    CompiledRule(String id, Severity severity, PathPattern context, List<String> terms,
                  String source, Check check) {
         this.id = id;
         this.severity = severity;
@@ -54,7 +55,7 @@ final class CompiledRule {
         return id;
     }
 
-    RuleSeverity severity() {
+    Severity severity() {
         return severity;
     }
 

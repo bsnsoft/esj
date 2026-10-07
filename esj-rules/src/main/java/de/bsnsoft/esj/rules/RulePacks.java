@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -278,7 +279,7 @@ public final class RulePacks {
         String where = "the rule " + id + " of " + what;
         reject(members.keySet(), RULE_MEMBERS, where, "a rule");
         String severityToken = text(members, "severity", where);
-        RuleSeverity severity = RuleSeverity.declared(severityToken).orElseThrow(
+        Severity severity = RuleLevel.declared(severityToken).orElseThrow(
                 () -> new RulePackException(where + " declares the severity " + severityToken
                         + "; a rule declares fatal or warning"));
         List<String> terms = new ArrayList<>();

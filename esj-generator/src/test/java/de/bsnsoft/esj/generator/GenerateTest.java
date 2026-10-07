@@ -395,9 +395,12 @@ class GenerateTest {
         for (String name : names) {
             if (name.endsWith("Steps.java") || name.endsWith("StepsXrechnung.java")) {
                 String chain = read(emitted.resolve(name));
-                assertTrue(chain.contains("public interface Start"), name + " has a first step");
-                assertTrue(chain.contains("public interface Buildable"),
+                assertTrue(chain.contains("public sealed interface Start "),
+                        name + " has a first step");
+                assertTrue(chain.contains("public sealed interface Buildable "),
                         name + " has a terminal step");
+                assertTrue(chain.contains(" permits " + name.replace("Steps", "Build")
+                        .replace(".java", "")), name + " permits its implementation alone");
                 assertTrue(names.contains(name.replace("Steps", "Build")),
                         name + " has an implementation");
             }
@@ -614,7 +617,7 @@ class GenerateTest {
         Path root = directory.resolve("overlay");
         Generate.generate(new Generate.Options(Optional.of(directory.resolve("typed")),
                 PACKAGE_2017, directory.resolve("model.schema.json"), FORMAT_SCHEMA,
-                Registry.DEFAULT_EDITION, Optional.of(DERIVABLE), Optional.of(PROFILES),
+                Registry.defaultEditionKey(), Optional.of(DERIVABLE), Optional.of(PROFILES),
                 Optional.of(invoice(directory)), Optional.of(ENUM_FACTS), Optional.of(RULES),
                 Optional.of(extension), Optional.of(root), Optional.of(prefix)));
         assertFalse(Files.exists(directory.resolve("typed")),
@@ -628,8 +631,8 @@ class GenerateTest {
         List<String> names = new ArrayList<>();
         for (String line : source.split("\n")) {
             String trimmed = line.strip();
-            if (trimmed.startsWith("public interface ")) {
-                String name = trimmed.substring("public interface ".length());
+            if (trimmed.startsWith("public sealed interface ")) {
+                String name = trimmed.substring("public sealed interface ".length());
                 names.add(name.split("[ {]")[0]);
             }
         }
@@ -645,7 +648,7 @@ class GenerateTest {
         Generate.Options options = Generate.Options.parse(new String[] {
             "--schema", "b", "--format-schema", "c"});
         assertEquals(Optional.empty(), options.typedDirectory());
-        assertEquals(Registry.DEFAULT_EDITION, options.edition());
+        assertEquals(Registry.defaultEditionKey(), options.edition());
         assertEquals(TypedSources.DEFAULT_PACKAGE, options.typedPackage());
     }
 
@@ -739,7 +742,7 @@ class GenerateTest {
     }
 
     static boolean carriesEdition2026() {
-        return Registry.editions().contains("2026");
+        return Registry.editionKeys().contains("2026");
     }
 
     /**
@@ -753,7 +756,7 @@ class GenerateTest {
     private static Generate.Options options(Path typed, Path schema, Path invoice,
                                             Optional<Path> extension) {
         return new Generate.Options(Optional.of(typed), PACKAGE_2017, schema, FORMAT_SCHEMA,
-                Registry.DEFAULT_EDITION, Optional.of(DERIVABLE), Optional.of(PROFILES),
+                Registry.defaultEditionKey(), Optional.of(DERIVABLE), Optional.of(PROFILES),
                 Optional.of(invoice), Optional.of(ENUM_FACTS), Optional.of(RULES), extension,
                 Optional.empty(), Optional.empty());
     }

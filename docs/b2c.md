@@ -70,7 +70,7 @@ policy, every value written, every price cut, the BT-114 step, notes and the `De
 
 ```java
 GrossAuthoring policy = GrossAuthoring.GROSS_UNIT_AUTHORING.with(
-        AuthoringOptions.standard().withBaseQuantity(true));
+        AuthoringOptions.defaults().withBaseQuantity(true));
 ```
 
 With `withLineAllowancesAndCharges(true)` a displayed unit price is the price before the line
@@ -156,7 +156,7 @@ artefacts over it, counts the row and names the terms left behind ([validation.m
 `convert`, `embed` and `render --embed cii` name them on one `info:` line and count them as no
 loss, and `--fail-on-loss` lets the conversion through ([cli.md](cli.md#writing-ubl-and-cii)). In
 Java the writer knows the declaration when it is handed the registry:
-`WriterOptions.builder().extensions(List.of(Registry.b2cExtension()))`.
+`WriterOptions.defaults().withExtensions(List.of(Registry.b2cExtension()))`.
 
 ## In a syntax and in a rendering
 

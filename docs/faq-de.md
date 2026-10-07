@@ -100,9 +100,8 @@ esj diff invoice.xml invoice.pdf            # derselbe semantische Digest: kein 
 esj validate invoice.xml --output json      # invoice.ok, syntax.findings, rules.findings, reasons
 ```
 
-**Wie unterscheide ich »ungültig« von »konnte nicht geprüft werden«?**
-Am Exit-Code: 0 `VALID`, 1 `INVALID`, 9 `INDETERMINATE` mit `reasons`, 7 ein Limit und kein
-Urteil ([`cli.md`](cli.md#exit-codes)).
+**Wie unterscheide ich »ungültig« von »konnte nicht geprüft werden«?** Am Exit-Code: 0 `VALID`, 1
+`INVALID`, 9 `INDETERMINATE` mit `reasons`, 7 ein Limit ohne Urteil ([`cli.md`](cli.md#exit-codes)).
 
 **Welche offiziellen Artefakte laufen, in welcher Version?**
 ```sh
@@ -286,9 +285,10 @@ WriteResult ubl = UblWriter.writeWithReport(document, WriterOptions.defaults());
 
 **Wie erzeuge ich das Hybrid-PDF aus Java?**
 ```java
-byte[] pages = new PdfRenderer().render(invoice, RenderOptions.in(RenderLanguage.ENGLISH));
+byte[] pages = new PdfRenderer().render(invoice,
+        RenderOptions.defaults().withLanguage(RenderLanguage.ENGLISH));
 EmbedResult hybrid = FacturX.embedWithReport(pages, invoice,
-        EmbedOptions.of(FacturXProfile.EN_16931));
+        EmbedOptions.defaults().withProfile(FacturXProfile.EN_16931));
 ```
 
 **Wie speichere ich aus Java: die kanonischen Bytes und die Digests?**

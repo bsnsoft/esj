@@ -22,7 +22,7 @@ public final class AdditionalSupportingDocumentSteps {
     /**
      * The first step of the group BG-24: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits AdditionalSupportingDocumentBuild {
         /**
          * BT-122 Supporting document reference. Reference that identifies the supporting document.
          *
@@ -38,7 +38,7 @@ public final class AdditionalSupportingDocumentSteps {
      * The terminal step of the group BG-24: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits AdditionalSupportingDocumentBuild {
         /**
          * BT-123 Supporting document description. Textual description of the supporting document.
          *

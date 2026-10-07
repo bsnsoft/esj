@@ -1,11 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +11,11 @@ import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What a pack says about itself, and which of its components a document gets.
@@ -278,10 +278,10 @@ class PacksTest {
         assertEquals(Optional.empty(), standard.level("BR-CL-13"),
                 "the standard profile says nothing about the rule, so its artefact's flag"
                         + " stands");
-        assertEquals(Optional.of(Severity.INFORMATION), cvd.level("BR-CL-13"),
+        assertEquals(Optional.of(Severity.INFO), cvd.level("BR-CL-13"),
                 "and the CVD profile, whose item classification scheme the EN 16931 code"
                         + " list does not carry, levels it down for its own documents");
-        assertEquals(Optional.of(Severity.FATAL), standard.level("UBL-CR-646"),
+        assertEquals(Optional.of(Severity.ERROR), standard.level("UBL-CR-646"),
                 "the levels go the other way too: a rule the artefact flags as a warning"
                         + " is one the standard profile refuses a document over");
     }

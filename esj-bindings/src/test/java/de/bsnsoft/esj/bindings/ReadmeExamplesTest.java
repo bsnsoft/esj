@@ -65,10 +65,9 @@ class ReadmeExamplesTest {
     @Test
     void readsWithBoundsOfItsCallersChoosing() throws IOException {
         // docs/java-api.md: Reading UBL and CII without a tree
-        StreamingReader large = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxValues(5_000_000).build())
-                .maxInputBytes(256L * 1024 * 1024)
-                .build());
+        StreamingReader large = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxValues(5_000_000))
+                .withMaxInputBytes(256L * 1024 * 1024));
         // end
 
         assertEquals(5_000_000, large.options().limits().maxValues());

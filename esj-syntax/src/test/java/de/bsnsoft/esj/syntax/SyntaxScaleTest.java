@@ -1,11 +1,11 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.ValidationStatus;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What a document of a megabyte costs.
@@ -47,12 +47,12 @@ class SyntaxScaleTest {
         assertEquals(3, report.ran().size(), "the schema and both rule sets ran over it");
         assertTrue(report.ran().stream().allMatch(run -> !run.duration().isNegative()),
                 "every component reports what it cost: " + measured);
-        assertEquals(Verdict.INVALID, report.verdict(),
+        assertEquals(ValidationStatus.INVALID, report.verdict(),
                 "the repeated lines make the totals of the document wrong");
         assertTrue(report.findings().stream()
                         .anyMatch(finding -> finding.code().equals("BR-CO-10")),
                 "the sum of the line net amounts is reported");
-        assertTrue(wall.compareTo(SyntaxOptions.DEFAULT_MAX_RUNTIME) < 0,
+        assertTrue(wall.compareTo(SyntaxOptions.defaults().maxRuntime()) < 0,
                 "a document of this size is answered inside the time a run is given by"
                         + " default: " + measured);
     }

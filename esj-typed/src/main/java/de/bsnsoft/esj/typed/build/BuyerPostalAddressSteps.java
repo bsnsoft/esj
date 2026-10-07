@@ -20,7 +20,7 @@ public final class BuyerPostalAddressSteps {
     /**
      * The first step of the group BG-8: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits BuyerPostalAddressBuild {
         /**
          * BT-55 Buyer country code. Country code of the buyer's address, from ISO 3166-1 alpha-2.
          *
@@ -36,7 +36,7 @@ public final class BuyerPostalAddressSteps {
      * The terminal step of the group BG-8: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits BuyerPostalAddressBuild {
         /**
          * BT-50 Buyer address line 1. First line of the buyer's address, usually street name and
          * number or post office box.

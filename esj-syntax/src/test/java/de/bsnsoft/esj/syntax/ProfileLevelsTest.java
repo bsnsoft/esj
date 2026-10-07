@@ -1,12 +1,12 @@
 package de.bsnsoft.esj.syntax;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What the profile a document names makes of a rule, asked outside the syntax engine.
@@ -31,7 +31,7 @@ class ProfileLevelsTest {
     void answersWithTheTableOfTheSyntaxAndTheProfile() {
         ProfileLevels levels = ProfileLevels.of(pack, InvoiceSyntax.UBL_INVOICE, CVD);
 
-        assertEquals(Optional.of(Severity.INFORMATION), levels.level("BR-CL-13"));
+        assertEquals(Optional.of(Severity.INFO), levels.level("BR-CL-13"));
         assertEquals(Optional.empty(), levels.level("BR-CO-10"),
                 "a rule the profile says nothing about keeps the level it was raised at");
         assertEquals(CVD, levels.profile());
@@ -56,18 +56,18 @@ class ProfileLevelsTest {
     void takesOnlyWhatEveryTableOfTheProfileAgreesOnWhereTheSyntaxIsUnknown() {
         ProfileLevels unknown = ProfileLevels.of(pack, EXTENSION);
 
-        assertEquals(Optional.of(Severity.INFORMATION), unknown.level("BR-CL-10"));
+        assertEquals(Optional.of(Severity.INFO), unknown.level("BR-CL-10"));
         assertEquals(Optional.empty(), unknown.level("BR-CO-16"));
-        assertEquals(Optional.of(Severity.INFORMATION),
+        assertEquals(Optional.of(Severity.INFO),
                 ProfileLevels.of(pack, InvoiceSyntax.UBL_INVOICE, EXTENSION).level("BR-CO-16"),
                 "the UBL scenario of the same profile does level it");
     }
 
     @Test
     void answersOutOfTheBundledPacksAsWell() {
-        assertEquals(Optional.of(Severity.INFORMATION),
+        assertEquals(Optional.of(Severity.INFO),
                 Packs.levels(InvoiceSyntax.CII, CVD).level("BR-CL-13"));
-        assertEquals(Optional.of(Severity.INFORMATION),
+        assertEquals(Optional.of(Severity.INFO),
                 Packs.levels(CVD).level("BR-CL-13"));
         assertFalse(Packs.levels("urn:example:profile:nobody:knows").any());
     }

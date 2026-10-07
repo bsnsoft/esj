@@ -24,7 +24,7 @@ import java.time.LocalDate;
  * of this editor: {@code LatePaymentPenaltyEditor} checks a value against the grammar of its
  * semantic data type and nothing else.
  */
-public interface LatePaymentPenaltyEditor {
+public sealed interface LatePaymentPenaltyEditor permits LatePaymentPenaltyEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

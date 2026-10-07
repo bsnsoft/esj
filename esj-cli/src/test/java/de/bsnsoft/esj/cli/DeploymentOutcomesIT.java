@@ -57,7 +57,7 @@ class DeploymentOutcomesIT {
     private static final String SMALL_CORPUS =
             "conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml";
 
-    /** The XML the default profile reads, from {@code XrImporter.DEFAULT_MAX_INPUT_BYTES}. */
+    /** The XML the default profile reads, from {@code XrImporter.defaultMaxInputBytes()}. */
     private static final long DEFAULT_INPUT_BYTES = 4L * 1024 * 1024;
 
     /**

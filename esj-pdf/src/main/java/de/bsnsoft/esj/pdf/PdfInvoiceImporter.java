@@ -89,7 +89,7 @@ public final class PdfInvoiceImporter {
                         + " it", new EsjLimitException.Bound("maxAttachmentBytes",
                         limits.maxAttachmentBytes(), "bytes"));
             }
-            ImportResult invoice = reader.read(content.bytes());
+            ImportResult invoice = reader.read(content.array());
             return new PdfImportResult(invoice,
                     report(container, located, invoice.document()),
                     attachment,

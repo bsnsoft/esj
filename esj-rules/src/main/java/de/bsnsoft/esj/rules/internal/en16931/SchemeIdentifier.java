@@ -4,7 +4,7 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.rules.JavaRule;
 import de.bsnsoft.esj.rules.RuleContext;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,8 +60,8 @@ public abstract class SchemeIdentifier implements JavaRule {
     }
 
     @Override
-    public final RuleSeverity severity() {
-        return RuleSeverity.FATAL;
+    public final Severity severity() {
+        return Severity.ERROR;
     }
 
     @Override

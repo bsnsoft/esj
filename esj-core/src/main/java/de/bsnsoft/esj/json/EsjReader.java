@@ -612,7 +612,7 @@ public final class EsjReader {
                 }
                 switch (name) {
                     case "format" -> fixed(parser, name, Esj.FORMAT);
-                    case "version" -> fixed(parser, name, Esj.VERSION);
+                    case "version" -> fixed(parser, name, Esj.formatVersion());
                     case "semanticModel" -> builder.semanticModel(edition(parser));
                     case "values" -> readValues(parser);
                     case "extensions" -> readExtensions(parser);
@@ -652,7 +652,7 @@ public final class EsjReader {
                 throw fatal(FindingCode.ESJ_L1_ENVELOPE_VALUE, "semanticModel",
                         "the envelope member semanticModel carries " + excerpt(value)
                                 + ", which is not an edition of the semantic model;"
-                                + " one is written " + Esj.SEMANTIC_MODEL);
+                                + " one is written " + Esj.defaultSemanticModel());
             }
             return value;
         }

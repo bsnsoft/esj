@@ -28,7 +28,7 @@ public final class SyntaxOptions {
      * small document, and the cost of the artefacts does not grow with the size of the
      * input in a straight line.
      */
-    public static final long DEFAULT_MAX_INPUT_BYTES = XrImporter.DEFAULT_MAX_INPUT_BYTES;
+    private static final long DEFAULT_MAX_INPUT_BYTES = XrImporter.defaultMaxInputBytes();
 
     /**
      * How long a run may take unless it is told otherwise: five minutes.
@@ -38,7 +38,7 @@ public final class SyntaxOptions {
      * pathological rather than for the one that is large; a caller that wants a tight
      * answer sets a tight number.
      */
-    public static final Duration DEFAULT_MAX_RUNTIME = Duration.ofMinutes(5);
+    private static final Duration DEFAULT_MAX_RUNTIME = Duration.ofMinutes(5);
 
     private static final SyntaxOptions DEFAULTS = new SyntaxOptions(null, null,
             DEFAULT_MAX_INPUT_BYTES, DEFAULT_MAX_RUNTIME);
@@ -59,8 +59,8 @@ public final class SyntaxOptions {
 
     /**
      * Returns the options a run uses unless it is given others: the bundled pack that
-     * recognizes the profile of the document ({@link PackCatalog#bundled()}),
-     * {@link #DEFAULT_MAX_INPUT_BYTES} and {@link #DEFAULT_MAX_RUNTIME}.
+     * recognizes the profile of the document ({@link PackCatalog#bundled()}), four
+     * mebibytes of input and five minutes. The accessors say why.
      *
      * @return the default options
      */
@@ -89,7 +89,12 @@ public final class SyntaxOptions {
     }
 
     /**
-     * Returns the largest input this run accepts, in bytes.
+     * Returns the largest input this run accepts, in bytes; by default the bound the
+     * importer of this project reads within, four mebibytes. It is taken from there rather
+     * than written again, because a document the validator accepts and the importer
+     * refuses, or the other way round, is a difference nobody asked for. An EN 16931
+     * invoice is a small document, and the cost of the artefacts does not grow with the
+     * size of the input in a straight line.
      *
      * @return the bound
      */
@@ -98,7 +103,12 @@ public final class SyntaxOptions {
     }
 
     /**
-     * Returns how long this run may take.
+     * Returns how long this run may take; five minutes by default.
+     *
+     * <p>It is a ceiling and not a budget. An ordinary invoice is validated in well under
+     * a second, and a default this far above that is there for the document that is
+     * pathological rather than for the one that is large; a caller that wants a tight
+     * answer sets a tight number.
      *
      * @return the bound
      */

@@ -17,7 +17,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface InvoicingPeriod {
+public sealed interface InvoicingPeriod permits InvoicingPeriodView {
 
     /**
      * Returns the document this view reads.

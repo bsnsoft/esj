@@ -2,7 +2,7 @@ package de.bsnsoft.esj.rules.internal.en16931.v2026;
 
 import de.bsnsoft.esj.rules.JavaRule;
 import de.bsnsoft.esj.rules.RuleContext;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,8 +43,8 @@ public final class BrCo18 implements JavaRule {
     }
 
     @Override
-    public RuleSeverity severity() {
-        return RuleSeverity.FATAL;
+    public Severity severity() {
+        return Severity.ERROR;
     }
 
     @Override

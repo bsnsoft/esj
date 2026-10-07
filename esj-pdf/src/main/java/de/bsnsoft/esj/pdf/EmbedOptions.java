@@ -27,38 +27,24 @@ import java.util.Optional;
  * term whose registry declares {@code "transport": "none"} is reported as left behind by
  * design rather than as a loss, as {@code WriterOptions.extensions()} says.
  *
- * @param profile    the profile the invoice is written in, which the specification
- *                   identifier of the document has to name as well
- * @param flavour    the container specification the file declares itself under
- * @param limits     what opening the input PDF may cost
- * @param check      a PDF/A validator for the input, or an empty optional to go by what
- *                   the input declares about itself
- * @param extensions the extension registries the terms of the document come from, none by
- *                   default
+ * <p>Instances are immutable; every {@code with} method returns new options.
  */
-public record EmbedOptions(FacturXProfile profile,
-                           HybridFlavour flavour,
-                           PdfLimits limits,
-                           Optional<PdfaCheck> check,
-                           List<Registry> extensions) {
+public final class EmbedOptions {
 
     private static final EmbedOptions DEFAULTS = new EmbedOptions(FacturXProfile.EN_16931,
             HybridFlavour.FACTUR_X_1_0, PdfLimits.defaults(), Optional.empty(), List.of());
 
-    /**
-     * Checks the profile and copies the registries.
-     *
-     * @param profile    the profile the invoice is written in, which the specification
-     *                   identifier of the document has to name as well
-     * @param flavour    the container specification the file declares itself under
-     * @param limits     what opening the input PDF may cost
-     * @param check      a PDF/A validator for the input, or an empty optional to go by what
-     *                   the input declares about itself
-     * @param extensions the extension registries the terms of the document come from
-     * @throws IllegalArgumentException if the profile is not an EN 16931 invoice
-     * @throws NullPointerException     if a member or a registry is {@code null}
-     */
-    public EmbedOptions {
+    private final FacturXProfile profile;
+    private final HybridFlavour flavour;
+    private final PdfLimits limits;
+    private final Optional<PdfaCheck> check;
+    private final List<Registry> extensions;
+
+    private EmbedOptions(FacturXProfile profile,
+                         HybridFlavour flavour,
+                         PdfLimits limits,
+                         Optional<PdfaCheck> check,
+                         List<Registry> extensions) {
         Objects.requireNonNull(profile, "profile");
         Objects.requireNonNull(flavour, "flavour");
         Objects.requireNonNull(limits, "limits");
@@ -69,25 +55,11 @@ public record EmbedOptions(FacturXProfile profile,
                     + Messages.quoted(profile.conformanceLevel()) + " is not an EN 16931"
                     + " invoice, and this module embeds no other kind");
         }
-    }
-
-    /**
-     * Creates options that hand the writer no extension registry.
-     *
-     * @param profile the profile the invoice is written in, which the specification
-     *                identifier of the document has to name as well
-     * @param flavour the container specification the file declares itself under
-     * @param limits  what opening the input PDF may cost
-     * @param check   a PDF/A validator for the input, or an empty optional to go by what the
-     *                input declares about itself
-     * @throws IllegalArgumentException if the profile is not an EN 16931 invoice
-     * @throws NullPointerException     if a member is {@code null}
-     */
-    public EmbedOptions(FacturXProfile profile,
-                        HybridFlavour flavour,
-                        PdfLimits limits,
-                        Optional<PdfaCheck> check) {
-        this(profile, flavour, limits, check, List.of());
+        this.profile = profile;
+        this.flavour = flavour;
+        this.limits = limits;
+        this.check = check;
+        this.extensions = extensions;
     }
 
     /**
@@ -99,18 +71,6 @@ public record EmbedOptions(FacturXProfile profile,
      */
     public static EmbedOptions defaults() {
         return DEFAULTS;
-    }
-
-    /**
-     * Returns the defaults with a profile of the caller's choosing.
-     *
-     * @param profile the profile
-     * @return the options
-     * @throws IllegalArgumentException if the profile is not an EN 16931 invoice
-     * @throws NullPointerException     if {@code profile} is {@code null}
-     */
-    public static EmbedOptions of(FacturXProfile profile) {
-        return DEFAULTS.withProfile(profile);
     }
 
     /**
@@ -166,7 +126,7 @@ public record EmbedOptions(FacturXProfile profile,
      * @return the options
      * @throws NullPointerException if {@code value} is {@code null}
      */
-    public EmbedOptions checkedWith(PdfaCheck value) {
+    public EmbedOptions withCheck(PdfaCheck value) {
         return new EmbedOptions(profile, flavour, limits,
                 Optional.of(Objects.requireNonNull(value, "value")), extensions);
     }
@@ -186,5 +146,101 @@ public record EmbedOptions(FacturXProfile profile,
     public EmbedOptions withExtensions(Collection<Registry> value) {
         return new EmbedOptions(profile, flavour, limits, check,
                 List.copyOf(Objects.requireNonNull(value, "value")));
+    }
+
+    /**
+     * Returns the profile the invoice is written in, which the specification identifier of
+     * the document has to name as well.
+     *
+     * @return the profile the invoice is written in, which the specification identifier
+     */
+    public FacturXProfile profile() {
+        return profile;
+    }
+
+    /**
+     * Returns the container specification the file declares itself under.
+     *
+     * @return the container specification the file declares itself under
+     */
+    public HybridFlavour flavour() {
+        return flavour;
+    }
+
+    /**
+     * Returns what opening the input PDF may cost.
+     *
+     * @return what opening the input PDF may cost
+     */
+    public PdfLimits limits() {
+        return limits;
+    }
+
+    /**
+     * Returns a PDF/A validator for the input, or an empty optional to go by what the
+     * input declares about itself.
+     *
+     * @return a PDF/A validator for the input
+     */
+    public Optional<PdfaCheck> check() {
+        return check;
+    }
+
+    /**
+     * Returns the extension registries the terms of the document come from, none by
+     * default.
+     *
+     * @return the extension registries the terms of the document come from, none by default
+     */
+    public List<Registry> extensions() {
+        return extensions;
+    }
+
+    /**
+     * Tells whether another object is of this class and has equal components.
+     *
+     * @param other the object to compare with
+     * @return {@code true} if every component is equal
+     */
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof EmbedOptions that
+                && Objects.equals(profile, that.profile)
+                && Objects.equals(flavour, that.flavour)
+                && Objects.equals(limits, that.limits)
+                && Objects.equals(check, that.check)
+                && Objects.equals(extensions, that.extensions);
+    }
+
+    /**
+     * Returns a hash code consistent with {@link #equals(Object)}, combined as a record
+     * combines the hash codes of its components.
+     *
+     * @return the hash code
+     */
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash = 31 * hash + Objects.hashCode(profile);
+        hash = 31 * hash + Objects.hashCode(flavour);
+        hash = 31 * hash + Objects.hashCode(limits);
+        hash = 31 * hash + Objects.hashCode(check);
+        hash = 31 * hash + Objects.hashCode(extensions);
+        return hash;
+    }
+
+    /**
+     * Returns the components as one line, in the form a record writes itself.
+     *
+     * @return a one-line description
+     */
+    @Override
+    public String toString() {
+        return "EmbedOptions[profile=" + profile
+                + ", flavour=" + flavour
+                + ", limits=" + limits
+                + ", check=" + check
+                + ", extensions=" + extensions
+                + "]";
     }
 }

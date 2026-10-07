@@ -20,7 +20,7 @@ public final class AddressStepsXrechnung {
     /**
      * The first step of the group BG-15: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits AddressBuildXrechnung {
         /**
          * BT-77 Deliver to city. Town or city of the deliver-to address.
          *
@@ -36,7 +36,7 @@ public final class AddressStepsXrechnung {
     /**
      * The step of the group BG-15 that follows BT-77 Deliver to city.
      */
-    public interface WithCity {
+    public sealed interface WithCity permits AddressBuildXrechnung {
         /**
          * BT-78 Deliver to post code. Postal code of the deliver-to address.
          *
@@ -52,7 +52,7 @@ public final class AddressStepsXrechnung {
     /**
      * The step of the group BG-15 that follows BT-78 Deliver to post code.
      */
-    public interface WithPostCode {
+    public sealed interface WithPostCode permits AddressBuildXrechnung {
         /**
          * BT-80 Deliver to country code. Country code of the deliver-to address, from ISO 3166-1
          * alpha-2.
@@ -69,7 +69,7 @@ public final class AddressStepsXrechnung {
      * The terminal step of the group BG-15: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits AddressBuildXrechnung {
         /**
          * BT-75 Deliver to address line 1. First line of the deliver-to address.
          *

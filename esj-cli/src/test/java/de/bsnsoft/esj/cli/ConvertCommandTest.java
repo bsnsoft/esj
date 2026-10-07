@@ -671,7 +671,7 @@ class ConvertCommandTest {
     @Test
     void refusesAnXmlInputAtTheBoundTheImporterReads() {
         byte[] oversize = paddedInvoice(
-                (int) de.bsnsoft.esj.xr.XrImporter.DEFAULT_MAX_INPUT_BYTES + 1024);
+                (int) de.bsnsoft.esj.xr.XrImporter.defaultMaxInputBytes() + 1024);
         Cli.Run run = Cli.run("convert", Fixtures.write(directory, "big.xml", oversize));
         assertEquals(ExitCode.LIMIT, run.exitCode(), run.err());
         assertTrue(run.err().contains("larger than the"), run.err());

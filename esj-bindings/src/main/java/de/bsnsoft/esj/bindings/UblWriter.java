@@ -102,7 +102,7 @@ public final class UblWriter {
      *                               model other than the one the UBL binding table was
      *                               written against
      * @throws EsjLimitException     if the document is larger than
-     *                               {@link WriterOptions#DEFAULT_MAX_OUTPUT_BYTES}
+     *                               {@link WriterOptions#maxOutputBytes()}
      * @throws NullPointerException  if {@code document} is {@code null}
      */
     public static byte[] write(SemanticDocument document) {

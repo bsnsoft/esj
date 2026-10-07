@@ -66,15 +66,15 @@ public final class GrossAuthoring {
 
     /** The merchant priced per unit with VAT included. */
     public static final GrossAuthoring GROSS_UNIT_AUTHORING =
-            new GrossAuthoring(new GrossUnitAuthoring(), AuthoringOptions.standard());
+            new GrossAuthoring(new GrossUnitAuthoring(), AuthoringOptions.defaults());
 
     /** The merchant priced the line with VAT included. */
     public static final GrossAuthoring GROSS_LINE_AUTHORING =
-            new GrossAuthoring(new GrossLineAuthoring(), AuthoringOptions.standard());
+            new GrossAuthoring(new GrossLineAuthoring(), AuthoringOptions.defaults());
 
     /** Only the total with VAT was agreed. */
     public static final GrossAuthoring GROSS_TOTAL_AUTHORING =
-            new GrossAuthoring(new GrossTotalAuthoring(), AuthoringOptions.standard());
+            new GrossAuthoring(new GrossTotalAuthoring(), AuthoringOptions.defaults());
 
     private static final SemanticPath DISPLAYED_TOTAL = SemanticPath.of("/BT-B2C-010");
 
@@ -93,7 +93,7 @@ public final class GrossAuthoring {
      * is replaced rather than checked against them.
      */
     private static final Totals TOTALS_POLICY =
-            Totals.of(TotalsOptions.standard().withOverwriteLines(true));
+            Totals.of(TotalsOptions.defaults().withOverwriteLines(true));
 
     private final GrossPolicy policy;
 

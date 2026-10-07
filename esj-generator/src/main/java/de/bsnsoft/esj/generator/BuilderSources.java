@@ -335,7 +335,8 @@ final class BuilderSources {
                     + ", which is its terminal step as well: the model declares nothing in it"
                     + " mandatory that a caller has to state."));
             body.append("     */\n");
-            body.append("    public interface Start extends Buildable {\n");
+            body.append("    public sealed interface Start extends Buildable permits ")
+                    .append(buildType(key, profile)).append(" {\n");
             body.append("    }\n");
         }
         for (int index = 0; index <= chain.size(); index++) {
@@ -369,7 +370,12 @@ final class BuilderSources {
                     + " that follows " + written.id() + " " + written.name() + ".")));
         }
         body.append("     */\n");
-        body.append("    public interface ").append(name).append(" {\n");
+        body.append("    public sealed interface ").append(name).append(" permits ")
+                .append(buildType(key, profile));
+        if (terminal && chain.isEmpty()) {
+            body.append(", Start");
+        }
+        body.append(" {\n");
 
         List<Member> members = terminal
                 ? terminalMembers(key, profile, imports)

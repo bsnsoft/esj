@@ -66,18 +66,18 @@ class UsageTest {
         assertEquals(ExitCode.SUCCESS, run.exitCode());
         String[] lines = run.lines();
         assertTrue(lines[0].startsWith("esj "), lines[0]);
-        assertEquals("ESJ format version " + Esj.VERSION, lines[1]);
-        assertEquals("semantic model " + Esj.SEMANTIC_MODEL, lines[2]);
+        assertEquals("ESJ format version " + Esj.formatVersion(), lines[1]);
+        assertEquals("semantic model " + Esj.defaultSemanticModel(), lines[2]);
         List<String> editions = new ArrayList<>();
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             editions.add(Registry.forEdition(edition).isPreview()
                     ? edition + " (preview)" : edition);
         }
         assertEquals("semantic model registries " + String.join(", ", editions), lines[3],
                 "which editions a copy of the tool carries is a property of that copy");
-        assertFalse(lines[3].contains(Registry.DEFAULT_EDITION + " (preview)"),
+        assertFalse(lines[3].contains(Registry.defaultEditionKey() + " (preview)"),
                 "the default edition is no preview");
-        if (Registry.editions().contains("2026")) {
+        if (Registry.editionKeys().contains("2026")) {
             assertTrue(lines[3].contains("2026 (preview)"), lines[3]);
         }
     }

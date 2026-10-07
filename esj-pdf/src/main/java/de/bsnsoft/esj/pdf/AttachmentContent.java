@@ -13,23 +13,51 @@ import java.util.Objects;
  * an invoice is not an invoice, and the caller is told that a bound was met rather than
  * handed a document that looks complete.
  *
- * <p>The array is the one this class holds and is not copied on the way out; a caller
- * that modifies it modifies what every later reader of the same attachment sees.
- *
- * @param bytes     the decoded content, at most the bound this reader runs
- * @param truncated whether the stream carried more than the bound
+ * <p>{@link #bytes()} returns a copy of the content on every call, so that a caller cannot
+ * change what a later reader of the same attachment sees.
  */
-public record AttachmentContent(byte[] bytes, boolean truncated) {
+public final class AttachmentContent {
+
+    private final byte[] bytes;
+    private final boolean truncated;
 
     /**
-     * Checks that the content is present.
+     * Creates the content over an array the decoder wrote and hands over.
      *
-     * @param bytes     the decoded content, at most the bound this reader runs
+     * @param bytes     the decoded content, at most the bound this reader runs; not copied
      * @param truncated whether the stream carried more than the bound
      * @throws NullPointerException if {@code bytes} is {@code null}
      */
-    public AttachmentContent {
-        Objects.requireNonNull(bytes, "bytes");
+    AttachmentContent(byte[] bytes, boolean truncated) {
+        this.bytes = Objects.requireNonNull(bytes, "bytes");
+        this.truncated = truncated;
+    }
+
+    /**
+     * Returns the decoded content, at most the bound this reader runs.
+     *
+     * @return a fresh copy of the bytes
+     */
+    public byte[] bytes() {
+        return bytes.clone();
+    }
+
+    /**
+     * Returns the content without copying it, for the readers of this package.
+     *
+     * @return the array this object holds
+     */
+    byte[] array() {
+        return bytes;
+    }
+
+    /**
+     * Tells whether the stream carried more than the bound.
+     *
+     * @return {@code true} if the content was cut off at the bound
+     */
+    public boolean truncated() {
+        return truncated;
     }
 
     /**

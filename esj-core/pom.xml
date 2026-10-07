@@ -62,7 +62,7 @@
           <!--
             Every core registry the repository carries, not a named one: an edition is
             data, and a distribution that leaves one out is a build that does not know
-            that edition (Registry.editions()).
+            that edition (Registry.editionKeys()).
           -->
           <include>en16931/*.json</include>
           <include>xrechnung/3.0.2.json</include>

@@ -15,7 +15,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface DirectDebit {
+public sealed interface DirectDebit permits DirectDebitView {
 
     /**
      * Returns the document this view reads.

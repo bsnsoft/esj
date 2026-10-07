@@ -141,7 +141,7 @@ class TotalsTest {
         SemanticDocument example = Examples.document(name);
         SemanticDocument.Builder builder = withoutDerivedAmounts(example);
 
-        Totals.derive(builder, TotalsOptions.standard());
+        Totals.derive(builder, TotalsOptions.defaults());
 
         assertEquals(example.values(), builder.build().values());
     }
@@ -360,7 +360,7 @@ class TotalsTest {
         invoice.derive(Totals.STANDARD);
         assertTrue(invoice.document().value(SemanticPath.of("/BG-22/BT-111")).isEmpty());
 
-        DerivationReport report = invoice.derive(Totals.of(TotalsOptions.standard()
+        DerivationReport report = invoice.derive(Totals.of(TotalsOptions.defaults()
                 .withVatAccountingCurrencyRate(new BigDecimal("11.4321"))));
 
         assertEquals(new BigDecimal("2172.1"), decimal(invoice, "/BG-22/BT-111"));
@@ -382,7 +382,7 @@ class TotalsTest {
 
         invoice.invoiceLines().get(0).price(p -> p.netPrice(new BigDecimal("13")));
         DerivationReport replaced = invoice.derive(
-                Totals.of(TotalsOptions.standard().withOverwriteLines(true)));
+                Totals.of(TotalsOptions.defaults().withOverwriteLines(true)));
 
         assertTrue(replaced.at("/BG-25/0/BT-131").isPresent());
         assertEquals(new BigDecimal("26"), decimal(invoice, "/BG-25/0/BT-131"));
@@ -630,13 +630,13 @@ class TotalsTest {
 
     @Test
     void theStandardPolicyIsTheOneWithNothingVaried() {
-        assertSame(Totals.STANDARD.options(), TotalsOptions.standard());
-        assertFalse(TotalsOptions.standard().overwriteLines());
-        assertEquals(Optional.empty(), TotalsOptions.standard().vatAccountingCurrencyRate());
+        assertSame(Totals.STANDARD.options(), TotalsOptions.defaults());
+        assertFalse(TotalsOptions.defaults().overwriteLines());
+        assertEquals(Optional.empty(), TotalsOptions.defaults().vatAccountingCurrencyRate());
         assertEquals("Totals[overwriteLines=false, vatAccountingCurrencyRate=none]",
                 Totals.STANDARD.toString());
         assertThrows(IllegalArgumentException.class,
-                () -> TotalsOptions.standard().withVatAccountingCurrencyRate(BigDecimal.ZERO));
+                () -> TotalsOptions.defaults().withVatAccountingCurrencyRate(BigDecimal.ZERO));
     }
 
     @Test
@@ -647,7 +647,7 @@ class TotalsTest {
                 .put("/BG-25/0/BG-30/BT-151", "Z")
                 .put("/BG-25/0/BG-30/BT-152", SemanticValue.ofDecimal(BigDecimal.ZERO));
 
-        DerivationReport report = Totals.derive(builder, TotalsOptions.standard());
+        DerivationReport report = Totals.derive(builder, TotalsOptions.defaults());
 
         assertEquals(new BigDecimal("11.00"), report.at("/BG-22/BT-115").orElseThrow().value());
         assertEquals(SemanticValue.ofDecimal(new BigDecimal("11")),
@@ -668,7 +668,7 @@ class TotalsTest {
                 .put(SemanticPath.of("/BG-25/0/BG-29/BT-146"), SemanticValue.of("100"));
 
         IllegalArgumentException refused = assertThrows(IllegalArgumentException.class,
-                () -> Totals.derive(builder, TotalsOptions.standard()));
+                () -> Totals.derive(builder, TotalsOptions.defaults()));
 
         assertTrue(refused.getMessage().contains(En16931.SEMANTIC_MODEL)
                         && refused.getMessage().contains("EN16931-1:2026"),

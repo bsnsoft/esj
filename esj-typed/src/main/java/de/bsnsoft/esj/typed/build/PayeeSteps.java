@@ -21,7 +21,7 @@ public final class PayeeSteps {
     /**
      * The first step of the group BG-10: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits PayeeBuild {
         /**
          * BT-59 Payee name. Name of the party that is to receive the payment.
          *
@@ -37,7 +37,7 @@ public final class PayeeSteps {
      * The terminal step of the group BG-10: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits PayeeBuild {
         /**
          * BT-60 Payee identifier. Identification of the payee; may carry an identification scheme
          * identifier.

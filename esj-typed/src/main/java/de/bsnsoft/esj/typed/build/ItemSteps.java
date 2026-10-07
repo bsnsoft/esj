@@ -22,7 +22,7 @@ public final class ItemSteps {
     /**
      * The first step of the group BG-31: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits ItemBuild {
         /**
          * BT-153 Item name. Name of the invoiced item.
          *
@@ -38,7 +38,7 @@ public final class ItemSteps {
      * The terminal step of the group BG-31: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits ItemBuild {
         /**
          * BT-154 Item description. Textual description of the invoiced item.
          *

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -50,14 +51,15 @@ public final class RulePackSources {
     }
 
     /**
-     * Returns the pack of one edition, where this build carries one.
+     * Returns the pack of the edition a registry describes, where this build carries one.
      *
-     * @param edition the edition, in the spelling of the registry that describes it
-     * @return the source, or an empty optional
-     * @throws NullPointerException if {@code edition} is {@code null}
+     * @param registry the registry, of the core model or combined with an extension
+     * @return the source whose {@link RulePackSource#edition()} is the
+     *         {@link Registry#edition()} of the registry, or an empty optional
+     * @throws NullPointerException if {@code registry} is {@code null}
      */
-    public static Optional<RulePackSource> forEdition(String edition) {
-        Objects.requireNonNull(edition, "edition");
+    public static Optional<RulePackSource> forRegistry(Registry registry) {
+        String edition = Objects.requireNonNull(registry, "registry").edition();
         for (RulePackSource source : all()) {
             if (source.edition().equals(edition)) {
                 return Optional.of(source);
@@ -67,7 +69,8 @@ public final class RulePackSources {
     }
 
     /**
-     * Returns the editions this build carries a pack for.
+     * Returns the editions this build carries a pack for, in the spelling of
+     * {@link Registry#edition()}.
      *
      * @return the editions, in the order they were published
      */

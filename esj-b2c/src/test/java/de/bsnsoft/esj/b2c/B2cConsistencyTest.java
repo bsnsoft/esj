@@ -1,18 +1,17 @@
 package de.bsnsoft.esj.b2c;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.rules.RuleCategory;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.typed.InvoiceEditor;
+import de.bsnsoft.esj.validate.Severity;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** The consistency checks: what a policy guarantees, and what happens when it does not hold. */
 class B2cConsistencyTest {
@@ -38,7 +37,7 @@ class B2cConsistencyTest {
         RuleFinding finding = findings.get(0);
         assertEquals("B2C-01", finding.code());
         assertEquals(RuleCategory.B2C, finding.category());
-        assertEquals(RuleSeverity.FATAL, finding.severity());
+        assertEquals(Severity.ERROR, finding.severity());
         assertEquals("b2c", finding.packId());
         assertEquals("0.1", finding.packVersion());
         assertEquals("native", finding.engine());
@@ -68,7 +67,7 @@ class B2cConsistencyTest {
         gross.line(0).displayedGrossUnitPrice("99.99");
         gross.displayedGrossTotal("99.99");
         GrossAuthoring policy = GrossAuthoring.GROSS_UNIT_AUTHORING.with(
-                AuthoringOptions.standard().withNetPriceScale(10));
+                AuthoringOptions.defaults().withNetPriceScale(10));
         gross.derive(policy);
         SemanticDocument document = invoice.document();
 
@@ -96,7 +95,7 @@ class B2cConsistencyTest {
 
         assertEquals(List.of("B2C-01", "B2C-03", "B2C-04"),
                 findings.stream().map(RuleFinding::code).toList(), findings.toString());
-        assertEquals(RuleSeverity.INFO, findings.get(0).severity(),
+        assertEquals(Severity.INFO, findings.get(0).severity(),
                 "the invoice states no agreed gross total, so B2C-01 is not decided");
         assertTrue(findings.get(2).message().contains("25.2"), findings.get(2).message());
     }
@@ -113,7 +112,7 @@ class B2cConsistencyTest {
 
         assertEquals(1, findings.size(), findings.toString());
         assertEquals("B2C-01", findings.get(0).code());
-        assertEquals(RuleSeverity.INFO, findings.get(0).severity());
+        assertEquals(Severity.INFO, findings.get(0).severity());
         assertEquals(List.of(), findings.stream().filter(RuleFinding::fatal).toList());
     }
 
@@ -128,7 +127,7 @@ class B2cConsistencyTest {
 
         assertEquals(1, findings.size(), findings.toString());
         assertEquals("B2C-00", findings.get(0).code());
-        assertEquals(RuleSeverity.INFO, findings.get(0).severity());
+        assertEquals(Severity.INFO, findings.get(0).severity());
         assertTrue(findings.get(0).message().contains("layer L2"));
     }
 

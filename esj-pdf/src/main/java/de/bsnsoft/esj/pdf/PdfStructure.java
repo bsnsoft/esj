@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.validate.Severity;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ final class PdfStructure {
         String tail = tail(pdf);
         if (!tail.contains("%%EOF")) {
             findings.add(new ContainerFinding(ContainerFinding.Category.PDF_STRUCTURE,
-                    "PDF-STRUCTURE-EOF", ContainerFinding.Severity.WARNING,
+                    "PDF-STRUCTURE-EOF", Severity.WARNING,
                     "the file does not end with the end-of-file marker, so it is either"
                             + " truncated or was written by a producer that does not"
                             + " finish a file"));
@@ -44,12 +45,12 @@ final class PdfStructure {
         long offset = startxref(tail);
         if (offset < 0) {
             findings.add(new ContainerFinding(ContainerFinding.Category.PDF_STRUCTURE,
-                    "PDF-STRUCTURE-XREF", ContainerFinding.Severity.WARNING,
+                    "PDF-STRUCTURE-XREF", Severity.WARNING,
                     "the file names no offset for its cross-reference data, so its objects"
                             + " can only be found by scanning it"));
         } else if (!pointsAtCrossReferenceData(pdf, offset)) {
             findings.add(new ContainerFinding(ContainerFinding.Category.PDF_STRUCTURE,
-                    "PDF-STRUCTURE-XREF", ContainerFinding.Severity.WARNING,
+                    "PDF-STRUCTURE-XREF", Severity.WARNING,
                     "the offset the file gives for its cross-reference data, " + offset
                             + ", points at neither a cross-reference table nor an object,"
                             + " so the objects were found by scanning the file"));

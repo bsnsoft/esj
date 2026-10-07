@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xr.XrFormatException;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.util.ArrayList;
@@ -71,8 +72,8 @@ final class XmlCheck {
     }
 
     private static SyntaxFinding finding(String code, String message, int line, int column) {
-        return new SyntaxFinding(Engine.PARSER, FindingCategory.XML, Severity.FATAL,
-                Severity.FATAL, code, message, "", line, column, "", "", "", "");
+        return new SyntaxFinding(Engine.PARSER, FindingCategory.XML, Severity.ERROR,
+                Severity.ERROR, code, message, "", line, column, "", "", "", "");
     }
 
     /**

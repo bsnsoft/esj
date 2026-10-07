@@ -34,7 +34,7 @@ class EditionUpgradeTest {
     private static final String E2026 = "EN16931-1:2026";
 
     static boolean carries2026() {
-        return Registry.editions().contains("2026");
+        return Registry.editionKeys().contains("2026");
     }
 
     /** A document of the 2017 edition that is complete enough to satisfy the model. */
@@ -181,7 +181,7 @@ class EditionUpgradeTest {
                 left.require().value(SemanticPath.of("/BG-2/BT-24")).orElseThrow().content());
 
         UpgradeResult named = EditionUpgrade.apply(invoice().build(), "2026",
-                UpgradeOptions.builder().specification("urn:cen.eu:en16931:2026").build());
+                UpgradeOptions.defaults().withSpecification("urn:cen.eu:en16931:2026"));
         assertEquals(List.of(), notes(named, UpgradeNote.Kind.SPECIFICATION_IDENTIFIER));
         assertEquals(1, notes(named, UpgradeNote.Kind.SPECIFICATION_REPLACED).size());
         assertEquals("urn:cen.eu:en16931:2026",
@@ -224,9 +224,8 @@ class EditionUpgradeTest {
     @Test
     @EnabledIf("carries2026")
     void aBoundThatFollowsTheCurrencyIsEvaluatedWithTheMinorUnitsTheCallerHandsOver() {
-        UpgradeOptions options = UpgradeOptions.builder()
-                .minorUnits(MinorUnits.of(Map.of("EUR", 2, "JPY", 0), "a snapshot of a test"))
-                .build();
+        UpgradeOptions options = UpgradeOptions.defaults()
+                .withMinorUnits(MinorUnits.of(Map.of("EUR", 2, "JPY", 0), "a snapshot of a test"));
         UpgradeResult within = EditionUpgrade.apply(invoice().build(), "2026", options);
         assertEquals(List.of(), notes(within, UpgradeNote.Kind.DECIMALS_NOT_EVALUATED));
         assertEquals(List.of(), notes(within, UpgradeNote.Kind.DECIMALS_OUT_OF_BOUNDS));
@@ -257,10 +256,9 @@ class EditionUpgradeTest {
     @Test
     @EnabledIf("carries2026")
     void theTotalInTheAccountingCurrencyIsBoundedByThatCurrency() {
-        UpgradeOptions options = UpgradeOptions.builder()
-                .minorUnits(MinorUnits.of(Map.of("EUR", 2, "JPY", 0, "KWD", 3),
-                        "a snapshot of a test"))
-                .build();
+        UpgradeOptions options = UpgradeOptions.defaults()
+                .withMinorUnits(MinorUnits.of(Map.of("EUR", 2, "JPY", 0, "KWD", 3),
+                        "a snapshot of a test"));
         UpgradeResult yen = EditionUpgrade.apply(invoice()
                 .set(SemanticPath.of("/BT-6"), SemanticValue.of("JPY"))
                 .set(SemanticPath.of("/BG-22/BT-111"), SemanticValue.of("1811.88")).build(),
@@ -283,9 +281,8 @@ class EditionUpgradeTest {
     @EnabledIf("carries2026")
     void aCurrencyTheSnapshotDoesNotListLeavesTheBoundUnevaluated() {
         UpgradeResult result = EditionUpgrade.apply(invoice().set(SemanticPath.of("/BT-5"), SemanticValue.of("XTS")).build(),
-                "2026", UpgradeOptions.builder()
-                        .minorUnits(MinorUnits.of(Map.of("EUR", 2), "a snapshot of a test"))
-                        .build());
+                "2026", UpgradeOptions.defaults()
+                        .withMinorUnits(MinorUnits.of(Map.of("EUR", 2), "a snapshot of a test")));
         List<UpgradeNote> reported = notes(result, UpgradeNote.Kind.DECIMALS_NOT_EVALUATED);
         assertEquals(1, reported.size());
         assertTrue(reported.get(0).message().contains("gives XTS no minor unit"),
@@ -311,10 +308,8 @@ class EditionUpgradeTest {
         assertThrows(java.util.NoSuchElementException.class, refused::require);
 
         UpgradeResult dropped = EditionUpgrade.apply(document, "2017",
-                UpgradeOptions.builder()
-                        .drop(SemanticPath.of("/BT-166"))
-                        .drop(SemanticPath.group("/BG-33/0/BG-35"))
-                        .build());
+                UpgradeOptions.defaults().withDroppable(List.of(
+                        SemanticPath.of("/BT-166"), SemanticPath.group("/BG-33/0/BG-35"))));
         assertTrue(dropped.isUpgraded(), dropped.report().notes().toString());
         assertEquals(2, dropped.report().dropped());
         assertEquals(List.of("/BT-166", "/BG-33/0/BG-35/0/BT-170"),
@@ -361,7 +356,7 @@ class EditionUpgradeTest {
         assertTrue(findings.get(0).message().contains("BT-117"));
 
         UpgradeResult partial = EditionUpgrade.apply(relaxed, "2017",
-                UpgradeOptions.builder().partial(true).build());
+                UpgradeOptions.defaults().withPartial(true));
         assertTrue(partial.isUpgraded());
         assertEquals(UpgradeNote.Severity.OPEN_POINT,
                 notes(partial, UpgradeNote.Kind.MODEL_FINDING).get(0).severity());
@@ -384,13 +379,13 @@ class EditionUpgradeTest {
     @EnabledIf("carries2026")
     void aRunAskedForADocumentWithoutAnOpenPointRefusesWhereItLeavesOne() {
         UpgradeResult refused = EditionUpgrade.apply(invoice().build(), "2026",
-                UpgradeOptions.builder().strict(true).build());
+                UpgradeOptions.defaults().withStrict(true));
         assertFalse(refused.isUpgraded());
         assertEquals(1, notes(refused, UpgradeNote.Kind.STRICT).size());
 
         UpgradeResult clean = EditionUpgrade.apply(invoice().build(), "2026",
-                UpgradeOptions.builder().strict(true)
-                        .specification("urn:cen.eu:en16931:2026").build());
+                UpgradeOptions.defaults().withStrict(true)
+                        .withSpecification("urn:cen.eu:en16931:2026"));
         assertTrue(clean.isUpgraded(), clean.report().notes().toString());
         assertTrue(clean.report().isClean(), clean.report().notes().toString());
     }
@@ -406,7 +401,7 @@ class EditionUpgradeTest {
 
         byte[] bytes = "the bytes the result derives from".getBytes(StandardCharsets.UTF_8);
         UpgradeResult recorded = EditionUpgrade.apply(document, "2026",
-                UpgradeOptions.builder().source(bytes).build());
+                UpgradeOptions.defaults().withSource(bytes));
         SemanticDocument.Source source = recorded.require().source().orElseThrow();
         assertEquals(Optional.of("ESJ"), source.syntax());
         assertEquals(Optional.of(sha256(bytes)), source.sha256());

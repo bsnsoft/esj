@@ -25,10 +25,16 @@ public final class Rules {
     /** The identifier of the rule pack the domain API runs by default. */
     public static final String PACK_ID = En16931Pack.PACK_ID;
 
-    /** The version of that pack, which is the release it was verified against. */
-    public static final String PACK_VERSION = En16931Pack.VERSION;
-
     private Rules() {
+    }
+
+    /**
+     * Returns the version of that pack, which is the release it was verified against.
+     *
+     * @return the version, as {@link En16931Pack#version()} returns it
+     */
+    public static String packVersion() {
+        return En16931Pack.version();
     }
 
     /**

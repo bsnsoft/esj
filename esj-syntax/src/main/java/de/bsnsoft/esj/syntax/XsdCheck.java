@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
 import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.ByteArrayInputStream;
@@ -21,10 +22,10 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -206,8 +207,8 @@ final class XsdCheck {
 
     private static SyntaxFinding finding(String message, int line, int column, Pack pack,
                                          PackComponent component, InvoiceSyntax syntax) {
-        return new SyntaxFinding(Engine.XSD, Categories.ofSchema(syntax), Severity.FATAL,
-                Severity.FATAL, code(message), message, "", line, column, pack.id(),
+        return new SyntaxFinding(Engine.XSD, Categories.ofSchema(syntax), Severity.ERROR,
+                Severity.ERROR, code(message), message, "", line, column, pack.id(),
                 pack.version(), pack.release(), component.name());
     }
 

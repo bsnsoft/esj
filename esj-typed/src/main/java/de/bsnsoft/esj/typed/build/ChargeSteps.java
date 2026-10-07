@@ -21,7 +21,7 @@ public final class ChargeSteps {
     /**
      * The first step of the group BG-28: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits ChargeBuild {
         /**
          * BT-141 Invoice line charge amount. Amount of the invoice line charge, without VAT.
          *
@@ -37,7 +37,7 @@ public final class ChargeSteps {
      * The terminal step of the group BG-28: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits ChargeBuild {
         /**
          * BT-142 Invoice line charge base amount. Base amount the invoice line charge percentage is
          * applied to.

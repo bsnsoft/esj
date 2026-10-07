@@ -38,7 +38,7 @@ class RegistryCoverageTest {
      * @return the edition keys
      */
     static List<String> editions() {
-        return Registry.editions();
+        return Registry.editionKeys();
     }
 
     @ParameterizedTest
@@ -65,7 +65,7 @@ class RegistryCoverageTest {
      */
     private static Class<?> rootView(String edition) {
         String base = Invoice.class.getPackageName();
-        String viewPackage = Registry.DEFAULT_EDITION.equals(edition)
+        String viewPackage = Registry.defaultEditionKey().equals(edition)
                 ? base
                 : base + ".v" + edition;
         try {

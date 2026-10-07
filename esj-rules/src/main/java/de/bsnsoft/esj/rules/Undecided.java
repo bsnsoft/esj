@@ -4,13 +4,13 @@ package de.bsnsoft.esj.rules;
  * A rule that cannot be decided on this document, because a value it reads does not spell
  * what its semantic data type requires.
  *
- * <p>An amount that reads {@code 1.000,00} is not a number this engine will guess at. It is
- * a defect of the document, the structural validator reports it at layer L2 as
+ * <p>An amount that reads {@code 1.000,00} is not a number this engine will guess at. It
+ * is a defect of the document, the structural validator reports it at layer L2 as
  * {@code ESJ-L2-DECIMAL} with the path it is at, and a rule that reads it stops there: it
- * produces one {@link RuleSeverity#INFO} finding saying which rule was not decided and why,
- * and no verdict. Reporting the same defect a second time as a failed business rule would
- * make one problem look like two and would put the blame in the wrong place — the rule did
- * not fail, it was never given the number it is about.
+ * produces one {@link de.bsnsoft.esj.validate.Severity#INFO} finding saying which rule was
+ * not decided and why, and no verdict. Reporting the same defect a second time as a failed
+ * business rule would make one problem look like two and would put the blame in the wrong
+ * place — the rule did not fail, it was never given the number it is about.
  *
  * <p>A rule raises it as well where the case its {@code undecided} member names holds: a
  * figure the document may state and the rule has no answer for, such as a price stated per

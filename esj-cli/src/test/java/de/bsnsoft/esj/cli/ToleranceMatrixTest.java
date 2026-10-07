@@ -1,22 +1,21 @@
 package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.SemanticDocument;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.bindings.ReaderOptions;
 import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931Pack;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * How closely release 1.3.16 asks the two figures of a rule to agree, read out of the
@@ -68,9 +67,8 @@ class ToleranceMatrixTest {
             List.of(EQUALITY, ONE_UNIT, ONE_UNIT_CLOSED);
 
     /** The reader {@code esj validate} uses when nothing is chosen. */
-    private static final StreamingReader READER = new StreamingReader(ReaderOptions.builder()
-            .registry(Registry.en16931WithXrechnung())
-            .build());
+    private static final StreamingReader READER = new StreamingReader(ReaderOptions.defaults()
+            .withRegistry(Registry.en16931WithXrechnung()));
 
     /** The pack this build carries. */
     private static final RuleEngine ENGINE = En16931Pack.engine(Registry.en16931WithXrechnung());
@@ -202,7 +200,7 @@ class ToleranceMatrixTest {
         SemanticDocument document = READER.read(Oracle.apply(aimed)).document();
         Optional<RuleFinding> found = ENGINE.evaluate(document).stream()
                 .filter(finding -> finding.code().equals(rule))
-                .filter(finding -> finding.severity() == RuleSeverity.WARNING)
+                .filter(finding -> finding.severity() == Severity.WARNING)
                 .findFirst();
         assertTrue(found.isPresent(), mutation + " makes " + rule + " warn");
         return found.orElseThrow();

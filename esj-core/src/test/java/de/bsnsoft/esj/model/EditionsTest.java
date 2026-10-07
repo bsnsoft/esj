@@ -28,30 +28,30 @@ class EditionsTest {
      * the loader is expected to work there as well.
      */
     static boolean carries2026() {
-        return Registry.editions().contains("2026");
+        return Registry.editionKeys().contains("2026");
     }
 
     @Test
     void theBuildCarriesAtLeastTheDefaultEdition() {
-        assertTrue(Registry.editions().contains(Registry.DEFAULT_EDITION));
-        assertEquals("2017", Registry.DEFAULT_EDITION);
+        assertTrue(Registry.editionKeys().contains(Registry.defaultEditionKey()));
+        assertEquals("2017", Registry.defaultEditionKey());
     }
 
     @Test
     void theEditionsAreListedInTheOrderTheyWerePublished() {
-        List<String> editions = Registry.editions();
+        List<String> editions = Registry.editionKeys();
         assertEquals(editions.stream().sorted().toList(), editions);
     }
 
     @Test
     void theCoreRegistryIsTheOneOfTheDefaultEdition() {
-        assertSame(Registry.forEdition(Registry.DEFAULT_EDITION), Registry.en16931());
+        assertSame(Registry.forEdition(Registry.defaultEditionKey()), Registry.en16931());
         assertEquals("EN 16931-1:2017+A1:2019/AC:2020", Registry.en16931().edition());
     }
 
     @Test
     void aRegistryIsReadOnceAndShared() {
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             assertSame(Registry.forEdition(edition), Registry.forEdition(edition));
         }
     }
@@ -61,12 +61,12 @@ class EditionsTest {
         EsjFormatException thrown = assertThrows(EsjFormatException.class,
                 () -> Registry.forEdition("1999"));
         assertTrue(thrown.getMessage().contains("1999"));
-        assertTrue(thrown.getMessage().contains(Registry.DEFAULT_EDITION));
+        assertTrue(thrown.getMessage().contains(Registry.defaultEditionKey()));
     }
 
     @Test
     void everyEditionOnTheClasspathIsReadable() {
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             Registry registry = Registry.forEdition(edition);
             assertEquals("EN16931-1", registry.model());
             assertFalse(registry.terms().isEmpty());
@@ -76,7 +76,7 @@ class EditionsTest {
 
     @Test
     void aDocumentIsMeasuredAgainstTheRegistryOfItsOwnEdition() {
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             Registry registry = Registry.forEdition(edition);
             String semanticModel = registry.edition().replace(" ", "");
             assertEquals(Optional.of(registry), Registry.forSemanticModel(semanticModel));

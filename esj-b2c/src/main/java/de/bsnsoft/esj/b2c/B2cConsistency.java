@@ -6,7 +6,7 @@ import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.rules.RuleCategory;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +58,8 @@ public final class B2cConsistency {
     /** The identifier of the pack these findings carry. */
     public static final String PACK_ID = "b2c";
 
-    /** The version of that pack, which is the version of the extension registry. */
-    public static final String PACK_VERSION = "0.1";
+    /** The value {@link #packVersion()} returns. */
+    private static final String PACK_VERSION = "0.1";
 
     private static final SemanticPath DISPLAYED_TOTAL = SemanticPath.of("/BT-B2C-010");
 
@@ -70,6 +70,16 @@ public final class B2cConsistency {
     private static final SemanticPath LINES = SemanticPath.group("/BG-25");
 
     private B2cConsistency() {
+    }
+
+    /**
+     * Returns the version of the pack these findings carry, which is the version of the
+     * extension registry: {@code 0.1} in this release.
+     *
+     * @return the version
+     */
+    public static String packVersion() {
+        return PACK_VERSION;
     }
 
     /**
@@ -90,7 +100,7 @@ public final class B2cConsistency {
         try {
             new Check(document.toBuilder(), policy, findings).run();
         } catch (EsjFormatException e) {
-            return List.of(finding("B2C-00", RuleSeverity.INFO,
+            return List.of(finding("B2C-00", Severity.INFO,
                     "a value this check reads does not spell what its semantic data type"
                             + " requires, so no guarantee of " + policy.name() + " could be"
                             + " checked; the structural validator reports the value itself at"
@@ -101,7 +111,7 @@ public final class B2cConsistency {
         return List.copyOf(findings);
     }
 
-    private static RuleFinding finding(String code, RuleSeverity severity, String message,
+    private static RuleFinding finding(String code, Severity severity, String message,
                                        List<String> paths) {
         return new RuleFinding(code, RuleCategory.of(code), severity, message, paths, PACK_ID,
                 PACK_VERSION, RuleFinding.NATIVE_ENGINE);
@@ -139,7 +149,7 @@ public final class B2cConsistency {
         private void agreedTotal() {
             Optional<BigDecimal> displayed = decimal(DISPLAYED_TOTAL);
             if (displayed.isEmpty()) {
-                findings.add(finding("B2C-01", RuleSeverity.INFO,
+                findings.add(finding("B2C-01", Severity.INFO,
                         "the invoice states no displayed invoice gross total (BT-B2C-010), so"
                                 + " there is no agreed gross total for the amount due for"
                                 + " payment (BT-115) to come to",
@@ -150,7 +160,7 @@ public final class B2cConsistency {
             BigDecimal paid = decimal(PAID).orElse(BigDecimal.ZERO);
             BigDecimal target = displayed.orElseThrow();
             if (due == null || due.add(paid).compareTo(target) != 0) {
-                findings.add(finding("B2C-01", RuleSeverity.FATAL,
+                findings.add(finding("B2C-01", Severity.ERROR,
                         "the customer agreed to " + target.toPlainString() + " with VAT"
                                 + " (BT-B2C-010) and the amount due for payment (BT-115) is "
                                 + (due == null ? "not stated" : due.toPlainString())
@@ -179,7 +189,7 @@ public final class B2cConsistency {
             SemanticPath pricePath = AuthoringRun.path(line, "BG-29/BT-146");
             Optional<BigDecimal> displayed = decimal(displayedPath);
             if (displayed.isEmpty()) {
-                findings.add(finding("B2C-02", RuleSeverity.INFO,
+                findings.add(finding("B2C-02", Severity.INFO,
                         "the invoice line at " + line + " states no displayed gross unit price"
                                 + " (BT-B2C-001), so its item net price (BT-146) follows from"
                                 + " no figure of the extension",
@@ -191,7 +201,7 @@ public final class B2cConsistency {
                     AuthoringRun.net(displayed.orElseThrow(), rate, scale).value();
             BigDecimal price = decimal(pricePath).orElse(null);
             if (price == null || price.compareTo(expected) != 0) {
-                findings.add(finding("B2C-02", RuleSeverity.FATAL,
+                findings.add(finding("B2C-02", Severity.ERROR,
                         "the displayed gross unit price (BT-B2C-001) "
                                 + displayed.orElseThrow().toPlainString() + " at "
                                 + rate.toPlainString() + " per cent comes to "
@@ -208,7 +218,7 @@ public final class B2cConsistency {
             BigDecimal price = decimal(AuthoringRun.path(line, "BG-29/BT-146")).orElse(null);
             BigDecimal quantity = decimal(AuthoringRun.path(line, "BT-129")).orElse(null);
             if (price == null || quantity == null) {
-                findings.add(finding("B2C-03", RuleSeverity.INFO,
+                findings.add(finding("B2C-03", Severity.INFO,
                         "the invoice line at " + line + " states no item net price (BT-146) or"
                                 + " no invoiced quantity (BT-129), so its invoice line net"
                                 + " amount (BT-131) follows from nothing this check can read",
@@ -227,7 +237,7 @@ public final class B2cConsistency {
                     AuthoringRun.AMOUNT_SCALE).value();
             BigDecimal net = decimal(netPath).orElse(null);
             if (net == null || net.compareTo(expected) != 0) {
-                findings.add(finding("B2C-03", RuleSeverity.FATAL,
+                findings.add(finding("B2C-03", Severity.ERROR,
                         "the item net price (BT-146) " + price.toPlainString() + " over the"
                                 + " invoiced quantity (BT-129) " + quantity.toPlainString()
                                 + " comes to " + expected.toPlainString() + ", and the invoice"
@@ -253,7 +263,7 @@ public final class B2cConsistency {
                             AuthoringRun.AMOUNT_SCALE).value());
             BigDecimal net = decimal(netPath).orElse(null);
             if (net == null || net.compareTo(expected) != 0) {
-                findings.add(finding("B2C-04", RuleSeverity.FATAL,
+                findings.add(finding("B2C-04", Severity.ERROR,
                         "the displayed gross line total (BT-B2C-002) "
                                 + displayed.orElseThrow().toPlainString() + " at "
                                 + rate.toPlainString() + " per cent comes to "

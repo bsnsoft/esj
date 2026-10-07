@@ -77,11 +77,21 @@ public final class En16931V2026Pack implements RulePackSource {
     /** The identifier of the pack, which appears in every finding it produces. */
     public static final String PACK_ID = "en16931-2026";
 
-    /** The version of the pack, which is the release of this project that published it. */
-    public static final String VERSION = "0.1";
+    /** The value {@link #version()} returns. */
+    private static final String VERSION = "0.1";
 
-    /** The edition of the semantic model the rules of this pack are addresses in. */
-    public static final String EDITION = "EN 16931-1:2026";
+    /** The value {@link #edition()} returns. */
+    private static final String EDITION = "EN 16931-1:2026";
+
+    /**
+     * Returns the version of the pack, which is the release of this project that published
+     * it: {@code 0.1} in this release.
+     *
+     * @return the version
+     */
+    public static String version() {
+        return VERSION;
+    }
 
     /**
      * Creates the source. It is found by {@link java.util.ServiceLoader} and is created by

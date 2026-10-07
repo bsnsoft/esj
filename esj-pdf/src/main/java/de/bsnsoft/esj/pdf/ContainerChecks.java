@@ -5,6 +5,7 @@ import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -109,7 +110,7 @@ public final class ContainerChecks {
         List<ContainerFinding> findings = new ArrayList<>(container.structureFindings());
         container.pdfaIdentification().ifPresent(pdfa -> findings.add(
                 finding(ContainerFinding.Category.PDF_STRUCTURE, "PDF-STRUCTURE-PDFA",
-                        ContainerFinding.Severity.INFO,
+                        Severity.INFO,
                         "the file declares " + pdfa.describe()
                                 + "; this is the declaration as the file writes it, and"
                                 + " conformance to it was not validated")));
@@ -174,7 +175,7 @@ public final class ContainerChecks {
                         .append(identified(attachment));
             }
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                    "PDF-EMBEDDED-DUPLICATE-NAME", ContainerFinding.Severity.ERROR,
+                    "PDF-EMBEDDED-DUPLICATE-NAME", Severity.ERROR,
                     text.toString()));
         }
     }
@@ -200,7 +201,7 @@ public final class ContainerChecks {
                 continue;
             }
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                    "PDF-EMBEDDED-NOT-IN-TREE", ContainerFinding.Severity.WARNING,
+                    "PDF-EMBEDDED-NOT-IN-TREE", Severity.WARNING,
                     "the attachment " + (located.all().indexOf(attachment) + 1) + " "
                             + identified(attachment) + " could be the invoice and the"
                             + " embedded files name tree does not list it; it is referred to"
@@ -270,7 +271,7 @@ public final class ContainerChecks {
                     .append(candidate);
         }
         findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED, "PDF-EMBEDDED-SEVERAL",
-                ContainerFinding.Severity.WARNING, text.toString()));
+                Severity.WARNING, text.toString()));
     }
 
     /**
@@ -301,7 +302,7 @@ public final class ContainerChecks {
             return Optional.empty();
         }
         return Optional.of(finding(ContainerFinding.Category.PDF_XMP,
-                "PDF-XMP-CONFORMANCE-MISMATCH", ContainerFinding.Severity.ERROR,
+                "PDF-XMP-CONFORMANCE-MISMATCH", Severity.ERROR,
                 "the XMP packet declares the profile "
                         + Messages.quoted(declared.get().conformanceLevel())
                         + " and the invoice writes a specification identifier of the"
@@ -315,7 +316,7 @@ public final class ContainerChecks {
         EmbeddedFile file = attachment.file();
         if (!file.associated()) {
             findings.add(finding(ContainerFinding.Category.PDF_AF, "PDF-AF-ABSENT",
-                    ContainerFinding.Severity.ERROR,
+                    Severity.ERROR,
                     "the invoice attachment " + Messages.quoted(file.name()) + " is not"
                             + " referred to by the catalog's associated files array, so"
                             + " nothing in the file says that this attachment is what the"
@@ -325,7 +326,7 @@ public final class ContainerChecks {
         Optional<String> relationship = file.associatedRelationship();
         if (relationship.isEmpty()) {
             findings.add(finding(ContainerFinding.Category.PDF_AF, "PDF-AF-RELATIONSHIP",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the invoice attachment " + Messages.quoted(file.name()) + " is an"
                             + " associated file with no relationship, and a hybrid invoice"
                             + " declares " + ALTERNATIVE));
@@ -338,7 +339,7 @@ public final class ContainerChecks {
         boolean known = DOCUMENT_RELATIONSHIPS.contains(value)
                 || OTHER_RELATIONSHIPS.contains(value);
         findings.add(finding(ContainerFinding.Category.PDF_AF, "PDF-AF-RELATIONSHIP",
-                ContainerFinding.Severity.WARNING,
+                Severity.WARNING,
                 "the invoice attachment " + Messages.quoted(file.name()) + " is an"
                         + " associated file with the relationship "
                         + Messages.quoted(value)
@@ -354,7 +355,7 @@ public final class ContainerChecks {
             boolean packet = container.xmpPacket().isPresent();
             findings.add(finding(ContainerFinding.Category.PDF_XMP,
                     packet ? "PDF-XMP-SCHEMA" : "PDF-XMP-ABSENT",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     packet
                             ? "the XMP packet of this file carries none of the properties"
                                     + " of the Factur-X extension schema, so the container"
@@ -367,13 +368,13 @@ public final class ContainerChecks {
         properties.documentType()
                 .filter(type -> !INVOICE.equals(type.toUpperCase(Locale.ROOT)))
                 .ifPresent(type -> findings.add(finding(ContainerFinding.Category.PDF_XMP,
-                        "PDF-XMP-DOCUMENT-TYPE", ContainerFinding.Severity.WARNING,
+                        "PDF-XMP-DOCUMENT-TYPE", Severity.WARNING,
                         "the XMP packet declares the document type "
                                 + Messages.quoted(type) + " and a hybrid invoice declares "
                                 + INVOICE)));
         if (properties.version().isEmpty()) {
             findings.add(finding(ContainerFinding.Category.PDF_XMP, "PDF-XMP-VERSION",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the XMP packet names no version of the container specification"));
         }
         fileName(properties, invoice, findings);
@@ -386,7 +387,7 @@ public final class ContainerChecks {
         Optional<String> declared = properties.documentFileName();
         if (declared.isEmpty()) {
             findings.add(finding(ContainerFinding.Category.PDF_XMP, "PDF-XMP-FILENAME",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the XMP packet names no attachment, so a consumer that reads the"
                             + " container has to guess which attachment is the invoice"));
             return;
@@ -395,7 +396,7 @@ public final class ContainerChecks {
             return;
         }
         findings.add(finding(ContainerFinding.Category.PDF_XMP, "PDF-XMP-FILENAME",
-                ContainerFinding.Severity.ERROR,
+                Severity.ERROR,
                 "the XMP packet names the attachment " + Messages.quoted(declared.get())
                         + " and the invoice is the attachment "
                         + Messages.quoted(invoice.get().name()) + ", so a consumer that"
@@ -407,14 +408,14 @@ public final class ContainerChecks {
         Optional<String> level = properties.conformanceLevel();
         if (level.isEmpty()) {
             findings.add(finding(ContainerFinding.Category.PDF_XMP, "PDF-XMP-CONFORMANCE",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the XMP packet names no conformance level, so the container does not"
                             + " say which profile the invoice is written in"));
             return;
         }
         if (properties.profile().isEmpty()) {
             findings.add(finding(ContainerFinding.Category.PDF_XMP, "PDF-XMP-CONFORMANCE",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the XMP packet names the conformance level "
                             + Messages.quoted(level.get())
                             + ", which is no profile this reader knows"));
@@ -428,14 +429,14 @@ public final class ContainerChecks {
         mediaType(attachment, findings);
         if (attachment.kind() == AttachmentKind.UNREADABLE) {
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                    "PDF-EMBEDDED-UNREADABLE", ContainerFinding.Severity.WARNING,
+                    "PDF-EMBEDDED-UNREADABLE", Severity.WARNING,
                     "the attachment " + Messages.quoted(name) + " is filtered with"
                             + " something this reader does not decode, so not one byte of"
                             + " it was looked at and what it holds is unknown here"));
         }
         if (attachment.kind() == AttachmentKind.UNDETERMINED) {
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                    "PDF-EMBEDDED-UNDETERMINED", ContainerFinding.Severity.WARNING,
+                    "PDF-EMBEDDED-UNDETERMINED", Severity.WARNING,
                     "the attachment " + Messages.quoted(name) + " begins an XML document"
                             + " whose root element this reader did not reach inside the"
                             + " bytes it classifies an attachment by, so what it holds was"
@@ -445,12 +446,12 @@ public final class ContainerChecks {
         boolean conventional = CROSS_INDUSTRY_NAMES.contains(name.toLowerCase(Locale.ROOT));
         if (attachment.kind().isInvoice() && !name.toLowerCase(Locale.ROOT).endsWith(".xml")) {
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED, "PDF-EMBEDDED-NAME",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the attachment " + Messages.quoted(name) + " carries an invoice in "
                             + attachment.kind().describe() + " and is not named as XML"));
         } else if (conventional && attachment.kind() != AttachmentKind.CII_INVOICE) {
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED, "PDF-EMBEDDED-NAME",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the attachment " + Messages.quoted(name) + " carries the name a cross"
                             + " industry invoice has and its content is "
                             + attachment.kind().describe()));
@@ -458,7 +459,7 @@ public final class ContainerChecks {
         file.decoded().ifPresent(content -> {
             if (content.truncated()) {
                 findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                        "PDF-EMBEDDED-TRUNCATED", ContainerFinding.Severity.ERROR,
+                        "PDF-EMBEDDED-TRUNCATED", Severity.ERROR,
                         "the attachment " + Messages.quoted(name) + " decodes to more than"
                                 + " the bytes this reader holds, so it was cut off and"
                                 + " nothing was read from it"));
@@ -466,7 +467,7 @@ public final class ContainerChecks {
             file.declaredSize().ifPresent(declared -> {
                 if (!content.truncated() && declared != content.length()) {
                     findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED,
-                            "PDF-EMBEDDED-SIZE", ContainerFinding.Severity.WARNING,
+                            "PDF-EMBEDDED-SIZE", Severity.WARNING,
                             "the attachment " + Messages.quoted(name) + " declares a size"
                                     + " of " + declared + " bytes and decodes to "
                                     + content.length()));
@@ -485,14 +486,14 @@ public final class ContainerChecks {
         Optional<String> declared = file.declaredMediaType();
         if (declared.isEmpty()) {
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED, "PDF-EMBEDDED-MIME",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the attachment " + Messages.quoted(file.name()) + " carries XML and"
                             + " its embedded file stream declares no media type"));
             return;
         }
         if (!isXmlMediaType(declared.get())) {
             findings.add(finding(ContainerFinding.Category.PDF_EMBEDDED, "PDF-EMBEDDED-MIME",
-                    ContainerFinding.Severity.WARNING,
+                    Severity.WARNING,
                     "the attachment " + Messages.quoted(file.name()) + " carries XML and"
                             + " its embedded file stream declares the media type "
                             + Messages.quoted(declared.get())));
@@ -511,7 +512,7 @@ public final class ContainerChecks {
 
     private static ContainerFinding finding(ContainerFinding.Category category,
                                             String code,
-                                            ContainerFinding.Severity severity,
+                                            Severity severity,
                                             String message) {
         return new ContainerFinding(category, code, severity, message);
     }

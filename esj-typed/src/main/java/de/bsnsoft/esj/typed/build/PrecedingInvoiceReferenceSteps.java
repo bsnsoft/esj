@@ -22,7 +22,7 @@ public final class PrecedingInvoiceReferenceSteps {
     /**
      * The first step of the group BG-3: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits PrecedingInvoiceReferenceBuild {
         /**
          * BT-25 Preceding Invoice reference. Identification of the preceding invoice that is being
          * corrected or referred to.
@@ -39,7 +39,7 @@ public final class PrecedingInvoiceReferenceSteps {
      * The terminal step of the group BG-3: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits PrecedingInvoiceReferenceBuild {
         /**
          * BT-26 Preceding Invoice issue date. Issue date of the preceding invoice; required when
          * the preceding invoice number alone is ambiguous.

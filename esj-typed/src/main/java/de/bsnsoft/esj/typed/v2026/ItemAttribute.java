@@ -17,7 +17,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface ItemAttribute {
+public sealed interface ItemAttribute permits ItemAttributeView {
 
     /**
      * Returns the document this view reads.

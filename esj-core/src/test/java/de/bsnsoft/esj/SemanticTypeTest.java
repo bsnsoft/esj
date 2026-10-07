@@ -38,7 +38,7 @@ class SemanticTypeTest {
         Set<String> declared = Stream.of(SemanticType.values())
                 .map(SemanticType::registryDatatype)
                 .collect(Collectors.toSet());
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             for (Term term : Registry.forEdition(edition).terms()) {
                 term.datatype().ifPresent(type ->
                         assertTrue(declared.contains(type.registryDatatype())));

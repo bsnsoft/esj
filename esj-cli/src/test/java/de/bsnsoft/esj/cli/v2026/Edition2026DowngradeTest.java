@@ -54,17 +54,15 @@ class Edition2026DowngradeTest {
 
     private static final String LEDGER = "/conformance/rules-2026/ledger.json";
 
-    private static final StreamingReader READER = new StreamingReader(ReaderOptions.builder()
-            .registry(Registry.en16931WithXrechnung())
-            .build());
+    private static final StreamingReader READER = new StreamingReader(ReaderOptions.defaults()
+            .withRegistry(Registry.en16931WithXrechnung()));
 
     private static final RuleEngine EDITION = new En16931V2026Pack().engine(Registry.forEdition("2026"));
 
     private static final RuleEngine DEFAULT_PACK = En16931Pack.engine(Registry.en16931WithXrechnung());
 
-    private static final UpgradeOptions OPTIONS = UpgradeOptions.builder()
-            .extension(Registry.xrechnungExtension())
-            .build();
+    private static final UpgradeOptions OPTIONS = UpgradeOptions.defaults()
+            .withExtensions(List.of(Registry.xrechnungExtension()));
 
     /** What one run of the comparison found. */
     private record Measurement(int held,

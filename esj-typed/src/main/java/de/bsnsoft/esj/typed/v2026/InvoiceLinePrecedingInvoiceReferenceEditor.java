@@ -24,7 +24,7 @@ import java.time.LocalDate;
  * of this editor: {@code InvoiceLinePrecedingInvoiceReferenceEditor} checks a value against the
  * grammar of its semantic data type and nothing else.
  */
-public interface InvoiceLinePrecedingInvoiceReferenceEditor {
+public sealed interface InvoiceLinePrecedingInvoiceReferenceEditor permits InvoiceLinePrecedingInvoiceReferenceEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

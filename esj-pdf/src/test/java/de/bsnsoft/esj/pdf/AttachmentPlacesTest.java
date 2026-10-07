@@ -1,14 +1,14 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.validate.Severity;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import de.bsnsoft.esj.EsjLimitException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import org.junit.jupiter.api.Test;
 
 /**
  * Every place of a PDF that can refer to an embedded file, and what counts as one file.
@@ -61,7 +61,7 @@ class AttachmentPlacesTest {
 
             ContainerFinding outside = finding(ContainerChecks.run(container, located),
                     "PDF-EMBEDDED-NOT-IN-TREE");
-            assertEquals(ContainerFinding.Severity.WARNING, outside.severity());
+            assertEquals(Severity.WARNING, outside.severity());
             assertTrue(outside.message().contains("the attachment 2 \"factur-x.xml\" (CII,"
                     + " object "), outside.message());
             assertTrue(outside.message().contains("a file attachment annotation on page 1"),
@@ -118,9 +118,9 @@ class AttachmentPlacesTest {
             LocatedAttachment invoice = located.single();
             assertEquals(AttachmentKind.CII_INVOICE, invoice.kind());
             List<ContainerFinding> findings = ContainerChecks.run(container, located);
-            assertEquals(ContainerFinding.Severity.WARNING,
+            assertEquals(Severity.WARNING,
                     finding(findings, "PDF-EMBEDDED-NOT-IN-TREE").severity());
-            assertEquals(ContainerFinding.Severity.ERROR,
+            assertEquals(Severity.ERROR,
                     finding(findings, "PDF-AF-ABSENT").severity(),
                     "and the document's array does not declare it either");
         }

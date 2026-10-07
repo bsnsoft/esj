@@ -77,8 +77,8 @@ class DenseScaleTest {
         Path generated = directory.resolve(source.getFileName() + ".dense.xml");
         run(List.of("python3", generator.toString(), "--source", source.toString(),
                 "--dense", "--lines", String.valueOf(LINES), "--out", generated.toString()));
-        StreamingReader reader = new StreamingReader(ReaderOptions.builder()
-                .limits(Limits.builder().maxValues(100_000).build()).build());
+        StreamingReader reader = new StreamingReader(ReaderOptions.defaults()
+                .withLimits(Limits.defaults().withMaxValues(100_000)));
         try (InputStream in = Files.newInputStream(generated)) {
             return reader.read(in).document();
         } catch (IOException e) {

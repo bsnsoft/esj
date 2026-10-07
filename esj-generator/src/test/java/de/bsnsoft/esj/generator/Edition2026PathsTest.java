@@ -326,11 +326,11 @@ class Edition2026PathsTest {
      * the removal was complete.
      */
     private static Pattern addedByTheEdition() {
-        if (!Registry.editions().contains(EDITION)) {
+        if (!Registry.editionKeys().contains(EDITION)) {
             return null;
         }
         Set<String> earlier = new LinkedHashSet<>();
-        for (Term term : Registry.forEdition(Registry.DEFAULT_EDITION).terms()) {
+        for (Term term : Registry.forEdition(Registry.defaultEditionKey()).terms()) {
             earlier.add(term.id());
         }
         List<String> added = new ArrayList<>();

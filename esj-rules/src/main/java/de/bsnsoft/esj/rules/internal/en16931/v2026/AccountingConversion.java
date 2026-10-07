@@ -2,7 +2,7 @@ package de.bsnsoft.esj.rules.internal.en16931.v2026;
 
 import de.bsnsoft.esj.rules.JavaRule;
 import de.bsnsoft.esj.rules.RuleContext;
-import de.bsnsoft.esj.rules.RuleSeverity;
+import de.bsnsoft.esj.validate.Severity;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -68,8 +68,8 @@ abstract class AccountingConversion implements JavaRule {
     }
 
     @Override
-    public final RuleSeverity severity() {
-        return RuleSeverity.FATAL;
+    public final Severity severity() {
+        return Severity.ERROR;
     }
 
     @Override

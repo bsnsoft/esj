@@ -1,11 +1,9 @@
 package de.bsnsoft.esj.rules.en16931;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.rules.RuleFinding;
+import de.bsnsoft.esj.validate.Severity;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,6 +12,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * What the pack says about documents that are known to be good.
@@ -109,7 +109,7 @@ class En16931CorpusTest {
         for (String document : documents) {
             SemanticDocument invoice = EsjReader.strict().read(Pack.bytes("/" + document));
             for (RuleFinding finding : Pack.ENGINE.evaluate(invoice)) {
-                rows.add(new Row(document, finding.code(), finding.severity().token(),
+                rows.add(new Row(document, finding.code(), word(finding.severity()),
                         finding.paths()));
             }
         }
@@ -177,5 +177,14 @@ class En16931CorpusTest {
         for (String document : documents()) {
             assertTrue(Pack.bytes("/" + document).length > 0, document);
         }
+    }
+
+    /** Returns the word a rule pack writes a severity with, as the ledger records it. */
+    private static String word(Severity severity) {
+        return switch (severity) {
+            case ERROR -> "fatal";
+            case WARNING -> "warning";
+            case INFO -> "info";
+        };
     }
 }

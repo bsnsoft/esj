@@ -21,7 +21,7 @@ public final class AllowanceSteps {
     /**
      * The first step of the group BG-27: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits AllowanceBuild {
         /**
          * BT-136 Invoice line allowance amount. Amount of the invoice line allowance, without VAT.
          *
@@ -37,7 +37,7 @@ public final class AllowanceSteps {
      * The terminal step of the group BG-27: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits AllowanceBuild {
         /**
          * BT-137 Invoice line allowance base amount. Base amount the invoice line allowance
          * percentage is applied to.

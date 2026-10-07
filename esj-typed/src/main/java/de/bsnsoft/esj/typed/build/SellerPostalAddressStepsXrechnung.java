@@ -20,7 +20,7 @@ public final class SellerPostalAddressStepsXrechnung {
     /**
      * The first step of the group BG-5: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits SellerPostalAddressBuildXrechnung {
         /**
          * BT-37 Seller city. Town or city of the seller's address.
          *
@@ -36,7 +36,7 @@ public final class SellerPostalAddressStepsXrechnung {
     /**
      * The step of the group BG-5 that follows BT-37 Seller city.
      */
-    public interface WithCity {
+    public sealed interface WithCity permits SellerPostalAddressBuildXrechnung {
         /**
          * BT-38 Seller post code. Postal code of the seller's address.
          *
@@ -52,7 +52,7 @@ public final class SellerPostalAddressStepsXrechnung {
     /**
      * The step of the group BG-5 that follows BT-38 Seller post code.
      */
-    public interface WithPostCode {
+    public sealed interface WithPostCode permits SellerPostalAddressBuildXrechnung {
         /**
          * BT-40 Seller country code. Country code of the seller's address, from ISO 3166-1 alpha-2.
          *
@@ -68,7 +68,7 @@ public final class SellerPostalAddressStepsXrechnung {
      * The terminal step of the group BG-5: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerPostalAddressBuildXrechnung {
         /**
          * BT-35 Seller address line 1. First line of the seller's address, usually street name and
          * number or post office box.

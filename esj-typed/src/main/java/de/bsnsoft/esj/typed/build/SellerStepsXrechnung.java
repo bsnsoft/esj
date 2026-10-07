@@ -22,7 +22,7 @@ public final class SellerStepsXrechnung {
     /**
      * The first step of the group BG-4: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits SellerBuildXrechnung {
         /**
          * BT-27 Seller name. Full name of the seller as registered in the national register of
          * legal entities.
@@ -38,7 +38,7 @@ public final class SellerStepsXrechnung {
     /**
      * The step of the group BG-4 that follows BT-27 Seller name.
      */
-    public interface WithName {
+    public sealed interface WithName permits SellerBuildXrechnung {
         /**
          * BT-34 Seller electronic address. Electronic address of the seller, with a mandatory
          * scheme identifier saying which address scheme is used.
@@ -68,7 +68,7 @@ public final class SellerStepsXrechnung {
     /**
      * The step of the group BG-4 that follows BT-34 Seller electronic address.
      */
-    public interface WithElectronicAddress {
+    public sealed interface WithElectronicAddress permits SellerBuildXrechnung {
         /**
          * BG-5 SELLER POSTAL ADDRESS. Group carrying the seller's postal address.
          *
@@ -87,7 +87,7 @@ public final class SellerStepsXrechnung {
     /**
      * The step of the group BG-4 that follows BG-5 SELLER POSTAL ADDRESS.
      */
-    public interface WithPostalAddress {
+    public sealed interface WithPostalAddress permits SellerBuildXrechnung {
         /**
          * BG-6 SELLER CONTACT. Group carrying the seller's contact details.
          *
@@ -108,7 +108,7 @@ public final class SellerStepsXrechnung {
      * The terminal step of the group BG-4: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerBuildXrechnung {
         /**
          * BT-28 Seller trading name. Name the seller is known by, where different from the
          * registered seller name.

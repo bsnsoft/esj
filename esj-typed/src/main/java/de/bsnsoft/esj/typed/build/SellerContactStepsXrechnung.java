@@ -20,7 +20,7 @@ public final class SellerContactStepsXrechnung {
     /**
      * The first step of the group BG-6: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits SellerContactBuildXrechnung {
         /**
          * BT-41 Seller contact point. Name of the contact point or department at the seller.
          *
@@ -36,7 +36,7 @@ public final class SellerContactStepsXrechnung {
     /**
      * The step of the group BG-6 that follows BT-41 Seller contact point.
      */
-    public interface WithName {
+    public sealed interface WithName permits SellerContactBuildXrechnung {
         /**
          * BT-42 Seller contact telephone number. Telephone number of the seller's contact point.
          *
@@ -52,7 +52,7 @@ public final class SellerContactStepsXrechnung {
     /**
      * The step of the group BG-6 that follows BT-42 Seller contact telephone number.
      */
-    public interface WithTelephone {
+    public sealed interface WithTelephone permits SellerContactBuildXrechnung {
         /**
          * BT-43 Seller contact email address. Email address of the seller's contact point.
          *
@@ -69,7 +69,7 @@ public final class SellerContactStepsXrechnung {
      * The terminal step of the group BG-6: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerContactBuildXrechnung {
         /**
          * Returns the typed editor of this instance of BG-6. It is the way to anything this builder
          * does not offer, an extension term above all, and it writes into the same document.

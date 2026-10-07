@@ -11,6 +11,9 @@ import de.bsnsoft.esj.EsjFormatException;
  * <p>There is no overload that appends a bare identifier: the scheme is part of what the
  * term means, and a value without it is refused by validation layer L2. The handle of a
  * term whose scheme is optional is {@link IdentifierList}, which adds that overload.
+ *
+ * <p>Not for implementation: the editors return the implementation of this library, and a
+ * later release may add methods to this interface.
  */
 public interface SchemedIdentifierList extends ValueList<Identifier> {
 

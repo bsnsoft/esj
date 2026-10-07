@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  * of this editor: {@code InvoiceLineDeliveryEditor} checks a value against the grammar of its
  * semantic data type and nothing else.
  */
-public interface InvoiceLineDeliveryEditor {
+public sealed interface InvoiceLineDeliveryEditor permits InvoiceLineDeliveryEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

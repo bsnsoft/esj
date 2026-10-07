@@ -20,7 +20,7 @@ public final class CardSteps {
     /**
      * The first step of the group BG-18: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits CardBuild {
         /**
          * BT-87 Payment card primary account number. Primary account number of the payment card;
          * only part of the number may be shown.
@@ -37,7 +37,7 @@ public final class CardSteps {
      * The terminal step of the group BG-18: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits CardBuild {
         /**
          * BT-88 Payment card holder name. Name of the payment card holder.
          *

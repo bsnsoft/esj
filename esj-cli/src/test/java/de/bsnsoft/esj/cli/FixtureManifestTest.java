@@ -1,10 +1,5 @@
 package de.bsnsoft.esj.cli;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -33,12 +28,12 @@ import de.bsnsoft.esj.rules.RulePack;
 import de.bsnsoft.esj.rules.RulePackSource;
 import de.bsnsoft.esj.rules.RulePackSources;
 import de.bsnsoft.esj.rules.RulePacks;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.upgrade.EditionUpgrade;
 import de.bsnsoft.esj.upgrade.UpgradeOptions;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.validate.StructuralValidator;
 import de.bsnsoft.esj.validate.ValidationLayer;
 import de.bsnsoft.esj.xr.XrImporter;
@@ -65,6 +60,10 @@ import java.util.TreeSet;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * The fixture manifest of {@code conformance/fixtures/}: a list of cases that is written in
@@ -128,9 +127,8 @@ class FixtureManifestTest {
     private static final String LATER_EDITION_CASES = "conformance/rules-2026/cases/cases.json";
 
     /** The options the documents of those cases are written up to the later edition with. */
-    private static final UpgradeOptions UPGRADE = UpgradeOptions.builder()
-            .extension(Registry.xrechnungExtension())
-            .build();
+    private static final UpgradeOptions UPGRADE = UpgradeOptions.defaults()
+            .withExtensions(List.of(Registry.xrechnungExtension()));
 
     /** The format identifier of a manifest file. */
     private static final String FORMAT = "EN16931-Semantic-JSON-Fixtures";
@@ -162,7 +160,7 @@ class FixtureManifestTest {
 
     /** The registry of the default edition, as the repository checks it in. */
     private static final String CORE_REGISTRY =
-            "model/en16931/" + Registry.DEFAULT_EDITION + ".json";
+            "model/en16931/" + Registry.defaultEditionKey() + ".json";
 
     /** The extension registries of the repository, in the order a binding loads them. */
     private static final List<String> EXTENSION_REGISTRIES =
@@ -502,8 +500,8 @@ class FixtureManifestTest {
         manifest.put("grammars", tables);
 
         manifest.put("rules", Manifest.object()
-                .put("pack", En16931Pack.PACK_ID + "/" + En16931Pack.VERSION)
-                .put("directory", "rules/" + En16931Pack.PACK_ID + "/" + En16931Pack.VERSION)
+                .put("pack", En16931Pack.PACK_ID + "/" + En16931Pack.version())
+                .put("directory", "rules/" + En16931Pack.PACK_ID + "/" + En16931Pack.version())
                 .put("casesFile", CASES)
                 .put("cases", Oracle.all().size()));
 
@@ -552,12 +550,11 @@ class FixtureManifestTest {
         Manifest.Object file = Manifest.object()
                 .put("format", FORMAT + "-Rules")
                 .put("version", CONTRACT_VERSION)
-                .put("pack", En16931Pack.PACK_ID + "/" + En16931Pack.VERSION)
-                .put("directory", "rules/" + En16931Pack.PACK_ID + "/" + En16931Pack.VERSION);
+                .put("pack", En16931Pack.PACK_ID + "/" + En16931Pack.version())
+                .put("directory", "rules/" + En16931Pack.PACK_ID + "/" + En16931Pack.version());
 
-        StreamingReader streaming = new StreamingReader(ReaderOptions.builder()
-                .registry(COMBINED)
-                .build());
+        StreamingReader streaming = new StreamingReader(ReaderOptions.defaults()
+                .withRegistry(COMBINED));
         Map<String, SemanticDocument> bases = new LinkedHashMap<>();
         Manifest.Array array = Manifest.array();
         for (Oracle.Mutation mutation : Oracle.all()) {
@@ -663,7 +660,7 @@ class FixtureManifestTest {
         if (!theLaterEditionIsThere()) {
             return Optional.empty();
         }
-        return RulePackSources.forEdition(Registry.forEdition(LATER_EDITION).edition());
+        return RulePackSources.forRegistry(Registry.forEdition(LATER_EDITION));
     }
 
     static boolean theLaterEditionPackIsThere() {
@@ -770,7 +767,7 @@ class FixtureManifestTest {
      */
     private Manifest.Array coreRegistries() {
         return Manifest.array()
-                .add(registry(CORE_REGISTRY, Registry.forEdition(Registry.DEFAULT_EDITION)))
+                .add(registry(CORE_REGISTRY, Registry.forEdition(Registry.defaultEditionKey())))
                 .add(registry(EXTENSION_REGISTRIES.get(0), Registry.xrechnungExtension()))
                 .add(registry(EXTENSION_REGISTRIES.get(1), Registry.b2cExtension()));
     }
@@ -1127,7 +1124,7 @@ class FixtureManifestTest {
                                          boolean warningsOnly) {
         Set<String> codes = new TreeSet<>();
         for (RuleFinding finding : engine.evaluate(document)) {
-            if (!warningsOnly || finding.severity() == RuleSeverity.WARNING) {
+            if (!warningsOnly || finding.severity() == Severity.WARNING) {
                 codes.add(finding.code());
             }
         }
@@ -1219,7 +1216,7 @@ class FixtureManifestTest {
     }
 
     static boolean theLaterEditionIsThere() {
-        return Registry.editions().contains(LATER_EDITION);
+        return Registry.editionKeys().contains(LATER_EDITION);
     }
 
     /**

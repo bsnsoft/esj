@@ -86,7 +86,7 @@ class ReadmeExamplesTest {
     void readWithLimitsOfTheCallersOwn() {
         // docs/java-api.md: Reading a document
         EsjReader reader = EsjReader.withLimits(
-                Limits.defaults().toBuilder().maxValues(5_000).build());
+                Limits.defaults().withMaxValues(5_000));
 
         assertEquals(5_000, reader.limits().maxValues());
         assertEquals(Limits.defaults().maxDocumentBytes(), reader.limits().maxDocumentBytes());

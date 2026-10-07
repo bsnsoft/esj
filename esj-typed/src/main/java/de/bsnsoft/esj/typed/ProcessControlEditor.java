@@ -22,7 +22,7 @@ import de.bsnsoft.esj.typed.internal.Writers;
  * of this editor: {@code ProcessControlEditor} checks a value against the grammar of its semantic
  * data type and nothing else.
  */
-public interface ProcessControlEditor {
+public sealed interface ProcessControlEditor permits ProcessControlEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

@@ -17,13 +17,13 @@ module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Ma
 |---|---|---|
 | `esj-core` | paths, values, reader, writer, canonicalizer, structural validator | `jackson-core` |
 | `esj-typed` | the generated typed view and the typed editor | — |
-| `esj-bindings` | the table-driven streaming reader and the two writers | `esj-xr` |
+| `esj-bindings` | the table-driven streaming reader and the two writers | — |
 | `esj-xr` | the XSLT path for UBL 2.1 and CII D16B, and the XR export | Saxon-HE 13.0 or newer |
 | `esj-syntax` | the official XSD and Schematron of a profile, run over an XML input | `esj-xr` |
 | `esj-rules` | the business rules of the standard over the semantic model | — |
 | `esj-invoice` | the domain API: invoice objects, code list enums, one `build()` | `esj-typed`, `esj-rules` |
 | `esj-b2c` | the B2C extension: the gross figures a consumer was shown, and the policies that derive the net invoice from them ([`b2c.md`](b2c.md)) | `esj-invoice` |
-| `esj-pdf` | hybrid PDFs: the embedded invoice read, and an invoice written into a PDF/A-3 file | `esj-xr`, `esj-bindings`, PDFBox |
+| `esj-pdf` | hybrid PDFs: the embedded invoice read, and an invoice written into a PDF/A-3 file | `esj-bindings`, PDFBox |
 | `esj-render` | the XR export, the HTML page and the PDF/A-3b rendering, plain or on a template | `esj-xr`, PDFBox, ZXing |
 | `esj-generator` | generates the sources of `esj-typed` and the per-term schema, under `-Pgenerate`; a build tool, not published | — |
 | `esj-cli` | the `esj` command line tool | every module above but `esj-invoice`, picocli |
@@ -48,12 +48,29 @@ version of its own; the two tools are on no repository ([`releasing.md`](releasi
 </dependencyManagement>
 ```
 
-The public API of `esj-core` is `de.bsnsoft.esj` for paths, values and documents, `.json` for
-reader, writer, canonicalizer and limits, `.model` for the registry, `.validate` for the structural
-validator, `.imports` for what a reader has to say about the document it read, `.handler` for the
-event view and, as a preview, `.upgrade` for moving a document between editions
-([`editions.md`](editions.md)). A package whose name contains `internal` is not API; `@Preview`
-marks what may change in any minor release: the 2026 edition, `esj-b2c` and a few named types.
+## Packages
+
+**API** keeps its signatures within a major version, **preview** (`@Preview`) may change in any minor
+release, **internal** is public only because another module needs it ([`compatibility.md`](compatibility.md)).
+
+| Package `de.bsnsoft.esj…` | Module | Status | Holds |
+|---|---|---|---|
+| (root) | `esj-core` | API | paths, values, documents, exceptions, `Esj` |
+| `.json`, `.model`, `.validate` | `esj-core` | API | reader, writer, canonicalizer, limits; registry (`MinorUnits` preview); structural validator, `Severity`, `ValidationStatus` |
+| `.imports`, `.handler`, `.xml` | `esj-core` | API | what a reader says about what it read, `InvoiceReader`; event view; syntax and encoding of an XML invoice |
+| `.upgrade` | `esj-core` | preview | moving a document between editions ([`editions.md`](editions.md)) |
+| `.typed`, `.typed.build` | `esj-typed` | API | view, editor and step builder of the 2017 edition, generated |
+| `.typed.v2026` | `esj-typed` | preview | view and editor of the 2026 edition, generated |
+| `.xr` | `esj-xr` | API | the XSLT path and the XR export |
+| `.syntax` | `esj-syntax` | API | XSD and Schematron of a profile (`PackFetcher`, `PackRecipe`, `PackRecipes` preview) |
+| `.rules`, `.rules.en16931` | `esj-rules` | API | rule engine, packs, `En16931Pack` |
+| `.rules.en16931.v2026` | `esj-rules` | preview | `En16931V2026Pack` |
+| `.invoice`, `.invoice.code` | `esj-invoice` | API | the domain API and the code list enums |
+| `.b2c` | `esj-b2c` | preview | the B2C extension |
+| `.bindings` | `esj-bindings` | API | streaming reader, CII and UBL writers |
+| `.pdf` | `esj-pdf` | API | hybrid PDFs (`ContainerChecks`, `InvoiceAttachments` preview) |
+| `.render` | `esj-render` | API | HTML and PDF rendering |
+| `.internal`, `.internal.report`, `.typed.internal`, `.xr.internal`, `.rules.internal…`, `.render.internal` | | internal | |
 
 Every snippet below is a test, in the `ReadmeExamplesTest.java` of the module it shows.
 
@@ -79,7 +96,7 @@ The limits of `SPEC.md` section 12.2 are the defaults, and every one is the call
 
 ```java
 EsjReader reader = EsjReader.withLimits(
-        Limits.defaults().toBuilder().maxValues(5_000).build());
+        Limits.defaults().withMaxValues(5_000));
 ```
 
 ## Layers
@@ -236,9 +253,7 @@ did not do; the reason comes from the closed vocabulary `NotEvaluatedReason` —
 `PRECEDING-LAYER-FAILED`, `EDITION-UNKNOWN`, `NOT-REQUESTED`, in the order of precedence
 `SPEC.md` 9.5 fixes, which also decides which survives a `merge`. `registries()` names what the
 run measured against. A structural validator never evaluates L1 and a reader evaluates nothing
-else, so neither alone may say `VALID`; `merge` composes them. A document that never was a byte
-sequence has no L1, and the tool that composes a verdict for such an input decides whether L1 is
-part of its complete check (`SPEC.md` 3.5).
+else, so neither alone may say `VALID`; `merge` composes them (`SPEC.md` 3.5).
 
 ```java
 ReadResult read = EsjReader.strict().readWithFindings(bytes);
@@ -261,8 +276,7 @@ ValidationResult result = StructuralValidator.validate(
 A validator given a set of registries picks the one that describes the edition the document
 names. Where none does it evaluates nothing rather than guessing: the result carries
 `ESJ-L2-EDITION-UNKNOWN` once at document level, names both model layers as not evaluated for
-the reason `EDITION-UNKNOWN`, and is `INDETERMINATE`. Which editions an implementation holds a
-registry for is a property of the implementation, not of the document.
+the reason `EDITION-UNKNOWN`, and is `INDETERMINATE`.
 
 ## Canonical form and digests
 
@@ -459,7 +473,7 @@ The derivation runs where it is asked to and never inside `document()`. Where th
 not say enough — a line with no VAT category, a category levied at a rate with no rate, a base
 quantity with no price, an allowance with no category, no line at all — it throws
 `DerivationException` naming the term and the group instance. A stated line net amount that the
-formula contradicts is refused unless `TotalsOptions.standard().withOverwriteLines(true)`.
+formula contradicts is refused unless `TotalsOptions.defaults().withOverwriteLines(true)`.
 
 The 2026 view (a preview) has its own policy, `…typed.v2026.Totals.of(En16931V2026Pack.minorUnits())`,
 with the same report: each amount rounded to the minor unit of its currency, BT-179 added into BT-115,
@@ -608,8 +622,7 @@ boolean sameInvoice = Canonicalizer.semanticDigest(fromUbl)
 ```
 
 The litmus test of [`conformance.md`](conformance.md) is what that comparison says over the
-whole corpus. This module depends on Saxon-HE (Mozilla Public License 2.0), because the
-stylesheets are written in XSLT 2.0.
+whole corpus.
 
 ## Reading UBL and CII without a tree
 
@@ -635,10 +648,9 @@ may do: the registry, the `Limits` the documents are written for, and three boun
 in bytes (64 MiB by default), the element nesting, and the largest element it holds whole.
 
 ```java
-StreamingReader large = new StreamingReader(ReaderOptions.builder()
-        .limits(Limits.builder().maxValues(5_000_000).build())
-        .maxInputBytes(256L * 1024 * 1024)
-        .build());
+StreamingReader large = new StreamingReader(ReaderOptions.defaults()
+        .withLimits(Limits.defaults().withMaxValues(5_000_000))
+        .withMaxInputBytes(256L * 1024 * 1024));
 ```
 
 `ReaderMode` says what happens where the document and the model disagree: `REPAIR`, the
@@ -681,7 +693,7 @@ element the syntax requires that the document does not state, and a character XM
 place for — a text value may hold any Unicode scalar value (`SPEC.md` 12.6), so the writer
 leaves it out, writes the rest and reports `CHARACTER_NOT_REPRESENTABLE`. A term whose registry
 declares that its terms belong to no syntax, the B2C extension's, is not a loss where the writer
-is handed that registry with `WriterOptions.builder().extensions(...)`: its note is
+is handed that registry with `WriterOptions.withExtensions(...)`: its note is
 `TERM_BY_DESIGN` with the registry, it counts neither as written nor as dropped, and
 `report.byDesign()` gathers the terms by registry.
 
@@ -726,14 +738,14 @@ importer writes a new one when it reads the result back.
 
 ## Rendering an invoice for a reader
 
-`esj-render` has two renderers. Both take a `RenderOptions` — the language, the page size,
-layout, template and page bound only the PDF one uses, and the byte bound only the HTML one
-uses — and neither changes the document.
+`esj-render` has two renderers; both take a `RenderOptions` and neither changes the document.
+Layout, template and page bound concern only the PDF one, the byte bound only the HTML one.
 
 ```java
 HtmlRenderer html = new HtmlRenderer();
 String german = html.render(document);
-String english = html.render(document, RenderOptions.in(RenderLanguage.ENGLISH));
+String english = html.render(document, RenderOptions.defaults()
+        .withLanguage(RenderLanguage.ENGLISH));
 
 RenderResult result = html.renderWithReport(document, RenderOptions.defaults());
 List<ExportNote> notLeftBehind = result.report().notes();
@@ -741,21 +753,22 @@ List<ExportNote> notLeftBehind = result.report().notes();
 PdfRenderer pdf = new PdfRenderer();
 byte[] a4 = pdf.render(document);
 byte[] usLetter = pdf.render(document,
-        RenderOptions.in(RenderLanguage.ENGLISH).on(PageSize.LETTER));
-byte[] generic = pdf.render(document, RenderOptions.defaults().layout(Layout.GENERIC));
+        RenderOptions.defaults().withLanguage(RenderLanguage.ENGLISH)
+                .withPageSize(PageSize.LETTER));
+byte[] generic = pdf.render(document,
+        RenderOptions.defaults().withLayout(Layout.GENERIC));
 ```
 
 The HTML rendering is the document written as the XR representation and handed to
-`xrechnung-html.xsl` of the KoSIT visualization; its report is `XrExporter`'s and the
-`extensions` subtree never reaches it. The PDF is drawn with PDFBox as PDF/A-3b, in one of two
-layouts: `Layout.LETTER`, a business letter and the default (`RenderOptions.DEFAULT_LAYOUT`), or
-`Layout.GENERIC`, the shape of the semantic model. `RenderOptions.with(template)` brings a
-letterhead, a logo, colours, fonts, margins, places for the terms of a model extension and a
-layout of its own, which an explicit `layout(…)` overrules ([`templates.md`](templates.md));
-`withMaxPages(int)` bounds a rendering at 2 000 pages and throws `EsjLimitException` beyond
-it; `withMaxHtmlBytes(long)` bounds the HTML page at 1 GiB of UTF-8, counted while it is written,
-and throws the same. Two runs give the same bytes, an edition the registry does not describe is
-refused with `IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
+`xrechnung-html.xsl` of the KoSIT visualization; its report is `XrExporter`'s, and the `extensions`
+subtree never reaches it. The PDF is PDF/A-3b, drawn with PDFBox in `Layout.LETTER`, a business
+letter and the default (`RenderOptions.DEFAULT_LAYOUT`), or `Layout.GENERIC`, the shape of the
+semantic model. `withTemplate(…)` brings a letterhead, a logo, colours, fonts, margins, places for
+extension terms and a layout, which `withLayout(…)` overrules ([`templates.md`](templates.md));
+`withPaymentCode(…)` decides the EPC QR code of the letter. `withMaxPages(int)` (2 000) and
+`withMaxHtmlBytes(long)` (1 GiB of UTF-8, counted while written) throw `EsjLimitException`. Two runs
+give the same bytes, an edition the registry does not describe is refused with
+`IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
 
 ## Validating against the official artefacts
 
@@ -767,7 +780,7 @@ validation packs under `packs/` and are executed as data, never reimplemented.
 ```java
 SyntaxReport report = SyntaxValidator.validate(Files.readAllBytes(invoice));
 
-Verdict verdict = report.verdict();
+ValidationStatus verdict = report.verdict();
 List<SyntaxFinding> fatal = report.fatal();
 List<SyntaxFinding> warnings = report.warnings();
 ```
@@ -845,7 +858,7 @@ is compiled once, evaluated many times, and is immutable and safe to share betwe
 `En16931Pack.engine` is the pack this build carries, brought together from three things:
 
 ```java
-RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.VERSION);
+RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.version());
 RuleEngine other = RuleEngine.compile(pack, Registry.en16931(),
         CodeLists.bundled(pack), En16931Pack.javaRules());
 ```
@@ -874,19 +887,16 @@ The build is Maven and needs a JDK 17, 21 or 25; the compiler targets release 17
 mvn -B verify
 ```
 
-That compiles the eleven modules, runs every test, builds the source and Javadoc jars, and writes
-the self-contained `esj-cli/target/esj.jar` that `bin/esj` runs. Warnings are errors: `-Xlint:all`
-with `failOnWarning`, and Javadoc with `doclint` on every group and `failOnWarnings`. The
-generated artefacts — the sources under `esj-typed/src`, the code list enums under
-`esj-invoice/src` and the model schema of each edition under `schema/` — are checked in and
-regenerated from the registries with
+That compiles the eleven modules, runs every test, builds the source and Javadoc jars and writes
+`esj-cli/target/esj.jar`, which `bin/esj` runs; warnings are errors in `javac` and in Javadoc. The
+generated sources under `esj-typed/src` and `esj-invoice/src` and the model schemas under
+`schema/` are checked in and regenerated from the registries with
 
 ```text
 mvn -B -Pgenerate -pl esj-generator -am process-classes
 ```
 
-which must leave the working tree unchanged; `.github/workflows/ci.yml` runs both and fails
-when a generated file differs.
+which must leave the tree unchanged; `.github/workflows/ci.yml` fails where it does not.
 
 ## The three version numbers
 
@@ -896,17 +906,10 @@ when a generated file differs.
 | semantic model edition | the `semanticModel` member of every document, the `edition` member of the registry | `EN16931-1:2017+A1:2019/AC:2020`, `EN16931-1:2026` |
 | artifact version | `pom.xml` | `0.9.5-SNAPSHOT` |
 
-The **format version** is the version of `SPEC.md`, not of the semantic model. It follows
-`MAJOR.MINOR`, and until 1.0 any version may change the format in incompatible ways. A reader
-that does not implement the version it finds rejects the document rather than guessing.
-
-The **semantic model edition** is the edition of EN 16931-1 the paths refer to:
-`EN16931-1:2017+A1:2019/AC:2020` by default, `EN16931-1:2026`, a preview, where a build carries it.
-A reader needs none, so a document of an edition without one is read, canonicalized and hashed, and
-the model layers report `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` 9.2). The extension registry is
-versioned by the specification it describes, `XRechnung 3.0.2`.
-
-The **artifact version** is the Maven version every module shares; it says nothing about the
-format. From 0.9.0 the libraries are published under `de.bsnsoft.esj` on Maven Central
-([`releasing.md`](releasing.md)). All three are constants in `de.bsnsoft.esj.Esj` where a program
-needs them: `FORMAT`, `VERSION`, `SEMANTIC_MODEL`, `MEDIA_TYPE` and `FILE_EXTENSION`.
+The format version follows `MAJOR.MINOR`; a reader rejects a version it does not implement. A reader
+needs no registry for the edition a document names; the model layers then report
+`ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` 9.2). The artifact version says nothing about the format; the
+libraries are on Maven Central from 0.9.0 ([`releasing.md`](releasing.md)). `Esj.formatVersion()`
+and `Esj.defaultSemanticModel()` return the first two of this build; a registry names an edition by
+`editionKey()` (`2017`), `edition()` (`EN 16931-1:2017+A1:2019/AC:2020`) and `semanticModel()`
+(`EN16931-1:2017+A1:2019/AC:2020`). [`compatibility.md`](compatibility.md) is what each promises.

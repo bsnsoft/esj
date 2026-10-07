@@ -22,7 +22,7 @@ public final class DocumentLevelChargeSteps {
     /**
      * The first step of the group BG-21: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits DocumentLevelChargeBuild {
         /**
          * BT-99 Document level charge amount. Amount of the document level charge, without VAT.
          *
@@ -37,7 +37,7 @@ public final class DocumentLevelChargeSteps {
     /**
      * The step of the group BG-21 that follows BT-99 Document level charge amount.
      */
-    public interface WithAmount {
+    public sealed interface WithAmount permits DocumentLevelChargeBuild {
         /**
          * BT-102 Document level charge VAT category code. VAT category code that applies to the
          * document level charge.
@@ -54,7 +54,7 @@ public final class DocumentLevelChargeSteps {
      * The terminal step of the group BG-21: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits DocumentLevelChargeBuild {
         /**
          * BT-100 Document level charge base amount. Base amount the document level charge
          * percentage is applied to.

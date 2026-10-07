@@ -17,7 +17,7 @@ import java.util.Optional;
  * nothing is resolved before it is asked for: every accessor reads the document the view was built
  * over.
  */
-public interface DeliveryAddress {
+public sealed interface DeliveryAddress permits DeliveryAddressView {
 
     /**
      * Returns the document this view reads.

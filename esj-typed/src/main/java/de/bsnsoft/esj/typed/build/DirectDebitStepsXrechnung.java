@@ -21,7 +21,7 @@ public final class DirectDebitStepsXrechnung {
     /**
      * The first step of the group BG-19: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits DirectDebitBuildXrechnung {
         /**
          * BT-89 Mandate reference identifier. Reference of the direct debit mandate agreed between
          * payer and payee.
@@ -54,7 +54,7 @@ public final class DirectDebitStepsXrechnung {
     /**
      * The step of the group BG-19 that follows BT-89 Mandate reference identifier.
      */
-    public interface WithMandateReferenceIdentifier {
+    public sealed interface WithMandateReferenceIdentifier permits DirectDebitBuildXrechnung {
         /**
          * BT-90 Bank assigned creditor identifier. Creditor identifier assigned to the payee by its
          * bank or by the direct debit scheme.
@@ -87,7 +87,7 @@ public final class DirectDebitStepsXrechnung {
     /**
      * The step of the group BG-19 that follows BT-90 Bank assigned creditor identifier.
      */
-    public interface WithBankAssignedCreditorIdentifier {
+    public sealed interface WithBankAssignedCreditorIdentifier permits DirectDebitBuildXrechnung {
         /**
          * BT-91 Debited account identifier. The account that the direct debit of BG-19 takes its
          * money from.
@@ -119,7 +119,7 @@ public final class DirectDebitStepsXrechnung {
      * The terminal step of the group BG-19: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits DirectDebitBuildXrechnung {
         /**
          * Returns the typed editor of this instance of BG-19. It is the way to anything this
          * builder does not offer, an extension term above all, and it writes into the same

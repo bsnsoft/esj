@@ -22,7 +22,7 @@ public final class BuyerStepsXrechnung {
     /**
      * The first step of the group BG-7: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits BuyerBuildXrechnung {
         /**
          * BT-44 Buyer name. Full name of the buyer as it appears in the buyer's own records.
          *
@@ -37,7 +37,7 @@ public final class BuyerStepsXrechnung {
     /**
      * The step of the group BG-7 that follows BT-44 Buyer name.
      */
-    public interface WithName {
+    public sealed interface WithName permits BuyerBuildXrechnung {
         /**
          * BT-49 Buyer electronic address. Electronic address of the buyer, with a mandatory scheme
          * identifier saying which address scheme is used.
@@ -67,7 +67,7 @@ public final class BuyerStepsXrechnung {
     /**
      * The step of the group BG-7 that follows BT-49 Buyer electronic address.
      */
-    public interface WithElectronicAddress {
+    public sealed interface WithElectronicAddress permits BuyerBuildXrechnung {
         /**
          * BG-8 BUYER POSTAL ADDRESS. Group carrying the buyer's postal address.
          *
@@ -87,7 +87,7 @@ public final class BuyerStepsXrechnung {
      * The terminal step of the group BG-7: every member the model declares mandatory in it has been
      * written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits BuyerBuildXrechnung {
         /**
          * BT-45 Buyer trading name. Name the buyer is known by, where different from the buyer
          * name.

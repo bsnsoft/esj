@@ -23,7 +23,7 @@ import java.time.LocalDate;
  * of this editor: {@code PeriodEditor} checks a value against the grammar of its semantic data type
  * and nothing else.
  */
-public interface PeriodEditor {
+public sealed interface PeriodEditor permits PeriodEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

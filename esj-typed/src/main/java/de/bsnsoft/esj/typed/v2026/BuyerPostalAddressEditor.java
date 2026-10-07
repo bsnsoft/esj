@@ -22,7 +22,7 @@ import de.bsnsoft.esj.typed.internal.Writers;
  * of this editor: {@code BuyerPostalAddressEditor} checks a value against the grammar of its
  * semantic data type and nothing else.
  */
-public interface BuyerPostalAddressEditor {
+public sealed interface BuyerPostalAddressEditor permits BuyerPostalAddressEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

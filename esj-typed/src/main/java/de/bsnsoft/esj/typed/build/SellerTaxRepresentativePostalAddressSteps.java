@@ -21,7 +21,7 @@ public final class SellerTaxRepresentativePostalAddressSteps {
     /**
      * The first step of the group BG-12: nothing has been written into it yet.
      */
-    public interface Start {
+    public sealed interface Start permits SellerTaxRepresentativePostalAddressBuild {
         /**
          * BT-69 Tax representative country code. Country code of the tax representative's address,
          * from ISO 3166-1 alpha-2.
@@ -38,7 +38,7 @@ public final class SellerTaxRepresentativePostalAddressSteps {
      * The terminal step of the group BG-12: every member the model declares mandatory in it has
      * been written, so what is left are the optional members.
      */
-    public interface Buildable {
+    public sealed interface Buildable permits SellerTaxRepresentativePostalAddressBuild {
         /**
          * BT-64 Tax representative address line 1. First line of the tax representative's address.
          *

@@ -74,12 +74,12 @@ public final class EditionUpgrade {
      * Returns the editions this build can write a document of a given edition as.
      *
      * @param semanticModel the {@code semanticModel} member of a document
-     * @return the edition keys, in the order {@link Registry#editions()} gives them
+     * @return the edition keys, in the order {@link Registry#editionKeys()} gives them
      */
     public static List<String> targets(String semanticModel) {
         Objects.requireNonNull(semanticModel, "semanticModel");
         List<String> targets = new ArrayList<>();
-        for (String edition : Registry.editions()) {
+        for (String edition : Registry.editionKeys()) {
             if (isAvailable(semanticModel, edition)) {
                 targets.add(edition);
             }
@@ -91,7 +91,7 @@ public final class EditionUpgrade {
      * Tells whether this build can write a document of one edition as another.
      *
      * @param semanticModel the {@code semanticModel} member of a document
-     * @param targetEdition the key of the target edition, as {@link Registry#editions()}
+     * @param targetEdition the key of the target edition, as {@link Registry#editionKeys()}
      *                      spells it
      * @return {@code true} where this build carries the registry of the target edition and
      *         a mapping between the two
@@ -99,7 +99,7 @@ public final class EditionUpgrade {
     public static boolean isAvailable(String semanticModel, String targetEdition) {
         Objects.requireNonNull(semanticModel, "semanticModel");
         Objects.requireNonNull(targetEdition, "targetEdition");
-        if (!Registry.editions().contains(targetEdition)) {
+        if (!Registry.editionKeys().contains(targetEdition)) {
             return false;
         }
         Registry target = Registry.forEdition(targetEdition);
@@ -113,7 +113,7 @@ public final class EditionUpgrade {
      * Writes a document as a document of another edition.
      *
      * @param document      the document to upgrade or downgrade
-     * @param targetEdition the key of the target edition, as {@link Registry#editions()}
+     * @param targetEdition the key of the target edition, as {@link Registry#editionKeys()}
      *                      spells it
      * @param options       what the caller decides
      * @return the result: a document of the target edition and what the run has to say
@@ -128,9 +128,9 @@ public final class EditionUpgrade {
         Objects.requireNonNull(document, "document");
         Objects.requireNonNull(targetEdition, "targetEdition");
         Objects.requireNonNull(options, "options");
-        if (!Registry.editions().contains(targetEdition)) {
+        if (!Registry.editionKeys().contains(targetEdition)) {
             throw new EsjFormatException("this build carries no registry of the edition "
-                    + targetEdition + "; it carries " + Registry.editions());
+                    + targetEdition + "; it carries " + Registry.editionKeys());
         }
         Registry target = Registry.forEdition(targetEdition);
         if (target.describes(document.semanticModel())) {
@@ -729,7 +729,7 @@ public final class EditionUpgrade {
          * already failed.
          */
         private Registry sourceRegistry() {
-            for (String edition : Registry.editions()) {
+            for (String edition : Registry.editionKeys()) {
                 Registry registry = Registry.forEdition(edition);
                 if (registry.describes(document.semanticModel())) {
                     return combined(registry, options);

@@ -1,20 +1,15 @@
 package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.SemanticDocument;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import de.bsnsoft.esj.bindings.ReaderOptions;
 import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
+import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -27,6 +22,10 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The official artefacts as the oracle of the EN 16931 rule pack.
@@ -60,9 +59,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 class OracleTest {
 
     /** The reader {@code esj validate} uses when nothing is chosen. */
-    private static final StreamingReader READER = new StreamingReader(ReaderOptions.builder()
-            .registry(Registry.en16931WithXrechnung())
-            .build());
+    private static final StreamingReader READER = new StreamingReader(ReaderOptions.defaults()
+            .withRegistry(Registry.en16931WithXrechnung()));
 
     private static final RuleEngine ENGINE = En16931Pack.engine(Registry.en16931WithXrechnung());
 
@@ -89,7 +87,7 @@ class OracleTest {
         SemanticDocument document = READER.read(xml).document();
         Set<String> codes = new TreeSet<>();
         for (RuleFinding finding : ENGINE.evaluate(document)) {
-            if (!warnings || finding.severity() == RuleSeverity.WARNING) {
+            if (!warnings || finding.severity() == Severity.WARNING) {
                 codes.add(finding.code());
             }
         }

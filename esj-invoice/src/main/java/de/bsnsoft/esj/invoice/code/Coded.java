@@ -14,8 +14,14 @@ package de.bsnsoft.esj.invoice.code;
  * <p>Nothing here decides whether a code is admissible. Membership in a code list is a
  * business rule, it is decided by a named rule of a named pack version against a dated
  * snapshot, and a report says so; an enum is a spelling aid and never a verdict.
+ *
+ * <p>The interface is sealed: a code no enum carries is a {@link CustomCode}, and a later
+ * release may add methods here. The generated enums are listed by name, so a new code list
+ * of the generator is added to {@code permits} with it.
  */
-public interface Coded {
+public sealed interface Coded permits AllowanceReason, ChargeReason, Country, CurrencyCode,
+        CustomCode, ElectronicAddressScheme, InvoiceType, PaymentMeansCode, Unit, VatCategory,
+        VatExemptionReason {
 
     /**
      * Returns the code as it is written into the document.

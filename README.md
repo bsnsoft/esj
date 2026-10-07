@@ -112,9 +112,10 @@ SemanticDocument fromPdf = PdfInvoiceImporter.importPdf(Files.readAllBytes(pdfFi
 String invoiceNumber = invoice.value(SemanticPath.of("/BT-1"))
         .map(SemanticValue::asString).orElseThrow();
 
-byte[] pages = new PdfRenderer().render(invoice, RenderOptions.in(RenderLanguage.ENGLISH));
+byte[] pages = new PdfRenderer().render(invoice,
+        RenderOptions.defaults().withLanguage(RenderLanguage.ENGLISH));
 EmbedResult hybrid = FacturX.embedWithReport(pages, invoice,
-        EmbedOptions.of(FacturXProfile.EN_16931));
+        EmbedOptions.defaults().withProfile(FacturXProfile.EN_16931));
 hybrid.report().notes().forEach(note -> System.out.println("write note: " + note));
 Files.write(out.resolve("invoice.pdf"), hybrid.pdf());
 Files.write(out.resolve("invoice.esj.json"), EsjWriter.pretty().toBytes(invoice));
@@ -203,6 +204,7 @@ manifest. Changes: [`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.m
 - [`docs/faq-de.md`](docs/faq-de.md) — the same questions in German
 - [`docs/storage.md`](docs/storage.md) — invoices in a database, PostgreSQL first
 - [`docs/java-api.md`](docs/java-api.md) — the reference implementation, every snippet a test
+- [`docs/compatibility.md`](docs/compatibility.md) — what a release may change, and what it keeps
 - [`docs/cli.md`](docs/cli.md) — the command line reference and the exit codes
 - [`docs/validation.md`](docs/validation.md) — what each engine checks, what a verdict commits to
 - [`docs/b2c.md`](docs/b2c.md) — the gross figures a consumer was shown, and the policies over them

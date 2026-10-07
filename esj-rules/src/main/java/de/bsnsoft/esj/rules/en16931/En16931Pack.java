@@ -59,14 +59,35 @@ public final class En16931Pack {
     /** The identifier of the pack, which appears in every finding it produces. */
     public static final String PACK_ID = "en16931";
 
-    /** The version of the pack, which is the release of the artefacts it was verified against. */
-    public static final String VERSION = "1.3.16";
+    /** The value {@link #version()} returns. */
+    private static final String VERSION = "1.3.16";
 
-    /** The edition of the semantic model the rules of this pack are addresses in. */
-    public static final String EDITION = "EN 16931-1:2017+A1:2019/AC:2020";
+    /** The value {@link #edition()} returns. */
+    private static final String EDITION = "EN 16931-1:2017+A1:2019/AC:2020";
 
     private En16931Pack() {
         throw new AssertionError("no instances");
+    }
+
+    /**
+     * Returns the version of the pack, which is the release of the artefacts it was
+     * verified against: {@code 1.3.16} in this release. A later release may carry a pack
+     * verified against a later release of the artefacts.
+     *
+     * @return the version
+     */
+    public static String version() {
+        return VERSION;
+    }
+
+    /**
+     * Returns the edition of the semantic model the rules of this pack are addressed in, in
+     * the spelling of {@link Registry#edition()}.
+     *
+     * @return {@code EN 16931-1:2017+A1:2019/AC:2020}
+     */
+    public static String edition() {
+        return EDITION;
     }
 
     /**

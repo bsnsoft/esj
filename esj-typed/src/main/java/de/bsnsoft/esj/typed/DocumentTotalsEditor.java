@@ -23,7 +23,7 @@ import java.math.BigDecimal;
  * of this editor: {@code DocumentTotalsEditor} checks a value against the grammar of its semantic
  * data type and nothing else.
  */
-public interface DocumentTotalsEditor {
+public sealed interface DocumentTotalsEditor permits DocumentTotalsEdit {
 
     /**
      * Returns the builder every editor of this document writes into. It is the way to an extension

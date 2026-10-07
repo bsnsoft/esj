@@ -30,7 +30,7 @@ final class GlobalOptions {
      * no number: the default of the syntax engine, so that one number holds for every
      * command and for every step of {@code esj validate}.
      */
-    static final Duration DEFAULT_MAX_RUNTIME = SyntaxOptions.DEFAULT_MAX_RUNTIME;
+    static final Duration DEFAULT_MAX_RUNTIME = SyntaxOptions.defaults().maxRuntime();
 
     private boolean verbose;
     private boolean debug;

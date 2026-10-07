@@ -156,7 +156,7 @@ class XrMappingTest {
     @Test
     void leavesExtensionGroupsOutWithoutTheirRegistry() {
         XrImporter core = new XrImporter(de.bsnsoft.esj.model.Registry.en16931(),
-                XrImporter.DEFAULT_MAX_INPUT_BYTES);
+                XrImporter.defaultMaxInputBytes());
         ImportResult result = core.readUbl(Conformance.instance(EXTENSION));
 
         assertEquals(SemanticValue.of("12345"),
@@ -215,9 +215,10 @@ class XrMappingTest {
      */
     @Test
     void followsTheDeeperLevelsForAReaderThatAcceptsThem() {
-        Limits wide = Limits.defaults().toBuilder().maxPathSegments(32).maxPathBytes(512).build();
+        Limits wide = Limits.defaults().withMaxPathSegments(32).withMaxPathBytes(512);
         XrImporter deep =
-                new XrImporter(Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES, wide);
+                new XrImporter(Registry.en16931WithXrechnung(), XrImporter.defaultMaxInputBytes(),
+                        wide);
 
         ImportResult result = deep.readUbl(subInvoiceLines(7));
 
@@ -319,7 +320,7 @@ class XrMappingTest {
     @Test
     void keepsThePrefixWhereTheNormalizationIsNotRun() {
         XrImporter plain = new XrImporter(Registry.en16931WithXrechnung(),
-                XrImporter.DEFAULT_MAX_INPUT_BYTES, Limits.defaults(), Set.of());
+                XrImporter.defaultMaxInputBytes(), Limits.defaults(), Set.of());
         SemanticDocument document = plain.readUbl(notes("#ADU#Our terms apply.")).document();
 
         assertEquals(Set.of(), plain.normalizations());
@@ -351,9 +352,9 @@ class XrMappingTest {
      */
     @Test
     void stopsWhereTheDocumentReachesTheNumberOfValuesTheReaderAdmits() {
-        Limits few = Limits.defaults().toBuilder().maxValues(6).build();
+        Limits few = Limits.defaults().withMaxValues(6);
         XrImporter narrow = new XrImporter(
-                Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES, few);
+                Registry.en16931WithXrechnung(), XrImporter.defaultMaxInputBytes(), few);
 
         ImportResult result = narrow.readUbl(notes("one", "two", "three", "four"));
 
@@ -371,9 +372,9 @@ class XrMappingTest {
      */
     @Test
     void leavesOutAValueLongerThanTheReaderAdmits() {
-        Limits shortStrings = Limits.defaults().toBuilder().maxStringBytes(32).build();
+        Limits shortStrings = Limits.defaults().withMaxStringBytes(32);
         XrImporter narrow = new XrImporter(
-                Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES, shortStrings);
+                Registry.en16931WithXrechnung(), XrImporter.defaultMaxInputBytes(), shortStrings);
 
         ImportResult result = narrow.readUbl(notes("x".repeat(64), "short"));
 
@@ -411,8 +412,8 @@ class XrMappingTest {
     }
 
     private static XrImporter importerFor(int maxDocumentBytes) {
-        return new XrImporter(Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES,
-                Limits.defaults().toBuilder().maxDocumentBytes(maxDocumentBytes).build());
+        return new XrImporter(Registry.en16931WithXrechnung(), XrImporter.defaultMaxInputBytes(),
+                Limits.defaults().withMaxDocumentBytes(maxDocumentBytes));
     }
 
     /** Returns the paths of the invoice notes of a document, in canonical order. */
