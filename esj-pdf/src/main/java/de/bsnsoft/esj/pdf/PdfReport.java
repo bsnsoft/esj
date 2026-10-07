@@ -8,8 +8,8 @@ import java.util.Optional;
  * What the container had to say, beside the invoice that was read out of it.
  *
  * <p>It is a report about the PDF and not about the invoice. The findings of
- * {@code esj-core} describe the semantic document; the notes of {@code esj-xr} describe
- * the distance between the XML and that document; these describe the distance between the
+ * {@code esj-core} describe the semantic document; the notes of the reader describe the
+ * distance between the XML and that document; these describe the distance between the
  * container and the XML. A caller shows the three as three things, because a caller who is
  * handed one list cannot tell which of the three answers a line belongs to.
  *

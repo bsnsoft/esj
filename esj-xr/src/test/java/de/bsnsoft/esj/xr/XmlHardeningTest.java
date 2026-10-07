@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -64,7 +65,7 @@ class XmlHardeningTest {
                 + "<!DOCTYPE Invoice [<!ENTITY % remote SYSTEM \"" + UNREACHABLE + "e.dtd\">%remote;]>"
                 + invoice("Example GmbH", ""));
 
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
     }
 
     @Test
@@ -73,7 +74,7 @@ class XmlHardeningTest {
                 + "<!DOCTYPE Invoice SYSTEM \"" + UNREACHABLE + "invoice.dtd\">"
                 + invoice("Example GmbH", ""));
 
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
     }
 
     /**
@@ -86,7 +87,7 @@ class XmlHardeningTest {
         byte[] document = utf8("<?xml version=\"1.0\"?><!DOCTYPE Invoice>"
                 + invoice("Example GmbH", ""));
 
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
     }
 
     /**
@@ -107,7 +108,7 @@ class XmlHardeningTest {
                 + invoice("&a12;", ""));
 
         long start = System.nanoTime();
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
         Duration took = Duration.ofNanos(System.nanoTime() - start);
 
         assertTrue(took.toSeconds() < 5, "the refusal took " + took);
@@ -126,7 +127,7 @@ class XmlHardeningTest {
                 + invoice("<xi:include href=\"" + UNREACHABLE + "secret\" parse=\"text\"/>",
                         " xmlns:xi=\"http://www.w3.org/2001/XInclude\""));
 
-        SemanticDocument imported = importer.importXml(document);
+        SemanticDocument imported = importer.read(document).document();
 
         assertFalse(imported.values().containsKey(SemanticPath.of("/BG-4/BT-27")),
                 "an unprocessed xi:include carries no text, so the seller name has no value");
@@ -135,7 +136,7 @@ class XmlHardeningTest {
     /**
      * The mapper walks the XR tree recursively, so a document that nests without end used
      * to end the call in a {@code StackOverflowError} — an error no caller of this module
-     * agreed to and none of its documentation names. It is now an {@link XrLimitException}
+     * agreed to and none of its documentation names. It is now an {@link EsjLimitException}
      * like any other bound. The entry point that reads the XR representation directly is
      * the one that matters: it hands the caller's bytes to the mapper without a
      * transformation in between.
@@ -151,7 +152,7 @@ class XmlHardeningTest {
         xml.append("</xr:invoice>");
         byte[] document = utf8(xml.toString());
 
-        assertThrows(XrLimitException.class, () -> importer.fromXr(document));
+        assertThrows(EsjLimitException.class, () -> importer.readXr(document).document());
     }
 
     /**
@@ -225,7 +226,7 @@ class XmlHardeningTest {
                                 + " xsi:schemaLocation=\"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2 "
                                 + UNREACHABLE + "UBL-Invoice-2.1.xsd\""));
 
-        SemanticDocument imported = importer.importXml(document);
+        SemanticDocument imported = importer.read(document).document();
 
         SemanticValue name = imported.values().get(SemanticPath.of("/BG-4/BT-27"));
 

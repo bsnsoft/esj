@@ -26,7 +26,7 @@ import java.util.List;
  */
 final class Documents {
 
-    private static final Registry REGISTRY = XrImporter.defaultRegistry();
+    private static final Registry REGISTRY = Registry.en16931WithXrechnung();
 
     private Documents() {
         throw new AssertionError("no instances");

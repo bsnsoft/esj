@@ -1,9 +1,9 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.EsjException;
+import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.EsjLimitException;
+import de.bsnsoft.esj.xml.XmlEncodingException;
 import de.bsnsoft.esj.xr.XrException;
-import de.bsnsoft.esj.xr.XrLimitException;
 import java.io.BufferedOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -307,16 +307,19 @@ public final class Main {
             trace(exception, console);
             return cli.exitCode();
         }
-        if (exception instanceof EsjLimitException || exception instanceof XrLimitException) {
-            // A bound of this run that a command did not turn into a CliException itself.
+        if (exception instanceof EsjLimitException limit) {
+            // A bound of a library, met in a step a command did not word the refusal of.
             // It is not a defect of the document, so it is not ExitCode.INPUT; see
-            // ExitCode.LIMIT.
-            console.error(console.options().bounds()
-                    .refusal("the input", exception.getMessage()));
+            // ExitCode.LIMIT and LimitRefusal, which decides the code for every bound.
+            CliException refused = LimitRefusal.refused(reached -> console.options().bounds()
+                    .refusal("the input", reached.getMessage()), limit);
+            console.error(refused.getMessage());
             trace(exception, console);
-            return ExitCode.LIMIT;
+            return refused.exitCode();
         }
-        if (exception instanceof EsjException || exception instanceof XrException) {
+        if (exception instanceof EsjFormatException
+                || exception instanceof XmlEncodingException
+                || exception instanceof XrException) {
             // A rule of the format or of a syntax binding that the input broke, met
             // somewhere a command did not turn it into a CliException itself.
             console.error(exception.getMessage());

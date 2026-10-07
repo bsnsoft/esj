@@ -3,7 +3,6 @@ package de.bsnsoft.esj.cli;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.bindings.BindingEditionException;
 import de.bsnsoft.esj.bindings.BindingException;
-import de.bsnsoft.esj.bindings.BindingLimitException;
 import de.bsnsoft.esj.bindings.CiiWriter;
 import de.bsnsoft.esj.bindings.UblWriter;
 import de.bsnsoft.esj.bindings.WriteNote;
@@ -11,7 +10,7 @@ import de.bsnsoft.esj.bindings.WriteReport;
 import de.bsnsoft.esj.bindings.WriteResult;
 import de.bsnsoft.esj.bindings.WriterOptions;
 import de.bsnsoft.esj.json.EsjWriter;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -237,11 +236,10 @@ final class ConvertCommand implements Callable<Integer>, ReadsADocument {
                 .extensions(extensions.registries())
                 .build();
         try {
-            return target == Target.CII ? CiiWriter.writeWithReport(document, options)
-                    : UblWriter.writeWithReport(document, options);
-        } catch (BindingLimitException e) {
-            throw CliException.limit(console.options().bounds()
-                    .refusal(target.description(form), e.getMessage()), e);
+            return LimitRefusal.during(limit -> console.options().bounds()
+                            .refusal(target.description(form), limit.getMessage()),
+                    () -> target == Target.CII ? CiiWriter.writeWithReport(document, options)
+                            : UblWriter.writeWithReport(document, options));
         } catch (BindingEditionException refused) {
             // A document of an edition the table does not bind is a request this version
             // does not serve rather than an input it could not read, and the way out is
@@ -341,23 +339,14 @@ final class ConvertCommand implements Callable<Integer>, ReadsADocument {
      * one of them is a business rule check this command does not make.
      */
     private void levelShift(Loaded loaded, WriteReport report, SemanticDocument document) {
-        XrSyntax target = targetSyntax(report);
+        InvoiceSyntax target = report.syntax();
         String profile = Validation.customizationId(document);
-        List<String> codes = LevelShift.stricterInTarget(loaded.syntax().xrSyntax(), target,
+        List<String> codes = LevelShift.stricterInTarget(loaded.syntax().invoiceSyntax(), target,
                 profile);
         if (!codes.isEmpty()) {
             console.information(LevelShift.line(codes,
-                    loaded.syntax().xrSyntax().orElseThrow(), target));
+                    loaded.syntax().invoiceSyntax().orElseThrow(), target));
         }
-    }
-
-    /** Returns the syntax a write report says was written. */
-    private static XrSyntax targetSyntax(WriteReport report) {
-        return switch (report.syntax()) {
-            case CII -> XrSyntax.CII;
-            case UBL_INVOICE -> XrSyntax.UBL_INVOICE;
-            case UBL_CREDIT_NOTE -> XrSyntax.UBL_CREDIT_NOTE;
-        };
     }
 
     /**

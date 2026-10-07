@@ -7,7 +7,7 @@ import de.bsnsoft.esj.syntax.PackSelection;
 import de.bsnsoft.esj.syntax.Packs;
 import de.bsnsoft.esj.syntax.ProfileLevels;
 import de.bsnsoft.esj.syntax.SyntaxOptions;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -132,7 +132,7 @@ record PackChoice(Pack named, PackCatalog catalog) {
      * @return the selection
      * @throws PackException if the pack cannot be read, or the choice is ambiguous
      */
-    PackSelection select(XrSyntax syntax, String profile) {
+    PackSelection select(InvoiceSyntax syntax, String profile) {
         return named == null ? catalog.select(syntax, profile) : named.select(syntax, profile);
     }
 
@@ -161,7 +161,7 @@ record PackChoice(Pack named, PackCatalog catalog) {
             return ProfileLevels.none();
         }
         try {
-            return syntax.xrSyntax()
+            return syntax.invoiceSyntax()
                     .map(xr -> named == null
                             ? catalog.levels(xr, profile)
                             : ProfileLevels.of(named, xr, profile))

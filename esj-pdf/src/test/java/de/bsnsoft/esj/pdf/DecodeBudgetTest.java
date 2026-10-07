@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.nio.charset.StandardCharsets;
 import org.apache.pdfbox.cos.COSStream;
 import org.junit.jupiter.api.Test;
@@ -184,7 +185,7 @@ class DecodeBudgetTest {
                 Pdfs.deflated("<?xml version=\"1.0\"?><a/>".getBytes(StandardCharsets.UTF_8)),
                 bomb());
 
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> read(pdf, PdfLimits.defaults()));
 
         assertTrue(refused.getMessage().startsWith("an object stream"),
@@ -212,7 +213,7 @@ class DecodeBudgetTest {
     void theBudgetCountsWhatThisReaderDecodesOutOfAContainerAsWell() {
         byte[] pdf = Pdfs.facturX(Conformance.instance(CII));
 
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> read(pdf, PdfLimits.defaults().withMaxDecodedBytes(64)));
 
         assertTrue(refused.getMessage().contains("decodes to more than the 64 bytes"),
@@ -228,7 +229,7 @@ class DecodeBudgetTest {
     }
 
     private static void assertRefused(byte[] pdf, String what) {
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> PdfContainer.open(pdf));
 
         assertTrue(refused.getMessage().startsWith(what),
@@ -244,16 +245,17 @@ class DecodeBudgetTest {
         try (PdfContainer container = PdfContainer.open(pdf)) {
             assertEquals(0, container.embeddedFiles().size(),
                     "nothing was read out of the file");
-        } catch (PdfException refused) {
-            assertTrue(refused instanceof PdfLimitException || refused instanceof PdfFormatException,
-                    "a file this reader cannot read is refused, not decoded: "
-                            + refused.getMessage());
+        } catch (PdfFormatException | EsjLimitException refused) {
+            // A file this reader cannot read is refused, not decoded; any other refusal
+            // leaves this method and fails the test.
+            assertTrue(refused.getMessage() != null,
+                    "a file this reader cannot read is refused, not decoded");
         }
     }
 
     /** Asserts that a file is refused by a bound, in the words the refusal is about. */
     private static void assertRefusedWith(byte[] pdf, String phrase) {
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> PdfContainer.open(pdf));
 
         assertTrue(refused.getMessage().contains(phrase),

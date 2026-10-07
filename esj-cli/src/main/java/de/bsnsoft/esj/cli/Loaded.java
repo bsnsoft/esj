@@ -2,7 +2,6 @@ package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.bindings.BindingException;
-import de.bsnsoft.esj.bindings.BindingLimitException;
 import de.bsnsoft.esj.bindings.BindingSyntaxException;
 import de.bsnsoft.esj.bindings.ReaderOptions;
 import de.bsnsoft.esj.bindings.StreamingReader;
@@ -15,13 +14,11 @@ import de.bsnsoft.esj.validate.FindingCode;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportReport;
 import de.bsnsoft.esj.imports.ImportResult;
-import de.bsnsoft.esj.xr.XmlBytes;
-import de.bsnsoft.esj.xr.XmlEncodingReport;
-import de.bsnsoft.esj.xr.XrEncodingException;
-import de.bsnsoft.esj.xr.XrEncodingMode;
+import de.bsnsoft.esj.xml.EncodingMode;
+import de.bsnsoft.esj.xml.XmlEncodingException;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import de.bsnsoft.esj.xr.XrException;
 import de.bsnsoft.esj.xr.XrImporter;
-import de.bsnsoft.esj.xr.XrLimitException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +99,7 @@ record Loaded(String name,
      */
     static Loaded read(Input input, InputSyntax from, Extensions extension, Console console) {
         return load(input, from, extension, console,
-                console.options().strict() ? XrEncodingMode.STRICT : XrEncodingMode.REPAIR,
+                console.options().strict() ? EncodingMode.STRICT : EncodingMode.REPAIR,
                 false);
     }
 
@@ -125,7 +122,7 @@ record Loaded(String name,
      */
     static Loaded validate(Input input, InputSyntax from, Extensions extension,
                            Console console) {
-        return load(input, from, extension, console, XrEncodingMode.STRICT, true);
+        return load(input, from, extension, console, EncodingMode.STRICT, true);
     }
 
     /**
@@ -146,14 +143,14 @@ record Loaded(String name,
      */
     static Loaded repaired(Input input, InputSyntax from, Extensions extension,
                            Console console) {
-        return load(input, from, extension, console, XrEncodingMode.REPAIR, false);
+        return load(input, from, extension, console, EncodingMode.REPAIR, false);
     }
 
     private static Loaded load(Input input,
                                InputSyntax from,
                                Extensions extension,
                                Console console,
-                               XrEncodingMode mode,
+                               EncodingMode mode,
                                boolean encodingIsAFinding) {
         Bounds bounds = console.options().bounds();
         if (input.isPdf()) {
@@ -177,7 +174,7 @@ record Loaded(String name,
             // encoding — and a UTF-16 invoice inside a PDF would be reported as no
             // invoice at all.
             Optional<InputSyntax> classified = invoice.attachment().kind().syntax()
-                    .flatMap(InputSyntax::ofXrSyntax);
+                    .flatMap(InputSyntax::ofInvoiceSyntax);
             InputSyntax syntax = from != null || classified.isEmpty()
                     ? resolve(inner, from)
                     : classified.orElseThrow();
@@ -223,7 +220,7 @@ record Loaded(String name,
                                Extensions extension,
                                Console console,
                                Bounds bounds,
-                               XrEncodingMode mode,
+                               EncodingMode mode,
                                boolean encodingIsAFinding,
                                Optional<Container> container) {
         if (console.options().verbose()) {
@@ -459,7 +456,7 @@ record Loaded(String name,
      * {@link XmlEncodingReport#unreadable()}.
      */
     private static String why(Input input) {
-        Optional<String> unreadable = XmlBytes.inspect(input.bytes()).unreadable();
+        Optional<String> unreadable = XmlEncodingReport.of(input.bytes()).unreadable();
         if (unreadable.isPresent()) {
             return " (it is written in, or declares, the encoding "
                     + ValueText.quoted(unreadable.orElseThrow())
@@ -486,7 +483,7 @@ record Loaded(String name,
                                     Extensions extension,
                                     Bounds bounds,
                                     Importer importer,
-                                    XrEncodingMode mode,
+                                    EncodingMode mode,
                                     boolean encodingIsAFinding,
                                     Optional<Container> container) {
         try {
@@ -496,7 +493,7 @@ record Loaded(String name,
             return new Loaded(input.name(), syntax, Optional.of(result.document()), List.of(),
                     result.report(), extension, Optional.of(importer), container,
                     recoded(input, result.report()), List.of());
-        } catch (XrEncodingException e) {
+        } catch (XmlEncodingException e) {
             if (encodingIsAFinding) {
                 return new Loaded(input.name(), syntax, Optional.empty(), List.of(),
                         ImportReport.empty(), extension, Optional.of(importer), container,
@@ -536,7 +533,7 @@ record Loaded(String name,
      * one a caller who has to name the syntax by hand wants.
      */
     private static ImportResult stream(Input input, Bounds bounds, Registry registry,
-                                       XrEncodingMode mode) {
+                                       EncodingMode mode) {
         StreamingReader reader = new StreamingReader(ReaderOptions.builder()
                 .registry(registry)
                 .limits(bounds.readerLimits())
@@ -546,9 +543,8 @@ record Loaded(String name,
                 .maxBufferedElements(bounds.maxBufferedElements())
                 .build());
         try {
-            return reader.read(input.bytes());
-        } catch (BindingLimitException e) {
-            throw CliException.limit(bounds.refusal(input.name(), e.getMessage()), e);
+            return LimitRefusal.during(limit -> bounds.refusal(input.name(), limit.getMessage()),
+                    () -> reader.read(input.bytes()));
         } catch (BindingSyntaxException e) {
             throw CliException.input("cannot read " + input.name() + ": " + e.getMessage()
                     + "; --importer xslt reads a document whose syntax is named with --from",
@@ -560,20 +556,18 @@ record Loaded(String name,
 
     /** Reads an XML input with the XSLT path. */
     private static ImportResult transform(Input input, InputSyntax syntax, Bounds bounds,
-                                          Registry registry, XrEncodingMode mode) {
+                                          Registry registry, EncodingMode mode) {
         XrImporter importer =
                 new XrImporter(registry, bounds.maxInputBytes(), bounds.readerLimits())
                         .withEncodingMode(mode);
         try {
-            return syntax == InputSyntax.CII
-                    ? importer.importCiiWithReport(input.bytes())
-                    : importer.importUblWithReport(input.bytes());
-        } catch (XrEncodingException e) {
-            // The front door of both readers. What it means for the run is decided one
-            // level up, so it must not be folded into the sentence about the syntax below.
-            throw e;
-        } catch (XrLimitException e) {
-            throw CliException.limit(bounds.refusal(input.name(), e.getMessage()), e);
+            // The front door of both readers raises an XmlEncodingException, which is no
+            // XrException: what it means for the run is decided one level up, and it is not
+            // folded into the sentence about the syntax below.
+            return LimitRefusal.during(limit -> bounds.refusal(input.name(), limit.getMessage()),
+                    () -> syntax == InputSyntax.CII
+                            ? importer.readCii(input.bytes())
+                            : importer.readUbl(input.bytes()));
         } catch (XrException e) {
             throw CliException.input("cannot read " + input.name() + " as "
                     + syntax.label() + ": " + e.getMessage(), e);
@@ -591,6 +585,6 @@ record Loaded(String name,
     private static Optional<XmlEncodingReport> recoded(Input input, ImportReport report) {
         return report.notes(ImportNote.Kind.ENCODING_REPAIRED).isEmpty()
                 ? Optional.empty()
-                : Optional.of(XmlBytes.inspect(input.bytes()));
+                : Optional.of(XmlEncodingReport.of(input.bytes()));
     }
 }

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.typed;
 
+import de.bsnsoft.esj.EsjException;
 import de.bsnsoft.esj.SemanticPath;
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ import java.util.Objects;
  * business term that is missing or contradictory and the group instance it is in, so that the
  * caller can go to that one place in the invoice.
  */
-public final class DerivationException extends RuntimeException {
+public final class DerivationException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

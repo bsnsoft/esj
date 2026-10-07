@@ -14,7 +14,7 @@ package de.bsnsoft.esj.render;
  * that the document could not be rendered, rather than reporting a defect of the tool.
  * The message of the engine underneath is the cause, and it names the value.
  */
-public class RenderContentException extends RenderException {
+public final class RenderContentException extends RenderException {
 
     private static final long serialVersionUID = 1L;
 

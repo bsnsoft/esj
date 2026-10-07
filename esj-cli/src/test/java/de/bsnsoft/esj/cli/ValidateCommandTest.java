@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import de.bsnsoft.esj.syntax.SyntaxLimitException;
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.syntax.SyntaxOptions;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
 import java.io.IOException;
@@ -616,24 +616,25 @@ class ValidateCommandTest {
      *
      * <p>The syntax engine reaches one exit code for both: an input larger than it accepts
      * and a run longer than the time it was given. Only the first is a fact about the
-     * written document, and the budget the exception carries is what says which of the two
+     * written document, and the bound the exception names is what says which of the two
      * happened. A limit the deadline of the command raised itself carries no such
      * exception at all, and is a clock as well.
      */
     @Test
     void tellsAClockThatRanOutFromABoundOnTheWrittenBytes() {
-        SyntaxLimitException clock = assertThrows(SyntaxLimitException.class,
+        EsjLimitException clock = assertThrows(EsjLimitException.class,
                 () -> SyntaxValidator.validate(Fixtures.bytes(UBL),
                         SyntaxOptions.defaults().withMaxRuntime(Duration.ofMillis(1))));
-        assertTrue(clock.budget().isPresent(), clock.getMessage());
+        assertTrue(LimitRefusal.outOfTime(clock), clock.getMessage());
         assertFalse(ValidateCommand.overBound(CliException.limit("out of time", clock)),
                 "a clock leaves no verdict for any row to keep");
         assertFalse(ValidateCommand.overBound(CliException.limit("out of time")),
                 "and neither does the deadline of the whole command");
 
-        SyntaxLimitException bytes = new SyntaxLimitException("the document is longer than"
-                + " this validation accepts");
-        assertTrue(bytes.budget().isEmpty(), bytes.getMessage());
+        EsjLimitException bytes = new EsjLimitException("the document is longer than"
+                + " this validation accepts",
+                new EsjLimitException.Bound("maxInputBytes", 16, "bytes"));
+        assertFalse(LimitRefusal.outOfTime(bytes), bytes.getMessage());
         assertTrue(ValidateCommand.overBound(CliException.limit("too large", bytes)),
                 "a bound on the written bytes is a row that did not run");
     }

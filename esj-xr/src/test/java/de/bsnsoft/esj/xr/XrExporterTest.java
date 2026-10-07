@@ -276,7 +276,7 @@ class XrExporterTest {
 
         SemanticDocument read = new XrImporter(Registry.en16931(),
                 XrImporter.DEFAULT_MAX_INPUT_BYTES)
-                .fromXr(new XrExporter().toXr(document));
+                .readXr(new XrExporter().toXr(document)).document();
 
         assertEquals(List.of(SemanticPath.of("/BG-25/0/BT-126")),
                 List.copyOf(read.values().keySet()));
@@ -291,6 +291,6 @@ class XrExporterTest {
     }
 
     private static SemanticDocument reread(SemanticDocument document) {
-        return new XrImporter().fromXr(new XrExporter().toXr(document));
+        return new XrImporter().readXr(new XrExporter().toXr(document)).document();
     }
 }

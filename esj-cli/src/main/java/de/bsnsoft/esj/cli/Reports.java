@@ -26,7 +26,7 @@ import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.imports.ImportNote;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -617,7 +617,7 @@ final class Reports {
         for (SkippedComponent component : report.skipped()) {
             skipped.put(component.component(), component.message());
         }
-        Optional<XrSyntax> syntax = report.syntax();
+        Optional<InvoiceSyntax> syntax = report.syntax();
         for (PackComponent component : pack.components()) {
             boolean relevant = all || syntax.isEmpty()
                     || component.appliesToSyntax(syntax.orElseThrow());

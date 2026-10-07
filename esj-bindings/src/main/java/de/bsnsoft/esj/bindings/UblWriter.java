@@ -1,7 +1,9 @@
 package de.bsnsoft.esj.bindings;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -66,7 +68,7 @@ public final class UblWriter {
      * @return the edition, for example {@code EN16931-1:2017+A1:2019/AC:2020}
      */
     public static String semanticModel() {
-        return BindingTable.of(BindingSyntax.UBL_INVOICE).semanticModel();
+        return BindingTable.of(InvoiceSyntax.UBL_INVOICE).semanticModel();
     }
 
     /**
@@ -83,8 +85,8 @@ public final class UblWriter {
      * @throws NullPointerException if {@code semanticModel} is {@code null}
      */
     public static boolean supports(String semanticModel) {
-        return BindingTable.of(BindingSyntax.UBL_INVOICE).describes(semanticModel)
-                && BindingTable.of(BindingSyntax.UBL_CREDIT_NOTE).describes(semanticModel);
+        return BindingTable.of(InvoiceSyntax.UBL_INVOICE).describes(semanticModel)
+                && BindingTable.of(InvoiceSyntax.UBL_CREDIT_NOTE).describes(semanticModel);
     }
 
     /**
@@ -99,7 +101,7 @@ public final class UblWriter {
      * @throws BindingEditionException if the document names an edition of the semantic
      *                               model other than the one the UBL binding table was
      *                               written against
-     * @throws BindingLimitException if the document is larger than
+     * @throws EsjLimitException     if the document is larger than
      *                               {@link WriterOptions#DEFAULT_MAX_OUTPUT_BYTES}
      * @throws NullPointerException  if {@code document} is {@code null}
      */
@@ -120,7 +122,7 @@ public final class UblWriter {
      * @throws BindingEditionException if the document names an edition of the semantic
      *                               model other than the one the UBL binding table was
      *                               written against
-     * @throws BindingLimitException if the document is larger than
+     * @throws EsjLimitException     if the document is larger than
      *                               {@link WriterOptions#maxOutputBytes()}
      * @throws NullPointerException  if an argument is {@code null}
      */
@@ -139,7 +141,7 @@ public final class UblWriter {
      * @throws BindingEditionException if the document names an edition of the semantic
      *                               model other than the one the UBL binding table was
      *                               written against
-     * @throws BindingLimitException if the document is larger than
+     * @throws EsjLimitException     if the document is larger than
      *                               {@link WriterOptions#maxOutputBytes()}
      * @throws NullPointerException  if an argument is {@code null}
      */
@@ -158,16 +160,16 @@ public final class UblWriter {
      * @return the syntax and document type
      * @throws NullPointerException if an argument is {@code null}
      */
-    public static BindingSyntax syntaxOf(SemanticDocument document, DocumentType choice) {
+    public static InvoiceSyntax syntaxOf(SemanticDocument document, DocumentType choice) {
         Objects.requireNonNull(document, "document");
         Objects.requireNonNull(choice, "choice");
         return switch (choice) {
-            case INVOICE -> BindingSyntax.UBL_INVOICE;
-            case CREDIT_NOTE -> BindingSyntax.UBL_CREDIT_NOTE;
+            case INVOICE -> InvoiceSyntax.UBL_INVOICE;
+            case CREDIT_NOTE -> InvoiceSyntax.UBL_CREDIT_NOTE;
             case AUTO -> document.value(TYPE_CODE)
                     .filter(code -> CREDIT_NOTE_CODES.contains(code.canonicalContent()))
-                    .map(code -> BindingSyntax.UBL_CREDIT_NOTE)
-                    .orElse(BindingSyntax.UBL_INVOICE);
+                    .map(code -> InvoiceSyntax.UBL_CREDIT_NOTE)
+                    .orElse(InvoiceSyntax.UBL_INVOICE);
         };
     }
 

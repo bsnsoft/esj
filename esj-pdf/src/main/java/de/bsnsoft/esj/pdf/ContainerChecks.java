@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
@@ -98,7 +99,7 @@ public final class ContainerChecks {
      * @param container the container
      * @param located   its attachments, classified
      * @return the findings, in the order the checks were made, possibly none
-     * @throws PdfLimitException    if reading the XMP packet meets a bound
+     * @throws EsjLimitException    if reading the XMP packet meets a bound
      * @throws NullPointerException if an argument is {@code null}
      */
     public static List<ContainerFinding> run(PdfContainer container,

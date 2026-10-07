@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.typed.build;
 
+import de.bsnsoft.esj.EsjException;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,7 +11,7 @@ import java.util.Objects;
  * as data. A caller that would rather look than be interrupted uses {@code validate()} on
  * the terminal step instead, which reports and does not throw.
  */
-public final class BuildException extends RuntimeException {
+public final class BuildException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +88,8 @@ final class Sheet implements AutoCloseable {
      * @param backdrop  what is drawn under the text of every page, or {@code null}
      * @param marks     the fold and punch marks printed in the left margin
      * @param maxPages  how many pages this rendering may have
-     * @throws RenderException      if the first page could not be opened
-     * @throws RenderLimitException if {@code maxPages} is less than one
+     * @throws RenderException   if the first page could not be opened
+     * @throws EsjLimitException if {@code maxPages} is less than one
      */
     Sheet(PDDocument document, PageSize size, Fonts fonts, Margins first, Margins following,
           Palette palette, Backdrop backdrop, PageMarks marks, int maxPages) {
@@ -343,12 +344,13 @@ final class Sheet implements AutoCloseable {
      * Opens a new page, draws the letterhead under it and runs whatever repeats at the
      * top of one.
      *
-     * @throws RenderLimitException if the page would be past the bound of this rendering
+     * @throws EsjLimitException if the page would be past the bound of this rendering
      */
     void newPage() {
         if (pages.size() >= maxPages) {
-            throw new RenderLimitException("this rendering reached the bound of " + maxPages
-                    + (maxPages == 1 ? " page" : " pages") + " this run allows");
+            throw new EsjLimitException("this rendering reached the bound of " + maxPages
+                    + (maxPages == 1 ? " page" : " pages") + " this run allows",
+                    new EsjLimitException.Bound("maxPages", maxPages, "pages"));
         }
         boolean isFirst = pages.isEmpty();
         margins = isFirst ? first : following;
@@ -369,7 +371,7 @@ final class Sheet implements AutoCloseable {
             }
             cursor = size.height() - margins.top() - (isFirst ? 0f : head);
         } catch (IOException e) {
-            throw new RenderException("a page could not be opened", e);
+            throw new RenderEngineException("a page could not be opened", e);
         }
         onNewPage.run();
     }
@@ -475,7 +477,7 @@ final class Sheet implements AutoCloseable {
             stream.showText(line);
             stream.endText();
         } catch (IOException e) {
-            throw new RenderException("a line of text could not be written", e);
+            throw new RenderEngineException("a line of text could not be written", e);
         }
     }
 
@@ -577,7 +579,7 @@ final class Sheet implements AutoCloseable {
             stream.lineTo(toX, atY);
             stream.stroke();
         } catch (IOException e) {
-            throw new RenderException("a rule could not be drawn", e);
+            throw new RenderEngineException("a rule could not be drawn", e);
         }
     }
 
@@ -596,7 +598,7 @@ final class Sheet implements AutoCloseable {
             stream.addRect(x, y, width, height);
             stream.fill();
         } catch (IOException e) {
-            throw new RenderException("a box could not be filled", e);
+            throw new RenderEngineException("a box could not be filled", e);
         }
     }
 
@@ -640,7 +642,7 @@ final class Sheet implements AutoCloseable {
                 stream.fill();
             }
         } catch (IOException e) {
-            throw new RenderException("a grid of squares could not be drawn", e);
+            throw new RenderEngineException("a grid of squares could not be drawn", e);
         }
     }
 
@@ -732,7 +734,7 @@ final class Sheet implements AutoCloseable {
                             top - lineHeight(HEAD_SIZE) - HEAD_RULE_GAP, palette.rule());
                 }
             } catch (IOException e) {
-                throw new RenderException("a page footer could not be written", e);
+                throw new RenderEngineException("a page footer could not be written", e);
             }
         }
         stream = null;
@@ -745,7 +747,7 @@ final class Sheet implements AutoCloseable {
             try {
                 stream.close();
             } catch (IOException e) {
-                throw new RenderException("the content of a page could not be closed", e);
+                throw new RenderEngineException("the content of a page could not be closed", e);
             }
             stream = null;
         }

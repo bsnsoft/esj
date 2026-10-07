@@ -88,7 +88,7 @@ class CreditNoteReaderTest {
     @Test
     void thetwoReadersDifferOnlyWhereTheRecordSaysSo() {
         SemanticDocument streaming = read();
-        SemanticDocument stylesheets = new XrImporter().importXml(Corpus.bytes(XML));
+        SemanticDocument stylesheets = new XrImporter().read(Corpus.bytes(XML)).document();
         Set<SemanticPath> all = new TreeSet<>(streaming.values().keySet());
         all.addAll(stylesheets.values().keySet());
         List<String> differing = new ArrayList<>();

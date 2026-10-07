@@ -12,6 +12,7 @@ import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.json.EsjWriter;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ class CreditNoteExtensionTest {
     void writesTheSubLinesAsSubCreditNoteLinesAndReadsThemBack() {
         SemanticDocument document = EsjReader.strict().read(Corpus.bytes(ESJ));
         WriteResult result = UblWriter.writeWithReport(document, WriterOptions.defaults());
-        assertEquals(BindingSyntax.UBL_CREDIT_NOTE, result.report().syntax());
+        assertEquals(InvoiceSyntax.UBL_CREDIT_NOTE, result.report().syntax());
         assertTrue(result.report().isComplete(), result.report().notes().toString());
         String xml = new String(result.xml(), StandardCharsets.UTF_8);
         assertEquals(13, count(xml, "<cac:SubCreditNoteLine>"),
@@ -107,7 +108,7 @@ class CreditNoteExtensionTest {
     @Test
     void theXsltPathPartsInsideTheSubLinesAndNowhereElse() {
         SemanticDocument streaming = read();
-        SemanticDocument stylesheets = new XrImporter().importXml(Corpus.bytes(XML));
+        SemanticDocument stylesheets = new XrImporter().read(Corpus.bytes(XML)).document();
         List<String> differing = differences(streaming, stylesheets);
         assertEquals(114, differing.size());
         assertTrue(differing.stream().allMatch(path -> path.contains("/BG-DEX-01/")),

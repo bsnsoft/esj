@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
@@ -95,7 +96,7 @@ final class SchematronCheck {
      *                  gives none and the flags of the artefact stand
      * @param budget    the time the whole validation was given
      * @return the outcome
-     * @throws SyntaxLimitException if the run was still going at the deadline
+     * @throws EsjLimitException if the run was still going at the deadline
      */
     static Result run(XdmNode document, Pack pack, PackComponent component, String entry,
                       Optional<PackLevels> levels, Budget budget) {

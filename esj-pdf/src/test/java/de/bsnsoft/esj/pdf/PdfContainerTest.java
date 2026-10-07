@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -189,7 +190,7 @@ class PdfContainerTest {
         byte[] pdf = Pdfs.facturX(Conformance.instance(CII));
         PdfLimits limits = PdfLimits.defaults().withMaxPdfBytes(128);
 
-        PdfLimitException thrown = assertThrows(PdfLimitException.class,
+        EsjLimitException thrown = assertThrows(EsjLimitException.class,
                 () -> PdfContainer.open(pdf, limits));
         assertTrue(thrown.getMessage().contains("128"), thrown.getMessage());
     }
@@ -202,7 +203,7 @@ class PdfContainerTest {
         }
         byte[] pdf = builder.build();
 
-        PdfLimitException thrown = assertThrows(PdfLimitException.class,
+        EsjLimitException thrown = assertThrows(EsjLimitException.class,
                 () -> PdfContainer.open(pdf, PdfLimits.defaults()));
         assertTrue(thrown.getMessage().contains("64"), thrown.getMessage());
     }
@@ -241,7 +242,7 @@ class PdfContainerTest {
         try (PdfContainer container = PdfContainer.open(pdf, limits)) {
             assertEquals(64 * 1024, container.embeddedFiles().get(0).content().length());
 
-            PdfLimitException thrown = assertThrows(PdfLimitException.class,
+            EsjLimitException thrown = assertThrows(EsjLimitException.class,
                     () -> container.embeddedFiles().get(1).content());
             assertTrue(thrown.getMessage().contains("two.bin"), thrown.getMessage());
         }
@@ -253,7 +254,7 @@ class PdfContainerTest {
         PdfLimits limits = PdfLimits.defaults().withMaxXmpBytes(16);
 
         try (PdfContainer container = PdfContainer.open(pdf, limits)) {
-            assertThrows(PdfLimitException.class, container::xmpPacket);
+            assertThrows(EsjLimitException.class, container::xmpPacket);
         }
     }
 

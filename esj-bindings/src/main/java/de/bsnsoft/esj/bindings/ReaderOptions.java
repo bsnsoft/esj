@@ -2,7 +2,7 @@ package de.bsnsoft.esj.bindings;
 
 import de.bsnsoft.esj.json.Limits;
 import de.bsnsoft.esj.model.Registry;
-import de.bsnsoft.esj.xr.XrEncodingMode;
+import de.bsnsoft.esj.xml.EncodingMode;
 import java.util.Objects;
 
 /**
@@ -102,7 +102,7 @@ public final class ReaderOptions {
     private final Registry registry;
     private final Limits limits;
     private final ReaderMode mode;
-    private final XrEncodingMode encodingMode;
+    private final EncodingMode encodingMode;
     private final long maxInputBytes;
     private final int maxElementDepth;
     private final long maxBufferedBytes;
@@ -183,7 +183,7 @@ public final class ReaderOptions {
      *
      * @return the encoding mode
      */
-    public XrEncodingMode encodingMode() {
+    public EncodingMode encodingMode() {
         return encodingMode;
     }
 
@@ -252,10 +252,10 @@ public final class ReaderOptions {
     /** Collects the options of a reader. */
     public static final class Builder {
 
-        private Registry registry = DefaultRegistry.COMBINED;
+        private Registry registry = Registry.en16931WithXrechnung();
         private Limits limits = Limits.defaults();
         private ReaderMode mode = ReaderMode.REPAIR;
-        private XrEncodingMode encodingMode = XrEncodingMode.REPAIR;
+        private EncodingMode encodingMode = EncodingMode.REPAIR;
         private long maxInputBytes = DEFAULT_MAX_INPUT_BYTES;
         private int maxElementDepth = DEFAULT_MAX_ELEMENT_DEPTH;
         private long maxBufferedBytes = DEFAULT_MAX_BUFFERED_BYTES;
@@ -308,14 +308,14 @@ public final class ReaderOptions {
          * Sets what the reader does with bytes that are not written in the encoding the
          * document declares.
          *
-         * <p>The default is {@link XrEncodingMode#REPAIR}, which recodes them and says so
-         * in the report; {@link XrEncodingMode#STRICT} refuses them instead.
+         * <p>The default is {@link EncodingMode#REPAIR}, which recodes them and says so
+         * in the report; {@link EncodingMode#STRICT} refuses them instead.
          *
          * @param value the encoding mode
          * @return this builder
          * @throws NullPointerException if {@code value} is {@code null}
          */
-        public Builder encodingMode(XrEncodingMode value) {
+        public Builder encodingMode(EncodingMode value) {
             this.encodingMode = Objects.requireNonNull(value, "encodingMode");
             return this;
         }
@@ -387,17 +387,6 @@ public final class ReaderOptions {
                 throw new IllegalArgumentException(message);
             }
             return value;
-        }
-    }
-
-    /** Holds the combined registry, which is built once and shared. */
-    private static final class DefaultRegistry {
-
-        private static final Registry COMBINED =
-                Registry.en16931().withExtension(Registry.xrechnungExtension());
-
-        private DefaultRegistry() {
-            throw new AssertionError("no instances");
         }
     }
 }

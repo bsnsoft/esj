@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,12 +49,12 @@ class PackFetcherTest {
         assertTrue(pack.files().containsKey(PackFetcher.NOTICE));
 
         PackCatalog catalog = PackCatalog.withDirectories(List.of(into));
-        PackSelection selection = catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.PROFILE);
+        PackSelection selection = catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.PROFILE);
         assertEquals("example/1.0/2026-09-30", selection.pack().directory());
         assertEquals(List.of("ubl-2.1-xsd", "example-ubl-schematron"),
                 selection.applied().stream().map(PackComponent::name).toList());
         assertEquals("xrechnung/3.0.2/2026-08-31",
-                catalog.select(XrSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG).pack().directory(),
+                catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG).pack().directory(),
                 "a document of another profile keeps the pack it had");
     }
 

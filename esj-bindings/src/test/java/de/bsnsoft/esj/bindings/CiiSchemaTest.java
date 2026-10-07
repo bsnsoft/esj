@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,7 @@ class CiiSchemaTest {
 
     @Test
     void theTableIsTheOneTheSchemaModulesSay() {
-        BindingTable table = BindingTable.of(BindingSyntax.CII);
+        BindingTable table = BindingTable.of(InvoiceSyntax.CII);
         String generated = CiiSchemaSource.generate(table.namespaces());
         String resource = new String(Corpus.bytes(
                 "/de/bsnsoft/esj/bindings/cii-schema.json"),
@@ -43,8 +44,8 @@ class CiiSchemaTest {
 
     @Test
     void theTableAndTheBindingTableAgreeOnTheSyntax() {
-        BindingTable table = BindingTable.of(BindingSyntax.CII);
-        SchemaTable schema = SchemaTable.of(BindingSyntax.CII);
+        BindingTable table = BindingTable.of(InvoiceSyntax.CII);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.CII);
         assertEquals(table.namespaces(), schema.namespaces(),
                 "the two tables of this syntax name the same namespaces");
         assertEquals("rsm:CrossIndustryInvoice", schema.rootElement());
@@ -64,7 +65,7 @@ class CiiSchemaTest {
      */
     @Test
     void namesTheTypesThatMayStandEmpty() {
-        SchemaTable schema = SchemaTable.of(BindingSyntax.CII);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.CII);
         assertTrue(schema.isSkeletal("ram:SupplyChainTradeTransactionType"));
         assertTrue(schema.isSkeletal("ram:HeaderTradeAgreementType"));
         assertTrue(schema.isSkeletal("ram:HeaderTradeDeliveryType"));
@@ -86,7 +87,7 @@ class CiiSchemaTest {
      */
     @Test
     void knowsWhichNamesTheSyntaxHas() {
-        SchemaTable schema = SchemaTable.of(BindingSyntax.CII);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.CII);
         SchemaTable.Type means = schema.type("ram:TradeSettlementPaymentMeansType");
         assertNotNull(means.child("ram:PayeeSpecifiedCreditorFinancialInstitution"));
         assertEquals(null, means.child("ram:PayeeSpecifiedDebtorFinancialInstitution"));
@@ -96,7 +97,7 @@ class CiiSchemaTest {
 
     @Test
     void knowsWhichElementsMayRepeat() {
-        SchemaTable schema = SchemaTable.of(BindingSyntax.CII);
+        SchemaTable schema = SchemaTable.of(InvoiceSyntax.CII);
         assertTrue(schema.type("ram:SupplyChainTradeTransactionType")
                 .child("ram:IncludedSupplyChainTradeLineItem").repeatable());
         assertTrue(schema.type("ram:HeaderTradeSettlementType")

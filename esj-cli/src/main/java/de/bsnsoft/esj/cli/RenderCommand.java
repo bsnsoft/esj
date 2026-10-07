@@ -9,13 +9,11 @@ import de.bsnsoft.esj.render.PdfRenderer;
 import de.bsnsoft.esj.render.RenderContentException;
 import de.bsnsoft.esj.render.RenderLanguage;
 import de.bsnsoft.esj.render.RenderOptions;
-import de.bsnsoft.esj.render.RenderLimitException;
 import de.bsnsoft.esj.render.RenderResult;
 import de.bsnsoft.esj.render.RenderTemplate;
 import de.bsnsoft.esj.render.TemplateException;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.ExportNote;
-import de.bsnsoft.esj.xr.XrImporter;
-import de.bsnsoft.esj.xr.XrSyntax;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -210,11 +208,11 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
             // whoever validates the container next is entitled to the levels of that
             // syntax, which are not obliged to be the levels the source was judged by.
             String profile = Validation.customizationId(document);
-            List<String> shifted = LevelShift.stricterInTarget(loaded.syntax().xrSyntax(),
-                    XrSyntax.CII, profile);
+            List<String> shifted = LevelShift.stricterInTarget(loaded.syntax().invoiceSyntax(),
+                    InvoiceSyntax.CII, profile);
             if (!shifted.isEmpty()) {
                 console.information(LevelShift.line(shifted,
-                        loaded.syntax().xrSyntax().orElseThrow(), XrSyntax.CII));
+                        loaded.syntax().invoiceSyntax().orElseThrow(), InvoiceSyntax.CII));
             }
             rendering = Embedding.into(rendering, document,
                     Embedding.options(null, null, verapdf, extensions, document, console,
@@ -269,7 +267,7 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      * such refusal.
      */
     private byte[] htmlOf(SemanticDocument document, Registry registry, RenderOptions options) {
-        Registry stylesheets = XrImporter.defaultRegistry();
+        Registry stylesheets = Registry.en16931WithXrechnung();
         if (!stylesheets.describes(document.semanticModel())) {
             throw Editions.refuse(document, "the vendored visualization stylesheets render "
                     + stylesheets.semanticModel());
@@ -334,13 +332,11 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      */
     private <T> T render(Supplier<T> rendering, Bound bound) {
         try {
-            return rendering.get();
-        } catch (RenderLimitException e) {
             // A bound of this run, and no statement about the invoice: the same document
             // renders where more is allowed. The sentence that says how to raise it is the
             // one every other bound of this tool uses.
-            throw CliException.limit(e.getMessage()
-                    + console.options().bounds().hint(bound), e);
+            return LimitRefusal.during(limit -> limit.getMessage()
+                    + console.options().bounds().hint(bound), rendering);
         } catch (TemplateException e) {
             throw CliException.input("cannot render this document on this template: "
                     + e.getMessage(), e);

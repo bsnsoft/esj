@@ -1,4 +1,4 @@
-package de.bsnsoft.esj.xr;
+package de.bsnsoft.esj.xml;
 
 import de.bsnsoft.esj.imports.ImportNote;
 
@@ -15,9 +15,9 @@ import de.bsnsoft.esj.imports.ImportNote;
  *
  * <p>Neither mode is silent. The repairing one records
  * {@link ImportNote.Kind#ENCODING_REPAIRED} with what was declared and what was read; the
- * refusing one throws {@link XrEncodingException} carrying the same two facts.
+ * refusing one throws {@link XmlEncodingException} carrying the same two facts.
  */
-public enum XrEncodingMode {
+public enum EncodingMode {
 
     /**
      * Recode the document and record the note. This is what an importer does unless it is
@@ -26,7 +26,7 @@ public enum XrEncodingMode {
     REPAIR,
 
     /**
-     * Refuse the document with an {@link XrEncodingException}. The verdict is about the
+     * Refuse the document with an {@link XmlEncodingException}. The verdict is about the
      * bytes that were handed over, so nothing is read in a charset other than the one the
      * document names.
      */

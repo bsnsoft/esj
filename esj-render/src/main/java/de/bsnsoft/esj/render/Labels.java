@@ -218,11 +218,11 @@ final class Labels {
                     }
                 }
             } catch (SaxonApiException e) {
-                throw new RenderException(
+                throw new RenderEngineException(
                         "the vendored localization of the visualization could not be read", e);
             }
             if (labels.isEmpty()) {
-                throw new RenderException(
+                throw new RenderEngineException(
                         "the vendored localization of the visualization names no term");
             }
             return Map.copyOf(labels);
@@ -231,7 +231,7 @@ final class Labels {
         private static byte[] bytes() {
             try (InputStream in = Labels.class.getResourceAsStream(GERMAN_RESOURCE)) {
                 if (in == null) {
-                    throw new RenderException(
+                    throw new RenderEngineException(
                             "the resource " + GERMAN_RESOURCE + " is not on the classpath");
                 }
                 return in.readAllBytes();

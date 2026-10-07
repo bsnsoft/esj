@@ -20,6 +20,19 @@ still change; a change to it is named here under *Format*.
   `RulePackSource.currencyMinorUnits()`. The generator writes the package comment of the 2026
   view with it.
 - `Registry.isPreview()`: whether a registry describes an edition this project ships as a preview.
+- `de.bsnsoft.esj.imports.InvoiceReader`, `ImportResult read(byte[] xml)`: `StreamingReader` and
+  `XrImporter` implement it, and `PdfInvoiceImporter.importPdf` hands the attachment to one.
+- The package `de.bsnsoft.esj.xml` in `esj-core`, the front door of an XML invoice:
+  `InvoiceSyntax` with `of(namespace, localName)`, `EncodingMode`, `XmlEncodingReport` with
+  `of(byte[])`, and `XmlEncodingException`. Both readers, the syntax engine and the PDF container
+  name a syntax and an encoding with these types.
+- `Registry.en16931WithXrechnung()`: the core model with the XRechnung extension, built once; the
+  readers, the renderers and `XrExporter` use it by default.
+- `EsjLimitException.bound()` names the bound that was reached as an `EsjLimitException.Bound`:
+  the setting (`maxInputBytes`, `maxPages`, `maxRuntime`, …), its value and its unit. Every bound
+  of every module names it.
+- `RenderEngineException`, the failure of the rendering machinery, which `RenderException` stood
+  for itself before.
 - `CiiWriter.semanticModel()`, `CiiWriter.supports(String)`, `UblWriter.semanticModel()` and
   `UblWriter.supports(String)`.
 - Every jar names its module: `Automatic-Module-Name` is `de.bsnsoft.esj.` followed by the
@@ -28,8 +41,9 @@ still change; a change to it is named here under *Format*.
 - The Maven profile `api-check` compares the API of every library module with the release
   `esj.api-baseline` names, with japicmp, leaving out internal packages, the preview packages and
   everything marked `@Preview`. It reports and does not fail before 1.0.0; the CI job *API compared
-  with the last release* keeps the report (`docs/releasing.md`). Against 0.9.4 it names 70 classes
-  with incompatible changes, all of them the moves above and the preview marks.
+  with the last release* keeps the report (`docs/releasing.md`). Against 0.9.4 it names 99 classes
+  with incompatible changes, all of them the moves, renames and removals of the migration table and
+  the preview marks.
 - The rule files of both bundled packs, as their manifests name them, are validated against
   `rules/rule.schema.json` on every build; the 2026 pack's test is part of what
   `bin/without-edition-2026.sh` removes.
@@ -47,8 +61,8 @@ still change; a change to it is named here under *Format*.
   every XML document the tool writes is: the page is measured in bytes of UTF-8 while it is
   written, and one past the bound leaves with exit code 7 and nothing written, rather than being
   finished in memory first. In the library the bound is `RenderOptions.maxHtmlBytes()`
-  (`withMaxHtmlBytes(long)`, default `DEFAULT_MAX_HTML_BYTES`, 1 GiB) and is reached with a
-  `RenderLimitException`. `RenderOptions` has a seventh member; the constructor of six stays.
+  (`withMaxHtmlBytes(long)`, default `DEFAULT_MAX_HTML_BYTES`, 1 GiB) and is reached with an
+  `EsjLimitException`. `RenderOptions` has a seventh member; the constructor of six stays.
 - `esj-render` replaces U+007F and the C1 controls with a space in every form — the HTML
   rendering and the report carried them as they stood, the PDF printed a question mark — and
   turns U+0085, U+2028 and U+2029 into line feeds in all of them; one class holds the sets for
@@ -98,12 +112,39 @@ still change; a change to it is named here under *Format*.
 - `examples/smallest-valid.esj.json` states BT-110 (0): it is `VALID` through both syntaxes, where
   `--via ubl` said `INDETERMINATE` (exit code 9) because UBL requires the tax amount beside a VAT
   breakdown. It has 28 terms, and removing any of them ends the verdict through one of the two.
-- `XmlEncodingReport` has `decodes()` and `XrEncodingException` has `repairable()`; the earlier
+- `XmlEncodingReport` has `decodes()` and `XmlEncodingException` has `repairable()`; the earlier
   constructors stay.
+- One exception hierarchy: `EsjException` is the abstract root of every exception the libraries
+  throw, no longer sealed. `XrException`, `BindingException`, `SyntaxException`, `PdfException`,
+  `RenderException`, `PackException`, `RulePackException`, `DerivationException`,
+  `MissingValueException`, `ValueTypeException`, `BuildException` and
+  `PolicyPreconditionException` extend it. `RenderException` is abstract and sealed, its kinds
+  final: `RenderEngineException`, `TemplateException`, `RenderContentException`.
+- Every bound of every module raises `EsjLimitException`, which is no longer final and no longer
+  belongs to a module's hierarchy: `catch (PdfException e)` or `catch (BindingException e)` no
+  longer catches a limit. The messages are the ones of 0.9.4.
+- `PdfInvoiceImporter.importPdf(byte[])` reads the attachment with the `StreamingReader`, as the
+  command line does; it was the importer of `esj-xr`. The document is the one `esj convert` writes
+  for the same file, and a refusal is the streaming reader's (`BindingSyntaxException`,
+  `BindingFormatException`). A reader handed in is used as it is. The command line is unchanged.
+- `esj-bindings` needs neither `esj-xr` nor Saxon-HE (runtime dependencies 8.7 MB → 1.1 MB), and
+  `esj-pdf` no longer needs `esj-xr` (12.7 MB → 5.1 MB); both declare it for their tests only.
+- `XrImporter` reads with one verb, as `StreamingReader` does: `read(byte[])`, `readUbl`,
+  `readCii` and `readXr` return the `ImportResult`.
+- `XmlEncodingException` is thrown by both readers and is an `EsjException`, not an
+  `XrException`; a recode that does not decode, which a report made of the same bytes rules out,
+  raises it rather than an `XrFormatException`.
+- The command line turns a bound of any library into exit code 7 in one place. A bound met while
+  the PDF validation report is drawn, or while `esj embed` writes the attachment, now leaves with
+  7 where it left with 5, "internal error".
 
 ### Removed
 
 - `esj-generator` is no longer published on Maven Central and is no longer managed by `esj-bom`.
+- `XrLimitException`, `BindingLimitException`, `SyntaxLimitException`, `PdfLimitException` and
+  `RenderLimitException`; `XrSyntax` and `BindingSyntax`; `XrImporter.importUbl`, `importCii`,
+  `importXml`, `fromXr` and `defaultRegistry()`; `Esj.forMessage`, `forSubject` and `abbreviated`.
+  The migration table below names what takes their place.
 
 ### Fixed
 
@@ -230,6 +271,20 @@ compatibility promise. One row per package or type:
 | `de.bsnsoft.esj.render.ReportOptions` | `de.bsnsoft.esj.render.internal.ReportOptions`, internal |
 | `de.bsnsoft.esj.bindings.BindingTable` | no longer public; `CiiWriter.semanticModel()` and `supports(String)`, `UblWriter.semanticModel()` and `supports(String)` say which edition a writer writes |
 | `esj-generator` on Maven Central and in `esj-bom` | not published; it is the build tool of this repository |
+| `de.bsnsoft.esj.xr.XrSyntax`, `de.bsnsoft.esj.bindings.BindingSyntax` | `de.bsnsoft.esj.xml.InvoiceSyntax` in `esj-core`; `XmlFrontDoor.detect` is `InvoiceSyntax.of(namespace, localName)` for a name |
+| `de.bsnsoft.esj.xr.XrEncodingMode` | `de.bsnsoft.esj.xml.EncodingMode` |
+| `de.bsnsoft.esj.xr.XmlEncodingReport` | `de.bsnsoft.esj.xml.XmlEncodingReport` |
+| `de.bsnsoft.esj.xr.XrEncodingException` | `de.bsnsoft.esj.xml.XmlEncodingException`, an `EsjException` and no `XrException` |
+| `de.bsnsoft.esj.xr.XmlBytes` | `de.bsnsoft.esj.internal.XmlBytes`, internal; `XmlBytes.inspect(xml)` is `XmlEncodingReport.of(xml)` |
+| `XrImporter.importXmlWithReport`, `importUblWithReport`, `importCiiWithReport`, `fromXrWithReport` | `XrImporter.read`, `readUbl`, `readCii`, `readXr` |
+| `XrImporter.importXml(xml)`, `importUbl`, `importCii`, `fromXr` | `XrImporter.read(xml).document()`, `readUbl`, `readCii`, `readXr` |
+| `XrImporter.defaultRegistry()` | `Registry.en16931WithXrechnung()` |
+| `PdfInvoiceImporter.importPdf(pdf, XrImporter)`, `importPdf(pdf, limits, XrImporter)` | `importPdf(pdf, InvoiceReader)`, `importPdf(pdf, limits, InvoiceReader)`; an `XrImporter` is one |
+| `PdfInvoiceImporter.importPdf(pdf)` read with `new XrImporter()` | reads with `new StreamingReader()`; `importPdf(pdf, new XrImporter())` reads as before |
+| `XrLimitException`, `BindingLimitException`, `SyntaxLimitException`, `PdfLimitException`, `RenderLimitException` | `de.bsnsoft.esj.EsjLimitException`; `bound()` names the bound |
+| `SyntaxLimitException.budget()` | `EsjLimitException.bound()`, the bound `maxRuntime` in milliseconds |
+| `new RenderException(…)` | `new RenderEngineException(…)`; `RenderException` is abstract |
+| `Esj.forMessage`, `Esj.forSubject`, `Esj.abbreviated` | `de.bsnsoft.esj.internal.Messages`, internal; `Esj.steersATerminal` and `Esj.isBidiControl` stay |
 
 ## [0.9.4] — 2026-10-07
 

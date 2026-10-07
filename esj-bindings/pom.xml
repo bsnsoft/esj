@@ -31,20 +31,21 @@
       <artifactId>esj-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+
     <!--
-      The front door both readers enter through: XmlBytes, the encoding mode and the
-      refusal a strict reader answers with, so that a document whose bytes are not written
-      in the encoding it declares is answered the same way whichever reader was asked. The
-      report types of an import are no longer among them; they are in esj-core.
+      The other reader, the XSLT path, is the oracle this one is compared with on the
+      corpus. The front door both readers enter through is in esj-core, so the reader needs
+      neither that module nor Saxon, and the dependency is a test one.
     -->
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-xr</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <!--

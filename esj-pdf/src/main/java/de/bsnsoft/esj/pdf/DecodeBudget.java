@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * <p>This counts them. Every stream the library is about to decode passes through a view
  * of this module first (see {@code BoundedPdfParser}), which measures the stream against
  * what is left of the budget before the library decodes it. A stream that would take the
- * budget past its bound raises {@link PdfLimitException}, which is a statement about this
+ * budget past its bound raises {@link EsjLimitException}, which is a statement about this
  * reader's configuration and never a verdict on the file.
  *
  * <p>The budget is suspended for the one stream this module is decoding itself — an
@@ -107,7 +108,7 @@ final class DecodeBudget {
      *
      * @param bytes how many bytes were produced
      * @param what  what to call the stream in a message
-     * @throws PdfLimitException if the budget is spent
+     * @throws EsjLimitException if the budget is spent
      */
     void spend(long bytes, String what) {
         if (bytes <= 0) {
@@ -124,16 +125,18 @@ final class DecodeBudget {
      *
      * @param declared what {@code /N} of the stream dictionary says
      * @param what     what to call the stream in a message
-     * @throws PdfLimitException if the container declares more objects than the bound
+     * @throws EsjLimitException if the container declares more objects than the bound
      */
     void spendObjects(long declared, String what) {
         if (declared <= 0) {
             return;
         }
         if (declared > objectLimit - objects) {
-            throw new PdfLimitException(what + " declares " + declared + " objects, and the"
+            throw new EsjLimitException(what + " declares " + declared + " objects, and the"
                     + " object streams of one container declare at most " + objectLimit
-                    + " objects together for this reader");
+                    + " objects together for this reader",
+                    new EsjLimitException.Bound("maxObjectStreamObjects", objectLimit,
+                            "objects"));
         }
         objects += declared;
     }
@@ -148,11 +151,12 @@ final class DecodeBudget {
      * @param what what to call the stream in the message
      * @return the exception to throw
      */
-    PdfLimitException past(String what) {
-        return new PdfLimitException(what + " decodes to more than the " + limit
+    EsjLimitException past(String what) {
+        return new EsjLimitException(what + " decodes to more than the " + limit
                 + " bytes this reader decodes while it opens a PDF, counting every stream"
                 + " the library reads out of the file and every stream this reader"
-                + " decodes itself");
+                + " decodes itself",
+                new EsjLimitException.Bound("maxDecodedBytes", limit, "bytes"));
     }
 
     /**
@@ -167,8 +171,8 @@ final class DecodeBudget {
      * @param what what to call the stream in the message
      * @return the exception to throw
      */
-    PdfLimitException unmeasurable(String what) {
-        return new PdfLimitException(what + " is filtered with a chain this reader does not"
+    EsjLimitException unmeasurable(String what) {
+        return new EsjLimitException(what + " is filtered with a chain this reader does not"
                 + " decode, so what it decodes to cannot be bounded and the file was not"
                 + " opened; the structural streams of a container of an electronic invoice"
                 + " are deflated");

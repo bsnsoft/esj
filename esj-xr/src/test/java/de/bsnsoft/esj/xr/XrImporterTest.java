@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -32,7 +33,7 @@ class XrImporterTest {
 
     @Test
     void readsACreditNote() {
-        ImportResult result = importer.importUblWithReport(Instances.bytes("/ubl/credit-note.xml"));
+        ImportResult result = importer.readUbl(Instances.bytes("/ubl/credit-note.xml"));
         SemanticDocument document = result.document();
 
         assertEquals(SemanticValue.of("CN-2026-0007"), value(document, "/BT-1"));
@@ -48,9 +49,9 @@ class XrImporterTest {
 
     @Test
     void recognizesTheSyntaxOfADocument() {
-        assertEquals("UBL", importer.importXml(Conformance.instance(UBL))
+        assertEquals("UBL", importer.read(Conformance.instance(UBL)).document()
                 .source().orElseThrow().syntax().orElseThrow());
-        assertEquals("CII", importer.importXml(Conformance.instance(CII))
+        assertEquals("CII", importer.read(Conformance.instance(CII)).document()
                 .source().orElseThrow().syntax().orElseThrow());
     }
 
@@ -59,8 +60,8 @@ class XrImporterTest {
         byte[] ubl = Conformance.instance(UBL);
         byte[] cii = Conformance.instance(CII);
 
-        assertThrows(XrSyntaxException.class, () -> importer.importCii(ubl));
-        assertThrows(XrSyntaxException.class, () -> importer.importUbl(cii));
+        assertThrows(XrSyntaxException.class, () -> importer.readCii(ubl).document());
+        assertThrows(XrSyntaxException.class, () -> importer.readUbl(cii).document());
     }
 
     @Test
@@ -68,7 +69,7 @@ class XrImporterTest {
         byte[] document = utf8("<order xmlns=\"urn:example:orders\"><id>1</id></order>");
 
         XrSyntaxException thrown =
-                assertThrows(XrSyntaxException.class, () -> importer.importXml(document));
+                assertThrows(XrSyntaxException.class, () -> importer.read(document).document());
         assertEquals("urn:example:orders", thrown.namespace());
         assertEquals("order", thrown.localName());
     }
@@ -77,16 +78,16 @@ class XrImporterTest {
     void doesNotTakeTheXrRepresentationForASourceSyntax() {
         byte[] xr = Instances.bytes("/xr/notes.xml");
 
-        assertThrows(XrSyntaxException.class, () -> importer.importXml(xr));
+        assertThrows(XrSyntaxException.class, () -> importer.read(xr).document());
         assertEquals(XrImporter.XR_PROVENANCE,
-                importer.fromXr(xr).source().orElseThrow().syntax().orElseThrow());
+                importer.readXr(xr).document().source().orElseThrow().syntax().orElseThrow());
     }
 
     @Test
     void refusesSomethingThatIsNotTheXrRepresentation() {
         byte[] ubl = Conformance.instance(UBL);
 
-        assertThrows(XrSyntaxException.class, () -> importer.fromXr(ubl));
+        assertThrows(XrSyntaxException.class, () -> importer.readXr(ubl).document());
     }
 
     /** The provenance digest is taken over the bytes that were handed in, not over the XR tree. */
@@ -94,7 +95,7 @@ class XrImporterTest {
     void recordsTheDigestOfTheInput() {
         byte[] ubl = Conformance.instance(UBL);
 
-        assertEquals(sha256(ubl), importer.importUbl(ubl).source().orElseThrow()
+        assertEquals(sha256(ubl), importer.readUbl(ubl).document().source().orElseThrow()
                 .sha256().orElseThrow());
     }
 
@@ -104,7 +105,7 @@ class XrImporterTest {
                 + "<!ENTITY greeting \"hello\">]>"
                 + "<invoice xmlns=\"urn:example:orders\">&greeting;</invoice>");
 
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
     }
 
     @Test
@@ -113,29 +114,29 @@ class XrImporterTest {
                 + "<!ENTITY secret SYSTEM \"file:///etc/passwd\">]>"
                 + "<invoice xmlns=\"urn:example:orders\">&secret;</invoice>");
 
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
     }
 
     @Test
     void refusesBytesThatAreNotXml() {
         byte[] document = utf8("this is not a document");
 
-        assertThrows(XrFormatException.class, () -> importer.importXml(document));
+        assertThrows(XrFormatException.class, () -> importer.read(document).document());
     }
 
     @Test
     void refusesAnInputLargerThanItsBound() {
-        XrImporter small = new XrImporter(XrImporter.defaultRegistry(), 64);
+        XrImporter small = new XrImporter(Registry.en16931WithXrechnung(), 64);
         byte[] document = Conformance.instance(UBL);
 
-        XrLimitException thrown =
-                assertThrows(XrLimitException.class, () -> small.importXml(document));
+        EsjLimitException thrown =
+                assertThrows(EsjLimitException.class, () -> small.read(document).document());
         assertTrue(thrown.getMessage().contains("64"), thrown.getMessage());
     }
 
     @Test
     void rejectsAnImpossibleBound() {
-        Registry registry = XrImporter.defaultRegistry();
+        Registry registry = Registry.en16931WithXrechnung();
 
         assertThrows(IllegalArgumentException.class, () -> new XrImporter(registry, 0));
     }
@@ -153,7 +154,7 @@ class XrImporterTest {
      */
     @Test
     void describesEverythingItCouldNotUse() {
-        ImportResult result = importer.fromXrWithReport(Instances.bytes("/xr/notes.xml"));
+        ImportResult result = importer.readXr(Instances.bytes("/xr/notes.xml"));
         SemanticDocument document = result.document();
         ImportReport report = result.report();
 
@@ -199,7 +200,7 @@ class XrImporterTest {
                         "<ram:LineTotalAmount>314.860</ram:LineTotalAmount>");
 
         ImportResult result =
-                importer.importXmlWithReport(written.getBytes(StandardCharsets.UTF_8));
+                importer.read(written.getBytes(StandardCharsets.UTF_8));
 
         assertEquals(List.of("/BG-22/BT-106"),
                 locations(result.report(), ImportNote.Kind.SCALE_REDUCED));
@@ -218,7 +219,7 @@ class XrImporterTest {
                         "<ram:LineTotalAmount>314.861</ram:LineTotalAmount>");
 
         ImportResult result =
-                importer.importXmlWithReport(written.getBytes(StandardCharsets.UTF_8));
+                importer.read(written.getBytes(StandardCharsets.UTF_8));
 
         assertEquals(SemanticValue.ofDecimal(new java.math.BigDecimal("314.861")),
                 value(result.document(), "/BG-22/BT-106"));

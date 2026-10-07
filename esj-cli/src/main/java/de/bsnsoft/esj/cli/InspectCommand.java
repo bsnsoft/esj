@@ -9,7 +9,7 @@ import de.bsnsoft.esj.pdf.PdfaIdentification;
 import de.bsnsoft.esj.syntax.PackException;
 import de.bsnsoft.esj.syntax.PackSelection;
 import de.bsnsoft.esj.validate.ValidationLayer;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -174,7 +174,7 @@ final class InspectCommand implements Callable<Integer>, ReadsADocument {
     private static String validationPack(Loaded loaded,
                                          SemanticDocument document,
                                          PackChoice chosen) {
-        Optional<XrSyntax> syntax = loaded.syntax().xrSyntax();
+        Optional<InvoiceSyntax> syntax = loaded.syntax().invoiceSyntax();
         if (syntax.isEmpty()) {
             return SyntaxCheck.NO_XML;
         }

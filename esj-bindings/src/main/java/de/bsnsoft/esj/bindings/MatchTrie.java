@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.bindings;
 
 import de.bsnsoft.esj.model.Component;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,14 +36,14 @@ import java.util.TreeSet;
  */
 final class MatchTrie {
 
-    private static final Map<BindingSyntax, MatchTrie> COMPILED = new HashMap<>();
+    private static final Map<InvoiceSyntax, MatchTrie> COMPILED = new HashMap<>();
 
-    private final BindingSyntax syntax;
+    private final InvoiceSyntax syntax;
     private final Node root;
     private final List<String> bufferedPaths;
     private final List<List<Name>> references;
 
-    private MatchTrie(BindingSyntax syntax,
+    private MatchTrie(InvoiceSyntax syntax,
                       Node root,
                       List<String> bufferedPaths,
                       List<List<Name>> references) {
@@ -58,7 +59,7 @@ final class MatchTrie {
      * @param syntax the syntax
      * @return its compiled binding table
      */
-    static synchronized MatchTrie of(BindingSyntax syntax) {
+    static synchronized MatchTrie of(InvoiceSyntax syntax) {
         return COMPILED.computeIfAbsent(syntax, key -> compile(BindingTable.of(key)));
     }
 
@@ -126,7 +127,7 @@ final class MatchTrie {
     }
 
     /** Returns the syntax this tree belongs to. */
-    BindingSyntax syntax() {
+    InvoiceSyntax syntax() {
         return syntax;
     }
 

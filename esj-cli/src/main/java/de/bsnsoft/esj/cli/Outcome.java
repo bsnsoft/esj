@@ -26,7 +26,7 @@ import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.ValidationStatus;
 import de.bsnsoft.esj.imports.ImportNote;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -408,7 +408,7 @@ final class Outcome {
         for (SkippedComponent component : report.skipped()) {
             skipped.put(component.component(), component.reason());
         }
-        Optional<XrSyntax> syntax = report.syntax();
+        Optional<InvoiceSyntax> syntax = report.syntax();
         List<Row> rows = new ArrayList<>();
         for (PackComponent component : pack.components()) {
             if (syntax.isPresent() && !component.appliesToSyntax(syntax.orElseThrow())) {

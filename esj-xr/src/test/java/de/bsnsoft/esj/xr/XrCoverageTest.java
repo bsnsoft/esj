@@ -34,7 +34,7 @@ class XrCoverageTest {
 
     @Test
     void reportsAPaymentMeansWithoutItsTypeCode() {
-        ImportResult result = importer.importXmlWithReport(
+        ImportResult result = importer.read(
                 without(Conformance.instance(CII), "<ram:TypeCode>58</ram:TypeCode>"));
 
         assertEquals(List.of("BG-16"), lost(result.report()));
@@ -49,7 +49,7 @@ class XrCoverageTest {
         assertTrue(new String(source, StandardCharsets.UTF_8).contains(indicator),
                 "the instance this case is built from states a document level allowance");
 
-        ImportResult result = importer.importXmlWithReport(without(source, indicator));
+        ImportResult result = importer.read(without(source, indicator));
 
         assertEquals(List.of("BG-20 or BG-21"), lost(result.report()));
     }
@@ -61,7 +61,7 @@ class XrCoverageTest {
         assertTrue(new String(source, StandardCharsets.UTF_8).contains(indicator),
                 "the instance this case is built from states a price allowance");
 
-        ImportResult result = importer.importXmlWithReport(without(source, indicator));
+        ImportResult result = importer.read(without(source, indicator));
 
         assertEquals(List.of("BG-29"), lost(result.report()));
         assertFalse(result.document().value(SemanticPath.of("/BG-25/0/BG-29/BT-147")).isPresent(),
@@ -75,7 +75,7 @@ class XrCoverageTest {
         assertTrue(new String(source, StandardCharsets.UTF_8).contains(currency),
                 "the instance this case is built from states an invoice currency");
 
-        ImportResult result = importer.importXmlWithReport(without(source, currency));
+        ImportResult result = importer.read(without(source, currency));
 
         assertEquals(List.of("BG-22"), lost(result.report()));
         assertFalse(result.document().value(SemanticPath.of("/BG-22/BT-110")).isPresent(),
@@ -89,7 +89,7 @@ class XrCoverageTest {
         assertTrue(new String(source, StandardCharsets.UTF_8).contains(currency),
                 "the instance this case is built from states a document currency");
 
-        ImportResult result = importer.importXmlWithReport(without(source, currency));
+        ImportResult result = importer.read(without(source, currency));
 
         assertEquals(List.of("BG-22"), lost(result.report()));
         assertFalse(result.document().value(SemanticPath.of("/BG-22/BT-110")).isPresent(),
@@ -98,7 +98,7 @@ class XrCoverageTest {
 
     @Test
     void reportsATaxRegistrationOfAnotherScheme() {
-        ImportResult result = importer.importXmlWithReport(
+        ImportResult result = importer.read(
                 instead(Conformance.instance(CII_SCHEMES), "schemeID=\"VA\"",
                         "schemeID=\"XX\""));
 
@@ -115,7 +115,7 @@ class XrCoverageTest {
         assertTrue(new String(source, StandardCharsets.UTF_8).contains(identifier),
                 "the instance this case is built from states a global identifier");
 
-        ImportResult result = importer.importXmlWithReport(
+        ImportResult result = importer.read(
                 instead(source, identifier, "<ram:GlobalID>"));
 
         assertEquals(List.of("BG-4"), lost(result.report()));
@@ -127,11 +127,11 @@ class XrCoverageTest {
     @Test
     void reportsAUblPartyTaxSchemeThatIsNotValueAddedTax() {
         byte[] source = Conformance.instance(UBL);
-        ImportResult whole = importer.importXmlWithReport(source);
+        ImportResult whole = importer.read(source);
         assertTrue(whole.document().value(SemanticPath.of("/BG-7/BT-48")).isPresent(),
                 "the instance this case is built from states a buyer VAT identifier");
 
-        ImportResult result = importer.importXmlWithReport(
+        ImportResult result = importer.read(
                 instead(source, "<cbc:ID>VAT</cbc:ID>", "<cbc:ID>FC</cbc:ID>"));
 
         assertTrue(lost(result.report()).contains("BG-7"), "the buyer registration is lost");
@@ -143,7 +143,7 @@ class XrCoverageTest {
     void saysNothingAboutTheCorpus() {
         for (String instance : Conformance.corpus()) {
             ImportResult result =
-                    importer.importXmlWithReport(Conformance.instance(instance));
+                    importer.read(Conformance.instance(instance));
             assertEquals(List.of(), lost(result.report()),
                     instance + " is a document the binding carries whole");
         }

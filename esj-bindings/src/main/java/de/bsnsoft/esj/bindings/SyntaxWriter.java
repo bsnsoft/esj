@@ -8,6 +8,7 @@ import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -152,7 +153,7 @@ final class SyntaxWriter {
      *                                 model other than the one the binding table of that
      *                                 syntax was written against
      */
-    static WriteResult write(BindingSyntax syntax,
+    static WriteResult write(InvoiceSyntax syntax,
                              SemanticDocument document,
                              WriterOptions options) {
         return new Run(syntax, document, options).write();
@@ -161,7 +162,7 @@ final class SyntaxWriter {
     /** One conversion, from the values of a document to the bytes of an XML syntax. */
     private static final class Run {
 
-        private final BindingSyntax syntax;
+        private final InvoiceSyntax syntax;
         private final SemanticDocument document;
         private final WriterOptions options;
         private final BindingTable table;
@@ -220,7 +221,7 @@ final class SyntaxWriter {
         private int written;
         private int dropped;
 
-        private Run(BindingSyntax syntax, SemanticDocument document, WriterOptions options) {
+        private Run(InvoiceSyntax syntax, SemanticDocument document, WriterOptions options) {
             this.syntax = syntax;
             this.document = document;
             this.options = options;
@@ -251,7 +252,7 @@ final class SyntaxWriter {
             }
             indicate(root);
             fold();
-            if (syntax != BindingSyntax.CII) {
+            if (syntax != InvoiceSyntax.CII) {
                 structure(root);
                 currency(root);
             }
@@ -259,7 +260,7 @@ final class SyntaxWriter {
                 reference.resolve(root);
             }
             convention(root, "/" + root.name());
-            if (syntax != BindingSyntax.CII) {
+            if (syntax != InvoiceSyntax.CII) {
                 // After the references, because an attribute a reference fills is an
                 // attribute the document states, and one it cannot fill is one it does not.
                 unstated(root, "/" + root.name());
@@ -841,7 +842,7 @@ final class SyntaxWriter {
          */
         private boolean suits(BindingTable.Path candidate, SemanticValue value) {
             List<BindingTable.Step> steps = candidate.steps();
-            if (syntax != BindingSyntax.CII || candidate.attribute() != null
+            if (syntax != InvoiceSyntax.CII || candidate.attribute() != null
                     || !"IBANID".equals(steps.get(steps.size() - 1).localName())) {
                 return true;
             }

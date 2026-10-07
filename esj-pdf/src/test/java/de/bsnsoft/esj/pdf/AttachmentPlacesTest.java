@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -220,7 +221,7 @@ class AttachmentPlacesTest {
     void theWalkOfThePagesIsBounded() {
         byte[] pdf = PdfEdit.withMorePages(hybrid(), 40);
 
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> PdfContainer.open(pdf, PdfLimits.defaults().withMaxObjectStreamObjects(30))
                         .close());
 

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -323,7 +324,7 @@ public final class EmbeddedFile {
      * stream the content is empty and not truncated.
      *
      * @return the content
-     * @throws PdfLimitException  if the container has already produced as much decoded
+     * @throws EsjLimitException  if the container has already produced as much decoded
      *                            content as {@link PdfLimits#maxTotalAttachmentBytes()}
      *                            allows
      * @throws PdfFormatException if the stream cannot be decoded
@@ -374,7 +375,8 @@ public final class EmbeddedFile {
      */
     private AttachmentContent read(long cap) {
         return BoundedStream.decode(stream, cap, container.limits().maxAttachmentBytes(),
-                "the attachment " + Messages.quoted(name), container.budget());
+                "maxAttachmentBytes", "the attachment " + Messages.quoted(name),
+                container.budget());
     }
 
     /**

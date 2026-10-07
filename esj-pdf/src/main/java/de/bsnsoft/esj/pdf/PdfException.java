@@ -1,11 +1,13 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjException;
+
 /**
  * Base class of the unchecked exceptions this module throws.
  *
  * <p>A container this module cannot get an invoice out of raises one of these, and each
- * of them answers a different question, because the four answers do not mean the same
- * thing to the caller that has to act on them:
+ * of them answers a different question, because the answers do not mean the same thing
+ * to the caller that has to act on them:
  *
  * <ul>
  *   <li>the bytes are no PDF this module can read, or the file is encrypted in a way that
@@ -17,23 +19,24 @@ package de.bsnsoft.esj.pdf;
  *       question is not answerable from it alone;</li>
  *   <li>the container carries an invoice in a format this project has decided not to
  *       support ({@link UnsupportedInvoiceException}) — nothing about the file is
- *       wrong;</li>
- *   <li>a bound of {@link PdfLimits} was reached ({@link PdfLimitException}) — this
- *       reader, as configured, declines to go on, which is a statement about the
- *       configuration and not about the file, and a caller must never present it as a
- *       verdict on the invoice.</li>
+ *       wrong.</li>
  * </ul>
+ *
+ * <p>One more answer is not of this type: a bound of {@link PdfLimits} that was reached
+ * ends in an {@link de.bsnsoft.esj.EsjLimitException}, the type every module of this
+ * project raises for a bound, and names the setting it was. This reader, as configured,
+ * declines to go on, which is a statement about the configuration and not about the file,
+ * and a caller must never present it as a verdict on the invoice.
  *
  * <p>{@link EmbedRefusedException} is the one of these that is not about reading: it says
  * that a file this module read is not a file it will write an invoice into.
  */
-public abstract sealed class PdfException extends RuntimeException
+public abstract sealed class PdfException extends EsjException
         permits AmbiguousInvoiceAttachmentException,
                 EmbedRefusedException,
                 NoInvoiceAttachmentException,
                 PdfAccessException,
                 PdfFormatException,
-                PdfLimitException,
                 UnsupportedInvoiceException {
 
     private static final long serialVersionUID = 1L;

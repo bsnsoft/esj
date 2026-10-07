@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.typed;
 
+import de.bsnsoft.esj.EsjException;
 import de.bsnsoft.esj.EsjFormatException;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
@@ -15,7 +16,7 @@ import java.util.Objects;
  * view does not validate, so it meets the defect when an accessor is called and says so
  * rather than returning a value it had to invent.
  */
-public final class ValueTypeException extends RuntimeException {
+public final class ValueTypeException extends EsjException {
 
     private static final long serialVersionUID = 1L;
 

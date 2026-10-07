@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class LetterCoverageTest {
 
-    private static final Registry REGISTRY = XrImporter.defaultRegistry();
+    private static final Registry REGISTRY = Registry.en16931WithXrechnung();
 
     static List<String> instances() {
         return Corpus.instances();

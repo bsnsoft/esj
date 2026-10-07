@@ -1,17 +1,30 @@
 package de.bsnsoft.esj;
 
 /**
- * Base class of the unchecked exceptions this implementation throws.
+ * Base class of the unchecked exceptions the libraries of this project throw.
  *
- * <p>Invalid user data is reported as findings, not as exceptions
- * (specification, section 9.5). An {@code EsjException} therefore signals one of two
- * things: a value or path that this implementation was asked to construct although it
- * cannot exist in a conformant document ({@link EsjFormatException}), or a resource
- * bound that was reached ({@link EsjLimitException}). Input/output failures keep their
- * own exception types.
+ * <p>Every module throws exceptions of its own, and every one of them is an
+ * {@code EsjException}, so that a caller who handles them all in one place catches this
+ * type and a caller who cares about one kind catches that kind. Invalid user data is
+ * reported as findings, not as exceptions (specification, section 9.5); an exception says
+ * that something could not be done at all. Two kinds are defined here because every
+ * module meets them:
+ *
+ * <ul>
+ *   <li>{@link EsjFormatException}: a value or path that this implementation was asked to
+ *       construct although it cannot exist in a conformant document;</li>
+ *   <li>{@link EsjLimitException}: a resource bound that was reached, in any module. A
+ *       limit is the policy of the party that reads, writes or renders, and never a
+ *       statement about the document, so it has one type wherever it is met.</li>
+ * </ul>
+ *
+ * <p>The other kinds belong to the module that throws them: a document in no syntax a
+ * reader knows, a PDF without an invoice, a template that is not a template, a rule pack
+ * that does not load. {@link de.bsnsoft.esj.xml.XmlEncodingException} is the one of
+ * those this module defines, because both readers of an XML invoice throw it.
+ * Input/output failures keep their own exception types.
  */
-public abstract sealed class EsjException extends RuntimeException
-        permits EsjFormatException, EsjLimitException {
+public abstract class EsjException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

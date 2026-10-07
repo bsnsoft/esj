@@ -5,7 +5,8 @@
  * twice: once as the page a person reads, and once as an XML document attached to the
  * file. Only the second of the two is data. This module opens the container, enumerates
  * what is attached to it, decides by the bytes of each attachment what it is, and hands
- * the one invoice to the importer of {@code esj-xr}. From there nothing is different
+ * the one invoice to a reader of an XML invoice — the streaming reader of
+ * {@code esj-bindings} unless the caller names another. From there nothing is different
  * from reading the same XML on its own.
  *
  * <p><strong>The page is never read.</strong> There is no optical character recognition,

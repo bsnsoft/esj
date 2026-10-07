@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.time.Duration;
 import java.util.Objects;
@@ -12,7 +13,7 @@ import java.util.Optional;
  * document: a caller who reads invoices from strangers sets them low and refuses a
  * document rather than spending minutes on it, and a caller who processes its own
  * archive raises them. Reaching either of them ends the run in a
- * {@link SyntaxLimitException} and not in a verdict, so a document nobody managed to
+ * {@link EsjLimitException} and not in a verdict, so a document nobody managed to
  * check never reads as an invalid one.
  *
  * <p>Instances are immutable; every {@code with} method returns a new one.

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.exc.StreamReadException;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -93,7 +94,7 @@ final class SchemaTable {
      * @param syntax the syntax
      * @return its schema table
      */
-    static SchemaTable of(BindingSyntax syntax) {
+    static SchemaTable of(InvoiceSyntax syntax) {
         return Loaded.LOADED.get(syntax);
     }
 
@@ -327,16 +328,16 @@ final class SchemaTable {
     /** Holds the tables, which are read once and shared. */
     private static final class Loaded {
 
-        private static final Map<BindingSyntax, SchemaTable> LOADED = read();
+        private static final Map<InvoiceSyntax, SchemaTable> LOADED = read();
 
         private Loaded() {
             throw new AssertionError("no instances");
         }
 
-        private static Map<BindingSyntax, SchemaTable> read() {
-            Map<BindingSyntax, SchemaTable> tables = new EnumMap<>(BindingSyntax.class);
-            for (BindingSyntax syntax : BindingSyntax.values()) {
-                String resource = syntax == BindingSyntax.CII ? CII_RESOURCE : UBL_RESOURCE;
+        private static Map<InvoiceSyntax, SchemaTable> read() {
+            Map<InvoiceSyntax, SchemaTable> tables = new EnumMap<>(InvoiceSyntax.class);
+            for (InvoiceSyntax syntax : InvoiceSyntax.values()) {
+                String resource = syntax == InvoiceSyntax.CII ? CII_RESOURCE : UBL_RESOURCE;
                 try (InputStream in = SchemaTable.class.getResourceAsStream(resource)) {
                     if (in == null) {
                         throw new BindingFormatException("the schema table " + resource

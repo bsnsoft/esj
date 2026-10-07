@@ -6,11 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.ExtensionValue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -271,7 +273,7 @@ class CiiWriterTest {
 
         assertContains(refused.getMessage(), "EN16931-1:2026");
         assertContains(refused.getMessage(),
-                BindingTable.of(BindingSyntax.CII).semanticModel());
+                BindingTable.of(InvoiceSyntax.CII).semanticModel());
         assertContains(refused.getMessage(), "drops");
     }
 
@@ -281,7 +283,7 @@ class CiiWriterTest {
      */
     @Test
     void saysWhichEditionItWrites() {
-        String written = BindingTable.of(BindingSyntax.CII).semanticModel();
+        String written = BindingTable.of(InvoiceSyntax.CII).semanticModel();
         assertEquals(written, CiiWriter.semanticModel());
         assertTrue(CiiWriter.supports(written));
         assertFalse(CiiWriter.supports("EN16931-1:2026"));
@@ -378,7 +380,7 @@ class CiiWriterTest {
      */
     @Test
     void gathersTheTermsLeftBehindByDesignWithoutTheirOccurrenceIndex() {
-        WriteReport report = new WriteReport(BindingSyntax.CII, 0, 0, List.of(
+        WriteReport report = new WriteReport(InvoiceSyntax.CII, 0, 0, List.of(
                 new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BG-25/0/BT-X-1/0", "a", "X 1"),
                 new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BG-25/0/BT-X-1/1", "b", "X 1"),
                 new WriteNote(WriteNote.Kind.TERM_BY_DESIGN, "/BG-25/1/BT-X-2", "c", "X 1"),
@@ -577,7 +579,7 @@ class CiiWriterTest {
     @Test
     void refusesToWriteMoreThanTheOptionsAllow() {
         SemanticDocument document = SemanticDocument.builder().put("/BT-1", "RE-1").build();
-        BindingLimitException refused = assertThrows(BindingLimitException.class, () ->
+        EsjLimitException refused = assertThrows(EsjLimitException.class, () ->
                 CiiWriter.write(document, WriterOptions.builder().maxOutputBytes(64).build()));
         assertContains(refused.getMessage(), "the 64 bytes this run was given");
     }
@@ -608,7 +610,7 @@ class CiiWriterTest {
                 SemanticDocument.builder().put("/BT-1", "RE-1").build(),
                 WriterOptions.defaults());
         assertContains(result.toString(), "1 values written, 0 dropped, 0 notes");
-        assertEquals(BindingSyntax.CII, result.report().syntax());
+        assertEquals(InvoiceSyntax.CII, result.report().syntax());
     }
 
     private static String write(SemanticDocument document) {

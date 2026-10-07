@@ -1,5 +1,6 @@
 package de.bsnsoft.esj;
 
+import de.bsnsoft.esj.internal.Messages;
 import de.bsnsoft.esj.validate.FindingCode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -340,7 +341,7 @@ public record SemanticValue(String content,
     @Override
     public String toString() {
         StringBuilder text = new StringBuilder("SemanticValue[value=\"")
-                .append(Esj.forMessage(content, DESCRIPTION_EXCERPT))
+                .append(Messages.forMessage(content, DESCRIPTION_EXCERPT))
                 .append("\" (").append(content.length()).append(" characters)");
         append(text, "scheme", scheme);
         append(text, "schemeVersion", schemeVersion);
@@ -352,7 +353,7 @@ public record SemanticValue(String content,
     private static void append(StringBuilder text, String name, String value) {
         if (value != null) {
             text.append(", ").append(name).append("=\"")
-                    .append(Esj.forMessage(value, DESCRIPTION_EXCERPT)).append('"');
+                    .append(Messages.forMessage(value, DESCRIPTION_EXCERPT)).append('"');
         }
     }
 }

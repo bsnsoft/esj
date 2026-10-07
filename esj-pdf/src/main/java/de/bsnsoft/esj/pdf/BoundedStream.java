@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  *
  * <p>Reaching the bound on the last filter of the chain is not a failure — it is what a
  * window is for, and the content is returned with {@link AttachmentContent#truncated()}
- * set. Reaching it on an earlier filter is a {@link PdfLimitException}: the output of that
+ * set. Reaching it on an earlier filter is an {@link EsjLimitException}: the output of that
  * stage is the input of the next one, so a stage that was cut off cannot be decoded
  * further and this run has no answer about the stream rather than a partial one.
  *
@@ -101,6 +102,10 @@ final class BoundedStream {
      */
     private static final long MAX_PREDICTOR_ROW = 1024L * 1024L;
 
+    /** The bound {@link #MAX_PREDICTOR_ROW} is, named for an exception; no setting moves it. */
+    private static final EsjLimitException.Bound PREDICTOR_ROW =
+            new EsjLimitException.Bound("maxPredictorRowBytes", MAX_PREDICTOR_ROW, "bytes");
+
     /**
      * The filters this reader runs: the ones whose decoders write what they have decoded
      * as they decode it, so that the output stream they write into is a bound on what
@@ -145,14 +150,17 @@ final class BoundedStream {
      * @param intermediate how many bytes an earlier filter of a chain may produce; it is
      *                     a bound of this reader and not of the window, because the
      *                     output of one stage is the input of the next
+     * @param bound        the name of the setting of {@link PdfLimits} that
+     *                     {@code intermediate} is, for the exception that reaches it
      * @param what         what to call the stream in a message
      * @return the decoded bytes, and whether the stream carried more than the bound
-     * @throws PdfLimitException  if a filter that is not the last one reached its bound
+     * @throws EsjLimitException  if a filter that is not the last one reached its bound
      * @throws PdfFormatException if the stream cannot be decoded
      */
     static AttachmentContent decode(PDStream stream,
                                     long cap,
                                     long intermediate,
+                                    String bound,
                                     String what,
                                     DecodeBudget budget) {
         COSStream cos = stream.getCOSObject();
@@ -172,7 +180,7 @@ final class BoundedStream {
         cos.getDictionaryObject(COSName.LENGTH);
         budget.suspend(cos);
         try {
-            AttachmentContent content = run(cos, filters, cap, intermediate, what);
+            AttachmentContent content = run(cos, filters, cap, intermediate, bound, what);
             budget.spend(content.length(), what);
             return content;
         } finally {
@@ -190,6 +198,7 @@ final class BoundedStream {
                                          List<COSName> filters,
                                          long cap,
                                          long intermediate,
+                                         String bound,
                                          String what) {
         int bounded = (int) Math.min(Math.max(cap, 0), MAX_BYTES);
         int between = (int) Math.min(Math.max(Math.max(intermediate, cap), 0), MAX_BYTES);
@@ -205,9 +214,10 @@ final class BoundedStream {
                 guardPredictor(filters.get(i), cos, i, what);
                 run(filter(filters.get(i), what), stage, out, cos, i, what);
                 if (!last && out.full()) {
-                    throw new PdfLimitException(what + " decodes to more than"
+                    throw new EsjLimitException(what + " decodes to more than"
                             + " the " + between + " bytes this reader holds after its "
-                            + ordinal(i) + " filter, and the stages after it were not run");
+                            + ordinal(i) + " filter, and the stages after it were not run",
+                            new EsjLimitException.Bound(bound, between, "bytes"));
                 }
                 if (!last) {
                     stage = new ByteArrayInputStream(out.bytes());
@@ -239,7 +249,7 @@ final class BoundedStream {
      * @return the number of bytes the stream decodes to, or {@link #PAST_THE_BOUND} where
      *         it was still producing them at {@code cap}, or {@link #NOT_MEASURABLE}
      *         where this reader does not run the chain the stream declares
-     * @throws PdfLimitException if a stage declares a predictor row wider than
+     * @throws EsjLimitException if a stage declares a predictor row wider than
      *                           {@link #MAX_PREDICTOR_ROW}, which is an allocation made
      *                           before the decoding begins and therefore refused before it
      */
@@ -350,7 +360,7 @@ final class BoundedStream {
      * @param parameters the stream dictionary the stage's parameters are read out of
      * @param index      the position of the stage in the chain
      * @param what       what to call the stream in a message
-     * @throws PdfLimitException  if the row is wider than {@link #MAX_PREDICTOR_ROW}
+     * @throws EsjLimitException  if the row is wider than {@link #MAX_PREDICTOR_ROW}
      * @throws PdfFormatException if the stage declares values this format does not define
      */
     private static void guardPredictor(COSName filter,
@@ -391,16 +401,16 @@ final class BoundedStream {
             // A row that does not fit the arithmetic is wider than any ceiling, and the
             // library would compute a negative length out of the same numbers and refuse
             // the stream itself. It is a bound of this reader and not a defect.
-            throw new PdfLimitException(what + " declares a predictor row of /Columns "
+            throw new EsjLimitException(what + " declares a predictor row of /Columns "
                     + columns + " by /Colors " + colors + " by /BitsPerComponent " + bits
                     + ", which is wider than this format can express, and this reader"
                     + " decodes a predicted stream whose rows are at most "
-                    + MAX_PREDICTOR_ROW + " bytes wide");
+                    + MAX_PREDICTOR_ROW + " bytes wide", PREDICTOR_ROW);
         }
         if (row > MAX_PREDICTOR_ROW) {
-            throw new PdfLimitException(what + " declares a predictor row of " + row
+            throw new EsjLimitException(what + " declares a predictor row of " + row
                     + " bytes, and this reader decodes a predicted stream whose rows are at"
-                    + " most " + MAX_PREDICTOR_ROW + " bytes wide");
+                    + " most " + MAX_PREDICTOR_ROW + " bytes wide", PREDICTOR_ROW);
         }
     }
 

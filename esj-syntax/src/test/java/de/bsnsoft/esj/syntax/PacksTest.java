@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -54,7 +54,7 @@ class PacksTest {
 
     @Test
     void appliesTheSchemaAndBothRuleSetsToAnXRechnungInvoice() {
-        PackSelection selection = pack.select(XrSyntax.UBL_INVOICE, XRECHNUNG);
+        PackSelection selection = pack.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG);
 
         assertEquals(List.of("ubl-2.1-xsd", "en16931-ubl-schematron",
                         "xrechnung-ubl-schematron"),
@@ -68,17 +68,17 @@ class PacksTest {
     void appliesTheComponentsOfTheSyntaxTheDocumentIsWrittenIn() {
         assertEquals(List.of("cii-d16b-xsd", "en16931-cii-schematron",
                         "xrechnung-cii-schematron"),
-                pack.select(XrSyntax.CII, XRECHNUNG).applied().stream()
+                pack.select(InvoiceSyntax.CII, XRECHNUNG).applied().stream()
                         .map(PackComponent::name).toList());
         assertEquals(List.of("ubl-2.1-xsd", "en16931-ubl-schematron",
                         "xrechnung-ubl-schematron"),
-                pack.select(XrSyntax.UBL_CREDIT_NOTE, XRECHNUNG).applied().stream()
+                pack.select(InvoiceSyntax.UBL_CREDIT_NOTE, XRECHNUNG).applied().stream()
                         .map(PackComponent::name).toList());
     }
 
     @Test
     void appliesTheCenArtefactsToAProfileWhoseCiusItDoesNotKnow() {
-        PackSelection selection = pack.select(XrSyntax.UBL_INVOICE,
+        PackSelection selection = pack.select(InvoiceSyntax.UBL_INVOICE,
                 "urn:cen.eu:en16931:2017#compliant#urn:example.org:cius:1.0");
 
         assertEquals(List.of("ubl-2.1-xsd", "en16931-ubl-schematron"),
@@ -93,7 +93,7 @@ class PacksTest {
 
     @Test
     void appliesOnlyTheSchemaToAProfileOfNoSpecificationItKnows() {
-        PackSelection selection = pack.select(XrSyntax.UBL_INVOICE, "urn:example.org:own:1");
+        PackSelection selection = pack.select(InvoiceSyntax.UBL_INVOICE, "urn:example.org:own:1");
 
         assertEquals(List.of("ubl-2.1-xsd"),
                 selection.applied().stream().map(PackComponent::name).toList());
@@ -101,14 +101,14 @@ class PacksTest {
                         + " validation only"),
                 selection.profileNote());
         assertTrue(selection.profileRulesSkipped());
-        assertFalse(pack.select(XrSyntax.UBL_INVOICE, XRECHNUNG).profileRulesSkipped(),
+        assertFalse(pack.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).profileRulesSkipped(),
                 "and a document of a profile the pack knows had nothing left out for it");
     }
 
     @Test
     void choosesTheBundledPackThatRecognizesTheProfile() {
         assertEquals(pack.directory(),
-                Packs.select(XrSyntax.UBL_INVOICE, XRECHNUNG).pack().directory());
+                Packs.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).pack().directory());
     }
 
     @Test
@@ -149,7 +149,7 @@ class PacksTest {
         assertEquals(pack.components(), fromDirectory.components());
         assertEquals(List.of("ubl-2.1-xsd", "en16931-ubl-schematron",
                         "xrechnung-ubl-schematron"),
-                fromDirectory.select(XrSyntax.UBL_INVOICE, XRECHNUNG).applied().stream()
+                fromDirectory.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).applied().stream()
                         .map(PackComponent::name).toList());
     }
 
@@ -268,9 +268,9 @@ class PacksTest {
 
     @Test
     void givesADocumentTheLevelsOfItsOwnProfile() {
-        PackLevels standard = pack.select(XrSyntax.UBL_INVOICE, XRECHNUNG).levels()
+        PackLevels standard = pack.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).levels()
                 .orElseThrow();
-        PackLevels cvd = pack.select(XrSyntax.UBL_INVOICE, XRECHNUNG_CVD).levels()
+        PackLevels cvd = pack.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG_CVD).levels()
                 .orElseThrow();
 
         assertEquals("xrechnung-ubl-invoice", standard.name());
@@ -289,11 +289,11 @@ class PacksTest {
     @Test
     void givesNoLevelsToAProfileNoTableNames() {
         assertEquals(Optional.empty(),
-                pack.select(XrSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017").levels(),
+                pack.select(InvoiceSyntax.UBL_INVOICE, "urn:cen.eu:en16931:2017").levels(),
                 "a document that names EN 16931 and no specification beyond it is judged"
                         + " on the flags of the artefacts alone");
         assertEquals(Optional.empty(),
-                pack.select(XrSyntax.CII, "urn:example.org:own:1").levels());
+                pack.select(InvoiceSyntax.CII, "urn:example.org:own:1").levels());
     }
 
     @Test

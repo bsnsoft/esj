@@ -1,7 +1,5 @@
 package de.bsnsoft.esj.pdf;
 
-import de.bsnsoft.esj.xr.XrImporter;
-
 /**
  * What a reader of a PDF container is willing to spend on one file.
  *
@@ -48,10 +46,11 @@ public record PdfLimits(long maxPdfBytes,
     public static final int DEFAULT_MAX_EMBEDDED_FILES = 64;
 
     /**
-     * The default bound on one decoded attachment: the bound the XML importer of
-     * {@code esj-xr} reads within, because that importer is where the attachment goes.
+     * The default bound on one decoded attachment: four mebibytes, the bound the
+     * stylesheet importer of {@code esj-xr} and the command line read an XML invoice
+     * within, because a reader is where the attachment goes.
      */
-    public static final long DEFAULT_MAX_ATTACHMENT_BYTES = XrImporter.DEFAULT_MAX_INPUT_BYTES;
+    public static final long DEFAULT_MAX_ATTACHMENT_BYTES = 4L * 1024L * 1024L;
 
     /**
      * The default bound on all decoded attachments of one container together: four times

@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * Writes an ESJ document as an XR document: the reverse of what
- * {@link XrImporter#fromXr(byte[])} reads.
+ * {@link XrImporter#readXr(byte[])} reads.
  *
  * <p>The XR representation is the semantic XML the stylesheets of the KoSIT XRechnung
  * visualization produce — an element per business term or business group, carrying the
@@ -19,7 +19,7 @@ import java.util.Objects;
  * is the shape of the XR representation and the registry.
  *
  * <p>It is the second half of a round trip. A document that came out of the importer goes
- * back in through {@link XrImporter#fromXr(byte[])} with the same values — for every
+ * back in through {@link XrImporter#readXr(byte[])} with the same values — for every
  * instance of the conformance corpus and every example of the repository, checked on
  * every build; {@code conformance/README.md} records what the trip cannot carry.
  *
@@ -73,10 +73,10 @@ public final class XrExporter {
 
     /**
      * Creates an exporter that knows the core model and the XRechnung extension, which is
-     * the registry {@link XrImporter#defaultRegistry()} returns.
+     * the registry {@link Registry#en16931WithXrechnung()} returns.
      */
     public XrExporter() {
-        this(XrImporter.defaultRegistry());
+        this(Registry.en16931WithXrechnung());
     }
 
     /**

@@ -1,6 +1,8 @@
 package de.bsnsoft.esj.bindings;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.Objects;
 
 /**
@@ -28,7 +30,7 @@ public final class CiiWriter {
      * @return the edition, for example {@code EN16931-1:2017+A1:2019/AC:2020}
      */
     public static String semanticModel() {
-        return BindingTable.of(BindingSyntax.CII).semanticModel();
+        return BindingTable.of(InvoiceSyntax.CII).semanticModel();
     }
 
     /**
@@ -45,7 +47,7 @@ public final class CiiWriter {
      * @throws NullPointerException if {@code semanticModel} is {@code null}
      */
     public static boolean supports(String semanticModel) {
-        return BindingTable.of(BindingSyntax.CII).describes(semanticModel);
+        return BindingTable.of(InvoiceSyntax.CII).describes(semanticModel);
     }
 
     /**
@@ -59,7 +61,7 @@ public final class CiiWriter {
      * @throws BindingEditionException if the document names an edition of the semantic
      *                               model other than the one the CII binding table was
      *                               written against
-     * @throws BindingLimitException if the document is larger than
+     * @throws EsjLimitException     if the document is larger than
      *                               {@link WriterOptions#DEFAULT_MAX_OUTPUT_BYTES}
      * @throws NullPointerException  if {@code document} is {@code null}
      */
@@ -79,7 +81,7 @@ public final class CiiWriter {
      * @throws BindingEditionException if the document names an edition of the semantic
      *                               model other than the one the CII binding table was
      *                               written against
-     * @throws BindingLimitException if the document is larger than
+     * @throws EsjLimitException     if the document is larger than
      *                               {@link WriterOptions#maxOutputBytes()}
      * @throws NullPointerException  if an argument is {@code null}
      */
@@ -96,7 +98,7 @@ public final class CiiWriter {
      * @throws BindingEditionException if the document names an edition of the semantic
      *                               model other than the one the CII binding table was
      *                               written against
-     * @throws BindingLimitException if the document is larger than
+     * @throws EsjLimitException     if the document is larger than
      *                               {@link WriterOptions#maxOutputBytes()}
      * @throws NullPointerException  if an argument is {@code null}
      */
@@ -104,6 +106,6 @@ public final class CiiWriter {
                                               WriterOptions options) {
         Objects.requireNonNull(document, "document");
         Objects.requireNonNull(options, "options");
-        return SyntaxWriter.write(BindingSyntax.CII, document, options);
+        return SyntaxWriter.write(InvoiceSyntax.CII, document, options);
     }
 }

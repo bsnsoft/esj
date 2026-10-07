@@ -1,16 +1,20 @@
 package de.bsnsoft.esj.bindings;
 
+import de.bsnsoft.esj.EsjLimitException.Bound;
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.handler.DocumentCollector;
+import de.bsnsoft.esj.imports.InvoiceReader;
+import de.bsnsoft.esj.internal.XmlBytes;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportReport;
 import de.bsnsoft.esj.imports.ImportResult;
-import de.bsnsoft.esj.xr.XmlBytes;
-import de.bsnsoft.esj.xr.XmlEncodingReport;
-import de.bsnsoft.esj.xr.XrEncodingException;
-import de.bsnsoft.esj.xr.XrEncodingMode;
+import de.bsnsoft.esj.xml.EncodingMode;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
+import de.bsnsoft.esj.xml.XmlEncodingException;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,9 +75,9 @@ import javax.xml.stream.XMLStreamReader;
  * <p>{@link #read(byte[])} checks the bytes against the encoding the document declares
  * before the parser sees them, exactly as the XSLT path does, and
  * {@link ReaderOptions#encodingMode()} decides what happens where the two disagree:
- * {@link XrEncodingMode#REPAIR} recodes the document into UTF-8 and records
+ * {@link EncodingMode#REPAIR} recodes the document into UTF-8 and records
  * {@link ImportNote.Kind#ENCODING_REPAIRED} with what was declared and what the bytes are,
- * {@link XrEncodingMode#STRICT} refuses it with {@link XrEncodingException}. The
+ * {@link EncodingMode#STRICT} refuses it with {@link XmlEncodingException}. The
  * provenance digest is taken over the bytes the caller handed over rather than over the
  * recoded ones. {@link #read(InputStream)} does none of this: recoding needs the whole
  * document, and a reader whose point is that it holds one element does not hold one.
@@ -87,7 +91,7 @@ import javax.xml.stream.XMLStreamReader;
  *
  * <p>Instances are immutable and safe to share between threads.
  */
-public final class StreamingReader {
+public final class StreamingReader implements InvoiceReader {
 
     /** The length of a SHA-256 digest, which fixes the length of the provenance member. */
     private static final int SHA256_BYTES = 32;
@@ -130,14 +134,15 @@ public final class StreamingReader {
      *                                reads
      * @throws BindingFormatException if the document is not well-formed XML this reader
      *                                accepts
-     * @throws BindingLimitException  if the document asks for more bytes, more nesting or
+     * @throws EsjLimitException      if the document asks for more bytes, more nesting or
      *                                more buffer than the reader grants it
-     * @throws XrEncodingException    if the bytes are not written in the encoding the
+     * @throws XmlEncodingException   if the bytes are not written in the encoding the
      *                                document declares and this reader runs in
-     *                                {@link XrEncodingMode#STRICT}, or if they decode in
+     *                                {@link EncodingMode#STRICT}, or if they decode in
      *                                no charset this reader reads them in, in either mode
      * @throws NullPointerException   if {@code xml} is {@code null}
      */
+    @Override
     public ImportResult read(byte[] xml) {
         Objects.requireNonNull(xml, "xml");
         bound(xml.length, "");
@@ -162,9 +167,15 @@ public final class StreamingReader {
      */
     private void bound(int length, String stage) {
         if (length > options.maxInputBytes()) {
-            throw new BindingLimitException("the document is " + length + " bytes long"
-                    + stage + ", and this reader reads at most " + options.maxInputBytes());
+            throw new EsjLimitException("the document is " + length + " bytes long"
+                    + stage + ", and this reader reads at most " + options.maxInputBytes(),
+                    new Bound("maxInputBytes", options.maxInputBytes(), "bytes"));
         }
+    }
+
+    /** Names the bound on how deep elements may nest, which this reader is given. */
+    private Bound elementDepth() {
+        return new Bound("maxElementDepth", options.maxElementDepth(), "levels");
     }
 
     /**
@@ -184,7 +195,7 @@ public final class StreamingReader {
         if (!report.decodes()) {
             // Read in the charset it names, a parser would replace what does not decode
             // and say nothing; recoded, it would be a guess. Neither mode reads it.
-            throw new XrEncodingException("the bytes of this document are not written in"
+            throw new XmlEncodingException("the bytes of this document are not written in"
                     + " the encoding it declares, and not in one this reader recodes from"
                     + " (UTF-8, UTF-16, ISO-8859-1 and Windows-1252), so it was not read: "
                     + report.describe(), report.documented(), report.assumed(), false);
@@ -192,8 +203,8 @@ public final class StreamingReader {
         if (report.consistent() || !report.repairable()) {
             return xml;
         }
-        if (options.encodingMode() == XrEncodingMode.STRICT) {
-            throw new XrEncodingException("the bytes of this document are not written in the"
+        if (options.encodingMode() == EncodingMode.STRICT) {
+            throw new XmlEncodingException("the bytes of this document are not written in the"
                     + " encoding it declares: " + report.describe(),
                     report.declaration().orElse(null), report.assumed());
         }
@@ -224,7 +235,7 @@ public final class StreamingReader {
      *                                reads
      * @throws BindingFormatException if the document is not well-formed XML this reader
      *                                accepts
-     * @throws BindingLimitException  if the document asks for more bytes, more nesting or
+     * @throws EsjLimitException      if the document asks for more bytes, more nesting or
      *                                more buffer than the reader grants it
      * @throws UncheckedIOException   if the stream cannot be read
      * @throws NullPointerException   if {@code in} is {@code null}
@@ -249,7 +260,7 @@ public final class StreamingReader {
         DigestInputStream digested = new DigestInputStream(counted, digest);
         XMLStreamReader reader = open(digested);
         try {
-            BindingSyntax syntax = detect(reader);
+            InvoiceSyntax syntax = detect(reader);
             Run run = new Run(syntax);
             run.walk(reader);
             counted.drain(digested);
@@ -313,7 +324,7 @@ public final class StreamingReader {
     }
 
     /** Advances to the root element and returns the syntax it belongs to. */
-    private static BindingSyntax detect(XMLStreamReader reader) {
+    private static InvoiceSyntax detect(XMLStreamReader reader) {
         try {
             while (reader.hasNext()) {
                 int event = reader.next();
@@ -325,7 +336,7 @@ public final class StreamingReader {
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     String namespace = namespaceOf(reader);
                     String localName = reader.getLocalName();
-                    for (BindingSyntax syntax : BindingSyntax.values()) {
+                    for (InvoiceSyntax syntax : InvoiceSyntax.values()) {
                         if (syntax.matches(namespace, localName)) {
                             return syntax;
                         }
@@ -381,7 +392,7 @@ public final class StreamingReader {
         private long heldCharacters;
         private int heldElements;
 
-        private Run(BindingSyntax syntax) {
+        private Run(InvoiceSyntax syntax) {
             this.trie = MatchTrie.of(syntax);
             this.emitter = new SemanticEmitter(options.registry(), options.limits(),
                     envelopeBytes(syntax), options.mode() == ReaderMode.REPAIR,
@@ -427,7 +438,7 @@ public final class StreamingReader {
         }
 
         /** Builds the result once the document has been read. */
-        private ImportResult result(BindingSyntax syntax, byte[] digest) {
+        private ImportResult result(InvoiceSyntax syntax, byte[] digest) {
             SemanticDocument.Source origin = SemanticDocument.Source.of(syntax.provenance(),
                     HexFormat.of().formatHex(digest));
             DocumentCollector collector =
@@ -509,9 +520,9 @@ public final class StreamingReader {
                 return;
             }
             if (depth + 1 >= frames.length) {
-                throw new BindingLimitException("the document nests elements more than "
+                throw new EsjLimitException("the document nests elements more than "
                         + options.maxElementDepth() + " deep, and this reader reads no"
-                        + " deeper");
+                        + " deeper", elementDepth());
             }
             pathNamespaces.add(namespace);
             pathNames.add(localName);
@@ -906,18 +917,20 @@ public final class StreamingReader {
          */
         private Buffered capture(XMLStreamReader reader, int level) throws XMLStreamException {
             if (depth + level + 1 >= frames.length) {
-                throw new BindingLimitException("the document nests elements more than "
+                throw new EsjLimitException("the document nests elements more than "
                         + options.maxElementDepth() + " deep, and this reader reads no"
-                        + " deeper");
+                        + " deeper", elementDepth());
             }
             if (level == 0) {
                 heldCharacters = 0;
                 heldElements = 0;
             }
             if (++heldElements > options.maxBufferedElements()) {
-                throw new BindingLimitException("an element this reader has to hold whole"
+                throw new EsjLimitException("an element this reader has to hold whole"
                         + " to decide a predicate over carries more than the "
-                        + options.maxBufferedElements() + " elements it holds");
+                        + options.maxBufferedElements() + " elements it holds",
+                        new Bound("maxBufferedElements", options.maxBufferedElements(),
+                                "elements"));
             }
             Map<String, String> attributes = new HashMap<>();
             for (int i = 0; i < reader.getAttributeCount(); i++) {
@@ -940,11 +953,13 @@ public final class StreamingReader {
                         } else if (!node.isOverlong()) {
                             heldCharacters += text.length();
                             if (heldCharacters > options.maxBufferedBytes()) {
-                                throw new BindingLimitException("an element this reader has"
+                                throw new EsjLimitException("an element this reader has"
                                         + " to hold whole to decide a predicate over"
                                         + " carries more than the "
                                         + options.maxBufferedBytes()
-                                        + " characters it holds");
+                                        + " characters it holds",
+                                        new Bound("maxBufferedBytes",
+                                                options.maxBufferedBytes(), "characters"));
                             }
                             node.append(text);
                         }
@@ -970,7 +985,7 @@ public final class StreamingReader {
     }
 
     /** Returns the identifiers of the business groups a table gives an element of their own. */
-    private static Set<String> boundGroups(BindingSyntax syntax) {
+    private static Set<String> boundGroups(InvoiceSyntax syntax) {
         Set<String> groups = new LinkedHashSet<>();
         BindingTable table = BindingTable.of(syntax);
         for (BindingTable.Entry entry : table.entries()) {
@@ -988,7 +1003,7 @@ public final class StreamingReader {
      * and not an estimate of it. The digest is not known while the document is being read
      * and its length is, which is all the envelope depends on.
      */
-    private static long envelopeBytes(BindingSyntax syntax) {
+    private static long envelopeBytes(InvoiceSyntax syntax) {
         SemanticDocument.Source origin = SemanticDocument.Source.of(syntax.provenance(),
                 HexFormat.of().formatHex(new byte[SHA256_BYTES]));
         return Canonicalizer.canonicalBytes(
@@ -1076,8 +1091,8 @@ public final class StreamingReader {
         private void count(long more) {
             read += more;
             if (read > bound) {
-                throw new BindingLimitException("the document is longer than the " + bound
-                        + " bytes this reader reads");
+                throw new EsjLimitException("the document is longer than the " + bound
+                        + " bytes this reader reads", new Bound("maxInputBytes", bound, "bytes"));
             }
         }
 

@@ -159,7 +159,7 @@ class CiiWriterCorpusTest {
         int accepted = 0;
         int identical = 0;
         for (String instance : Corpus.corpus()) {
-            SemanticDocument source = importer.importXml(Corpus.instance(instance));
+            SemanticDocument source = importer.read(Corpus.instance(instance)).document();
             byte[] xml = CiiWriter.write(source);
             if (SyntaxValidator.validate(xml).fatal().isEmpty()) {
                 accepted++;

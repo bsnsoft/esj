@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.Optional;
 
 /**
@@ -17,19 +17,19 @@ enum InputSyntax {
     ESJ("esj", "ESJ", null),
 
     /** A UBL 2.1 invoice. */
-    UBL_INVOICE("ubl", "UBL Invoice", XrSyntax.UBL_INVOICE),
+    UBL_INVOICE("ubl", "UBL Invoice", InvoiceSyntax.UBL_INVOICE),
 
     /** A UBL 2.1 credit note. */
-    UBL_CREDIT_NOTE("ubl", "UBL CreditNote", XrSyntax.UBL_CREDIT_NOTE),
+    UBL_CREDIT_NOTE("ubl", "UBL CreditNote", InvoiceSyntax.UBL_CREDIT_NOTE),
 
     /** A UN/CEFACT cross industry invoice, CII D16B. */
-    CII("cii", "CII", XrSyntax.CII);
+    CII("cii", "CII", InvoiceSyntax.CII);
 
     private final String token;
     private final String label;
-    private final XrSyntax xr;
+    private final InvoiceSyntax xr;
 
-    InputSyntax(String token, String label, XrSyntax xr) {
+    InputSyntax(String token, String label, InvoiceSyntax xr) {
         this.token = token;
         this.label = label;
         this.xr = xr;
@@ -50,18 +50,18 @@ enum InputSyntax {
         return xr != null;
     }
 
-    /** Returns the syntax of {@code esj-xr} this constant stands for, where there is one. */
-    Optional<XrSyntax> xrSyntax() {
+    /** Returns the syntax of an XML invoice this constant stands for, where there is one. */
+    Optional<InvoiceSyntax> invoiceSyntax() {
         return Optional.ofNullable(xr);
     }
 
     /**
-     * Returns the constant that stands for a syntax of {@code esj-xr}.
+     * Returns the constant that stands for a syntax of an XML invoice.
      *
-     * @param xr the syntax of the importer
+     * @param xr the syntax
      * @return the constant, or an empty optional where this tool has none for it
      */
-    static Optional<InputSyntax> ofXrSyntax(XrSyntax xr) {
+    static Optional<InputSyntax> ofInvoiceSyntax(InvoiceSyntax xr) {
         for (InputSyntax syntax : values()) {
             if (syntax.xr == xr) {
                 return Optional.of(syntax);

@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -53,7 +53,7 @@ final class Categories {
      * @param syntax the syntax of the document
      * @return the category
      */
-    static FindingCategory ofSchema(XrSyntax syntax) {
+    static FindingCategory ofSchema(InvoiceSyntax syntax) {
         return switch (syntax) {
             case UBL_INVOICE, UBL_CREDIT_NOTE -> FindingCategory.UBL_XSD;
             case CII -> FindingCategory.CII_XSD;

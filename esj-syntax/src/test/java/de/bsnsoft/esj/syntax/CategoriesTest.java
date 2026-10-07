@@ -103,11 +103,11 @@ class CategoriesTest {
     @Test
     void namesTheSchemaCategoryAfterTheSyntax() {
         assertEquals(FindingCategory.UBL_XSD,
-                Categories.ofSchema(de.bsnsoft.esj.xr.XrSyntax.UBL_INVOICE));
+                Categories.ofSchema(de.bsnsoft.esj.xml.InvoiceSyntax.UBL_INVOICE));
         assertEquals(FindingCategory.UBL_XSD,
-                Categories.ofSchema(de.bsnsoft.esj.xr.XrSyntax.UBL_CREDIT_NOTE));
+                Categories.ofSchema(de.bsnsoft.esj.xml.InvoiceSyntax.UBL_CREDIT_NOTE));
         assertEquals(FindingCategory.CII_XSD,
-                Categories.ofSchema(de.bsnsoft.esj.xr.XrSyntax.CII));
+                Categories.ofSchema(de.bsnsoft.esj.xml.InvoiceSyntax.CII));
     }
 
     /** Every rule identifier an assertion of the four vendored stylesheets reports. */

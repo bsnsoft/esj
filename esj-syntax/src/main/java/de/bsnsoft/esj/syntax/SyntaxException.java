@@ -1,17 +1,21 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.EsjException;
+import de.bsnsoft.esj.EsjLimitException;
+
 /**
  * Base class of the unchecked exceptions the syntax engine throws.
  *
  * <p>An exception here is never a verdict about the document. What is wrong with a
  * document is a finding, and findings are returned; an exception says that no verdict was
- * reached — the run hit a limit it was given ({@link SyntaxLimitException}), or the
- * document is one no pack of this engine binds
- * ({@link SyntaxNotSupportedException}). A caller that turned one of these into
- * "invalid" would be reporting its own configuration as a fault of the sender.
+ * reached because the document is one no pack of this engine binds
+ * ({@link SyntaxNotSupportedException}). A run that hit a limit it was given reached no
+ * verdict either, and ends in an {@link EsjLimitException}, the type every module of this
+ * project raises for a bound. A caller that turned one of these into "invalid" would be
+ * reporting its own configuration as a fault of the sender.
  */
-public abstract sealed class SyntaxException extends RuntimeException
-        permits SyntaxLimitException, SyntaxNotSupportedException {
+public abstract sealed class SyntaxException extends EsjException
+        permits SyntaxNotSupportedException {
 
     private static final long serialVersionUID = 1L;
 

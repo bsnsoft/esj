@@ -1,7 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
 import de.bsnsoft.esj.Preview;
-import de.bsnsoft.esj.xr.XrSyntax;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -466,7 +466,7 @@ public final class PackRecipe {
      * @return whether the pack would carry rules for that profile
      * @throws NullPointerException if an argument is {@code null}
      */
-    public boolean bringsRulesFor(XrSyntax syntax, String customizationId) {
+    public boolean bringsRulesFor(InvoiceSyntax syntax, String customizationId) {
         Objects.requireNonNull(syntax, "syntax");
         Objects.requireNonNull(customizationId, "customizationId");
         String token = Syntaxes.token(syntax);

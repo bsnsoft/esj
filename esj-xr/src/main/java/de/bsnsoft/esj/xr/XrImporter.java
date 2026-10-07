@@ -1,13 +1,20 @@
 package de.bsnsoft.esj.xr;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.handler.DocumentCollector;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportReport;
 import de.bsnsoft.esj.imports.ImportResult;
+import de.bsnsoft.esj.imports.InvoiceReader;
+import de.bsnsoft.esj.internal.XmlBytes;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.json.Limits;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.xml.EncodingMode;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
+import de.bsnsoft.esj.xml.XmlEncodingException;
+import de.bsnsoft.esj.xml.XmlEncodingReport;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -35,9 +42,8 @@ import net.sf.saxon.s9api.XdmNode;
  * instance opened and closed around the values it holds, and collected from there into
  * the document.
  *
- * <p>Every method comes in two forms. The plain one returns the document; the one whose
- * name ends in {@code WithReport} returns it together with the
- * {@link ImportReport}. The report covers what the mapper could not turn into a value:
+ * <p>Every method returns the document together with the {@link ImportReport}, as every
+ * {@link InvoiceReader} does. The report covers what the mapper could not turn into a value:
  * an element the registry could not place, a content that spelled no value of its type,
  * a supplementary component the standard does not give that term. It does not cover what
  * the stylesheets never emitted, because the mapper never sees that. The known case is
@@ -90,7 +96,7 @@ import net.sf.saxon.s9api.XdmNode;
  * treats a {@link ImportNote.Kind#LIMIT_REACHED} note as a refusal of the input.
  *
  * <p>Two bounds are outside this account. The bound on the input is the importer's own and
- * raises {@link XrLimitException}; see {@link #maxInputBytes()}. And the bound on a string
+ * raises {@link EsjLimitException}; see {@link #maxInputBytes()}. And the bound on a string
  * value covers the {@code source.syntax} member as well (specification, section 12.2),
  * which this importer writes as two or three bytes; a profile whose string bound is below
  * that describes no document this importer can write and is not checked for.
@@ -113,15 +119,15 @@ import net.sf.saxon.s9api.XdmNode;
  * declares, and a document that is not written in the charset it names is recoded into
  * UTF-8 — the commonest defect of an invoice in the field, and one that costs an XML
  * parser the whole document. What happens then is the importer's
- * {@link #encodingMode()}: {@link XrEncodingMode#REPAIR}, the default, recodes and
+ * {@link #encodingMode()}: {@link EncodingMode#REPAIR}, the default, recodes and
  * records {@link ImportNote.Kind#ENCODING_REPAIRED} with what was declared and what was
- * read, and {@link XrEncodingMode#STRICT} refuses the document with an
- * {@link XrEncodingException} carrying the same two facts. Neither is silent, and the
+ * read, and {@link EncodingMode#STRICT} refuses the document with an
+ * {@link XmlEncodingException} carrying the same two facts. Neither is silent, and the
  * digest in the provenance of the result is over the bytes that were handed over rather
- * than over the recoded ones. {@link XmlBytes} says which charsets are recoded and which
- * are handed to the parser untouched. Bytes that decode neither in the charset the document
- * names nor in one of those are refused in both modes, with an {@link XrEncodingException}
- * that is not {@link XrEncodingException#repairable() repairable}: no parser is handed bytes
+ * than over the recoded ones. {@link XmlEncodingReport#repairable()} says which charsets
+ * are recoded; a document in any other is handed to the parser untouched. Bytes that decode neither in the charset the document
+ * names nor in one of those are refused in both modes, with an {@link XmlEncodingException}
+ * that is not {@link XmlEncodingException#repairable() repairable}: no parser is handed bytes
  * it would have to read with replacement characters.
  *
  * <h2>Normalizations</h2>
@@ -134,7 +140,7 @@ import net.sf.saxon.s9api.XdmNode;
  *
  * <p>Instances are immutable and safe to share between threads.
  */
-public final class XrImporter {
+public final class XrImporter implements InvoiceReader {
 
     /**
      * The provenance token of a document that was read from the XR representation
@@ -162,9 +168,9 @@ public final class XrImporter {
 
     /**
      * The encoding mode an importer runs in unless it is given another:
-     * {@link XrEncodingMode#REPAIR}.
+     * {@link EncodingMode#REPAIR}.
      */
-    public static final XrEncodingMode DEFAULT_ENCODING_MODE = XrEncodingMode.REPAIR;
+    public static final EncodingMode DEFAULT_ENCODING_MODE = EncodingMode.REPAIR;
 
     /**
      * The location an import note carries when it is about the document as a whole rather
@@ -172,8 +178,8 @@ public final class XrImporter {
      */
     private static final String DOCUMENT_LOCATION = "/";
 
-    private static final Set<XrSyntax> UBL =
-            EnumSet.of(XrSyntax.UBL_INVOICE, XrSyntax.UBL_CREDIT_NOTE);
+    private static final Set<InvoiceSyntax> UBL =
+            EnumSet.of(InvoiceSyntax.UBL_INVOICE, InvoiceSyntax.UBL_CREDIT_NOTE);
 
     /** The provenance token of the syntax the note subject code normalization applies to. */
     private static final String UBL_PROVENANCE = "UBL";
@@ -182,7 +188,7 @@ public final class XrImporter {
     private final long maxInputBytes;
     private final Limits readerLimits;
     private final Set<XrNormalization> normalizations;
-    private final XrEncodingMode encodingMode;
+    private final EncodingMode encodingMode;
 
     /**
      * Creates an importer that knows the core model and the XRechnung extension, accepts
@@ -191,7 +197,7 @@ public final class XrImporter {
      * {@link #DEFAULT_NORMALIZATIONS}.
      */
     public XrImporter() {
-        this(defaultRegistry(), DEFAULT_MAX_INPUT_BYTES);
+        this(Registry.en16931WithXrechnung(), DEFAULT_MAX_INPUT_BYTES);
     }
 
     /**
@@ -252,7 +258,7 @@ public final class XrImporter {
                        long maxInputBytes,
                        Limits readerLimits,
                        Set<XrNormalization> normalizations,
-                       XrEncodingMode encodingMode) {
+                       EncodingMode encodingMode) {
         this.registry = Objects.requireNonNull(registry, "registry");
         this.readerLimits = Objects.requireNonNull(readerLimits, "readerLimits");
         this.normalizations =
@@ -276,7 +282,7 @@ public final class XrImporter {
      * @return the importer
      * @throws NullPointerException if {@code mode} is {@code null}
      */
-    public XrImporter withEncodingMode(XrEncodingMode mode) {
+    public XrImporter withEncodingMode(EncodingMode mode) {
         Objects.requireNonNull(mode, "mode");
         return mode == encodingMode ? this
                 : new XrImporter(registry, maxInputBytes, readerLimits, normalizations, mode);
@@ -288,18 +294,8 @@ public final class XrImporter {
      *
      * @return the encoding mode
      */
-    public XrEncodingMode encodingMode() {
+    public EncodingMode encodingMode() {
         return encodingMode;
-    }
-
-    /**
-     * Returns the registry an importer uses unless it is given another one: the core
-     * model of EN 16931-1 combined with the XRechnung extension.
-     *
-     * @return the combined registry
-     */
-    public static Registry defaultRegistry() {
-        return DefaultRegistry.COMBINED;
     }
 
     /**
@@ -361,68 +357,70 @@ public final class XrImporter {
     }
 
     /**
-     * Reads a UBL 2.1 invoice or credit note.
-     *
-     * @param ubl the bytes of the document
-     * @return the semantic document
-     * @throws XrSyntaxException    if the root element is neither a UBL invoice nor a UBL
-     *                              credit note
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts, or the transformation failed
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code ubl} is {@code null}
-     */
-    public SemanticDocument importUbl(byte[] ubl) {
-        return importUblWithReport(ubl).document();
-    }
-
-    /**
-     * Reads a UN/CEFACT CII D16B invoice.
-     *
-     * @param cii the bytes of the document
-     * @return the semantic document
-     * @throws XrSyntaxException    if the root element is no cross industry invoice
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts, or the transformation failed
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code cii} is {@code null}
-     */
-    public SemanticDocument importCii(byte[] cii) {
-        return importCiiWithReport(cii).document();
-    }
-
-    /**
      * Reads a document of either syntax, recognized by its root element.
      *
      * @param xml the bytes of the document
-     * @return the semantic document
-     * @throws XrSyntaxException    if the root element belongs to no syntax this importer
-     *                              reads
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts, or the transformation failed
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code xml} is {@code null}
+     * @return the document and the report
+     * @throws XrSyntaxException     if the root element belongs to no syntax this importer
+     *                               reads
+     * @throws XrFormatException     if the document is not well-formed XML this importer
+     *                               accepts, or the transformation failed
+     * @throws EsjLimitException     if the document is larger than {@link #maxInputBytes()},
+     *                               or its XR representation nests elements deeper than
+     *                               this importer walks
+     * @throws XmlEncodingException  if the bytes are not written in the encoding the
+     *                               document declares and this importer runs in
+     *                               {@link EncodingMode#STRICT}, or if they decode in no
+     *                               charset this importer reads them in, in either mode
+     * @throws NullPointerException  if {@code xml} is {@code null}
      */
-    public SemanticDocument importXml(byte[] xml) {
-        return importXmlWithReport(xml).document();
+    @Override
+    public ImportResult read(byte[] xml) {
+        return readAs(xml, EnumSet.allOf(InvoiceSyntax.class), "a UBL invoice, a UBL credit"
+                + " note or a cross industry invoice");
+    }
+
+    /**
+     * Reads a UBL 2.1 invoice or credit note, and refuses a document of another syntax.
+     *
+     * @param ubl the bytes of the document
+     * @return the document and the report
+     * @throws XrSyntaxException     if the root element is neither a UBL invoice nor a UBL
+     *                               credit note
+     * @throws XrFormatException     if the document is not well-formed XML this importer
+     *                               accepts, or the transformation failed
+     * @throws EsjLimitException     if the document is larger than {@link #maxInputBytes()},
+     *                               or its XR representation nests elements deeper than
+     *                               this importer walks
+     * @throws XmlEncodingException  if the bytes are not written in the encoding the
+     *                               document declares and this importer runs in
+     *                               {@link EncodingMode#STRICT}, or if they decode in no
+     *                               charset this importer reads them in, in either mode
+     * @throws NullPointerException  if {@code ubl} is {@code null}
+     */
+    public ImportResult readUbl(byte[] ubl) {
+        return readAs(ubl, UBL, "a UBL invoice or credit note");
+    }
+
+    /**
+     * Reads a UN/CEFACT CII D16B invoice, and refuses a document of another syntax.
+     *
+     * @param cii the bytes of the document
+     * @return the document and the report
+     * @throws XrSyntaxException     if the root element is no cross industry invoice
+     * @throws XrFormatException     if the document is not well-formed XML this importer
+     *                               accepts, or the transformation failed
+     * @throws EsjLimitException     if the document is larger than {@link #maxInputBytes()},
+     *                               or its XR representation nests elements deeper than
+     *                               this importer walks
+     * @throws XmlEncodingException  if the bytes are not written in the encoding the
+     *                               document declares and this importer runs in
+     *                               {@link EncodingMode#STRICT}, or if they decode in no
+     *                               charset this importer reads them in, in either mode
+     * @throws NullPointerException  if {@code cii} is {@code null}
+     */
+    public ImportResult readCii(byte[] cii) {
+        return readAs(cii, EnumSet.of(InvoiceSyntax.CII), "a cross industry invoice");
     }
 
     /**
@@ -433,107 +431,20 @@ public final class XrImporter {
      * that were read are neither UBL nor CII.
      *
      * @param xrXml the bytes of the XR document
-     * @return the semantic document
-     * @throws XrSyntaxException    if the root element is not {@code xr:invoice}
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code xrXml} is {@code null}
-     */
-    public SemanticDocument fromXr(byte[] xrXml) {
-        return fromXrWithReport(xrXml).document();
-    }
-
-    /**
-     * Reads a UBL 2.1 invoice or credit note and keeps the report.
-     *
-     * @param ubl the bytes of the document
      * @return the document and the report
-     * @throws XrSyntaxException    if the root element is neither a UBL invoice nor a UBL
-     *                              credit note
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts, or the transformation failed
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code ubl} is {@code null}
+     * @throws XrSyntaxException     if the root element is not {@code xr:invoice}
+     * @throws XrFormatException     if the document is not well-formed XML this importer
+     *                               accepts
+     * @throws EsjLimitException     if the document is larger than {@link #maxInputBytes()},
+     *                               or its XR representation nests elements deeper than
+     *                               this importer walks
+     * @throws XmlEncodingException  if the bytes are not written in the encoding the
+     *                               document declares and this importer runs in
+     *                               {@link EncodingMode#STRICT}, or if they decode in no
+     *                               charset this importer reads them in, in either mode
+     * @throws NullPointerException  if {@code xrXml} is {@code null}
      */
-    public ImportResult importUblWithReport(byte[] ubl) {
-        return read(ubl, UBL, "a UBL invoice or credit note");
-    }
-
-    /**
-     * Reads a UN/CEFACT CII D16B invoice and keeps the report.
-     *
-     * @param cii the bytes of the document
-     * @return the document and the report
-     * @throws XrSyntaxException    if the root element is no cross industry invoice
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts, or the transformation failed
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code cii} is {@code null}
-     */
-    public ImportResult importCiiWithReport(byte[] cii) {
-        return read(cii, EnumSet.of(XrSyntax.CII), "a cross industry invoice");
-    }
-
-    /**
-     * Reads a document of either syntax and keeps the report.
-     *
-     * @param xml the bytes of the document
-     * @return the document and the report
-     * @throws XrSyntaxException    if the root element belongs to no syntax this importer
-     *                              reads
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts, or the transformation failed
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code xml} is {@code null}
-     */
-    public ImportResult importXmlWithReport(byte[] xml) {
-        return read(xml, EnumSet.allOf(XrSyntax.class), "a UBL invoice, a UBL credit note"
-                + " or a cross industry invoice");
-    }
-
-    /**
-     * Reads a document that is already in the XR representation and keeps the report.
-     *
-     * @param xrXml the bytes of the XR document
-     * @return the document and the report
-     * @throws XrSyntaxException    if the root element is not {@code xr:invoice}
-     * @throws XrFormatException    if the document is not well-formed XML this importer
-     *                              accepts
-     * @throws XrLimitException     if the document is larger than {@link #maxInputBytes()},
-     *                              or its XR representation nests elements deeper than
-     *                              this importer walks
-     * @throws XrEncodingException  if the bytes are not written in the encoding the
-     *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
-     *                              charset this importer reads them in, in either mode
-     * @throws NullPointerException if {@code xrXml} is {@code null}
-     */
-    public ImportResult fromXrWithReport(byte[] xrXml) {
+    public ImportResult readXr(byte[] xrXml) {
         bound(xrXml);
         Decoded decoded = frontDoor(xrXml);
         XdmNode root = XrTransformer.rootElement(XrTransformer.parse(decoded.bytes()));
@@ -543,16 +454,16 @@ public final class XrImporter {
         return collect(root, XR_PROVENANCE, xrXml, leading(decoded, List.of()));
     }
 
-    private ImportResult read(byte[] xml, Set<XrSyntax> accepted, String expectation) {
+    private ImportResult readAs(byte[] xml, Set<InvoiceSyntax> accepted, String expectation) {
         bound(xml);
         Decoded decoded = frontDoor(xml);
         XdmNode document = XrTransformer.parse(decoded.bytes());
         XdmNode root = XrTransformer.rootElement(document);
-        Optional<XrSyntax> detected = XrTransformer.detect(root).filter(accepted::contains);
+        Optional<InvoiceSyntax> detected = XrTransformer.detect(root).filter(accepted::contains);
         if (detected.isEmpty()) {
             throw refuse(root, expectation);
         }
-        XrSyntax syntax = detected.get();
+        InvoiceSyntax syntax = detected.get();
         XdmNode xr = XrTransformer.rootElement(XrTransformer.transform(document, syntax));
         List<ImportNote> ahead = leading(decoded, XrCoverage.notes(root, syntax));
         return collect(xr, syntax.provenance(), xml, ahead);
@@ -580,16 +491,16 @@ public final class XrImporter {
         if (report.consistent() || !report.repairable()) {
             return new Decoded(xml, Optional.empty());
         }
-        if (encodingMode == XrEncodingMode.STRICT) {
-            throw new XrEncodingException("the bytes of this document are not written in the"
+        if (encodingMode == EncodingMode.STRICT) {
+            throw new XmlEncodingException("the bytes of this document are not written in the"
                     + " encoding it declares: " + report.describe(),
                     report.declaration().orElse(null), report.assumed());
         }
         byte[] repaired = XmlBytes.repair(xml, report);
         if (repaired.length > maxInputBytes) {
-            throw new XrLimitException("the document is " + repaired.length + " bytes long"
+            throw new EsjLimitException("the document is " + repaired.length + " bytes long"
                     + " once recoded into UTF-8, and this importer reads at most "
-                    + maxInputBytes);
+                    + maxInputBytes, inputBytes());
         }
         return new Decoded(repaired, Optional.of(new ImportNote(
                 ImportNote.Kind.ENCODING_REPAIRED, DOCUMENT_LOCATION,
@@ -606,13 +517,13 @@ public final class XrImporter {
      * nothing about it.
      *
      * @param report what the bytes of the document say about their encoding
-     * @throws XrEncodingException if the bytes do not decode
+     * @throws XmlEncodingException if the bytes do not decode
      */
     private static void undecodable(XmlEncodingReport report) {
         if (report.decodes()) {
             return;
         }
-        throw new XrEncodingException("the bytes of this document are not written in the"
+        throw new XmlEncodingException("the bytes of this document are not written in the"
                 + " encoding it declares, and not in one this importer recodes from (UTF-8,"
                 + " UTF-16, ISO-8859-1 and Windows-1252), so it was not read: "
                 + report.describe(), report.documented(), report.assumed(), false);
@@ -718,9 +629,14 @@ public final class XrImporter {
     private void bound(byte[] xml) {
         Objects.requireNonNull(xml, "xml");
         if (xml.length > maxInputBytes) {
-            throw new XrLimitException("the document is " + xml.length + " bytes long, and this"
-                    + " importer reads at most " + maxInputBytes);
+            throw new EsjLimitException("the document is " + xml.length + " bytes long, and this"
+                    + " importer reads at most " + maxInputBytes, inputBytes());
         }
+    }
+
+    /** Names the bound on the input, which {@link #maxInputBytes()} returns. */
+    private EsjLimitException.Bound inputBytes() {
+        return new EsjLimitException.Bound("maxInputBytes", maxInputBytes, "bytes");
     }
 
     private static XrSyntaxException refuse(XdmNode root, String expectation) {
@@ -741,17 +657,6 @@ public final class XrImporter {
             return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(source));
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("every Java runtime implements SHA-256", e);
-        }
-    }
-
-    /** Holds the combined registry, which is built once and shared. */
-    private static final class DefaultRegistry {
-
-        private static final Registry COMBINED =
-                Registry.en16931().withExtension(Registry.xrechnungExtension());
-
-        private DefaultRegistry() {
-            throw new AssertionError("no instances");
         }
     }
 }

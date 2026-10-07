@@ -1,10 +1,10 @@
 package de.bsnsoft.esj.xr;
 
+import de.bsnsoft.esj.SemanticDocument;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.imports.ImportNote;
@@ -12,6 +12,7 @@ import de.bsnsoft.esj.imports.ImportResult;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.json.Limits;
+import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
 import de.bsnsoft.esj.validate.StructuralValidator;
@@ -49,7 +50,7 @@ class XrMappingTest {
 
     @Test
     void readsTheUblInvoice() {
-        SemanticDocument document = importer.importUbl(Conformance.instance(UBL));
+        SemanticDocument document = importer.readUbl(Conformance.instance(UBL)).document();
 
         assertEquals(SemanticValue.of("123456XX"), value(document, "/BT-1"));
         assertEquals(SemanticValue.ofDate(LocalDate.of(2016, 4, 4)), value(document, "/BT-2"));
@@ -84,8 +85,8 @@ class XrMappingTest {
      */
     @Test
     void readsTheSameInvoiceFromCii() {
-        SemanticDocument ubl = importer.importUbl(Conformance.instance(UBL));
-        SemanticDocument cii = importer.importCii(Conformance.instance(CII));
+        SemanticDocument ubl = importer.readUbl(Conformance.instance(UBL)).document();
+        SemanticDocument cii = importer.readCii(Conformance.instance(CII)).document();
 
         for (String path : List.of("/BT-1", "/BT-2", "/BT-3", "/BT-5", "/BG-4/BT-27",
                 "/BG-4/BT-34", "/BG-4/BG-5/BT-40", "/BG-7/BT-44", "/BG-25/0/BT-131",
@@ -104,7 +105,7 @@ class XrMappingTest {
      */
     @Test
     void dropsASchemeTheStandardDoesNotGiveTheTerm() {
-        ImportResult result = importer.importCiiWithReport(Conformance.instance(CII));
+        ImportResult result = importer.readCii(Conformance.instance(CII));
 
         assertEquals(SemanticValue.of("DE 123456789"),
                 value(result.document(), "/BG-4/BT-31"));
@@ -120,7 +121,7 @@ class XrMappingTest {
      */
     @Test
     void putsTheInvoicingPeriodWhereTheStandardPutsIt() {
-        SemanticDocument document = importer.importUbl(Conformance.instance(EXTENSION));
+        SemanticDocument document = importer.readUbl(Conformance.instance(EXTENSION)).document();
 
         assertEquals(SemanticValue.ofDate(LocalDate.of(2019, 2, 1)),
                 value(document, "/BG-13/BG-14/BT-73"));
@@ -136,7 +137,7 @@ class XrMappingTest {
      */
     @Test
     void readsTheExtensionGroups() {
-        SemanticDocument document = importer.importUbl(Conformance.instance(EXTENSION));
+        SemanticDocument document = importer.readUbl(Conformance.instance(EXTENSION)).document();
 
         assertEquals(SemanticValue.of("1 1"),
                 value(document, "/BG-25/0/BG-DEX-01/0/BT-126"));
@@ -156,7 +157,7 @@ class XrMappingTest {
     void leavesExtensionGroupsOutWithoutTheirRegistry() {
         XrImporter core = new XrImporter(de.bsnsoft.esj.model.Registry.en16931(),
                 XrImporter.DEFAULT_MAX_INPUT_BYTES);
-        ImportResult result = core.importUblWithReport(Conformance.instance(EXTENSION));
+        ImportResult result = core.readUbl(Conformance.instance(EXTENSION));
 
         assertEquals(SemanticValue.of("12345"),
                 value(result.document(), "/BT-1"));
@@ -174,7 +175,7 @@ class XrMappingTest {
      */
     @Test
     void nestsTheSubInvoiceLineAsDeepAsAReaderReadsItBack() {
-        ImportResult result = importer.importUblWithReport(subInvoiceLines(6));
+        ImportResult result = importer.readUbl(subInvoiceLines(6));
         SemanticDocument document = result.document();
 
         assertEquals(SemanticValue.of("level 6"),
@@ -192,7 +193,7 @@ class XrMappingTest {
      */
     @Test
     void leavesOutWhatWouldNotFitIntoAPathAndSaysSo() {
-        ImportResult result = importer.importUblWithReport(subInvoiceLines(7));
+        ImportResult result = importer.readUbl(subInvoiceLines(7));
         SemanticDocument document = result.document();
         String seventh = "/BG-25/0" + "/BG-DEX-01/0".repeat(7);
 
@@ -216,9 +217,9 @@ class XrMappingTest {
     void followsTheDeeperLevelsForAReaderThatAcceptsThem() {
         Limits wide = Limits.defaults().toBuilder().maxPathSegments(32).maxPathBytes(512).build();
         XrImporter deep =
-                new XrImporter(XrImporter.defaultRegistry(), XrImporter.DEFAULT_MAX_INPUT_BYTES, wide);
+                new XrImporter(Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES, wide);
 
-        ImportResult result = deep.importUblWithReport(subInvoiceLines(7));
+        ImportResult result = deep.readUbl(subInvoiceLines(7));
 
         assertEquals(wide, deep.readerLimits());
         assertEquals(SemanticValue.of("level 7"),
@@ -268,8 +269,8 @@ class XrMappingTest {
      */
     @Test
     void spendsAnIndexOnWhatIsRecordedAndNotOnWhatIsVisited() {
-        SemanticDocument leading = importer.importUbl(notes("", "second"));
-        SemanticDocument middle = importer.importUbl(notes("first", "", "third"));
+        SemanticDocument leading = importer.readUbl(notes("", "second")).document();
+        SemanticDocument middle = importer.readUbl(notes("first", "", "third")).document();
 
         assertEquals(SemanticValue.of("second"), value(leading, "/BG-1/0/BT-22"));
         assertEquals(List.of("/BG-1/0/BT-22"), notePaths(leading));
@@ -286,7 +287,7 @@ class XrMappingTest {
      */
     @Test
     void splitsTheNoteSubjectCodeOutOfAUblNote() {
-        SemanticDocument document = importer.importUbl(notes("#ADU#Our terms apply."));
+        SemanticDocument document = importer.readUbl(notes("#ADU#Our terms apply.")).document();
 
         assertEquals(SemanticValue.of("ADU"), value(document, "/BG-1/0/BT-21"));
         assertEquals(SemanticValue.of("Our terms apply."),
@@ -301,13 +302,13 @@ class XrMappingTest {
     @Test
     void leavesANoteAloneWhereThePrefixIsNoSubjectCode() {
         assertEquals(SemanticValue.of("#adu#lowercase"),
-                value(importer.importUbl(notes("#adu#lowercase")), "/BG-1/0/BT-22"));
+                value(importer.readUbl(notes("#adu#lowercase")).document(), "/BG-1/0/BT-22"));
         assertEquals(SemanticValue.of("#ADUX#four letters"),
-                value(importer.importUbl(notes("#ADUX#four letters")), "/BG-1/0/BT-22"));
+                value(importer.readUbl(notes("#ADUX#four letters")).document(), "/BG-1/0/BT-22"));
         assertEquals(SemanticValue.of("#ADU#"),
-                value(importer.importUbl(notes("#ADU#")), "/BG-1/0/BT-22"));
+                value(importer.readUbl(notes("#ADU#")).document(), "/BG-1/0/BT-22"));
         assertEquals(SemanticValue.of("no prefix at all"),
-                value(importer.importUbl(notes("no prefix at all")), "/BG-1/0/BT-22"));
+                value(importer.readUbl(notes("no prefix at all")).document(), "/BG-1/0/BT-22"));
     }
 
     /**
@@ -317,9 +318,9 @@ class XrMappingTest {
      */
     @Test
     void keepsThePrefixWhereTheNormalizationIsNotRun() {
-        XrImporter plain = new XrImporter(XrImporter.defaultRegistry(),
+        XrImporter plain = new XrImporter(Registry.en16931WithXrechnung(),
                 XrImporter.DEFAULT_MAX_INPUT_BYTES, Limits.defaults(), Set.of());
-        SemanticDocument document = plain.importUbl(notes("#ADU#Our terms apply."));
+        SemanticDocument document = plain.readUbl(notes("#ADU#Our terms apply.")).document();
 
         assertEquals(Set.of(), plain.normalizations());
         assertEquals(SemanticValue.of("#ADU#Our terms apply."),
@@ -336,7 +337,7 @@ class XrMappingTest {
      */
     @Test
     void leavesTheTextAloneWhereTheStylesheetAlreadyFoundACode() {
-        SemanticDocument document = importer.importUbl(notes("REG", "#ADU#Betriebsstätte"));
+        SemanticDocument document = importer.readUbl(notes("REG", "#ADU#Betriebsstätte")).document();
 
         assertEquals(SemanticValue.of("REG"), value(document, "/BG-1/0/BT-21"));
         assertEquals(SemanticValue.of("#ADU#Betriebsstätte"),
@@ -352,9 +353,9 @@ class XrMappingTest {
     void stopsWhereTheDocumentReachesTheNumberOfValuesTheReaderAdmits() {
         Limits few = Limits.defaults().toBuilder().maxValues(6).build();
         XrImporter narrow = new XrImporter(
-                XrImporter.defaultRegistry(), XrImporter.DEFAULT_MAX_INPUT_BYTES, few);
+                Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES, few);
 
-        ImportResult result = narrow.importUblWithReport(notes("one", "two", "three", "four"));
+        ImportResult result = narrow.readUbl(notes("one", "two", "three", "four"));
 
         assertEquals(6, result.document().values().size());
         assertEquals(1, result.report().notes(ImportNote.Kind.LIMIT_REACHED).size(),
@@ -372,9 +373,9 @@ class XrMappingTest {
     void leavesOutAValueLongerThanTheReaderAdmits() {
         Limits shortStrings = Limits.defaults().toBuilder().maxStringBytes(32).build();
         XrImporter narrow = new XrImporter(
-                XrImporter.defaultRegistry(), XrImporter.DEFAULT_MAX_INPUT_BYTES, shortStrings);
+                Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES, shortStrings);
 
-        ImportResult result = narrow.importUblWithReport(notes("x".repeat(64), "short"));
+        ImportResult result = narrow.readUbl(notes("x".repeat(64), "short"));
 
         assertEquals(List.of("/BG-1/0/BT-22"), notePaths(result.document()));
         assertEquals(SemanticValue.of("short"),
@@ -395,11 +396,11 @@ class XrMappingTest {
     @Test
     void measuresTheSizeOfTheDocumentItIsBuilding() {
         byte[] invoice = Conformance.instance(UBL);
-        SemanticDocument document = importer.importUbl(invoice);
+        SemanticDocument document = importer.readUbl(invoice).document();
         int length = Canonicalizer.canonicalBytes(document).length;
 
-        ImportResult exact = importerFor(length).importUblWithReport(invoice);
-        ImportResult short1 = importerFor(length - 1).importUblWithReport(invoice);
+        ImportResult exact = importerFor(length).readUbl(invoice);
+        ImportResult short1 = importerFor(length - 1).readUbl(invoice);
 
         assertEquals(document, exact.document(), "the whole document fits its own length");
         assertEquals(List.of(), exact.report().notes(ImportNote.Kind.LIMIT_REACHED));
@@ -410,7 +411,7 @@ class XrMappingTest {
     }
 
     private static XrImporter importerFor(int maxDocumentBytes) {
-        return new XrImporter(XrImporter.defaultRegistry(), XrImporter.DEFAULT_MAX_INPUT_BYTES,
+        return new XrImporter(Registry.en16931WithXrechnung(), XrImporter.DEFAULT_MAX_INPUT_BYTES,
                 Limits.defaults().toBuilder().maxDocumentBytes(maxDocumentBytes).build());
     }
 
@@ -424,7 +425,7 @@ class XrMappingTest {
 
     /** Returns the cardinality findings that report an occurrence index with a gap. */
     private static List<String> indexGaps(SemanticDocument document) {
-        return StructuralValidator.validate(document, XrImporter.defaultRegistry(),
+        return StructuralValidator.validate(document, Registry.en16931WithXrechnung(),
                         EnumSet.of(ValidationLayer.L3)).findings().stream()
                 .filter(finding -> finding.code() == FindingCode.ESJ_L3_INDEX_GAP)
                 .map(Finding::message)
@@ -457,9 +458,9 @@ class XrMappingTest {
     @Test
     void readsAnAttachmentFromBothSyntaxes() {
         SemanticValue fromUbl = value(
-                importer.importUbl(Conformance.instance(ATTACHMENT_UBL)), "/BG-24/0/BT-125");
+                importer.readUbl(Conformance.instance(ATTACHMENT_UBL)).document(), "/BG-24/0/BT-125");
         SemanticValue fromCii = value(
-                importer.importCii(Conformance.instance(ATTACHMENT_CII)), "/BG-24/0/BT-125");
+                importer.readCii(Conformance.instance(ATTACHMENT_CII)).document(), "/BG-24/0/BT-125");
 
         assertEquals("application/pdf", fromUbl.mimeCode());
         assertEquals(fromUbl.filename(), fromCii.filename());

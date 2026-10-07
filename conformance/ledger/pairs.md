@@ -117,7 +117,7 @@ scoped, and the scope is worth stating precisely:
   invoice line note BT-127 no subject code to split off in the first place. A line note is
   therefore left alone.
 - **UBL only.** The prefix is a property of the UBL syntax binding. A document read as CII
-  carries the code in an element of its own, and a document handed to `fromXr` is not
+  carries the code in an element of its own, and a document handed to `readXr` is not
   attributed to a syntax at all, so neither is normalized.
 - **The shape, not the code list.** The three characters are taken as the code without being
   tested against UNTDID 4451. Code list membership is a business rule, which the

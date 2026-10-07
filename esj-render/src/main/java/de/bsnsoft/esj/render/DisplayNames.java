@@ -172,12 +172,12 @@ final class DisplayNames {
             String resource = DIRECTORY + list.file + ".json";
             Object tree = parse(bytes(resource), resource);
             if (!FORMAT.equals(TemplateJson.text(tree, "displayNames", resource))) {
-                throw new RenderException("the resource " + resource + " is not a table of"
+                throw new RenderEngineException("the resource " + resource + " is not a table of"
                         + " display names of this version");
             }
             Object names = TemplateJson.member(tree, "names");
             if (!(names instanceof Map<?, ?> entries) || entries.isEmpty()) {
-                throw new RenderException("the resource " + resource + " names no code");
+                throw new RenderEngineException("the resource " + resource + " names no code");
             }
             Map<String, Map<RenderLanguage, String>> table = new LinkedHashMap<>();
             for (Map.Entry<?, ?> entry : entries.entrySet()) {
@@ -198,7 +198,7 @@ final class DisplayNames {
             try {
                 return TemplateJson.read(bytes);
             } catch (TemplateException e) {
-                throw new RenderException("the resource " + resource + " could not be read: "
+                throw new RenderEngineException("the resource " + resource + " could not be read: "
                         + e.getMessage(), e);
             }
         }
@@ -206,7 +206,7 @@ final class DisplayNames {
         private static byte[] bytes(String resource) {
             try (InputStream in = DisplayNames.class.getResourceAsStream(resource)) {
                 if (in == null) {
-                    throw new RenderException(
+                    throw new RenderEngineException(
                             "the resource " + resource + " is not on the classpath");
                 }
                 return in.readAllBytes();

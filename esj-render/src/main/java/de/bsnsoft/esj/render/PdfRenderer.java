@@ -1,10 +1,10 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Registry;
-import de.bsnsoft.esj.xr.XrImporter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -119,7 +119,7 @@ public final class PdfRenderer {
      * Creates a renderer that knows the core model and the XRechnung extension.
      */
     public PdfRenderer() {
-        this(XrImporter.defaultRegistry());
+        this(Registry.en16931WithXrechnung());
     }
 
     /**
@@ -162,7 +162,7 @@ public final class PdfRenderer {
      * @throws IllegalArgumentException if the document names an edition of the semantic
      *                                  model that the registry of this renderer does not
      *                                  describe
-     * @throws RenderLimitException     if the rendering runs past the page bound of the
+     * @throws EsjLimitException        if the rendering runs past the page bound of the
      *                                  options
      * @throws TemplateException        if the template could not be used for this document
      * @throws RenderException          if the rendering could not be produced
@@ -219,7 +219,7 @@ public final class PdfRenderer {
             }
             return saved(pdf);
         } catch (IOException e) {
-            throw new RenderException("the document could not be rendered as a PDF", e);
+            throw new RenderEngineException("the document could not be rendered as a PDF", e);
         }
     }
 

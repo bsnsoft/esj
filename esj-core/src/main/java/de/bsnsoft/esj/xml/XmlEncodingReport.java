@@ -1,5 +1,6 @@
-package de.bsnsoft.esj.xr;
+package de.bsnsoft.esj.xml;
 
+import de.bsnsoft.esj.internal.XmlBytes;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import java.util.Set;
  *
  * <p>A report is a description and not a judgement. {@link #consistent()} says whether
  * the bytes and the claim agree; what to do about a disagreement is decided by the
- * {@link XrEncodingMode} the importer runs in. {@link #decodes()} says whether there is
+ * {@link EncodingMode} the importer runs in. {@link #decodes()} says whether there is
  * anything to do at all: bytes that spell no character of the charset the document names,
  * and none of the charsets this module recodes from, are bytes nothing can be read from
  * without replacing some of them, and an importer refuses them whatever its mode.
@@ -97,6 +98,24 @@ public record XmlEncodingReport(Optional<String> byteOrderMark,
     }
 
     /**
+     * Looks at the bytes of an XML document before a parser does: what a byte order mark
+     * and the XML declaration say about the encoding, and what the bytes are.
+     *
+     * <p>Nothing is parsed and nothing is repaired. The byte order mark and the
+     * declaration are read out of the first bytes, and whether the rest decodes in the
+     * charset it is taken for is decided by one scan that keeps nothing it decoded. Where
+     * the bytes and the claim differ, four charsets are told apart — UTF-8, UTF-16 in
+     * either byte order, ISO-8859-1 and Windows-1252 — and no other is guessed at.
+     *
+     * @param xml the bytes of the document
+     * @return what the bytes say about their encoding, and what they are
+     * @throws NullPointerException if {@code xml} is {@code null}
+     */
+    public static XmlEncodingReport of(byte[] xml) {
+        return XmlBytes.inspect(xml);
+    }
+
+    /**
      * Returns the charset the document says it is written in: the one a byte order mark
      * names, otherwise the one the XML declaration names, otherwise UTF-8, which is what
      * an XML document without either is.
@@ -108,8 +127,7 @@ public record XmlEncodingReport(Optional<String> byteOrderMark,
     }
 
     /**
-     * Tells whether {@link XmlBytes#repair(byte[], XmlEncodingReport)} can turn these
-     * bytes into UTF-8.
+     * Tells whether a reader that repairs can turn these bytes into UTF-8.
      *
      * <p>It can where the bytes disagree with the document and the charset they spell is
      * one of the four this module knows: UTF-8, UTF-16, ISO-8859-1 and Windows-1252.

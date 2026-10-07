@@ -1,13 +1,14 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.SemanticDocument;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.bindings.ReaderOptions;
 import de.bsnsoft.esj.bindings.StreamingReader;
+import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleSeverity;
@@ -60,10 +61,10 @@ class OracleTest {
 
     /** The reader {@code esj validate} uses when nothing is chosen. */
     private static final StreamingReader READER = new StreamingReader(ReaderOptions.builder()
-            .registry(XrImporter.defaultRegistry())
+            .registry(Registry.en16931WithXrechnung())
             .build());
 
-    private static final RuleEngine ENGINE = En16931Pack.engine(XrImporter.defaultRegistry());
+    private static final RuleEngine ENGINE = En16931Pack.engine(Registry.en16931WithXrechnung());
 
     /** The causes {@code ledger.md} explains; a mutation may not invent a new one. */
     private static final Set<String> CAUSES = Set.of(

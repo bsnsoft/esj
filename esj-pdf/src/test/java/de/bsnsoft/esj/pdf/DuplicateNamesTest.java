@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -196,7 +197,7 @@ class DuplicateNamesTest {
                 .build();
         byte[] repeated = PdfEdit.repeatNameTreeEntry(pdf, 3);
 
-        PdfLimitException refused = assertThrows(PdfLimitException.class,
+        EsjLimitException refused = assertThrows(EsjLimitException.class,
                 () -> PdfContainer.open(repeated,
                         PdfLimits.defaults().withMaxEmbeddedFiles(3)).close());
 
@@ -219,7 +220,7 @@ class DuplicateNamesTest {
 
         EmbedRefusedException refused = assertThrows(EmbedRefusedException.class,
                 () -> FacturX.embed(pdf, new de.bsnsoft.esj.xr.XrImporter()
-                                .importXml(Conformance.instance(CII)),
+                                .read(Conformance.instance(CII)).document(),
                         EmbedOptions.of(FacturXProfile.XRECHNUNG)));
 
         assertTrue(refused.getMessage().contains("\"terms.txt\""), refused.getMessage());

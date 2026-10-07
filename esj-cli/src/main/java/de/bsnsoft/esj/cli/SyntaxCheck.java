@@ -1,9 +1,9 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.syntax.ComponentRun;
 import de.bsnsoft.esj.syntax.PackException;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
-import de.bsnsoft.esj.syntax.SyntaxLimitException;
 import de.bsnsoft.esj.syntax.SyntaxNotSupportedException;
 import de.bsnsoft.esj.syntax.SyntaxOptions;
 import de.bsnsoft.esj.syntax.SyntaxReport;
@@ -144,16 +144,18 @@ record SyntaxCheck(Optional<SyntaxReport> report, Optional<String> reason) {
         SyntaxOptions options = packs.apply(SyntaxOptions.defaults().withMaxRuntime(left)
                 .withMaxInputBytes(console.options().bounds().maxInputBytes()));
         try {
-            SyntaxReport report = SyntaxValidator.validate(xml, options);
+            SyntaxReport report = LimitRefusal.during(limit -> {
+                // A clock names its own switch in the note below; a bound on the bytes is
+                // one of the run's own bounds and is named the way every other one of them
+                // is.
+                String raises = LimitRefusal.outOfTime(limit) ? ""
+                        : console.options().bounds()
+                                .hint(Bound.of(limit.getMessage()).orElse(null));
+                return name + ": " + limit.getMessage() + raises
+                        + remainderNote(limit, deadline);
+            }, () -> SyntaxValidator.validate(xml, options));
             explain(report, name, console);
             return new SyntaxCheck(Optional.of(report), Optional.empty());
-        } catch (SyntaxLimitException e) {
-            // A clock names its own switch in the note below; a bound on the bytes is one
-            // of the run's own bounds and is named the way every other one of them is.
-            String raises = e.budget().isPresent() ? ""
-                    : console.options().bounds().hint(Bound.of(e.getMessage()).orElse(null));
-            throw CliException.limit(name + ": " + e.getMessage() + raises
-                    + remainderNote(e, deadline), e);
         } catch (SyntaxNotSupportedException e) {
             throw CliException.unsupported(name + ": " + e.getMessage());
         } catch (PackException e) {
@@ -174,13 +176,13 @@ record SyntaxCheck(Optional<SyntaxReport> report, Optional<String> reason) {
      * the input is named by {@link Bound} from the message the engine wrote, and leaving the
      * artefacts out is an answer to either bound, so that sentence is added to both.
      */
-    static String remainderNote(SyntaxLimitException e, Deadline deadline) {
-        return e.budget()
-                .map(given -> "; the artefacts were given what was left of the "
+    static String remainderNote(EsjLimitException e, Deadline deadline) {
+        return LimitRefusal.outOfTime(e)
+                ? "; the artefacts were given what was left of the "
                         + deadline.total().toMillis() + " ms --max-runtime gave the whole"
                         + " command once the document had been read; --max-runtime gives it"
-                        + " more, or --no-syntax leaves the official artefacts out")
-                .orElse("; --no-syntax leaves the official artefacts out");
+                        + " more, or --no-syntax leaves the official artefacts out"
+                : "; --no-syntax leaves the official artefacts out";
     }
 
     /**

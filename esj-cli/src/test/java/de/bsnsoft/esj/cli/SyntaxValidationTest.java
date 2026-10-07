@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.syntax.Pack;
 import de.bsnsoft.esj.syntax.Packs;
-import de.bsnsoft.esj.syntax.SyntaxLimitException;
 import de.bsnsoft.esj.syntax.SyntaxOptions;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
 import java.io.IOException;
@@ -469,12 +469,12 @@ class SyntaxValidationTest {
      */
     @Test
     void namesTheTimeTheCallerSetBesideTheTimeTheArtefactsHad() {
-        SyntaxLimitException outOfTime = assertThrows(SyntaxLimitException.class,
+        EsjLimitException outOfTime = assertThrows(EsjLimitException.class,
                 () -> SyntaxValidator.validate(Fixtures.bytes(UBL),
                         SyntaxOptions.defaults().withMaxRuntime(Duration.ofMillis(1))));
 
-        assertTrue(outOfTime.budget().isPresent(),
-                "a time limit carries the budget it was given: " + outOfTime.getMessage());
+        assertTrue(LimitRefusal.outOfTime(outOfTime),
+                "a time limit names the budget it was given: " + outOfTime.getMessage());
         String note = SyntaxCheck.remainderNote(outOfTime, Deadline.of(Duration.ofSeconds(12)));
         assertTrue(note.contains("12000 ms"),
                 "the number the caller set is in the message: " + note);

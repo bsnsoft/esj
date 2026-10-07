@@ -41,7 +41,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class BrandedRenderingTest {
 
-    private static final Registry REGISTRY = XrImporter.defaultRegistry();
+    private static final Registry REGISTRY = Registry.en16931WithXrechnung();
 
     /** The two example templates that bring a letterhead and no extension terms. */
     private static final List<String> LETTERHEADS = List.of("letterhead.json", "image.json");

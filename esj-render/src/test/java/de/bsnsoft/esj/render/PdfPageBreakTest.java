@@ -122,7 +122,7 @@ class PdfPageBreakTest {
         run(List.of("python3", generator.toString(), "--source", source.toString(),
                 "--lines", String.valueOf(LINES), "--out", grown.toString()));
 
-        return new XrImporter().importXml(read(grown));
+        return new XrImporter().read(read(grown)).document();
     }
 
     private static long lineCount(SemanticDocument document) {

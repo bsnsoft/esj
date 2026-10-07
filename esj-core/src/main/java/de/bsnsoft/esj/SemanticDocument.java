@@ -1,5 +1,6 @@
 package de.bsnsoft.esj;
 
+import de.bsnsoft.esj.internal.Messages;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -267,7 +268,7 @@ public final class SemanticDocument {
             Objects.requireNonNull(semanticModel, "semanticModel");
             if (!Esj.isEdition(semanticModel)) {
                 throw new EsjFormatException("not an edition of the semantic model: "
-                        + Esj.forMessage(semanticModel, MESSAGE_EXCERPT));
+                        + Messages.forMessage(semanticModel, MESSAGE_EXCERPT));
             }
             this.semanticModel = semanticModel;
             return this;

@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.xr;
 
 import de.bsnsoft.esj.EsjFormatException;
+import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.SemanticValue;
@@ -249,16 +250,17 @@ final class XrMapper {
      * @param instancePath  the semantic path of the group instance the children lie in
      * @param instanceChain the term identifiers of that path, from the root down
      * @param depth         how many XR elements enclose the children
-     * @throws XrLimitException if the element nesting is deeper than
-     *                          {@link #MAX_ELEMENT_DEPTH}
+     * @throws EsjLimitException if the element nesting is deeper than
+     *                           {@link #MAX_ELEMENT_DEPTH}
      */
     private void walk(XdmNode parent,
                       SemanticPath instancePath,
                       List<String> instanceChain,
                       int depth) {
         if (depth > MAX_ELEMENT_DEPTH) {
-            throw new XrLimitException("the XR representation nests elements more than "
-                    + MAX_ELEMENT_DEPTH + " deep, and this importer reads no deeper");
+            throw new EsjLimitException("the XR representation nests elements more than "
+                    + MAX_ELEMENT_DEPTH + " deep, and this importer reads no deeper",
+                    new EsjLimitException.Bound("maxElementDepth", MAX_ELEMENT_DEPTH, "levels"));
         }
         for (XdmNode child : parent.children()) {
             if (full) {

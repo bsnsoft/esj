@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.EsjLimitException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -243,7 +244,8 @@ public record RenderOptions(RenderLanguage language, PageSize pageSize,
      *
      * <p>The bound is on the rendering as it is written, in bytes of UTF-8, and it holds
      * while the page is produced: a rendering that reaches it is stopped there, with a
-     * {@link RenderLimitException}, and nothing of it is returned. The PDF rendering is
+     * {@link EsjLimitException} that names the bound {@code maxHtmlBytes}, and nothing of it
+     * is returned. The PDF rendering is
      * bounded by its pages and ignores this.
      *
      * @param bytes how many bytes an HTML rendering may have

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.internal.Messages;
 import java.util.Locale;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -65,8 +66,8 @@ class TerminalCharactersTest {
         assertFalse(Esj.steersATerminal(codePoint), hex(codePoint));
         assertFalse(Esj.isBidiControl(codePoint), hex(codePoint));
         String text = "a" + Character.toString(codePoint) + "b";
-        assertEquals(text, Esj.forMessage(text, 80));
-        assertEquals(text, Esj.forSubject(text));
+        assertEquals(text, Messages.forMessage(text, 80));
+        assertEquals(text, Messages.forSubject(text));
     }
 
     @ParameterizedTest(name = "code point {0} is written by name")
@@ -78,16 +79,16 @@ class TerminalCharactersTest {
             case 0x0A -> "a\\nb";
             default -> "a\\rb";
         };
-        assertEquals(expected, Esj.forSubject("a" + Character.toString(codePoint) + "b"));
+        assertEquals(expected, Messages.forSubject("a" + Character.toString(codePoint) + "b"));
     }
 
     private static void assertSteersAndIsEscaped(int codePoint) {
         assertTrue(Esj.steersATerminal(codePoint), hex(codePoint));
         String fragment = "RE-" + Character.toString(codePoint) + "1";
         String escaped = "RE-\\u" + String.format(Locale.ROOT, "%04x", codePoint) + "1";
-        assertEquals(escaped, Esj.forMessage(fragment, 80));
-        assertEquals(escaped, Esj.forSubject(fragment));
-        assertEquals(escaped.length(), Esj.abbreviated(escaped, escaped.length()).length(),
+        assertEquals(escaped, Messages.forMessage(fragment, 80));
+        assertEquals(escaped, Messages.forSubject(fragment));
+        assertEquals(escaped.length(), Messages.abbreviated(escaped, escaped.length()).length(),
                 "a fragment that fits is not cut");
     }
 

@@ -159,8 +159,9 @@ public record ImportNote(ImportNote.Kind kind,
          *
          * <p>The note names what the document declared and what its bytes were read as,
          * because a recode is a guess about the writer of the document and the reader of
-         * the result is entitled to see it. An importer in {@code XrEncodingMode.STRICT}
-         * refuses such a document instead of recording this note.
+         * the result is entitled to see it. An importer in
+         * {@link de.bsnsoft.esj.xml.EncodingMode#STRICT} refuses such a document instead of
+         * recording this note.
          *
          * <p>The digest in the provenance of the document is over the bytes that were
          * handed over, not over the recoded ones, so the note is also what tells a caller

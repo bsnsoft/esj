@@ -1,5 +1,7 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.EsjLimitException.Bound;
+import de.bsnsoft.esj.EsjLimitException;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
  * streams the library reads out of the file while it opens it as well as the streams this
  * module decodes itself — the objects the object streams of the file declare, and as many
  * objects again walked on its pages. Reaching one of them raises
- * {@link PdfLimitException}, which is a statement about this reader's configuration and
+ * {@link EsjLimitException}, which is a statement about this reader's configuration and
  * never a verdict on the file.
  *
  * <p><strong>This reader never decrypts.</strong> It takes no password, it builds no
@@ -108,7 +110,7 @@ public final class PdfContainer implements AutoCloseable {
      * @param pdf    the bytes of the file
      * @param limits what this reader is willing to spend on it
      * @return the container, which the caller closes
-     * @throws PdfLimitException    if the file is larger than {@link PdfLimits#maxPdfBytes()}
+     * @throws EsjLimitException    if the file is larger than {@link PdfLimits#maxPdfBytes()}
      * @throws PdfAccessException   if the file is encrypted
      * @throws PdfFormatException   if the bytes are no PDF, or the object structure is
      *                              damaged past recovery
@@ -118,8 +120,9 @@ public final class PdfContainer implements AutoCloseable {
         Objects.requireNonNull(pdf, "pdf");
         Objects.requireNonNull(limits, "limits");
         if (pdf.length > limits.maxPdfBytes()) {
-            throw new PdfLimitException("the file is " + pdf.length + " bytes long, and this"
-                    + " reader opens a PDF of at most " + limits.maxPdfBytes());
+            throw new EsjLimitException("the file is " + pdf.length + " bytes long, and this"
+                    + " reader opens a PDF of at most " + limits.maxPdfBytes(),
+                    new Bound("maxPdfBytes", limits.maxPdfBytes(), "bytes"));
         }
         if (!startsWithHeader(pdf)) {
             throw new PdfFormatException("the bytes do not begin with the PDF file header");
@@ -134,7 +137,7 @@ public final class PdfContainer implements AutoCloseable {
         PDDocument document;
         try {
             document = BoundedPdfParser.load(new RandomAccessReadBuffer(pdf), budget);
-        } catch (PdfException e) {
+        } catch (PdfException | EsjLimitException e) {
             // A bound of this reader, met inside the library: it is this module's own
             // answer and never a statement that the file could not be read.
             throw e;
@@ -156,7 +159,7 @@ public final class PdfContainer implements AutoCloseable {
      *
      * @param pdf the bytes of the file
      * @return the container, which the caller closes
-     * @throws PdfLimitException    if the file is larger than the default bound
+     * @throws EsjLimitException    if the file is larger than the default bound
      * @throws PdfAccessException   if the file is encrypted
      * @throws PdfFormatException   if the bytes are no PDF
      * @throws NullPointerException if {@code pdf} is {@code null}
@@ -262,7 +265,7 @@ public final class PdfContainer implements AutoCloseable {
      * means. It is read once and bounded by {@link PdfLimits#maxXmpBytes()}.
      *
      * @return the packet, or an empty optional where the catalog carries no metadata
-     * @throws PdfLimitException if the packet is larger than the bound
+     * @throws EsjLimitException if the packet is larger than the bound
      */
     public Optional<byte[]> xmpPacket() {
         readXmp();
@@ -275,7 +278,7 @@ public final class PdfContainer implements AutoCloseable {
      *
      * @return the properties, or an empty optional where the packet is absent or carries
      *         no such property
-     * @throws PdfLimitException if the XMP packet is larger than the bound
+     * @throws EsjLimitException if the XMP packet is larger than the bound
      */
     public Optional<FacturXMetadata> facturX() {
         return xmpProperties().facturX();
@@ -289,7 +292,7 @@ public final class PdfContainer implements AutoCloseable {
      * all; what the declaration is worth is a question for a PDF/A validator.
      *
      * @return the declaration, or an empty optional where the packet declares none
-     * @throws PdfLimitException if the XMP packet is larger than the bound
+     * @throws EsjLimitException if the XMP packet is larger than the bound
      */
     public Optional<PdfaIdentification> pdfaIdentification() {
         return xmpProperties().pdfa();
@@ -313,9 +316,11 @@ public final class PdfContainer implements AutoCloseable {
     long claim(String name) {
         long remaining = limits.maxTotalAttachmentBytes() - decoded;
         if (remaining <= 0) {
-            throw new PdfLimitException("the attachments of this file decode to more than the "
+            throw new EsjLimitException("the attachments of this file decode to more than the "
                     + limits.maxTotalAttachmentBytes() + " bytes this reader holds, and "
-                    + Messages.quoted(name) + " is past that bound");
+                    + Messages.quoted(name) + " is past that bound",
+                    new Bound("maxTotalAttachmentBytes", limits.maxTotalAttachmentBytes(),
+                            "bytes"));
         }
         long cap = Math.min(limits.maxAttachmentBytes(), remaining);
         decoded += cap;
@@ -462,9 +467,11 @@ public final class PdfContainer implements AutoCloseable {
         void visit() {
             visited++;
             if (visited > limits.maxObjectStreamObjects()) {
-                throw new PdfLimitException("the pages of this file and what they refer to"
+                throw new EsjLimitException("the pages of this file and what they refer to"
                         + " come to more than " + limits.maxObjectStreamObjects() + " objects,"
-                        + " the number of objects this reader walks on the pages of a PDF");
+                        + " the number of objects this reader walks on the pages of a PDF",
+                        new Bound("maxObjectStreamObjects", limits.maxObjectStreamObjects(),
+                                "objects"));
             }
         }
     }
@@ -499,9 +506,9 @@ public final class PdfContainer implements AutoCloseable {
             return associated;
         }
         if (array.size() > limits.maxEmbeddedFiles()) {
-            throw new PdfLimitException("the associated files array of this file has "
+            throw new EsjLimitException("the associated files array of this file has "
                     + array.size() + " entries, more than the " + limits.maxEmbeddedFiles()
-                    + " attachments this reader enumerates");
+                    + " attachments this reader enumerates", embeddedFiles(limits, "attachments"));
         }
         for (int i = 0; i < array.size(); i++) {
             if (array.getObject(i) instanceof COSDictionary specification) {
@@ -532,9 +539,10 @@ public final class PdfContainer implements AutoCloseable {
                       TreeWalk walked,
                       Enumeration enumeration) {
         if (depth > MAX_NAME_TREE_DEPTH) {
-            throw new PdfLimitException("the embedded files name tree of this file nests more"
+            throw new EsjLimitException("the embedded files name tree of this file nests more"
                     + " than " + MAX_NAME_TREE_DEPTH + " levels deep, which this reader"
-                    + " does not walk");
+                    + " does not walk",
+                    new Bound("maxNameTreeDepth", MAX_NAME_TREE_DEPTH, "levels"));
         }
         if (!walked.nodes.add(node)) {
             return;
@@ -543,10 +551,10 @@ public final class PdfContainer implements AutoCloseable {
         if (names == null || names.size() < 2) {
             walked.withoutEntries++;
             if (walked.withoutEntries > limits.maxEmbeddedFiles()) {
-                throw new PdfLimitException("the embedded files name tree of this file has"
+                throw new EsjLimitException("the embedded files name tree of this file has"
                         + " more than " + limits.maxEmbeddedFiles() + " nodes that list no"
                         + " file, more than a tree of the " + limits.maxEmbeddedFiles()
-                        + " attachments this reader enumerates needs");
+                        + " attachments this reader enumerates needs", embeddedFiles(limits, "nodes"));
             }
         }
         if (names != null) {
@@ -564,9 +572,10 @@ public final class PdfContainer implements AutoCloseable {
                 }
                 walked.entries++;
                 if (walked.entries > limits.maxEmbeddedFiles()) {
-                    throw new PdfLimitException("the embedded files name tree of this file"
+                    throw new EsjLimitException("the embedded files name tree of this file"
                             + " lists more entries than the " + limits.maxEmbeddedFiles()
-                            + " attachments this reader enumerates");
+                            + " attachments this reader enumerates",
+                            embeddedFiles(limits, "attachments"));
                 }
                 // An entry whose value is missing names no file. It is kept as an
                 // attachment with no content, as a file specification that embeds
@@ -659,9 +668,9 @@ public final class PdfContainer implements AutoCloseable {
         /** Returns a new attachment, within the bound on how many there are. */
         private Found found(COSDictionary specification, PDEmbeddedFile stream) {
             if (ordered.size() >= limits.maxEmbeddedFiles()) {
-                throw new PdfLimitException("the file carries more than the "
+                throw new EsjLimitException("the file carries more than the "
                         + limits.maxEmbeddedFiles() + " attachments this reader"
-                        + " enumerates");
+                        + " enumerates", embeddedFiles(limits, "attachments"));
             }
             Found attachment = new Found(specification, stream);
             ordered.add(attachment);
@@ -812,10 +821,11 @@ public final class PdfContainer implements AutoCloseable {
         // BoundedStream. A metadata stream that inflates without end is as cheap to write
         // as an attachment that does, and it is read on every container.
         AttachmentContent packet = BoundedStream.decode(metadata, limits.maxXmpBytes(),
-                limits.maxXmpBytes(), "the XMP packet of this file", budget);
+                limits.maxXmpBytes(), "maxXmpBytes", "the XMP packet of this file", budget);
         if (packet.truncated()) {
-            throw new PdfLimitException("the XMP packet of this file is larger than the "
-                    + limits.maxXmpBytes() + " bytes this reader holds");
+            throw new EsjLimitException("the XMP packet of this file is larger than the "
+                    + limits.maxXmpBytes() + " bytes this reader holds",
+                    new Bound("maxXmpBytes", limits.maxXmpBytes(), "bytes"));
         }
         xmp = packet.bytes();
     }
@@ -830,5 +840,10 @@ public final class PdfContainer implements AutoCloseable {
             }
         }
         return true;
+    }
+
+    /** Names the bound on the attachments this reader enumerates. */
+    private static Bound embeddedFiles(PdfLimits limits, String unit) {
+        return new Bound("maxEmbeddedFiles", limits.maxEmbeddedFiles(), unit);
     }
 }

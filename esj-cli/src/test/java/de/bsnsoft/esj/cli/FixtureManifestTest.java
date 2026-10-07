@@ -147,7 +147,7 @@ class FixtureManifestTest {
      * measured rather than reported as not checked (specification, section 5.6), so a binding
      * that left one of those registries out fails the manifest instead of passing it silently.
      */
-    private static final Registry COMBINED = XrImporter.defaultRegistry()
+    private static final Registry COMBINED = Registry.en16931WithXrechnung()
             .withExtension(Registry.b2cExtension());
 
     /**

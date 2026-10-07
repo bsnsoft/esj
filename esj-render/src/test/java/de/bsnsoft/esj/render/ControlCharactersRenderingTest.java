@@ -39,7 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class ControlCharactersRenderingTest {
 
-    private static final Registry REGISTRY = XrImporter.defaultRegistry();
+    private static final Registry REGISTRY = Registry.en16931WithXrechnung();
 
     /** The types whose values are written as they stand rather than formatted. */
     private static final Set<SemanticType> TEXTS = Set.of(SemanticType.TEXT,

@@ -539,16 +539,16 @@ under `--importer xslt`; where the syntax is not named it is read off the root e
 
 ```java
 XrImporter importer = new XrImporter();
-SemanticDocument fromUbl = importer.importUbl(Files.readAllBytes(ublFile));
-SemanticDocument fromCii = importer.importCii(Files.readAllBytes(ciiFile));
-SemanticDocument either = importer.importXml(Files.readAllBytes(someFile));
+SemanticDocument fromUbl = importer.readUbl(Files.readAllBytes(ublFile)).document();
+SemanticDocument fromCii = importer.readCii(Files.readAllBytes(ciiFile)).document();
+SemanticDocument either = importer.read(Files.readAllBytes(someFile)).document();
 ```
 
-What comes back is an ordinary `SemanticDocument`; its `source` member records the syntax and the
-SHA-256 of the bytes it was read from, and the variant with a report adds what did not reach it.
+Both readers are an `InvoiceReader` and return an `ImportResult`: the document, whose `source`
+records the syntax and the SHA-256 of the bytes read, and the report of what did not reach it.
 
 ```java
-ImportResult result = importer.importXmlWithReport(Files.readAllBytes(invoice));
+ImportResult result = importer.read(Files.readAllBytes(invoice));
 
 SemanticDocument document = result.document();
 String syntax = document.source().orElseThrow().syntax().orElseThrow();
@@ -564,7 +564,7 @@ qualifier other than `102` is the known case.
 `XrFormatException` — and with it external entities, parameter entities and entity expansion.
 Nothing external is fetched: no entity, no DTD, no schema, no XInclude. The input is bounded in
 bytes before it is parsed, four mebibytes by default, and the XR element nesting as the mapper
-walks it; both raise `XrLimitException`. The byte bound is low because the cost of the
+walks it; both raise `EsjLimitException`. The byte bound is low because the cost of the
 transformation grows faster than the input
 ([`deployment-measurements.md`](deployment-measurements.md)); `XrImporter.maxInputBytes()`
 raises it.
@@ -702,7 +702,7 @@ and against reading the result back, is
 ## Writing the XR representation
 
 `XrExporter` writes an ESJ document back as an XR document — the same semantic XML the
-stylesheets produce, and the input `XrImporter.fromXr` reads. It is not a syntax writer.
+stylesheets produce, and the input `XrImporter.readXr` reads. It is not a syntax writer.
 
 ```java
 XrExporter exporter = new XrExporter();
@@ -752,7 +752,7 @@ layouts: `Layout.LETTER`, a business letter and the default (`RenderOptions.DEFA
 `Layout.GENERIC`, the shape of the semantic model. `RenderOptions.with(template)` brings a
 letterhead, a logo, colours, fonts, margins, places for the terms of a model extension and a
 layout of its own, which an explicit `layout(…)` overrules ([`templates.md`](templates.md));
-`withMaxPages(int)` bounds a rendering at 2 000 pages and throws `RenderLimitException` beyond
+`withMaxPages(int)` bounds a rendering at 2 000 pages and throws `EsjLimitException` beyond
 it; `withMaxHtmlBytes(long)` bounds the HTML page at 1 GiB of UTF-8, counted while it is written,
 and throws the same. Two runs give the same bytes, an edition the registry does not describe is
 refused with `IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
@@ -800,9 +800,9 @@ everywhere. An application whose reports travel fixes its locale.
 A rule set that stops over a document is a fatal finding of that component with the code
 `ARTEFACT-STOPPED`, not a `PackException`; its `ComponentRun` stays in `ran()` and carries
 `stopped() == true`. The exception is kept for a pack that cannot be read or an artefact that
-will not compile. Reaching either limit ends the run in a `SyntaxLimitException` rather than in
-a verdict — `budget()` names the budget where the limit was the time — and a document of a
-syntax no pack binds raises `SyntaxNotSupportedException`.
+will not compile. Reaching either limit ends the run in an `EsjLimitException` rather than in
+a verdict — `bound()` names `maxInputBytes` or `maxRuntime` and the value it had — and a document
+of a syntax no pack binds raises `SyntaxNotSupportedException`.
 
 Which packs are available, and under which licences:
 

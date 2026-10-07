@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import de.bsnsoft.esj.model.Component;
+import de.bsnsoft.esj.xml.InvoiceSyntax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -53,7 +54,7 @@ final class BindingTable {
     /** The longest string a binding table is written with: an XPath, with room to spare. */
     private static final int MAX_TABLE_STRING = 8192;
 
-    private final BindingSyntax syntax;
+    private final InvoiceSyntax syntax;
     private final String edition;
     private final String release;
     private final Map<String, String> namespaces;
@@ -62,7 +63,7 @@ final class BindingTable {
     private final List<Entry> entries;
     private final Map<String, Entry> byId;
 
-    private BindingTable(BindingSyntax syntax,
+    private BindingTable(InvoiceSyntax syntax,
                          String edition,
                          String release,
                          Map<String, String> namespaces,
@@ -93,7 +94,7 @@ final class BindingTable {
      * @return its binding table
      * @throws NullPointerException if {@code syntax} is {@code null}
      */
-    public static BindingTable of(BindingSyntax syntax) {
+    public static BindingTable of(InvoiceSyntax syntax) {
         Objects.requireNonNull(syntax, "syntax");
         return Tables.LOADED.get(syntax);
     }
@@ -109,7 +110,7 @@ final class BindingTable {
      * @throws UncheckedIOException   if the stream cannot be read
      * @throws NullPointerException   if an argument is {@code null}
      */
-    public static BindingTable load(InputStream in, BindingSyntax syntax) {
+    public static BindingTable load(InputStream in, InvoiceSyntax syntax) {
         Objects.requireNonNull(in, "in");
         Objects.requireNonNull(syntax, "syntax");
         try (JsonParser parser = factory().createParser(in)) {
@@ -127,7 +128,7 @@ final class BindingTable {
      *
      * @return the syntax
      */
-    public BindingSyntax syntax() {
+    public InvoiceSyntax syntax() {
         return syntax;
     }
 
@@ -294,7 +295,7 @@ final class BindingTable {
                 .build();
     }
 
-    private static BindingTable read(JsonParser parser, BindingSyntax syntax)
+    private static BindingTable read(JsonParser parser, InvoiceSyntax syntax)
             throws IOException {
         expect(parser.nextToken() == JsonToken.START_OBJECT, "the table is a JSON object");
         String edition = null;
@@ -339,7 +340,7 @@ final class BindingTable {
      * does know. A table that grows a second condition is read by a release that
      * understands it or by none.
      */
-    private static List<Convention> conventions(Object array, BindingSyntax syntax) {
+    private static List<Convention> conventions(Object array, InvoiceSyntax syntax) {
         if (!(array instanceof List<?> items)) {
             return List.of();
         }
@@ -448,23 +449,32 @@ final class BindingTable {
         }
     }
 
+    /** Returns the file name of the binding table of a syntax. */
+    static String file(InvoiceSyntax syntax) {
+        return switch (syntax) {
+            case UBL_INVOICE -> "ubl-invoice.json";
+            case UBL_CREDIT_NOTE -> "ubl-creditnote.json";
+            case CII -> "cii.json";
+        };
+    }
+
     /** Holds the three tables, which are read once and shared. */
     private static final class Tables {
 
-        private static final Map<BindingSyntax, BindingTable> LOADED = load();
+        private static final Map<InvoiceSyntax, BindingTable> LOADED = load();
 
         private Tables() {
             throw new AssertionError("no instances");
         }
 
-        private static Map<BindingSyntax, BindingTable> load() {
-            Map<BindingSyntax, BindingTable> tables = new EnumMap<>(BindingSyntax.class);
-            for (BindingSyntax syntax : BindingSyntax.values()) {
+        private static Map<InvoiceSyntax, BindingTable> load() {
+            Map<InvoiceSyntax, BindingTable> tables = new EnumMap<>(InvoiceSyntax.class);
+            for (InvoiceSyntax syntax : InvoiceSyntax.values()) {
                 try (InputStream in =
-                             BindingTable.class.getResourceAsStream(syntax.table())) {
+                             BindingTable.class.getResourceAsStream(file(syntax))) {
                     if (in == null) {
                         throw new BindingFormatException("the binding table "
-                                + syntax.table() + " is not on the classpath of this module");
+                                + file(syntax) + " is not on the classpath of this module");
                     }
                     tables.put(syntax, BindingTable.load(in, syntax));
                 } catch (IOException e) {
