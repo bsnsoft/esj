@@ -101,6 +101,8 @@
     <embedded-postgres.version>2.2.2</embedded-postgres.version>
     <embedded-postgres-binaries.version>18.6.0</embedded-postgres-binaries.version>
     <verapdf.version>1.30.2</verapdf.version>
+    <test-jackson3.version>3.2.3</test-jackson3.version>
+    <postgresql-driver.version>42.7.13</postgresql-driver.version>
 
     <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
@@ -239,6 +241,32 @@
         <groupId>org.verapdf</groupId>
         <artifactId>validation-model-jakarta</artifactId>
         <version>${verapdf.version}</version>
+      </dependency>
+      <!--
+        Libraries that come into the tests through the three tools above, pinned past the
+        releases with published advisories: Jackson 3 under json-schema-validator, Jackson 2
+        databind under veraPDF, the JDBC driver under embedded-postgres. Test scope only;
+        none of them is in a published artefact.
+      -->
+      <dependency>
+        <groupId>tools.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${test-jackson3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${test-jackson3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql-driver.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
