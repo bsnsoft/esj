@@ -95,7 +95,7 @@ import picocli.CommandLine.Parameters;
                 + " reported beside it. VALID and exit code 0 are given only where the"
                 + " complete check for that kind of input ran.",
         sortOptions = false)
-final class ValidateCommand implements Callable<Integer> {
+final class ValidateCommand implements Callable<Integer>, ReadsADocument {
 
     @Mixin
     private final GlobalFlags flags;

@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -83,9 +84,12 @@ final class ValueText {
      * line and says on a terminal what the document carries.
      *
      * <p>A backslash becomes {@code \\}, a line feed {@code \n}, a carriage return
-     * {@code \r} and a tab {@code \t}. Every other C0 control, the delete character and
-     * the bidirectional formatting characters become {@code &#92;uXXXX}. The escaping stays
-     * reversible, because the backslash is escaped with them.
+     * {@code \r} and a tab {@code \t}. Every other character of
+     * {@link Esj#steersATerminal(int)} — the C0 and C1 controls, the delete character, the
+     * line and paragraph separators and the bidirectional formatting characters — becomes
+     * {@code &#92;uXXXX}. That is the set every text output of this tool escapes, and the
+     * one the messages of the validator escape. The escaping stays reversible, because the
+     * backslash is escaped with them.
      *
      * <p>This is not decoration. A value of an invoice is content a stranger wrote, and
      * the specification, section 12.6 is normative about where it may be put unescaped:
@@ -109,7 +113,7 @@ final class ValueText {
                 case '\r' -> line.append("\\r");
                 case '\t' -> line.append("\\t");
                 default -> {
-                    if (isDangerous(c)) {
+                    if (Esj.steersATerminal(c)) {
                         line.append(String.format("\\u%04x", (int) c));
                     } else {
                         line.append(c);
@@ -118,18 +122,5 @@ final class ValueText {
             }
         }
         return line.toString();
-    }
-
-    /**
-     * Tells whether a character steers a terminal rather than saying something: a C0
-     * control, the delete character, or one of the bidirectional formatting characters
-     * that reorder the text around them.
-     */
-    private static boolean isDangerous(char c) {
-        return c < 0x20
-                || c == 0x7F
-                || c == '\u200E' || c == '\u200F'
-                || (c >= '\u202A' && c <= '\u202E')
-                || (c >= '\u2066' && c <= '\u2069');
     }
 }

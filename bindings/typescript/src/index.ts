@@ -51,9 +51,9 @@ export type { IndexSegment, Segment, TermSegment } from './paths.ts';
 
 export {
   MAX_DECIMAL_LENGTH, MAX_OWNER_TOKEN_LENGTH, base64Violation, codePointCount, dateViolation,
-  decimalViolation, escapeForMessage, forMessage, hasLoneSurrogate, isBase64, isDate, isDecimal,
-  isEdition, isOwnerToken, isPath, isSha256, isTime, normalizeLineEndings, timeViolation,
-  utf8Length,
+  decimalViolation, escapeForMessage, forMessage, hasLoneSurrogate, isBase64, isBidiControl,
+  isDate, isDecimal, isEdition, isOwnerToken, isPath, isSha256, isTime, normalizeLineEndings,
+  steersATerminal, timeViolation, utf8Length,
 } from './grammars.ts';
 
 export { RuleContext, RuleEngine, Undecided, compile } from './rules/engine.ts';

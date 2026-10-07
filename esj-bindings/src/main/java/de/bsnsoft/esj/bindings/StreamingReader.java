@@ -134,7 +134,8 @@ public final class StreamingReader {
      *                                more buffer than the reader grants it
      * @throws XrEncodingException    if the bytes are not written in the encoding the
      *                                document declares and this reader runs in
-     *                                {@link XrEncodingMode#STRICT}
+     *                                {@link XrEncodingMode#STRICT}, or if they decode in
+     *                                no charset this reader reads them in, in either mode
      * @throws NullPointerException   if {@code xml} is {@code null}
      */
     public ImportResult read(byte[] xml) {
@@ -179,6 +180,14 @@ public final class StreamingReader {
         if (unreadable != null) {
             throw new BindingFormatException("the document is written in, or declares, the"
                     + " encoding " + unreadable + ", which this reader does not read");
+        }
+        if (!report.decodes()) {
+            // Read in the charset it names, a parser would replace what does not decode
+            // and say nothing; recoded, it would be a guess. Neither mode reads it.
+            throw new XrEncodingException("the bytes of this document are not written in"
+                    + " the encoding it declares, and not in one this reader recodes from"
+                    + " (UTF-8, UTF-16, ISO-8859-1 and Windows-1252), so it was not read: "
+                    + report.describe(), report.documented(), report.assumed(), false);
         }
         if (report.consistent() || !report.repairable()) {
             return xml;
@@ -267,15 +276,16 @@ public final class StreamingReader {
      * host application's class path chose. The XML front door of {@code esj-cli} says the
      * same thing the same way.
      *
-     * <p>One thing this parser does that the rest of this project does not: an input whose
-     * bytes are not the encoding it declares makes the default error reporter of the
-     * platform parser write a line of its own to {@code System.err}, before this reader's
-     * refusal and in the locale of the process. Setting {@code XMLInputFactory.REPORTER}
-     * does not suppress it and the error handler of the underlying parser is not settable
-     * on the factory. Decoding the bytes before the parser sees them would, but that needs
-     * the declared encoding read off the first bytes first; {@code docs/deployment.md}
-     * tells callers not to parse the error stream, so this is noise rather than a defect,
-     * and it is recorded here so the next reader does not take it for an oversight.
+     * <p>The parser is never handed bytes it cannot decode. An input whose bytes are not
+     * the encoding it declares would make the default error reporter of the platform
+     * parser write a line of its own to {@code System.err}, before this reader's refusal
+     * and in the locale of the process — setting {@code XMLInputFactory.REPORTER} does not
+     * suppress it, and the error handler of the underlying parser is not settable on the
+     * factory. The front door of {@link #read(byte[])} decides that question first: it
+     * refuses such bytes, or recodes them into UTF-8 that decodes. A caller who hands a
+     * stream to {@link #read(InputStream)} has skipped that door and gets the platform's
+     * behaviour, which {@code docs/deployment.md} covers by telling callers not to parse
+     * the error stream.
      */
     private static XMLStreamReader open(InputStream in) {
         XMLInputFactory factory = XMLInputFactory.newDefaultFactory();

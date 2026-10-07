@@ -17,47 +17,83 @@ import java.util.Set;
  *
  * <p>A report is a description and not a judgement. {@link #consistent()} says whether
  * the bytes and the claim agree; what to do about a disagreement is decided by the
- * {@link XrEncodingMode} the importer runs in.
+ * {@link XrEncodingMode} the importer runs in. {@link #decodes()} says whether there is
+ * anything to do at all: bytes that spell no character of the charset the document names,
+ * and none of the charsets this module recodes from, are bytes nothing can be read from
+ * without replacing some of them, and an importer refuses them whatever its mode.
  *
  * @param byteOrderMark the charset a byte order mark names, absent if there is none
  * @param declaration   the charset the XML declaration names, absent if the document
  *                      carries no declaration or a declaration without an
  *                      {@code encoding} pseudo-attribute
  * @param assumed       the canonical name of the charset the bytes are read in: the one
- *                      the document names where the bytes agree with it, and the one the
- *                      bytes spell where they do not
+ *                      the document names where the bytes agree with it, the one the bytes
+ *                      spell where they do not, and the one the document names again where
+ *                      they spell none this module knows
  * @param consistent    whether the bytes agree with what the document says about them
+ * @param decodes       whether the bytes decode in {@code assumed} without a single byte
+ *                      sequence that is no character of it; {@code true} where this runtime
+ *                      has no decoder for {@code assumed}, which {@link #unreadable()}
+ *                      reports instead
  */
 public record XmlEncodingReport(Optional<String> byteOrderMark,
                                 Optional<String> declaration,
                                 String assumed,
-                                boolean consistent) {
+                                boolean consistent,
+                                boolean decodes) {
 
     /**
      * The charsets this module recodes from. Nothing outside this set is guessed at and
      * nothing outside it is repaired; a document in any other charset is handed to the
-     * XML parser as it stands, which is the party that knows the whole list.
+     * XML parser as it stands where its bytes decode in that charset, and is not
+     * {@link #decodes() decodable} where they do not.
      */
     private static final Set<String> RECODED = Set.of(
             "UTF-8", "UTF-16", "UTF-16BE", "UTF-16LE", "ISO-8859-1", "windows-1252");
 
     /**
-     * Checks that no member is {@code null}.
+     * Checks that no member is {@code null} and that the bytes of a consistent report decode.
      *
      * @param byteOrderMark the charset a byte order mark names, absent if there is none
      * @param declaration   the charset the XML declaration names, absent if the document
      *                      carries no declaration or a declaration without an
      *                      {@code encoding} pseudo-attribute
      * @param assumed       the canonical name of the charset the bytes are read in: the one
-     *                      the document names where the bytes agree with it, and the one the
-     *                      bytes spell where they do not
+     *                      the document names where the bytes agree with it, the one the
+     *                      bytes spell where they do not, and the one the document names
+     *                      again where they spell none this module knows
      * @param consistent    whether the bytes agree with what the document says about them
-     * @throws NullPointerException if a member is {@code null}
+     * @param decodes       whether the bytes decode in {@code assumed}
+     * @throws NullPointerException     if a member is {@code null}
+     * @throws IllegalArgumentException if the report is consistent and the bytes do not
+     *                                  decode: bytes that spell no character of the
+     *                                  charset they claim do not agree with the claim
      */
     public XmlEncodingReport {
         Objects.requireNonNull(byteOrderMark, "byteOrderMark");
         Objects.requireNonNull(declaration, "declaration");
         Objects.requireNonNull(assumed, "assumed");
+        if (consistent && !decodes) {
+            throw new IllegalArgumentException("bytes that do not decode in " + assumed
+                    + " do not agree with a document that says they are " + assumed);
+        }
+    }
+
+    /**
+     * Creates a report of bytes that decode in the charset they are read in, which is every
+     * report this module made before it asked that question.
+     *
+     * @param byteOrderMark the charset a byte order mark names, absent if there is none
+     * @param declaration   the charset the XML declaration names, absent if there is none
+     * @param assumed       the canonical name of the charset the bytes are read in
+     * @param consistent    whether the bytes agree with what the document says about them
+     * @throws NullPointerException if a member is {@code null}
+     */
+    public XmlEncodingReport(Optional<String> byteOrderMark,
+                             Optional<String> declaration,
+                             String assumed,
+                             boolean consistent) {
+        this(byteOrderMark, declaration, assumed, consistent, true);
     }
 
     /**
@@ -77,13 +113,14 @@ public record XmlEncodingReport(Optional<String> byteOrderMark,
      *
      * <p>It can where the bytes disagree with the document and the charset they spell is
      * one of the four this module knows: UTF-8, UTF-16, ISO-8859-1 and Windows-1252.
-     * Where they disagree and the charset is another one, the bytes are left alone: a
-     * guess outside that set would be a second defect on top of the first.
+     * Where they disagree and spell none of those, nothing is guessed: a guess outside that
+     * set would be a second defect on top of the first, and such bytes do not
+     * {@link #decodes() decode}.
      *
      * @return {@code true} if a repair is possible and needed
      */
     public boolean repairable() {
-        return !consistent && RECODED.contains(assumed);
+        return !consistent && decodes && RECODED.contains(assumed);
     }
 
     /**
@@ -123,8 +160,11 @@ public record XmlEncodingReport(Optional<String> byteOrderMark,
     public String describe() {
         String documented = documented();
         String source = byteOrderMark.isPresent() ? "byte order mark " : "declared ";
-        return consistent
-                ? source + documented + ", and the bytes agree"
-                : source + documented + ", read as " + assumed;
+        if (consistent) {
+            return source + documented + ", and the bytes agree";
+        }
+        return decodes
+                ? source + documented + ", read as " + assumed
+                : source + documented + ", and the bytes do not decode in " + assumed;
     }
 }

@@ -1,7 +1,6 @@
 package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.SemanticDocument;
-import java.time.Duration;
 import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -43,15 +42,7 @@ import picocli.CommandLine.Parameters;
         description = "Write an invoice into a PDF/A-3 file, so that the pages a person"
                 + " reads carry the invoice a machine reads.",
         sortOptions = false)
-final class EmbedCommand implements Callable<Integer> {
-
-    /**
-     * How long this command may take where the caller named no number of its own and lent
-     * a validator. Writing the attachment costs what reading the document cost; the
-     * validator is a process of somebody else's, and a bound that nobody set is the one
-     * every other command that starts one gives it.
-     */
-    private static final Duration DEFAULT_MAX_RUNTIME = Duration.ofMinutes(5);
+final class EmbedCommand implements Callable<Integer>, ReadsADocument {
 
     @Mixin
     private final GlobalFlags flags;
@@ -109,9 +100,6 @@ final class EmbedCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         Extensions extensions = Options.extension(extension);
-        if (verapdf != null) {
-            console.options().defaultMaxRuntime(DEFAULT_MAX_RUNTIME);
-        }
         Deadline deadline = Deadline.of(console.options().maxRuntime());
         Input container = Input.read(pdf, console);
         Input invoice = Input.read(file, console);

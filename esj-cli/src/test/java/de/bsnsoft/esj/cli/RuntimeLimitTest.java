@@ -1,14 +1,21 @@
 package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * The deadline of {@code --max-runtime}.
@@ -27,6 +34,18 @@ class RuntimeLimitTest {
 
     /** How long a test waits for the deadline before it gives up on it. */
     private static final long PATIENCE_SECONDS = 30;
+
+    /** Stands for a hybrid PDF of the corpus, copied into the directory of the test. */
+    private static final String PDF = "@pdf";
+
+    /** Stands for a second ESJ document, copied into the directory of the test. */
+    private static final String OTHER = "@other";
+
+    /** Stands for a file in the directory of the test that a command writes to. */
+    private static final String OUT = "@out";
+
+    @TempDir
+    private Path directory;
 
     @Test
     void endsARunThatTakesLongerThanItWasGiven() throws InterruptedException {
@@ -78,6 +97,63 @@ class RuntimeLimitTest {
                     "convert", "--max-runtime", bound, Input.STDIN_ARGUMENT);
             assertEquals(ExitCode.SUCCESS, run.exitCode(), bound + ": " + run.err());
         }
+    }
+
+    /**
+     * Every command that reads a document holds the deadline where the caller named none,
+     * not only the three that spend it step by step. The default is five minutes; it is
+     * shortened to one second here, which is the only difference to the tool a user runs.
+     * {@code esj validate} stops itself at the deadline and names the step; every other
+     * command is ended by the watchdog. Either way the run leaves with exit code 7 and no
+     * verdict.
+     */
+    @ParameterizedTest
+    @MethodSource("documentCommands")
+    void everyCommandThatReadsADocumentHoldsTheDefaultDeadline(List<String> command)
+            throws InterruptedException {
+        CountDownLatch halted = new CountDownLatch(1);
+        AtomicInteger code = new AtomicInteger();
+        Stalled stdin = new Stalled(halted);
+        try {
+            String[] arguments = command.stream().map(argument -> switch (argument) {
+                case PDF -> Fixtures.file(directory, "conformance/pdf/factur-x.pdf");
+                case OTHER -> Fixtures.file(directory, "examples/minimal.esj.json");
+                case OUT -> directory.resolve("out").toString();
+                default -> argument;
+            }).toArray(String[]::new);
+            Cli.Run run = Cli.runWithDefaultMaxRuntime(Duration.ofSeconds(1), stdin, status -> {
+                code.set(status);
+                halted.countDown();
+            }, arguments);
+
+            boolean watchdog = halted.getCount() == 0;
+            assertTrue(watchdog || run.exitCode() == ExitCode.LIMIT,
+                    command + ": exit " + run.exitCode() + ", " + run.err());
+            if (watchdog) {
+                assertEquals(ExitCode.LIMIT, code.get(), command.toString());
+                assertTrue(run.err().contains("runtime limit of 1 s reached"),
+                        command + ": " + run.err());
+            }
+            assertTrue(run.err().contains("no verdict"), command + ": " + run.err());
+            assertFalse(run.text().contains("VALID"), command + ": " + run.text());
+        } finally {
+            halted.countDown();
+        }
+    }
+
+    static List<List<String>> documentCommands() {
+        return List.of(
+                List.of("convert", "-"),
+                List.of("upgrade", "--to", "2017", "-"),
+                List.of("validate", "-"),
+                List.of("render", "-", "--out", OUT),
+                List.of("embed", PDF, "-", "--out", OUT),
+                List.of("inspect", "-"),
+                List.of("extract", "-", "--list"),
+                List.of("get", "-", "/BT-1"),
+                List.of("list", "-"),
+                List.of("diff", "-", OTHER),
+                List.of("canonicalize", "-"));
     }
 
     /**

@@ -97,7 +97,9 @@ async function answer(request: Record<string, unknown>): Promise<unknown> {
         : JSON.stringify(request.document);
       const result = validate(input, { registries: REGISTRIES });
       return {
-        findings: result.findings.map((entry) => ({ path: entry.path, code: entry.code })),
+        findings: result.findings.map((entry) => ({
+          path: entry.path, code: entry.code, subject: entry.subject,
+        })),
         status: result.status,
       };
     }

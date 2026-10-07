@@ -4,9 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -134,6 +138,146 @@ class EncodingModeTest {
             assertEquals(ExitCode.LIMIT, run.exitCode(), run.err());
             assertTrue(run.err().contains("once recoded into UTF-8"), run.err());
             assertTrue(run.err().contains("--max-input-bytes raises that bound"), run.err());
+        }
+    }
+
+    /**
+     * Bytes that decode neither in the charset they declare nor in one this tool recodes
+     * from are refused by every command that reads them, by both readers and in both modes:
+     * read anyway, they would carry replacement characters the sender never wrote, and the
+     * repair note would have nothing true to say.
+     */
+    @Test
+    void bytesThatDecodeInNoCharsetThisToolReadsAreReadByNoCommand() {
+        byte[] bytes = undecodableShiftJis();
+        List<String[]> commands = List.of(
+                new String[] {"convert", "-"},
+                new String[] {"convert", "--strict", "-"},
+                new String[] {"--importer", "xslt", "convert", "-"},
+                new String[] {"--importer", "xslt", "convert", "--strict", "-"},
+                new String[] {"inspect", "-"},
+                new String[] {"list", "-"},
+                new String[] {"get", "-", "/BT-1"},
+                new String[] {"canonicalize", "-"},
+                new String[] {"render", "-", "--html", "--out", "-"});
+        for (String[] command : commands) {
+            Cli.Run run = withoutTheErrorStreamOfTheProcess(() -> Cli.run(bytes, command));
+            String line = String.join(" ", command);
+            assertEquals(ExitCode.INPUT, run.exitCode(), line + ": " + run.err());
+            assertTrue(run.err().contains("declared Shift_JIS"), line + ": " + run.err());
+            assertTrue(run.err().contains("so it was not read"), line + ": " + run.err());
+            assertFalse(run.err().contains("without --strict"), line + ": " + run.err());
+            assertFalse(run.text().contains("�"), line + ": " + run.text());
+        }
+    }
+
+    @Test
+    void validateCallsSuchBytesInvalidAndOffersNoRecoding() {
+        Cli.Run run = Cli.run(undecodableShiftJis(), "validate", "--after-repair", "-");
+
+        assertEquals(ExitCode.VALIDATION, run.exitCode(), run.err() + run.text());
+        assertTrue(run.text().contains("XML-ENCODING [error]"), run.text());
+        assertTrue(run.text().contains("no recoding of it is offered"), run.text());
+        assertTrue(run.text().contains("Model (L2):                not checked"), run.text());
+        assertTrue(run.text().contains("the recoded bytes could not be read either"),
+                run.text());
+    }
+
+    @Test
+    void aContainerCarriesSuchBytesThroughToTheSameRefusal() {
+        byte[] pdf = TestPdfs.facturX(undecodableShiftJis());
+
+        Cli.Run convert = Cli.run(pdf, "convert", "-");
+        Cli.Run validate = Cli.run(pdf, "validate", "-");
+
+        assertEquals(ExitCode.INPUT, convert.exitCode(), convert.err());
+        assertTrue(convert.err().contains("so it was not read"), convert.err());
+        assertEquals(ExitCode.VALIDATION, validate.exitCode(), validate.err());
+        assertTrue(validate.text().contains("XML-ENCODING [error]"), validate.text());
+        assertTrue(validate.text().contains("Container:        OK"), validate.text());
+    }
+
+    /**
+     * No XML parser of the platform is handed bytes it cannot decode, so none of them
+     * writes a line of its own to the error stream of the process: neither the parser that
+     * finds the root element, nor the two readers, nor the syntax engine. A byte that does
+     * not decode in a comment before the root element was the case that reached the first
+     * of them, and with it the run said the document was of no syntax it knew.
+     */
+    @Test
+    void noParserWritesToTheErrorStreamOfTheProcess() {
+        String text = new String(Fixtures.bytes(CII), StandardCharsets.UTF_8);
+        int root = text.indexOf("?>") + 2;
+        byte[] commentBeforeTheRoot = concat(concat(
+                text.substring(0, root).getBytes(StandardCharsets.UTF_8),
+                new byte[] {'<', '!', '-', '-', ' ', (byte) 0xFC, ' ', '-', '-', '>'}),
+                text.substring(root).getBytes(StandardCharsets.UTF_8));
+        byte[] asciiWithLatin1 = latin1Declaring("US-ASCII");
+        List<String[]> commands = List.of(
+                new String[] {"convert", "-"},
+                new String[] {"--importer", "xslt", "convert", "-"},
+                new String[] {"convert", "--strict", "-"},
+                new String[] {"inspect", "-"},
+                new String[] {"validate", "-"},
+                new String[] {"--importer", "xslt", "validate", "-"});
+        for (byte[] bytes : List.of(commentBeforeTheRoot, asciiWithLatin1)) {
+            for (String[] command : commands) {
+                ByteArrayOutputStream process = new ByteArrayOutputStream();
+                Cli.Run run = withErrorStreamOfTheProcess(process, () -> Cli.run(bytes, command));
+                String line = String.join(" ", command);
+                assertEquals("", process.toString(StandardCharsets.UTF_8), line);
+                assertFalse(run.err().contains("neither an ESJ document"), line + ": "
+                        + run.err());
+            }
+        }
+        Cli.Run repaired = Cli.run(commentBeforeTheRoot, "convert", "-");
+        assertEquals(ExitCode.SUCCESS, repaired.exitCode(), repaired.err());
+        assertTrue(repaired.err().contains("encoding repaired: declared UTF-8"), repaired.err());
+    }
+
+    /**
+     * Returns the corpus invoice declaring Shift_JIS, with a lead byte that starts no
+     * character of it in a business term: the bytes are neither Shift_JIS nor UTF-8.
+     */
+    private static byte[] undecodableShiftJis() {
+        String text = new String(Fixtures.bytes(CII), StandardCharsets.UTF_8)
+                .replace("encoding=\"UTF-8\"", "encoding=\"Shift_JIS\"");
+        int at = text.indexOf(UMLAUT);
+        return concat(concat(text.substring(0, at).getBytes(StandardCharsets.UTF_8),
+                        new byte[] {(byte) 0x82, (byte) 0xFF}),
+                text.substring(at).getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** Returns the Latin-1 bytes of {@link #latin1()} under another declaration. */
+    private static byte[] latin1Declaring(String charset) {
+        return new String(latin1(), StandardCharsets.ISO_8859_1)
+                .replace("encoding=\"UTF-8\"", "encoding=\"" + charset + "\"")
+                .getBytes(StandardCharsets.ISO_8859_1);
+    }
+
+    private static byte[] concat(byte[] first, byte[] second) {
+        byte[] joined = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, joined, first.length, second.length);
+        return joined;
+    }
+
+    /** Runs something with the error stream of the process going nowhere. */
+    private static Cli.Run withoutTheErrorStreamOfTheProcess(Supplier<Cli.Run> run) {
+        return withErrorStreamOfTheProcess(new ByteArrayOutputStream(), run);
+    }
+
+    /**
+     * Runs something with the error stream of the process captured: a library that writes
+     * there bypasses the streams the tool was given, which is what is asked about here.
+     */
+    private static Cli.Run withErrorStreamOfTheProcess(ByteArrayOutputStream captured,
+                                                       Supplier<Cli.Run> run) {
+        PrintStream original = System.err;
+        try {
+            System.setErr(new PrintStream(captured, true, StandardCharsets.UTF_8));
+            return run.get();
+        } finally {
+            System.setErr(original);
         }
     }
 

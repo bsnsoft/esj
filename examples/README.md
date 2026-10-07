@@ -15,7 +15,7 @@ it to this table.
 
 | File | Verdict | What it shows |
 |---|---|---|
-| `smallest-valid.esj.json` | `VALID` | the smallest invoice this tool accepts: 27 terms, and dropping any one of them ends the verdict |
+| `smallest-valid.esj.json` | `VALID` | the smallest invoice this tool accepts through both syntaxes: 28 terms, and dropping any one of them ends the verdict through one of the two |
 | `standard-invoice.esj.json` | `VALID` | a typical business invoice: seller and buyer with addresses and contacts, payment instructions with one credit transfer, one VAT breakdown, three lines |
 | `multiple-lines.esj.json` | `VALID` | ten lines with periods, item attributes and classifications, delivery information, an embedded attachment, two VAT rates |
 | `allowances.esj.json` | `VALID` | allowances on the document level and on a line, two VAT rates |
@@ -46,11 +46,11 @@ seller identifier of any kind is stated (`BR-CO-26`); and an amount due for paym
 neither a payment due date nor payment terms (`BR-CO-25`).
 
 Every term those rules ask for is optional in the model, so adding any of them would cost exactly
-the thing each file is an example of. `smallest-valid.esj.json` is where that trade is made instead:
-it is `minimal.esj.json` plus the four terms the rules need — a payment due date, the seller VAT
-identifier, the VAT category rate of the breakdown and the VAT rate of the line — and it is minimal
-in its own right, because removing any of its 27 terms ends the verdict. A transcript in `README.md`
-or `docs/cli.md` uses `standard-invoice.esj.json` or a corpus instance, which every engine accepts.
+the thing each file is an example of. `smallest-valid.esj.json` makes that trade: `minimal.esj.json`
+plus the four terms the rules need — payment due date, seller VAT identifier, VAT category rate,
+line VAT rate — and BT-110, which UBL requires beside a VAT breakdown. It is `VALID` by default and
+under `--via ubl`, and removing any of its 28 terms ends the verdict under one of the two.
+Transcripts in `README.md` and `docs/cli.md` use `standard-invoice.esj.json` or a corpus instance.
 
 The two `INDETERMINATE` rows are not faults either. No syntax binds an extension term, so the
 official artefacts are not run over `b2c-gross.esj.json`, and no artefacts are published for the

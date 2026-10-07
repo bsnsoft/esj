@@ -2,7 +2,6 @@ package de.bsnsoft.esj.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -50,6 +49,10 @@ class ExampleVerdictsTest {
 
     /** The one document that a build without the later edition does not carry. */
     private static final String LATER_EDITION = "edition-2026.esj.json";
+
+    /** The two checks of a valid ESJ document: through CII, the default, and through UBL. */
+    private static final List<String[]> CHECKS = List.of(new String[] {},
+            new String[] {"--via", "ubl"});
 
     /** A row of the table: a file in backticks, then its verdict in backticks. */
     private static final Pattern ROW =
@@ -139,11 +142,29 @@ class ExampleVerdictsTest {
     }
 
     /**
+     * The smallest valid document is valid through both syntaxes: the check over the
+     * written cross industry invoice that {@code esj validate} runs by default, and the one
+     * over the written UBL invoice that {@code --via ubl} asks for.
+     */
+    @Test
+    void theSmallestValidDocumentIsValidThroughBothSyntaxes() {
+        byte[] source = Fixtures.bytes(EXAMPLES + "/smallest-valid.esj.json");
+
+        for (String[] check : CHECKS) {
+            Cli.Run run = Cli.run(source, validate(check));
+            assertEquals(ExitCode.SUCCESS, run.exitCode(),
+                    String.join(" ", check) + ": " + run.text() + run.err());
+        }
+    }
+
+    /**
      * The smallest valid document is smallest by measurement: no term of it can go.
      *
      * <p>A document that calls itself the smallest valid one earns the name only if removing
      * any single value ends the verdict, so this removes each of them in turn and requires
-     * that the tool no longer says valid.
+     * that the tool no longer says valid through at least one of the two syntaxes. BT-110 is
+     * the one term only the UBL check needs: UBL requires a tax amount wherever a VAT
+     * breakdown is stated, and the writer derives no total nobody stated.
      */
     @Test
     void theSmallestValidDocumentNeedsEveryTermItStates() {
@@ -153,17 +174,34 @@ class ExampleVerdictsTest {
         while (matcher.find()) {
             paths.add(matcher.group(1));
         }
-        assertEquals(27, paths.size(), "the document states 27 values");
+        assertEquals(28, paths.size(), "the document states 28 values");
 
         for (String path : paths) {
             byte[] shortened = withoutValue(source, path)
                     .getBytes(StandardCharsets.UTF_8);
 
-            Cli.Run run = Cli.run(shortened, "validate", "-");
+            boolean valid = true;
+            List<String> verdicts = new ArrayList<>();
+            for (String[] check : CHECKS) {
+                Cli.Run run = Cli.run(shortened, validate(check));
+                verdicts.add(String.join(" ", check) + ": " + verdictLine(run.text()));
+                valid &= run.exitCode() == ExitCode.SUCCESS;
+                if (!valid) {
+                    break;
+                }
+            }
 
-            assertNotEquals(ExitCode.SUCCESS, run.exitCode(),
-                    "without " + path + " the document is no longer valid: " + run.text());
+            assertFalse(valid, "without " + path + " the document is still valid through"
+                    + " both syntaxes: " + verdicts);
         }
+    }
+
+    /** Returns the command line that validates the standard input with the options given. */
+    private static String[] validate(String[] options) {
+        List<String> arguments = new ArrayList<>(List.of("validate"));
+        arguments.addAll(List.of(options));
+        arguments.add("-");
+        return arguments.toArray(String[]::new);
     }
 
     /** Returns the document with the one line of that path removed, still well-formed JSON. */

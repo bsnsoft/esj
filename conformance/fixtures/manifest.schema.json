@@ -216,7 +216,7 @@
               "path": { "type": "string" },
               "code": { "$ref": "#/$defs/code" },
               "subject": {
-                "description": "What the finding is about where the path cannot name it.",
+                "description": "What the finding is about where the path cannot name it. Absent where the finding has none.",
                 "type": "string"
               }
             }
@@ -235,7 +235,11 @@
           "enum": ["L1", "L2", "L3", "limit", "business-rule"]
         },
         "code": { "$ref": "#/$defs/code" },
-        "path": { "type": "string" }
+        "path": { "type": "string" },
+        "subject": {
+          "description": "What the finding is about where the path cannot name it, escaped as SPEC.md section 9.5 escapes a fragment of a document. Absent where the finding has none.",
+          "type": "string"
+        }
       }
     },
     "canonicalOrder": {

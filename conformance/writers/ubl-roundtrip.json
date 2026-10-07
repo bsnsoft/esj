@@ -20,12 +20,12 @@
   },
   "examples": {
     "count": 10,
-    "structural": 6,
-    "ruleClean": 6,
+    "structural": 7,
+    "ruleClean": 7,
     "identical": 10
   },
   "exampleRules": {
-    "cvc-complex-type.2.4.a": 4
+    "cvc-complex-type.2.4.a": 3
   },
   "refusals": [
     {

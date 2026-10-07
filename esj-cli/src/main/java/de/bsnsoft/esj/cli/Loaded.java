@@ -502,6 +502,10 @@ record Loaded(String name,
                         ImportReport.empty(), extension, Optional.of(importer), container,
                         Optional.empty(), List.of(XmlFinding.encoding(e)));
             }
+            if (!e.repairable()) {
+                throw CliException.input("cannot read " + input.name() + ": "
+                        + e.getMessage(), e);
+            }
             throw CliException.input("cannot read " + input.name() + ": " + e.getMessage()
                     + "; this run is strict, and without --strict the bytes are recoded and"
                     + " the repair is reported", e);

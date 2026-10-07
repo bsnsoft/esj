@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.StandardCharsets;
@@ -38,9 +40,20 @@ import java.util.regex.Pattern;
  * claimed is read as Windows-1252 when it carries a byte between {@code 0x80} and
  * {@code 0x9F} that Windows-1252 defines, and as ISO-8859-1 otherwise; the report says
  * which of the two was assumed, because the two differ exactly in that range and the
- * assumption is a guess about the writer rather than a fact about the bytes. Nothing is
- * guessed at beyond these: a document that declares some other charset is handed to the
- * XML parser as it stands, which is the party that knows the whole list.
+ * assumption is a guess about the writer rather than a fact about the bytes. A document
+ * that declares Windows-1252 and carries one of the five bytes it leaves undefined is read
+ * as ISO-8859-1, which defines them.
+ *
+ * <p>Nothing is guessed at beyond these. A document that declares some other charset — a
+ * Japanese one, a Latin one of another number, ASCII — is handed to the XML parser as it
+ * stands where its bytes decode in that charset, and where they do not it is read as UTF-8
+ * if they are UTF-8 and is otherwise not read at all: the report says that the bytes do not
+ * {@link XmlEncodingReport#decodes() decode}, and an importer refuses them in either mode.
+ * The same question is asked of a byte order mark and of a document that names no
+ * encoding. A parser handed such bytes would read them in the charset they claim and turn
+ * what it cannot decode into a replacement character, or write a complaint of its own to
+ * the error stream of the process before it refused them; either way the content of the
+ * document would be decided by the parser of the day rather than by the bytes.
  */
 public final class XmlBytes {
 
@@ -58,6 +71,9 @@ public final class XmlBytes {
     /** The bytes Windows-1252 leaves undefined in the range it fills and ISO-8859-1 does not. */
     private static final Set<Integer> UNDEFINED_IN_1252 = Set.of(0x81, 0x8D, 0x8F, 0x90, 0x9D);
 
+    /** The size of the buffer {@link #decodes(byte[], Charset)} decodes into, in chars. */
+    private static final int DECODE_BUFFER = 8192;
+
     /** The character a byte order mark decodes to, which is not part of the document. */
     private static final char ZERO_WIDTH_NO_BREAK_SPACE = '\uFEFF';
 
@@ -70,8 +86,9 @@ public final class XmlBytes {
      *
      * <p>Nothing is decoded into a document here and nothing is allocated in proportion
      * to the input: the byte order mark and the first four bytes are read, the XML
-     * declaration is read from a short window, and whether the rest is valid UTF-8 is
-     * decided by a scan over the bytes.
+     * declaration is read from a short window, and whether the rest decodes in the charset
+     * it is taken for is decided by a scan over the bytes — the UTF-8 one below, or a
+     * decoder that writes into one buffer of fixed size and keeps nothing it decoded.
      *
      * @param xml the bytes of the document
      * @return the report
@@ -85,14 +102,14 @@ public final class XmlBytes {
                 declaredEncoding(xml, mark.or(() -> pattern).orElse("ISO-8859-1"));
         if (mark.isPresent()) {
             String actual = mark.get();
-            return new XmlEncodingReport(mark, declaration, actual,
+            return checked(xml, mark, declaration, actual,
                     declaration.isEmpty() || sameCharset(declaration.get(), actual));
         }
         if (pattern.isPresent()) {
             // A document in UTF-16 or UTF-32 without a byte order mark has to declare
             // itself, and one that declares something else is wrong about its own bytes.
             String actual = pattern.get();
-            return new XmlEncodingReport(mark, declaration, actual,
+            return checked(xml, mark, declaration, actual,
                     declaration.isPresent() && sameCharset(declaration.get(), actual));
         }
         String documented = declaration.orElse("UTF-8");
@@ -102,12 +119,17 @@ public final class XmlBytes {
                     : new XmlEncodingReport(mark, declaration, singleByteGuess(xml), false);
         }
         if ("ISO-8859-1".equals(documented) || "windows-1252".equals(documented)) {
-            // Every byte sequence decodes in a single-byte charset, so the bytes cannot
-            // contradict such a declaration by failing to decode. What contradicts it is
-            // being valid UTF-8 with a character outside ASCII: that is a sequence no
-            // writer of Latin-1 produces by accident.
-            return isUtf8(xml) && hasNonAscii(xml)
-                    ? new XmlEncodingReport(mark, declaration, "UTF-8", false)
+            // Every byte sequence decodes in ISO-8859-1, so the bytes cannot contradict
+            // that declaration by failing to decode. What contradicts it is being valid
+            // UTF-8 with a character outside ASCII: that is a sequence no writer of
+            // Latin-1 produces by accident. Windows-1252 leaves five bytes undefined, and
+            // a document that declares it and carries one of them is read in the charset
+            // that defines them rather than with a replacement character.
+            if (isUtf8(xml) && hasNonAscii(xml)) {
+                return new XmlEncodingReport(mark, declaration, "UTF-8", false);
+            }
+            return "windows-1252".equals(documented) && hasUndefinedIn1252(xml)
+                    ? new XmlEncodingReport(mark, declaration, "ISO-8859-1", false)
                     : new XmlEncodingReport(mark, declaration, documented, true);
         }
         if (isWideFamily(documented)) {
@@ -116,7 +138,76 @@ public final class XmlBytes {
             return new XmlEncodingReport(mark, declaration,
                     isUtf8(xml) ? "UTF-8" : singleByteGuess(xml), false);
         }
-        return new XmlEncodingReport(mark, declaration, documented, true);
+        Optional<Charset> charset = supported(documented);
+        if (charset.isEmpty() || decodes(xml, charset.get())) {
+            return new XmlEncodingReport(mark, declaration, documented, true);
+        }
+        // Declared some other charset, and the bytes are not written in it. Bytes that are
+        // UTF-8 with a character outside ASCII were written by a UTF-8 writer that
+        // declared the wrong name, which is the one repair this case admits; anything else
+        // is a guess and is not made.
+        return isUtf8(xml) && hasNonAscii(xml)
+                ? new XmlEncodingReport(mark, declaration, "UTF-8", false)
+                : new XmlEncodingReport(mark, declaration, documented, false, false);
+    }
+
+    /**
+     * Returns the report of a document whose charset its first bytes name, after asking
+     * whether the rest of the bytes decode in it: a byte order mark or a wide pattern is a
+     * fact about the first bytes and not about the others.
+     */
+    private static XmlEncodingReport checked(byte[] xml,
+                                             Optional<String> mark,
+                                             Optional<String> declaration,
+                                             String actual,
+                                             boolean agrees) {
+        Optional<Charset> charset = supported(actual);
+        boolean decodes = charset.isEmpty() || actual.startsWith("UTF-32")
+                || ("UTF-8".equals(actual) ? isUtf8(xml) : decodes(xml, charset.get()));
+        return new XmlEncodingReport(mark, declaration, actual, agrees && decodes, decodes);
+    }
+
+    /** Returns the charset of a name, where this runtime has a decoder for it. */
+    private static Optional<Charset> supported(String name) {
+        try {
+            return Charset.isSupported(name) ? Optional.of(Charset.forName(name))
+                    : Optional.empty();
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Tells whether the bytes decode in a charset without one sequence that is no
+     * character of it. The decoder writes into one buffer of fixed size, which is emptied
+     * whenever it fills, so the scan costs time in proportion to the input and no memory.
+     */
+    private static boolean decodes(byte[] xml, Charset charset) {
+        CharsetDecoder decoder = charset.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPORT)
+                .onUnmappableCharacter(CodingErrorAction.REPORT);
+        ByteBuffer in = ByteBuffer.wrap(xml);
+        CharBuffer out = CharBuffer.allocate(DECODE_BUFFER);
+        while (true) {
+            CoderResult result = decoder.decode(in, out, true);
+            if (result.isError()) {
+                return false;
+            }
+            if (result.isUnderflow()) {
+                break;
+            }
+            out.clear();
+        }
+        while (true) {
+            out.clear();
+            CoderResult result = decoder.flush(out);
+            if (result.isError()) {
+                return false;
+            }
+            if (result.isUnderflow()) {
+                return true;
+            }
+        }
     }
 
     /**
@@ -317,6 +408,17 @@ public final class XmlBytes {
             }
         }
         return upperControl ? "windows-1252" : "ISO-8859-1";
+    }
+
+    /** Tells whether the document carries one of the five bytes Windows-1252 leaves undefined. */
+    private static boolean hasUndefinedIn1252(byte[] xml) {
+        for (byte b : xml) {
+            int value = b & 0xFF;
+            if (value >= 0x81 && value <= 0x9D && UNDEFINED_IN_1252.contains(value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Tells whether the document carries a byte outside ASCII. */

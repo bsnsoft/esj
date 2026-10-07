@@ -31,13 +31,18 @@ standard input, reading one JSON object per line back. Six requests exist:
 
     {"op": "validate", "file": "..."}            a document read from the repository
     {"op": "validate", "document": { ... }}      a document passed inline
-        -> {"findings": [{"path": "/BT-2", "code": "ESJ-L2-DATE"}]}
+        -> {"findings": [{"path": "/BT-2", "code": "ESJ-L2-DATE", "subject": ""}]}
 
     A finding carries the path SPEC.md section 9.5 gives its code: the member's path where
     the finding is about one member of `values`, and the empty string where the member name
-    is no path at all. Both the path and the code are compared. A document rejected at layer
-    L1 is expected to draw findings of that layer alone, because the model layers are not
-    evaluated over a document the reader refused a member of (section 9.5).
+    is no path at all. It carries the subject that section gives it, or the empty string:
+    the member access that names the place where the path is empty, as `values["/BT-1x"]`,
+    with the name escaped as a fragment of a message is, and the term or group a finding of
+    layer L3 is about. The path and the code are compared, and the subject wherever the
+    manifest records one, which it does where section 9.5 requires one; a subject a reader
+    MAY carry beside a path is not compared. A document rejected at layer L1 is expected to
+    draw findings of that layer alone, because the model layers are not evaluated over a
+    document the reader refused a member of (section 9.5).
 
     {"op": "rules", "document": { ... }}
         -> {"rules": ["BR-CO-10"], "warnings": []}
@@ -217,12 +222,29 @@ class Report:
 
 
 def errors(answer):
-    """The error findings of an answer, as pairs, in no particular order."""
-    return sorted((finding["path"], finding["code"])
+    """The error findings of an answer, as path, code and subject, in no particular order."""
+    return sorted((finding["path"], finding["code"], finding.get("subject", ""))
                   for finding in answer.get("findings", [])
                   if finding["code"].startswith("ESJ-L")
                   and not finding["code"].endswith("NOT-CHECKED")
                   and not finding["code"].endswith("EDITION-UNKNOWN"))
+
+
+def pinned(rows):
+    """The places whose subject the manifest records, as pairs of path and code."""
+    return {(row.get("path", ""), row["code"]) for row in rows if "subject" in row}
+
+
+def compared(findings, pins):
+    """Findings as path, code and subject, the subject kept only at the places pinned."""
+    return sorted((path, code, subject if (path, code) in pins else "")
+                  for path, code, subject in findings)
+
+
+def recorded(rows):
+    """The rows of the manifest in the form compared() gives an answer."""
+    return compared([(row.get("path", ""), row["code"], row.get("subject", ""))
+                     for row in rows], pinned(rows))
 
 
 def outcome(rule, reported):
@@ -270,26 +292,26 @@ def run(binding, files, repository, report):
             report.check(name + " canonical form", expected,
                          binding.ask({"op": "canonicalize", "file": name})["canonical"])
         if document["semanticModel"] in carried:
-            expected = sorted((finding["path"], finding["code"])
-                              for finding in document.get("findings", []))
-            report.check(name + " findings", expected,
-                         errors(binding.ask({"op": "validate", "file": name})))
+            rows = document.get("findings", [])
+            report.check(name + " findings", recorded(rows),
+                         compared(errors(binding.ask({"op": "validate", "file": name})),
+                                  pinned(rows)))
 
     for manifest in files:
         for name, rows in invalid(manifest).items():
             answer = binding.ask({"op": "validate", "file": name})
             found = errors(answer)
             if rows[0]["layer"] == "business-rule":
-                report.check(name + " is structurally sound", [], [code for _, code in found])
+                report.check(name + " is structurally sound", [], [code for _, code, _ in found])
                 continue
             if rows[0]["layer"] in ("L1", "limit"):
                 # A document layer L1 refused is answered whole: section 9.6 fixes how far a
                 # reader reads, so the rows are the list and not a sample of it.
                 report.check(name + " is rejected at layer L1, with these findings alone",
-                             sorted((row.get("path", ""), row["code"]) for row in rows), found)
+                             recorded(rows), compared(found, pinned(rows)))
                 continue
             report.check(name + " is rejected", True,
-                         (rows[0].get("path", ""), rows[0]["code"]) in found)
+                         recorded(rows[:1])[0] in compared(found, pinned(rows[:1])))
 
         for case in manifest.get("canonicalOrder", []):
             expected = (repository / case["canonical"]).read_text(encoding="utf-8")
@@ -305,13 +327,13 @@ def run(binding, files, repository, report):
                 document = apply(base, [{"path": grammar["path"], "value": candidate}])
                 answer = binding.ask({"op": "validate", "document": document})
                 report.check(grammar["datatype"] + " accepts " + json.dumps(candidate),
-                             [], [code for path, code in errors(answer)
+                             [], [code for path, code, _ in errors(answer)
                                   if path == grammar["path"]])
             for candidate in grammar["reject"]:
                 document = apply(base, [{"path": grammar["path"], "value": candidate}])
                 answer = binding.ask({"op": "validate", "document": document})
                 report.check(grammar["datatype"] + " rejects " + json.dumps(candidate),
-                             [grammar["code"]], [code for path, code in errors(answer)
+                             [grammar["code"]], [code for path, code, _ in errors(answer)
                                                  if path == grammar["path"]])
 
     for case, base in cases(files, repository):

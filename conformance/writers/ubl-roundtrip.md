@@ -92,17 +92,17 @@ business rules of EN 16931-1, clause 6.4 make of it.
 
 | Measure | Documents |
 |---|---:|
-| `structural` — the parser and the schema modules report nothing fatal | 6 |
-| `ruleClean` — the Schematron artefacts report nothing fatal either | 6 |
+| `structural` — the parser and the schema modules report nothing fatal | 7 |
+| `ruleClean` — the Schematron artefacts report nothing fatal either | 7 |
 | `identical` — reading the result back gives the document it was written from | 10 |
 
-Every example survives the round trip. Four are refused by the schema modules for the element
-above: `smallest-valid`, `minimal`, `extended` and `extension-depth` state a VAT breakdown and
-no BT-110.
+Every example survives the round trip. Three are refused by the schema modules for the element
+above: `minimal`, `extended` and `extension-depth` state a VAT breakdown and no BT-110.
+`smallest-valid` states BT-110 for this reason.
 
 | Rule | Findings |
 |---|---:|
-| `cvc-complex-type.2.4.a` | 4 |
+| `cvc-complex-type.2.4.a` | 3 |
 
 ## The credit note
 

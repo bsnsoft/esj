@@ -918,6 +918,7 @@ $ esj extract conformance/pdf/factur-x.pdf
 **The name of an attachment is never used as a file name.** It is attacker-controlled — path
 separators, `..`, a misleading double extension, control characters (`SPEC.md`, section 12.5) —
 so `esj extract` writes to the standard output or to the path `--out` names, and nowhere else.
+That path is the caller's and is written like any other file: a symbolic link there is followed.
 
 `esj inspect` shows the same facts about the container as part of its page, before the usual
 summary of the invoice. Where several attachments could be the invoice and none was named, it
@@ -935,18 +936,19 @@ it, the exit code is 1, and the row below it is `XML`. `--output json` carries t
 `xml.ok` and `xml.findings` and the second under `syntax`.
 
 `--after-repair` runs the checks a second time on the recoded bytes under a heading of its own;
-the verdict line and the exit code stay those of the original bytes. Every other command exists
-to get at the content, so it recodes — UTF-8, UTF-16, ISO-8859-1 and Windows-1252, and nothing
-beyond those without saying so — whichever reader `--importer` chose. It writes one line to the
-error stream and records the note `ENCODING_REPAIRED` in the report, where `esj inspect` and
-`--output json` show it:
+the verdict line and the exit code stay those of the original bytes. Every other command recodes,
+whichever reader `--importer` chose — from UTF-8, UTF-16, ISO-8859-1 and Windows-1252 only — with
+one line on the error stream and the note `ENCODING_REPAIRED`, which `esj inspect` and
+`--output json` show:
 
 ```text
 warning: invoice.xml: encoding repaired: declared UTF-8, read as ISO-8859-1; esj validate is strict about this and --strict makes every command so
 ```
 
 A repair is not a loss and is not counted as one. `--strict` turns it off for every command,
-which is then exit code 2 with the reason.
+which is then exit code 2 with the reason. Bytes that decode neither in the declared charset nor
+in one of the four are read by no command in either mode: exit code 2 naming the charset,
+`XML-ENCODING` under `esj validate`.
 
 ## render
 
@@ -1151,7 +1153,9 @@ examples/standard-invoice.esj.json carries no value at /BT-9999: the registry of
 
 `esj list` writes the whole document as lines of path, type and canonical value, separated by
 tabs and in canonical path order; a value carrying a line break is written on one line with the
-escape `\n`, and `--format json` writes the same three fields as an array of objects.
+escape `\n`, and `--format json` writes the same three fields as an array of objects. The C0
+and C1 controls, DEL, U+2028, U+2029 and the bidirectional controls (U+061C, U+200E, U+200F,
+U+202A–E, U+2066–9) are written `\uXXXX` in every text line and JSON report; `esj get` is raw.
 
 ```console
 $ esj list examples/standard-invoice.esj.json
@@ -1373,21 +1377,17 @@ $ echo $?
 `esj validate` answers the same way: a document that outgrew a bound leaves with 7 rather than 1,
 and a bound a reader ran into leaves with 7 naming the switch that would have kept the value,
 rather than writing a document with a term missing. `--max-runtime <duration>` bounds the time
-instead of the bytes. It takes `500ms`, `90s`, `5m` or a bare number of seconds, and it is one
-number over the whole run.
-
-Two things enforce it. `esj validate` spends the time step by step and stops itself when it is
-gone, which is why its refusal names the step; `esj render` arms the watchdog at five minutes
-where the caller named no number. Behind both, a watchdog ends the process half a second later,
-whatever state it is in, with one line on the error stream and code 7:
+instead of the bytes: `500ms`, `90s`, `5m` or a bare number of seconds, one number over the whole
+run, and five minutes for every command that reads a document where none is given. `esj validate`
+spends it step by step and names the step it ran out in; behind it, and for every other command,
+a watchdog ends the process half a second later with one line on the error stream and code 7:
 
 ```text
 esj: runtime limit of 30 s reached; no verdict on the document
 ```
 
 It is a second layer: `timeout 30 esj validate - < invoice.xml`, or a `destroyForcibly()` on the
-caller's side, stays the primary guard. Without `--max-runtime`, `esj validate` and `esj render`
-still hold a deadline of five minutes; a heap that runs out first ends the process with code 3.
+caller's side, stays the primary guard; a heap that runs out first ends the process with code 3.
 `conformance/scale/README.md` describes the synthetic instances the large profile was sized
 against, and [`deployment.md`](deployment.md) is where these switches belong in a service.
 

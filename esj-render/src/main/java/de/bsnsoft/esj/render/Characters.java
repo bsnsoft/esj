@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.render;
 
+import de.bsnsoft.esj.Esj;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -46,18 +47,23 @@ final class Characters {
 
     /**
      * Tells whether a code point directs the reading order rather than showing a
-     * character: the Arabic letter mark U+061C, the marks U+200E and U+200F, the
-     * embeddings and overrides U+202A-U+202E, the isolates U+2066-U+2069 and the
-     * interlinear annotation characters U+FFF9-U+FFFB.
+     * character: a bidirectional formatting character of {@link Esj#isBidiControl(int)} —
+     * the Arabic letter mark U+061C, the marks U+200E and U+200F, the embeddings and
+     * overrides U+202A-U+202E and the isolates U+2066-U+2069 — or one of the interlinear
+     * annotation characters U+FFF9-U+FFFB.
+     *
+     * <p>The first set is the one every text output of this implementation escapes, and is
+     * asked of {@code esj-core} so that a rendering and a message never disagree about it.
+     * The annotation characters are a rendering's own addition: they mark a run of text as
+     * an annotation of another and change what a line on a page appears to say, which is
+     * this class's concern, but they steer no terminal and reorder nothing, so a message
+     * carries them as they stand and the specification, section 9.5 does not list them.
      *
      * @param codePoint the code point
      * @return {@code true} if it is one of those
      */
     static boolean directional(int codePoint) {
-        return codePoint == 0x061c
-                || codePoint == 0x200e || codePoint == 0x200f
-                || (codePoint >= 0x202a && codePoint <= 0x202e)
-                || (codePoint >= 0x2066 && codePoint <= 0x2069)
+        return Esj.isBidiControl(codePoint)
                 || (codePoint >= 0xfff9 && codePoint <= 0xfffb);
     }
 

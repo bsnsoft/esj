@@ -25,6 +25,13 @@ import java.util.function.Consumer;
  */
 final class GlobalOptions {
 
+    /**
+     * How long a command that reads a document may take where {@code --max-runtime} names
+     * no number: the default of the syntax engine, so that one number holds for every
+     * command and for every step of {@code esj validate}.
+     */
+    static final Duration DEFAULT_MAX_RUNTIME = SyntaxOptions.DEFAULT_MAX_RUNTIME;
+
     private boolean verbose;
     private boolean debug;
     private boolean strict;
@@ -35,6 +42,7 @@ final class GlobalOptions {
     private final Map<Bound, Long> overrides = new EnumMap<>(Bound.class);
     private Bounds bounds;
     private Duration maxRuntime;
+    private Duration defaultMaxRuntime = DEFAULT_MAX_RUNTIME;
     private Consumer<Duration> runtimeLimit = duration -> { };
     private Map<String, String> environment = Map.of();
 
@@ -173,21 +181,30 @@ final class GlobalOptions {
     }
 
     /**
-     * Arms the watchdog at a default, for a command that has one and was not given a
-     * number of its own.
+     * Arms the watchdog at the default, for a command that reads a document and was not
+     * given a number of its own.
      *
      * <p>{@code --max-runtime} arms the watchdog as it is parsed, which is where the
      * clock should start. A command whose work can run away without ever asking anything
-     * about the time — the PDF rendering draws pages until the heap is gone — needs a
-     * deadline even where nobody wrote one, and this is how it asks for it. A number the
-     * caller gave stands: this does nothing where one was written.
+     * about the time — an importer over a document built to be slow, the PDF rendering
+     * drawing pages until the heap is gone — needs a deadline even where nobody wrote one,
+     * and {@link Main} asks for it here before every command that reads a document. A
+     * number the caller gave stands: this does nothing where one was written.
+     */
+    void armDefaultMaxRuntime() {
+        if (maxRuntime == null) {
+            maxRuntime(defaultMaxRuntime);
+        }
+    }
+
+    /**
+     * Replaces the default deadline, for a test that cannot wait five minutes to watch it
+     * fire. The tool a user runs never calls this.
      *
-     * @param duration the deadline to fall back to
+     * @param duration the deadline of a command that reads a document and names none
      */
     void defaultMaxRuntime(Duration duration) {
-        if (maxRuntime == null) {
-            maxRuntime(duration);
-        }
+        this.defaultMaxRuntime = duration;
     }
 
     /**
@@ -198,10 +215,10 @@ final class GlobalOptions {
      * still names the step it ran out in; {@link RuntimeLimit} stands behind that for the
      * commands that do not and for work that has stopped answering.
      *
-     * @return the deadline, or the default of the syntax engine where none was asked for
+     * @return the deadline, or {@link #DEFAULT_MAX_RUNTIME} where none was asked for
      */
     Duration maxRuntime() {
-        return maxRuntime == null ? SyntaxOptions.DEFAULT_MAX_RUNTIME : maxRuntime;
+        return maxRuntime == null ? defaultMaxRuntime : maxRuntime;
     }
 
     /**

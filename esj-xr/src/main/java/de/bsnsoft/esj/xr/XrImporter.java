@@ -119,7 +119,10 @@ import net.sf.saxon.s9api.XdmNode;
  * {@link XrEncodingException} carrying the same two facts. Neither is silent, and the
  * digest in the provenance of the result is over the bytes that were handed over rather
  * than over the recoded ones. {@link XmlBytes} says which charsets are recoded and which
- * are handed to the parser untouched.
+ * are handed to the parser untouched. Bytes that decode neither in the charset the document
+ * names nor in one of those are refused in both modes, with an {@link XrEncodingException}
+ * that is not {@link XrEncodingException#repairable() repairable}: no parser is handed bytes
+ * it would have to read with replacement characters.
  *
  * <h2>Normalizations</h2>
  *
@@ -371,7 +374,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code ubl} is {@code null}
      */
     public SemanticDocument importUbl(byte[] ubl) {
@@ -391,7 +395,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code cii} is {@code null}
      */
     public SemanticDocument importCii(byte[] cii) {
@@ -412,7 +417,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code xml} is {@code null}
      */
     public SemanticDocument importXml(byte[] xml) {
@@ -436,7 +442,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code xrXml} is {@code null}
      */
     public SemanticDocument fromXr(byte[] xrXml) {
@@ -457,7 +464,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code ubl} is {@code null}
      */
     public ImportResult importUblWithReport(byte[] ubl) {
@@ -477,7 +485,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code cii} is {@code null}
      */
     public ImportResult importCiiWithReport(byte[] cii) {
@@ -498,7 +507,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code xml} is {@code null}
      */
     public ImportResult importXmlWithReport(byte[] xml) {
@@ -519,7 +529,8 @@ public final class XrImporter {
      *                              this importer walks
      * @throws XrEncodingException  if the bytes are not written in the encoding the
      *                              document declares and this importer runs in
-     *                              {@link XrEncodingMode#STRICT}
+     *                              {@link XrEncodingMode#STRICT}, or if they decode in no
+     *                              charset this importer reads them in, in either mode
      * @throws NullPointerException if {@code xrXml} is {@code null}
      */
     public ImportResult fromXrWithReport(byte[] xrXml) {
@@ -565,6 +576,7 @@ public final class XrImporter {
     private Decoded frontDoor(byte[] xml) {
         XmlEncodingReport report = XmlBytes.inspect(xml);
         readable(report);
+        undecodable(report);
         if (report.consistent() || !report.repairable()) {
             return new Decoded(xml, Optional.empty());
         }
@@ -582,6 +594,28 @@ public final class XrImporter {
         return new Decoded(repaired, Optional.of(new ImportNote(
                 ImportNote.Kind.ENCODING_REPAIRED, DOCUMENT_LOCATION,
                 "the bytes were recoded into UTF-8 before parsing: " + report.describe())));
+    }
+
+    /**
+     * Refuses a document whose bytes decode neither in the charset it names nor in one this
+     * importer recodes from, in either mode.
+     *
+     * <p>A parser handed such bytes reads them in the charset the document names and turns
+     * what does not decode into a replacement character, silently, so that the document
+     * that came out would carry characters the sender never wrote and the report would say
+     * nothing about it.
+     *
+     * @param report what the bytes of the document say about their encoding
+     * @throws XrEncodingException if the bytes do not decode
+     */
+    private static void undecodable(XmlEncodingReport report) {
+        if (report.decodes()) {
+            return;
+        }
+        throw new XrEncodingException("the bytes of this document are not written in the"
+                + " encoding it declares, and not in one this importer recodes from (UTF-8,"
+                + " UTF-16, ISO-8859-1 and Windows-1252), so it was not read: "
+                + report.describe(), report.documented(), report.assumed(), false);
     }
 
     /**

@@ -21,7 +21,7 @@ import picocli.CommandLine.Parameters;
         description = "Write the canonical bytes of a document, or the two digests taken over"
                 + " them.",
         sortOptions = false)
-final class CanonicalizeCommand implements Callable<Integer> {
+final class CanonicalizeCommand implements Callable<Integer>, ReadsADocument {
 
     @Mixin
     private final GlobalFlags flags;

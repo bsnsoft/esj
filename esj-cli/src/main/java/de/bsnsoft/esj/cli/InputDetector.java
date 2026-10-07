@@ -1,12 +1,15 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.xr.XmlBytes;
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -487,9 +490,38 @@ final class InputDetector {
 
         private final XMLStreamReader reader;
 
+        /**
+         * Opens a parser over the bytes of a document, decoded before the parser sees them.
+         *
+         * <p>The parser is given characters and not bytes. Handed bytes that are not the
+         * encoding they declare, the platform parser writes a complaint of its own to the
+         * error stream of the process before it gives up, and the detector would then say
+         * that it recognized nothing — which sends the reader of the message to the syntax
+         * of a document whose only fault is its encoding. So the bytes are read in the
+         * charset the front door of the importers takes them for, with a replacement
+         * character where they do not decode: what is wanted here is the name of the root
+         * element, and the importer is the place that refuses or recodes the bytes and
+         * says so.
+         */
         Reader(byte[] content, int start) throws XMLStreamException {
-            this(hardened().createXMLStreamReader(
-                    new ByteArrayInputStream(content, start, content.length - start)));
+            this(hardened().createXMLStreamReader(decoded(content, start)));
+        }
+
+        /** Returns the bytes from {@code start} on as characters, replacing what does not decode. */
+        private static java.io.Reader decoded(byte[] content, int start) {
+            Charset charset;
+            try {
+                charset = Charset.forName(XmlBytes.inspect(content).assumed());
+            } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+                // A charset this runtime does not know; the importer names it. The root
+                // element of most such documents is still legible as ASCII.
+                charset = StandardCharsets.UTF_8;
+            }
+            return new InputStreamReader(
+                    new ByteArrayInputStream(content, start, content.length - start),
+                    charset.newDecoder()
+                            .onMalformedInput(CodingErrorAction.REPLACE)
+                            .onUnmappableCharacter(CodingErrorAction.REPLACE));
         }
 
         Reader(String text) throws XMLStreamException {

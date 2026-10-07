@@ -1,5 +1,8 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.Esj;
+import java.util.Locale;
+
 /**
  * Escaping of a fragment of a document that goes into a message.
  *
@@ -7,10 +10,12 @@ package de.bsnsoft.esj.rules;
  * code that is not on its list. That fragment is content a stranger wrote
  * ({@code SPEC.md} section 12.6), so it is escaped before it is put in a message
  * (section 9.5): a backslash, a quotation mark, the three whitespace controls by name, and
- * every other C0 control, the delete character and the bidirectional formatting characters
- * by code point. A message is then safe to write to a terminal or a log line as it stands:
- * an escape sequence in a value cannot rewrite the line a reader sees, and a right-to-left
- * override in one cannot reverse the rest of it.
+ * every other character of {@link Esj#steersATerminal(int)} — the C0 and C1 controls, the
+ * delete character, the line and paragraph separators and the bidirectional formatting
+ * characters — by code point, as {@code \}{@code u} and four lowercase hexadecimal digits,
+ * the spelling of {@code esj-core}. A message is then safe to write to a terminal or a log
+ * line as it stands: an escape sequence in a value cannot rewrite the line a reader sees,
+ * and a right-to-left override in one cannot reverse the rest of it.
  *
  * <p>A quoted fragment is also cut. {@code esj-core} reproduces at most eighty characters of
  * content in a message ({@code SPEC.md} section 12.6) and this module reproduces the same
@@ -89,16 +94,11 @@ final class Texts {
             case '\r' -> "\\r";
             case '\t' -> "\\t";
             default -> {
-                if (c < 0x20 || c == 0x7f || isBidirectional(c)) {
-                    yield String.format("\\u%04X", (int) c);
+                if (Esj.steersATerminal(c)) {
+                    yield String.format(Locale.ROOT, "\\u%04x", (int) c);
                 }
                 yield null;
             }
         };
-    }
-
-    private static boolean isBidirectional(char c) {
-        return (c >= 0x202a && c <= 0x202e) || (c >= 0x2066 && c <= 0x2069)
-                || c == 0x200e || c == 0x200f || c == 0x061c;
     }
 }

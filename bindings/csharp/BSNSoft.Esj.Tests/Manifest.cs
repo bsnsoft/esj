@@ -15,16 +15,17 @@ internal sealed record DocumentCase(
     int CanonicalBytes,
     string SemanticDigest,
     string DocumentDigest,
-    IReadOnlyList<(string Path, string Code)> Findings);
+    IReadOnlyList<(string Path, string Code, string? Subject)> Findings);
 
 /// <summary>One document of the manifest that has to be rejected.</summary>
 /// <remarks>
 /// A document may be wrong in two ways at layer L1 and draw a row for each code, so the rows
 /// of one file are held together: SPEC.md section 9.6 fixes how far a reader reads, and the
-/// rows of a document layer L1 refused are its whole answer.
+/// rows of a document layer L1 refused are its whole answer. A row carries the subject of its
+/// finding where the specification, section 9.5 requires one, and no subject elsewhere.
 /// </remarks>
 internal sealed record InvalidCase(
-    string File, string Layer, IReadOnlyList<(string Path, string Code)> Rows);
+    string File, string Layer, IReadOnlyList<(string Path, string Code, string? Subject)> Rows);
 
 /// <summary>One document whose members are in the wrong order, with its canonical bytes.</summary>
 internal sealed record CanonicalOrderCase(string Scrambled, string Canonical, int Values, string DocumentDigest);
@@ -94,11 +95,12 @@ internal static class Manifest
         Dictionary<string, DocumentCase> cases = new(StringComparer.Ordinal);
         foreach ((JsonElement _, JsonElement entry) in Fixtures.Section("documents"))
         {
-            List<(string, string)> findings = new();
+            List<(string, string, string?)> findings = new();
             if (entry.TryGetProperty("findings", out JsonElement reported))
             {
                 findings.AddRange(reported.EnumerateArray().Select(finding =>
-                    (finding.GetProperty("path").GetString()!, finding.GetProperty("code").GetString()!)));
+                    (finding.GetProperty("path").GetString()!, finding.GetProperty("code").GetString()!,
+                        Fixtures.Optional(finding, "subject"))));
             }
 
             string file = entry.GetProperty("file").GetString()!;
@@ -125,13 +127,13 @@ internal static class Manifest
         {
             string file = entry.GetProperty("file").GetString()!;
             string layer = entry.GetProperty("layer").GetString()!;
-            List<(string, string)> rows = cases.TryGetValue(file, out InvalidCase? known)
-                ? new List<(string, string)>(known.Rows)
-                : new List<(string, string)>();
+            List<(string, string, string?)> rows = cases.TryGetValue(file, out InvalidCase? known)
+                ? new List<(string, string, string?)>(known.Rows)
+                : new List<(string, string, string?)>();
             string? code = Fixtures.Optional(entry, "code");
             if (code is not null)
             {
-                rows.Add((Fixtures.Optional(entry, "path") ?? string.Empty, code));
+                rows.Add((Fixtures.Optional(entry, "path") ?? string.Empty, code, Fixtures.Optional(entry, "subject")));
             }
 
             cases[file] = new InvalidCase(file, layer, rows);

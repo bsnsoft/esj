@@ -53,7 +53,7 @@ import picocli.CommandLine.Parameters;
             "  7  a resource or time limit of this run was reached; no verdict on the",
             "     document"},
         sortOptions = false)
-final class GetCommand implements Callable<Integer> {
+final class GetCommand implements Callable<Integer>, ReadsADocument {
 
     /**
      * The model layer findings that are about the path itself rather than about the value

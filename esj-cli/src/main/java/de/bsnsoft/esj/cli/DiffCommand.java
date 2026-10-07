@@ -36,7 +36,7 @@ import picocli.CommandLine.Parameters;
         description = "Compare two documents in the semantic model and print the paths at"
                 + " which they differ.",
         sortOptions = false)
-final class DiffCommand implements Callable<Integer> {
+final class DiffCommand implements Callable<Integer>, ReadsADocument {
 
     @Mixin
     private final GlobalFlags flags;

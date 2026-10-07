@@ -395,9 +395,9 @@ charset and whose declaration names another is the commonest defect in the field
 are; `XmlBytes.repair` recodes into UTF-8 and rewrites the declaration. Four charsets are recoded
 and no others: UTF-8, UTF-16 in either byte order, ISO-8859-1 and Windows-1252. A sequence that
 is not valid UTF-8 where UTF-8 was claimed is read as Windows-1252 when it carries a byte between
-`0x80` and `0x9F` that Windows-1252 defines, and as ISO-8859-1 otherwise — the two differ exactly
-in that range, so the report says which was assumed. Any other declared charset is handed to the
-parser untouched.
+`0x80` and `0x9F` that Windows-1252 defines, and as ISO-8859-1 otherwise; the report says which.
+Any other declared charset is handed to the parser where the bytes decode in it, and refused in
+both modes (`XrEncodingException`, not `repairable()`) where they do not.
 
 **Repair is not validation**, and nothing is silent. `REPAIR`, the default, records the import
 note `ENCODING_REPAIRED` with what was declared and what was read; `STRICT` refuses with

@@ -50,7 +50,7 @@ import picocli.CommandLine.Parameters;
         description = "Write an ESJ document as a document of another edition of the"
                 + " semantic model.",
         sortOptions = false)
-final class UpgradeCommand implements Callable<Integer> {
+final class UpgradeCommand implements Callable<Integer>, ReadsADocument {
 
     /** How many distinct note lines the error stream carries without {@code --verbose}. */
     private static final int NOTE_LINES = 20;
