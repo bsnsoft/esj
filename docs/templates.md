@@ -35,8 +35,14 @@ EN 16931-1 stay the net ones ([`rendering.md`](rendering.md)).
 Measurements are PostScript points, 1/72 inch: A4 is 595 × 842.
 
 **A reference is a file beside the template.** A name that is absolute, that leaves the
-template's directory or that is not a plain relative path is refused rather than followed.
-`RenderTemplate.of(byte[], Files)` is the entry for a caller who keeps templates elsewhere.
+template's directory or that is not a plain relative path is refused rather than followed, and so
+is one that reaches a file outside that directory through a symbolic link, or something that is
+not a regular file. A file is refused by its size before it is read, past 32 MiB, and an image by
+the size its header states before it is decoded, past 36 million pixels — a page at 600 dots per
+inch. A template is the renderer's own configuration and these bounds do not make it anything
+else; they turn a link that points elsewhere or a scan at the wrong resolution into an error that
+names the file. `RenderTemplate.of(byte[], Files)` is the entry for a caller who keeps templates
+elsewhere; the bound on an image holds for what it answers too.
 
 **The left and the right margin are the same on both page kinds**, because a table lays its
 columns out once and keeps them across every page it runs onto; a template that writes two

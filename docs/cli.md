@@ -803,22 +803,22 @@ apart from the codes that say something about the document.
 
 `PDF/A-3 declared` is a declaration: it is read out of the XMP packet, and nothing in this build
 checks it. `--verapdf` closes that gap with a veraPDF installation of your own — the directory it
-was installed into, or its executable. It is never bundled and never downloaded: the reference
-validator is under a copyleft licence and is in no artefact this project publishes.
+was installed into, or its executable — which this project never bundles and never downloads.
 
 ```text
 $ esj validate invoice.pdf --verapdf /opt/verapdf
   PDF/A-3 declared           yes, PDF/A-3B — veraPDF 1.30.2, "PDF/A-3B validation profile": PASS
 ```
 
-The validator runs as a process of its own inside `--max-runtime`, and the row carries its
-version, the profile it ran and its verdict; `--output json` carries the same under
-`pdfaValidator`, beside `pdfa.validated`. A file it rejects is a container that is wrong about
-itself: `Container: INVALID`, exit code 1. A validator that was asked for and could not run
-leaves with 2, or with 7 where the clock ran out, and never with `VALID`. Without the switch the
-row reads `declared, not validated` and has no part in the verdict. The same switch is on
-[`embed`](#embed) and on `render --embed cii`, where it checks the file the invoice goes into
-before anything is written into it.
+The validator runs as a process of its own inside `--max-runtime`, and the row carries its version,
+the profile it ran and its verdict; `--output json` carries the same under `pdfaValidator`, beside
+`pdfa.validated`. A file it rejects is a container that is wrong about itself: `Container: INVALID`,
+exit code 1. A validator that was asked for and could not run leaves with 2, or with 7 where the
+clock ran out, and never with `VALID`. Without the switch the row reads `declared, not validated`
+and has no part in the verdict. It reads the input as it came: use veraPDF 1.30.2 or later, 1.31.71
+or later on its development line ([advisories](https://github.com/veraPDF/veraPDF-validation/security/advisories)
+of earlier releases), and cap its heap with `JAVA_OPTS`, which it inherits (`JAVA_OPTS=-Xmx1g`).
+The switch is also on [`embed`](#embed) and `render --embed cii`.
 
 ### The container in `--output json`
 
@@ -1022,8 +1022,9 @@ or rendered and for a template that is not one, 7 for a bound of this run the re
 
 The cost of `render` is the drawing: the PDF is built whole in memory before its first byte is
 written, so a document inside every bound can still have a rendering that is not. `--max-pages`
-is the bound here, `--max-runtime` defaults to 5m, and a heap that runs out ends the process
-with 3; [`deployment-measurements.md`](deployment-measurements.md) says what to give it.
+is the bound here, `--max-output-bytes` bounds the HTML page, `--max-runtime` defaults to 5m,
+and a heap that runs out ends the process with 3;
+[`deployment-measurements.md`](deployment-measurements.md) says what to give it.
 
 ## embed
 
@@ -1292,7 +1293,8 @@ does not overwrite; `--verbose` adds how long fetching and compiling took.
 Reading an invoice costs memory and time before anything is known about it, so a run reads
 within bounds: how large an XML input may be, how large an ESJ document, how many values it may
 carry, how long one value may be, how deep a path may go, how many nodes may sit inside
-`extensions`, and — the one bound on what a run writes — how many pages one rendering may have.
+`extensions`, and — the two bounds on what a run writes — how large an XML document or HTML page
+it writes may be and how many pages one rendering may have.
 They are the limits of `SPEC.md` section 12.2, and they are **policy of the reading party, not
 conformance** (section 3.1).
 
@@ -1301,7 +1303,7 @@ Two profiles ship, and `--limits` chooses between them:
 | Bound | `--limits default` | `--limits large` | Switch |
 |---|---|---|---|
 | XML input | 4 MiB | 256 MiB | `--max-input-bytes` |
-| XML output | 64 MiB | 1 GiB | `--max-output-bytes` |
+| XML output, HTML page | 64 MiB | 1 GiB | `--max-output-bytes` |
 | ESJ document | 64 MiB | 512 MiB | `--max-document-bytes` |
 | PDF file | 64 MiB | 512 MiB | `--max-pdf-bytes` |
 | attachments of a PDF enumerated | 64 | 64 | `--max-attachments` |
@@ -1315,10 +1317,11 @@ Two profiles ship, and `--limits` chooses between them:
 | elements held of one element | 100 000 | 100 000 | `--max-buffered-elements` |
 
 The XML output bounds what a writer may produce and is not the input bound read backwards: a
-cross industry invoice runs to about three times the UBL invoice it was converted from. The last
-two are the streaming reader's alone — a condition that asks about a child element is decided
-only once that element has been read, so the element it stands on is held whole — and a refusal
-says which of the two was met.
+cross industry invoice runs to about three times the UBL invoice it was converted from. It bounds
+the page of `render --html` as well, measured while it is written: ten thousand lines are about
+130 MB of HTML. The last two are the streaming reader's alone — a condition that asks about a
+child element is decided only once that element has been read, so the element it stands on is
+held whole — and a refusal says which of the two was met.
 
 A bound is a promise that an input of that size will be read, so a profile needs the heap its
 bounds imply. Measured as the smallest `-Xmx` at which an input **at** the bound is read and

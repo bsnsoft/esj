@@ -36,6 +36,12 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  * product description would be worse than useless. The replacement is visible, which is
  * the point — a reader sees that something was there.
  *
+ * <p>A character that ends a line is no exception either. A value may carry line breaks,
+ * and a block breaks its lines where they are, while the page footer, a figure of the
+ * totals and a text measured for the width of a cell are one line, with a space where the
+ * value ended one ({@link Face#line(String)}). Neither form hands a line end to the font,
+ * which has no glyph for one.
+ *
  * <p>An instance belongs to the document it was created for and is used by one rendering,
  * on one thread.
  */
@@ -176,57 +182,65 @@ final class Fonts {
         }
 
         /**
-         * Returns the text with every character this face cannot show replaced by a
-         * question mark, and every control character by a space. A line feed is left
-         * alone: the layout splits lines on it before anything is measured.
+         * Returns a text as this face writes it in a block: every line end as a line feed,
+         * every control character and every character that directs the reading order as a
+         * space, as {@link Characters#plain(String)} says, the tabulator as a space, and
+         * every character this face has no glyph for as a question mark.
          *
-         * <p>A character that directs the reading order counts as a control character
-         * here, whether or not the face has a glyph for it. The right-to-left override
-         * and its family are invisible and they change what a text says without changing
-         * what it is: a file name that reads one way on the page and another in the
-         * document it was taken from. A rendering that showed the text of an invoice as
-         * something other than the text the invoice stores would be the wrong kind of
-         * faithful, so those characters become spaces like the other controls.
+         * <p>The line feed is the one character left in that has no glyph, because a block
+         * breaks its lines at it before anything is measured ({@link Sheet#wrap}). A text
+         * that stands on one line is asked for with {@link #line(String)} instead.
          *
          * @param text the text of the document
-         * @return the text that can be written with this face
+         * @return the text that can be written with this face, line by line
          */
         String showable(String text) {
+            String plain = Characters.plain(text);
             boolean clean = true;
-            for (int i = 0; i < text.length() && clean; i++) {
-                char c = text.charAt(i);
-                clean = c >= ' ' && c != 0x7f
-                        && (c < 0x80
-                                || (!Characters.directional(c)
-                                        && has(text.codePointAt(i))));
+            for (int i = 0; i < plain.length() && clean; i++) {
+                char c = plain.charAt(i);
+                clean = c == '\n' || (c >= ' ' && (c < 0x7f || has(plain.codePointAt(i))));
             }
             if (clean) {
-                return text;
+                return plain;
             }
-            StringBuilder shown = new StringBuilder(text.length());
+            StringBuilder shown = new StringBuilder(plain.length());
             int i = 0;
-            while (i < text.length()) {
-                int codePoint = text.codePointAt(i);
-                int step = Character.charCount(codePoint);
+            while (i < plain.length()) {
+                int codePoint = plain.codePointAt(i);
                 if (codePoint == '\n') {
                     shown.append('\n');
-                } else if (codePoint < ' ' || codePoint == 0x7f
-                        || Characters.directional(codePoint)) {
+                } else if (codePoint < ' ') {
+                    // The tabulator: nothing else below the space is left by now.
                     shown.append(' ');
                 } else if (has(codePoint)) {
                     shown.appendCodePoint(codePoint);
                 } else {
                     shown.append(REPLACEMENT);
                 }
-                i += step;
+                i += Character.charCount(codePoint);
             }
             return shown.toString();
         }
 
         /**
+         * Returns a text as this face writes it on one line: as {@link #showable(String)}
+         * does, with a space where a line ends. The page footer, a figure of the totals and
+         * the compact head of a following page are one line each, whatever the document
+         * wrote into the value they show.
+         *
+         * @param text the text of the document
+         * @return the text that can be written with this face on one line
+         */
+        String line(String text) {
+            return showable(text).replace('\n', ' ');
+        }
+
+        /**
          * Returns how wide a text is at a font size, in points.
          *
-         * @param text the text, already passed through {@link #showable(String)}
+         * @param text the text, already passed through {@link #showable(String)} or
+         *             {@link #line(String)}
          * @param size the font size in points
          * @return the width in points
          * @throws RenderException if the text cannot be measured with this face
@@ -234,7 +248,10 @@ final class Fonts {
         float width(String text, float size) {
             Float known = widths.get(text);
             if (known == null) {
-                known = width(text);
+                // A line feed is the one character a showable text keeps without a glyph,
+                // and a text that is measured is a line: one that still carries a line
+                // feed is measured as the line it is written as, with a space there.
+                known = width(text.indexOf('\n') < 0 ? text : text.replace('\n', ' '));
                 if (widths.size() < WIDTH_CACHE_LIMIT) {
                     widths.put(text, known);
                 }

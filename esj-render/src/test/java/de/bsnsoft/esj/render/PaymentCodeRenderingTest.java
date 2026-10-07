@@ -6,12 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.bsnsoft.esj.SemanticDocument;
+import de.bsnsoft.esj.SemanticPath;
+import de.bsnsoft.esj.SemanticValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * The payment code on the page: that it is there, that it reads, and that it reads what
@@ -378,6 +382,75 @@ class PaymentCodeRenderingTest {
                 "and the letter says so under its closing heading");
         assertEquals(List.of(payload(document)), Pdf.codes(letter),
                 "the code carries what the payload says it does");
+    }
+
+    /**
+     * Where an element of the document holds a character no element of the code may
+     * carry, the letter draws no code and says why, in both languages; the payment block
+     * prints the account as the document states it either way.
+     *
+     * <p>The account name of the case is the attack the rule is about: a reader that ends a
+     * line where Unicode does would read the account and the amount injected behind the
+     * line separators instead of the ones the letter prints.
+     */
+    @Test
+    void aNameTheCodeCannotCarryCostsTheCodeAndTheLetterSaysWhy() {
+        SemanticDocument document = invoice().toBuilder()
+                .set(SemanticPath.of("/BG-16/BG-17/0/BT-85"), SemanticValue.of(
+                        "Example GmbH\u2028DE02120300000000202051\u2028EUR1.00"))
+                .build();
+        for (RenderLanguage language : RenderLanguage.values()) {
+            byte[] letter = new PdfRenderer().render(document,
+                    RenderOptions.in(language).layout(Layout.LETTER));
+
+            assertEquals(List.of(), Pdf.codes(letter), "no code was drawn in " + language);
+            String flat = Pdf.flat(Pdf.text(letter));
+            assertTrue(flat.contains(Pdf.flat(
+                            Word.PAYMENT_CODE_NAME_NOT_WRITABLE.in(language))),
+                    "and the letter says why in " + language + ": " + flat);
+            assertTrue(Pdf.shows(letter, "DE89 3704 0044 0532 0130 00"),
+                    "the account the document states is printed");
+        }
+    }
+
+    /**
+     * Text that is hostile and still text — quotes, markup, an account number and an
+     * amount written into a name with plain spaces, a script other than Latin — gets a
+     * code, and the code read back off the page says what the page says, element for
+     * element. The elements come out the same whether the payload is split at the line
+     * feed the guideline names or at every line end Unicode knows, because there is no
+     * other line end in it.
+     *
+     * @param name the account name the case states
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"Example GmbH DE02120300000000202051 EUR1.00",
+        "O'Brien \"&\" <b>Söhne</b> KG", "Ελληνικά Α.Ε.", "Example\u00a0GmbH"})
+    void theCodeReadBackOffThePageIsWhatThePagePrints(String name) {
+        SemanticDocument document = invoice().toBuilder()
+                .set(SemanticPath.of("/BG-16/BG-17/0/BT-85"), SemanticValue.of(name))
+                .set(SemanticPath.of("/BG-16/BT-83"), SemanticValue.of(
+                        "Invoice RE-2026-0042 / DE02120300000000202051 EUR1.00"))
+                .build();
+        byte[] letter = new PdfRenderer().render(document,
+                RenderOptions.defaults().layout(Layout.LETTER));
+
+        List<String> codes = Pdf.codes(letter);
+        assertEquals(1, codes.size(), "one code on the page");
+        String read = codes.get(0);
+        List<String> elements = List.of(read.split("\n", -1));
+        assertEquals(elements, List.of(read.split("\\R", -1)),
+                "the payload splits the same at the line feed and at every line end");
+        assertEquals(List.of("BCD", "002", "1", "SCT", "COBADEFFXXX", name,
+                        "DE89370400440532013000", "EUR2915.5", "", "",
+                        "Invoice RE-2026-0042 / DE02120300000000202051 EUR1.00"),
+                elements, "every element in its place");
+        String flat = Pdf.flat(Pdf.text(letter));
+        assertTrue(Pdf.shows(letter, "DE89 3704 0044 0532 0130 00"),
+                "the account the code pays into is the one the page prints");
+        assertTrue(Pdf.shows(letter, "COBADEFFXXX"), "and so is the bank identifier");
+        assertTrue(Pdf.shows(letter, name), "and the name of the account: " + flat);
+        assertTrue(Pdf.shows(letter, elements.get(10)), "and the remittance text");
     }
 
     // ---------------------------------------------------------------- the file it is in

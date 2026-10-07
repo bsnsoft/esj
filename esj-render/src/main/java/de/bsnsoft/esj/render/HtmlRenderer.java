@@ -135,11 +135,14 @@ public final class HtmlRenderer {
      * Renders a document and keeps the report of what did not reach the stylesheet.
      *
      * @param document the document to render
-     * @param options  the language; the page size of the options is for the PDF renderer
+     * @param options  the language and the bound on the size of the page; the page size
+     *                 of the options is for the PDF renderer
      * @return the rendering and the report
      * @throws IllegalArgumentException if the document names an edition of the semantic
      *                                  model that the registry of this renderer does not
      *                                  describe
+     * @throws RenderLimitException     if the page reached the bound of the options,
+     *                                  {@link RenderOptions#maxHtmlBytes()}
      * @throws RenderException          if the rendering could not be produced
      * @throws NullPointerException     if an argument is {@code null}
      */
@@ -148,7 +151,8 @@ public final class HtmlRenderer {
         Objects.requireNonNull(options, "options");
         ExportResult exported = exporter.toXrWithReport(document);
         String html = KositHtml.transform(
-                XmlFrontDoor.parse(Characters.plain(exported.xr())), options.language());
+                XmlFrontDoor.parse(Characters.plain(exported.xr())), options.language(),
+                options.maxHtmlBytes());
         return new RenderResult(html, exported.report());
     }
 }

@@ -16,6 +16,26 @@ still change; a change to it is named here under *Format*.
 
 ### Changed
 
+- `esj render --html` is held to `--max-output-bytes` (64 MiB, 1 GiB under `--limits large`), as
+  every XML document the tool writes is: the page is measured in bytes of UTF-8 while it is
+  written, and one past the bound leaves with exit code 7 and nothing written, rather than being
+  finished in memory first. In the library the bound is `RenderOptions.maxHtmlBytes()`
+  (`withMaxHtmlBytes(long)`, default `DEFAULT_MAX_HTML_BYTES`, 1 GiB) and is reached with a
+  `RenderLimitException`. `RenderOptions` has a seventh member; the constructor of six stays.
+- `esj-render` replaces U+007F and the C1 controls with a space in every form — the HTML
+  rendering and the report carried them as they stood, the PDF printed a question mark — and
+  turns U+0085, U+2028 and U+2029 into line feeds in all of them; one class holds the sets for
+  every form.
+- `dist/package.sh smoke` compares a container image only when `dist/package.sh docker` built it
+  from the jar it is compared with, and fails when the image that target built is gone or stale;
+  an older image of the same tag is named and not compared. `dist/smoke.sh` takes a relative path
+  in a command relative to the directory it was run from.
+- `bin/without-edition-2026.sh` makes its copy under `$TMPDIR` and removes it when it ends;
+  `--keep` keeps it.
+- `-Dsurefire.failIfNoSpecifiedTests=false` lets `mvn -Dtest=<class> -pl <module> -am` pass the
+  modules without that test; without it, a pattern that matches no test still fails.
+- `esj-render`'s sRGB profile is recorded as compared byte for byte with the file the
+  International Color Consortium publishes (`icc/README.md`, `docs/sources.md`).
 - The bindings carry their publisher's names and the project's version: the npm package is
   `@bsnsoft/esj` (was `en16931-semantic-json`), the C# package, assembly and namespace
   `BSNSoft.Esj` (was `En16931.SemanticJson`, projects under `bindings/csharp/BSNSoft.Esj*`). The C#
@@ -24,6 +44,32 @@ still change; a change to it is named here under *Format*.
 
 ### Fixed
 
+- `esj render` in the letter layout — the default since 0.9.2 — left with exit code 5, "internal
+  error", where the invoice number (BT-1) or the buyer reference (BT-10) carried a line feed,
+  which ESJ allows in every text; the generic layout left with 2 on the same invoice number. Both
+  layouts draw such a document now. A line end of any kind — CR LF, CR, VT, FF, U+0085, U+2028,
+  U+2029 — breaks a block as a line feed does and is a space on a line that has to stay one: the
+  page footer, the head of a following page, a figure of the totals, the footer of the PDF report.
+  No character the embedded faces have no glyph for reaches them.
+- U+061C ARABIC LETTER MARK reached the HTML rendering and the HTML report, although the
+  renderings replace the characters that direct the reading order with a space. HTML, PDF and
+  report now replace one set: U+061C, U+200E, U+200F, U+202A–U+202E, U+2066–U+2069 and
+  U+FFF9–U+FFFB.
+- The EPC QR code (GiroCode) of the letter dropped an element only where it carried a line feed
+  or a carriage return; U+2028, U+2029, U+0085, VT and FF passed into the payload, so a reader
+  that splits lines where Unicode does would read the account and the amount one line too far
+  down. No element carries a line end of any kind, another control character, a character that
+  directs the reading order or half a surrogate pair now: where the beneficiary, the remittance
+  information or the invoice number standing in for it holds one, the letter draws no code and
+  says under *Further details* which element it was.
+- Render templates: a reference was checked as a name, so a symbolic link beside the template
+  led out of its directory, and a link to `/dev/zero` or a small PNG that declares a vast picture
+  ran the heap out. A reference is now checked as the file it reaches — a link out of the
+  directory and anything that is not a regular file are refused — a file is refused by its size
+  before it is read (32 MiB), an image by the size its header states before it is decoded
+  (36 million pixels, a page at 600 dots per inch), and the template file itself is read to
+  32 MiB at most. Each refusal names the file and leaves with exit code 2, as every template error
+  does.
 - TypeScript: a number inside `extensions` whose canonical form is long (`1e500000000`,
   `1e-500000000`, `1e999999999`, `0.` and a million zeros) cost up to 600 MiB, minutes, or an
   uncaught `RangeError` from `readDocument`. The length of the canonical form is computed before
@@ -49,6 +95,27 @@ still change; a change to it is named here under *Format*.
   `ESJ-L1-ENVELOPE-VALUE`); a number token longer than the string bound is `ESJ-L1-LIMIT` wherever
   it stands (was `ESJ-L1-JSON-TYPE` inside `values`), and so is a member name longer than the
   larger of the string and path bound.
+
+### Security
+
+- The release archives and the container image carry a build provenance attestation, signed
+  through Sigstore and kept by GitHub: `gh attestation verify <archive> --repo bsnsoft/esj`, and
+  `gh attestation verify oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj` for the image.
+  `docs/install.md` ("Checking a download") and `SECURITY.md` name the fingerprint of the key the
+  artefacts on Maven Central are signed with, `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`, and say
+  that the macOS executable is signed ad hoc and not notarised.
+- The base images of `dist/Dockerfile` and `dist/Dockerfile.native` are pinned by digest beside
+  their tags, and Dependabot moves the digests; the image of a release names the base it was built on.
+- `docs/cli.md` names the veraPDF releases `--verapdf` should run — 1.30.2 or later, 1.31.71 or
+  later on veraPDF's development line; earlier ones have advisories for untrusted PDFs — and caps
+  its heap through `JAVA_OPTS`.
+- The workflows pin every action to a commit and keep no token in a checkout; the release and
+  publish jobs build without a Maven cache. A release tag stops the release before anything is
+  built unless it reads `v1.2.3` or `v1.2.3-rc.1` and names the version of the POM; `publish.yml`
+  takes its tag only in that form and checks it out as a tag. Every push to `main` submits the
+  resolved Maven dependency tree, so that Dependabot alerts cover the libraries the jar carries
+  through other ones (fontbox, pdfbox-io, commons-logging, xmlresolver).
+
 
 ## [0.9.4] — 2026-10-07
 

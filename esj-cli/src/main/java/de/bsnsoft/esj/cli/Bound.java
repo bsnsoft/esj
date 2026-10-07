@@ -64,12 +64,14 @@ enum Bound {
     RENDER_PAGES("--max-pages", true, "pages this run allows"),
 
     /**
-     * The largest XML output a writer produces, in bytes.
+     * The largest XML output a writer produces, in bytes, and the largest HTML page a
+     * rendering writes.
      *
      * <p>It is a bound of its own and not the input one read backwards. A cross industry
      * invoice is about three times the size of the UBL invoice it was converted from, so a
      * conversion held to the bound on its input would refuse documents that are well
-     * inside every bound this run was given.
+     * inside every bound this run was given; and an HTML page is many times the size
+     * of the document it shows.
      */
     OUTPUT_BYTES("--max-output-bytes", true,
             "bytes this run was given, so it was not written"),
