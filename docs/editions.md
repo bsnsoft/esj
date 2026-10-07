@@ -14,9 +14,11 @@ Which editions a build carries is a property of that build:
 esj --version
 ```
 
-prints `semantic model registries 2017, 2026` for a build that carries both. The default — the
-edition the tool writes when nobody asks for another — is 2017, because the official validation
-artefacts, XRechnung 3.0.2 and Peppol BIS 3 are written for it.
+prints `semantic model registries 2017, 2026 (preview)` for a build that carries both. The
+default — the edition the tool writes when nobody asks for another — is 2017, because the official
+validation artefacts, XRechnung 3.0.2 and Peppol BIS 3 are written for it. **2026 is a preview**:
+its registry, typed view, rule pack and `upgrade` may change in any minor release (`@Preview` in
+the Java API), and `validate`, `inspect`, `upgrade` and the report say so for a 2026 document.
 
 ## What each command does with a document of a non-default edition
 
@@ -107,9 +109,6 @@ binding — and the Maven profile leaves them out:
 
 ```text
 mvn -B -P without-edition-2026 verify
-```
-
-```text
 bin/without-edition-2026.sh
 ```
 
@@ -131,7 +130,7 @@ Per layer, for a build that carries the registry of that edition:
 | Reader, canonicalizer, digests | nothing was added: these layers read no registry | complete |
 | Structural validation L1 to L3 | measured against the registry of the edition the document names | complete |
 | Typed view, editing | `…typed.v2026`, generated from that registry | complete |
-| Totals, `derive()` | `…typed.v2026.Totals.of(En16931V2026.minorUnits())`: each amount rounded once, to the minor unit of its currency in the pack's snapshot; an unknown currency is refused | complete |
+| Totals, `derive()` | `…typed.v2026.Totals.of(En16931V2026Pack.minorUnits())`: each amount rounded once, to the minor unit of its currency in the pack's snapshot; an unknown currency is refused | complete |
 | Constrained builder | `…typed.build` is generated for the default edition alone, and no profile overlay is written for another | not in this version |
 | Domain API (`esj-invoice`) | built on that builder, with enums and profile defaults that are facts of the default edition | not in this version |
 | `upgrade`, both directions | the mapping as data, with the open points reported | complete |

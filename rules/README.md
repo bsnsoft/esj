@@ -52,7 +52,7 @@ about agreement is made anywhere in this repository without the ledger that meas
   "verifiedAgainst": "CEN/TC 434 eInvoicing EN 16931 validation artefacts, release 1.3.16",
   "description": "…",
   "codeLists": { "untdid-5305": "2026-09-19" },
-  "javaRules": [{ "class": "…rules.en16931.SomeRule", "oracle": "artefact" }],
+  "javaRules": [{ "class": "…rules.internal.en16931.SomeRule", "oracle": "artefact" }],
   "files": ["rules/br.json", "rules/br-co.json"],
   "shares": [{ "pack": "en16931", "version": "1.3.16", "file": "rules/br.json",
                "oracle": "downgrade", "rules": ["BR-01", "BR-02"] }],

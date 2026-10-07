@@ -51,6 +51,12 @@ public final class Registry {
      */
     private static final List<String> CORE_EDITION_KEYS = List.of("2017", "2026");
 
+    /**
+     * The edition keys among {@link #CORE_EDITION_KEYS} this project ships as a preview
+     * ({@link #isPreview()}).
+     */
+    private static final List<String> PREVIEW_EDITION_KEYS = List.of("2026");
+
     private static final String XRECHNUNG_RESOURCE = "xrechnung/3.0.2.json";
     private static final String B2C_RESOURCE = "b2c/0.1.json";
 
@@ -445,6 +451,29 @@ public final class Registry {
     public boolean describes(String semanticModel) {
         Objects.requireNonNull(semanticModel, "semanticModel");
         return this.semanticModel.equals(semanticModel);
+    }
+
+    /**
+     * Tells whether this registry describes an edition of the core model that this project
+     * ships as a preview.
+     *
+     * <p>A preview edition is read, validated and written like any other, and a document of
+     * it is a document of the format. What is a preview is the support this project gives
+     * it: the registry, the typed view, the rule pack and the upgrade to that edition may
+     * change in any minor release.
+     *
+     * @return {@code true} if this registry describes an edition this build ships as a
+     *         preview, {@code false} for every other registry, an extension registry
+     *         included
+     */
+    public boolean isPreview() {
+        for (String key : PREVIEW_EDITION_KEYS) {
+            if (editions().contains(key) && forEdition(key).semanticModel.equals(semanticModel)
+                    && forEdition(key).model.equals(model)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

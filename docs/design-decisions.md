@@ -150,7 +150,7 @@ the failure mode this project exists to prevent.
 `de.bsnsoft.esj.typed` is the view of the 2017 edition, `…typed.v2026` the view of
 the 2026 one, each generated from that edition's registry with an `En16931` of its own. The
 types the two share — the value records, the handles, the two exceptions and the runtime a
-generated accessor calls — lie in the first package and in `…typed.runtime`.
+generated accessor calls — lie in the first package and in `…typed.internal`.
 
 **Why.** The typed view exists to make a wrong path unrepresentable. A single view over both
 editions would offer `/BT-20` at the root of a 2026 document, where no such path exists, and

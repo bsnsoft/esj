@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +30,11 @@ import java.util.stream.Collectors;
  * {@link #single()} says so rather than taking the first: one of the two may be valid and
  * the other not, and a tool that prints one verdict has to know which document the
  * verdict is about.
+ *
+ * <p>The class is a preview: the command line chooses the invoice of a container with it,
+ * and the class may change in any minor release.
  */
+@Preview
 public final class InvoiceAttachments {
 
     /**

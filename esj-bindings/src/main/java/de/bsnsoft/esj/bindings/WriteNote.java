@@ -160,7 +160,8 @@ public record WriteNote(WriteNote.Kind kind, String path, String message, String
          * is one the syntax accepts. The message names the element, the value, what asks
          * for the element and where the value comes from, so that a caller can see what is
          * in the document that the invoice did not state.
-         * {@link BindingTable#conventions()} carries the three of this release.
+         * The {@code conventions} of a binding table under {@code model/bindings} carry
+         * the three of this release.
          */
         CONVENTION_APPLIED,
 

@@ -25,14 +25,14 @@ module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Ma
 | `esj-b2c` | the B2C extension: the gross figures a consumer was shown, and the policies that derive the net invoice from them ([`b2c.md`](b2c.md)) | `esj-invoice` |
 | `esj-pdf` | hybrid PDFs: the embedded invoice read, and an invoice written into a PDF/A-3 file | `esj-xr`, `esj-bindings`, PDFBox |
 | `esj-render` | the XR export, the HTML page and the PDF/A-3b rendering, plain or on a template | `esj-xr`, PDFBox, ZXing |
-| `esj-generator` | generates the sources of `esj-typed` and the per-term schema, under `-Pgenerate` | — |
+| `esj-generator` | generates the sources of `esj-typed` and the per-term schema, under `-Pgenerate`; a build tool, not published | — |
 | `esj-cli` | the `esj` command line tool | every module above but `esj-invoice`, picocli |
-| `esj-bom` | the version of every module above but `esj-cli`, which is not published | — |
+| `esj-bom` | the version of every module above but the two tools | — |
 
 Saxon-HE 13.0 is the minimum: a build that forces 12.x keeps the XML Schema, Schematron and XSLT path working, and every HTML page of `esj-render` — the HTML report too — fails with `AbstractMethodError` (`UnparsedTextURIResolver`).
 
 Import the bill of materials once, then name a module of the table as a dependency without a
-version of its own; `esj-cli` is the tool and is on no repository ([`releasing.md`](releasing.md)).
+version of its own; the two tools are on no repository ([`releasing.md`](releasing.md)).
 
 ```xml
 <dependencyManagement>
@@ -48,12 +48,12 @@ version of its own; `esj-cli` is the tool and is on no repository ([`releasing.m
 </dependencyManagement>
 ```
 
-The public API lives in eight packages of `esj-core` — `de.bsnsoft.esj` for paths,
-values and documents, `.json` for reader, writer, canonicalizer and limits, `.model` for the
-registry, `.validate` for the structural validator, `.imports` for what a reader has to say about
-the document it read, `.upgrade` for moving a document between editions
-([`editions.md`](editions.md)), `.handler` for the event view, `.report` for what a run came to —
-plus one package per module, named after it, and `.invoice.code` for the code list enums.
+The public API of `esj-core` is `de.bsnsoft.esj` for paths, values and documents, `.json` for
+reader, writer, canonicalizer and limits, `.model` for the registry, `.validate` for the structural
+validator, `.imports` for what a reader has to say about the document it read, `.handler` for the
+event view and, as a preview, `.upgrade` for moving a document between editions
+([`editions.md`](editions.md)). A package whose name contains `internal` is not API; `@Preview`
+marks what may change in any minor release: the 2026 edition, `esj-b2c` and a few named types.
 
 Every snippet below is a test, in the `ReadmeExamplesTest.java` of the module it shows.
 
@@ -461,9 +461,9 @@ quantity with no price, an allowance with no category, no line at all — it thr
 `DerivationException` naming the term and the group instance. A stated line net amount that the
 formula contradicts is refused unless `TotalsOptions.standard().withOverwriteLines(true)`.
 
-The 2026 view has its own policy, `…typed.v2026.Totals.of(En16931V2026.minorUnits())`, with the
-same report: each amount rounded to the minor unit of its currency, BT-179 added into BT-115, one
-breakdown per exemption reason and goods/services code ([`editions.md`](editions.md)).
+The 2026 view (a preview) has its own policy, `…typed.v2026.Totals.of(En16931V2026Pack.minorUnits())`,
+with the same report: each amount rounded to the minor unit of its currency, BT-179 added into BT-115,
+one breakdown per exemption reason and goods/services code ([`editions.md`](editions.md)).
 
 ## The domain API
 
@@ -830,7 +830,7 @@ never XML: do the business rules of EN 16931-1, clause 6.4 hold? They are writte
 terms rather than over the XPath of a syntax, so one rule serves UBL, CII and a native document.
 
 ```java
-RuleEngine engine = En16931.engine(Registry.en16931());
+RuleEngine engine = En16931Pack.engine(Registry.en16931());
 
 List<RuleFinding> findings = engine.evaluate(document);
 boolean rejected = findings.stream().anyMatch(RuleFinding::fatal);
@@ -842,12 +842,12 @@ semantic paths the rule read, and the pack identifier and version together with 
 `native`. `RuleFinding.ORDER` sorts a report so that two runs over one document produce the same
 list. Compiling a pack is the expensive part and does not depend on the document, so an engine
 is compiled once, evaluated many times, and is immutable and safe to share between threads.
-`En16931.engine` is the pack this build carries, brought together from three things:
+`En16931Pack.engine` is the pack this build carries, brought together from three things:
 
 ```java
-RulePack pack = RulePacks.bundled(En16931.PACK_ID, En16931.VERSION);
+RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.VERSION);
 RuleEngine other = RuleEngine.compile(pack, Registry.en16931(),
-        CodeLists.bundled(pack), En16931.javaRules());
+        CodeLists.bundled(pack), En16931Pack.javaRules());
 ```
 
 The third argument is what a caller supplies for a pack it did not write. **The manifest names
@@ -901,7 +901,7 @@ The **format version** is the version of `SPEC.md`, not of the semantic model. I
 that does not implement the version it finds rejects the document rather than guessing.
 
 The **semantic model edition** is the edition of EN 16931-1 the paths refer to:
-`EN16931-1:2017+A1:2019/AC:2020` by default, `EN16931-1:2026` where the build carries its registry.
+`EN16931-1:2017+A1:2019/AC:2020` by default, `EN16931-1:2026`, a preview, where a build carries it.
 A reader needs none, so a document of an edition without one is read, canonicalized and hashed, and
 the model layers report `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` 9.2). The extension registry is
 versioned by the specification it describes, `XRechnung 3.0.2`.

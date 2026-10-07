@@ -70,143 +70,143 @@
   },
   "javaRules": [
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl07",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl07",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl11",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl11",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl13",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl13",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.BrCl25",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.BrCl25",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br62",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br62",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br63",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br63",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br64",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br64",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.Br65",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.Br65",
       "oracle": "downgrade"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br68",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br68",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br69",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br69",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br70",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br70",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br71",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br71",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br72",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br72",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br73",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br73",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br74",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br74",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.Br75",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.Br75",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrAe01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrAe01",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrAe08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrAe08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo09",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrCo09",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo14",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrCo14",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo18",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrCo18",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo49",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrCo49",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrCo50",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrCo50",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrE01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrE01",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrE08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrE08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrG01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrG01",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrG08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrG08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIc01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrIc01",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIc08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrIc08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIg08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrIg08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrIp08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrIp08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrO01",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrO01",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrO08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrO08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrS08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrS08",
       "oracle": "cases"
     },
     {
-      "class": "de.bsnsoft.esj.rules.en16931.v2026.BrZ08",
+      "class": "de.bsnsoft.esj.rules.internal.en16931.v2026.BrZ08",
       "oracle": "cases"
     }
   ],

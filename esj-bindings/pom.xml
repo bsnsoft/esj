@@ -21,6 +21,10 @@
     document back out as any of the three from the same tables.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.bindings</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>

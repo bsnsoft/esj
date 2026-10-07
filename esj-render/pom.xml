@@ -25,6 +25,10 @@
     as one self-contained HTML page or as a PDF that carries the invoice after it.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.render</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
@@ -35,6 +39,15 @@
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-xr</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!--
+      Saxon-HE, which runs the vendored visualization stylesheets and reads the label files.
+      It arrives with esj-xr and is declared here as well, because this module calls it
+      directly. Mozilla Public License 2.0; see the NOTICE file of the repository.
+    -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
     </dependency>
     <!--
       PDFBox writes the PDF. It is the only thing in this project that does, it is the

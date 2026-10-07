@@ -37,7 +37,7 @@ import org.junit.jupiter.api.TestFactory;
  */
 class Edition2026RuleCasesTest {
 
-    private static final RuleEngine ENGINE = new En16931V2026().engine(Registry.forEdition("2026"));
+    private static final RuleEngine ENGINE = new En16931V2026Pack().engine(Registry.forEdition("2026"));
 
     /** One case: a document the rule is silent on and one it speaks on. */
     private record Case(String id, String what, SemanticDocument holds, SemanticDocument fails) {

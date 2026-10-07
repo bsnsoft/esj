@@ -22,6 +22,10 @@
     reported as such and nothing else is attempted.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.pdf</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>

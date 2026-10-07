@@ -11,7 +11,7 @@ import de.bsnsoft.esj.pdf.EmbeddedFile;
 import de.bsnsoft.esj.pdf.FacturX;
 import de.bsnsoft.esj.pdf.PdfContainer;
 import de.bsnsoft.esj.render.PdfRenderer;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
 import de.bsnsoft.esj.typed.build.Profile;
 import de.bsnsoft.esj.xr.XrImporter;
@@ -72,7 +72,7 @@ class HybridInvoiceExampleTest {
             CiiWriter.class,          // esj-bindings
             XrImporter.class,         // esj-xr
             SyntaxValidator.class,    // esj-syntax
-            En16931.class,            // esj-rules
+            En16931Pack.class,            // esj-rules
             FacturX.class,            // esj-pdf
             PdfRenderer.class);       // esj-render
 

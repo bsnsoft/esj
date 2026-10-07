@@ -1,7 +1,7 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XmlFrontDoor;
 import de.bsnsoft.esj.xr.XrFormatException;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import org.xml.sax.XMLReader;
  * encoding is not the one they declare have no text to read, so a schema finding or a
  * rule finding made on them would describe a document nobody sent.
  *
- * <p>The parser is the one of {@link XmlFrontDoor}: it refuses a document type
+ * <p>The parser is the one of {@code XmlFrontDoor}: it refuses a document type
  * declaration outright, fetches no external entity, no external subset, no DTD and no
  * schema, and processes no XInclude. A document that carries one of those is refused
  * here, with the parser's own words, and never reaches the schema.

@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.cli;
 
-import de.bsnsoft.esj.report.Phrase;
+import de.bsnsoft.esj.internal.report.Phrase;
 
 /**
  * The two ways this tool reads an XML invoice into the semantic model.

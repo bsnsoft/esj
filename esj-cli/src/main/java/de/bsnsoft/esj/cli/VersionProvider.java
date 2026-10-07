@@ -20,7 +20,7 @@ import java.util.Properties;
  * <p>The fourth is a property of the build rather than a version. A registry is data and a
  * distribution may leave one out, so which editions a copy of this tool can read, check,
  * render and upgrade is a question only that copy can answer; every other line of every
- * report follows from it.
+ * report follows from it. An edition this project ships as a preview is marked as one.
  */
 final class VersionProvider implements picocli.CommandLine.IVersionProvider {
 
@@ -33,7 +33,20 @@ final class VersionProvider implements picocli.CommandLine.IVersionProvider {
             "esj " + artifactVersion(),
             "ESJ format version " + Esj.VERSION,
             "semantic model " + Esj.SEMANTIC_MODEL,
-            "semantic model registries " + String.join(", ", Registry.editions())};
+            "semantic model registries " + registries()};
+    }
+
+    /**
+     * Returns the edition keys this build carries a registry for, each edition this project
+     * ships as a preview marked as one: {@code 2017, 2026 (preview)}.
+     *
+     * @return the keys, in the order the editions were published
+     */
+    static String registries() {
+        return String.join(", ", Registry.editions().stream()
+                .map(edition -> Registry.forEdition(edition).isPreview()
+                        ? edition + " (preview)" : edition)
+                .toList());
     }
 
     /**

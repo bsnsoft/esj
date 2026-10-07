@@ -2,11 +2,11 @@ package de.bsnsoft.esj.render;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.json.Canonicalizer;
-import de.bsnsoft.esj.report.Phrase;
-import de.bsnsoft.esj.report.Text;
-import de.bsnsoft.esj.report.ValidationOutcome;
-import de.bsnsoft.esj.report.ValidationOutcome.Judged;
-import de.bsnsoft.esj.report.ValidationOutcome.Subject;
+import de.bsnsoft.esj.internal.report.Phrase;
+import de.bsnsoft.esj.internal.report.Text;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.ValidationOutcome.Judged;
+import de.bsnsoft.esj.internal.report.ValidationOutcome.Subject;
 import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.validate.ValidationStatus;
 import java.util.List;
@@ -195,7 +195,7 @@ final class Outcomes {
         return new ValidationOutcome(
                 new ValidationOutcome.Identity("standard-invoice.esj.json",
                         Text.words("ESJ"),
-                        Optional.empty(), Optional.of(MODEL),
+                        Optional.empty(), Optional.of(Text.words(MODEL)),
                         Optional.of("urn:cen.eu:en16931:2017"),
                         Optional.of(Corpus.sha256(
                                 Corpus.bytes("/examples/standard-invoice.esj.json"))),
@@ -230,7 +230,7 @@ final class Outcomes {
         SemanticDocument document = Corpus.example("minimal");
         return new ValidationOutcome(
                 new ValidationOutcome.Identity("factur-x.pdf", FROM_PDF,
-                        Optional.of(READER), Optional.of(MODEL), Optional.of("EN 16931"),
+                        Optional.of(READER), Optional.of(Text.words(MODEL)), Optional.of("EN 16931"),
                         Optional.of("e0f1a2b3c4d5e6f70819a2b3c4d5e6f70819a2b3c4d5e6f70819"
                                 + "a2b3c4d5e6f7"),
                         Optional.of(Canonicalizer.semanticDigest(document)),
@@ -295,7 +295,7 @@ final class Outcomes {
     static ValidationOutcome minimum() {
         return new ValidationOutcome(
                 new ValidationOutcome.Identity("minimum.pdf", FROM_PDF,
-                        Optional.of(READER), Optional.of(MODEL), Optional.of("MINIMUM"),
+                        Optional.of(READER), Optional.of(Text.words(MODEL)), Optional.of("MINIMUM"),
                         Optional.of("11d2e3f405162738495a6b7c8d9e0f112233445566778899aabb"
                                 + "ccddeeff0011"),
                         Optional.empty(), Optional.empty(), Optional.empty(),
@@ -325,7 +325,7 @@ final class Outcomes {
                                                        String profile,
                                                        SemanticDocument document) {
         return new ValidationOutcome.Identity(input, Text.words(syntax), Optional.of(READER),
-                Optional.of(MODEL), Optional.of(profile),
+                Optional.of(Text.words(MODEL)), Optional.of(profile),
                 Optional.of(Corpus.sha256(Corpus.bytes("/conformance/kosit/" + INSTANCE))),
                 Optional.of(Canonicalizer.semanticDigest(document)),
                 Optional.of(Canonicalizer.documentDigest(document)),

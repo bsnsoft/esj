@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.rules;
 
+import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.model.MinorUnits;
 import de.bsnsoft.esj.model.Registry;
 import java.util.Optional;
@@ -61,10 +62,14 @@ public interface RulePackSource {
      * reports a value exceeding it, a policy that rounds to it — reads the numbers here, so
      * that it decides against the same snapshot the rules of the pack do.
      *
+     * <p>The method is a preview, like {@link MinorUnits} itself: it may change in any
+     * minor release.
+     *
      * @return the minor units, empty for a pack whose edition bounds every term by a
      *         constant
      * @throws RulePackException if the snapshot is not in this build
      */
+    @Preview
     default Optional<MinorUnits> currencyMinorUnits() {
         return Optional.empty();
     }

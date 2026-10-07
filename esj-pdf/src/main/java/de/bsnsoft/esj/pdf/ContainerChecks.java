@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.pdf;
 
+import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
@@ -30,7 +31,11 @@ import java.util.Set;
  * properties it defines, the relationship an associated file is declared with and the
  * conventional attachment names — come from the public Factur-X and ZUGFeRD
  * specifications; {@code docs/pdf-input.md} records where each of them was taken from.
+ *
+ * <p>The class is a preview: the command line reports its findings, and the class may
+ * change in any minor release.
  */
+@Preview
 public final class ContainerChecks {
 
     /** The semantic path of BT-24, the specification identifier of the invoice. */

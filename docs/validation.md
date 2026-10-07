@@ -182,7 +182,7 @@ per edition (`esj --list-packs`). The pack of the default edition:
 | Verified against | the CEN/TC 434 validation artefacts, release 1.3.16 |
 
 `1.3.16` is the release of the artefacts the pack was *measured against*. The pack
-`en16931-2026/0.1` has no release behind it ([`editions.md`](editions.md#what-works-for-a-2026-document-today)).
+`en16931-2026/0.1`, a preview like its edition, has no release behind it ([`editions.md`](editions.md#what-works-for-a-2026-document-today)).
 
 ### The rule language, in short
 

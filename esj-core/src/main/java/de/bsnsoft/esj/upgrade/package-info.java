@@ -14,5 +14,11 @@
  * where the target edition has no address for a value, the run refuses and names every
  * such path, and a caller who accepts the loss names the paths that may be dropped and
  * finds each of them in the report.
+ *
+ * <p>The package is a preview, like the support of the later edition it moves documents
+ * to: it may change in any minor release.
  */
+@Preview
 package de.bsnsoft.esj.upgrade;
+
+import de.bsnsoft.esj.Preview;

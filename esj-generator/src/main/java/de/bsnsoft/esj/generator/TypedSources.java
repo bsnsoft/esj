@@ -34,7 +34,7 @@ import java.util.TreeSet;
  * editions would offer accessors for terms the document's own edition does not have. The
  * types the views of every edition share — the value records, the handles, the two
  * exceptions and the runtime the accessors call — are not emitted; they lie in
- * {@code de.bsnsoft.esj.typed} and its {@code runtime} package and are
+ * {@code de.bsnsoft.esj.typed} and its {@code internal} package and are
  * imported where the view is emitted somewhere else.
  *
  * <p>The emitted text depends on the registry and on that package alone. It carries no
@@ -52,7 +52,7 @@ final class TypedSources {
     /** The package the view of the edition the repository defaults to is emitted into. */
     static final String DEFAULT_PACKAGE = BASE_PACKAGE;
 
-    private static final String RUNTIME_PACKAGE = BASE_PACKAGE + ".runtime";
+    private static final String RUNTIME_PACKAGE = BASE_PACKAGE + ".internal";
 
     /** The type that opens a view and an editor over a document of one edition. */
     private static final String ENTRY_POINT = "En16931";
@@ -117,6 +117,9 @@ final class TypedSources {
     Map<String, String> sources() {
         Map<String, String> files = new LinkedHashMap<>();
         files.put(ENTRY_POINT + ".java", entryPointSource());
+        if (!typedPackage.equals(DEFAULT_PACKAGE)) {
+            files.put("package-info.java", packageInfoSource());
+        }
         List<Group> groups = groups();
         for (Group group : groups) {
             files.put(group.typeName() + ".java", interfaceSource(group));
@@ -125,6 +128,47 @@ final class TypedSources {
             files.put(Naming.editName(group.typeName()) + ".java", editSource(group));
         }
         return files;
+    }
+
+    /**
+     * Emits the package comment of a view that is emitted into a package of its own.
+     *
+     * <p>The package of the default edition carries a comment written by hand, which says
+     * what the shared types around the view are, so nothing is emitted for it. Where the
+     * registry describes an edition this project ships as a preview
+     * ({@code Registry.isPreview()}), the package is marked as one.
+     *
+     * @return the source of {@code package-info.java}
+     */
+    private String packageInfoSource() {
+        boolean preview = registry.isPreview();
+        StringBuilder out = new StringBuilder(header);
+        out.append("\n");
+        out.append("/**\n");
+        out.append(JavaText.wrap("", " * ", "The typed view of "
+                + JavaText.escape(registry.edition()) + ", generated from the registry of that"
+                + " edition: {@link " + ENTRY_POINT + "} turns a semantic"
+                + " document of the edition into a view for reading and opens an editor for"
+                + " writing."));
+        out.append(" *\n");
+        out.append(JavaText.wrap("", " * <p>", "The value records, the handles and the"
+                + " exceptions the view shares with the views of the other editions lie in"
+                + " {@code " + BASE_PACKAGE + "}."));
+        if (preview) {
+            out.append(" *\n");
+            out.append(JavaText.wrap("", " * <p>", "The package is a preview, like the support"
+                    + " of this project for the edition: it may change in any minor release."));
+        }
+        out.append(" */\n");
+        if (preview) {
+            out.append("@Preview\n");
+        }
+        out.append("package ").append(typedPackage).append(";\n");
+        if (preview) {
+            out.append("\n");
+            out.append("import de.bsnsoft.esj.Preview;\n");
+        }
+        return out.toString();
     }
 
     /**

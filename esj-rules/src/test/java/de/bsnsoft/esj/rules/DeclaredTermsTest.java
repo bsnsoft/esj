@@ -2,7 +2,7 @@ package de.bsnsoft.esj.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,7 @@ class DeclaredTermsTest {
     @Test
     void everyRuleDeclaresTheTermsItReadsAndNoOthers() {
         List<String> wrong = new ArrayList<>();
-        for (RuleDefinition rule : En16931.pack().rules()) {
+        for (RuleDefinition rule : En16931Pack.pack().rules()) {
             Set<String> addressed = addressed(rule);
             Set<String> declared = new TreeSet<>(rule.terms());
             Set<String> phantom = new TreeSet<>(declared);

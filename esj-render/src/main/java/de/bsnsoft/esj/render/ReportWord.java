@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.render;
 
-import de.bsnsoft.esj.report.Phrase;
+import de.bsnsoft.esj.internal.report.Phrase;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,15 +11,15 @@ import java.util.Locale;
  * than twice in two layouts. What is <em>not</em> here is anything a run produced: a
  * verdict, a rule identifier, a message of an artefact, a pack name and the label a pack
  * gives one of its components travel in the
- * {@link de.bsnsoft.esj.report.ValidationOutcome} as
- * {@link de.bsnsoft.esj.report.Text.Words} and are printed as they stand. A
+ * {@link de.bsnsoft.esj.internal.report.ValidationOutcome} as
+ * {@link de.bsnsoft.esj.internal.report.Text.Words} and are printed as they stand. A
  * report that translated a finding of a rule set would be rewording somebody else's rule,
  * and a report that translated the verdict would give a pipeline a second spelling of a
  * word it branches on.
  *
  * <p>What a run writes in this project's own words — the label of a check row it invented,
  * the reason a layer did not run, the line under the verdict — is a
- * {@link de.bsnsoft.esj.report.Text.Phrased} text, and {@link #of(Phrase)}
+ * {@link de.bsnsoft.esj.internal.report.Text.Phrased} text, and {@link #of(Phrase)}
  * is where each of those sentences is written in every language this module knows. A
  * report half in one language and half in another is the thing that split keeps out.
  *
@@ -201,6 +201,9 @@ enum ReportWord {
     /** The XSLT path of the vendored stylesheets, named by the token of the option. */
     READER_XSLT("%1$s — the XSLT path of the vendored visualization stylesheets",
             "%1$s — der XSLT-Weg der mitgelieferten Visualisierungs-Stylesheets"),
+
+    /** An edition this project ships as a preview. One argument: the edition. */
+    EDITION_PREVIEW("%1$s (preview)", "%1$s (Vorschau)"),
 
     /** A component of the pack that validates another syntax than this document. */
     SKIPPED_OTHER_SYNTAX("it validates no document of this syntax",
@@ -416,6 +419,7 @@ enum ReportWord {
             case SYNTAX_FROM_ATTACHMENT -> SYNTAX_FROM_ATTACHMENT;
             case READER_STREAMING -> READER_STREAMING;
             case READER_XSLT -> READER_XSLT;
+            case EDITION_PREVIEW -> EDITION_PREVIEW;
             case SKIPPED_OTHER_SYNTAX -> SKIPPED_OTHER_SYNTAX;
             case SKIPPED_OTHER_PROFILE -> SKIPPED_OTHER_PROFILE;
             case SKIPPED_SCHEMA_INVALID -> SKIPPED_SCHEMA_INVALID;

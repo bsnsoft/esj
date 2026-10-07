@@ -100,7 +100,7 @@ class En16931PackTest {
 
     @Test
     void theManifestNamesTheFilesTheRulesAreIn() {
-        RulePack pack = En16931.pack();
+        RulePack pack = En16931Pack.pack();
 
         assertEquals(List.of("rules/br-cl.json", "rules/br-co.json", "rules/br-dec.json",
                         "rules/br.json", "rules/vat-ae.json", "rules/vat-e.json", "rules/vat-g.json",
@@ -113,7 +113,7 @@ class En16931PackTest {
 
     @Test
     void everyCodeListTheManifestNamesIsLoadedAndSaysWhereItCameFrom() {
-        RulePack pack = En16931.pack();
+        RulePack pack = En16931Pack.pack();
 
         assertEquals(pack.codeLists().keySet(), Pack.ENGINE.codeLists().listIds());
         for (String listId : pack.codeLists().keySet()) {

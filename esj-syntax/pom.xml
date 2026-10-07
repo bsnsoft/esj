@@ -22,7 +22,20 @@
     module packages and executes.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.syntax</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
+    <!--
+      The core of the format, for the one type of it this module names itself: the
+      annotation that marks the preview types of pack fetching. It arrives with esj-xr.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!--
       The secure XML front door of this project and the XSLT processor that runs the
       compiled Schematron artefacts both live in esj-xr, which is where the parser and
@@ -32,6 +45,15 @@
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-xr</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!--
+      Saxon-HE, which compiles and runs the Schematron artefacts. It arrives with esj-xr and
+      is declared here as well, because this module calls it directly. Mozilla Public
+      License 2.0; see the NOTICE file of the repository.
+    -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>Saxon-HE</artifactId>
     </dependency>
 
     <dependency>

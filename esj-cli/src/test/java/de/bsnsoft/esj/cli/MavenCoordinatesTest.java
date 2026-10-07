@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -20,11 +22,12 @@ import org.junit.jupiter.api.Test;
 
 /**
  * What a build of someone else writes down: the modules this project publishes, the bill of
- * materials that carries their version, and the coordinates the pages print. Three things can
- * go stale between one release and the next without any other test noticing — a module added
- * to the reactor and forgotten in the bill of materials, the command line tool slipping into
- * the deployment although it ships as a release asset, and a version left behind on a page.
- * This test holds all three against {@code pom.xml}.
+ * materials that carries their version, the name each jar has on the module path, and the
+ * coordinates the pages print. Four things can go stale between one release and the next
+ * without any other test noticing — a module added to the reactor and forgotten in the bill of
+ * materials, one of the two tools slipping into the deployment although it is no library, a jar
+ * without the name the module system knows it by, and a version left behind on a page. This
+ * test holds all four against {@code pom.xml} and the jars of the build.
  */
 class MavenCoordinatesTest {
 
@@ -52,8 +55,15 @@ class MavenCoordinatesTest {
     private static final Pattern SHORT_COORDINATE =
             Pattern.compile("de\\.bsnsoft\\.esj:([A-Za-z0-9._-]+)(?::([0-9][A-Za-z0-9.+-]*))?");
 
-    /** The module that is built like every other and is on no repository. */
-    private static final String THE_TOOL = "esj-cli";
+    /**
+     * The modules that are built like every other and are on no repository: the command line
+     * tool, which ships as the archives of a release, and the generator, a build tool of this
+     * repository.
+     */
+    private static final Set<String> THE_TOOLS = Set.of("esj-cli", "esj-generator");
+
+    /** What every published module is called on the module path, before its own suffix. */
+    private static final String MODULE_NAME_PREFIX = "de.bsnsoft.esj.";
 
     /** The module that carries the version of the others. */
     private static final String THE_BOM = "esj-bom";
@@ -63,9 +73,7 @@ class MavenCoordinatesTest {
 
     @Test
     void theBillOfMaterialsCarriesEveryPublishedModule() {
-        Set<String> published = new LinkedHashSet<>(modules());
-        published.remove(THE_TOOL);
-        published.remove(THE_BOM);
+        Set<String> published = published();
 
         Set<String> managed = new LinkedHashSet<>();
         String bom = read(repository().resolve(THE_BOM).resolve("pom.xml"));
@@ -102,9 +110,7 @@ class MavenCoordinatesTest {
         assertEquals(Set.of("de.bsnsoft.esj"), groups, "managed groups");
         assertFalse(managed.contains("<scope>import</scope>"), "no bill of materials of others");
 
-        Set<String> published = new LinkedHashSet<>(modules());
-        published.remove(THE_TOOL);
-        published.remove(THE_BOM);
+        Set<String> published = published();
         Set<String> artifacts = new LinkedHashSet<>();
         Matcher artifact = ARTIFACT_ID.matcher(managed);
         while (artifact.find()) {
@@ -120,7 +126,7 @@ class MavenCoordinatesTest {
     }
 
     @Test
-    void theDeploymentLeavesOutTheCommandLineTool() {
+    void theDeploymentLeavesOutTheTwoTools() {
         String root = read(repository().resolve("pom.xml"));
         Set<String> excluded = new LinkedHashSet<>();
         Matcher exclusion = EXCLUDED.matcher(block(root, "excludeArtifacts"));
@@ -128,7 +134,34 @@ class MavenCoordinatesTest {
             excluded.add(exclusion.group(1));
         }
 
-        assertEquals(Set.of(THE_TOOL), excluded, "the deployment leaves out the tool and nothing else");
+        assertEquals(THE_TOOLS, excluded, "the deployment leaves out the tools and nothing else");
+    }
+
+    /**
+     * Every published jar names the module it is on the module path, in its manifest, as
+     * {@code de.bsnsoft.esj} followed by its artifact identifier without the {@code esj-}
+     * prefix. Without the entry the module system derives a name from the file name, and a
+     * renamed file would be another module.
+     */
+    @Test
+    void everyPublishedJarNamesItsModule() throws IOException {
+        Path repository = repository();
+        String version = System.getProperty(VERSION_PROPERTY);
+        assertTrue(version != null && !version.isBlank(), VERSION_PROPERTY + " is not set");
+        Set<String> published = published();
+        assertTrue(published.size() >= 10, "found only " + published.size() + " published modules");
+        for (String module : published) {
+            Path jar = repository.resolve(module).resolve("target")
+                    .resolve(module + "-" + version + ".jar");
+            assertTrue(Files.isRegularFile(jar), jar + " is written when " + module + " is packaged");
+            try (JarFile file = new JarFile(jar.toFile())) {
+                Manifest manifest = file.getManifest();
+                assertTrue(manifest != null, jar + " carries a manifest");
+                assertEquals(MODULE_NAME_PREFIX + module.substring("esj-".length()),
+                        manifest.getMainAttributes().getValue("Automatic-Module-Name"),
+                        "the module name of " + module);
+            }
+        }
     }
 
     /**
@@ -167,7 +200,7 @@ class MavenCoordinatesTest {
                     String version = found.group(2);
                     if (!modules.contains(artifact)) {
                         wrong.add(name + ": " + artifact + " is no module of this project");
-                    } else if (THE_TOOL.equals(artifact)) {
+                    } else if (THE_TOOLS.contains(artifact)) {
                         wrong.add(name + ": " + artifact + " is on no repository");
                     }
                     if (version != null && !version.equals(released) && !version.equals(snapshot)
@@ -182,6 +215,14 @@ class MavenCoordinatesTest {
 
         assertEquals(List.of(), wrong, "coordinates a reader would copy");
         assertTrue(coordinates >= 3, "found only " + coordinates + " coordinates; has the form changed?");
+    }
+
+    /** The modules a build of someone else can depend on, in the order of the aggregator. */
+    private static Set<String> published() {
+        Set<String> published = new LinkedHashSet<>(modules());
+        published.removeAll(THE_TOOLS);
+        published.remove(THE_BOM);
+        return published;
     }
 
     /** The modules of the aggregator, in the order it names them. */

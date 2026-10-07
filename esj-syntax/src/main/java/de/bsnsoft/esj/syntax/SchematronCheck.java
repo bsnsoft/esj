@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XmlFrontDoor;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import net.sf.saxon.trans.XPathException;
  * the file came from and what is in it — {@link Pack#cacheKey(String)} — and never the
  * identity a pack declares about itself, so no supplied pack can answer for a packaged
  * one. The processor is the one of
- * {@link XmlFrontDoor}: no extension function, no {@code xsl:evaluate}, no protocol that
+ * {@code XmlFrontDoor}: no extension function, no {@code xsl:evaluate}, no protocol that
  * may be dereferenced, and a resolver that answers nothing, because these artefacts
  * include no file and must not begin to.
  *

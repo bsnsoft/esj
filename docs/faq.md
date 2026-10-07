@@ -184,7 +184,7 @@ esj render invoice.esj.json --out invoice.pdf   # the letter layout puts it in t
 esj render examples/b2c-gross.esj.json --extension b2c --template examples/templates/gross.json --out invoice.pdf
 ```
 
-**How do I lift an invoice to EN 16931-1:2026?**
+**How do I lift an invoice to EN 16931-1:2026, the edition supported as a preview?**
 ```sh
 esj upgrade invoice.esj.json --to 2026 --out invoice-2026.esj.json   # names every open point, never rounds
 ```
@@ -266,7 +266,7 @@ DerivationReport report = invoice.derive(Totals.STANDARD);
 
 **How do I check the business rules in Java?**
 ```java
-RuleEngine engine = En16931.engine(Registry.en16931());
+RuleEngine engine = En16931Pack.engine(Registry.en16931());
 
 List<RuleFinding> findings = engine.evaluate(document);
 boolean rejected = findings.stream().anyMatch(RuleFinding::fatal);

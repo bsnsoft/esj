@@ -2,7 +2,7 @@ package de.bsnsoft.esj.invoice;
 
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.typed.build.InvoiceRules;
 import de.bsnsoft.esj.typed.build.RuleViolation;
 import java.util.Objects;
@@ -23,10 +23,10 @@ import java.util.Objects;
 public final class Rules {
 
     /** The identifier of the rule pack the domain API runs by default. */
-    public static final String PACK_ID = En16931.PACK_ID;
+    public static final String PACK_ID = En16931Pack.PACK_ID;
 
     /** The version of that pack, which is the release it was verified against. */
-    public static final String PACK_VERSION = En16931.VERSION;
+    public static final String PACK_VERSION = En16931Pack.VERSION;
 
     private Rules() {
     }
@@ -64,7 +64,7 @@ public final class Rules {
     /** Compiles the bundled pack on first use, and not when the class is loaded. */
     private static final class Bundled {
 
-        private static final RuleEngine ENGINE = En16931.engine(Registry.en16931());
+        private static final RuleEngine ENGINE = En16931Pack.engine(Registry.en16931());
 
         private Bundled() {
         }

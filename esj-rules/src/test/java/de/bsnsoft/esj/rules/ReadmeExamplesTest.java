@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.json.EsjReader;
 import de.bsnsoft.esj.model.Registry;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -42,7 +42,7 @@ class ReadmeExamplesTest {
         SemanticDocument document = example("standard-invoice");
 
         // docs/java-api.md: Checking the business rules
-        RuleEngine engine = En16931.engine(Registry.en16931());
+        RuleEngine engine = En16931Pack.engine(Registry.en16931());
 
         List<RuleFinding> findings = engine.evaluate(document);
         boolean rejected = findings.stream().anyMatch(RuleFinding::fatal);
@@ -54,9 +54,9 @@ class ReadmeExamplesTest {
     @Test
     void compileThePackFromItsThreeParts() {
         // docs/java-api.md: Checking the business rules
-        RulePack pack = RulePacks.bundled(En16931.PACK_ID, En16931.VERSION);
+        RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.VERSION);
         RuleEngine other = RuleEngine.compile(pack, Registry.en16931(),
-                CodeLists.bundled(pack), En16931.javaRules());
+                CodeLists.bundled(pack), En16931Pack.javaRules());
 
         assertEquals("en16931", other.pack().id());
         assertEquals("1.3.16", other.pack().version());
