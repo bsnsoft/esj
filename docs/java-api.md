@@ -608,6 +608,9 @@ ValidationStatus modelStatus = model.status();
 List<Finding> modelFindings = model.findings();
 ```
 
+One layer checked is not three, so `modelStatus` is `INDETERMINATE` here whatever the findings
+say; the verdict over the imported document is the merge of all three layers.
+
 Canonicalizing is what makes two syntaxes comparable. The semantic digest covers `values` and
 nothing else, so two documents built from the same invoice in different syntaxes meet on it
 while their `source` members, and therefore their document digests, differ.

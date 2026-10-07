@@ -10,8 +10,10 @@ the data they ship.
 
 ## The format
 
-`SPEC.md` 1.0 fixes the document, the path grammar, the value shape, the canonical form and both
-digests. A 1.x reader reads every 1.y document with y ≤ x, and reads documents of format 0.1.
+The format is 0.1 until 1.0.0-rc.1, which raises it to 1.0 unchanged unless review finds a
+defect. `SPEC.md` 1.0 fixes the document, the path grammar, the value shape, the canonical form
+and both digests. A 1.x reader reads every 1.y document with y ≤ x, and reads documents of
+format 0.1.
 The semantic digest does not depend on the format version (section 8.2); the document digest
 covers the `version` member (section 8.3), so a 0.1 document and its 1.0 rewrite have different
 document digests. Finding codes keep their meaning once released (section 9.6), and an extension
@@ -82,5 +84,6 @@ A release may tighten a resource limit or refuse a new kind of hostile input in 
 
 ## Other implementations
 
-The TypeScript and C# bindings implement `SPEC.md`, not the Java API, carry version numbers of
-their own and are measured against `conformance/fixtures`.
+The TypeScript and C# bindings implement `SPEC.md`, not the Java API. They carry the version of
+this project, and their compatibility is that of the format: they are measured against
+`conformance/fixtures`.
