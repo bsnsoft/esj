@@ -486,7 +486,7 @@ final class Table {
     private float closingFigureLeft(Closing closing) {
         int column = closing.column();
         Fonts.Face face = sheet.fonts().bold();
-        float value = face.width(face.showable(closing.value()), SIZE);
+        float value = face.width(face.line(closing.value()), SIZE);
         return Math.min(columnX[column], columnX[column] + columnWidth[column] - value);
     }
 
@@ -505,7 +505,7 @@ final class Table {
         if (room <= 0) {
             return List.of();
         }
-        if (face.width(written, SIZE) <= room) {
+        if (written.indexOf('\n') < 0 && face.width(written, SIZE) <= room) {
             return List.of(written);
         }
         List<String> lines = Sheet.wrap(written, face, SIZE, room);
@@ -584,7 +584,7 @@ final class Table {
         }
         // The figure stands beside the last line of its label, which is the line a reader
         // reads it off, and in the column the figures above it stand in.
-        writeAt(face.showable(closing.value()), closing.column(),
+        writeAt(face.line(closing.value()), closing.column(),
                 top - (block - height) - SIZE, face, SIZE, sheet.palette().text());
         sheet.down(block);
     }

@@ -92,6 +92,39 @@ enum Word {
             "the bank identifier of the account is not a BIC, so the code carries none",
             "Die Bankkennung des Kontos ist kein BIC; der Code führt keine"),
 
+    /**
+     * Says that the name of the beneficiary holds a character the code cannot carry and
+     * that the letter carries no code for that reason.
+     */
+    PAYMENT_CODE_NAME_NOT_WRITABLE(
+            "the name of the beneficiary holds a line break or another control character,"
+                    + " which the code cannot carry, so there is no code",
+            "Der Name des Zahlungsempfängers enthält einen Zeilenumbruch oder ein anderes"
+                    + " Steuerzeichen, das der Code nicht aufnimmt; es gibt deshalb keinen"
+                    + " Code"),
+
+    /**
+     * Says that the remittance information holds a character the code cannot carry and
+     * that the letter carries no code for that reason.
+     */
+    PAYMENT_CODE_REMITTANCE_NOT_WRITABLE(
+            "the remittance information holds a line break or another control character,"
+                    + " which the code cannot carry, so there is no code",
+            "Der Verwendungszweck enthält einen Zeilenumbruch oder ein anderes Steuerzeichen,"
+                    + " das der Code nicht aufnimmt; es gibt deshalb keinen Code"),
+
+    /**
+     * Says that the invoice number, which the code would carry as the reference, holds a
+     * character the code cannot carry and that the letter carries no code for that reason.
+     */
+    PAYMENT_CODE_NUMBER_NOT_WRITABLE(
+            "the invoice number, which the code would carry as the reference, holds a line"
+                    + " break or another control character, which the code cannot carry,"
+                    + " so there is no code",
+            "Die Rechnungsnummer, die der Code als Verwendungszweck führen würde, enthält"
+                    + " einen Zeilenumbruch oder ein anderes Steuerzeichen, das der Code"
+                    + " nicht aufnimmt; es gibt deshalb keinen Code"),
+
     /** The heading over the payee. */
     PAYEE("Payee", "Zahlungsempfänger"),
 

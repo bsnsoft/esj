@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -362,6 +364,102 @@ class RenderCommandTest {
         assertEquals(ExitCode.LIMIT, run.exitCode(), run.err());
         assertTrue(run.err().contains("--max-pages"), run.err());
         assertFalse(Files.exists(target), "no file where there is no rendering");
+    }
+
+    /**
+     * The HTML page is held to {@code --max-output-bytes} as every other document this tool
+     * writes is: a page past it is exit code 7, nothing is written, and the message names
+     * the switch. The page is stopped where it reached the bound rather than finished.
+     */
+    @Test
+    void anHtmlPagePastTheOutputBoundIsALimitAndNotAVerdict() {
+        Path target = directory.resolve("invoice.html");
+
+        Cli.Run run = Cli.run("render", example("standard-invoice"), "--html",
+                "--max-output-bytes", "10k", "--out", target.toString());
+
+        assertEquals(ExitCode.LIMIT, run.exitCode(), run.err());
+        assertTrue(run.err().contains("--max-output-bytes"), run.err());
+        assertFalse(Files.exists(target), "no file where there is no rendering");
+    }
+
+    /** The bound is the size of the page and not less: a page of that size is written. */
+    @Test
+    void anHtmlPageAtTheOutputBoundIsWritten() {
+        Cli.Run whole = Cli.run(render(example("standard-invoice"), new String[] {"--html"}));
+        assertEquals(ExitCode.SUCCESS, whole.exitCode(), whole.err());
+        String bound = Integer.toString(whole.out().length);
+
+        Cli.Run at = Cli.run(render(example("standard-invoice"),
+                new String[] {"--html", "--max-output-bytes", bound}));
+        Cli.Run under = Cli.run(render(example("standard-invoice"),
+                new String[] {"--html", "--max-output-bytes",
+                    Integer.toString(whole.out().length - 1)}));
+
+        assertEquals(ExitCode.SUCCESS, at.exitCode(), at.err());
+        assertArrayEquals(whole.out(), at.out(), "the same page");
+        assertEquals(ExitCode.LIMIT, under.exitCode(), under.err());
+        assertEquals(0, under.out().length, "and nothing of it one byte under that");
+    }
+
+    /**
+     * A line feed is legal in every text of a document, the invoice number among them,
+     * which stands in the footer of every page, and the buyer reference, which stands in
+     * the reference line of the letter. Both layouts draw such a document, the HTML page
+     * shows it, and the validation report renders it: it is no internal error.
+     */
+    @Test
+    void anInvoiceNumberOnTwoLinesIsRenderedInEveryForm() {
+        Path file = directory.resolve("two-lines.esj.json");
+        String document = new String(Fixtures.bytes("examples/smallest-valid.esj.json"),
+                StandardCharsets.UTF_8)
+                .replace("\"/BT-1\": \"RE-2026-0002\"", "\"/BT-1\": \"INV\\n2026-1\"")
+                .replace("\"/BT-9\"", "\"/BT-10\": \"REF\\r\\n0815\",\n    \"/BT-9\"");
+        write(file, document);
+        assertTrue(document.contains("INV\\n2026-1") && document.contains("REF\\r\\n0815"),
+                document);
+
+        for (String[] options : List.of(new String[0], new String[] {"--layout", "generic"},
+                new String[] {"--layout", "letter"}, new String[] {"--html"})) {
+            Cli.Run run = Cli.run(render(file.toString(), options));
+            assertEquals(ExitCode.SUCCESS, run.exitCode(),
+                    String.join(" ", options) + ": " + run.err());
+        }
+        for (String format : List.of("pdf", "html")) {
+            Cli.Run run = Cli.run("validate", file.toString(), "--report", "-",
+                    "--report-format", format);
+            assertEquals(ExitCode.SUCCESS, run.exitCode(), format + ": " + run.err());
+        }
+        Path cii = directory.resolve("two-lines.xml");
+        Cli.Run converted = Cli.run("convert", file.toString(), "--to", "cii",
+                "--out", cii.toString());
+        assertEquals(ExitCode.SUCCESS, converted.exitCode(), converted.err());
+        Cli.Run fromCii = Cli.run(render(cii.toString(), new String[0]));
+        assertEquals(ExitCode.SUCCESS, fromCii.exitCode(),
+                "the same invoice number read from a cross industry invoice: " + fromCii.err());
+    }
+
+    /**
+     * A template refers to files beside it, and a symbolic link beside it that points out
+     * of its directory is not followed: the refusal names the file, and it is the code of
+     * a template that is not one.
+     */
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void aTemplateThatLinksOutOfItsDirectoryIsRefused() throws IOException {
+        String template = templates();
+        Path letterhead = Path.of(template).resolveSibling("letterhead.pdf");
+        Path outside = Files.write(directory.resolve("elsewhere.pdf"),
+                Files.readAllBytes(letterhead));
+        Files.delete(letterhead);
+        Files.createSymbolicLink(letterhead, outside);
+
+        Cli.Run run = Cli.run("render", example("minimal"), "--template", template,
+                "--out", directory.resolve("out.pdf").toString());
+
+        assertEquals(ExitCode.INPUT, run.exitCode(), run.err());
+        assertTrue(run.err().contains("letterhead.pdf") && run.err().contains("link"),
+                run.err());
     }
 
     /** Copies the example templates into a directory of their own and names the file. */

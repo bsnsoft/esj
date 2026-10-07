@@ -902,7 +902,7 @@ final class LetterLayout extends InvoiceLayout {
     /** Returns how many columns a field takes: two where one is too narrow for its value. */
     private int span(Field field, float column) {
         Fonts.Face face = sheet.fonts().regular();
-        return face.width(face.showable(field.value()), INFO_SIZE) > column ? 2 : 1;
+        return Sheet.widestLine(face.showable(field.value()), face, INFO_SIZE) > column ? 2 : 1;
     }
 
     /** Returns how wide a cell of a span is, the columns it joins and the air between them. */
@@ -1287,7 +1287,8 @@ final class LetterLayout extends InvoiceLayout {
                 sheet.rule(x, sheet.right(), sheet.y(), palette.rule());
                 sheet.down(3f);
             }
-            float value = face.width(face.showable(row.value()), size);
+            String figure = face.line(row.value());
+            float value = face.width(figure, size);
             List<String> label = label(row, face, size, width - value - 10f);
             float height = label.size() * Sheet.lineHeight(size);
             sheet.require(height
@@ -1297,8 +1298,7 @@ final class LetterLayout extends InvoiceLayout {
                 sheet.show(label.get(line), x, top - line * Sheet.lineHeight(size) - size,
                         face, size, ink);
             }
-            sheet.show(face.showable(row.value()), sheet.right() - value, top - size, face,
-                    size, ink);
+            sheet.show(figure, sheet.right() - value, top - size, face, size, ink);
             sheet.down(height + ROW_GAP);
         }
     }
@@ -1317,7 +1317,7 @@ final class LetterLayout extends InvoiceLayout {
     private float height(Row row, float width) {
         float size = size(row);
         Fonts.Face face = row.due() ? sheet.fonts().bold() : sheet.fonts().regular();
-        float value = face.width(face.showable(row.value()), size);
+        float value = face.width(face.line(row.value()), size);
         return label(row, face, size, width - value - 10f).size() * Sheet.lineHeight(size)
                 + ROW_GAP + (row.due() ? 6f : 0f);
     }
@@ -1555,22 +1555,26 @@ final class LetterLayout extends InvoiceLayout {
         if (!letter.paymentCode() || !readerPays()) {
             return null;
         }
-        PaymentCode code = PaymentCode.of(document).orElse(null);
-        if (code != null) {
-            for (PaymentCode.Remark remark : code.remarks()) {
-                remarks.add(new Field("", Word.PAYMENT_CODE.in(language),
-                        said(remark).in(language), false));
-            }
+        PaymentCode.Decision decision = PaymentCode.decide(document);
+        PaymentCode code = decision.code().orElse(null);
+        List<PaymentCode.Remark> said = code != null ? code.remarks()
+                : decision.withheld().map(List::of).orElse(List.of());
+        for (PaymentCode.Remark remark : said) {
+            remarks.add(new Field("", Word.PAYMENT_CODE.in(language),
+                    said(remark).in(language), false));
         }
         return code;
     }
 
-    /** Returns what the closing heading says about a difference of the code. */
+    /** Returns what the closing heading says about a difference of the code, or its absence. */
     private static Word said(PaymentCode.Remark remark) {
         return switch (remark) {
             case BENEFICIARY_CUT -> Word.PAYMENT_CODE_NAME_CUT;
             case REMITTANCE_REPLACED -> Word.PAYMENT_CODE_REMITTANCE_REPLACED;
             case BIC_LEFT_OUT -> Word.PAYMENT_CODE_BIC_LEFT_OUT;
+            case NAME_NOT_WRITABLE -> Word.PAYMENT_CODE_NAME_NOT_WRITABLE;
+            case REMITTANCE_NOT_WRITABLE -> Word.PAYMENT_CODE_REMITTANCE_NOT_WRITABLE;
+            case NUMBER_NOT_WRITABLE -> Word.PAYMENT_CODE_NUMBER_NOT_WRITABLE;
         };
     }
 
