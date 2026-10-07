@@ -37,8 +37,8 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 class Edition2026RuleSchemaTest {
 
-    private static final String PACK = "packs/" + En16931V2026.PACK_ID + "/"
-            + En16931V2026.VERSION + "/";
+    private static final String PACK = "packs/" + En16931V2026Pack.PACK_ID + "/"
+            + En16931V2026Pack.VERSION + "/";
 
     private static Schema schema;
 
