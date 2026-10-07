@@ -904,7 +904,7 @@ which must leave the tree unchanged; `.github/workflows/ci.yml` fails where it d
 |---|---|---|
 | format version | the `version` member of every document, `SPEC.md` | `0.1` |
 | semantic model edition | the `semanticModel` member of every document, the `edition` member of the registry | `EN16931-1:2017+A1:2019/AC:2020`, `EN16931-1:2026` |
-| artifact version | `pom.xml` | `0.9.5` |
+| artifact version | `pom.xml` | `0.9.6-SNAPSHOT` |
 
 The format version follows `MAJOR.MINOR`; a reader rejects a version it does not implement. A reader
 needs no registry for the edition a document names; the model layers then report
