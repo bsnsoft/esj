@@ -3,7 +3,7 @@ package de.bsnsoft.esj.render;
 import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
-import de.bsnsoft.esj.xr.XmlFrontDoor;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;

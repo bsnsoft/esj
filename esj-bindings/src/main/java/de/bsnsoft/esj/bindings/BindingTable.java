@@ -33,14 +33,16 @@ import java.util.Set;
  * source the facts were taken from, its release, and the meaning of every flag;
  * {@link #flagDefinitions()} carries those meanings as data.
  *
- * <p>What this class publishes is the table as it is written. The compiled form the
- * reader matches a document against is built from it and is not part of the API: a
- * caller that wants to read a document calls {@link StreamingReader}, and a caller that
- * wants to know what the project claims about a syntax reads the facts here.
+ * <p>The class is the table as it is written, and it is not part of the API: the reader
+ * and the writers of this package are built from it. A caller that wants to read a
+ * document calls {@link StreamingReader}, a caller that wants to know which edition a
+ * writer writes asks {@link CiiWriter#supports(String)} or
+ * {@link UblWriter#supports(String)}, and the facts themselves are the files under
+ * {@code model/bindings}.
  *
  * <p>Instances are immutable and safe to share between threads.
  */
-public final class BindingTable {
+final class BindingTable {
 
     /** The largest binding table this class reads, in bytes. */
     private static final int MAX_TABLE_BYTES = 8 * 1024 * 1024;

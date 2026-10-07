@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XmlFrontDoor;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import de.bsnsoft.esj.xr.XrFormatException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,7 +38,7 @@ import org.xml.sax.InputSource;
  *
  * <p>It exists for packs whose publisher releases the Schematron but no compiled form that
  * may be redistributed, which {@code esj packs fetch} then compiles on the machine that
- * will run it. The compilation runs on the processor of {@link XmlFrontDoor}: no extension
+ * will run it. The compilation runs on the processor of {@code XmlFrontDoor}: no extension
  * function, no {@code xsl:evaluate}, no protocol that may be dereferenced, and a resolver
  * that answers the four stylesheets of the skeleton and nothing else. A schema that
  * includes another file is therefore refused rather than assembled: a recipe names every

@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
-import de.bsnsoft.esj.xr.XmlFrontDoor;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -53,7 +53,7 @@ import org.xml.sax.SAXParseException;
  * <p>The factory and the validator resolve schema references through {@link PackResolver}
  * and have external access to DTDs and schemas turned off, so nothing outside the pack is
  * read — not a reference inside a schema, and not an {@code xsi:schemaLocation} a
- * document names. The document itself is read with the parser of {@link XmlFrontDoor},
+ * document names. The document itself is read with the parser of {@code XmlFrontDoor},
  * which is the same door it came through.
  */
 final class XsdCheck {

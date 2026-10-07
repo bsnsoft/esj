@@ -127,6 +127,17 @@
     <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
     <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
     <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
+    <japicmp-maven-plugin.version>0.26.3</japicmp-maven-plugin.version>
+
+    <!--
+      The API check of the profile api-check: the release on Maven Central every library
+      module is compared with, whether an incompatible change fails the build, and the
+      modules that are not compared at all (the two tools set it to true). Until 1.0.0 the
+      check reports and does not fail; docs/releasing.md says how to read the report.
+    -->
+    <esj.api-baseline>0.9.4</esj.api-baseline>
+    <esj.api-check.break>false</esj.api-check.break>
+    <esj.api-check.skip>false</esj.api-check.skip>
   </properties>
 
   <dependencyManagement>
@@ -246,10 +257,24 @@
             <failIfNoSpecifiedTests>true</failIfNoSpecifiedTests>
           </configuration>
         </plugin>
+        <!--
+          Every jar names the module it is on the module path: esj.automatic-module-name,
+          set by each module, is de.bsnsoft.esj followed by the artifact identifier without
+          its esj- prefix. Without the entry the module system derives a name from the file
+          name, and that name would change with the file. MavenCoordinatesTest holds every
+          published jar to its name.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven-jar-plugin.version}</version>
+          <configuration>
+            <archive>
+              <manifestEntries>
+                <Automatic-Module-Name>${esj.automatic-module-name}</Automatic-Module-Name>
+              </manifestEntries>
+            </archive>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -329,6 +354,12 @@
             <failOnWarnings>true</failOnWarnings>
             <doclint>all</doclint>
             <notimestamp>true</notimestamp>
+            <!--
+              The API is what the Javadoc shows. A package whose name contains internal is
+              public because a module of this project needs it, not because a caller has
+              business with it, and its documentation is the source.
+            -->
+            <excludePackageNames>*.internal:*.internal.*</excludePackageNames>
           </configuration>
         </plugin>
       </plugins>
@@ -433,13 +464,75 @@
               <deploymentName>EN16931 Semantic JSON ${project.version}</deploymentName>
               <!--
                 esj-cli is the command line tool, and it ships as the archives of a GitHub
-                release rather than as a library (docs/install.md). It is built here like
-                every other module and is the one module the deployment leaves out.
+                release rather than as a library (docs/install.md). esj-generator is the
+                build tool that writes the checked-in sources of this repository and makes
+                no promise to anyone else. Both are built here like every other module and
+                are the two modules the deployment leaves out.
               -->
               <excludeArtifacts>
                 <excludeArtifact>esj-cli</excludeArtifact>
+                <excludeArtifact>esj-generator</excludeArtifact>
               </excludeArtifacts>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!--
+        Compares the public API of every library module with the release named by
+        esj.api-baseline, using japicmp on the jars: mvn -B -Papi-check verify. The report
+        is target/japicmp/api-check.html (and .md) in each module. What is not API is left
+        out: packages whose name contains internal, the preview packages of the 2026
+        edition and of the upgrade, the B2C overlay, and every element marked with
+        de.bsnsoft.esj.Preview. Until 1.0.0 the check only reports (esj.api-check.break).
+      -->
+      <id>api-check</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.siom79.japicmp</groupId>
+            <artifactId>japicmp-maven-plugin</artifactId>
+            <version>${japicmp-maven-plugin.version}</version>
+            <configuration>
+              <skip>${esj.api-check.skip}</skip>
+              <oldVersion>
+                <dependency>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${project.artifactId}</artifactId>
+                  <version>${esj.api-baseline}</version>
+                  <type>jar</type>
+                </dependency>
+              </oldVersion>
+              <newVersion>
+                <file>
+                  <path>${project.build.directory}/${project.build.finalName}.jar</path>
+                </file>
+              </newVersion>
+              <parameter>
+                <onlyModified>true</onlyModified>
+                <skipPomModules>true</skipPomModules>
+                <breakBuildOnBinaryIncompatibleModifications>${esj.api-check.break}</breakBuildOnBinaryIncompatibleModifications>
+                <breakBuildOnSourceIncompatibleModifications>${esj.api-check.break}</breakBuildOnSourceIncompatibleModifications>
+                <excludes>
+                  <exclude>*.internal.*</exclude>
+                  <exclude>*.v2026.*</exclude>
+                  <exclude>de.bsnsoft.esj.upgrade.*</exclude>
+                  <exclude>de.bsnsoft.esj.b2c.*</exclude>
+                  <exclude>@de.bsnsoft.esj.Preview</exclude>
+                </excludes>
+              </parameter>
+            </configuration>
+            <executions>
+              <execution>
+                <id>api-check</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>cmp</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

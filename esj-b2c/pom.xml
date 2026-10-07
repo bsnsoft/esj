@@ -23,6 +23,10 @@
     report per run.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.b2c</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <!--
       The document, the path and the registry are types of the core module, and the public

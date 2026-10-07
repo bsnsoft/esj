@@ -53,7 +53,7 @@
  * {@code de.bsnsoft.esj.typed.v2026}, with an entry point of its own, and a
  * build may leave that edition out — which is why the package is named here and not
  * linked: a link to it would not resolve in a distribution assembled without it. What the two share is not generated and lies here and
- * in {@link de.bsnsoft.esj.typed.runtime}: the derivation policy with its
+ * in {@code de.bsnsoft.esj.typed.internal}: the derivation policy with its
  * options, report and exception, the two value records, the two exceptions of the view,
  * the three handle interfaces, and the resolvers a generated view calls.
  *

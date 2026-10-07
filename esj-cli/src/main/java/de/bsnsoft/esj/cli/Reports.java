@@ -3,6 +3,8 @@ package de.bsnsoft.esj.cli;
 import com.fasterxml.jackson.core.JsonGenerator;
 import de.bsnsoft.esj.bindings.WriteNote;
 import de.bsnsoft.esj.bindings.WriteReport;
+import de.bsnsoft.esj.internal.report.Phrase;
+import de.bsnsoft.esj.internal.report.Text;
 import de.bsnsoft.esj.pdf.ContainerFinding;
 import de.bsnsoft.esj.pdf.EmbeddedFile;
 import de.bsnsoft.esj.pdf.FacturXMetadata;
@@ -18,7 +20,7 @@ import de.bsnsoft.esj.syntax.Severity;
 import de.bsnsoft.esj.syntax.SkippedComponent;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxReport;
-import de.bsnsoft.esj.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleSeverity;
 import de.bsnsoft.esj.validate.Finding;
@@ -184,7 +186,23 @@ final class Reports {
         boolean unknown = report.l2().notEvaluatedCause()
                 .filter(cause -> cause == Coverage.Cause.EDITION_UNKNOWN).isPresent();
         return report.semanticModel()
-                .map(model -> model + (unknown ? " (no registry in this build)" : ""));
+                .map(model -> model + (unknown ? " (no registry in this build)"
+                        : Editions.isPreview(model) ? " (preview)" : ""));
+    }
+
+    /**
+     * Returns the same line as the identity of the validation report writes it: an edition
+     * this project ships as a preview is said to be one in the language of the report, and
+     * every other edition stands as {@link #semanticModel(Validation.Report)} writes it.
+     *
+     * @param report what the engines found
+     * @return the line, empty where no document was built
+     */
+    static Optional<Text> semanticModelText(Validation.Report report) {
+        return semanticModel(report).map(line -> report.semanticModel()
+                .filter(model -> line.equals(model + " (preview)"))
+                .map(model -> Text.of(Phrase.EDITION_PREVIEW, model))
+                .orElseGet(() -> Text.words(line)));
     }
 
     /**

@@ -2,8 +2,9 @@ package de.bsnsoft.esj.render;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.model.Registry;
-import de.bsnsoft.esj.report.ValidationOutcome;
+import de.bsnsoft.esj.render.internal.ReportOptions;
 import de.bsnsoft.esj.xr.ExportNote;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +28,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
  * <h2>It reports and never decides</h2>
  *
  * <p>Nothing here weighs a finding, adds up a row or reaches a verdict. A
- * {@link ValidationOutcome} carries what the run decided and this class puts it on a page,
+ * {@code ValidationOutcome} carries what the run decided and this class puts it on a page,
  * in the order the run wrote it. That is the only way the report, the lines the command
  * printed and the machine-readable form of the same run can be one answer, and it is why a
  * renderer that sorted findings again would be a defect rather than a courtesy.
@@ -61,7 +62,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
  * <p>The same outcome, the same document and the same options give the same string and the
  * same bytes. Nothing of the machine, the moment or the run takes part: there is no clock
  * in either form, the PDF carries no date and a fixed producer, and the moment a report
- * prints is the one the caller passed in {@link ReportOptions#time()} and is printed as
+ * prints is the one the caller passed in {@code ReportOptions.time()} and is printed as
  * given.
  *
  * <h2>A document that cannot be rendered</h2>

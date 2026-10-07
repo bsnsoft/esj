@@ -38,10 +38,10 @@ import org.junit.jupiter.api.Test;
  */
 class Edition2026TotalsTest {
 
-    private static final MinorUnits UNITS = En16931V2026.minorUnits();
+    private static final MinorUnits UNITS = En16931V2026Pack.minorUnits();
 
     private static final RuleEngine ENGINE =
-            new En16931V2026().engine(Registry.forSemanticModel(En16931.SEMANTIC_MODEL)
+            new En16931V2026Pack().engine(Registry.forSemanticModel(En16931.SEMANTIC_MODEL)
                     .orElseThrow());
 
     @Test

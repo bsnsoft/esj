@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +20,10 @@ import java.util.Optional;
  * this class rather than discovered, because a class path inside a jar is not a directory
  * that can be listed; a test checks that the index and the packaged recipes are the same
  * list.
+ *
+ * <p>The class is a preview, like the recipes it lists: it may change in any minor release.
  */
+@Preview
 public final class PackRecipes {
 
     /** The directory of the recipes below {@link Packs#ROOT}. */

@@ -67,8 +67,10 @@ requirement is not decided by this specification.
 
 The default edition of this specification is EN 16931-1:2017+A1:2019 with the corrigendum
 AC:2020 applied, written `EN16931-1:2017+A1:2019/AC:2020`. This version defines a second
-edition beside it, EN 16931-1:2026, written `EN16931-1:2026`; whether a given build carries a
-registry for one of them is a property of that build, and an implementation names the editions
+edition beside it, EN 16931-1:2026, written `EN16931-1:2026`, as a preview: a document that names
+it is a document of this version of the format, and the registry of the edition (section 10) may
+be corrected in a later release without a new version of the format. Whether a given build carries
+a registry for one of them is a property of that build, and an implementation names the editions
 it holds registries for (section 3). Neither is the only value the `semanticModel` member
 admits: section 4.4 gives a grammar that a further edition satisfies too, and says what an
 implementation does with an edition it has no registry for.

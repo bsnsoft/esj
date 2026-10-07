@@ -98,7 +98,7 @@ final class Editions {
     /**
      * Returns the {@code semanticModel} of a document as a report line writes it: the
      * edition it names, and where this build holds no registry of that edition, that fact
-     * beside it.
+     * beside it; an edition this project ships as a preview is marked as one.
      *
      * <p>A reader of a report has to be able to tell the two situations apart without
      * knowing which editions this build was compiled with. Everything the report says
@@ -111,8 +111,50 @@ final class Editions {
      */
     static String describe(SemanticDocument document, Extensions extension) {
         return document.semanticModel()
-                + (forDocument(document, extension).isPresent()
-                        ? "" : " (no registry in this build)");
+                + (forDocument(document, extension).isEmpty() ? " (no registry in this build)"
+                        : isPreview(document.semanticModel()) ? " (preview)" : "");
+    }
+
+    /**
+     * Tells whether a document that names this semantic model names an edition this project
+     * ships as a preview ({@link Registry#isPreview()}).
+     *
+     * <p>Every command that reports on such a document says so — {@code inspect} and
+     * {@code validate} beside the edition, the report in its identity, {@code upgrade} in a
+     * line of its own, {@code --list-packs} beside the pack — because what this build does
+     * with the edition may change in any minor release.
+     *
+     * @param semanticModel the {@code semanticModel} member of a document
+     * @return {@code true} if this build carries the registry of that edition and ships the
+     *         edition as a preview
+     */
+    static boolean isPreview(String semanticModel) {
+        return Registry.forSemanticModel(semanticModel).filter(Registry::isPreview).isPresent();
+    }
+
+    /**
+     * Tells whether the registry of an edition, in the spelling a registry and a pack use,
+     * is one this project ships as a preview.
+     *
+     * @param edition the edition with its spaces, for example
+     *                {@code EN 16931-1:2017+A1:2019/AC:2020}
+     * @return {@code true} if this build carries the registry of that edition and ships the
+     *         edition as a preview
+     */
+    static boolean isPreviewEdition(String edition) {
+        return isPreview(edition.replace(" ", ""));
+    }
+
+    /**
+     * Returns the line a command writes for a run that reads or writes a document of an
+     * edition this project ships as a preview.
+     *
+     * @param semanticModel the {@code semanticModel} of the edition
+     * @return the line, without the {@code info:} the console prefixes it with
+     */
+    static String previewNotice(String semanticModel) {
+        return semanticModel + " is supported as a preview: its registry, its rule pack and the"
+                + " upgrade to and from it may change in any minor release";
     }
 
     /**

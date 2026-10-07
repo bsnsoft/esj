@@ -184,7 +184,7 @@ esj render invoice.esj.json --out invoice.pdf   # das Brief-Layout setzt ihn in 
 esj render examples/b2c-gross.esj.json --extension b2c --template examples/templates/gross.json --out invoice.pdf
 ```
 
-**Wie hebe ich eine Rechnung auf EN 16931-1:2026?**
+**Wie hebe ich eine Rechnung auf EN 16931-1:2026, die als Vorschau unterstützte Ausgabe?**
 ```sh
 esj upgrade invoice.esj.json --to 2026 --out invoice-2026.esj.json   # nennt jeden offenen Punkt, rundet nie
 ```
@@ -267,7 +267,7 @@ DerivationReport report = invoice.derive(Totals.STANDARD);
 
 **Wie prüfe ich die Geschäftsregeln in Java?**
 ```java
-RuleEngine engine = En16931.engine(Registry.en16931());
+RuleEngine engine = En16931Pack.engine(Registry.en16931());
 
 List<RuleFinding> findings = engine.evaluate(document);
 boolean rejected = findings.stream().anyMatch(RuleFinding::fatal);

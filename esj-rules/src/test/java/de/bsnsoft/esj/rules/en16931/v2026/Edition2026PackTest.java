@@ -26,7 +26,7 @@ class Edition2026PackTest {
 
     @Test
     void thePackNamesItsEditionAndNoArtefactRelease() {
-        RulePack pack = new En16931V2026().pack();
+        RulePack pack = new En16931V2026Pack().pack();
 
         assertEquals("en16931-2026/0.1", pack.name());
         assertEquals("EN 16931-1:2026", pack.edition());
@@ -43,7 +43,7 @@ class Edition2026PackTest {
 
     @Test
     void thePackCompilesAgainstTheRegistryOfItsEdition() {
-        RuleEngine engine = new En16931V2026().engine(REGISTRY);
+        RuleEngine engine = new En16931V2026Pack().engine(REGISTRY);
 
         assertFalse(engine.ruleIds().isEmpty());
         assertEquals(engine.ruleIds().size(),
@@ -52,7 +52,7 @@ class Edition2026PackTest {
 
     @Test
     void thePackIsRefusedAgainstTheRegistryOfAnotherEdition() {
-        RulePackSource source = new En16931V2026();
+        RulePackSource source = new En16931V2026Pack();
 
         RulePackException refused = assertThrows(RulePackException.class,
                 () -> source.engine(Registry.en16931()));
@@ -67,7 +67,7 @@ class Edition2026PackTest {
      */
     @Test
     void theCoverageTableSaysWhatThePackCarries() {
-        RuleEngine engine = new En16931V2026().engine(REGISTRY);
+        RuleEngine engine = new En16931V2026Pack().engine(REGISTRY);
         int rows = 0;
         for (String line : Evidence2026.text("/conformance/rules-2026/coverage.md").split("\n")) {
             String[] cells = line.split("\\|");
@@ -90,7 +90,7 @@ class Edition2026PackTest {
 
     @Test
     void everyRuleSaysWhatStandsBehindIt() {
-        RuleEngine engine = new En16931V2026().engine(REGISTRY);
+        RuleEngine engine = new En16931V2026Pack().engine(REGISTRY);
 
         for (String ruleId : engine.ruleIds()) {
             RuleOracle oracle = engine.oracleOf(ruleId).orElseThrow();

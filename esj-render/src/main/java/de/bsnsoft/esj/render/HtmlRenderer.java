@@ -3,8 +3,8 @@ package de.bsnsoft.esj.render;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.xr.ExportResult;
-import de.bsnsoft.esj.xr.XmlFrontDoor;
 import de.bsnsoft.esj.xr.XrExporter;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.util.Objects;
 
 /**

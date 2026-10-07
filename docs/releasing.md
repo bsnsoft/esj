@@ -11,12 +11,12 @@ is published from a workstation.
 
 | Channel | Artefacts |
 |---|---|
-| Maven Central, `de.bsnsoft.esj` | the eleven modules a build can depend on, `esj-generator` among them, each with its source and Javadoc jar; the aggregator POM they inherit from; `esj-bom`, flattened (no parent, only these modules managed) |
+| Maven Central, `de.bsnsoft.esj` | the ten modules a build can depend on, each with its source and Javadoc jar; the aggregator POM they inherit from; `esj-bom`, flattened (no parent, only these modules managed) |
 | GitHub release assets | the native executables, the runtime image, the release zip and their checksums ([`install.md`](install.md)) |
 | GitHub container registry, `ghcr.io/bsnsoft/esj` | the container image of `dist/Dockerfile` for linux/amd64 and linux/arm64: the tags `<version>` and `latest` name both platforms, `<version>-linux-amd64` and `<version>-linux-arm64` one each ([`install.md`](install.md#container-image)) |
 
-`esj-cli` is not on Central: it is the tool, not a library, and `excludeArtifacts` in the
-`release` profile leaves it out of the deployment.
+`esj-cli` and `esj-generator` are not on Central: one is the tool, the other the build tool of
+this repository, and `excludeArtifacts` in the `release` profile leaves both out of the deployment.
 
 ## Cutting a release
 
@@ -50,8 +50,17 @@ mvn -B versions:set -DnewVersion=0.9.1-SNAPSHOT -DgenerateBackupPoms=false
 git commit -am 'Back to a snapshot version'
 ```
 
+The same commit sets `esj.api-baseline` in `pom.xml` to the version just released.
+
 The same command repeats a deployment that failed; a version the Portal has published cannot be
 deployed again.
+
+`mvn -B -Papi-check verify -DskipTests` compares the API of every library module with the release
+`esj.api-baseline` names (`pom.xml`) and writes `target/japicmp/api-check.html` per module; the CI
+job *API compared with the last release* keeps it as the artifact `api-check`. A class listed as
+removed or modified incompatibly is a break, except where an element of the baseline became
+internal or `@Preview`. Before 1.0.0 the check reports; from 1.0.0 `esj.api-check.break` is `true`
+and the baseline is the last release.
 
 Each of the three packaging jobs of `release.yml` delivers the archives of its platform, and the
 `linux-x64` job also the platform-independent `esj-<version>.zip`; the other two build one as

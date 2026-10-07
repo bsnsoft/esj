@@ -51,7 +51,7 @@ class Edition2026SeparationTest {
     @Test
     void whatIsSeparableIsTheEditionAndNotTheMachinery() {
         assertTrue(loads("de.bsnsoft.esj.typed.En16931"));
-        assertTrue(loads("de.bsnsoft.esj.typed.runtime.Views"));
+        assertTrue(loads("de.bsnsoft.esj.typed.internal.Views"));
         assertTrue(Registry.editions().contains(Registry.DEFAULT_EDITION));
         assertThrows(Exception.class, () -> Registry.forEdition("1999"));
     }

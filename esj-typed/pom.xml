@@ -21,6 +21,10 @@
     in; a view holds no data of its own and an editor writes into one document builder.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.typed</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>

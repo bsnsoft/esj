@@ -22,6 +22,33 @@ public final class CiiWriter {
     }
 
     /**
+     * Returns the edition of the semantic model this writer writes, in the spelling a
+     * document uses in its {@code semanticModel} member ({@code SPEC.md}, section 10).
+     *
+     * @return the edition, for example {@code EN16931-1:2017+A1:2019/AC:2020}
+     */
+    public static String semanticModel() {
+        return BindingTable.of(BindingSyntax.CII).semanticModel();
+    }
+
+    /**
+     * Tells whether this writer writes a document that names an edition of the semantic
+     * model.
+     *
+     * <p>A path is an address relative to an edition, so a document of another edition is
+     * refused with a {@link BindingEditionException} rather than written short of the terms
+     * the binding table does not know. A caller asks here before it writes, to say so in
+     * its own words.
+     *
+     * @param semanticModel the {@code semanticModel} member of a document
+     * @return {@code true} if the CII binding table was written against that edition
+     * @throws NullPointerException if {@code semanticModel} is {@code null}
+     */
+    public static boolean supports(String semanticModel) {
+        return BindingTable.of(BindingSyntax.CII).describes(semanticModel);
+    }
+
+    /**
      * Writes a document with the default options.
      *
      * <p>The report of what did not reach the syntax is discarded; a caller who has to

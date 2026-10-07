@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.syntax;
 
+import de.bsnsoft.esj.Preview;
 import de.bsnsoft.esj.xr.XrSyntax;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,7 +32,10 @@ import java.util.regex.Pattern;
  * the syntaxes, whose licences permit that — so that the pack it makes is complete.
  *
  * <p>Instances are immutable.
+ *
+ * <p>The class is a preview, like the recipes it reads: it may change in any minor release.
  */
+@Preview
 public final class PackRecipe {
 
     /** The format a recipe of this repository is written in. */

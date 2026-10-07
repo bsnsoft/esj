@@ -51,7 +51,7 @@ final class OverlaySources {
     private static final String REGISTRY_TYPE = "de.bsnsoft.esj.model.Registry";
     private static final String MISSING_TYPE = TypedSources.BASE_PACKAGE + ".MissingValueException";
     private static final String VALUE_TYPE_EXCEPTION = TypedSources.BASE_PACKAGE + ".ValueTypeException";
-    private static final String RUNTIME_PACKAGE = TypedSources.BASE_PACKAGE + ".runtime";
+    private static final String RUNTIME_PACKAGE = TypedSources.BASE_PACKAGE + ".internal";
 
     private final Registry registry;
     private final Registry extension;

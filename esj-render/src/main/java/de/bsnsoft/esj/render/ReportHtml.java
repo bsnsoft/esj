@@ -1,7 +1,8 @@
 package de.bsnsoft.esj.render;
 
-import de.bsnsoft.esj.report.Text;
-import de.bsnsoft.esj.report.ValidationOutcome;
+import de.bsnsoft.esj.internal.report.Text;
+import de.bsnsoft.esj.internal.report.ValidationOutcome;
+import de.bsnsoft.esj.render.internal.ReportOptions;
 import java.util.List;
 import java.util.Locale;
 

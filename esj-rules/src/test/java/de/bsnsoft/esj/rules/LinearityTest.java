@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.bsnsoft.esj.SemanticDocument;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
@@ -209,7 +209,7 @@ class LinearityTest {
 
     @Test
     void theCostOfAVatBreakdownDoesNotGrowWithTheNumberOfLines() {
-        RuleEngine engine = En16931.engine(Packs.REGISTRY);
+        RuleEngine engine = En16931Pack.engine(Packs.REGISTRY);
         engine.evaluate(Documents.breakdowns(100, 10));
         System.out.printf(Locale.ROOT, "esj-rules, the pack this build ships, the cheapest of"
                 + " %d evaluations, processor time:%n", RUNS);

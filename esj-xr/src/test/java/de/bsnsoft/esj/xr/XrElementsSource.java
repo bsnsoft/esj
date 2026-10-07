@@ -2,6 +2,7 @@ package de.bsnsoft.esj.xr;
 
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;

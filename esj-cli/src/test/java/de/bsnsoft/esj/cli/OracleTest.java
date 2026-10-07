@@ -11,7 +11,7 @@ import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleSeverity;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.syntax.SyntaxFinding;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
 import de.bsnsoft.esj.xr.XrImporter;
@@ -63,7 +63,7 @@ class OracleTest {
             .registry(XrImporter.defaultRegistry())
             .build());
 
-    private static final RuleEngine ENGINE = En16931.engine(XrImporter.defaultRegistry());
+    private static final RuleEngine ENGINE = En16931Pack.engine(XrImporter.defaultRegistry());
 
     /** The causes {@code ledger.md} explains; a mutation may not invent a new one. */
     private static final Set<String> CAUSES = Set.of(

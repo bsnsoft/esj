@@ -30,10 +30,10 @@
 # names a business term or group the 2026 registry adds over the 2017 one.
 #
 # The rule pack of the edition is separable in the same way. Its directory, its coverage
-# and its measurements are data; the rules of it that the rule language cannot express are
-# a package of Java sources; and the service declaration is what keeps the rest of the code
-# from naming any of them, so that a build without the edition finds one rule pack fewer
-# rather than failing to compile.
+# and its measurements are data; the pack class and the rules of it that the rule language
+# cannot express are two packages of Java sources; and the service declaration is what
+# keeps the rest of the code from naming any of them, so that a build without the edition
+# finds one rule pack fewer rather than failing to compile.
 
 model/en16931/2026.json
 model/en16931/upgrade-2017-2026.json
@@ -49,6 +49,7 @@ bindings/csharp/En16931.SemanticJson/Typed/Invoice2026.cs
 rules/en16931-2026
 conformance/rules-2026
 esj-rules/src/main/java/de/bsnsoft/esj/rules/en16931/v2026
+esj-rules/src/main/java/de/bsnsoft/esj/rules/internal/en16931/v2026
 esj-rules/src/test/java/de/bsnsoft/esj/rules/en16931/v2026
 esj-cli/src/test/java/de/bsnsoft/esj/cli/v2026
 esj-rules/src/main/resources/META-INF/services/de.bsnsoft.esj.rules.RulePackSource

@@ -23,15 +23,16 @@
     here.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.cli</esj.automatic-module-name>
+    <!-- A tool and no library: the API check of the profile api-check passes it over. -->
+    <esj.api-check.skip>true</esj.api-check.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>de.bsnsoft.esj</groupId>
-      <artifactId>esj-typed</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -121,6 +122,28 @@
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-invoice</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      The typed view, for the same test: the example names the profile and the refusal of
+      the generated builder, which esj-typed declares. The command line reads documents by
+      path and never through the typed view, so nothing of esj-typed is in the fat jar.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-typed</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      The B2C overlay, for MavenCoordinatesTest only: it reads the manifest of every jar this
+      project publishes, and this dependency packages esj-b2c before this module. Test scope:
+      the command line loads the B2C registry from esj-core and needs nothing of the overlay.
+    -->
+    <dependency>
+      <groupId>de.bsnsoft.esj</groupId>
+      <artifactId>esj-b2c</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

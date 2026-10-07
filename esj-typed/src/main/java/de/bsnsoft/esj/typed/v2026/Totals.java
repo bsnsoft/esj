@@ -8,7 +8,7 @@ import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
 import de.bsnsoft.esj.typed.DerivationException;
 import de.bsnsoft.esj.typed.DerivationReport;
-import de.bsnsoft.esj.typed.runtime.TermPaths;
+import de.bsnsoft.esj.typed.internal.TermPaths;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;

@@ -34,7 +34,7 @@ import de.bsnsoft.esj.rules.RulePackSource;
 import de.bsnsoft.esj.rules.RulePackSources;
 import de.bsnsoft.esj.rules.RulePacks;
 import de.bsnsoft.esj.rules.RuleSeverity;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.upgrade.EditionUpgrade;
 import de.bsnsoft.esj.upgrade.UpgradeOptions;
 import de.bsnsoft.esj.validate.Finding;
@@ -173,7 +173,7 @@ class FixtureManifestTest {
             "model/en16931/" + LATER_EDITION + ".json";
 
     /** The rule pack, compiled once: it is evaluated over every mutation of the corpus. */
-    private static final RuleEngine ENGINE = En16931.engine(COMBINED);
+    private static final RuleEngine ENGINE = En16931Pack.engine(COMBINED);
 
     /**
      * The pack of the rule language whose rules pin its arithmetic, as the repository files it.
@@ -502,8 +502,8 @@ class FixtureManifestTest {
         manifest.put("grammars", tables);
 
         manifest.put("rules", Manifest.object()
-                .put("pack", En16931.PACK_ID + "/" + En16931.VERSION)
-                .put("directory", "rules/" + En16931.PACK_ID + "/" + En16931.VERSION)
+                .put("pack", En16931Pack.PACK_ID + "/" + En16931Pack.VERSION)
+                .put("directory", "rules/" + En16931Pack.PACK_ID + "/" + En16931Pack.VERSION)
                 .put("casesFile", CASES)
                 .put("cases", Oracle.all().size()));
 
@@ -552,8 +552,8 @@ class FixtureManifestTest {
         Manifest.Object file = Manifest.object()
                 .put("format", FORMAT + "-Rules")
                 .put("version", CONTRACT_VERSION)
-                .put("pack", En16931.PACK_ID + "/" + En16931.VERSION)
-                .put("directory", "rules/" + En16931.PACK_ID + "/" + En16931.VERSION);
+                .put("pack", En16931Pack.PACK_ID + "/" + En16931Pack.VERSION)
+                .put("directory", "rules/" + En16931Pack.PACK_ID + "/" + En16931Pack.VERSION);
 
         StreamingReader streaming = new StreamingReader(ReaderOptions.builder()
                 .registry(COMBINED)

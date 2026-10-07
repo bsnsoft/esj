@@ -275,6 +275,19 @@ class CiiWriterTest {
         assertContains(refused.getMessage(), "drops");
     }
 
+    /**
+     * A caller asks the writer which edition it writes, rather than the binding table, and
+     * the answer is the one the refusal above is made by.
+     */
+    @Test
+    void saysWhichEditionItWrites() {
+        String written = BindingTable.of(BindingSyntax.CII).semanticModel();
+        assertEquals(written, CiiWriter.semanticModel());
+        assertTrue(CiiWriter.supports(written));
+        assertFalse(CiiWriter.supports("EN16931-1:2026"));
+        assertThrows(NullPointerException.class, () -> CiiWriter.supports(null));
+    }
+
     @Test
     void reportsATermNoRegistryOfTheTableKnows() {
         WriteResult result = CiiWriter.writeWithReport(SemanticDocument.builder()

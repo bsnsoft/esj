@@ -23,7 +23,7 @@ import de.bsnsoft.esj.render.PdfRenderer;
 import de.bsnsoft.esj.render.RenderLanguage;
 import de.bsnsoft.esj.render.RenderOptions;
 import de.bsnsoft.esj.rules.RuleFinding;
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.syntax.SyntaxValidator;
 import de.bsnsoft.esj.typed.build.BuildException;
@@ -119,7 +119,7 @@ public final class HybridInvoice {
         }
 
         // 5b. The second: the rule pack over any document, whatever syntax it arrived in.
-        List<RuleFinding> findings = En16931.engine(Registry.en16931()).evaluate(invoice);
+        List<RuleFinding> findings = En16931Pack.engine(Registry.en16931()).evaluate(invoice);
         System.out.println("rule findings: " + findings.size());
 
         // 5c. The third: the official XSD and Schematron over the very bytes that are sent.

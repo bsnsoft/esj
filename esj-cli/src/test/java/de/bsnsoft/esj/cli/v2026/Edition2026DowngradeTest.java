@@ -12,8 +12,8 @@ import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.rules.RuleEngine;
 import de.bsnsoft.esj.rules.RuleFinding;
 import de.bsnsoft.esj.rules.RuleOracle;
-import de.bsnsoft.esj.rules.en16931.En16931;
-import de.bsnsoft.esj.rules.en16931.v2026.En16931V2026;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
+import de.bsnsoft.esj.rules.en16931.v2026.En16931V2026Pack;
 import de.bsnsoft.esj.upgrade.EditionUpgrade;
 import de.bsnsoft.esj.upgrade.UpgradeOptions;
 import de.bsnsoft.esj.upgrade.UpgradeResult;
@@ -58,9 +58,9 @@ class Edition2026DowngradeTest {
             .registry(XrImporter.defaultRegistry())
             .build());
 
-    private static final RuleEngine EDITION = new En16931V2026().engine(Registry.forEdition("2026"));
+    private static final RuleEngine EDITION = new En16931V2026Pack().engine(Registry.forEdition("2026"));
 
-    private static final RuleEngine DEFAULT_PACK = En16931.engine(XrImporter.defaultRegistry());
+    private static final RuleEngine DEFAULT_PACK = En16931Pack.engine(XrImporter.defaultRegistry());
 
     private static final UpgradeOptions OPTIONS = UpgradeOptions.builder()
             .extension(Registry.xrechnungExtension())

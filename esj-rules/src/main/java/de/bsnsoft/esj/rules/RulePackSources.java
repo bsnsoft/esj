@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.rules;
 
-import de.bsnsoft.esj.rules.en16931.En16931;
+import de.bsnsoft.esj.rules.en16931.En16931Pack;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,7 +37,7 @@ public final class RulePackSources {
      */
     public static List<RulePackSource> all() {
         Map<String, RulePackSource> byEdition = new LinkedHashMap<>();
-        RulePackSource standing = En16931.source();
+        RulePackSource standing = En16931Pack.source();
         byEdition.put(standing.edition(), standing);
         for (RulePackSource source : ServiceLoader.load(RulePackSource.class,
                 RulePackSources.class.getClassLoader())) {

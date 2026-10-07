@@ -1,6 +1,6 @@
 package de.bsnsoft.esj.render;
 
-import de.bsnsoft.esj.xr.XmlFrontDoor;
+import de.bsnsoft.esj.xr.internal.XmlFrontDoor;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -44,7 +44,7 @@ import net.sf.saxon.trans.XPathException;
  * refuse everything else.
  *
  * <p>The processor underneath is the one of
- * {@link de.bsnsoft.esj.xr.XmlFrontDoor}, which is where this project's
+ * {@code de.bsnsoft.esj.xr.internal.XmlFrontDoor}, which is where this project's
  * settings live: no extension function, no DTD, no XInclude, no {@code xsl:evaluate} and
  * no protocol it may dereference. The resolvers of this class are set on the compiler and
  * on the transformer rather than on that shared processor, so nothing here widens what the

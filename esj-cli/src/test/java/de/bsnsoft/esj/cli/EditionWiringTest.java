@@ -140,7 +140,10 @@ class EditionWiringTest {
         assertFalse(run.text().contains(RuleCheck.PACK), run.text());
     }
 
-    /** The listing names every rule pack this build carries, with its edition. */
+    /**
+     * The listing names every rule pack this build carries, with its edition, and marks the
+     * pack of an edition this project ships as a preview.
+     */
     @Test
     void theListingNamesTheRulePacksWithTheirEdition() {
         Cli.Run run = Cli.run("--list-packs");
@@ -148,7 +151,7 @@ class EditionWiringTest {
         assertTrue(run.text().contains(RuleCheck.PACK + System.lineSeparator() + "  "
                 + "EN 16931-1:2017+A1:2019/AC:2020; measured against"), run.text());
         if (carries2026()) {
-            assertTrue(run.text().contains("en16931-2026/0.1" + System.lineSeparator()
+            assertTrue(run.text().contains("en16931-2026/0.1 (preview)" + System.lineSeparator()
                     + "  EN 16931-1:2026; " + RuleCheck.UNCORROBORATED), run.text());
             assertTrue(run.text().contains(" downgrade, ") && run.text().contains(" cases"),
                     run.text());

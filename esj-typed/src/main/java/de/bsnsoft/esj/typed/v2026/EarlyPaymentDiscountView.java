@@ -6,9 +6,9 @@ package de.bsnsoft.esj.typed.v2026;
 
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
-import de.bsnsoft.esj.typed.runtime.TermPaths;
-import de.bsnsoft.esj.typed.runtime.Values;
-import de.bsnsoft.esj.typed.runtime.Views;
+import de.bsnsoft.esj.typed.internal.TermPaths;
+import de.bsnsoft.esj.typed.internal.Values;
+import de.bsnsoft.esj.typed.internal.Views;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;

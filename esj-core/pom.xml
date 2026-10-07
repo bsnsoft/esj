@@ -19,6 +19,10 @@
     structural validator for the EN16931 Semantic JSON format.
   </description>
 
+  <properties>
+    <esj.automatic-module-name>de.bsnsoft.esj.core</esj.automatic-module-name>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
