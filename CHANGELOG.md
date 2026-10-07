@@ -16,6 +16,13 @@ still change; a change to it is named here under *Format*.
 - The rule files of both bundled packs, as their manifests name them, are validated against
   `rules/rule.schema.json` on every build; the 2026 pack's test is part of what
   `bin/without-edition-2026.sh` removes.
+- Three negative fixtures carry, in a member name, every class of character `SPEC.md` section 9.5
+  escapes: `path-syntax-terminal-characters` (`ESJ-L1-PATH-SYNTAX`),
+  `owner-token-terminal-characters` (`ESJ-L1-OWNER-TOKEN`) and
+  `envelope-member-terminal-characters` (`ESJ-L1-ENVELOPE-MEMBER`). The fixture manifest records
+  the `subject` of a finding where section 9.5 requires one — where the path is empty, and on a
+  finding of layer L3 — and `run.py` and the manifest tests of both bindings compare it there; a
+  binding's `validate` answer carries `subject` beside `path` and `code`.
 
 ### Changed
 
@@ -50,7 +57,10 @@ still change; a change to it is named here under *Format*.
   `esj extract --list` and of every report, and the error stream. The JSON reports write the same
   characters as JSON escapes. Until now `list`, `inspect` and `diff` wrote C1 controls (CSI,
   NEXT LINE), U+061C, U+2028 and U+2029 as they stood, and a message of a registry quoted its
-  content unescaped. `esj get` still writes a value raw.
+  content unescaped. `esj get` still writes a value raw. `esj-render` takes the bidirectional
+  controls from there as well and adds the interlinear annotation characters U+FFF9–U+FFFB,
+  which only a rendering replaces; the messages of `esj-rules` and `esj-pdf` write `\u` with
+  lowercase digits, as `esj-core` does.
 - Every command that reads a document holds the five-minute deadline where `--max-runtime` names
   none: `convert`, `upgrade`, `inspect`, `extract`, `get`, `list`, `diff`, `canonicalize`, and
   `embed` without `--verapdf`, as `validate` and `render` did. Exit code 7 and no verdict. Over
@@ -131,6 +141,14 @@ still change; a change to it is named here under *Format*.
 - `docs/cli.md`: `esj extract --out` follows a symbolic link at the path the caller names.
   `docs/validation-measurements.md`: the official Schematron is superlinear where a line-level
   assertion fails on every line.
+- TypeScript and C#: a message and a `subject` escape the characters of `SPEC.md` section 9.5 the
+  Java implementation escapes. Both let the C1 controls, U+2028, U+2029 and U+061C through, and
+  TypeScript U+200E and U+200F as well; TypeScript wrote `\u001B` where Java and C# write
+  `\u001b`, and ended a cut excerpt in `…` where they write `...`. TypeScript exports
+  `steersATerminal` and `isBidiControl`, C# has `Esj.SteersATerminal` and `Esj.IsBidiControl`.
+- TypeScript: a finding about a member of `source` names it `source.syntax` (was
+  `source["syntax"]`), and one about a name repeated in `values` names `values` (was the member
+  access of the name), as Java and C# do.
 
 ### Security
 
@@ -154,11 +172,12 @@ still change; a change to it is named here under *Format*.
 
 ### Format
 
-- `SPEC.md` section 9.5 names every character a finding message and a `subject` escape as
-  `\uXXXX`: besides the C0 controls and DEL, every C1 control (U+0080–U+009F), U+2028, U+2029
-  and the bidirectional formatting characters, listed as U+061C, U+200E, U+200F, U+202A–U+202E
-  and U+2066–U+2069. The reference implementation let the C1 controls and the two separators
-  through, and U+061C in the messages of `esj-core`.
+- `SPEC.md` section 9.5 names every character a finding message and a `subject` escape as `\u`
+  and four lowercase hexadecimal digits: besides the C0 controls and DEL, every C1 control
+  (U+0080–U+009F), U+2028, U+2029 and the bidirectional formatting characters, listed as
+  U+061C, U+200E, U+200F, U+202A–U+202E and U+2066–U+2069. The reference implementation let the
+  C1 controls and the two separators through, and U+061C in the messages of `esj-core`; the
+  section said `\uXXXX` and left the case of the digits open.
 
 ## [0.9.4] — 2026-10-07
 

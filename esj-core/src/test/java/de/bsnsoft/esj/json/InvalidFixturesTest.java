@@ -62,6 +62,7 @@ class InvalidFixturesTest {
         table.put("empty-extensions", "ESJ-L1-ENVELOPE-VALUE");
         table.put("empty-string-value", "ESJ-L1-EMPTY-STRING");
         table.put("empty-string-with-missing-term", "ESJ-L1-EMPTY-STRING");
+        table.put("envelope-member-terminal-characters", "ESJ-L1-ENVELOPE-MEMBER");
         table.put("extension-number-exponent-overflow", "ESJ-L1-EXT-NUMBER");
         table.put("extension-number-exponent-underflow", "ESJ-L1-EXT-NUMBER");
         table.put("extension-number-too-long", "ESJ-L1-EXT-NUMBER");
@@ -69,7 +70,9 @@ class InvalidFixturesTest {
         table.put("number-instead-of-string", "ESJ-L1-JSON-TYPE");
         table.put("object-without-component", "ESJ-L1-VALUE-SHAPE");
         table.put("owner-token-syntax", "ESJ-L1-OWNER-TOKEN");
+        table.put("owner-token-terminal-characters", "ESJ-L1-OWNER-TOKEN");
         table.put("path-leading-zero-index", "ESJ-L1-PATH-SYNTAX");
+        table.put("path-syntax-terminal-characters", "ESJ-L1-PATH-SYNTAX");
         table.put("path-syntax-with-array-value", "ESJ-L1-PATH-SYNTAX");
         table.put("scheme-version-without-scheme", "ESJ-L1-VALUE-MEMBER");
         table.put("source-empty-syntax", "ESJ-L1-ENVELOPE-VALUE");

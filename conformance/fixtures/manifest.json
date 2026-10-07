@@ -1902,7 +1902,8 @@
       "file": "examples/invalid/duplicate-below-bad-owner-token.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-OWNER-TOKEN",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"urn:example:v/2\"]"
     },
     {
       "file": "examples/invalid/duplicate-in-two-value-objects.esj.json",
@@ -1920,7 +1921,8 @@
       "file": "examples/invalid/duplicate-member.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": ""
+      "path": "",
+      "subject": "values"
     },
     {
       "file": "examples/invalid/duplicate-path-of-value-objects.esj.json",
@@ -1932,13 +1934,15 @@
       "file": "examples/invalid/duplicate-path-of-value-objects.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": ""
+      "path": "",
+      "subject": "values"
     },
     {
       "file": "examples/invalid/empty-extensions.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": ""
+      "path": "",
+      "subject": "extensions"
     },
     {
       "file": "examples/invalid/empty-string-value.esj.json",
@@ -1953,34 +1957,46 @@
       "path": "/BG-4/BT-27"
     },
     {
+      "file": "examples/invalid/envelope-member-terminal-characters.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-ENVELOPE-MEMBER",
+      "path": "",
+      "subject": "profile\\u001b]8;;\\u0007\\u0085\\u2028\\u061c\\u202e"
+    },
+    {
       "file": "examples/invalid/extension-depth-33.esj.json",
       "layer": "limit",
       "code": "ESJ-L1-LIMIT",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"de.example.vendor\"][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]"
     },
     {
       "file": "examples/invalid/extension-number-exponent-overflow.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-EXT-NUMBER",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"de.example.vendor\"][\"exponentPastEveryLength\"]"
     },
     {
       "file": "examples/invalid/extension-number-exponent-underflow.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-EXT-NUMBER",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"de.example.vendor\"][\"exponentPastEveryLength\"]"
     },
     {
       "file": "examples/invalid/extension-number-too-long.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-EXT-NUMBER",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"de.example.vendor\"][\"canonicalFormTooLong\"]"
     },
     {
       "file": "examples/invalid/index-gap.esj.json",
       "layer": "L3",
       "code": "ESJ-L3-INDEX-GAP",
-      "path": ""
+      "path": "",
+      "subject": "BG-23"
     },
     {
       "file": "examples/invalid/index-on-bt-1.esj.json",
@@ -1998,7 +2014,8 @@
       "file": "examples/invalid/missing-mandatory-term.esj.json",
       "layer": "L3",
       "code": "ESJ-L3-MISSING-TERM",
-      "path": "/BG-25/0"
+      "path": "/BG-25/0",
+      "subject": "BT-130"
     },
     {
       "file": "examples/invalid/number-instead-of-string.esj.json",
@@ -2016,25 +2033,43 @@
       "file": "examples/invalid/owner-token-syntax.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-OWNER-TOKEN",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"urn:example:v/2\"]"
+    },
+    {
+      "file": "examples/invalid/owner-token-terminal-characters.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-OWNER-TOKEN",
+      "path": "",
+      "subject": "extensions[\"urn:example:\\u0085\\u009b\\u2028\\u2029\\u061c\\u200f\\u202e\\u2067\"]"
     },
     {
       "file": "examples/invalid/path-leading-zero-index.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-PATH-SYNTAX",
-      "path": ""
+      "path": "",
+      "subject": "values[\"/BG-4/BT-29/00\"]"
+    },
+    {
+      "file": "examples/invalid/path-syntax-terminal-characters.esj.json",
+      "layer": "L1",
+      "code": "ESJ-L1-PATH-SYNTAX",
+      "path": "",
+      "subject": "values[\"/BT-1\\u001b[2J\\u0007\\u007f\\u0085\\u009b\\u2028\\u2029\\u061c\\u200e\\u200f\\u202a\\u202e\\u2066\\u2069\\t\\\"\\\\\"]"
     },
     {
       "file": "examples/invalid/path-syntax-with-array-value.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-PATH-SYNTAX",
-      "path": ""
+      "path": "",
+      "subject": "values[\"/BG-25/0/BT 129\"]"
     },
     {
       "file": "examples/invalid/path-syntax-with-array-value.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-JSON-TYPE",
-      "path": ""
+      "path": "",
+      "subject": "values[\"/BG-25/0/BT 129\"]"
     },
     {
       "file": "examples/invalid/scheme-on-text-value.esj.json",
@@ -2052,19 +2087,22 @@
       "file": "examples/invalid/source-empty-syntax.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": ""
+      "path": "",
+      "subject": "source.syntax"
     },
     {
       "file": "examples/invalid/source-lone-surrogate.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-SURROGATE",
-      "path": ""
+      "path": "",
+      "subject": "source.syntax"
     },
     {
       "file": "examples/invalid/source-sha256-uppercase.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": ""
+      "path": "",
+      "subject": "source.sha256"
     },
     {
       "file": "examples/invalid/surrogate-and-duplicate-in-value-object.esj.json",
@@ -2076,7 +2114,8 @@
       "file": "examples/invalid/surrogate-below-bad-owner-token.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-OWNER-TOKEN",
-      "path": ""
+      "path": "",
+      "subject": "extensions[\"urn:example:v/2\"]"
     },
     {
       "file": "examples/invalid/surrogate-in-envelope-member-name.esj.json",
@@ -2112,7 +2151,8 @@
       "file": "examples/invalid/unknown-envelope-member.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-ENVELOPE-MEMBER",
-      "path": ""
+      "path": "",
+      "subject": "profile"
     },
     {
       "file": "examples/invalid/unknown-object-member.esj.json",
@@ -2154,7 +2194,8 @@
       "file": "examples/invalid/values-deep-array.esj.json",
       "layer": "L1",
       "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": ""
+      "path": "",
+      "subject": "values"
     }
   ],
   "canonicalOrder": [

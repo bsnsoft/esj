@@ -97,7 +97,7 @@ class MessageTest {
 
         String message = messageOf(document, rule("{\"const\": false}", "BT-1 carries {/BT-1}."));
 
-        assertEquals("BT-1 carries RE\\t2026\\u202E0001\\n\\\"x\\\"\\\\.", message);
+        assertEquals("BT-1 carries RE\\t2026\\u202e0001\\n\\\"x\\\"\\\\.", message);
     }
 
     /**
@@ -114,7 +114,7 @@ class MessageTest {
 
         String message = messageOf(document, rule("{\"const\": false}", "BT-1 carries {/BT-1}."));
 
-        assertEquals("BT-1 carries RE\\u009B2K\\u00851\\u20282\\u20293\\u061C4\\u007F.",
+        assertEquals("BT-1 carries RE\\u009b2K\\u00851\\u20282\\u20293\\u061c4\\u007f.",
                 message);
     }
 

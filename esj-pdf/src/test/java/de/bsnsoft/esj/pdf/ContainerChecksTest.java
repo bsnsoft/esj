@@ -186,7 +186,7 @@ class ContainerChecksTest {
 
         ContainerFinding finding = one(check(pdf), "PDF-EMBEDDED-NAME");
 
-        assertTrue(finding.message().contains("\\u001B"), finding.message());
+        assertTrue(finding.message().contains("\\u001b"), finding.message());
         assertTrue(finding.message().contains("\\\""), finding.message());
         assertEquals(-1, finding.message().indexOf(ESCAPE), finding.message());
     }

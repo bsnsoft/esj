@@ -117,8 +117,8 @@ public class ManifestTests
         }
 
         Assert.Equal(
-            expected.Findings.OrderBy(finding => finding, TupleOrder).ToList(),
-            Errors(Validator.Validate(Fixtures.Bytes(name))));
+            Recorded(expected.Findings),
+            Compared(Errors(Validator.Validate(Fixtures.Bytes(name))), Pinned(expected.Findings)));
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public class ManifestTests
     {
         InvalidCase expected = Manifest.Invalid[name];
         ValidationResult result = Validator.Validate(Fixtures.Bytes(name));
-        List<(string Path, string Code)> errors = Errors(result);
+        List<(string Path, string Code, string Subject)> errors = Errors(result);
 
         if (expected.Layer == "business-rule")
         {
@@ -148,11 +148,12 @@ public class ManifestTests
         {
             // The specification, section 9.6 fixes how far a reader reads, so the rows of a
             // document layer L1 refused are the whole answer and not a sample of it.
-            Assert.Equal(expected.Rows.OrderBy(row => row, TupleOrder).ToList(), errors);
+            Assert.Equal(Recorded(expected.Rows), Compared(errors, Pinned(expected.Rows)));
         }
         else
         {
-            Assert.Contains(errors, finding => finding == expected.Rows[0]);
+            IReadOnlyList<(string Path, string Code, string? Subject)> first = expected.Rows.Take(1).ToList();
+            Assert.Contains(Recorded(first)[0], Compared(errors, Pinned(first)));
         }
 
         Assert.NotEqual(ValidationStatus.Valid, result.Status);
@@ -260,21 +261,51 @@ public class ManifestTests
 
     /// <summary>
     /// The error findings of a result, as the runner of the manifest reads them: the codes of
-    /// this specification, without the two that record something not evaluated.
+    /// this specification, without the two that record something not evaluated, each with its
+    /// path and its subject.
     /// </summary>
-    private static List<(string Path, string Code)> Errors(ValidationResult result) =>
+    private static List<(string Path, string Code, string Subject)> Errors(ValidationResult result) =>
         result.Findings
             .Where(finding => finding.Code.Code.StartsWith("ESJ-L", StringComparison.Ordinal)
                 && !finding.Code.Code.EndsWith("NOT-CHECKED", StringComparison.Ordinal)
                 && !finding.Code.Code.EndsWith("EDITION-UNKNOWN", StringComparison.Ordinal))
-            .Select(finding => (finding.Path.Text, finding.Code.Code))
+            .Select(finding => (finding.Path.Text, finding.Code.Code, finding.Subject))
             .OrderBy(finding => finding, TupleOrder)
             .ToList();
 
-    private static readonly IComparer<(string Path, string Code)> TupleOrder =
-        Comparer<(string Path, string Code)>.Create((left, right) =>
+    /// <summary>
+    /// The places whose subject the manifest records, as path and code. The manifest records one
+    /// where the specification, section 9.5 requires it, and it is compared there and nowhere else.
+    /// </summary>
+    private static HashSet<(string Path, string Code)> Pinned(
+        IEnumerable<(string Path, string Code, string? Subject)> rows) =>
+        rows.Where(row => row.Subject is not null).Select(row => (row.Path, row.Code)).ToHashSet();
+
+    /// <summary>Findings as path, code and subject, the subject kept only at the places pinned.</summary>
+    private static List<(string Path, string Code, string Subject)> Compared(
+        IEnumerable<(string Path, string Code, string Subject)> findings,
+        HashSet<(string Path, string Code)> pins) =>
+        findings
+            .Select(finding => (finding.Path, finding.Code,
+                pins.Contains((finding.Path, finding.Code)) ? finding.Subject : string.Empty))
+            .OrderBy(finding => finding, TupleOrder)
+            .ToList();
+
+    /// <summary>The rows of the manifest in the form <see cref="Compared"/> gives an answer.</summary>
+    private static List<(string Path, string Code, string Subject)> Recorded(
+        IReadOnlyList<(string Path, string Code, string? Subject)> rows) =>
+        Compared(rows.Select(row => (row.Path, row.Code, row.Subject ?? string.Empty)), Pinned(rows));
+
+    private static readonly IComparer<(string Path, string Code, string Subject)> TupleOrder =
+        Comparer<(string Path, string Code, string Subject)>.Create((left, right) =>
         {
             int paths = string.CompareOrdinal(left.Path, right.Path);
-            return paths != 0 ? paths : string.CompareOrdinal(left.Code, right.Code);
+            if (paths != 0)
+            {
+                return paths;
+            }
+
+            int codes = string.CompareOrdinal(left.Code, right.Code);
+            return codes != 0 ? codes : string.CompareOrdinal(left.Subject, right.Subject);
         });
 }

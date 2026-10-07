@@ -49,7 +49,7 @@ interface Manifest {
     documentDigest: string;
     findings?: Array<{ path: string; code: string; subject?: string }>;
   }>;
-  invalid?: Array<{ file: string; layer: string; code?: string; path?: string }>;
+  invalid?: Array<Row>;
   canonicalOrder?: Array<{ scrambled: string; canonical: string }>;
   grammars?: Array<{
     datatype: string; code: string; base: string; path: string;
@@ -57,6 +57,15 @@ interface Manifest {
   }>;
   rules?: { pack: string; version: string; casesFile: string; cases: number };
   arithmetic?: { pack: string; base: string; expect: { rules: string[]; warnings: string[] } };
+}
+
+/** A row of the manifest that names a finding: its file and layer where it is a negative one. */
+interface Row {
+  file?: string;
+  layer?: string;
+  code?: string;
+  path?: string;
+  subject?: string;
 }
 
 interface Case {
@@ -110,19 +119,48 @@ function documentOf(file: string): SemanticDocument {
   return readDocumentOrThrow(readFileSync(path.join(ROOT, file)));
 }
 
-/** The error findings of a validation, as the runner compares them: path and code. */
-function errorsOf(input: Uint8Array | string): Array<[string, string]> {
+type Triple = [string, string, string];
+
+/** The error findings of a validation, as the runner reads them: path, code and subject. */
+function errorsOf(input: Uint8Array | string): Triple[] {
   const result = validate(input, { registries: REGISTRIES });
   return result.findings
     .filter((entry) => entry.code.startsWith('ESJ-L')
       && !entry.code.endsWith('NOT-CHECKED') && !entry.code.endsWith('EDITION-UNKNOWN'))
-    .map((entry): [string, string] => [entry.path, entry.code])
-    .sort(comparePairs);
+    .map((entry): Triple => [entry.path, entry.code, entry.subject])
+    .sort(compareTriples);
 }
 
-function comparePairs(left: [string, string], right: [string, string]): number {
-  return left[0] < right[0] ? -1 : left[0] > right[0] ? 1
-    : left[1] < right[1] ? -1 : left[1] > right[1] ? 1 : 0;
+function compareTriples(left: Triple, right: Triple): number {
+  for (let at = 0; at < 3; at++) {
+    if (left[at] !== right[at]) {
+      return left[at] < right[at] ? -1 : 1;
+    }
+  }
+  return 0;
+}
+
+/**
+ * The places whose subject the manifest records, as path and code. The manifest records one
+ * where SPEC.md section 9.5 requires it, and the runner compares it there and nowhere else.
+ */
+function pinned(rows: readonly Row[]): Set<string> {
+  return new Set(rows.filter((row) => row.subject !== undefined)
+    .map((row) => (row.path ?? '') + '\u0000' + row.code));
+}
+
+/** Findings as path, code and subject, the subject kept only at the places pinned. */
+function compared(findings: readonly Triple[], pins: Set<string>): Triple[] {
+  return findings
+    .map(([where, code, subject]): Triple =>
+      [where, code, pins.has(where + '\u0000' + code) ? subject : ''])
+    .sort(compareTriples);
+}
+
+/** The rows of the manifest in the form compared() gives an answer. */
+function recorded(rows: readonly Row[]): Triple[] {
+  return compared(rows.map((row): Triple =>
+    [row.path ?? '', row.code as string, row.subject ?? '']), pinned(rows));
 }
 
 test('every file the manifest names is in the repository', () => {
@@ -201,10 +239,9 @@ test('a conformant document draws exactly the findings the manifest records', ()
       if (!CARRIED.has(entry.semanticModel)) {
         continue;
       }
-      const expected = (entry.findings ?? [])
-        .map((finding): [string, string] => [finding.path, finding.code])
-        .sort(comparePairs);
-      assert.deepEqual(errorsOf(readFileSync(path.join(ROOT, entry.file))), expected, entry.file);
+      const rows = entry.findings ?? [];
+      assert.deepEqual(compared(errorsOf(readFileSync(path.join(ROOT, entry.file))), pinned(rows)),
+        recorded(rows), entry.file);
     }
   }
 });
@@ -213,16 +250,12 @@ test('a conformant document draws exactly the findings the manifest records', ()
  * The rows of one manifest, gathered per file: a document may be wrong in two ways at layer
  * L1 and draw a row for each code.
  */
-function invalidByFile(manifest: Manifest): Map<string, Array<{
-  file: string; layer: string; code?: string; path?: string;
-}>> {
-  const byFile = new Map<string, Array<{
-    file: string; layer: string; code?: string; path?: string;
-  }>>();
+function invalidByFile(manifest: Manifest): Map<string, Row[]> {
+  const byFile = new Map<string, Row[]>();
   for (const entry of manifest.invalid ?? []) {
-    const rows = byFile.get(entry.file);
+    const rows = byFile.get(entry.file as string);
     if (rows === undefined) {
-      byFile.set(entry.file, [entry]);
+      byFile.set(entry.file as string, [entry]);
     } else {
       rows.push(entry);
     }
@@ -242,13 +275,12 @@ test('a document the manifest calls invalid is rejected at the place it names', 
       if (rows[0].layer === 'L1' || rows[0].layer === 'limit') {
         // SPEC.md section 9.6 fixes how far a reader reads, so the rows of a document layer
         // L1 refused are the whole answer and not a sample of it.
-        assert.deepEqual(found, rows
-          .map((entry): [string, string] => [entry.path ?? '', entry.code as string])
-          .sort(comparePairs), file);
+        assert.deepEqual(compared(found, pinned(rows)), recorded(rows), file);
         continue;
       }
-      assert.ok(found.some(([where, code]) => code === rows[0].code
-        && where === (rows[0].path ?? '')),
+      const [first] = recorded(rows.slice(0, 1));
+      assert.ok(compared(found, pinned(rows.slice(0, 1))).some((entry) =>
+        compareTriples(entry, first) === 0),
         file + ' draws ' + rows[0].code + ' at ' + JSON.stringify(rows[0].path ?? '')
         + ', and this reader answered ' + JSON.stringify(found));
     }

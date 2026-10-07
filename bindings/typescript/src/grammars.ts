@@ -463,22 +463,28 @@ export function codePointCount(value: string): number {
 /**
  * Returns a fragment of a document in the form a message may carry it: escaped as
  * section 9.5 requires and cut to the excerpt length of section 12.6.
+ *
+ * The length is counted in UTF-16 code units, a fragment that was cut ends in three dots, and
+ * the cut never falls between the two halves of a surrogate pair — the excerpt the Java and
+ * the C# implementation write, so that a message reads the same in all three.
  */
 export function forMessage(value: string, limit: number = MESSAGE_EXCERPT): string {
-  let end = 0;
-  for (let count = 0; count < limit && end < value.length; count++) {
-    const unit = value.charCodeAt(end);
-    end += unit >= 0xd800 && unit <= 0xdbff && end + 1 < value.length
-      && value.charCodeAt(end + 1) >= 0xdc00 && value.charCodeAt(end + 1) <= 0xdfff ? 2 : 1;
+  if (value.length <= limit) {
+    return escapeForMessage(value);
   }
-  const escaped = escapeForMessage(value.slice(0, end));
-  return end < value.length ? `${escaped}…` : escaped;
+  let end = limit;
+  const last = value.charCodeAt(end - 1);
+  if (last >= 0xd800 && last <= 0xdbff) {
+    end--;
+  }
+  return escapeForMessage(value.slice(0, end)) + '...';
 }
 
 /**
- * Escapes a fragment quoted inside a message: a backslash, a quotation mark, the three
- * whitespace controls, every other C0 control, the delete character and the bidirectional
- * formatting characters (specification, section 9.5).
+ * Escapes a fragment quoted inside a message or carried in a subject (specification,
+ * section 9.5): a backslash and a quotation mark, the line feed, the carriage return and the
+ * tab by name, and every other character of {@link steersATerminal} as `\u` and four
+ * lowercase hexadecimal digits.
  */
 export function escapeForMessage(value: string): string {
   let out = '';
@@ -494,11 +500,40 @@ export function escapeForMessage(value: string): string {
       out += '\\r';
     } else if (c === '\t') {
       out += '\\t';
-    } else if (code < 0x20 || code === 0x7f || (code >= 0x202a && code <= 0x202e) || (code >= 0x2066 && code <= 0x2069)) {
-      out += `\\u${code.toString(16).toUpperCase().padStart(4, '0')}`;
+    } else if (steersATerminal(code)) {
+      out += `\\u${code.toString(16).padStart(4, '0')}`;
     } else {
       out += c;
     }
   }
   return out;
+}
+
+/**
+ * Tells whether a character steers a terminal rather than saying something, which makes it a
+ * character no message and no subject carries as it stands (specification, section 9.5): a C0
+ * control, the delete character, a C1 control (U+0080 to U+009F, U+0085 NEXT LINE among them),
+ * the line separator U+2028, the paragraph separator U+2029, or a bidirectional formatting
+ * character of {@link isBidiControl}. The set is the one of the Java implementation,
+ * `Esj.steersATerminal`.
+ */
+export function steersATerminal(codePoint: number): boolean {
+  return codePoint < 0x20
+    || (codePoint >= 0x7f && codePoint <= 0x9f)
+    || codePoint === 0x2028
+    || codePoint === 0x2029
+    || isBidiControl(codePoint);
+}
+
+/**
+ * Tells whether a character is a bidirectional formatting character: U+061C ARABIC LETTER
+ * MARK, U+200E and U+200F, the embeddings and overrides U+202A to U+202E, and the isolates
+ * U+2066 to U+2069 — the characters of the Unicode property Bidi_Control.
+ */
+export function isBidiControl(codePoint: number): boolean {
+  return codePoint === 0x061c
+    || codePoint === 0x200e
+    || codePoint === 0x200f
+    || (codePoint >= 0x202a && codePoint <= 0x202e)
+    || (codePoint >= 0x2066 && codePoint <= 0x2069);
 }

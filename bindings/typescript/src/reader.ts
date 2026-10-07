@@ -325,7 +325,9 @@ class Parse {
       any = true;
       const name = scanner.readName();
       const subject = valuesSubject(name);
-      this.nameTheReaderCannotTake(name, subject, seen, subject);
+      // A name that occurs twice in values draws a finding about the object, whose subject is
+      // values, as the Java and the C# reader write it.
+      this.nameTheReaderCannotTake(name, subject, seen, 'values');
       if (++this.valueCount > this.limits.maxValues) {
         this.limit('values carries more than ' + this.limits.maxValues + ' members.', subject);
       }
@@ -724,7 +726,8 @@ class Parse {
     while (scanner.nextMember(any)) {
       any = true;
       const name = scanner.readName();
-      const subject = 'source["' + escapeForMessage(name) + '"]';
+      // The member access the Java and the C# reader write for a member of source.
+      const subject = 'source.' + escapeForMessage(name);
       this.nameTheReaderCannotTake(name, subject, seen, 'source');
       if (name !== 'syntax' && name !== 'sha256') {
         this.fatal(FindingCode.L1_ENVELOPE_MEMBER,

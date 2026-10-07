@@ -154,6 +154,7 @@ public sealed class Protocol
                 writer.WriteStartObject();
                 writer.WriteString("path", finding.Path.Text);
                 writer.WriteString("code", finding.Code.Code);
+                writer.WriteString("subject", finding.Subject);
                 writer.WriteEndObject();
             }
 

@@ -921,7 +921,7 @@ class FixtureManifestTest {
 
     /**
      * One negative fixture, as one row per code it draws: the layer that catches the defect,
-     * the code and the path the finding names.
+     * the code, the path the finding names and, where section 9.5 requires one, its subject.
      *
      * <p>The reader is asked for its findings rather than for the exception it would raise,
      * because the specification, section 9.5 fixes what {@code path} points at for every
@@ -944,11 +944,11 @@ class FixtureManifestTest {
         ReadResult read = reader.readWithFindings(bytes);
         if (!read.isWellFormed()) {
             return read.findings().stream().filter(Finding::isError)
-                    .map(finding -> Manifest.object().put("file", file)
+                    .map(finding -> withSubject(Manifest.object().put("file", file)
                             .put("layer", finding.code() == FindingCode.ESJ_L1_LIMIT
                                     ? "limit" : finding.code().layer().name())
                             .put("code", finding.code().code())
-                            .put("path", finding.path().toString()))
+                            .put("path", finding.path().toString()), finding))
                     .toList();
         }
         SemanticDocument document = read.document().orElseThrow();
@@ -959,10 +959,35 @@ class FixtureManifestTest {
             return List.of(Manifest.object().put("file", file).put("layer", "business-rule"));
         }
         Finding first = errors.get(0);
-        return List.of(Manifest.object().put("file", file)
+        return List.of(withSubject(Manifest.object().put("file", file)
                 .put("layer", first.code().layer().name())
                 .put("code", first.code().code())
-                .put("path", first.path().toString()));
+                .put("path", first.path().toString()), first));
+    }
+
+    /**
+     * Adds the subject of a finding to its row where the specification, section 9.5 requires
+     * one: where the path is empty, because the member name is no semantic path or the place
+     * is the envelope, {@code source} or {@code extensions}, and on a finding of layer L3,
+     * which names the term or group it is about. Elsewhere a reader MAY carry the member
+     * access as well, so the manifest does not pin it there.
+     *
+     * <p>A subject is one of the three fields a program reacts to, and the name it carries is
+     * escaped as a message escapes a fragment of a document. A row that records one therefore
+     * holds a binding to the same set of escaped characters, spelled the same way;
+     * {@code run.py} compares the subject where a row records one and nowhere else. Where this
+     * implementation leaves a required subject empty — a member name carrying a lone
+     * surrogate, which has no UTF-8 encoding a subject could carry — the row records none, and
+     * what a binding answers there is not compared.
+     */
+    private static Manifest.Object withSubject(Manifest.Object row, Finding finding) {
+        return finding.subject().isEmpty() || !subjectRequired(finding)
+                ? row : row.put("subject", finding.subject());
+    }
+
+    /** Whether section 9.5 requires a finding to carry a subject: see {@link #withSubject}. */
+    private static boolean subjectRequired(Finding finding) {
+        return finding.path().isRoot() || finding.code().layer() == ValidationLayer.L3;
     }
 
     /**

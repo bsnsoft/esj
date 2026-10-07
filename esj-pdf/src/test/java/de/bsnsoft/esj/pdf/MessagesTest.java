@@ -22,7 +22,7 @@ class MessagesTest {
                 + (char) 0x2028 + (char) 0x2029 + (char) 0x061c + (char) 0x202e
                 + (char) 0x2066 + "lmx.lmth.xml";
 
-        assertEquals("x\\u001B[2K\\u007F\\u009B\\u0085\\u2028\\u2029\\u061C\\u202E\\u2066"
+        assertEquals("x\\u001b[2K\\u007f\\u009b\\u0085\\u2028\\u2029\\u061c\\u202e\\u2066"
                 + "lmx.lmth.xml", Messages.escape(name));
     }
 

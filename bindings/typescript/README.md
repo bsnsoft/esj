@@ -103,8 +103,8 @@ npm run fixtures  # the manifest through the language-neutral runner
 `npm test` runs the whole fixture manifest of [`conformance/fixtures/`](../../conformance/fixtures/README.md)
 in process: 98 conformant documents with their two digests, their canonical byte length, the
 registries they were measured with and the 46 cardinality findings two of them draw;
-52 rows for the documents that have to be rejected, each with its finding code and the path it
-names; the canonical bytes of two scrambled documents; the accept and reject tables of the value
+55 rows for the documents that have to be rejected, each with its finding code, the path it
+names and, where SPEC.md section 9.5 requires one, its subject; the canonical bytes of two scrambled documents; the accept and reject tables of the value
 grammars; 448 mutations of the conformance corpus against the rule pack, and 314 cases of the
 later edition's pack; and the rules of the pack that pins division. One document, one rejected
 row and the 314 cases come from the part of the manifest that carries the later edition, which a

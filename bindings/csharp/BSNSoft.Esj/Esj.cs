@@ -233,15 +233,35 @@ public static class Esj
     }
 
     /// <summary>
-    /// Tells whether a character would steer a terminal rather than appear in it: a C0
-    /// control, the delete character, or one of the bidirectional formatting characters.
+    /// Tells whether a character steers a terminal rather than saying something, which makes it
+    /// a character no message and no subject carries as it stands (specification, section 9.5):
+    /// a C0 control, the delete character, a C1 control (U+0080 to U+009F, U+0085 NEXT LINE
+    /// among them), the line separator U+2028, the paragraph separator U+2029, or a
+    /// bidirectional formatting character of <see cref="IsBidiControl"/>. The set is the one of
+    /// the Java implementation, <c>Esj.steersATerminal</c>.
     /// </summary>
-    private static bool SteersATerminal(char character) =>
-        character < 0x20
-        || character == 0x7F
-        || character == '‎' || character == '‏'
-        || (character >= '‪' && character <= '‮')
-        || (character >= '⁦' && character <= '⁩');
+    /// <param name="codePoint">a Unicode code point, or a UTF-16 code unit</param>
+    /// <returns>whether the character is written as an escape</returns>
+    public static bool SteersATerminal(int codePoint) =>
+        codePoint < 0x20
+        || (codePoint >= 0x7F && codePoint <= 0x9F)
+        || codePoint == 0x2028
+        || codePoint == 0x2029
+        || IsBidiControl(codePoint);
+
+    /// <summary>
+    /// Tells whether a character is a bidirectional formatting character: U+061C ARABIC LETTER
+    /// MARK, U+200E and U+200F, the embeddings and overrides U+202A to U+202E, and the isolates
+    /// U+2066 to U+2069 — the characters of the Unicode property Bidi_Control.
+    /// </summary>
+    /// <param name="codePoint">a Unicode code point, or a UTF-16 code unit</param>
+    /// <returns>whether the character is a bidirectional formatting character</returns>
+    public static bool IsBidiControl(int codePoint) =>
+        codePoint == 0x061C
+        || codePoint == 0x200E
+        || codePoint == 0x200F
+        || (codePoint >= 0x202A && codePoint <= 0x202E)
+        || (codePoint >= 0x2066 && codePoint <= 0x2069);
 
     /// <summary>Reads one or more alphanumeric groups joined by hyphens, a colon and a year.</summary>
     private static int ModelToken(string value, int from)

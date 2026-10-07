@@ -27,10 +27,13 @@ grammars and catches the first and the third.
 | `empty-string-value.esj.json` | BT-27 is the empty string | L1 | `ESJ-L1-EMPTY-STRING` | yes |
 | `empty-string-with-missing-term.esj.json` | BT-27 is the empty string, and the invoice line has no BT-130 either | L1 | `ESJ-L1-EMPTY-STRING` | yes |
 | `unknown-envelope-member.esj.json` | an extra top level member `profile` | L1 | `ESJ-L1-ENVELOPE-MEMBER` | yes |
+| `envelope-member-terminal-characters.esj.json` | an extra top level member whose name carries an escape sequence, a bell, NEXT LINE, U+2028, U+061C and U+202E | L1 | `ESJ-L1-ENVELOPE-MEMBER` | yes |
 | `values-deep-array.esj.json` | `values` is an array nested 40 levels deep, past the nesting bound | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `path-leading-zero-index.esj.json` | `/BG-4/BT-29/00` — an occurrence index with a leading zero | L1 | `ESJ-L1-PATH-SYNTAX` | yes |
 | `path-syntax-with-array-value.esj.json` | `/BG-25/0/BT 129` is no path, and the value under it is an array | L1 | `ESJ-L1-PATH-SYNTAX` and `ESJ-L1-JSON-TYPE` | yes |
+| `path-syntax-terminal-characters.esj.json` | a member of `values` named `/BT-1` followed by one character of every class SPEC.md section 9.5 escapes, a tab, a quotation mark and a backslash | L1 | `ESJ-L1-PATH-SYNTAX` | yes |
 | `owner-token-syntax.esj.json` | the extension owner `urn:example:v/2` is outside the grammar of SPEC.md section 4.6 | L1 | `ESJ-L1-OWNER-TOKEN` | yes |
+| `owner-token-terminal-characters.esj.json` | an extension owner carrying C1 controls, U+2028, U+2029 and bidirectional controls | L1 | `ESJ-L1-OWNER-TOKEN` | yes |
 | `empty-extensions.esj.json` | `extensions` is present and empty | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `source-empty-syntax.esj.json` | `source.syntax` is the empty string, which SPEC.md section 4.7 forbids | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `source-sha256-uppercase.esj.json` | `source.sha256` is written in uppercase hexadecimal | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
@@ -133,6 +136,13 @@ gives `ESJ-L1-SURROGATE` precedence over every check that reads the same string 
 check that reads the shape of the object untouched by it, so both are reported and the manifest
 pins both. `path-syntax-with-array-value.esj.json` draws two codes as well: a name that is no path
 is confined to its member, and the value under it is judged all the same (section 9.6).
+
+The three `*-terminal-characters` fixtures carry, in a member name, the characters SPEC.md section
+9.5 escapes in a message and a `subject`: C0 and C1 controls, DEL, U+2028, U+2029 and the
+bidirectional formatting characters. Each finding has an empty path, so its `subject` names the
+place, and the manifest records that subject as the reference writes it — `\u` and four lowercase
+hexadecimal digits for each of those characters, `\t`, `\"` and `\\` by name. A reader that lets
+one of them through, or spells it otherwise, fails the manifest.
 
 A byte order mark is the one L1 defect with no fixture here: a file carrying one is no JSON text
 (SPEC.md section 9.1).

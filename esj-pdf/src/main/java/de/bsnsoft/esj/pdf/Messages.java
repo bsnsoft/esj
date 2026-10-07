@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.pdf;
 
 import de.bsnsoft.esj.Esj;
+import java.util.Locale;
 
 /**
  * Escapes a fragment of a document before it is put into a message.
@@ -10,7 +11,8 @@ import de.bsnsoft.esj.Esj;
  * section 9.5 asks a validator to escape such a fragment so that an escape sequence in it
  * cannot rewrite the line a reader sees and a quotation mark in it cannot forge the rest
  * of a location. The same rule is applied here, to the same characters: the ones
- * {@link Esj#steersATerminal(int)} names.
+ * {@link Esj#steersATerminal(int)} names, each written as {@code \}{@code u} and four
+ * lowercase hexadecimal digits, as {@code esj-core} writes it.
  */
 final class Messages {
 
@@ -39,7 +41,7 @@ final class Messages {
                 case '\t' -> out.append("\\t");
                 default -> {
                     if (Esj.steersATerminal(c)) {
-                        out.append(String.format("\\u%04X", (int) c));
+                        out.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
                     } else {
                         out.append(c);
                     }
