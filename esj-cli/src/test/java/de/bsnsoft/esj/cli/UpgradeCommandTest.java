@@ -61,6 +61,8 @@ class UpgradeCommandTest {
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         assertTrue(run.err().contains("1 open point"), run.err());
         assertTrue(run.err().contains("BT-24"), run.err());
+        assertTrue(run.err().contains("info: EN16931-1:2026 is supported as a preview"),
+                run.err());
         assertEquals("EN16931-1:2026",
                 EsjReader.strict().read(read(written)).semanticModel());
     }

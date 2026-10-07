@@ -370,6 +370,20 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+          <!--
+            mvn dependency:analyze: the bill of materials and the B2C overlay are declared so
+            that they are built before this module, for MavenCoordinatesTest, which reads
+            their files and none of their classes.
+          -->
+          <execution>
+            <id>default-cli</id>
+            <configuration>
+              <ignoredUnusedDeclaredDependencies>
+                <ignoredUnusedDeclaredDependency>de.bsnsoft.esj:esj-bom</ignoredUnusedDeclaredDependency>
+                <ignoredUnusedDeclaredDependency>de.bsnsoft.esj:esj-b2c</ignoredUnusedDeclaredDependency>
+              </ignoredUnusedDeclaredDependencies>
+            </configuration>
+          </execution>
           <execution>
             <id>dependency-legal-files</id>
             <phase>process-classes</phase>
