@@ -30,6 +30,8 @@ other runtime. Release candidate: not a CEN or KoSIT deliverable; format 0.1 is 
 
 [Demo video](https://www.youtube.com/watch?v=Hys6tKensF4) ([German version](https://www.youtube.com/watch?v=OBbLrAIi03w)) — two minutes; everything on screen is the output of `esj` 0.9.1, a PostgreSQL included.
 
+[One-minute short](https://www.youtube.com/shorts/3yCHqg5ENno) (German, animated) — what ESJ is for, without a terminal.
+
 ```text
                 ┌── UBL
                 ├── CII
