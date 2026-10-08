@@ -1,0 +1,31 @@
+{
+  "format": "EN16931-Semantic-JSON-registry",
+  "version": "0.1",
+  "model": "ESJ-TEST-EXTENSION",
+  "edition": "ESJ-TEST-EXTENSION 1",
+  "license": "Apache-2.0",
+  "notice": "A test registry of the fixture manifest.",
+  "generated": "2026-10-08",
+  "sourceStatement": "Written for the fixture manifest; it describes no published model.",
+  "terms": [
+    {
+      "id": "BT-ZZZ-1",
+      "kind": "BT",
+      "name": "test term BT-ZZZ-1",
+      "slug": "test1",
+      "parent": "BG-25",
+      "path": [
+        "BG-25",
+        "BT-ZZZ-1"
+      ],
+      "depth": 1,
+      "min": 0,
+      "max": 1,
+      "datatype": "Text",
+      "components": [],
+      "order": 1,
+      "description": "A term of a test registry.",
+      "notes": []
+    }
+  ]
+}

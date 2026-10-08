@@ -1,6 +1,6 @@
 {
   "format": "EN16931-Semantic-JSON-Fixtures-Rules",
-  "version": "1",
+  "version": "2",
   "pack": "en16931-2026/0.1",
   "directory": "rules/en16931-2026/0.1",
   "bases": {

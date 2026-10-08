@@ -54,6 +54,16 @@ result.findings;                                   // path, subject, code, sever
 subject, the code of `SPEC.md` section 9.6, its severity and a message. A limit of section 12.2
 is a finding with the code `ESJ-L1-LIMIT` and leaves the result indeterminate, never invalid.
 
+| Field | What it holds |
+|---|---|
+| `path` | the path of the member of `values` the finding is about, where its name is a path; empty for `ESJ-L1-JSON` |
+| `subject` | the member access of section 9.5, never cut: `format`, `source.syntax`, `values["/BT-1"]`, `values["/BG-4/BT-29/0"].scheme`, `extensions["de.example"]["a"][1]`, `["profile"]`; a lone surrogate is written `\ud800`; at L2 and L3 the identifier or the component |
+| `message` | English, quoted fragments escaped; an offset is in UTF-8 bytes from the start of the token |
+
+`readDocumentOrThrow` raises `EsjError` with the code, the path and the subject of the first
+finding. `canonicalize` and `pretty` sort and normalize the values themselves; `pretty` ends with
+one LF and writes a number inside `extensions` in its canonical form.
+
 ## The typed view
 
 ```ts
@@ -99,9 +109,13 @@ edition other than the one the pack was compiled against.
 | Validator (3.5) | `src/validate.ts`: layers L1 to L3 and the tri-state result |
 
 Every registry under `model/en16931/` this build copies is carried, with the XRechnung 3.0.2 and
-B2C 0.1 extension registries beside the default edition. A document of an edition the build has no
-registry for is read, canonicalized and digested like any other and reports
-`ESJ-L2-EDITION-UNKNOWN` instead of a model layer (`SPEC.md` sections 4.4 and 9.2).
+B2C 0.1 extension registries beside the default edition. `registryOf` and `new Structure` make the
+checks of `SPEC.md` section 10 and throw `RegistryError`: components a value can satisfy, no
+identifier twice, an extension that defines identifiers of its own namespace only, and an
+extension combined only with the edition its `imports` names. A
+document of an edition the build has no registry for is read, canonicalized and digested like
+any other and reports `ESJ-L2-EDITION-UNKNOWN` instead of a model layer (`SPEC.md` sections 4.4
+and 9.2).
 
 Not here: the writers to UBL and CII, PDF, rendering, `esj upgrade` and the command line. Those
 are the Java implementation ([`cli.md`](cli.md)).
@@ -118,11 +132,15 @@ rounds to a scale the caller names.
 npm run fixtures
 ```
 
-starts `tools/fixture-binding.ts` and answers the six requests of
-`conformance/fixtures/run.py` over a pipe: the digests, the canonical bytes, the findings and
-the rule identifiers of every case of the manifest, 1089 of them where the part of the later
-edition is present. `npm test` runs the same manifest in process, so a case that the reference
-implementation writes into the manifest fails here until this binding answers it too. The job
+starts `tools/fixture-binding.ts` and answers the requests of `conformance/fixtures/run.py`
+over a pipe: the digests, the canonical bytes, the status, the layers not evaluated and every
+finding with its severity — under the bounds a request names in `limits`, with the registries it
+names in `registries` —, the
+rule identifiers of every case of the manifest, 1089 of them where the part of the later edition
+is present, and, for `{"op": "registry", "files": [...]}`, whether those registry files are
+accepted, every file after the first combined with the first. `npm test` runs the same manifest
+in process, so a case that the reference implementation writes into the manifest fails here
+until this binding answers it too. The job
 `bindings` of the CI runs `npm ci`, `npm test` and the runner on every push.
 
 Author: Christian Bürckert.

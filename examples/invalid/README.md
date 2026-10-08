@@ -19,6 +19,14 @@ grammars and catches the first and the third.
 
 | File | Defect | Layer | Finding code | Rejected by the schema |
 |---|---|---|---|---|
+| `encoding-byte-order-mark.esj.json` | the UTF-8 byte order mark `EF BB BF` before the document | L1 | `ESJ-L1-ENCODING` | no, not a JSON text |
+| `encoding-not-utf8.esj.json` | BT-27 carries `ü` as the single ISO-8859-1 byte `FC` | L1 | `ESJ-L1-ENCODING` | no |
+| `json-utf16-without-bom.esj.json` | the document encoded in UTF-16LE without a byte order mark: valid UTF-8, with a NUL byte after every character | L1 | `ESJ-L1-JSON` | no, not a JSON text |
+| `json-trailing-comma.esj.json` | a comma after the last member of `values` | L1 | `ESJ-L1-JSON` | no, not a JSON text |
+| `envelope-missing-values.esj.json` | the envelope has no `values` | L1 | `ESJ-L1-ENVELOPE-MEMBER` | yes |
+| `envelope-wrong-version.esj.json` | `version` is `1.0` | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
+| `semantic-model-grammar.esj.json` | `semanticModel` is `EN16931-1`, without the year the edition grammar of SPEC.md section 4.4 requires | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
+| `source-unknown-member.esj.json` | `source` carries a member `profile`, which SPEC.md section 4.7 does not define | L1 | `ESJ-L1-ENVELOPE-MEMBER` | yes |
 | `number-instead-of-string.esj.json` | BT-129 is the JSON number `1` instead of a string | L1 | `ESJ-L1-JSON-TYPE` | yes |
 | `object-without-component.esj.json` | BT-1 is written `{"value": "RE-2026-0001"}`, an object with no supplementary component | L1 | `ESJ-L1-VALUE-SHAPE` | yes |
 | `value-not-a-string.esj.json` | the `value` member of BT-29 is a JSON object instead of a string | L1 | `ESJ-L1-VALUE-SHAPE` | yes |
@@ -38,6 +46,8 @@ grammars and catches the first and the third.
 | `source-empty-syntax.esj.json` | `source.syntax` is the empty string, which SPEC.md section 4.7 forbids | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `source-sha256-uppercase.esj.json` | `source.sha256` is written in uppercase hexadecimal | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `duplicate-member.esj.json` | `/BT-1` appears twice in `values` | L1 (reader only) | `ESJ-L1-DUPLICATE-MEMBER` | no |
+| `duplicate-envelope-member.esj.json` | `format` appears twice in the envelope | L1 (reader only) | `ESJ-L1-DUPLICATE-MEMBER` | no |
+| `duplicate-in-extensions.esj.json` | a member name occurs twice below the owner token `de.example.vendor` | L1 (reader only) | `ESJ-L1-DUPLICATE-MEMBER` | no |
 | `duplicate-in-value-object.esj.json` | the value object at BT-29 carries `scheme` twice | L1 (reader only) | `ESJ-L1-DUPLICATE-MEMBER` | no |
 | `duplicate-in-two-value-objects.esj.json` | two value objects each carry `scheme` twice | L1 (reader only) | `ESJ-L1-DUPLICATE-MEMBER` | no |
 | `duplicate-path-of-value-objects.esj.json` | `/BT-1` appears twice in `values`, each time as an object with no supplementary component | L1 (reader only) | `ESJ-L1-VALUE-SHAPE` and `ESJ-L1-DUPLICATE-MEMBER` | yes, for the shape alone |
@@ -67,10 +77,17 @@ grammars and catches the first and the third.
 | `binary-without-filename.esj.json` | BT-125 carries `mimeCode` but not `filename`, which the registry declares mandatory | L2 | `ESJ-L2-COMPONENT-MISSING` | no |
 | `scheme-on-text-value.esj.json` | a `scheme` on BT-27, whose registry datatype is `Text` and which lists no component | L2 | `ESJ-L2-COMPONENT-NOT-ALLOWED` | no |
 | `unknown-term.esj.json` | `/BT-999` — a business term that does not exist in the model | L2 | `ESJ-L2-UNKNOWN-TERM` | no |
+| `parent-chain.esj.json` | `/BG-4/BT-2`: BT-2 belongs to the document root, not to the seller group | L2 | `ESJ-L2-PARENT-CHAIN` | no |
+| `index-required.esj.json` | `/BG-4/BT-29` without the occurrence index BT-29 carries as a repeatable term | L2 | `ESJ-L2-INDEX-REQUIRED` | no |
 | `index-on-bt-1.esj.json` | `/BT-1/0` — an occurrence index on a term declared `1..1` | L2 | `ESJ-L2-INDEX-FORBIDDEN` | no |
 | `index-gap.esj.json` | the only VAT breakdown sits at index 2, so indices 0 and 1 are missing | L3 | `ESJ-L3-INDEX-GAP` | no |
+| `missing-mandatory-group.esj.json` | no buyer: BG-7, declared mandatory, has no instance | L3 | `ESJ-L3-MISSING-GROUP` | no |
 | `missing-mandatory-term.esj.json` | the invoice line has no BT-130, which the registry declares mandatory | L3 | `ESJ-L3-MISSING-TERM` | no |
 | `arithmetic-mismatch.esj.json` | BT-115 does not equal BT-112 − BT-113 + BT-114 | business rule | none | no |
+
+Three fixtures are no JSON text, so a schema validator cannot parse them. The variants of each
+kind of error are in [`conformance/fixtures/reader/`](../../conformance/fixtures/reader/README.md)
+and [`conformance/fixtures/model/`](../../conformance/fixtures/model/README.md).
 
 The four fixtures at the top are the value shape of SPEC.md section 6.1 from four sides: content
 alone in the object form (rule 3), a `type` member of an earlier draft, a JSON object where the
@@ -81,20 +98,16 @@ rule 4). BT-158 declares `scheme` mandatory as well, but the model layers are no
 over a document L1 rejected (SPEC.md section 9.5), so the L1 finding is the whole answer.
 
 The five L2 content fixtures — the two decimals, the date, the base64 and the missing binary
-component — need the registry: without a type token in the document, nothing else says that
-BT-106 carries a decimal and BT-2 a date, so a validator run without one accepts all five, and
-must. `decimal-trailing-zeros.esj.json` pins SPEC.md section 6.4: `100.00` is an error and is
-never made into `100` on the way through.
+component — need the registry, which alone says that BT-106 carries a decimal and BT-2 a date.
+`decimal-trailing-zeros.esj.json` pins SPEC.md section 6.4: `100.00` is never made into `100`.
 
 `duplicate-member.esj.json` is a defect a JSON Schema validator never sees: its parser has
 collapsed the two members into one. With `duplicate-in-value-object.esj.json` it fixes what the
 finding points at: a name repeated in `values` carries no path, one repeated inside a value object
 carries that member's path (SPEC.md section 9.5).
 
-Nine fixtures are about a member name the reader cannot take; the code is `ESJ-L1-SURROGATE`
-and not `ESJ-L1-JSON`, an escaped surrogate being well-formed JSON and only ill-formed Unicode.
-SPEC.md section 9.6 decides three things about such a name that a reader cannot otherwise
-learn.
+Nine fixtures are about a member name the reader cannot take: `ESJ-L1-SURROGATE`, an escaped
+surrogate being well-formed JSON and ill-formed Unicode. SPEC.md section 9.6 decides three things.
 
 | What is pinned | By |
 |---|---|
@@ -102,29 +115,21 @@ learn.
 | where one object carries both defects, the one the text reaches first is the one reported | `surrogate-and-duplicate-in-value-object`, `duplicate-and-surrogate-in-value-object` |
 | the reader stops there and reports nothing after it | `duplicate-in-two-value-objects`, `duplicate-path-of-value-objects`, `duplicate-below-bad-owner-token`, `surrogate-below-bad-owner-token` |
 
-`extension-number-too-long.esj.json` carries a legal JSON number. SPEC.md section 7.6, rule 2
-makes it an error: a number inside `extensions` is canonicalized from its lexical form, and
-`1e400` canonicalizes to a one followed by four hundred zeros, past the 64-character bound of
-section 6.4. The code is `ESJ-L1-EXT-NUMBER` although the same bound inside `values` is an L2
-one, because no registry is needed to know that the thing measured is a number. The two
-`extension-number-exponent-*` fixtures have exponents past every integer type: a reader sizes the
-canonical form from the exponent and the significant digits and never writes it out.
+`extension-number-too-long.esj.json` carries a legal JSON number whose canonical form (SPEC.md
+section 7.6, rule 2) is 401 characters, past the bound of section 6.4; no registry is needed to
+know it is a number, so the code is of layer L1. The two `extension-number-exponent-*` fixtures
+have exponents past every integer type: a reader sizes the canonical form and never writes it.
 
-`extension-depth-33.esj.json` exceeds a configured limit, and SPEC.md section 3.1 keeps limits
-out of conformance: a reader with a larger bound accepts it and is right to. `ESJ-L1-LIMIT`
-says *not processed under this configuration*. With `examples/extension-depth.esj.json` (32
-levels, accepted) it leaves no second reading of where the depth count starts: an
-implementation that counts the `extensions` object itself as a level refuses the first, one
-that counts a scalar as a level refuses it too. `value-depth-32` and `value-depth-33` fix the
+`extension-depth-33.esj.json` exceeds a configured limit (SPEC.md section 3.1): a reader with a
+larger bound accepts it. With `examples/extension-depth.esj.json` (32 levels, accepted) it fixes
+where the depth count starts: counting the `extensions` object or a scalar as a level refuses both. `value-depth-32` and `value-depth-33` fix the
 same base for the walk past a structure inside `values`: the value of a member of `values` is
 level 1 (SPEC.md section 12.2). `values-deep-array` is no limit: `values` is refused at its first
 token and nothing after it is walked.
 
-`value-object-members-17.esj.json` is the second limit fixture. A value object has at most five
-members (SPEC.md section 6.1), so the count never makes a real document wrong; the bound keeps
-the collection a reader makes before it judges the set from being unbounded. Its schema column
-says yes for another reason than its name — fifteen of the seventeen members are undefined
-there — and a reader with a larger bound reports `ESJ-L1-VALUE-MEMBER` on the first of them.
+`value-object-members-17.esj.json` is the second limit fixture: a value object has at most five
+members (SPEC.md section 6.1), and the bound keeps what a reader collects before it judges the set
+bounded. The schema refuses it for its undefined members; a larger bound draws `ESJ-L1-VALUE-MEMBER`.
 
 `empty-string-with-missing-term.esj.json` is here for what a validator must **not** say about
 it: the member L1 refused is absent from the document the reader hands back, so a validator
@@ -137,15 +142,9 @@ check that reads the shape of the object untouched by it, so both are reported a
 pins both. `path-syntax-with-array-value.esj.json` draws two codes as well: a name that is no path
 is confined to its member, and the value under it is judged all the same (section 9.6).
 
-The three `*-terminal-characters` fixtures carry, in a member name, the characters SPEC.md section
-9.5 escapes in a message and a `subject`: C0 and C1 controls, DEL, U+2028, U+2029 and the
-bidirectional formatting characters. Each finding has an empty path, so its `subject` names the
-place, and the manifest records that subject as the reference writes it — `\u` and four lowercase
-hexadecimal digits for each of those characters, `\t`, `\"` and `\\` by name. A reader that lets
-one of them through, or spells it otherwise, fails the manifest.
-
-A byte order mark is the one L1 defect with no fixture here: a file carrying one is no JSON text
-(SPEC.md section 9.1).
+The three `*-terminal-characters` fixtures carry, in a member name, characters SPEC.md section
+9.5 escapes in a `subject` — C0 and C1 controls, DEL, U+2028, U+2029, bidirectional formatting
+characters — and the manifest records each subject as the reference escapes it.
 
 `source-lone-surrogate.esj.json` is `ESJ-L1-SURROGATE` and not `ESJ-L1-ENVELOPE-VALUE` (SPEC.md
 section 9.6). `source-empty-syntax.esj.json` and `source-sha256-uppercase.esj.json` are a `source`

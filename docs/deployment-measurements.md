@@ -178,7 +178,7 @@ judged, by a ladder of ceilings, on documents and not on adversaries:
 | Profile | Bound | Input it was measured with | File argument | Standard input | Resident set |
 |---|---|---|---|---|---|
 | default | 4 MiB of XML | 4 177 321 B of UBL, 2 780 lines | `64m` | `64m` | 215 MiB / 210 MiB |
-| default | 64 MiB of ESJ | 67 000 000 B: the ESJ of that UBL behind insignificant whitespace | `128m` | `160m` | 291 MiB / 257 MiB |
+| default | 64 MiB of ESJ | 67 000 000 B: the ESJ of that UBL behind insignificant whitespace | `160m` | `160m` | 276 MiB / 251 MiB |
 | default | 64 MiB of PDF | 67 000 003 B: a hybrid invoice padded with a comment before its cross-reference section | `96m` | `160m` | 271 MiB / 285 MiB |
 | `large` | 256 MiB of XML | 262 144 000 B: a CII root element around one comment | `3g` | not measured | 3 477 MiB |
 | `large` | 512 MiB of ESJ | 536 000 000 B, built as the 64 MiB row | `640m` | `1280m` | 1 259 MiB / 1 308 MiB |
@@ -193,10 +193,10 @@ the flag, and a container given the `-Xmx` figure is killed by the operating sys
 The padding is what makes these the *cheapest* inputs of their size: a document at the bound
 whose content is real costs what the tables above give it on top. The XML row measures the
 XSLT, and `-Xmx3g` is what the cheapest 250 MiB of XML one can write needed there. Every other
-row is within a factor of two of the bound; the standard input costs about twice the file
-argument. The last row is content rather than padding, and the only cell taken with
-`--no-syntax`: `--rules none` has the same floor (`2304m` is out of heap either way) and takes
-11.7 s against 22.0 s. Written as CII the document is 348 604 852 B, past the 256 MiB the
+row needs at most two and a half times the bound, and the standard input up to twice the file
+argument; at 64 MiB of ESJ the two are the same, `128m` running out of heap for either. The last
+row is content rather than padding, and the only cell taken with `--no-syntax`: `--rules none`
+has the same floor (`2304m` is out of heap either way) and takes 11.7 s against 22.0 s. Written as CII the document is 348 604 852 B, past the 256 MiB the
 profile admits, so the official artefacts cannot run on it at any ceiling and the verdict is
 `INDETERMINATE`; `validate` without `--no-syntax` needs `4608m`, 4 713 MiB and 35.2 s.
 

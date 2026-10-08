@@ -1,6 +1,6 @@
 {
   "format": "EN16931-Semantic-JSON-Fixtures",
-  "version": "1",
+  "version": "2",
   "part": "core",
   "specification": "SPEC.md",
   "parts": [
@@ -356,7 +356,12 @@
       "values": 69,
       "canonicalBytes": 2045,
       "semanticDigest": "2ad1888857e00f8175170f5fa1b24645b66275c971b0b3f92bf1aebc6d6be976",
-      "documentDigest": "f9ce573887ae5a6a102fb81375af0e6e1134d3a6af25a9e0b0e6ec9783b0d9bf"
+      "documentDigest": "f9ce573887ae5a6a102fb81375af0e6e1134d3a6af25a9e0b0e6ec9783b0d9bf",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/b2c-gross.esj.json",
@@ -370,7 +375,12 @@
       "values": 66,
       "canonicalBytes": 2036,
       "semanticDigest": "fc4dc48662eebcd1450f061ee01d59168141ade50d77be66d5053f065bb1a97c",
-      "documentDigest": "fe959fb6892dce5affdcf163b577c99643fc544653688dca4d2605c0d1607285"
+      "documentDigest": "fe959fb6892dce5affdcf163b577c99643fc544653688dca4d2605c0d1607285",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/charges.esj.json",
@@ -384,7 +394,12 @@
       "values": 65,
       "canonicalBytes": 1972,
       "semanticDigest": "badcdc2d7084ccf24890e7a0ba4e575c3148b1bc7c77dfece982b056469f6d1c",
-      "documentDigest": "0d7d05d5e23c9b8f72abf5220b760b94d9543af8bc4b908808ea3e88d38aedcb"
+      "documentDigest": "0d7d05d5e23c9b8f72abf5220b760b94d9543af8bc4b908808ea3e88d38aedcb",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/credit-note.esj.json",
@@ -398,7 +413,12 @@
       "values": 46,
       "canonicalBytes": 1437,
       "semanticDigest": "a1fbdf551318e58015aff2839ab8ab9ef2691091500f6c578621e7a72255704f",
-      "documentDigest": "df7eccec8612204baec6a25362d9cc6910b4c42cf6edc5fcae2813af75e4ec06"
+      "documentDigest": "df7eccec8612204baec6a25362d9cc6910b4c42cf6edc5fcae2813af75e4ec06",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/extended.esj.json",
@@ -412,7 +432,12 @@
       "values": 23,
       "canonicalBytes": 1423,
       "semanticDigest": "3cf1c0d54df6a342434ca2284b78f51a4c5e0def601956e46870acccfcf9a385",
-      "documentDigest": "a32e6647465f1fb0bc49468f0a2f0a1a1575fa228ffb7fa368b20eb5a8fc8ac1"
+      "documentDigest": "a32e6647465f1fb0bc49468f0a2f0a1a1575fa228ffb7fa368b20eb5a8fc8ac1",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/extension-depth.esj.json",
@@ -426,7 +451,12 @@
       "values": 23,
       "canonicalBytes": 795,
       "semanticDigest": "3cf1c0d54df6a342434ca2284b78f51a4c5e0def601956e46870acccfcf9a385",
-      "documentDigest": "3dbb4212aee47f6cae74dcc98b4b873bba551bdbc06fc15afd376a465cac744a"
+      "documentDigest": "3dbb4212aee47f6cae74dcc98b4b873bba551bdbc06fc15afd376a465cac744a",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/minimal.esj.json",
@@ -440,7 +470,12 @@
       "values": 23,
       "canonicalBytes": 676,
       "semanticDigest": "3cf1c0d54df6a342434ca2284b78f51a4c5e0def601956e46870acccfcf9a385",
-      "documentDigest": "f794bd37b57d197a82c9eb099e201e154ec353450be6a50be84dc6851ec50d9a"
+      "documentDigest": "f794bd37b57d197a82c9eb099e201e154ec353450be6a50be84dc6851ec50d9a",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/multiple-lines.esj.json",
@@ -454,7 +489,12 @@
       "values": 166,
       "canonicalBytes": 5482,
       "semanticDigest": "8f4e68d5bce16744b92a4cf2da4d9d63b30f9e9ada3e322b1a93ac9f8d244c80",
-      "documentDigest": "68dbdecdd176b421829e05b21c75d0e9b65a28da9fe37adc6d08def7bc0748e1"
+      "documentDigest": "68dbdecdd176b421829e05b21c75d0e9b65a28da9fe37adc6d08def7bc0748e1",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/self-billed.esj.json",
@@ -468,7 +508,12 @@
       "values": 61,
       "canonicalBytes": 1939,
       "semanticDigest": "3503f718af5e44b361b429a5bc70ade6105bb9c86e11c8f1e4a3314af8de17f9",
-      "documentDigest": "e565576a6fcac9e5ad1491d0055713b9b6bb68696b5923a03b0b406e0cdfdb98"
+      "documentDigest": "e565576a6fcac9e5ad1491d0055713b9b6bb68696b5923a03b0b406e0cdfdb98",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/smallest-valid.esj.json",
@@ -482,7 +527,12 @@
       "values": 28,
       "canonicalBytes": 795,
       "semanticDigest": "8d119b1249d35e3d87a806eb2c87343b05374962f688d4e8f9de6341ef476a35",
-      "documentDigest": "9118836ee083d3e75bbbad25f6dc8f1d7c87d85a93e0156e7534be347ab15a5c"
+      "documentDigest": "9118836ee083d3e75bbbad25f6dc8f1d7c87d85a93e0156e7534be347ab15a5c",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/standard-invoice.esj.json",
@@ -496,7 +546,12 @@
       "values": 81,
       "canonicalBytes": 2764,
       "semanticDigest": "6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a",
-      "documentDigest": "951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4"
+      "documentDigest": "951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/extension/04.01a-INVOICE_ubl.xml.esj.json",
@@ -509,7 +564,12 @@
       "values": 192,
       "canonicalBytes": 9091,
       "semanticDigest": "1094829c035e1e0f8002a57416d23bdc449c5308ea1d11ad352fa25a80f4d143",
-      "documentDigest": "17540fcd04597ffda4a02c9296706b839c506cb24758ee1c7b13039e41277808"
+      "documentDigest": "17540fcd04597ffda4a02c9296706b839c506cb24758ee1c7b13039e41277808",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/extension/04.02a-INVOICE_ubl.xml.esj.json",
@@ -522,7 +582,12 @@
       "values": 68,
       "canonicalBytes": 2615,
       "semanticDigest": "046e41adb07dbbd953f9580c0e5072386d02affde8217dc5d84aebaf1a6c82e3",
-      "documentDigest": "5264363db6eecce4dee6f977d8d66d26465b8fc96cd9777fb4e2ab8b0a8ecb9a"
+      "documentDigest": "5264363db6eecce4dee6f977d8d66d26465b8fc96cd9777fb4e2ab8b0a8ecb9a",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/extension/04.03a-INVOICE_ubl.xml.esj.json",
@@ -536,233 +601,57 @@
       "canonicalBytes": 36925,
       "semanticDigest": "079004119ffeb2f2f80a726b8f19a52f84a5f844fcd4969df4cc57926ffc02fc",
       "documentDigest": "f7472ec1867217e35344a00b94337abf9fcff10dc70e62c297b1851922cb7680",
-      "findings": [
-        {
-          "path": "/BG-25/0/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2/BG-DEX-01/1",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2/BG-DEX-01/7",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/3",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/7",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/8",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/1",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/2",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/3",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/2",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/6",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/7",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/8",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-129"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        },
-        {
-          "path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8/BG-DEX-01/1",
-          "code": "ESJ-L3-MISSING-TERM",
-          "subject": "BT-130"
-        }
-      ]
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/1", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2/BG-DEX-01/1", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/2/BG-DEX-01/7", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/3", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/3", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/7", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/4/BG-DEX-01/8", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/1", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/2", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/5/BG-DEX-01/3", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/6", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/2", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/6", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/7", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/7/BG-DEX-01/8", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8/BG-DEX-01/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0/BG-DEX-01/0/BG-DEX-01/8/BG-DEX-01/1", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "conformance/esj/business-cases/extension/04.04a-INVOICE_ubl.xml.esj.json",
@@ -776,13 +665,13 @@
       "canonicalBytes": 5679,
       "semanticDigest": "9a32ed24263b47ed4458b8f20d8a910a0c0b2025dc4251914d5c03e60f106b0b",
       "documentDigest": "bdcee8b9293b0062c48610c8a9f4c3af15aa15a1359e25e9ef10fc95cfcd3bc4",
-      "findings": [
-        {
-          "path": "/BG-25/0/BG-DEX-01/0",
-          "code": "ESJ-L3-MISSING-GROUP",
-          "subject": "BG-DEX-07"
-        }
-      ]
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0/BG-DEX-01/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-DEX-07", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "conformance/esj/business-cases/extension/04.05a-INVOICE_uncefact.xml.esj.json",
@@ -795,7 +684,12 @@
       "values": 53,
       "canonicalBytes": 2079,
       "semanticDigest": "985fc72077f8b0b32d427849e8eb7a61da584fef5bdd55551646c2fb5e3b6fb0",
-      "documentDigest": "4eec62a74a4e708c2e378dc43f6689a249a50bf9b24215d54458fa479d1c25a6"
+      "documentDigest": "4eec62a74a4e708c2e378dc43f6689a249a50bf9b24215d54458fa479d1c25a6",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/extension/05.01a-INVOICE_ubl.xml.esj.json",
@@ -808,7 +702,12 @@
       "values": 70,
       "canonicalBytes": 2902,
       "semanticDigest": "f047dd775123b8430598d09e02679696b68f7f150d86a6f71138d68e2c79b49b",
-      "documentDigest": "a405c2d7c82354a86baaf41de569baf66c5edcd33c45b146799ffadd29186efa"
+      "documentDigest": "a405c2d7c82354a86baaf41de569baf66c5edcd33c45b146799ffadd29186efa",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.01a-INVOICE_ubl.xml.esj.json",
@@ -821,7 +720,12 @@
       "values": 64,
       "canonicalBytes": 2499,
       "semanticDigest": "93c410bd2be4e613ca102876cfcbb5c9e1cdc9c905667d99bc74b1b4cdca577c",
-      "documentDigest": "8c5cb5bbebcfc789ac97b7348d532d13dd594b9f23374037a8113e3e2641a0d2"
+      "documentDigest": "8c5cb5bbebcfc789ac97b7348d532d13dd594b9f23374037a8113e3e2641a0d2",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.01a-INVOICE_uncefact.xml.esj.json",
@@ -834,7 +738,12 @@
       "values": 64,
       "canonicalBytes": 2499,
       "semanticDigest": "93c410bd2be4e613ca102876cfcbb5c9e1cdc9c905667d99bc74b1b4cdca577c",
-      "documentDigest": "b0157613f86c12ac74725b5821712f761a50ce4cc899b8bd7643cd053a01c085"
+      "documentDigest": "b0157613f86c12ac74725b5821712f761a50ce4cc899b8bd7643cd053a01c085",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.02a-INVOICE_ubl.xml.esj.json",
@@ -847,7 +756,12 @@
       "values": 62,
       "canonicalBytes": 2760,
       "semanticDigest": "b7509c89c313b5e359cf936d637967ba10a1db124d9fa342d8442e84f7defab7",
-      "documentDigest": "275e6d1e4b791d3e88e6bb30245b24008002742712ed8547680fba9060d4104c"
+      "documentDigest": "275e6d1e4b791d3e88e6bb30245b24008002742712ed8547680fba9060d4104c",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.02a-INVOICE_uncefact.xml.esj.json",
@@ -860,7 +774,12 @@
       "values": 61,
       "canonicalBytes": 2739,
       "semanticDigest": "f5830f90fdf4fd1b873b8709f09078c639507979862feee5e08c21e25209f413",
-      "documentDigest": "c016bfdd64edb5145ee7b6e5b78e20da9c1d8ba7f4e09922d7a6d4fac19afb88"
+      "documentDigest": "c016bfdd64edb5145ee7b6e5b78e20da9c1d8ba7f4e09922d7a6d4fac19afb88",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.03a-INVOICE_ubl.xml.esj.json",
@@ -873,7 +792,12 @@
       "values": 69,
       "canonicalBytes": 2678,
       "semanticDigest": "4e5c28977fd9f7d3d600c4b82eac5cc9bc576f99f37d54ff6bd70d7f8eb48644",
-      "documentDigest": "acd59b1ad5f7ca03518eaabe6c66b918b307bb65523443a1c16a34e870949f4f"
+      "documentDigest": "acd59b1ad5f7ca03518eaabe6c66b918b307bb65523443a1c16a34e870949f4f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.03a-INVOICE_uncefact.xml.esj.json",
@@ -886,7 +810,12 @@
       "values": 69,
       "canonicalBytes": 2678,
       "semanticDigest": "4e5c28977fd9f7d3d600c4b82eac5cc9bc576f99f37d54ff6bd70d7f8eb48644",
-      "documentDigest": "b72d9abd640a71e076d233210c5c5ff5e3e385020dacad6b0ad7e75f644cc559"
+      "documentDigest": "b72d9abd640a71e076d233210c5c5ff5e3e385020dacad6b0ad7e75f644cc559",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.04a-INVOICE_ubl.xml.esj.json",
@@ -899,7 +828,12 @@
       "values": 52,
       "canonicalBytes": 2273,
       "semanticDigest": "870562ea9ae7009ee7ddcf285531041e6a6354fb92473b7c2b0b3ecd89a1a016",
-      "documentDigest": "e568eab9aaca3a55c8bda653c50c3aeab06442a9a87e206b4da98146b13eea7b"
+      "documentDigest": "e568eab9aaca3a55c8bda653c50c3aeab06442a9a87e206b4da98146b13eea7b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.04a-INVOICE_uncefact.xml.esj.json",
@@ -912,7 +846,12 @@
       "values": 52,
       "canonicalBytes": 2273,
       "semanticDigest": "870562ea9ae7009ee7ddcf285531041e6a6354fb92473b7c2b0b3ecd89a1a016",
-      "documentDigest": "fa44511696089622024bc6e8a8e9b98a599e9594c1f365bdfddeb8fbd324961e"
+      "documentDigest": "fa44511696089622024bc6e8a8e9b98a599e9594c1f365bdfddeb8fbd324961e",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.05a-INVOICE_ubl.xml.esj.json",
@@ -925,7 +864,12 @@
       "values": 80,
       "canonicalBytes": 2748,
       "semanticDigest": "c7b22eb2365a09ac70b4468fea0cfbd5ea97f1bb2db335cb4a04e29d0a4708b7",
-      "documentDigest": "cb9b9e7c6918329a956397aae6cda5816954f583e3a285764336cf538e4a48e2"
+      "documentDigest": "cb9b9e7c6918329a956397aae6cda5816954f583e3a285764336cf538e4a48e2",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.05a-INVOICE_uncefact.xml.esj.json",
@@ -938,7 +882,12 @@
       "values": 80,
       "canonicalBytes": 2748,
       "semanticDigest": "c7b22eb2365a09ac70b4468fea0cfbd5ea97f1bb2db335cb4a04e29d0a4708b7",
-      "documentDigest": "5315395169ea0a1f7022484d89f30a056bf0e8f235c20452a52e4b3181a9e1d9"
+      "documentDigest": "5315395169ea0a1f7022484d89f30a056bf0e8f235c20452a52e4b3181a9e1d9",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.06a-INVOICE_ubl.xml.esj.json",
@@ -951,7 +900,12 @@
       "values": 105,
       "canonicalBytes": 3817,
       "semanticDigest": "7631837bf7c9d4e6b23179b5d1008fd7f48f4b83f8cb9bf9e8ac1f922175e67e",
-      "documentDigest": "245b8c0eb306c4c623abf61134d76e189aadf25ae8b08eedcde6ebe50f768307"
+      "documentDigest": "245b8c0eb306c4c623abf61134d76e189aadf25ae8b08eedcde6ebe50f768307",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.06a-INVOICE_uncefact.xml.esj.json",
@@ -964,7 +918,12 @@
       "values": 105,
       "canonicalBytes": 3817,
       "semanticDigest": "7631837bf7c9d4e6b23179b5d1008fd7f48f4b83f8cb9bf9e8ac1f922175e67e",
-      "documentDigest": "05390d7554975d5b4e5fa0100903d5c7b182c4fb5094b63586603a830536ed27"
+      "documentDigest": "05390d7554975d5b4e5fa0100903d5c7b182c4fb5094b63586603a830536ed27",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.07a-INVOICE_ubl.xml.esj.json",
@@ -977,7 +936,12 @@
       "values": 57,
       "canonicalBytes": 2715,
       "semanticDigest": "1ddb8a1ccee5eaa8daf81694dce1751cd787031241ceae788035cf15c13a8b1f",
-      "documentDigest": "a129c10830534c2e0ed27133f24684d8032bc880c3f1c7a479858362ddc723c8"
+      "documentDigest": "a129c10830534c2e0ed27133f24684d8032bc880c3f1c7a479858362ddc723c8",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.07a-INVOICE_uncefact.xml.esj.json",
@@ -990,7 +954,12 @@
       "values": 57,
       "canonicalBytes": 2715,
       "semanticDigest": "1ddb8a1ccee5eaa8daf81694dce1751cd787031241ceae788035cf15c13a8b1f",
-      "documentDigest": "3c5fd7a62492b5a7f525300fb9247452bc40d2dedddf5f7f04294e4f166dc34c"
+      "documentDigest": "3c5fd7a62492b5a7f525300fb9247452bc40d2dedddf5f7f04294e4f166dc34c",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.08a-INVOICE_ubl.xml.esj.json",
@@ -1003,7 +972,12 @@
       "values": 53,
       "canonicalBytes": 2132,
       "semanticDigest": "0453f04a29defa8f91bcf6d1bf8194a629971aa7d8456267e3d79dc6847311dd",
-      "documentDigest": "f2d413cc6b034d7d514be46b3aeafb01ce97eeb10f16a0edfb1a1ef00f4e99ec"
+      "documentDigest": "f2d413cc6b034d7d514be46b3aeafb01ce97eeb10f16a0edfb1a1ef00f4e99ec",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.08a-INVOICE_uncefact.xml.esj.json",
@@ -1016,7 +990,12 @@
       "values": 52,
       "canonicalBytes": 2111,
       "semanticDigest": "fc4664e29e724da015b9250836ef211ac88700a776b8810cea056e085826dac7",
-      "documentDigest": "29e22ad071e3d9b639c01c356aea9b2fcfdeb78ecfc82c9d43f6d9447602ddb9"
+      "documentDigest": "29e22ad071e3d9b639c01c356aea9b2fcfdeb78ecfc82c9d43f6d9447602ddb9",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.09a-INVOICE_ubl.xml.esj.json",
@@ -1029,7 +1008,12 @@
       "values": 52,
       "canonicalBytes": 1974,
       "semanticDigest": "a42e245c4770d60f62f1a206c7e42034386fa1827bf599b61dec8d6aec2089a6",
-      "documentDigest": "7661932eb5fc4fd4bb36856aa4ce1ceb1733e463aea82d7a1dde35bf8cf27289"
+      "documentDigest": "7661932eb5fc4fd4bb36856aa4ce1ceb1733e463aea82d7a1dde35bf8cf27289",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.09a-INVOICE_uncefact.xml.esj.json",
@@ -1042,7 +1026,12 @@
       "values": 51,
       "canonicalBytes": 1953,
       "semanticDigest": "a7f9d28afb3b26242bc25117b78a7d5208fe13b5c288a04912c5d2d65f8f7928",
-      "documentDigest": "a498ee8010325d8b09d4ab1f839dd5d08deb0784b4e467ba2c3cc7948124201f"
+      "documentDigest": "a498ee8010325d8b09d4ab1f839dd5d08deb0784b4e467ba2c3cc7948124201f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.10a-INVOICE_ubl.xml.esj.json",
@@ -1055,7 +1044,12 @@
       "values": 60,
       "canonicalBytes": 2594,
       "semanticDigest": "ee46c4bf4c42d9c43fa7b6001da45d10bd77f574796901abfff55955ad22469e",
-      "documentDigest": "a8622135ad37102fcc7d85362ddf13e2ffbe13a68f31680cd4c3c5d469877fa8"
+      "documentDigest": "a8622135ad37102fcc7d85362ddf13e2ffbe13a68f31680cd4c3c5d469877fa8",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.10a-INVOICE_uncefact.xml.esj.json",
@@ -1068,7 +1062,12 @@
       "values": 59,
       "canonicalBytes": 2573,
       "semanticDigest": "7091544a8a10c5a61a49b31dadc5c199725262b1119de0273ef955f3eda9720b",
-      "documentDigest": "bcba503383728ed2f0cfee85f2b36dff37c515dd98b6bdc3a0e0ff9a0533014f"
+      "documentDigest": "bcba503383728ed2f0cfee85f2b36dff37c515dd98b6bdc3a0e0ff9a0533014f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.11a-INVOICE_ubl.xml.esj.json",
@@ -1081,7 +1080,12 @@
       "values": 69,
       "canonicalBytes": 2474,
       "semanticDigest": "a3d91d9819ac66ebed41628dcb2223bdef9bac3e59ee2369e94f0ab8b4de57f6",
-      "documentDigest": "f57b1fc910cff30cb6d85e4f78f5a9d1cdb39fff02b0e30bc51135bba5e6440f"
+      "documentDigest": "f57b1fc910cff30cb6d85e4f78f5a9d1cdb39fff02b0e30bc51135bba5e6440f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.11a-INVOICE_uncefact.xml.esj.json",
@@ -1094,7 +1098,12 @@
       "values": 68,
       "canonicalBytes": 2453,
       "semanticDigest": "c7802df04a60eb89f2747aa1f2a86306d858246a792e792abf9e094042c23607",
-      "documentDigest": "0d73d79f250fdfb5b65c21bb6e5d3f346af5bdb63d13ef88b009ecba072c511f"
+      "documentDigest": "0d73d79f250fdfb5b65c21bb6e5d3f346af5bdb63d13ef88b009ecba072c511f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.12a-INVOICE_ubl.xml.esj.json",
@@ -1107,7 +1116,12 @@
       "values": 87,
       "canonicalBytes": 2990,
       "semanticDigest": "f16889a5a6310ecf5c8e227026a0c449509ba823a11e8f6637fb661ba0c921a0",
-      "documentDigest": "105f9f990bb71e8b35e12a8b2e2f525945d3f6d61ed586ac0ccd302eb96d9a9b"
+      "documentDigest": "105f9f990bb71e8b35e12a8b2e2f525945d3f6d61ed586ac0ccd302eb96d9a9b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.12a-INVOICE_uncefact.xml.esj.json",
@@ -1120,7 +1134,12 @@
       "values": 86,
       "canonicalBytes": 2969,
       "semanticDigest": "dae53caadf92217a4b3bbbb2d3907d6dae38a9bc0080c4cbe054047d6b0e40fd",
-      "documentDigest": "fdc2fbea21f0a0a2c630ff351ac001e6d5cac9a459404172fcae659f725605df"
+      "documentDigest": "fdc2fbea21f0a0a2c630ff351ac001e6d5cac9a459404172fcae659f725605df",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.13a-INVOICE_ubl.xml.esj.json",
@@ -1133,7 +1152,12 @@
       "values": 131,
       "canonicalBytes": 4298,
       "semanticDigest": "4fdf1923af28b0e3a11a17d7cf4b3c64c4d1dda6c38da0114edd0e2c8013f6e8",
-      "documentDigest": "b23adac80aabc087d5cedb9448f11c509518ffda91fc4d70bb3a5a76c0b5ecca"
+      "documentDigest": "b23adac80aabc087d5cedb9448f11c509518ffda91fc4d70bb3a5a76c0b5ecca",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.13a-INVOICE_uncefact.xml.esj.json",
@@ -1146,7 +1170,12 @@
       "values": 130,
       "canonicalBytes": 4277,
       "semanticDigest": "d2e4bc12650e8140399f0e7cdf7b981b21ba563cbb99d61018ecb048d5a08b49",
-      "documentDigest": "081303d33f5683e548dd6161b37ab096cf342123dd1bf84989207fd4b043bbbe"
+      "documentDigest": "081303d33f5683e548dd6161b37ab096cf342123dd1bf84989207fd4b043bbbe",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.14a-INVOICE_ubl.xml.esj.json",
@@ -1159,7 +1188,12 @@
       "values": 77,
       "canonicalBytes": 2555,
       "semanticDigest": "9acec45f5665d277fbe7158bf00252e5e771b17546a747b90815d355afc37e49",
-      "documentDigest": "09627f87dd6a8153e92db6ca12d61ca3014fc2ec51d78ef93dca8b76ef67eabd"
+      "documentDigest": "09627f87dd6a8153e92db6ca12d61ca3014fc2ec51d78ef93dca8b76ef67eabd",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.14a-INVOICE_uncefact.xml.esj.json",
@@ -1172,7 +1206,12 @@
       "values": 77,
       "canonicalBytes": 2555,
       "semanticDigest": "9acec45f5665d277fbe7158bf00252e5e771b17546a747b90815d355afc37e49",
-      "documentDigest": "1d141822505a80540abbe36e987f58fae81b0f31bc5af8d2de234aaf5530457a"
+      "documentDigest": "1d141822505a80540abbe36e987f58fae81b0f31bc5af8d2de234aaf5530457a",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.15a-INVOICE_ubl.xml.esj.json",
@@ -1185,7 +1224,12 @@
       "values": 89,
       "canonicalBytes": 203309,
       "semanticDigest": "97f36483030fe734f9633c4e29e31fe31ae38d3ac89750730ec8efe133816247",
-      "documentDigest": "bfd563942a7dd6dcbcaa4bf1e25afed7cfc72ab7ab8c6307c0441a70ba246fb6"
+      "documentDigest": "bfd563942a7dd6dcbcaa4bf1e25afed7cfc72ab7ab8c6307c0441a70ba246fb6",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.15a-INVOICE_uncefact.xml.esj.json",
@@ -1198,7 +1242,12 @@
       "values": 89,
       "canonicalBytes": 203309,
       "semanticDigest": "97f36483030fe734f9633c4e29e31fe31ae38d3ac89750730ec8efe133816247",
-      "documentDigest": "66145e706cbc2458597280492383eb6679f103ceabb1527cddf0cb24b321986c"
+      "documentDigest": "66145e706cbc2458597280492383eb6679f103ceabb1527cddf0cb24b321986c",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.17a-INVOICE_ubl.xml.esj.json",
@@ -1211,7 +1260,12 @@
       "values": 65,
       "canonicalBytes": 2523,
       "semanticDigest": "e3aac61aaf9668e9b72e7932ae8262d38bc9ec2f5e944fd4edc8f36303200345",
-      "documentDigest": "bfad40536cb3127ad913947a00810264c7d181429631dd172eddcabf0c254108"
+      "documentDigest": "bfad40536cb3127ad913947a00810264c7d181429631dd172eddcabf0c254108",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.17a-INVOICE_uncefact.xml.esj.json",
@@ -1224,7 +1278,12 @@
       "values": 65,
       "canonicalBytes": 2523,
       "semanticDigest": "e3aac61aaf9668e9b72e7932ae8262d38bc9ec2f5e944fd4edc8f36303200345",
-      "documentDigest": "edae873587f636f8093cae126bf5e4296e9ed6244531bbd403d5b4c1cca46b38"
+      "documentDigest": "edae873587f636f8093cae126bf5e4296e9ed6244531bbd403d5b4c1cca46b38",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.18a-INVOICE_ubl.xml.esj.json",
@@ -1237,7 +1296,12 @@
       "values": 81,
       "canonicalBytes": 2777,
       "semanticDigest": "76f257f3af688d4aaad6b5459efbb00e0f1c7361ff7c6be5396b527a8fcc0f63",
-      "documentDigest": "43cc806fcad5a29a67cddd03dc2b636395a9c7443b18740a7382d051a7485bea"
+      "documentDigest": "43cc806fcad5a29a67cddd03dc2b636395a9c7443b18740a7382d051a7485bea",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.18a-INVOICE_uncefact.xml.esj.json",
@@ -1250,7 +1314,12 @@
       "values": 81,
       "canonicalBytes": 2777,
       "semanticDigest": "76f257f3af688d4aaad6b5459efbb00e0f1c7361ff7c6be5396b527a8fcc0f63",
-      "documentDigest": "22e425fdf9043a58759b2956911ad9f50cc956e999bbe6094f67b94a29c2e913"
+      "documentDigest": "22e425fdf9043a58759b2956911ad9f50cc956e999bbe6094f67b94a29c2e913",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.19a-INVOICE_ubl.xml.esj.json",
@@ -1263,7 +1332,12 @@
       "values": 78,
       "canonicalBytes": 2730,
       "semanticDigest": "9d6d36257d37b2d2d122da4e6efc145bc101c770dd86053605f92044c5075578",
-      "documentDigest": "ce3e6f85d8e1947383e3f79457fef83acceefbf9f041750fb95df91fa19141b8"
+      "documentDigest": "ce3e6f85d8e1947383e3f79457fef83acceefbf9f041750fb95df91fa19141b8",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.19a-INVOICE_uncefact.xml.esj.json",
@@ -1276,7 +1350,12 @@
       "values": 78,
       "canonicalBytes": 2730,
       "semanticDigest": "9d6d36257d37b2d2d122da4e6efc145bc101c770dd86053605f92044c5075578",
-      "documentDigest": "03dd2cea8fc56b9aacf30cd51e5048ab9c4a2d121bda3f4221d37eb45e029220"
+      "documentDigest": "03dd2cea8fc56b9aacf30cd51e5048ab9c4a2d121bda3f4221d37eb45e029220",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.20a-INVOICE_ubl.xml.esj.json",
@@ -1289,7 +1368,12 @@
       "values": 79,
       "canonicalBytes": 2701,
       "semanticDigest": "9f85e3b7f6357bca694ddd2b11802e95a6b5025b91495d77a0f4256133cc070f",
-      "documentDigest": "7dbdce4288086c07f7e2a541a35207e77f0ef463434e092cb5b31448cf73a776"
+      "documentDigest": "7dbdce4288086c07f7e2a541a35207e77f0ef463434e092cb5b31448cf73a776",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.20a-INVOICE_uncefact.xml.esj.json",
@@ -1302,7 +1386,12 @@
       "values": 82,
       "canonicalBytes": 2747,
       "semanticDigest": "1296a43d410715c529d35bd6eb741897a2de12822ad8b3234865333b402f617e",
-      "documentDigest": "717779d2a6a7e6b0d0ec97730a4c38c8399604bf28ab4723528f3c183cb4c8a3"
+      "documentDigest": "717779d2a6a7e6b0d0ec97730a4c38c8399604bf28ab4723528f3c183cb4c8a3",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
@@ -1315,7 +1404,12 @@
       "values": 62,
       "canonicalBytes": 2107,
       "semanticDigest": "4ae06303ab126e89989a3397d8c1a51b7f434b40e511b94e871ea11630ee7956",
-      "documentDigest": "f1369ee4191b94530a051485d913697f9c0d99beddad72d4f0ee89b7095303bf"
+      "documentDigest": "f1369ee4191b94530a051485d913697f9c0d99beddad72d4f0ee89b7095303bf",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
@@ -1328,7 +1422,12 @@
       "values": 63,
       "canonicalBytes": 2115,
       "semanticDigest": "ef0445db07d2ac931d32a9a229cbe81506fabd8a50e71dc0ad4776f15b1006ed",
-      "documentDigest": "1c62a19a17256dbeb1c72a4fa828eb48558d122bbd660fd0157fc8f498467a5d"
+      "documentDigest": "1c62a19a17256dbeb1c72a4fa828eb48558d122bbd660fd0157fc8f498467a5d",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.01a-INVOICE_ubl.xml.esj.json",
@@ -1341,7 +1440,12 @@
       "values": 128,
       "canonicalBytes": 204719,
       "semanticDigest": "1c07698fe44e4b260e5e5328c9566e2ec3739a82d30b30d457fbf77d016eb5b2",
-      "documentDigest": "e2cfbcfcbedb3952a3c6d85fc274ce6cd24b76c761a257b77e747d5b3a9c103f"
+      "documentDigest": "e2cfbcfcbedb3952a3c6d85fc274ce6cd24b76c761a257b77e747d5b3a9c103f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.01a-INVOICE_uncefact.xml.esj.json",
@@ -1354,7 +1458,12 @@
       "values": 129,
       "canonicalBytes": 204739,
       "semanticDigest": "a185074c46c1476668057aac7e65734b219d8b12f5ea7f79ae54f0c89aed33b0",
-      "documentDigest": "3f2c6c49c90cb617ff43df94e6247e43f7161b32592c04858b01d0f286724e0a"
+      "documentDigest": "3f2c6c49c90cb617ff43df94e6247e43f7161b32592c04858b01d0f286724e0a",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.02a-INVOICE_ubl.xml.esj.json",
@@ -1367,7 +1476,12 @@
       "values": 124,
       "canonicalBytes": 204589,
       "semanticDigest": "20a309ebe16f47fa51e58abc37df0b91dadbe5c2b4bbc22a73ca61ad6542ad07",
-      "documentDigest": "d5fb7f320911f52cd7c0912390692a659e994451aa778285ca2f968cf10902d7"
+      "documentDigest": "d5fb7f320911f52cd7c0912390692a659e994451aa778285ca2f968cf10902d7",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.02a-INVOICE_uncefact.xml.esj.json",
@@ -1380,7 +1494,12 @@
       "values": 125,
       "canonicalBytes": 204609,
       "semanticDigest": "c5e18a17f60e74ff16da722da3c9a7f3d93cec6b5fe0a9c3d2caded54a46110b",
-      "documentDigest": "604f525a675bee4c563e7cb2eecb33afe128502980b7a78357f70aae56e74d98"
+      "documentDigest": "604f525a675bee4c563e7cb2eecb33afe128502980b7a78357f70aae56e74d98",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.03a-INVOICE_ubl.xml.esj.json",
@@ -1393,7 +1512,12 @@
       "values": 128,
       "canonicalBytes": 204719,
       "semanticDigest": "26f434d57f7470e81bd4aa0d52aeb5b3b262385f2b7339fcbdded2894f9cda94",
-      "documentDigest": "4d56fc15d26891d3a9b8eda56b72b946814f8621b4fc2798387f4d8eed098ccb"
+      "documentDigest": "4d56fc15d26891d3a9b8eda56b72b946814f8621b4fc2798387f4d8eed098ccb",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.03a-INVOICE_uncefact.xml.esj.json",
@@ -1406,7 +1530,12 @@
       "values": 129,
       "canonicalBytes": 204739,
       "semanticDigest": "30abb40a4ea7c6f8e3c5726f48bc167dd30b032ca1e0efd2371f81eae90a1037",
-      "documentDigest": "6a8faeafde6eb555c74b8a6c8ae4d0de07e2d8dd2801029b3b9ef9344550482e"
+      "documentDigest": "6a8faeafde6eb555c74b8a6c8ae4d0de07e2d8dd2801029b3b9ef9344550482e",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.04a-INVOICE_ubl.xml.esj.json",
@@ -1419,7 +1548,12 @@
       "values": 128,
       "canonicalBytes": 204645,
       "semanticDigest": "397e3dbc886f7347daac7c7a1ce8d18fe7534e509f59357a3dd8f5b9708f82c5",
-      "documentDigest": "8af6e30cf16c58480265e713a0f4ca07f91185654dfb13c7a5e0f65fcc6fddd1"
+      "documentDigest": "8af6e30cf16c58480265e713a0f4ca07f91185654dfb13c7a5e0f65fcc6fddd1",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.04a-INVOICE_uncefact.xml.esj.json",
@@ -1432,7 +1566,12 @@
       "values": 129,
       "canonicalBytes": 204665,
       "semanticDigest": "882017dc7dceae7256d68b5db986500cb2e9d174fdeddcf9d5046504d832a750",
-      "documentDigest": "9701f9abef7a6b9036ba3b8e71c23248ad581757303ddcd66075b26b74add08a"
+      "documentDigest": "9701f9abef7a6b9036ba3b8e71c23248ad581757303ddcd66075b26b74add08a",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.05a-INVOICE_ubl.xml.esj.json",
@@ -1445,7 +1584,12 @@
       "values": 262,
       "canonicalBytes": 208248,
       "semanticDigest": "54cd64a44976e581d2761d0cfbbbb503347a72577dc5b2e70cc23b16d9682880",
-      "documentDigest": "86973b162d781e3ec6eb71907e2198bec19d0a429adf0a50d266d968307eb562"
+      "documentDigest": "86973b162d781e3ec6eb71907e2198bec19d0a429adf0a50d266d968307eb562",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.05a-INVOICE_uncefact.xml.esj.json",
@@ -1458,7 +1602,12 @@
       "values": 262,
       "canonicalBytes": 208248,
       "semanticDigest": "54cd64a44976e581d2761d0cfbbbb503347a72577dc5b2e70cc23b16d9682880",
-      "documentDigest": "9969755a6eaab3f71d74e89717239cf39c550a1f0b56121e7ff4736053330d2b"
+      "documentDigest": "9969755a6eaab3f71d74e89717239cf39c550a1f0b56121e7ff4736053330d2b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.06a-INVOICE_ubl.xml.esj.json",
@@ -1471,7 +1620,12 @@
       "values": 74,
       "canonicalBytes": 203056,
       "semanticDigest": "aaf9e6fcde61b62fb49297e8b1e0d3fdf280c133c8c71e846a5788252ef9b742",
-      "documentDigest": "d913c058468c08c7314e8884a3fe7185d1b6fca10cc5dc1ddf495edd9f033fe9"
+      "documentDigest": "d913c058468c08c7314e8884a3fe7185d1b6fca10cc5dc1ddf495edd9f033fe9",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/02.06a-INVOICE_uncefact.xml.esj.json",
@@ -1484,7 +1638,12 @@
       "values": 74,
       "canonicalBytes": 203056,
       "semanticDigest": "aaf9e6fcde61b62fb49297e8b1e0d3fdf280c133c8c71e846a5788252ef9b742",
-      "documentDigest": "775b42b03977a2e44f46d0e090150cf9fc9d6a45d8e26c6f934333160387ea25"
+      "documentDigest": "775b42b03977a2e44f46d0e090150cf9fc9d6a45d8e26c6f934333160387ea25",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.01a-INVOICE_ubl.xml.esj.json",
@@ -1497,7 +1656,12 @@
       "values": 208,
       "canonicalBytes": 207106,
       "semanticDigest": "d8cf517ad4919f801d10dc9ce22a9638c81cbc71fdedf63582eff6d3c1a4fcb1",
-      "documentDigest": "1b6f95683fc5ec2115cd016bdc4463aaac3789b544718654a7d7af17c581ce1f"
+      "documentDigest": "1b6f95683fc5ec2115cd016bdc4463aaac3789b544718654a7d7af17c581ce1f",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.01a-INVOICE_uncefact.xml.esj.json",
@@ -1510,7 +1674,12 @@
       "values": 207,
       "canonicalBytes": 207077,
       "semanticDigest": "6b5dd9e5e1dc935d9e8a0ac15c834ab863860162084a11f60646ba0b631d9536",
-      "documentDigest": "7fe4c2c1f0aa55fcc3320684463f566a894b16293ff8087b1059ef683c31c207"
+      "documentDigest": "7fe4c2c1f0aa55fcc3320684463f566a894b16293ff8087b1059ef683c31c207",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.02a-INVOICE_ubl.xml.esj.json",
@@ -1523,7 +1692,12 @@
       "values": 89,
       "canonicalBytes": 203308,
       "semanticDigest": "c62f10509d5751161d7c2a73b59d70b25bc75a682857410d2a363b3a021f23f9",
-      "documentDigest": "a49f1a945dff5270afdc7fa13562ef0124d96582e16a48c4d75e3ce37011d5e2"
+      "documentDigest": "a49f1a945dff5270afdc7fa13562ef0124d96582e16a48c4d75e3ce37011d5e2",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.02a-INVOICE_uncefact.xml.esj.json",
@@ -1536,7 +1710,12 @@
       "values": 89,
       "canonicalBytes": 203308,
       "semanticDigest": "c62f10509d5751161d7c2a73b59d70b25bc75a682857410d2a363b3a021f23f9",
-      "documentDigest": "80e03aab8359e483620f0e3c9814b620208294997dd5b074e3293eaa7c0101c1"
+      "documentDigest": "80e03aab8359e483620f0e3c9814b620208294997dd5b074e3293eaa7c0101c1",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.03a-INVOICE_ubl.xml.esj.json",
@@ -1549,7 +1728,12 @@
       "values": 92,
       "canonicalBytes": 3238,
       "semanticDigest": "847d5322e4a7246430ea5f6e040256ce056dbd4a6b592c16b51b8f84cbb73b96",
-      "documentDigest": "4b9a299e278dfc79fba231a12ad12b9003989bb348821c61899e0a591161168b"
+      "documentDigest": "4b9a299e278dfc79fba231a12ad12b9003989bb348821c61899e0a591161168b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.03a-INVOICE_uncefact.xml.esj.json",
@@ -1562,7 +1746,12 @@
       "values": 92,
       "canonicalBytes": 3238,
       "semanticDigest": "847d5322e4a7246430ea5f6e040256ce056dbd4a6b592c16b51b8f84cbb73b96",
-      "documentDigest": "d833de867230db945445bf0666efd474938f4873fe4b55db83f10490b233dd03"
+      "documentDigest": "d833de867230db945445bf0666efd474938f4873fe4b55db83f10490b233dd03",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.04a-INVOICE_ubl.xml.esj.json",
@@ -1575,7 +1764,12 @@
       "values": 147,
       "canonicalBytes": 205244,
       "semanticDigest": "7354212721be70585f27c388c1adbae19e4dce31745d24c951326fcbad09638f",
-      "documentDigest": "45b8e0a679c9c4a5ff10edd5848a74e95cefca867cb3d4379090889a9938b159"
+      "documentDigest": "45b8e0a679c9c4a5ff10edd5848a74e95cefca867cb3d4379090889a9938b159",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.04a-INVOICE_uncefact.xml.esj.json",
@@ -1588,7 +1782,12 @@
       "values": 147,
       "canonicalBytes": 205244,
       "semanticDigest": "7354212721be70585f27c388c1adbae19e4dce31745d24c951326fcbad09638f",
-      "documentDigest": "8e21f540e738572f038b17030033daa07eb68972c8b5023aeb3495ae00966f67"
+      "documentDigest": "8e21f540e738572f038b17030033daa07eb68972c8b5023aeb3495ae00966f67",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.05a-INVOICE_ubl.xml.esj.json",
@@ -1601,7 +1800,12 @@
       "values": 86,
       "canonicalBytes": 203265,
       "semanticDigest": "dab3420bdbe11818c8d1fe93076503260999e34c374663d9fa084cd4bcb85b75",
-      "documentDigest": "6387f26ffc87d81b4d75828df05ffc6624455f978bda78233bbe05ee659572f0"
+      "documentDigest": "6387f26ffc87d81b4d75828df05ffc6624455f978bda78233bbe05ee659572f0",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.05a-INVOICE_uncefact.xml.esj.json",
@@ -1614,7 +1818,12 @@
       "values": 86,
       "canonicalBytes": 203265,
       "semanticDigest": "dab3420bdbe11818c8d1fe93076503260999e34c374663d9fa084cd4bcb85b75",
-      "documentDigest": "9c4b936fc18300f22c925f1b0d4196b193419ca9e285e19ae3c49d64bfabbbca"
+      "documentDigest": "9c4b936fc18300f22c925f1b0d4196b193419ca9e285e19ae3c49d64bfabbbca",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.06a-INVOICE_ubl.xml.esj.json",
@@ -1627,7 +1836,12 @@
       "values": 86,
       "canonicalBytes": 2841,
       "semanticDigest": "63451759fa50dd78ef99667c4467448d9bb5839ee71b317af2c1ba54ad5866bc",
-      "documentDigest": "d404accf659abdac354b631b1df53e544c2a51c960d3ead2799f62852784e3ad"
+      "documentDigest": "d404accf659abdac354b631b1df53e544c2a51c960d3ead2799f62852784e3ad",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.06a-INVOICE_uncefact.xml.esj.json",
@@ -1640,7 +1854,12 @@
       "values": 86,
       "canonicalBytes": 2841,
       "semanticDigest": "229091c51378e8ec85f3854c38fb6d1f14bbc9b07d49224b674d8b8b35e76162",
-      "documentDigest": "baa063fc556a0137084ebe1f8d24dfeafcc5a660da01a2423b0453f43a12897c"
+      "documentDigest": "baa063fc556a0137084ebe1f8d24dfeafcc5a660da01a2423b0453f43a12897c",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.07a-INVOICE_ubl.xml.esj.json",
@@ -1653,7 +1872,12 @@
       "values": 218,
       "canonicalBytes": 408484,
       "semanticDigest": "4907453df7d35484cad53824bce23c2273c4c9dc7cc7c750067d30b446900594",
-      "documentDigest": "323432027b34ad382b4e70fbea607b7bb674a0ad2b73344cd98df3c8064953e8"
+      "documentDigest": "323432027b34ad382b4e70fbea607b7bb674a0ad2b73344cd98df3c8064953e8",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/business-cases/standard/03.07a-INVOICE_uncefact.xml.esj.json",
@@ -1666,7 +1890,12 @@
       "values": 222,
       "canonicalBytes": 408634,
       "semanticDigest": "db32d5f3528445e1648ec2dea0343d96251f4ce280c098a03d136cfa762595da",
-      "documentDigest": "92743c8531ea1eca256832baa61ab3ec088699457b459691f1c919fb9ca9fe3e"
+      "documentDigest": "92743c8531ea1eca256832baa61ab3ec088699457b459691f1c919fb9ca9fe3e",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
@@ -1679,7 +1908,12 @@
       "values": 208,
       "canonicalBytes": 407851,
       "semanticDigest": "145e380030db58e970f43b35c7064ab71ac1c4fd86dcf57f2e02a99c5871c02f",
-      "documentDigest": "429f9dbb9f65aae4e2e55ae7b5acd0f4fd9af8f36162cebe2c4559ddb8379eaa"
+      "documentDigest": "429f9dbb9f65aae4e2e55ae7b5acd0f4fd9af8f36162cebe2c4559ddb8379eaa",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_uncefact.xml.esj.json",
@@ -1692,7 +1926,12 @@
       "values": 208,
       "canonicalBytes": 407882,
       "semanticDigest": "bb14bb36fa0ceb2d0bcd8f43f2a6638fcaf56fc0e9630e019b25d94e482d89d9",
-      "documentDigest": "dc7abcef4f1968b734ada290f932744bc93f42fbcb5d446b1fa9f196d5bca853"
+      "documentDigest": "dc7abcef4f1968b734ada290f932744bc93f42fbcb5d446b1fa9f196d5bca853",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.02_comprehensive_test_ubl.xml.esj.json",
@@ -1705,7 +1944,12 @@
       "values": 173,
       "canonicalBytes": 206469,
       "semanticDigest": "147548b750420d774d3e50d01aca0c362b5a0c73dc901c29ef63b5c5aefc8c3c",
-      "documentDigest": "0ed1fffbc1b6d7e3e6e91a4450f39d7e52767deaec4bdee654c3dc03338a1f7e"
+      "documentDigest": "0ed1fffbc1b6d7e3e6e91a4450f39d7e52767deaec4bdee654c3dc03338a1f7e",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.02_comprehensive_test_uncefact.xml.esj.json",
@@ -1718,7 +1962,12 @@
       "values": 173,
       "canonicalBytes": 206492,
       "semanticDigest": "3f00552f6112b6eae634da86f1d1f35ad7bd0ef846d59f7a4898db8ff4103851",
-      "documentDigest": "c51467ba27d2c3bbe25c935f4ec6e0f500b97eef2ac26e0371887edf93b52270"
+      "documentDigest": "c51467ba27d2c3bbe25c935f4ec6e0f500b97eef2ac26e0371887edf93b52270",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.03_comprehensive_test_ubl.xml.esj.json",
@@ -1731,7 +1980,12 @@
       "values": 169,
       "canonicalBytes": 206239,
       "semanticDigest": "c10b14ac16da8e0659b5c83ef34e354cc9c4c48ac2483d5f5d39af9798f211a2",
-      "documentDigest": "f8b42e8ba73f6ca37b91e277f4c329129c0b9b33adfdfafc5d628034b9411083"
+      "documentDigest": "f8b42e8ba73f6ca37b91e277f4c329129c0b9b33adfdfafc5d628034b9411083",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.03_comprehensive_test_uncefact.xml.esj.json",
@@ -1744,7 +1998,12 @@
       "values": 169,
       "canonicalBytes": 206268,
       "semanticDigest": "d09c63d5b358857189b0bcab2edd422a5bd4b6169c8404905512d562d9d15cef",
-      "documentDigest": "60d68b4fba22d521fcc9b9e26f3bfc1c25968fe578697ff842247c44331e7401"
+      "documentDigest": "60d68b4fba22d521fcc9b9e26f3bfc1c25968fe578697ff842247c44331e7401",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.04_comprehensive_test_ubl.xml.esj.json",
@@ -1757,7 +2016,12 @@
       "values": 170,
       "canonicalBytes": 206329,
       "semanticDigest": "ea94094ed0930cbe2be42e4dfa12391fc28624a4e102fe0beac2c2a668fed520",
-      "documentDigest": "5bdab8c948bd604376357d5f9a5b149ed762a41686bb08d2dbdaa4b3ed026e09"
+      "documentDigest": "5bdab8c948bd604376357d5f9a5b149ed762a41686bb08d2dbdaa4b3ed026e09",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.04_comprehensive_test_uncefact.xml.esj.json",
@@ -1770,7 +2034,12 @@
       "values": 170,
       "canonicalBytes": 206358,
       "semanticDigest": "e7a06ee43c81b811a5185295726f4726938b2300b4272f44e7514c67fff15b6b",
-      "documentDigest": "e9c8b53e8311995714c15e7aa57dc4c08b93840ccfc4ef9e03fc301725c237ae"
+      "documentDigest": "e9c8b53e8311995714c15e7aa57dc4c08b93840ccfc4ef9e03fc301725c237ae",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.05_minimal_test_ubl.xml.esj.json",
@@ -1783,7 +2052,12 @@
       "values": 41,
       "canonicalBytes": 1491,
       "semanticDigest": "ad1d8b2b9a4373a15a2ddaa5f375ec9bc7c60b993d4bfb7d55e3f463f36fee07",
-      "documentDigest": "27156ce5d6b485cfcb1c66d5cbac29c5416b301c94a056772fb6a7c29115c9c1"
+      "documentDigest": "27156ce5d6b485cfcb1c66d5cbac29c5416b301c94a056772fb6a7c29115c9c1",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.05_minimal_test_uncefact.xml.esj.json",
@@ -1796,7 +2070,12 @@
       "values": 40,
       "canonicalBytes": 1471,
       "semanticDigest": "a885a4329f2d4c66bda11d67fe924319488d48350c9ccf8f019250c78d56f0d2",
-      "documentDigest": "043024854f11bae91606b55b8186b779cb6840fdb40527fb5379b020fd078240"
+      "documentDigest": "043024854f11bae91606b55b8186b779cb6840fdb40527fb5379b020fd078240",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.06_minimal_test_ubl.xml.esj.json",
@@ -1809,7 +2088,12 @@
       "values": 42,
       "canonicalBytes": 1529,
       "semanticDigest": "eb48b91e7e41bc4b5ee4e3d4e001f3f8fbb77bf740d85d4ea65e28bfda0ee77a",
-      "documentDigest": "59bdb9f259df48325c8b6504fceaffaab956bb462963d9be27a70919218dfd3e"
+      "documentDigest": "59bdb9f259df48325c8b6504fceaffaab956bb462963d9be27a70919218dfd3e",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cius/01.06_minimal_test_uncefact.xml.esj.json",
@@ -1822,7 +2106,12 @@
       "values": 42,
       "canonicalBytes": 1529,
       "semanticDigest": "eb48b91e7e41bc4b5ee4e3d4e001f3f8fbb77bf740d85d4ea65e28bfda0ee77a",
-      "documentDigest": "b87cbd17e20e380ffb91df4eb1dbb4e5f1eef22f573da738ddde45bf8c42431b"
+      "documentDigest": "b87cbd17e20e380ffb91df4eb1dbb4e5f1eef22f573da738ddde45bf8c42431b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml.esj.json",
@@ -1835,7 +2124,12 @@
       "values": 214,
       "canonicalBytes": 7897,
       "semanticDigest": "b2db1d245cea503c754ee8e1d20cfc51ff91c8955394aae366a5ed9c276e07bf",
-      "documentDigest": "dc0cc3cefd629a193f0a3a07d1abd570b10ded40870520da6851f20da87cd200"
+      "documentDigest": "dc0cc3cefd629a193f0a3a07d1abd570b10ded40870520da6851f20da87cd200",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "conformance/esj/technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml.esj.json",
@@ -1848,354 +2142,3212 @@
       "values": 218,
       "canonicalBytes": 8049,
       "semanticDigest": "5b213d0a714494179add04efcbd4878d60bea57697a979bc83df1c0b6be135d4",
-      "documentDigest": "1f64753a35896069b24b7c6dfd77b397569d69eac2ee93bc483bd3ae17ef1488"
+      "documentDigest": "1f64753a35896069b24b7c6dfd77b397569d69eac2ee93bc483bd3ae17ef1488",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/documents/line-endings.esj.json",
+      "canonical": "conformance/fixtures/documents/line-endings.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 24,
+      "canonicalBytes": 871,
+      "semanticDigest": "cabf57b4c9bf03209e4ad07c01c67c250edeedcca5b870c3ec132a2efe01e81e",
+      "documentDigest": "f922f198a87a3b9d881e6cc69955259a95bcfd1a366b91bc334b748066e06e03",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/documents/not-checked-in-loaded-namespace.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 24,
+      "canonicalBytes": 706,
+      "semanticDigest": "474085e14c848e521537cbcdc6472519f647ddfa80cfae0ba5b261ca8b55b446",
+      "documentDigest": "15b776cb061f4a2169128dd3d52c5d17fca36566d8d9bf4ff516dd4eb14f1a8c",
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-DEX-09/0/BT-DEX-999", "code": "ESJ-L2-NOT-CHECKED", "subject": "", "severity": "info"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/documents/not-checked-unloaded-namespace.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 24,
+      "canonicalBytes": 700,
+      "semanticDigest": "c700571a471af447f52c800d841be8f8dd3e965faa4d16559579ee53dead1d92",
+      "documentDigest": "48c65105f5cba5bc9ed179d5e03470a7887d138cb3a25b285b5bad5a62f0ecf7",
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0/BT-ZZZ-1", "code": "ESJ-L2-NOT-CHECKED", "subject": "", "severity": "info"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/documents/unknown-edition.esj.json",
+      "semanticModel": "EN16931-1:2099",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 23,
+      "canonicalBytes": 660,
+      "semanticDigest": "f99f451428475372ab3bd91829bbe3f927141dc98d33b6ec29e80ad767323fbb",
+      "documentDigest": "663c7fc78e7b6bbc1c6bc82c18f5a4a910a3483c7f7631a7682bf6e5dc536b08",
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "EDITION-UNKNOWN"},
+          {"layer": "L3", "reason": "EDITION-UNKNOWN"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L2-EDITION-UNKNOWN", "subject": "", "severity": "info"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/annex-b/example.esj.json",
+      "canonical": "conformance/fixtures/annex-b/example.canonical.esj.json",
+      "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+      "registries": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "values": 4,
+      "canonicalBytes": 236,
+      "semanticDigest": "27d43ab507a929218e8278be315a736467d9a5f881bf232fe1843b06bd6105b8",
+      "documentDigest": "fdc75e42190b6aec5cf5454fe07e615af71f33fc275e297cb6aeefec0525e42a",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-3", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-5", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-2", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-7", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-22", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-23", "severity": "error"},
+          {"path": "/BG-4", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-27", "severity": "error"},
+          {"path": "/BG-4", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-5", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-126", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-29", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-30", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-31", "severity": "error"}
+        ]
+      }
     }
   ],
   "invalid": [
     {
       "file": "examples/invalid/arithmetic-mismatch.esj.json",
-      "layer": "business-rule"
+      "layer": "business-rule",
+      "values": 23,
+      "canonicalBytes": 675,
+      "semanticDigest": "200dcfc0ae7230eb732f3a9d610a054493e1e2bee2f53b350e518cf7bc1b29b0",
+      "documentDigest": "d41edb728aa742033ee62c181cd38b99efb357088d4c264b5322caa2cf63cb19",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
     },
     {
       "file": "examples/invalid/b2c-decimal-trailing-zeros.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-DECIMAL",
-      "path": "/BG-25/0/BT-B2C-001"
+      "values": 24,
+      "canonicalBytes": 709,
+      "semanticDigest": "2572a246361501e3e9f1119ba524b0c635e1093da36e5e95b4e20856e4681c87",
+      "documentDigest": "b694d3ff0fa895069040ae8680eda7e5d286f439dffa9ab67c804aec884741f4",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0/BT-B2C-001", "code": "ESJ-L2-DECIMAL", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/base64-non-canonical.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-BASE64",
-      "path": "/BG-24/0/BT-125"
+      "values": 25,
+      "canonicalBytes": 792,
+      "semanticDigest": "227cc608a7450c5d72568dc7a30f91e0202d38b2f371156bb553fdb811470858",
+      "documentDigest": "f2e67aa87c3d0eb89b6ca870012e92bbac30710ea2ae78e60d4aedae73151577",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-BASE64", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/binary-without-filename.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-COMPONENT-MISSING",
-      "path": "/BG-24/0/BT-125"
+      "values": 25,
+      "canonicalBytes": 770,
+      "semanticDigest": "19c5955ca37b6a85976573264d7aeb233f6098c2ad587eab86dc84321a3184e6",
+      "documentDigest": "1f81e07e8c23b0e716080e0aee999d720d4ba2e4ac4ac8939bbc91cb13698fc0",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-COMPONENT-MISSING", "subject": "filename", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/calendar-impossible-date.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-DATE",
-      "path": "/BT-2"
+      "values": 23,
+      "canonicalBytes": 676,
+      "semanticDigest": "5efbcea968e7306f5d10430afdc302c36219fd46dc9585d8ef8ac85a8a3a75b2",
+      "documentDigest": "0e671e2e0709393b07a4d68d322b73da778762f2dd21eafa6f1e2f157b654c0d",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BT-2", "code": "ESJ-L2-DATE", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/decimal-too-long.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-DECIMAL",
-      "path": "/BG-25/0/BT-129"
+      "values": 23,
+      "canonicalBytes": 740,
+      "semanticDigest": "267982103e37b40d30578f692624546b02e799d744047b4fd37eaebb4f8dbbf1",
+      "documentDigest": "07e185cc1b0df390061e2fb6a5564103efab377fc9fb923c49db28b67a3fa33a",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0/BT-129", "code": "ESJ-L2-DECIMAL", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/decimal-trailing-zeros.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-DECIMAL",
-      "path": "/BG-22/BT-106"
+      "values": 23,
+      "canonicalBytes": 679,
+      "semanticDigest": "e2450aa48295490ef6adae4b21fbcb79c28a7a5fa483784d6f46a0180b78b301",
+      "documentDigest": "eca69d00cc7e79f4d3d9cb0576c74cd392e5cf275928072b02a31595f01f63d3",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-22/BT-106", "code": "ESJ-L2-DECIMAL", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/duplicate-and-surrogate-in-value-object.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": "/BT-1"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/duplicate-below-bad-owner-token.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-OWNER-TOKEN",
-      "path": "",
-      "subject": "extensions[\"urn:example:v/2\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-OWNER-TOKEN", "subject": "extensions[\"urn:example:v/2\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/duplicate-envelope-member.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/duplicate-in-extensions.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "extensions[\"de.example.vendor\"][\"x\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/duplicate-in-two-value-objects.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": "/BG-4/BT-29/0"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "values[\"/BG-4/BT-29/0\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/duplicate-in-value-object.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": "/BG-4/BT-29/0"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "values[\"/BG-4/BT-29/0\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/duplicate-member.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": "",
-      "subject": "values"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/duplicate-path-of-value-objects.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-VALUE-SHAPE",
-      "path": "/BT-1"
-    },
-    {
-      "file": "examples/invalid/duplicate-path-of-value-objects.esj.json",
-      "layer": "L1",
-      "code": "ESJ-L1-DUPLICATE-MEMBER",
-      "path": "",
-      "subject": "values"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-VALUE-SHAPE", "subject": "values[\"/BT-1\"]", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/empty-extensions.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": "",
-      "subject": "extensions"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "extensions", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/empty-string-value.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-EMPTY-STRING",
-      "path": "/BG-4/BT-27"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-27", "code": "ESJ-L1-EMPTY-STRING", "subject": "values[\"/BG-4/BT-27\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/empty-string-with-missing-term.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-EMPTY-STRING",
-      "path": "/BG-4/BT-27"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-27", "code": "ESJ-L1-EMPTY-STRING", "subject": "values[\"/BG-4/BT-27\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/encoding-byte-order-mark.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/encoding-not-utf8.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/envelope-member-terminal-characters.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-ENVELOPE-MEMBER",
-      "path": "",
-      "subject": "profile\\u001b]8;;\\u0007\\u0085\\u2028\\u061c\\u202e"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"profile\\u001b]8;;\\u0007\\u0085\\u2028\\u061c\\u202e\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/envelope-missing-values.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/envelope-wrong-version.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "version", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/extension-depth-33.esj.json",
       "layer": "limit",
-      "code": "ESJ-L1-LIMIT",
-      "path": "",
-      "subject": "extensions[\"de.example.vendor\"][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]"
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.vendor\"][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/extension-number-exponent-overflow.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-EXT-NUMBER",
-      "path": "",
-      "subject": "extensions[\"de.example.vendor\"][\"exponentPastEveryLength\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"exponentPastEveryLength\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/extension-number-exponent-underflow.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-EXT-NUMBER",
-      "path": "",
-      "subject": "extensions[\"de.example.vendor\"][\"exponentPastEveryLength\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"exponentPastEveryLength\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/extension-number-too-long.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-EXT-NUMBER",
-      "path": "",
-      "subject": "extensions[\"de.example.vendor\"][\"canonicalFormTooLong\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"canonicalFormTooLong\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/index-gap.esj.json",
       "layer": "L3",
-      "code": "ESJ-L3-INDEX-GAP",
-      "path": "",
-      "subject": "BG-23"
+      "values": 23,
+      "canonicalBytes": 676,
+      "semanticDigest": "82d32f6323082a4ab9c1a3cbd820f819848319c0cfc7d0c438a0bc0c7f948ebd",
+      "documentDigest": "17488a85dfe969850448ab2966c6bd252f6958deb5b1a5299aee197aa7a6be8d",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "", "code": "ESJ-L3-INDEX-GAP", "subject": "BG-23", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/index-on-bt-1.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-INDEX-FORBIDDEN",
-      "path": "/BT-1/0"
+      "values": 23,
+      "canonicalBytes": 678,
+      "semanticDigest": "b205757697dd5ad47effbb40cf4290fc72a64fc495008bd51941e4db0760e2d6",
+      "documentDigest": "97fc39a896affff8db595bb4b96262bdb745a8c35dcf2e14c4dad151a384b67a",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BT-1/0", "code": "ESJ-L2-INDEX-FORBIDDEN", "subject": "BT-1", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-1", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/index-required.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 706,
+      "semanticDigest": "959af0fb887fba0b5cda103bd6a9fd62a7a4b772a7e866dfa37a7748bf5da670",
+      "documentDigest": "618321dffa0b051305c88bc67c03414438a7c226036873cc549619e606e7525f",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-4/BT-29", "code": "ESJ-L2-INDEX-REQUIRED", "subject": "BT-29", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/json-trailing-comma.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/json-utf16-without-bom.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/lone-surrogate.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": "/BG-4/BT-27"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-27", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BG-4/BT-27\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/missing-mandatory-group.esj.json",
+      "layer": "L3",
+      "values": 21,
+      "canonicalBytes": 626,
+      "semanticDigest": "160c7753fdd30130ac43ffcda302911c2e73425adeca36949a4903f7d41f4625",
+      "documentDigest": "2ba3c7dd2c063f5460ffa8a226f993ee915bbacc975be27b2050cd2012eb2cab",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-7", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/missing-mandatory-term.esj.json",
       "layer": "L3",
-      "code": "ESJ-L3-MISSING-TERM",
-      "path": "/BG-25/0",
-      "subject": "BT-130"
+      "values": 22,
+      "canonicalBytes": 652,
+      "semanticDigest": "9e1e9ad4086880818f6e2c427a36ec1003226b14ea07aaaa14d17888590b4edd",
+      "documentDigest": "28eab543ab24a82b942413c3d46a21a234564b6d5dc76b21664c6387da61a524",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/number-instead-of-string.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-JSON-TYPE",
-      "path": "/BG-25/0/BT-129"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BT-129", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BG-25/0/BT-129\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/object-without-component.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-VALUE-SHAPE",
-      "path": "/BT-1"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-VALUE-SHAPE", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/owner-token-syntax.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-OWNER-TOKEN",
-      "path": "",
-      "subject": "extensions[\"urn:example:v/2\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-OWNER-TOKEN", "subject": "extensions[\"urn:example:v/2\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/owner-token-terminal-characters.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-OWNER-TOKEN",
-      "path": "",
-      "subject": "extensions[\"urn:example:\\u0085\\u009b\\u2028\\u2029\\u061c\\u200f\\u202e\\u2067\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-OWNER-TOKEN", "subject": "extensions[\"urn:example:\\u0085\\u009b\\u2028\\u2029\\u061c\\u200f\\u202e\\u2067\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/parent-chain.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 702,
+      "semanticDigest": "407a85c24ae04cfd44b3d1821a99dd9b4858f0d05f039bdcad24070dbcc43bde",
+      "documentDigest": "704c64046d71ba339e25b9ad56abb0079b63ca3f202d30e1d437b0d73c8ebaf0",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-4/BT-2", "code": "ESJ-L2-PARENT-CHAIN", "subject": "BT-2", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/path-leading-zero-index.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-PATH-SYNTAX",
-      "path": "",
-      "subject": "values[\"/BG-4/BT-29/00\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-PATH-SYNTAX", "subject": "values[\"/BG-4/BT-29/00\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/path-syntax-terminal-characters.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-PATH-SYNTAX",
-      "path": "",
-      "subject": "values[\"/BT-1\\u001b[2J\\u0007\\u007f\\u0085\\u009b\\u2028\\u2029\\u061c\\u200e\\u200f\\u202a\\u202e\\u2066\\u2069\\t\\\"\\\\\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-PATH-SYNTAX", "subject": "values[\"/BT-1\\u001b[2J\\u0007\\u007f\\u0085\\u009b\\u2028\\u2029\\u061c\\u200e\\u200f\\u202a\\u202e\\u2066\\u2069\\t\\\"\\\\\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/path-syntax-with-array-value.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-PATH-SYNTAX",
-      "path": "",
-      "subject": "values[\"/BG-25/0/BT 129\"]"
-    },
-    {
-      "file": "examples/invalid/path-syntax-with-array-value.esj.json",
-      "layer": "L1",
-      "code": "ESJ-L1-JSON-TYPE",
-      "path": "",
-      "subject": "values[\"/BG-25/0/BT 129\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-PATH-SYNTAX", "subject": "values[\"/BG-25/0/BT 129\"]", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BG-25/0/BT 129\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/scheme-on-text-value.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-COMPONENT-NOT-ALLOWED",
-      "path": "/BG-4/BT-27"
+      "values": 23,
+      "canonicalBytes": 702,
+      "semanticDigest": "b20e6f9a1af66a7fee6715928922d3125c911ced9d4956a8e3631feaeae9c025",
+      "documentDigest": "9d018b4af84a0c91d60add694a50c27ad474616373aeb7a0c7dfcba336aed2c1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-4/BT-27", "code": "ESJ-L2-COMPONENT-NOT-ALLOWED", "subject": "scheme", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/scheme-version-without-scheme.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-VALUE-MEMBER",
-      "path": "/BG-25/0/BG-31/BT-158/0"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BG-31/BT-158/0", "code": "ESJ-L1-VALUE-MEMBER", "subject": "values[\"/BG-25/0/BG-31/BT-158/0\"].schemeVersion", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/semantic-model-grammar.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "semanticModel", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/source-empty-syntax.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": "",
-      "subject": "source.syntax"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "source.syntax", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/source-lone-surrogate.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": "",
-      "subject": "source.syntax"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "source.syntax", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/source-sha256-uppercase.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": "",
-      "subject": "source.sha256"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "source.sha256", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/invalid/source-unknown-member.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "source[\"profile\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/surrogate-and-duplicate-in-value-object.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": "/BT-1"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/surrogate-below-bad-owner-token.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-OWNER-TOKEN",
-      "path": "",
-      "subject": "extensions[\"urn:example:v/2\"]"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-OWNER-TOKEN", "subject": "extensions[\"urn:example:v/2\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/surrogate-in-envelope-member-name.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": ""
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "[\"\\ud800\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/surrogate-in-path.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": ""
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BT-9\\ud800\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/surrogate-in-shapeless-value-object.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": "/BT-1"
-    },
-    {
-      "file": "examples/invalid/surrogate-in-shapeless-value-object.esj.json",
-      "layer": "L1",
-      "code": "ESJ-L1-VALUE-SHAPE",
-      "path": "/BT-1"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BT-1\"].value", "severity": "error"},
+          {"path": "/BT-1", "code": "ESJ-L1-VALUE-SHAPE", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/surrogate-in-source-member-name.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-SURROGATE",
-      "path": ""
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "source[\"\\ud800\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/unknown-envelope-member.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-ENVELOPE-MEMBER",
-      "path": "",
-      "subject": "profile"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"profile\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/unknown-object-member.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-VALUE-MEMBER",
-      "path": "/BG-4/BT-29/0"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-VALUE-MEMBER", "subject": "values[\"/BG-4/BT-29/0\"][\"type\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/unknown-term.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-UNKNOWN-TERM",
-      "path": "/BT-999"
+      "values": 24,
+      "canonicalBytes": 704,
+      "semanticDigest": "d30dd7cd0bdae92be8c885648c8c45aaf24528954b65a148d4a8349384b2c2ce",
+      "documentDigest": "10d4a6192065d750d4c6972b4624c54203d0a67d8c97a826a4ceae6f1baebd46",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BT-999", "code": "ESJ-L2-UNKNOWN-TERM", "subject": "BT-999", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/value-depth-32.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-JSON-TYPE",
-      "path": "/BG-25/0/BT-129"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BT-129", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BG-25/0/BT-129\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/value-depth-33.esj.json",
       "layer": "limit",
-      "code": "ESJ-L1-LIMIT",
-      "path": "/BG-25/0/BT-129"
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BT-129", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BT-129\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/value-not-a-string.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-VALUE-SHAPE",
-      "path": "/BG-4/BT-29/0"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-VALUE-SHAPE", "subject": "values[\"/BG-4/BT-29/0\"].value", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/value-object-members-17.esj.json",
       "layer": "limit",
-      "code": "ESJ-L1-LIMIT",
-      "path": "/BT-1"
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
     },
     {
       "file": "examples/invalid/values-deep-array.esj.json",
       "layer": "L1",
-      "code": "ESJ-L1-ENVELOPE-VALUE",
-      "path": "",
-      "subject": "values"
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/duplicate-before-broken-value.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-above-unicode.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-decided-first.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-encoded-surrogate.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-overlong.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-stray-continuation.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-truncated-sequence.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/encoding-utf16-with-bom.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENCODING", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-empty-object.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "format", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "version", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "semanticModel", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-extensions-not-an-object.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "extensions", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-format-not-a-string.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-format-surrogate.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-member-named-value.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"value\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-missing-format-and-model.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "format", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "semanticModel", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-semantic-model-null.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "semanticModel", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-source-not-an-object.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "source", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-unknown-member-long-name.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"profile-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-values-not-an-object.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/envelope-wrong-format.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-duplicate-owner-token.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "extensions[\"de.example.vendor\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-number-fraction-65.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"n\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-number-in-array.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"a\"][1]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-number-negative-65.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"n\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-surrogate-in-array-member-name.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "extensions[\"de.example.vendor\"][1][\"\\udfff\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-surrogate-in-member-name.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "extensions[\"de.example.vendor\"][\"\\ud800\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-surrogate-in-owner-token.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "extensions[\"de.\\ud800\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/extensions-surrogate-in-string.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "extensions[\"de.example.vendor\"][\"a\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-after-path-syntax.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-PATH-SYNTAX", "subject": "values[\"/BT-1x\"]", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-control-character-in-string.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-empty.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-fraction-without-digits.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-invalid-escape.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-leading-zero-in-envelope.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-leading-zero-in-values.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-missing-colon.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-missing-comma.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-run-on-literal-in-envelope.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-run-on-literal-in-values.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-top-level-array.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-top-level-string.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-trailing-comma-in-envelope.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-trailing-text.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-truncated-literal-in-envelope.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-truncated-literal-in-values.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-two-objects.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-unclosed-object.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-unclosed-string.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-utf16be-without-bom.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-utf32be-without-bom.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-utf32le-without-bom.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/json-whitespace-only.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/name-before-broken-value.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"profile\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/name-before-missing-colon.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"profile\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/path-every-escaped-character-and-surrogate.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BT-1\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\u0008\\t\\n\\u000b\\u000c\\r\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\\u007f\\u0080\\u0081\\u0082\\u0083\\u0084\\u0085\\u0086\\u0087\\u0088\\u0089\\u008a\\u008b\\u008c\\u008d\\u008e\\u008f\\u0090\\u0091\\u0092\\u0093\\u0094\\u0095\\u0096\\u0097\\u0098\\u0099\\u009a\\u009b\\u009c\\u009d\\u009e\\u009f\\\"\\\\\\u2028\\u2029\\u061c\\u200e\\u200f\\u202a\\u202b\\u202c\\u202d\\u202e\\u2066\\u2067\\u2068\\u2069\\ud800\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/path-every-escaped-character.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-PATH-SYNTAX", "subject": "values[\"/BT-1\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\u0008\\t\\n\\u000b\\u000c\\r\\u000e\\u000f\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001a\\u001b\\u001c\\u001d\\u001e\\u001f\\u007f\\u0080\\u0081\\u0082\\u0083\\u0084\\u0085\\u0086\\u0087\\u0088\\u0089\\u008a\\u008b\\u008c\\u008d\\u008e\\u008f\\u0090\\u0091\\u0092\\u0093\\u0094\\u0095\\u0096\\u0097\\u0098\\u0099\\u009a\\u009b\\u009c\\u009d\\u009e\\u009f\\\"\\\\\\u2028\\u2029\\u061c\\u200e\\u200f\\u202a\\u202b\\u202c\\u202d\\u202e\\u2066\\u2067\\u2068\\u2069\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/source-duplicate-member.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "source.syntax", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/source-empty-object.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "source", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/source-sha256-short.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "source.sha256", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/source-syntax-not-a-string.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "source.syntax", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/source-unknown-member-surrogate-value.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "source[\"foo\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/values-duplicate-in-structure-walked-past.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/values-duplicate-through-escape.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-DUPLICATE-MEMBER", "subject": "values[\"/BT-1\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/values-surrogate-in-structure-walked-past.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-1", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-1\"]", "severity": "error"},
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/reader/values-value-object-member-named-syntax.esj.json",
+      "layer": "L1",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-VALUE-MEMBER", "subject": "values[\"/BG-4/BT-29/0\"][\"syntax\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/binary-as-string.esj.json",
+      "layer": "L2",
+      "values": 25,
+      "canonicalBytes": 727,
+      "semanticDigest": "770ac446b31b5f1ac04a116782ae8798ac82374c4a7334f8f5fc10561723b671",
+      "documentDigest": "7ae42bb6f5c6ca5fd808bb8d786e699087b43ef2696d4dd678cba4343ad74892",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-COMPONENT-MISSING", "subject": "mimeCode", "severity": "error"},
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-COMPONENT-MISSING", "subject": "filename", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/binary-with-scheme.esj.json",
+      "layer": "L2",
+      "values": 25,
+      "canonicalBytes": 750,
+      "semanticDigest": "87e286ae06872d41f2347e24e9e203e16dc6afe88b355c25f6298e3d9df52ff9",
+      "documentDigest": "205f95a77ed169b70b5755fcfccb186e8a9617bb77feb73e67d0cc2fe12a1681",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-COMPONENT-NOT-ALLOWED", "subject": "scheme", "severity": "error"},
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-COMPONENT-MISSING", "subject": "mimeCode", "severity": "error"},
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L2-COMPONENT-MISSING", "subject": "filename", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/index-forbidden-and-date.esj.json",
+      "layer": "L2",
+      "values": 23,
+      "canonicalBytes": 678,
+      "semanticDigest": "05b24548b44218fe3cdddd257d1b61b9e98d70b3b17005aa427c67d0138c4619",
+      "documentDigest": "35ded42d9c960c62d5cc3ab35117abd953831061bbab7d400053996ec7704d8a",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BT-2/0", "code": "ESJ-L2-INDEX-FORBIDDEN", "subject": "BT-2", "severity": "error"},
+          {"path": "/BT-2/0", "code": "ESJ-L2-DATE", "subject": "", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-2", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/index-forbidden-twice.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 703,
+      "semanticDigest": "209437e6c660e811d24116c5d72da1def4b9d9ee279068a58e7a821a2bed3a82",
+      "documentDigest": "e9c29fe03d11712f58ce36efce0bc998bfeb4b38379b2e2dac034bf5c69584fa",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BT-1/0", "code": "ESJ-L2-INDEX-FORBIDDEN", "subject": "BT-1", "severity": "error"},
+          {"path": "/BT-1/1", "code": "ESJ-L2-INDEX-FORBIDDEN", "subject": "BT-1", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-1", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/index-required-above-extension-segment.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 703,
+      "semanticDigest": "410fdc89fd1f5156091291f6b1ff694cc704a6a21b34b942c0bb8f8f8db2fd60",
+      "documentDigest": "0baa9eb0dd12d41bb9029aac9bcd0b6ef76c70323f7996b7c0d41ad3352c90d3",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/BG-ZZZ-1/BT-1", "code": "ESJ-L2-INDEX-REQUIRED", "subject": "BG-25", "severity": "error"},
+          {"path": "/BG-25/BG-ZZZ-1/BT-1", "code": "ESJ-L2-NOT-CHECKED", "subject": "", "severity": "info"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/index-required-and-unknown-term.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 701,
+      "semanticDigest": "94e9395f623b583294d0b0b5861415b09e855bd5dc985d2724fe9cadd9409fd5",
+      "documentDigest": "541bd784da99c3cec56fc1bb0dec5f9516dc821d1b5583a00bac005690a8a876",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/BG-999/BT-1", "code": "ESJ-L2-INDEX-REQUIRED", "subject": "BG-25", "severity": "error"},
+          {"path": "/BG-25/BG-999/BT-1", "code": "ESJ-L2-UNKNOWN-TERM", "subject": "BG-999", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/max-cardinality.esj.json",
+      "layer": "L3",
+      "registries": [
+        "conformance/fixtures/registries/cardinality.json"
+      ],
+      "values": 7,
+      "canonicalBytes": 216,
+      "semanticDigest": "119fa5793e3e78c9a20b5b39d2acb70cda9fd06703dcda8622c0c1ef12e870f4",
+      "documentDigest": "91232afdaca3dec16013ca29bb948b3e008b71fb556ef22f0a3d28de35ede307",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "", "code": "ESJ-L3-MAX-CARDINALITY", "subject": "BT-3", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MAX-CARDINALITY", "subject": "BG-1", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/parent-chain-and-date.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 705,
+      "semanticDigest": "fe869e1246c7ae5217a26ce7921716e570ed2ec5054a3f20e026374046b34911",
+      "documentDigest": "4b892dcf35a5ca12fc94890a391e3ca785b538fac63a20878ee97b5b926458a7",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-25/0/BT-2", "code": "ESJ-L2-PARENT-CHAIN", "subject": "BT-2", "severity": "error"},
+          {"path": "/BG-25/0/BT-2", "code": "ESJ-L2-DATE", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/unknown-core-segment-beside-extension-segment.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 699,
+      "semanticDigest": "99501f1567900d9a64b67b7ba75c8de174912042d92942b940cf40169c29c6e4",
+      "documentDigest": "9082c8342ce39c18351bfa94bc476a4bff30208c3474a75a7ee83825a80b34aa",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-999/BT-ZZZ-1", "code": "ESJ-L2-UNKNOWN-TERM", "subject": "BG-999", "severity": "error"},
+          {"path": "/BG-999/BT-ZZZ-1", "code": "ESJ-L2-NOT-CHECKED", "subject": "", "severity": "info"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/model/unknown-term-two-segments.esj.json",
+      "layer": "L2",
+      "values": 24,
+      "canonicalBytes": 697,
+      "semanticDigest": "2c63c9998bad56f3939c7ff6a6a4a6adf959d3194a9a54c5d1a97794aefc1c39",
+      "documentDigest": "4fe2d73e3fed807c08ee45fe872b577fda5156e1abb2a7db8f0edb9901615902",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-998/BT-999", "code": "ESJ-L2-UNKNOWN-TERM", "subject": "BG-998", "severity": "error"},
+          {"path": "/BG-998/BT-999", "code": "ESJ-L2-UNKNOWN-TERM", "subject": "BT-999", "severity": "error"}
+        ]
+      }
+    }
+  ],
+  "bounds": [
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxDocumentBytes": 835},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxDocumentBytes": 834},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxValues": 23},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxValues": 22},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BG-31/BT-153\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxPathSegments": 4},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxPathSegments": 3},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BG-29/BT-146\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxPathBytes": 21},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "examples/minimal.esj.json",
+      "limits": {"maxPathBytes": 20},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BG-29/BT-146\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/string.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/string.esj.json",
+      "limits": {"maxStringBytes": 63},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BG-31/BT-153", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BG-31/BT-153\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/normalized-string.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/normalized-string.esj.json",
+      "limits": {"maxStringBytes": 63},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BG-31/BT-153", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BG-31/BT-153\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/extension-string.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/extension-string.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.vendor\"][\"note\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/source-syntax.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/source-syntax.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "source.syntax", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/envelope-string.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-VALUE", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/envelope-string.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "format", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/semantic-model.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "EDITION-UNKNOWN"},
+          {"layer": "L3", "reason": "EDITION-UNKNOWN"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L2-EDITION-UNKNOWN", "subject": "", "severity": "info"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/semantic-model.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "semanticModel", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/member-name.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "[\"ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/member-name.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/owner-token.esj.json",
+      "limits": {"maxStringBytes": 129},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-OWNER-TOKEN", "subject": "extensions[\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/owner-token.esj.json",
+      "limits": {"maxStringBytes": 128},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-bad-path.esj.json",
+      "limits": {"maxPathBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-PATH-SYNTAX", "subject": "values[\"/BT-1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-bad-path.esj.json",
+      "limits": {"maxPathBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-bad-path.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-source.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "source[\"sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-source.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "source", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-value-object.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-VALUE-MEMBER", "subject": "values[\"/BG-4/BT-29/0\"][\"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-value-object.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-29/0\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-extension.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-extension.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.vendor\"][0]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/number-token.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-EXT-NUMBER", "subject": "extensions[\"de.example.vendor\"][\"n\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/number-token.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.vendor\"][\"n\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/number-in-values.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/number-in-values.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-string.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-number.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-number.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-name.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-name.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-depth.esj.json",
+      "limits": {"maxExtensionDepth": 3},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-depth.esj.json",
+      "limits": {"maxExtensionDepth": 2},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BT-9", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-9\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-value-member.esj.json",
+      "limits": {"maxExtensionDepth": 3},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-JSON-TYPE", "subject": "values[\"/BG-4/BT-29/0\"].value", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/walked-past-value-member.esj.json",
+      "limits": {"maxExtensionDepth": 2},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-29/0\"].value", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-strings.esj.json",
+      "limits": {"maxStringBytes": 64, "maxBinaryValueBytes": 128},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-strings.esj.json",
+      "limits": {"maxStringBytes": 63, "maxBinaryValueBytes": 128},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-29/0\"].value", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-strings.esj.json",
+      "limits": {"maxStringBytes": 64, "maxBinaryValueBytes": 127},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-24/0/BT-125\"].value", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-strings.esj.json",
+      "limits": {"maxStringBytes": 128, "maxBinaryValueBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-24/0/BT-125", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-24/0/BT-125\"].value", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/empty-before-limit.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-27", "code": "ESJ-L1-EMPTY-STRING", "subject": "values[\"/BG-4/BT-27\"]", "severity": "error"},
+          {"path": "/BG-25/0/BG-31/BT-153", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-25/0/BG-31/BT-153\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/limit-before-empty.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-27", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-27\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-empty-before-limit.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-EMPTY-STRING", "subject": "values[\"/BG-4/BT-29/0\"].scheme", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-limit-before-empty.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-29/0\"].value", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-members.esj.json",
+      "limits": {"maxValueMembers": 2},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/value-object-members.esj.json",
+      "limits": {"maxValueMembers": 1},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-29/0\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/binary-total.esj.json",
+      "limits": {"maxTotalBinaryBytes": 144},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/binary-total.esj.json",
+      "limits": {"maxTotalBinaryBytes": 143},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-24/1/BT-125", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-24/1/BT-125\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/binary-total-padding.esj.json",
+      "limits": {"maxTotalBinaryBytes": 10},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BG-24/2/BT-125", "code": "ESJ-L2-BASE64", "subject": "", "severity": "error"},
+          {"path": "/BG-24/3/BT-125", "code": "ESJ-L2-BASE64", "subject": "", "severity": "error"},
+          {"path": "/BG-24/4/BT-125", "code": "ESJ-L2-BASE64", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/binary-total-padding.esj.json",
+      "limits": {"maxTotalBinaryBytes": 9},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-24/4/BT-125", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-24/4/BT-125\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "examples/extension-depth.esj.json",
+      "limits": {"maxExtensionDepth": 32},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "examples/extension-depth.esj.json",
+      "limits": {"maxExtensionDepth": 31},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.vendor\"][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/extension-nodes.esj.json",
+      "limits": {"maxExtensionNodes": 6},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/extension-nodes.esj.json",
+      "limits": {"maxExtensionNodes": 5},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.archive\"][\"a\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-string-surrogate.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-25/0/BG-31/BT-153", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BG-25/0/BG-31/BT-153\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-name-surrogate.esj.json",
+      "limits": {"maxStringBytes": 200},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-SURROGATE", "subject": "values[\"/BT-9xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\ud800\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-name-surrogate.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-string-unclosed.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/long-name-bad-escape.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-JSON", "subject": "", "severity": "error"}
+        ]
+      }
+    }
+  ],
+  "registryChecks": [
+    {
+      "files": [
+        "model/en16931/2017.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/b2c/0.1.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "model/en16931/2017.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "model/xrechnung/3.0.2.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/cardinality.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/extension.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/extension.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "conformance/fixtures/registries/extension.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/cardinality.json",
+        "conformance/fixtures/registries/extension.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/binary-without-components.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/binary-without-components.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/scheme-version-without-scheme.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/scheme-version-without-scheme.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/mandatory-version-beside-optional-scheme.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/mandatory-version-beside-optional-scheme.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/duplicate-identifier.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/duplicate-identifier.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/no-imports.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/no-imports.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/identifier-without-namespace.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/identifier-without-namespace.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/two-namespaces.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/two-namespaces.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/redefines-core-term.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/redefines-core-term.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/imports-another-model.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/imports-another-model.json"
+      ],
+      "accepted": false
+    },
+    {
+      "files": [
+        "conformance/fixtures/registries/identifier-of-another-extension.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "conformance/fixtures/registries/identifier-of-another-extension.json"
+      ],
+      "accepted": true
+    },
+    {
+      "files": [
+        "model/en16931/2017.json",
+        "model/xrechnung/3.0.2.json",
+        "conformance/fixtures/registries/identifier-of-another-extension.json"
+      ],
+      "accepted": false
     }
   ],
   "canonicalOrder": [
@@ -2210,6 +5362,30 @@
       "canonical": "conformance/fixtures/canonical-order/indices.canonical.esj.json",
       "values": 93,
       "documentDigest": "d26eb250982f469d14d3e9c93a03c6462d1456cc1719019049c097458278b870"
+    },
+    {
+      "scrambled": "conformance/fixtures/canonical-order/escaping.esj.json",
+      "canonical": "conformance/fixtures/canonical-order/escaping.canonical.esj.json",
+      "values": 2,
+      "documentDigest": "6b6bb3400996733616c7522388f3e3017bda33b3d840cbc45e912293bfc3dba3"
+    },
+    {
+      "scrambled": "conformance/fixtures/canonical-order/corners.esj.json",
+      "canonical": "conformance/fixtures/canonical-order/corners.canonical.esj.json",
+      "values": 19,
+      "documentDigest": "715e6ba5291a68119f3468301cfe9a38a2c2903fc10b4eb811fcd4f85eb14ffe"
+    },
+    {
+      "scrambled": "conformance/fixtures/canonical-order/numbers.esj.json",
+      "canonical": "conformance/fixtures/canonical-order/numbers.canonical.esj.json",
+      "values": 1,
+      "documentDigest": "2c21bec7b7c074f973ee7d854227a7fa5d0599292dae89b9c17f2e9b6bd9891f"
+    },
+    {
+      "scrambled": "conformance/fixtures/canonical-order/value-object-order.esj.json",
+      "canonical": "conformance/fixtures/canonical-order/value-object-order.canonical.esj.json",
+      "values": 27,
+      "documentDigest": "a62556590e5e21ea499e70d3ce2fa8cdf3d16776bb7dad5218bd6a2cb886a315"
     }
   ],
   "grammars": [
@@ -2225,7 +5401,10 @@
         "0.5",
         "42.015",
         "-0.01",
-        "1111111111111111111111111111111111111111111111111111111111111111"
+        "1111111111111111111111111111111111111111111111111111111111111111",
+        "-111111111111111111111111111111111111111111111111111111111111111",
+        "0.11111111111111111111111111111111111111111111111111111111111111",
+        "11111111111111111111111111111111.1111111111111111111111111111111"
       ],
       "reject": [
         "100.00",
@@ -2240,7 +5419,64 @@
         "1 000",
         "1,5",
         "0x10",
+        "11111111111111111111111111111111111111111111111111111111111111111",
+        "-1111111111111111111111111111111111111111111111111111111111111111",
+        "0.111111111111111111111111111111111111111111111111111111111111111",
+        "100\n",
+        " 100",
+        "１",
+        "1.10",
+        "00.5"
+      ]
+    },
+    {
+      "datatype": "Quantity",
+      "code": "ESJ-L2-DECIMAL",
+      "base": "examples/minimal.esj.json",
+      "path": "/BG-25/0/BT-129",
+      "accept": [
+        "1",
+        "-2.5",
+        "0.0001",
+        "1111111111111111111111111111111111111111111111111111111111111111"
+      ],
+      "reject": [
+        "1.0",
+        "01",
+        "1e3",
         "11111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "datatype": "UnitPriceAmount",
+      "code": "ESJ-L2-DECIMAL",
+      "base": "examples/minimal.esj.json",
+      "path": "/BG-25/0/BG-29/BT-146",
+      "accept": [
+        "100",
+        "0.123456",
+        "1111111111111111111111111111111111111111111111111111111111111111"
+      ],
+      "reject": [
+        "100.000000",
+        "-0",
+        "11111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "datatype": "Percentage",
+      "code": "ESJ-L2-DECIMAL",
+      "base": "examples/minimal.esj.json",
+      "path": "/BG-23/0/BT-119",
+      "accept": [
+        "19",
+        "7.5",
+        "0"
+      ],
+      "reject": [
+        "19.0",
+        "19%",
+        "-0.0"
       ]
     },
     {
@@ -2252,7 +5488,11 @@
         "2026-01-15",
         "2024-02-29",
         "1000-01-01",
-        "9999-12-31"
+        "9999-12-31",
+        "2000-02-29",
+        "1600-02-29",
+        "2026-04-30",
+        "2026-12-31"
       ],
       "reject": [
         "2026-02-30",
@@ -2262,7 +5502,17 @@
         "20260115",
         "2026-01-15Z",
         "2026-13-01",
-        "2026-01-32"
+        "2026-01-32",
+        "2100-02-29",
+        "1900-02-29",
+        "2026-04-31",
+        "2026-00-10",
+        "2026-01-00",
+        "0000-01-01",
+        "+2026-01-15",
+        "2026-01-15\n",
+        "2026-01-15T00:00:00",
+        "２026-01-15"
       ]
     },
     {
@@ -2283,6 +5533,26 @@
         },
         {
           "value": "QQ==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUE=",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "AAAA",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "+/8=",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "+/+/",
           "mimeCode": "application/pdf",
           "filename": "note.pdf"
         }
@@ -2312,7 +5582,147 @@
           "value": "QUJDRQ===",
           "mimeCode": "application/pdf",
           "filename": "note.pdf"
+        },
+        {
+          "value": "QUJ=",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "Q===",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "====",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QQ==QUJD",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJD\n",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "Qa==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QW==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUC=",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "+/==",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QUJD_-8=",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "QQ",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
+        },
+        {
+          "value": "Q",
+          "mimeCode": "application/pdf",
+          "filename": "note.pdf"
         }
+      ]
+    },
+    {
+      "grammar": "edition",
+      "code": "ESJ-L1-ENVELOPE-VALUE",
+      "base": "examples/minimal.esj.json",
+      "member": "semanticModel",
+      "accept": [
+        "EN16931-1:2017+A1:2019/AC:2020",
+        "EN16931-1:2099",
+        "FOO-BAR:2099",
+        "A:0999",
+        "lower-case:2017",
+        "X1-Y2-Z3:2017",
+        "X:2017+A1:2019+A2:2020/AC:2021",
+        "X:2017/AC1:2020",
+        "X:2017/AC:2020+A2:2021/AC2:2022",
+        "X:2017+A10:2019"
+      ],
+      "reject": [
+        "EN16931-1",
+        "EN16931-1:17",
+        "EN16931-1:20170",
+        "EN 16931-1:2017",
+        " EN16931-1:2017",
+        "EN16931-1:2017 ",
+        "EN16931-1:2017+a1:2019",
+        "EN16931-1:2017/ac:2020",
+        "EN16931-1:2017+A:2019",
+        "EN16931-1:2017/AC",
+        "-EN:2017",
+        "EN-:2017",
+        "EN--1:2017",
+        ":2017",
+        "EN16931-1:2017+",
+        "EN16931-1:2017/AC:2020/AC:2021",
+        "EN16931_1:2017",
+        "EN16931-1:2017\n",
+        "ÉN:2017",
+        "EN16931-1:2017+A1:2019/",
+        ""
+      ]
+    },
+    {
+      "grammar": "owner-token",
+      "code": "ESJ-L1-OWNER-TOKEN",
+      "base": "examples/minimal.esj.json",
+      "member": "extensions",
+      "accept": [
+        "de.example.vendor",
+        "example-vendor_2",
+        "bt-example",
+        "a",
+        "Z9",
+        "1",
+        "a.b",
+        "a_b",
+        "a-b",
+        "BTX",
+        "bT-1",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      ],
+      "reject": [
+        "urn:example:v/2",
+        "de.exämple.vendor",
+        "BT-1",
+        "BG-example",
+        "BT-",
+        ".a",
+        "a.",
+        "-a",
+        "a-",
+        "_a",
+        "a_",
+        "a b",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "a/b",
+        "",
+        "de.example.vendor\n",
+        "a:b"
       ]
     }
   ],

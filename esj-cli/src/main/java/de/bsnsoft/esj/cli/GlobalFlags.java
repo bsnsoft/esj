@@ -178,7 +178,8 @@ final class GlobalFlags {
 
     @Option(order = 1150, names = "--max-string-bytes", paramLabel = "<bytes>",
             converter = Numbers.ByteCount.class,
-            description = "The largest string value, in bytes of its UTF-8 encoding.")
+            description = "The longest string, member name or number of an ESJ document,"
+                    + " in bytes of its UTF-8 encoding.")
     void maxStringBytes(long value) {
         target.bound(Bound.STRING_BYTES, value);
     }

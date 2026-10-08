@@ -44,9 +44,13 @@ import java.util.Set;
  * derived names come from the same base name, so a group is named once and read and write
  * never drift apart.
  *
- * <p>A member name is the slug itself. A slug that Java cannot spell as a method name, or
- * that would hide {@code path()}, {@code document()} or {@code builder()}, is a defect of
- * the registry, and this class refuses it instead of inventing a spelling for it.
+ * <p>A member name is the slug itself. A slug is language-neutral (specification,
+ * section 10), and the reserved words of Java are this generator's business and not the
+ * registry's: a slug that Java reserves as a keyword or a literal, or that would hide a
+ * member every view and editor carries — {@code path()}, {@code document()},
+ * {@code builder()} and the members of {@code Object} — is escaped by a trailing
+ * underscore, so {@code class} becomes {@code class_()}. A slug never carries an
+ * underscore, so the escaped name is the name of no other member.
  */
 final class Naming {
 
@@ -87,8 +91,9 @@ final class Naming {
      * Computes the type name of every business group of a registry.
      *
      * @param registry the registry the typed view is generated from
-     * @throws IllegalStateException if a name cannot be made unique or a slug cannot be a
-     *                               Java member name
+     * @throws IllegalStateException if a name cannot be made unique, a slug cannot be a
+     *                               Java name at all, or a repeatable group's slug has no
+     *                               singular form
      */
     Naming(Registry registry) {
         Objects.requireNonNull(registry, "registry");
@@ -104,7 +109,8 @@ final class Naming {
             if (!term.isGroup() || !term.isRepeatable()) {
                 continue;
             }
-            String singular = singularMemberName(term);
+            singularMemberName(term);
+            String singular = singular(term.slug());
             List<Term> siblings = term.parent().isPresent()
                     ? registry.children(term.parent().get())
                     : registry.rootTerms();
@@ -169,7 +175,26 @@ final class Naming {
      * @return the member name, which is the slug of the registry
      */
     String memberName(Term term) {
-        return Objects.requireNonNull(term, "term").slug();
+        return escaped(Objects.requireNonNull(term, "term").slug());
+    }
+
+    /**
+     * Returns the name a generated member takes for a name stem: the stem itself, or the
+     * stem followed by an underscore where Java reserves it as a keyword or a literal, or
+     * where every view and editor already has a member of that name.
+     *
+     * <p>The specification, section 10 leaves the reserved words of a target language to
+     * the generator for that language, because the registry is read by generators of
+     * several and must not encode the set of one of them. A slug matches
+     * {@code [a-z][A-Za-z0-9]*} and never carries an underscore, so an escaped name never
+     * collides with the name of another member.
+     *
+     * @param stem the slug, or a name derived from it
+     * @return the member name
+     */
+    static String escaped(String stem) {
+        Objects.requireNonNull(stem, "stem");
+        return JAVA_RESERVED.contains(stem) || RESERVED_MEMBERS.contains(stem) ? stem + "_" : stem;
     }
 
     /**
@@ -178,9 +203,9 @@ final class Naming {
      * it names one: {@code invoiceLines} yields {@code invoiceLine}.
      *
      * @param term the repeatable group
-     * @return the member name of the singular block overload
-     * @throws IllegalStateException if the slug has no singular form this rule can take,
-     *                               or the singular is a name the typed view reserves
+     * @return the member name of the singular block overload, escaped as
+     *         {@link #escaped(String)} escapes a reserved word
+     * @throws IllegalStateException if the slug has no singular form this rule can take
      */
     String singularMemberName(Term term) {
         String singular = singular(Objects.requireNonNull(term, "term").slug());
@@ -188,11 +213,7 @@ final class Naming {
             throw new IllegalStateException("the slug of the repeatable group " + term.id()
                     + " has no singular form: " + term.slug());
         }
-        if (JAVA_RESERVED.contains(singular) || RESERVED_MEMBERS.contains(singular)) {
-            throw new IllegalStateException("the singular of the slug of " + term.id()
-                    + " cannot be a member name of the typed view: " + singular);
-        }
-        return singular;
+        return escaped(singular);
     }
 
     /**
@@ -482,9 +503,8 @@ final class Naming {
 
     private void checkMemberName(Term term) {
         String slug = term.slug();
-        if (JAVA_RESERVED.contains(slug) || RESERVED_MEMBERS.contains(slug)) {
-            throw new IllegalStateException(
-                    "the slug of " + term.id() + " cannot be a member name of the typed view: " + slug);
+        if (slug.isEmpty()) {
+            throw new IllegalStateException("the slug of " + term.id() + " is empty");
         }
         if (!Character.isJavaIdentifierStart(slug.charAt(0))) {
             throw new IllegalStateException("the slug of " + term.id() + " does not start a Java name: " + slug);

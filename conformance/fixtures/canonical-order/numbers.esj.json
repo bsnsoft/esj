@@ -1,0 +1,24 @@
+{
+  "format": "EN16931-Semantic-JSON",
+  "version": "0.1",
+  "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+  "values": {
+    "/BT-1": "RE-2026-0001"
+  },
+  "extensions": {
+    "de.example.vendor": {
+      "fractionAt64": 1e-62,
+      "negativeAt64": -1e-61,
+      "integerAt64": 1111111111111111111111111111111111111111111111111111111111111111,
+      "zeroWithLargeExponent": 0e999999999,
+      "negativeZeroWithExponent": -0e-5,
+      "capitalExponent": 1E2,
+      "signedExponent": 1e+2,
+      "fractionTimesTen": 0.10e1,
+      "hundredthsOfHundred": 100e-2,
+      "trailingZeros": 12.3400,
+      "negativeTrailingZero": -12.0,
+      "objectsInAnArray": [{"b": 1, "a": 2}, {"d": [3e0, 4.0], "c": null}]
+    }
+  }
+}

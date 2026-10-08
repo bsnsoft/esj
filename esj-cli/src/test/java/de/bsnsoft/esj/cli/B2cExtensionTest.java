@@ -16,6 +16,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
@@ -124,8 +125,41 @@ class B2cExtensionTest {
         assertEquals(ExitCode.INDETERMINATE, run.exitCode(), run.err());
         assertTrue(run.text().contains("INDETERMINATE"), run.text());
         assertTrue(run.text().contains("extension-registry-missing"), run.text());
-        assertTrue(run.text().contains("the registry that defines BT-B2C-010 is not loaded"),
-                run.text());
+        assertTrue(run.text().contains("no registry of the namespace B2C, which defines"
+                + " BT-B2C-010, is loaded"), run.text());
+    }
+
+    /**
+     * A caller who loads the extension for a document of an edition it was not written
+     * against has not forgotten the registry: the run loaded it and left it out, because it
+     * imports another edition (specification, section 10). The four paths are not checked
+     * either way, and the run says which of the two happened, in the finding and in the
+     * cause, rather than asking for an option that was given.
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void saysThatTheExtensionImportsAnotherEditionThanTheDocumentNames() {
+        String later = Fixtures.text("examples/edition-2026.esj.json").replace(
+                "\"/BG-25/0/BT-126\":", "\"/BG-25/0/BT-B2C-001\": \"11.90\",\n    \"/BG-25/0/BT-126\":");
+        assertTrue(later.contains("BT-B2C-001"), "the document carries a term of the extension");
+
+        Cli.Run run = Cli.run(later.getBytes(StandardCharsets.UTF_8),
+                "validate", "--extension", "b2c", "-");
+        Cli.Run json = Cli.run(later.getBytes(StandardCharsets.UTF_8),
+                "validate", "--extension", "b2c", "--output", "json", "-");
+
+        assertEquals(ExitCode.INDETERMINATE, run.exitCode(), run.err());
+        assertTrue(run.text().contains("ESJ-L2-NOT-CHECKED [info] /BG-25/0/BT-B2C-001:"
+                + " --extension b2c loads ESJ-B2C 0.1, which imports"
+                + " EN16931-1:2017+A1:2019/AC:2020, not this edition"), run.text());
+        assertTrue(run.text().contains("model-l2 (extension-for-another-edition)"), run.text());
+        assertFalse(run.text().contains("extension-registry-missing"), run.text());
+        assertTrue(json.text().contains("\"cause\": \"extension-for-another-edition\""),
+                json.text());
+    }
+
+    static boolean carries2026() {
+        return Registry.editionKeys().contains("2026");
     }
 
     /** Both registries describe terms of one core model, and one run may load both. */

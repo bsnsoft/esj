@@ -6,12 +6,329 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.6] — unreleased
 
+The Java implementation and the TypeScript and C# bindings now read, report and load registries
+alike. An entry without a prefix holds for all three; a prefix names the implementation it is
+about.
+
+### Added
+
+- The fixture manifest records the whole answer of a validation (contract version 2): the status,
+  the layers not evaluated with their reasons, and every finding with its path, code, subject —
+  the empty one included — and severity, information findings such as `ESJ-L2-NOT-CHECKED` and
+  `ESJ-L2-EDITION-UNKNOWN` among them. `run.py` compares the findings of the reader and those of
+  one path at layer L2 in order, as `SPEC.md` sections 9.6 and 9.2 fix it, and the rest as a set,
+  and a rejected document by its whole list of findings rather than its first.
+- Fixture manifest: a section `bounds` reads documents under bounds below the defaults, each at a
+  bound and one past it; a section `registryChecks` asks a loader to read and combine registry
+  files and records whether it takes them; the grammar tables cover the edition grammar of
+  `semanticModel` and the owner token, and more decimal, date, time and base64 candidates; a
+  rejected document the reader reads carries its digests; a canonical order case carries its
+  document digest and its number of values. A `validate` request may name the registries to
+  validate with (`registries`), which the fixture bindings of TypeScript and C# answer.
+- Fixtures: 13 documents in `examples/invalid/` (the encoding, the JSON text, a missing envelope
+  member, a wrong version, the edition grammar, an undefined member of `source`, a duplicate in
+  the envelope and below an owner token, a parent chain, a missing index, a missing group) and,
+  under `conformance/fixtures/`, 64 variants layer L1 refuses, 10 documents whose findings at
+  layers L2 and L3 are pinned as a list, 4 documents a reader reads for what a validator says of
+  them, 69 cases under bounds, 30 sets of registries, 4 documents not in canonical form, and the
+  two documents of `SPEC.md` appendix B with their canonical bytes. A test holds the bytes,
+  lengths and digests the appendix prints to those files and to the manifest.
+
+### Changed
+
+- Java: `EsjReader` reads the bytes with a scanner of its own instead of `jackson-core`: it reads
+  UTF-8 and nothing else, and it judges every member name before the value written under it. It is
+  faster than before and holds less while it reads.
+- The `subject` of a reader finding is a member access with one grammar: a name the
+  specification defines at that place is dotted (`source.syntax`, `values["/BT-1"].scheme`),
+  every name the document chose is written in brackets (`["profile"]`, `source["origin"]`,
+  `values["/BT-1"]["note"]`, `extensions["a.b"]["x"][0]`), and the name is never cut to an
+  excerpt. The bindings wrote such a name dotted (`profile`, `source.foo`, `values["/BT-1"].foo`).
+- A duplicate member name is named by its own member access (`values["/BT-1"]`, `format`,
+  `source.syntax`, `extensions["a.b"]["x"]`), not by the object it occurs in; inside a value
+  object, a repeated name or a name with a lone surrogate names the value (`values["/BT-1"]`).
+- Every missing required envelope member is a finding of its own, with the member's name as its
+  subject, in the order `format`, `version`, `semanticModel`, `values` (was the first alone).
+- Every member name is held to `maxStringBytes`, counted in UTF-8 bytes (the bindings counted
+  UTF-16 code units), also below a value the reader walks past, and so are `format`, `version`,
+  `semanticModel` and `source.sha256` as `source.syntax` was: past the bound each is
+  `ESJ-L1-LIMIT` rather than the code of its grammar (`ESJ-L1-OWNER-TOKEN`, `ESJ-L1-PATH-SYNTAX`,
+  `ESJ-L1-ENVELOPE-MEMBER`), which still applies inside the bound. A bound shorter than the
+  envelope's own strings refuses every document; the edition string of 2017 is 30 bytes long.
+- A number token longer than `maxStringBytes` is `ESJ-L1-LIMIT` wherever it stands, measured
+  before it is built; in `values` it was `ESJ-L1-JSON-TYPE` when written with a fraction.
+- `ESJ-L1-LIMIT` carries the path of the member of `values` it was met in and, as its subject,
+  the member whose name or value reached the bound — `values["/BT-1"]`, `values["/BT-1"].value`,
+  `extensions["o"][1]`; for a member name past the string bound, the object the name stands in —
+  also for a bound the parser used to apply, which named nothing. Inside a
+  structure the reader walks past, that is the member walked past; names, numbers and the depth
+  are bounded there, strings are not.
+- A message that places a defect in the byte sequence names the byte offset at which the token
+  begins, counted from zero, rather than where the parser stopped (Java) or a UTF-16 index (the
+  bindings).
+- `ESJ-L1-JSON` is a finding about the document: its path and subject are empty, its message
+  names the byte offset. A token where a value belongs that is no complete JSON value — `tru`,
+  `truex`, `01`, `1.` — is `ESJ-L1-JSON`, before anything is said about its type, also where the
+  envelope expects another type (the bindings said `ESJ-L1-ENVELOPE-VALUE` there).
+- An exception carries the path and the subject of the finding it stands for beside its code:
+  `path()` and `subject()` of `EsjFormatException` and `EsjLimitException` in Java; `Path` and
+  `Subject` in C#, where `EsjLimitException.Code` is now an instance property and
+  `EsjLimitException.LimitCode` the constant; `subject` of `EsjError` in TypeScript, whose `path`
+  is the empty string where the finding names none (was `undefined`).
+- `esj validate --output json` writes `subject` as a string in every finding, `""` where it
+  names nothing beyond the path, and never `null`.
+- Layer L2 checks every path independently (`SPEC.md` 9.2): a core identifier the registry does not
+  contain is `ESJ-L2-UNKNOWN-TERM` once per segment, also beside an extension segment no loaded
+  registry defines, which made the whole path `ESJ-L2-NOT-CHECKED` and the result `INDETERMINATE`
+  before; the segments above an undefined one are held to the index rule; an unknown identifier of
+  a loaded extension namespace stays `ESJ-L2-NOT-CHECKED`, and its message no longer says that the
+  registry is not loaded. Of a path whose terms are all known, the index rule, the chain, the
+  content and the components are checked and every failure is reported (TypeScript reported the
+  first alone), and the findings of a path stand in the order of its segments.
+- The findings of layer L2 name in `subject` what the path cannot tell apart: the identifier of the
+  segment for `ESJ-L2-UNKNOWN-TERM`, `-INDEX-REQUIRED` and `-INDEX-FORBIDDEN`, the term whose group
+  chain is wrong for `ESJ-L2-PARENT-CHAIN`, the component for `ESJ-L2-COMPONENT-NOT-ALLOWED` and
+  `-COMPONENT-MISSING`. The subject was empty in Java and C#.
+- Java and C#: `ValidationResult.merge` (`Merge`) keeps `NOT-REQUESTED` for a layer the caller did
+  not ask for: a `LIMIT` or `PRECEDING-LAYER-FAILED` the other result names for it no longer
+  displaces it (`SPEC.md` 9.5). `EDITION-UNKNOWN` of a validator that was asked for the layer is
+  still kept over the `NOT-REQUESTED` of a clean read, which `Merge` of C# answered with
+  `NOT-REQUESTED`; both now compose every pair of reasons by one table. C#:
+  `Validator.Validate(byte[])` composes the read and the structural run with `Merge`, so an unknown
+  edition reads `EDITION-UNKNOWN`.
+- Java: `Registry.load` refuses a registry that names terms it does not define — as a parent, in a
+  chain or in `reusesTerms` — and imports nothing, and reports a cardinality below zero or a path
+  that does not end at its term as `EsjFormatException` rather than `IllegalArgumentException`.
+  `Registry.withExtension` refuses such an extension where its `imports` do not name this model
+  with this edition, which it combined silently before; its refusal of a redefined term no longer
+  calls a term of an earlier extension a core term. `Registry.admits(extension)` asks the edition
+  question before combining.
+- TypeScript: `registryOf` and `new Structure` refuse a registry the way section 10 does —
+  `RegistryError` for components no value can satisfy, an identifier listed twice or defined by
+  core and extension (was: the later one won), and an extension combined with an edition it does
+  not import, or naming core terms with no `imports` at all.
+- `esj validate --extension` for a document of an edition the extension does not import says so:
+  the `ESJ-L2-NOT-CHECKED` finding names the option, the edition the registry imports and that it
+  is not this one, and the cause is the new `extension-for-another-edition` rather than
+  `extension-registry-missing`.
+- An extension registry defines identifiers of its own namespace only: one that defines an
+  identifier without a namespace — `BT-999` as well as `BT-1` — or identifiers of two namespaces
+  is refused when it is read, where it imports a core, and where it is combined with one.
+  `model/registry.schema.json` states the same for a registry that carries `imports`.
+- C#: `Registry.Load` refuses a registry that names an identifier it does not define and imports
+  nothing, and `WithExtension` asks for the imports wherever an extension names an identifier it
+  does not define, as Java and TypeScript do, not only one of the core.
+- TypeScript and C#: a member name is judged before the colon after it, as in Java: `{"a" 1}` is
+  `ESJ-L1-ENVELOPE-MEMBER` rather than `ESJ-L1-JSON`, and a name of `values` that is no path draws
+  `ESJ-L1-PATH-SYNTAX` before the missing colon ends the read.
+- A string past its bound is read on to its end for a lone surrogate, which comes first:
+  TypeScript and C# refused a string of the envelope, of `source` or of `extensions` past the
+  larger of the two string bounds, and a string of `values` past twice the string bound, for its
+  length alone. Strings of the envelope, of `source`, of `extensions` and of `values` are held to
+  the string bound while they are read, in TypeScript and C# as in Java.
+- Inside a value object a string with a lone surrogate is held to no bound: it drew
+  `ESJ-L1-LIMIT` beside `ESJ-L1-SURROGATE`, and in Java past the larger of the two string bounds
+  `ESJ-L1-LIMIT` alone. TypeScript and C#: a member of a value object past every bound that could
+  apply to it stops the reader before the object is judged, as in Java, rather than after its
+  shape and member set.
+- TypeScript and C#: the message of an `ESJ-L1-LIMIT` about the members of `values`, the length
+  or the segments of a path, the members of a value object or the depth of `extensions` names the
+  byte offset of its token, as Java's does; TypeScript's `ESJ-L1-JSON` for a document that is no
+  JSON object names it too.
+- Java: the generator escapes a slug Java reserves, or one that would hide a member every view
+  carries, with a trailing underscore (`class_()`) instead of refusing the registry (`SPEC.md` 10).
+- TypeScript: the view generator refuses a repeatable group whose slug is no plural (was: the slug
+  named an instance as it stood).
+- TypeScript and C#: the fixture binding answers `validate` with `status`, `notEvaluated` and each
+  finding's `severity`, takes the bounds of section 12.2 in `limits` under the names of `Limits`,
+  and answers `{"op": "registry", "files": [...]}` with `accepted`.
+- TypeScript: `limitsOf` refuses a name that is no limit of section 12.2 and a bound that is not a
+  positive whole number.
+
 ### Fixed
 
+- Java: the reader read a document written in UTF-16 or UTF-32 without a byte order mark,
+  because its parser guessed the encoding; such a byte sequence is valid UTF-8 and no JSON text
+  in it, and is now `ESJ-L1-JSON`.
+- Java: a defective member name followed by a broken value — `"foo":tru`, a second
+  `"format":tru` — was `ESJ-L1-JSON`, because the parser read the value ahead; the name is judged
+  first and draws its own code.
+- A lone surrogate or a repeated name inside a structure the reader walks past under a defective
+  member was reported, and in Java a lone surrogate there stopped the read; neither is a finding
+  now, and the reader reads on.
+- A member name with a lone surrogate carries its member access as subject (it was empty in
+  Java), and a subject or message escapes every unpaired surrogate as `\u` and four lowercase
+  hexadecimal digits (`\ud800`); the C# fixture protocol carries it so instead of a replacement
+  character.
+- The subject of an undefined envelope member was cut to 80 characters; a subject is whole.
+- Java and C#: the decoded size of a base64 value counts at most two padding characters and is
+  never negative, so a value that is no base64 cannot lower the total the bound on binary content
+  sees.
+- TypeScript and C#: a value built through the API (`documentOf`, `SemanticValue`, or a document
+  assembled by hand) has its line endings normalized as a read one has, in the content and in
+  every component, so both have one canonical form and one digest; `source` and `extensions` stay
+  as written.
+- C#: `format`, `version`, `semanticModel` and both members of `source` were held to the binary
+  bound; they are held to the string bound, and a string of the envelope is screened for a lone
+  surrogate before it is measured.
+- C#: `Limits` refuses a `maxExtensionDepth` or a `maxDocumentBytes` past the bound the Java
+  implementation refuses, instead of overflowing when a document arrives.
+- TypeScript: `pretty` ends with one LF and writes a number inside `extensions` in its canonical
+  form, as the Java and the C# writer do.
+- TypeScript: `canonicalize` puts the values in canonical path order itself, leaves an empty
+  `extensions` and an empty `source` out, writes `format` and `version` as the constants, and
+  names the value of a string it cannot write.
+- TypeScript: `validate(bytes, {layers})` without L1 no longer measures the model layers over a
+  document the reader refused a member of: they are `PRECEDING-LAYER-FAILED`, or `LIMIT`.
+- C#: reading a registry applies the three component rules of `SPEC.md` section 10, and
+  `WithExtension` refuses an extension that names a term of the core without importing that
+  core's edition.
 - `publish.yml` deploys on Maven 3.9.16, downloaded and checked against Apache's digest: the
   runner image moved to Maven 3.10.0, with which central-publishing-maven-plugin 0.11.0 put the
   repository metadata of every artifact into the bundle, and the Portal refused the 0.9.5
   deployment. The release itself was not affected.
+
+### Format
+
+The format version stays 0.1, and the canonical bytes and both digests of every document a
+reader accepts are unchanged. `SPEC.md` now says what an implementation does where it was silent
+or contradicted itself; the section numbers are the same.
+
+- Section 4.2: a reader detects no encoding. Bytes that are not UTF-8 (RFC 3629: an overlong
+  form, an encoded surrogate, a code point past U+10FFFF) or begin with a byte order mark are
+  `ESJ-L1-ENCODING`; UTF-8 that decodes to no JSON text — UTF-16 or UTF-32 without a byte order
+  mark among it — is `ESJ-L1-JSON`.
+- Section 9.6: the document size, a byte order mark and UTF-8 are decided over the whole byte
+  sequence before any JSON is read, in that order, and a document refused for one of them draws
+  that one finding.
+- Section 6.8: CR LF and a lone CR become LF also when a value of `values` is built through an
+  interface; strings outside `values` (envelope, `source`, `extensions`) are never normalized and
+  are measured as they stand; a reader may accept a string early by its length before
+  normalization, and never refuse one by it.
+- Section 7.2, rule 5: a canonicalizer never re-encodes a binary object; the sentence about an
+  implementation that holds an attachment as bytes is gone.
+- Section 7.3: `format` and `version` are written as their fixed values, and an `extensions` or
+  `source` without members counts as absent.
+- Section 7.7: the pretty form ends in exactly one LF and writes every number inside `extensions`
+  in its canonical form, so it has one byte sequence per document content.
+- Section 12.2: the string bound (`maxStringBytes`) covers every string of the envelope
+  (`format`, `version`, `semanticModel`, `source.syntax`, `source.sha256`); "need no bound" is
+  gone.
+- Section 12.2: every member name of the document is held to the string bound in UTF-8 bytes,
+  before the grammar of its object; the owner-token and decimal bounds apply inside the limits,
+  and "never as `ESJ-L1-LIMIT`" holds only there.
+- Section 12.2: every number token, wherever it stands, is held to the string bound as it is
+  written and before it is built; past it the finding is `ESJ-L1-LIMIT`, not `ESJ-L1-JSON-TYPE`
+  or `ESJ-L1-EXT-NUMBER`.
+- Section 12.2: the table names every limit (`maxDocumentBytes`, `maxValues`,
+  `maxValueMembers`, `maxPathSegments`, `maxPathBytes`, `maxStringBytes`, `maxBinaryValueBytes`,
+  `maxTotalBinaryBytes`, `maxExtensionDepth`, `maxExtensionNodes`), and says how each is measured:
+  after JSON escapes are read, a lone surrogate counting three bytes, a count reached by the first
+  member or node past it.
+- Section 12.2: a member name of `values` is held to the string bound and the path length before
+  the path grammar, and its segments are counted once it satisfies the grammar.
+- Section 12.2: the total decoded binary content adds ⌊L/4⌋·3 − min(p, 2) bytes for a `value` of
+  length L ending in p `=`, never less than nothing, whether or not the value is canonical base64.
+- Section 9.5: `path` and `subject` are fixed for every code in one table. At L1 the path is the
+  member's path for a finding about the value of a member of `values` and empty otherwise; at L2
+  `ESJ-L2-UNKNOWN-TERM` and `ESJ-L2-INDEX-*` name the segment, `ESJ-L2-PARENT-CHAIN` the term the
+  path ends at, `ESJ-L2-COMPONENT-*` the component, and the content codes, `ESJ-L2-NOT-CHECKED`
+  and `ESJ-L2-EDITION-UNKNOWN` nothing.
+- Section 9.5: an L1 `subject` is a member access with a grammar (also in Appendix A): a name the
+  specification defines in that object after `.`, every other name in brackets as a JSON string
+  (`values["/BT-1"]`, `extensions["de.example"]["a"][0]`, an undefined top-level member
+  `["profile"]`, also `["value"]`, `source["foo"]`), an array element as `[n]`.
+- Section 9.5: `ESJ-L1-DUPLICATE-MEMBER` names the access of the name that occurs twice
+  (`values["/BT-1"]`, `format`, `source.syntax`, `extensions["a.b"]["x"]`), no longer the object
+  it occurs in; inside a value object it names the value object, as a lone surrogate in a name
+  there does.
+- Section 9.5: each missing required envelope member draws its own `ESJ-L1-ENVELOPE-MEMBER`,
+  `subject` its name, in the order `format`, `version`, `semanticModel`, `values`.
+- Section 9.5: a finding about a value object names the member the step of the order of
+  section 9.6 that applies is about, the first in document order where several are, and the
+  value object where the step is about the object as a whole.
+- Section 9.5: `ESJ-L1-LIMIT` carries the member's path where the bound is reached inside the
+  value of a member of `values`, and as `subject` the access of the member or element whose name
+  or value reaches the bound — the surplus member for `maxValues` (path empty), the value object
+  for `maxValueMembers`, the full access with indices inside `extensions`, and inside a structure
+  walked past under `values` the member walked past (`values["/BT-1"]`,
+  `values["/BT-1"].value`) and nothing deeper.
+- Section 9.5: a `subject` is never shortened; a lone surrogate is escaped as `\u` and four
+  lowercase hexadecimal digits (`\ud800`) in a message and a `subject` alike.
+- Sections 9.5 and 12.2: a member name past the string bound is not held and not part of the
+  finding: `ESJ-L1-LIMIT` names the object the name stands in (`values`, `source`, `extensions`,
+  `extensions["o"][0]`, the value object `values["/BT-1"]`, empty in the envelope), and its
+  message MUST name the byte offset at which the name begins. A reader reads such a name to its end
+  for the JSON text alone, so a 60 MiB name costs a refusal no more than its bytes.
+- Section 9.5: a message names a place as the byte offset of the start of the token, counted from
+  zero, also for a token the text ends inside — a string that is not closed at its opening
+  quotation mark — and the length of the byte sequence only where the text ends between two
+  tokens; `ESJ-L1-JSON` MUST name it, `ESJ-L1-LIMIT` SHOULD.
+- Section 9.5: `path` and `subject` are the empty string where empty, never absent or null.
+- Section 9.5: an exception carries code, path and subject of the finding it stopped at.
+- Section 9.6: `ESJ-L1-JSON` is a finding about the document (empty path and subject), and a
+  token that is not a complete JSON value where a value stands (`tru`, `01`, `1.`, `truex`) is
+  `ESJ-L1-JSON`, not `ESJ-L1-ENVELOPE-VALUE` or `ESJ-L1-JSON-TYPE`.
+- Section 9.6: the checks of one name or string run in a fixed order — a member name: string
+  bound, lone surrogate, repeated name, then its object's checks; a string of the envelope: lone
+  surrogate, string bound, value; a member of `source`: lone surrogate, empty string, string
+  bound, `sha256` grammar; a string of `values`: lone surrogate, empty string, string bound.
+- Section 9.6: the first defect the text reaches is the one that counts, and a member name is
+  judged before the colon after it and before the value written under it.
+- Section 9.6: a lone surrogate is found before the string bound however far past the bound a
+  string runs, and a string that carries one is held to no bound; inside a value object a reader
+  holds a supplementary component to the string bound and `value` to the larger of the two
+  string bounds while it reads them, and a member past that stops it before the object is
+  judged.
+- Sections 9.6 and 12.2: inside a structure a reader walks past only well-formedness and three
+  limits are checked — the depth, and the string bound on names and number tokens; a string there
+  is held to no string bound; no `ESJ-L1-SURROGATE` or `ESJ-L1-DUPLICATE-MEMBER` comes from it,
+  and the reader reads on. An undefined envelope or
+  `source` member draws `ESJ-L1-ENVELOPE-MEMBER` alone, whatever its value carries.
+- Sections 5.6 and 9.2: L2 walks the segments of a path from the left. A core segment the core
+  registry lacks is always `ESJ-L2-UNKNOWN-TERM`, one per segment, even beside an unloaded
+  extension segment; an extension segment no loaded registry carries — the namespace not loaded,
+  or an identifier the loaded registry lacks — draws one `ESJ-L2-NOT-CHECKED` per path, `subject`
+  empty; the index rule holds at every segment before the first unknown one; of a path whose
+  segments are all known, the parent chain, the content and the components are checked as well,
+  every failure reported, in that order.
+- Section 9.3: a validator handed bytes and asked for L2 or L3 alone names them
+  `PRECEDING-LAYER-FAILED` where the reader found an L1 error.
+- Section 9.5: `NOT-REQUESTED` stands outside the precedence of the other reasons, and a
+  composition of two results is stated by the two reasons the results name:
+  `NOT-REQUESTED` and `EDITION-UNKNOWN` give `EDITION-UNKNOWN`, `NOT-REQUESTED` and `LIMIT` or
+  `PRECEDING-LAYER-FAILED` give `NOT-REQUESTED`, any other two the first in the order of
+  precedence.
+- Sections 9.1 and 9.5: a validator handed an already parsed document MAY check the limits.
+- Section 10: loading registries refuses an identifier defined twice, an extension that defines a
+  term of the core it is combined with, an extension whose parents or `reusesTerms` name a core
+  identifier without `imports`, and a combination with a core whose model and edition `imports`
+  does not name; the three component rules are checked by every implementation. A fifth rule:
+  an extension registry defines identifiers of its own namespace only.
+- Section 10: a generator refuses a repeatable group whose slug is not a plural and escapes a
+  reserved word rather than refuse it; rule 3 is about groups, and the repeatable terms BT-10 and
+  BT-46 of the 2026 registry keep their singular slugs.
+- Grammar: the two `year` productions are `edition-year` and `date-year`; `b64tail2`,
+  `b64tail4` and the owner-token rule use case-sensitive literals (`%s"c"`, `%s"BT-"`); the
+  value object of Appendix A is an informative sketch of exactly the objects section 6.1 admits.
+- Regular expressions are those of ECMA-262 and end in `(?![\s\S])` rather than `$`, in
+  section 5.1, in `schema/esj.schema.json`, in the generated `schema/esj-en16931-*.schema.json`
+  and in `model/registry.schema.json`, so that no engine accepts a string followed by LF.
+- `schema/esj.schema.json`: `semanticModel` is typed `string` (5, `null`, `[]` and `{}` passed
+  before) and bounded; the guard on a string of `values` is 2 097 152 code points and on the
+  content of a value object 67 108 864, twice the limit, because the limit is measured after CR LF
+  has become LF; `source.syntax` keeps 1 048 576.
+- `model/registry.schema.json`: a registry whose namespaced terms hang under a core identifier, or
+  carry one through `reusesTerms`, requires `imports`.
+- Clarified, with no change to what conforms: business rules are "not part of ESJ conformance"
+  (sections 1.2, 9.4, 9.5); `100.00` is refused by a validator and passed through by a reader and a
+  canonicalizer (6.4); the sign rule of a decimal is a lookahead in the generated schemas (6.4);
+  serializing an ESJ document again is canonicalizer or pretty form, not the writer class (3.3);
+  the syntax of an extension segment is L1 (5.6, 9.2); "one defect, one code" (9.6); repeatable
+  terms and canonical order per edition (5.3, 7.4); the edition mapping runs from registry to
+  document only (10); code-list snapshots live in rule packs and the 2026 `schemeList` rests on
+  that edition's usage notes (10); Appendix C lists all twelve examples; the `value` of a binary
+  object is held to `maxBinaryValueBytes` alone, also where that is the smaller bound (12.2).
 
 ## [0.9.5] — 2026-10-08
 

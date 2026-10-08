@@ -1,4 +1,5 @@
 import { FindingCode } from '../codes.ts';
+import { utf8Length } from '../grammars.ts';
 import type { Limits } from '../limits.ts';
 
 /**
@@ -19,12 +20,15 @@ import type { Limits } from '../limits.ts';
  * stack of its own, never a recursion, so a nesting bound a caller raised is answered with a
  * document or a finding and never with a stack overflow.
  *
- * Three bounds are applied here, to every token of the document, because they size what a
- * token may cost before the reader knows where it stands: a number token at the string bound,
- * a member name at the larger of the string bound and the path bound, and a string the reader
- * keeps at the larger of the two string bounds. They are coarse guards counted in UTF-16 code
- * units, which are never more than the UTF-8 bytes of the same string, so they never refuse a
- * token the finer bounds of the reader, counted in bytes, would have taken.
+ * Two bounds are applied here, to every token of the document, because they size what a token
+ * may cost before the reader knows where it stands: a number token at the string bound of
+ * section 12.2, and a string the reader keeps at the bound the reader names for the place it
+ * stands in, both counted in UTF-8 bytes while the token is read. A member name is measured
+ * against the string bound the same way: one past it is read to its end for the JSON text and
+ * not kept, and the reader names the object it stands in rather than the name (section 9.5).
+ *
+ * Every offset a message names is the offset in UTF-8 bytes, counted from zero, of the
+ * beginning of the token the scanner stopped at (section 9.5).
  */
 
 /** What kind of JSON value the scanner stands on. */
@@ -36,6 +40,12 @@ export type JsonKind = 'string' | 'number' | 'true' | 'false' | 'null' | 'array'
  * the call never returns.
  */
 export type Failure = (code: FindingCode, message: string) => never;
+
+/**
+ * What {@link Scanner.readString} returns for a string past its bound that carries a lone
+ * surrogate: the surrogate alone, which every caller refuses for the surrogate.
+ */
+export const LONE_SURROGATE = '\ud800';
 
 const QUOTE = 0x22;
 const BACKSLASH = 0x5c;
@@ -55,6 +65,9 @@ export class Scanner {
   private readonly limits: Limits;
   private readonly fail: Failure;
   private at = 0;
+  private nameAt = 0;
+  /** Whether a member name was read and the colon after it not yet. */
+  private colonPending = false;
 
   constructor(text: string, limits: Limits, fail: Failure) {
     this.text = text;
@@ -65,6 +78,19 @@ export class Scanner {
   /** The offset of the next character, counted from zero in UTF-16 code units. */
   get offset(): number {
     return this.at;
+  }
+
+  /**
+   * The offset in UTF-8 bytes, counted from zero, of the member name {@link readName} read
+   * last: the place a finding about that name points at where a message names one.
+   */
+  get nameOffset(): number {
+    return this.bytesBefore(this.nameAt);
+  }
+
+  /** Returns the offset in UTF-8 bytes of a place given in UTF-16 code units. */
+  bytesBefore(index: number): number {
+    return utf8Length(this.text.slice(0, index));
   }
 
   /** Steps over the four whitespace characters of RFC 8259. */
@@ -83,9 +109,10 @@ export class Scanner {
 
   /** Returns what kind of value begins at the next token, without consuming it. */
   peekKind(): JsonKind {
+    this.colon();
     this.skipWhitespace();
     if (this.at >= this.text.length) {
-      return this.malformed('the document ends where a value belongs');
+      return this.malformed('the document ends where a value belongs', this.at);
     }
     const c = this.text.charAt(this.at);
     switch (c) {
@@ -105,12 +132,28 @@ export class Scanner {
         if (c === '-' || (c >= '0' && c <= '9')) {
           return 'number';
         }
-        return this.malformed('a JSON value does not begin with ' + describeCharacter(c));
+        return this.malformed('a JSON value does not begin with ' + describeCharacter(c), this.at);
+    }
+  }
+
+  /**
+   * Reads the scalar the scanner stands on to its end and checks that it is one JSON value,
+   * without keeping it; a container is left where it stands.
+   *
+   * A reader that refuses a value for its JSON type asks this first: a token that is not a
+   * whole JSON value — `tru`, `01`, `1.` — is not a JSON text at all, and that is the first
+   * thing to say about it (section 9.6). An object or an array is told by its first character
+   * and is refused there.
+   */
+  checkToken(kind: JsonKind): void {
+    if (kind !== 'object' && kind !== 'array') {
+      this.skipScalar(kind);
     }
   }
 
   /** Consumes the bracket that opens the object or array the scanner stands on. */
   open(): void {
+    this.colon();
     this.skipWhitespace();
     this.at++;
   }
@@ -131,13 +174,14 @@ export class Scanner {
     }
     if (any) {
       if (this.at >= text.length || text.charCodeAt(this.at) !== COMMA) {
-        return this.malformed('a member is followed by a comma or by the end of the object');
+        return this.malformed('a member is followed by a comma or by the end of the object',
+          this.at);
       }
       this.at++;
       this.skipWhitespace();
     }
     if (this.at >= text.length || text.charCodeAt(this.at) !== QUOTE) {
-      return this.malformed('a member name is a JSON string');
+      return this.malformed('a member name is a JSON string', this.at);
     }
     return true;
   }
@@ -157,7 +201,8 @@ export class Scanner {
     }
     if (any) {
       if (this.at >= text.length || text.charCodeAt(this.at) !== COMMA) {
-        return this.malformed('an element is followed by a comma or by the end of the array');
+        return this.malformed('an element is followed by a comma or by the end of the array',
+          this.at);
       }
       this.at++;
     }
@@ -165,29 +210,56 @@ export class Scanner {
   }
 
   /**
-   * Reads the member name the scanner stands on and the colon after it, holding the name to
-   * the larger of the string bound and the path bound of section 12.2.
+   * Reads the member name the scanner stands on, measuring it in UTF-8 bytes against the string
+   * bound of section 12.2 as it is read.
+   *
+   * A name past the bound is read to its end without being kept — for the JSON text and nothing
+   * else, a lone surrogate in it included, because the bound comes first in a name (section 9.6)
+   * — and `undefined` is returned: the reader reports the limit and names the object the name
+   * stands in, so the name is never held (section 9.5). The colon after the name is read where
+   * the value is, so that a defect of the name is judged before the text after it (section 9.6):
+   * `"foo" 1` in the envelope is an undefined member before it is a missing colon.
+   *
+   * @param bound the most UTF-8 bytes a name may take
    */
-  readName(): string {
-    const name = this.string(Math.max(this.limits.maxStringBytes, this.limits.maxPathBytes),
-      'a member name');
-    this.skipWhitespace();
-    if (this.at >= this.text.length || this.text.charCodeAt(this.at) !== COLON) {
-      return this.malformed('a member name is followed by a colon');
-    }
-    this.at++;
+  readName(bound: number): string | undefined {
+    this.nameAt = this.at;
+    const name = this.string(bound, false, true);
+    this.colonPending = true;
     return name;
   }
 
-  /**
-   * Reads the string the scanner stands on, holding it to the larger of the two string
-   * bounds of section 12.2: the scanner does not know whether it is the content of a binary
-   * object, and the reader applies the finer bound where it knows.
-   */
-  readString(): string {
+  /** Reads the colon after the member name read last, where it has not been read yet. */
+  private colon(): void {
+    if (!this.colonPending) {
+      return;
+    }
+    this.colonPending = false;
     this.skipWhitespace();
-    return this.string(
-      Math.max(this.limits.maxStringBytes, this.limits.maxBinaryValueBytes), 'a string');
+    if (this.at >= this.text.length || this.text.charCodeAt(this.at) !== COLON) {
+      this.malformed('a member name is followed by a colon', this.at);
+    }
+    this.at++;
+  }
+
+  /**
+   * Reads the string the scanner stands on and returns what it decodes to, measuring its content
+   * in UTF-8 bytes against the bound the reader sets for the place it stands in.
+   *
+   * A string past the bound is read to its end without being kept, because the checks of one
+   * string run in a fixed order and a lone surrogate comes before the bound (section 9.6): one
+   * that carries a lone surrogate is returned as that surrogate alone, `'\ud800'`, which every
+   * caller refuses for the surrogate before it asks anything else; any other one is refused with
+   * `ESJ-L1-LIMIT`.
+   *
+   * @param bound the most UTF-8 bytes the content may take here
+   * @param normalized whether the content is measured after CR LF has become LF, as a string
+   *   inside `values` is (section 6.8), or as it stands
+   */
+  readString(bound: number, normalized: boolean): string {
+    this.colon();
+    this.skipWhitespace();
+    return this.string(bound, normalized, false) as string;
   }
 
   /**
@@ -199,6 +271,7 @@ export class Scanner {
    * size what the scanner reads, and this one does.
    */
   readNumber(): string {
+    this.colon();
     this.skipWhitespace();
     const start = this.at;
     return this.text.slice(start, this.number());
@@ -216,18 +289,18 @@ export class Scanner {
     at = digits(text, at);
     if (at === integer) {
       this.at = at;
-      return this.malformed('a JSON number carries at least one digit here');
+      return this.malformed('a JSON number carries at least one digit here', start);
     }
     if (at - integer > 1 && text.charCodeAt(integer) === 0x30) {
       this.at = integer + 1;
-      return this.malformed('a JSON number carries no leading zero');
+      return this.malformed('a JSON number carries no leading zero', start);
     }
     if (at < text.length && text.charCodeAt(at) === 0x2e) {
       const fraction = at + 1;
       at = digits(text, fraction);
       if (at === fraction) {
         this.at = at;
-        return this.malformed('a fraction carries at least one digit');
+        return this.malformed('a fraction carries at least one digit', start);
       }
     }
     if (at < text.length && (text.charCodeAt(at) | 0x20) === 0x65) {
@@ -239,22 +312,28 @@ export class Scanner {
       at = digits(text, exponent);
       if (at === exponent) {
         this.at = at;
-        return this.malformed('an exponent carries at least one digit');
+        return this.malformed('an exponent carries at least one digit', start);
       }
     }
     this.at = at;
     if (at - start > this.limits.maxStringBytes) {
       return this.fail(FindingCode.L1_LIMIT, 'a number is spelled with more than '
-        + this.limits.maxStringBytes + ' characters, at offset ' + start);
+        + this.limits.maxStringBytes + ' characters, at offset ' + this.bytesBefore(start));
     }
     return at;
   }
 
-  /** Consumes `true`, `false` or `null`. */
+  /**
+   * Consumes `true`, `false` or `null`. A letter, a digit, `_` or `$` straight after the word
+   * makes the token another word, which is not a JSON value.
+   */
   literal(word: 'true' | 'false' | 'null'): void {
+    this.colon();
     this.skipWhitespace();
-    if (!this.text.startsWith(word, this.at)) {
-      this.malformed('a JSON literal is true, false or null');
+    const start = this.at;
+    if (!this.text.startsWith(word, start) || isWordCharacter(
+      this.text.charCodeAt(start + word.length))) {
+      this.malformed('a JSON literal is true, false or null', start);
     }
     this.at += word.length;
   }
@@ -266,13 +345,15 @@ export class Scanner {
    * A member of `values` is a string or a value object and a member of a value object is a
    * string (section 6.1), so an object or an array in either place is an error whatever it
    * holds — but the reader has to get past it to reach the next member, and section 12.2
-   * extends the nesting bound to that walk. A container is counted from the level the caller
-   * names: the value of a member of `values` is level 1, the value of a member of a value
-   * object level 2, the way levels are counted inside `extensions`. A container past the bound
-   * is `ESJ-L1-LIMIT`, because the reader stopped rather than finished judging (section 9.6).
+   * extends its bounds to that walk. A container is counted from the level the caller names:
+   * the value of a member of `values` is level 1, the value of a member of a value object
+   * level 2, the way levels are counted inside `extensions`. A container past the bound is
+   * `ESJ-L1-LIMIT`, because the reader stopped rather than finished judging (section 9.6).
    *
-   * Member names are read and held to the name bound, as everywhere; a string is checked to
-   * be JSON and never built.
+   * Nothing below the value is judged but the JSON text and the bounds: a member name is held
+   * to the string bound and a number token to the same bound, as everywhere, and neither a
+   * repeated name nor a lone surrogate is looked for (section 9.6). A string is checked to be
+   * JSON and never built.
    *
    * @param level the level the value occupies where it is a container
    */
@@ -284,7 +365,7 @@ export class Scanner {
       if (kind === 'object' || kind === 'array') {
         if (depth > this.limits.maxExtensionDepth) {
           this.fail(FindingCode.L1_LIMIT, 'a value nests deeper than '
-            + this.limits.maxExtensionDepth + ' levels, at offset ' + this.at);
+            + this.limits.maxExtensionDepth + ' levels, at offset ' + this.bytesBefore(this.at));
         }
         this.at++;
         open.push({ object: kind === 'object', any: false });
@@ -300,7 +381,10 @@ export class Scanner {
         if (top.object ? this.nextMember(top.any) : this.nextElement(top.any)) {
           top.any = true;
           if (top.object) {
-            this.readName();
+            if (this.readName(this.limits.maxStringBytes) === undefined) {
+              this.fail(FindingCode.L1_LIMIT, 'a member name is longer than '
+                + this.limits.maxStringBytes + ' bytes, at offset ' + this.nameOffset);
+            }
           }
           break;
         }
@@ -314,7 +398,7 @@ export class Scanner {
   end(): void {
     this.skipWhitespace();
     if (this.at < this.text.length) {
-      this.malformed('the document carries content after the object that closes it');
+      this.malformed('the document carries content after the object that closes it', this.at);
     }
   }
 
@@ -339,54 +423,95 @@ export class Scanner {
   }
 
   /**
-   * Reads one JSON string, the opening quotation mark included, and refuses it where it is
-   * longer than the bound, in UTF-16 code units.
+   * Reads one JSON string, the opening quotation mark included. The bytes are counted as the
+   * string is read: a code unit below U+0080 is one, below U+0800 two, any other three, and a
+   * low surrogate that completes a pair one more, which makes the pair four. A lone surrogate
+   * counts three, the bytes of the replacement character an encoder would write; the reader
+   * refuses such a string for the surrogate wherever it keeps one (section 6.8). Measured
+   * normalized, a LF straight after a CR counts nothing, because the two become one LF.
+   *
+   * Past the bound the rest of the string is read without being kept, looking for a lone
+   * surrogate only: see {@link readString}. A member name past the bound is read on for the JSON
+   * text alone and comes back as `undefined`: see {@link readName}.
    */
-  private string(bound: number, what: string): string {
+  private string(bound: number, normalized: boolean, name: boolean): string | undefined {
     const text = this.text;
     const start = this.at;
     this.at++;
     let value = '';
     let plain = this.at;
+    let bytes = 0;
+    let high = false;
+    let lone = false;
+    let cr = false;
+    let kept = true;
     for (;;) {
       if (this.at >= text.length) {
-        return this.malformed('the document ends inside a string');
+        return this.malformed('the document ends inside a string', start);
       }
       const c = text.charCodeAt(this.at);
       if (c === QUOTE) {
-        value += text.slice(plain, this.at);
         this.at++;
-        if (value.length > bound) {
-          return this.fail(FindingCode.L1_LIMIT, what + ' is longer than this reader accepts,'
-            + ' at offset ' + start);
+        if (high) {
+          lone = true;
         }
-        return value;
+        if (kept) {
+          return value + text.slice(plain, this.at - 1);
+        }
+        if (name) {
+          return undefined;
+        }
+        if (lone) {
+          return LONE_SURROGATE;
+        }
+        return this.fail(FindingCode.L1_LIMIT, 'a string is longer than ' + bound
+          + ' bytes, at offset ' + this.bytesBefore(start));
       }
+      let unit = c;
       if (c === BACKSLASH) {
-        value += text.slice(plain, this.at);
-        this.at++;
-        value += this.escape();
-        plain = this.at;
-        if (value.length > bound) {
-          return this.fail(FindingCode.L1_LIMIT, what + ' is longer than this reader accepts,'
-            + ' at offset ' + start);
+        if (kept) {
+          value += text.slice(plain, this.at);
         }
-        continue;
+        this.at++;
+        const decoded = this.escape(start);
+        if (kept) {
+          value += decoded;
+        }
+        plain = this.at;
+        unit = decoded.charCodeAt(0);
+      } else if (c < 0x20) {
+        return this.malformed('a control character is escaped inside a string', start);
+      } else {
+        this.at++;
       }
-      if (c < 0x20) {
-        return this.malformed('a control character is escaped inside a string');
+      if (high && unit >= 0xdc00 && unit <= 0xdfff) {
+        bytes += 1;
+        high = false;
+      } else {
+        if (high || (unit >= 0xdc00 && unit <= 0xdfff)) {
+          lone = true;
+        }
+        if (!(normalized && cr && unit === 0x0a)) {
+          bytes += unit < 0x80 ? 1 : unit < 0x800 ? 2 : 3;
+        }
+        high = unit >= 0xd800 && unit <= 0xdbff;
       }
-      this.at++;
+      cr = unit === 0x0d;
+      if (kept && bytes > bound) {
+        kept = false;
+        value = '';
+      }
     }
   }
 
   /** Checks one JSON string to be well formed and steps past it, building nothing. */
   private skipString(): void {
     const text = this.text;
+    const start = this.at;
     this.at++;
     for (;;) {
       if (this.at >= text.length) {
-        this.malformed('the document ends inside a string');
+        this.malformed('the document ends inside a string', start);
       }
       const c = text.charCodeAt(this.at);
       if (c === QUOTE) {
@@ -395,17 +520,22 @@ export class Scanner {
       }
       if (c === BACKSLASH) {
         this.at++;
-        this.escape();
+        this.escape(start);
         continue;
       }
       if (c < 0x20) {
-        this.malformed('a control character is escaped inside a string');
+        this.malformed('a control character is escaped inside a string', start);
       }
       this.at++;
     }
   }
 
-  private escape(): string {
+  /**
+   * Reads one escape, the backslash already consumed, and returns the code unit it stands for.
+   *
+   * @param start where the string the escape stands in begins, which a message names
+   */
+  private escape(start: number): string {
     const c = this.text.charAt(this.at);
     this.at++;
     switch (c) {
@@ -430,7 +560,7 @@ export class Scanner {
         for (let i = 0; i < 4; i++) {
           const digit = this.at < this.text.length ? hexValue(this.text.charCodeAt(this.at)) : -1;
           if (digit < 0) {
-            return this.malformed('a \\u escape carries four hexadecimal digits');
+            return this.malformed('a \\u escape carries four hexadecimal digits', start);
           }
           code = code * 16 + digit;
           this.at++;
@@ -439,14 +569,27 @@ export class Scanner {
       }
       default:
         this.at--;
-        return this.malformed('a backslash inside a string begins an escape');
+        return this.malformed('a backslash inside a string begins an escape', start);
     }
   }
 
-  private malformed(message: string): never {
+  /**
+   * Ends the scan with `ESJ-L1-JSON`, naming the offset in UTF-8 bytes of the token the scanner
+   * stopped at, or of the character where no token could begin.
+   */
+  private malformed(message: string, at: number): never {
     return this.fail(FindingCode.L1_JSON,
-      'the document is not a JSON text: ' + message + ', at offset ' + this.at);
+      'the document is not a JSON text: ' + message + ', at offset ' + this.bytesBefore(at));
   }
+}
+
+/**
+ * Tells whether a character continues a word, which makes `truex` one token and no JSON
+ * literal: an ASCII letter or digit, `_` or `$`.
+ */
+function isWordCharacter(c: number): boolean {
+  return (c >= 0x30 && c <= 0x39) || ((c | 0x20) >= 0x61 && (c | 0x20) <= 0x7a)
+    || c === 0x5f || c === 0x24;
 }
 
 /** Returns the offset after the run of ASCII digits that starts at an offset. */

@@ -68,83 +68,27 @@ final class Texts {
     }
 
     /**
-     * Tells whether a string carries an escaped surrogate that is not part of a pair,
-     * asking the bytes of the document rather than a parser. A parser that decodes member
-     * names to strings refuses such a name while it reads it, so the reader cannot see the
-     * name itself; the specification, section 9.6 nevertheless names that defect
-     * {@code ESJ-L1-SURROGATE}, and this is how the reader recognizes it.
-     *
-     * <p>Only escapes are examined. A raw surrogate has no UTF-8 encoding and is caught by
-     * {@link #isValidUtf8(byte[], int)} before a parser is started.
-     *
-     * @param bytes  the bytes of the document
-     * @param length the number of bytes of {@code bytes} that are the document
-     * @return {@code true} if an unpaired {@code \\uXXXX} surrogate escape occurs
-     */
-    static boolean hasLoneSurrogateEscape(byte[] bytes, int length) {
-        int i = 0;
-        boolean highPending = false;
-        while (i < length) {
-            if (bytes[i] != '\\') {
-                if (highPending) {
-                    return true;
-                }
-                i++;
-                continue;
-            }
-            int start = i;
-            while (i < length && bytes[i] == '\\') {
-                i++;
-            }
-            boolean escape = ((i - start) % 2) == 1;
-            if (!escape || i >= length || bytes[i] != 'u') {
-                if (highPending) {
-                    return true;
-                }
-                continue;
-            }
-            int code = hex4(bytes, i + 1, length);
-            i += 5;
-            boolean high = code >= 0xD800 && code <= 0xDBFF;
-            boolean low = code >= 0xDC00 && code <= 0xDFFF;
-            if (highPending != low) {
-                return true;
-            }
-            highPending = high;
-        }
-        return highPending;
-    }
-
-    private static int hex4(byte[] bytes, int from, int length) {
-        if (from + 4 > length) {
-            return -1;
-        }
-        int value = 0;
-        for (int i = from; i < from + 4; i++) {
-            int digit = Character.digit((char) (bytes[i] & 0xFF), 16);
-            if (digit < 0) {
-                return -1;
-            }
-            value = (value << 4) | digit;
-        }
-        return value;
-    }
-
-    /**
      * Returns the number of bytes a base64 string decodes to, without decoding it, so
      * that the bound of the specification, section 12.5 can be applied first. Whether the
      * string is canonical base64 at all is a layer L2 question and is not asked here: the
      * result is the size a reader has to be willing to hold either way.
      *
+     * <p>The size is {@code floor(L / 4) * 3} less the padding characters that end the
+     * string, of which at most two count, and never less than zero (specification, section
+     * 12.2). The formula is fixed for every string, base64 or not, because the bound on
+     * the decoded content of a document is a sum over its binary values and two readers
+     * that counted a string that is no base64 differently would refuse different
+     * documents: {@code "===="} counts as one byte, not as minus one.
+     *
      * @param value the encoded string
-     * @return the number of decoded bytes
+     * @return the number of decoded bytes, at least zero
      */
     static long decodedBase64Length(String value) {
         int padding = 0;
-        for (int i = value.length(); i > 0 && value.charAt(i - 1) == '='; i--) {
+        for (int i = value.length(); i > 0 && padding < 2 && value.charAt(i - 1) == '='; i--) {
             padding++;
         }
-        return value.length() / 4L * 3L - padding;
+        return Math.max(0, value.length() / 4L * 3L - padding);
     }
 
     /**

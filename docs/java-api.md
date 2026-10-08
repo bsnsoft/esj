@@ -76,9 +76,9 @@ Every snippet below is a test, in the `ReadmeExamplesTest.java` of the module it
 
 ## Reading a document
 
-A reader is strict: what fails layer L1 is not a document. `read` throws `EsjFormatException`
-with the finding code of `SPEC.md` section 9.6 and the place of the problem, or
-`EsjLimitException` for a limit of section 12.2.
+A reader is strict: what fails layer L1 is not a document. `read` throws `EsjFormatException`,
+or `EsjLimitException` for a limit of section 12.2; either carries the `code()`, `path()` and
+`subject()` the finding of `SPEC.md` section 9.5 would carry.
 
 ```java
 SemanticDocument document = EsjReader.strict().read(Files.readAllBytes(file));
@@ -250,9 +250,12 @@ configuration and not a defect of the document.
 
 `evaluated()` and `notEvaluated()` partition the three layers, so every result states what it
 did not do; the reason comes from the closed vocabulary `NotEvaluatedReason` — `LIMIT`,
-`PRECEDING-LAYER-FAILED`, `EDITION-UNKNOWN`, `NOT-REQUESTED`, in the order of precedence
-`SPEC.md` 9.5 fixes, which also decides which survives a `merge`. `registries()` names what the
-run measured against. A structural validator never evaluates L1 and a reader evaluates nothing
+`PRECEDING-LAYER-FAILED` and `EDITION-UNKNOWN` in the order of precedence `SPEC.md` 9.5 fixes,
+and `NOT-REQUESTED`, which a layer the caller did not ask for keeps whatever else happened. A
+`merge` follows the same rule: a `LIMIT` or `PRECEDING-LAYER-FAILED` a reader names for the model
+layers does not displace the `NOT-REQUESTED` of a validator not asked for one, and the
+`EDITION-UNKNOWN` of a validator that was asked is kept over the `NOT-REQUESTED` of a clean read.
+`registries()` names what the run measured against. A structural validator never evaluates L1 and a reader evaluates nothing
 else, so neither alone may say `VALID`; `merge` composes them (`SPEC.md` 3.5).
 
 ```java
@@ -265,7 +268,11 @@ ValidationResult verdict = read.isWellFormed()
 
 Layer L1 is the reader's: it is decided by the bytes, so the validator refuses to be asked
 for it. An extension registry is loaded beside the core one, and the paths it describes are
-then checked rather than reported as unchecked.
+then checked rather than reported as unchecked. `withExtension` refuses an extension that
+defines an identifier outside its own namespace (`BT-999` as well as `BT-1`), and one whose
+`imports` disagree with what it does — one that places terms under core terms without naming
+that model and edition — and `Registry.admits(extension)` asks the edition question before
+combining.
 
 ```java
 Registry registry = Registry.en16931().withExtension(Registry.xrechnungExtension());

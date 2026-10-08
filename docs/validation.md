@@ -363,6 +363,7 @@ carries the same as a `reasons` array of `{component, cause}`, from a closed voc
 | `no-rules-for-profile` | the document names a specification the pack carries no rules for |
 | `not-in-this-version` | a component announced for a later version and not built yet |
 | `extension-registry-missing` | a path only an extension registry defines, and none was loaded; `--extension xrechnung` or `--extension b2c` loads the registries this build carries |
+| `extension-for-another-edition` | the same path, and `--extension` loaded the registry: it imports another edition than the document names, so the run left it out (`SPEC.md` section 10). The `ESJ-L2-NOT-CHECKED` finding names the option, the edition the registry imports and that it is not this one |
 | `edition-unknown` | no registry for the edition the document names, so the model layers had nothing to measure it against |
 | `no-pack-for-edition` | a registry for that edition is carried and this build holds no rule pack written against it; [`editions.md`](editions.md) |
 | `no-artefacts-for-edition` | a registry and a rule pack for that edition are carried and no official validation artefact is published for it, so the component that runs those artefacts could not run; no work in this project closes it; [`editions.md`](editions.md) |

@@ -133,10 +133,10 @@ test('the README counts the manifest as this build runs it', () => {
   }
   const documents = parts.reduce((sum, part) => sum + (part.documents ?? []).length, 0);
   const invalid = parts.reduce((sum, part) => sum + (part.invalid ?? []).length, 0);
-  assert.ok(README.includes(documents + ' conformant documents'),
-    'the manifest this build runs holds ' + documents + ' conformant documents');
-  assert.ok(README.includes(invalid + ' rows for the documents that have to be rejected'),
-    'the manifest this build runs holds ' + invalid + ' rejected rows');
+  assert.ok(README.includes(documents + ' documents a reader reads'),
+    'the manifest this build runs holds ' + documents + ' documents a reader reads');
+  assert.ok(README.includes(invalid + ' documents that have to be rejected'),
+    'the manifest this build runs holds ' + invalid + ' documents that have to be rejected');
 });
 
 interface Part {

@@ -164,10 +164,27 @@ public final class ValidationResult {
      * {@code VALID} (specification, sections 3.5 and 9.5).
      *
      * <p>A layer either result evaluated counts as evaluated. A layer neither evaluated
-     * keeps the stronger of the two reasons, which is the one declared first in
-     * {@link NotEvaluatedReason}. The findings of this result come first, the registries
-     * of both are kept in that order without repetition, and the status is derived afresh
-     * from the whole.
+     * keeps one reason, chosen by the rule of the specification, section 9.5:
+     * <ul>
+     *   <li>a layer the caller did not ask for keeps
+     *       {@link NotEvaluatedReason#NOT_REQUESTED} whatever else happened. A
+     *       {@link NotEvaluatedReason#LIMIT} or
+     *       {@link NotEvaluatedReason#PRECEDING_LAYER_FAILED} the other result names for
+     *       that layer does not displace it: those two say what stopped an earlier layer,
+     *       and a component reports them for the layers after it whether or not anybody
+     *       asked for those — a reader whose layer L1 failed names the model layers so;</li>
+     *   <li>where one result says {@link NotEvaluatedReason#NOT_REQUESTED} and the other
+     *       {@link NotEvaluatedReason#EDITION_UNKNOWN}, the layer was asked for: whether a
+     *       registry describes the edition is a question only a run asked for a model
+     *       layer answers. The reason {@link NotEvaluatedReason#NOT_REQUESTED} came from a
+     *       component that does not run that layer — the reader of a clean read names the
+     *       model layers so — and {@link NotEvaluatedReason#EDITION_UNKNOWN} is kept;</li>
+     *   <li>of {@link NotEvaluatedReason#LIMIT},
+     *       {@link NotEvaluatedReason#PRECEDING_LAYER_FAILED} and
+     *       {@link NotEvaluatedReason#EDITION_UNKNOWN} the first in that order is kept.</li>
+     * </ul>
+     * The findings of this result come first, the registries of both are kept in that
+     * order without repetition, and the status is derived afresh from the whole.
      *
      * @param other the other result about the same document
      * @return the composed result
@@ -182,7 +199,7 @@ public final class ValidationResult {
             NotEvaluatedReason mine = notEvaluated.get(layer);
             NotEvaluatedReason theirs = other.notEvaluated.get(layer);
             if (mine != null && theirs != null) {
-                reasons.put(layer, mine.compareTo(theirs) <= 0 ? mine : theirs);
+                reasons.put(layer, composed(mine, theirs));
             }
         }
         List<String> named = new ArrayList<>(registries);
@@ -222,6 +239,20 @@ public final class ValidationResult {
     public String toString() {
         return "ValidationResult[" + status + ", findings=" + findings.size()
                 + ", evaluated=" + evaluated + ", notEvaluated=" + notEvaluated + "]";
+    }
+
+    /**
+     * Returns the reason a layer keeps where two results about one document both leave
+     * it unevaluated, by the rule {@link #merge(ValidationResult)} describes.
+     */
+    private static NotEvaluatedReason composed(NotEvaluatedReason mine, NotEvaluatedReason theirs) {
+        if (mine == NotEvaluatedReason.NOT_REQUESTED || theirs == NotEvaluatedReason.NOT_REQUESTED) {
+            NotEvaluatedReason other = mine == NotEvaluatedReason.NOT_REQUESTED ? theirs : mine;
+            return other == NotEvaluatedReason.EDITION_UNKNOWN
+                    ? NotEvaluatedReason.EDITION_UNKNOWN
+                    : NotEvaluatedReason.NOT_REQUESTED;
+        }
+        return mine.compareTo(theirs) <= 0 ? mine : theirs;
     }
 
     /**

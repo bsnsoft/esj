@@ -148,7 +148,10 @@ $ esj render examples/b2c-gross.esj.json --extension b2c \
 
 `--extension b2c` loads the registry, so every command checks, lists and renders the four terms;
 `--extension xrechnung,b2c` loads both. Without it the four paths are `ESJ-L2-NOT-CHECKED`, the
-reason is `extension-registry-missing` and the verdict is `INDETERMINATE`.
+reason is `extension-registry-missing` and the verdict is `INDETERMINATE`. The registry imports
+the 2017 edition, so for a document of another edition the run leaves it out: the paths are not
+checked either, the finding says that the registry imports another edition, and the reason is
+`extension-for-another-edition`.
 
 `model/b2c/0.1.json` declares `"transport": "none"`: these terms are bound by no transport syntax by
 design, so the XML written from such a document is the whole invoice. `validate` runs the official

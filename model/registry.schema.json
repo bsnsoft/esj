@@ -24,7 +24,7 @@
     "version": {
       "description": "Version of the registry file format, not of the described model.",
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+$"
+      "pattern": "^[0-9]+\\.[0-9]+(?![\\s\\S])"
     },
     "model": {
       "description": "Short token naming the described model, for example EN16931-1.",
@@ -37,7 +37,7 @@
       "minLength": 1
     },
     "imports": {
-      "description": "The models this registry builds on. An extension registry whose terms hang under a parent of another model, or whose groups carry terms of another model through reusesTerms, names that model and the exact edition string of the registry it was written against. A loader refuses a registry whose import does not match the edition of the registry it is combined with. It names the edition of another model and never a version of this registry's own namespace: an extension namespace is permanent, so a published identifier keeps its meaning, its datatype and its structural semantics in every later registry of that namespace, and an incompatible revision takes a new namespace (specification, sections 5.6 and 10).",
+      "description": "The models this registry builds on. An extension registry whose terms hang under a parent of another model, or whose groups carry terms of another model through reusesTerms, names that model and the exact edition string of the registry it was written against. A loader refuses to combine a registry with a core registry whose model and edition its imports do not name, and refuses an extension registry whose parents or reusesTerms name an identifier it does not define while it names no core here (specification, section 10). It names the edition of another model and never a version of this registry's own namespace: an extension namespace is permanent, so a published identifier keeps its meaning, its datatype and its structural semantics in every later registry of that namespace, and an incompatible revision takes a new namespace (specification, sections 5.6 and 10).",
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/import" }
@@ -64,7 +64,7 @@
     "generated": {
       "description": "Date the file was generated, as YYYY-MM-DD.",
       "type": "string",
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\\s\\S])"
     },
     "sourceStatement": {
       "description": "How the content of this file was derived and cross-checked.",
@@ -80,7 +80,7 @@
   },
   "allOf": [
     {
-      "description": "A registry whose groups carry terms of another model one level deeper builds on that model and names it. A parent identifier that is not defined in the same file has the same consequence; no schema can see that, so a loader checks it (specification, section 10).",
+      "description": "A registry whose groups carry terms of another model one level deeper builds on that model and names it. A parent identifier that is not defined in the same file has the same consequence; the next rule sees the case of a core parent, and a loader checks every case (specification, section 10).",
       "if": {
         "properties": {
           "terms": { "contains": { "required": ["reusesTerms"] } }
@@ -88,6 +88,54 @@
         "required": ["terms"]
       },
       "then": { "required": ["imports"] }
+    },
+    {
+      "description": "A registry whose own terms carry a namespace and hang under a core identifier — one without a namespace — or carry one through reusesTerms is an extension of a core model and names that core in imports (specification, section 10).",
+      "if": {
+        "properties": {
+          "terms": {
+            "contains": {
+              "required": ["id"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^(BT|BG)-[A-Z][A-Z0-9]*-[0-9]+(?![\\s\\S])" }
+              },
+              "anyOf": [
+                {
+                  "required": ["parent"],
+                  "properties": {
+                    "parent": { "type": "string", "pattern": "^(BT|BG)-[0-9]+(?![\\s\\S])" }
+                  }
+                },
+                {
+                  "required": ["reusesTerms"],
+                  "properties": {
+                    "reusesTerms": {
+                      "contains": { "type": "string", "pattern": "^(BT|BG)-[0-9]+(?![\\s\\S])" }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "required": ["terms"]
+      },
+      "then": { "required": ["imports"] }
+    },
+    {
+      "description": "A registry that names in imports what it builds on is an extension, and an extension defines identifiers of its own namespace only: every identifier it defines carries a namespace (BT-DEX-001, BG-DEX-01), because one without a namespace belongs to a core model. A loader also refuses an extension whose identifiers carry two namespaces, and one it is asked to combine that defines an identifier without a namespace (specification, sections 5.6 and 10).",
+      "if": { "required": ["imports"] },
+      "then": {
+        "properties": {
+          "terms": {
+            "items": {
+              "properties": {
+                "id": { "type": "string", "pattern": "^(BT|BG)-[A-Z][A-Z0-9]*-[0-9]+(?![\\s\\S])" }
+              }
+            }
+          }
+        }
+      }
     },
     {
       "description": "A registry that declares its terms untransported says why, and is an extension of a model whose own terms do travel: a registry describing a model of its own is the thing a syntax binds.",
@@ -119,7 +167,7 @@
     "termId": {
       "description": "A business term or business group identifier: BT-1, BG-25, or an extension identifier carrying a namespace such as BG-DEX-01. An identifier once published in a namespace is permanent: a later registry of that namespace may add identifiers, but may not change what a published one means, which datatype it carries or where it sits (specification, section 5.6).",
       "type": "string",
-      "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+$"
+      "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+(?![\\s\\S])"
     },
     "cardinalityMin": {
       "description": "Minimum occurrences relative to the parent group.",
@@ -160,7 +208,7 @@
         "id": {
           "description": "Component identifier, by convention the term identifier with a suffix.",
           "type": "string",
-          "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+-[0-9]+$"
+          "pattern": "^(BT|BG)-([A-Z][A-Z0-9]*-)?[0-9]+-[0-9]+(?![\\s\\S])"
         },
         "role": {
           "description": "Which ESJ value member carries this component.",
@@ -222,7 +270,7 @@
         "slug": {
           "description": "Language-neutral API name stem for code generation: a lowerCamelCase ASCII stem, unique among the children of the same parent. It is not a name in any particular language. A generator applies the naming convention of its target language to the stem and escapes that language's keywords itself. Two editorial rules no schema can check: a semantic concept that appears under more than one group carries the same stem everywhere, and a stem shortened against the term name still names the concept. An ESJ convention, not part of any standard.",
           "type": "string",
-          "pattern": "^[a-z][A-Za-z0-9]*$"
+          "pattern": "^[a-z][A-Za-z0-9]*(?![\\s\\S])"
         },
         "parent": {
           "description": "Identifier of the enclosing group, or null for a term directly under the invoice root.",
@@ -256,7 +304,7 @@
           "description": "The requirement identifiers the described edition's term table gives for this entry, in the order the table prints them. Absent where the cell is empty or where the edition has no such column. Documentation: it says which requirements of the standard the term serves, never what a document may say.",
           "type": "array",
           "minItems": 1,
-          "items": { "type": "string", "pattern": "^R[0-9]+[a-z]?$" }
+          "items": { "type": "string", "pattern": "^R[0-9]+[a-z]?(?![\\s\\S])" }
         },
         "codeList": {
           "description": "Name of the code list the value is taken from, without a version. Present on code terms only; the justification is in notes.",

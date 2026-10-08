@@ -16,6 +16,7 @@ import de.bsnsoft.esj.bindings.ReaderOptions;
 import de.bsnsoft.esj.bindings.StreamingReader;
 import de.bsnsoft.esj.json.Canonicalizer;
 import de.bsnsoft.esj.json.EsjReader;
+import de.bsnsoft.esj.json.Limits;
 import de.bsnsoft.esj.json.ReadResult;
 import de.bsnsoft.esj.model.Cardinality;
 import de.bsnsoft.esj.model.Component;
@@ -33,13 +34,16 @@ import de.bsnsoft.esj.upgrade.EditionUpgrade;
 import de.bsnsoft.esj.upgrade.UpgradeOptions;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
+import de.bsnsoft.esj.validate.NotEvaluatedReason;
 import de.bsnsoft.esj.validate.Severity;
 import de.bsnsoft.esj.validate.StructuralValidator;
 import de.bsnsoft.esj.validate.ValidationLayer;
+import de.bsnsoft.esj.validate.ValidationResult;
 import de.bsnsoft.esj.xr.XrImporter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -83,13 +87,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * a finding code has changed. That path writes into the working tree, relative to this
  * module's directory, and is the one place in this module that knows a path outside it.
  *
- * <p>Two parts of the manifest are not derived from anything. The candidate strings of the
- * value grammars are written down below, and what the manifest records about them — that
- * each is accepted or rejected, and with which finding code — is measured here; a candidate
- * whose outcome changes changes the manifest. The quotients of the arithmetic section are
+ * <p>Some parts of the manifest are not derived from anything. The candidate strings of the
+ * grammars, the bounds of the {@code bounds} section and the sets of registry files of
+ * {@code registryChecks} are written down below, and what the manifest records about them —
+ * that a candidate is accepted or rejected and with which finding code, what a validation
+ * answers under those bounds, whether a loader takes those files — is measured here; a case
+ * whose answer changes changes the manifest. The quotients of the arithmetic section are
  * written in their pack, {@code conformance/fixtures/arithmetic/pack.json}, and this test
  * holds the reference implementation to every one of them before it records what the pack
  * reports.
+ *
+ * <p>Every validation is recorded whole, as an outcome: the status, the layers not
+ * evaluated with their reasons, and every finding with its path, code, subject and severity,
+ * in the order this implementation reports them. A binding is compared with it in that order
+ * where the specification fixes one, and as a set elsewhere ({@code run.py}).
  */
 class FixtureManifestTest {
 
@@ -133,8 +144,30 @@ class FixtureManifestTest {
     /** The format identifier of a manifest file. */
     private static final String FORMAT = "EN16931-Semantic-JSON-Fixtures";
 
-    /** The version of the fixture contract, raised when a member changes meaning. */
-    private static final String CONTRACT_VERSION = "1";
+    /**
+     * The version of the fixture contract, raised when a member changes meaning. Version 2
+     * records the whole answer of a validation — status, the layers not evaluated, every
+     * finding with its subject and its severity — where version 1 recorded the errors.
+     */
+    private static final String CONTRACT_VERSION = "2";
+
+    /** The negative fixtures of layer L1 that pin what a reader reports, one defect each. */
+    private static final String READER_FIXTURES = DIRECTORY + "reader";
+
+    /** The negative fixtures of the model layers that pin the full list of their findings. */
+    private static final String MODEL_FIXTURES = DIRECTORY + "model";
+
+    /** Documents that are read, whatever their verdict, and pin what a validator says of them. */
+    private static final String DOCUMENT_FIXTURES = DIRECTORY + "documents";
+
+    /** The two documents of the specification, appendix B, as files with their twins. */
+    private static final String ANNEX_B = DIRECTORY + "annex-b";
+
+    /** Documents read under the bounds a case of the {@code bounds} section names. */
+    private static final String BOUND_FIXTURES = DIRECTORY + "bounds";
+
+    /** Registries written for the manifest: the ones a loader refuses, and two it takes. */
+    private static final String TEST_REGISTRIES = DIRECTORY + "registries";
 
     /** Whether this run writes the files instead of comparing them. */
     private static final boolean REWRITE = Boolean.getBoolean("esj.fixtures.rewrite");
@@ -190,6 +223,32 @@ class FixtureManifestTest {
     private final EsjReader reader = EsjReader.strict();
 
     /**
+     * The registries a binding carries when it answers a {@code validate} request: one per
+     * edition, the default one combined with the extension registries of the repository. The
+     * validator uses the one that describes the edition a document names, and none where none
+     * does (specification, section 9.2).
+     */
+    private static final List<Registry> CARRIED = carried();
+
+    private static List<Registry> carried() {
+        List<Registry> registries = new ArrayList<>(List.of(COMBINED));
+        if (theLaterEditionIsThere()) {
+            registries.add(Registry.forEdition(LATER_EDITION));
+        }
+        return List.copyOf(registries);
+    }
+
+    /**
+     * The fixtures of {@code conformance/fixtures/model/} that are validated with registries of
+     * their own rather than with the ones a binding carries: the bound on a maximum cardinality
+     * greater than one is reached by no published edition, so a registry written for the
+     * manifest declares one.
+     */
+    private static final Map<String, List<String>> VALIDATED_WITH = Map.of(
+            MODEL_FIXTURES + "/max-cardinality.esj.json",
+            List.of(TEST_REGISTRIES + "/cardinality.json"));
+
+    /**
      * A value grammar of the specification, section 6, with the term it is measured at and
      * the candidates that decide it.
      *
@@ -235,23 +294,92 @@ class FixtureManifestTest {
         List<Grammar> grammars = new ArrayList<>();
         grammars.add(new Grammar(SemanticType.AMOUNT, "ESJ-L2-DECIMAL", "/BG-22/BT-106",
                 List.of(plain("0"), plain("100"), plain("-100"), plain("0.5"),
-                        plain("42.015"), plain("-0.01"), plain(longestDecimal())),
+                        plain("42.015"), plain("-0.01"), plain(longestDecimal()),
+                        plain("-" + "1".repeat(63)), plain("0." + "1".repeat(62)),
+                        plain("1".repeat(32) + "." + "1".repeat(31))),
                 List.of(plain("100.00"), plain("007"), plain("1E2"), plain("1e-3"),
                         plain("+1"), plain("100."), plain(".5"), plain("-0"),
                         plain("-0.00"), plain("1 000"), plain("1,5"), plain("0x10"),
-                        plain(tooLongDecimal()))));
+                        plain(tooLongDecimal()), plain("-" + "1".repeat(64)),
+                        plain("0." + "1".repeat(63)), plain("100\n"), plain(" 100"),
+                        plain("\uff11"), plain("1.10"), plain("00.5"))));
+        grammars.add(new Grammar(SemanticType.QUANTITY, "ESJ-L2-DECIMAL", "/BG-25/0/BT-129",
+                List.of(plain("1"), plain("-2.5"), plain("0.0001"), plain(longestDecimal())),
+                List.of(plain("1.0"), plain("01"), plain("1e3"), plain(tooLongDecimal()))));
+        grammars.add(new Grammar(SemanticType.UNIT_PRICE_AMOUNT, "ESJ-L2-DECIMAL",
+                "/BG-25/0/BG-29/BT-146",
+                List.of(plain("100"), plain("0.123456"), plain(longestDecimal())),
+                List.of(plain("100.000000"), plain("-0"), plain(tooLongDecimal()))));
+        grammars.add(new Grammar(SemanticType.PERCENTAGE, "ESJ-L2-DECIMAL", "/BG-23/0/BT-119",
+                List.of(plain("19"), plain("7.5"), plain("0")),
+                List.of(plain("19.0"), plain("19%"), plain("-0.0"))));
         grammars.add(new Grammar(SemanticType.DATE, "ESJ-L2-DATE", "/BT-2",
                 List.of(plain("2026-01-15"), plain("2024-02-29"), plain("1000-01-01"),
-                        plain("9999-12-31")),
+                        plain("9999-12-31"), plain("2000-02-29"), plain("1600-02-29"),
+                        plain("2026-04-30"), plain("2026-12-31")),
                 List.of(plain("2026-02-30"), plain("2023-02-29"), plain("0999-12-31"),
                         plain("2026-1-5"), plain("20260115"), plain("2026-01-15Z"),
-                        plain("2026-13-01"), plain("2026-01-32"))));
+                        plain("2026-13-01"), plain("2026-01-32"), plain("2100-02-29"),
+                        plain("1900-02-29"), plain("2026-04-31"), plain("2026-00-10"),
+                        plain("2026-01-00"), plain("0000-01-01"), plain("+2026-01-15"),
+                        plain("2026-01-15\n"), plain("2026-01-15T00:00:00"),
+                        plain("\uff12026-01-15"))));
         grammars.add(new Grammar(SemanticType.BINARY_OBJECT, "ESJ-L2-BASE64",
                 "/BG-24/0/BT-125",
-                List.of(attachment("QUJDRQ=="), attachment("QUJD"), attachment("QQ==")),
+                List.of(attachment("QUJDRQ=="), attachment("QUJD"), attachment("QQ=="),
+                        attachment("QUE="), attachment("AAAA"), attachment("+/8="),
+                        attachment("+/+/")),
                 List.of(attachment("QUJDRR=="), attachment("QUJDRQ"), attachment("QUJD RQ=="),
-                        attachment("QUJDR-=="), attachment("QUJDRQ==="))));
+                        attachment("QUJDR-=="), attachment("QUJDRQ==="), attachment("QUJ="),
+                        attachment("Q==="), attachment("===="), attachment("QQ==QUJD"),
+                        attachment("QUJD\n"), attachment("Qa=="), attachment("QW=="),
+                        attachment("QUC="), attachment("+/=="), attachment("QUJD_-8="),
+                        attachment("QQ"), attachment("Q"))));
         return List.copyOf(grammars);
+    }
+
+    /**
+     * A grammar of the envelope, measured in the place a document writes it: the edition
+     * grammar of the specification, section 4.4 as the value of {@code semanticModel}, and the
+     * owner-token grammar of section 4.6 as the name of the one member of {@code extensions}.
+     *
+     * @param grammar the name of the grammar, as the manifest writes it
+     * @param code    the finding code a candidate outside the grammar draws at layer L1
+     * @param member  the envelope member the candidate is written into
+     * @param accept  candidates inside the grammar
+     * @param reject  candidates outside it
+     */
+    private record EnvelopeGrammar(String grammar, String code, String member,
+                                   List<String> accept, List<String> reject) {
+    }
+
+    /**
+     * The two envelope grammars, with the candidates that pin them down: every rule of the
+     * prose of sections 4.4 and 4.6 that a candidate can show. An edition the grammar admits
+     * and no registry describes is accepted at layer L1 and reported at layer L2 as unknown,
+     * which is not what the table measures: it holds layer L1 alone.
+     */
+    private static List<EnvelopeGrammar> envelopeGrammars() {
+        return List.of(
+                new EnvelopeGrammar("edition", "ESJ-L1-ENVELOPE-VALUE", "semanticModel",
+                        List.of("EN16931-1:2017+A1:2019/AC:2020", "EN16931-1:2099",
+                                "FOO-BAR:2099", "A:0999", "lower-case:2017", "X1-Y2-Z3:2017",
+                                "X:2017+A1:2019+A2:2020/AC:2021", "X:2017/AC1:2020",
+                                "X:2017/AC:2020+A2:2021/AC2:2022", "X:2017+A10:2019"),
+                        List.of("EN16931-1", "EN16931-1:17", "EN16931-1:20170",
+                                "EN 16931-1:2017", " EN16931-1:2017", "EN16931-1:2017 ",
+                                "EN16931-1:2017+a1:2019", "EN16931-1:2017/ac:2020",
+                                "EN16931-1:2017+A:2019", "EN16931-1:2017/AC", "-EN:2017",
+                                "EN-:2017", "EN--1:2017", ":2017", "EN16931-1:2017+",
+                                "EN16931-1:2017/AC:2020/AC:2021", "EN16931_1:2017",
+                                "EN16931-1:2017\n", "\u00c9N:2017", "EN16931-1:2017+A1:2019/",
+                                "")),
+                new EnvelopeGrammar("owner-token", "ESJ-L1-OWNER-TOKEN", "extensions",
+                        List.of("de.example.vendor", "example-vendor_2", "bt-example", "a", "Z9",
+                                "1", "a.b", "a_b", "a-b", "BTX", "bT-1", "x".repeat(128)),
+                        List.of("urn:example:v/2", "de.ex\u00e4mple.vendor", "BT-1",
+                                "BG-example", "BT-", ".a", "a.", "-a", "a-", "_a", "a_", "a b",
+                                "x".repeat(129), "a/b", "", "de.example.vendor\n", "a:b")));
     }
 
     /**
@@ -262,11 +390,16 @@ class FixtureManifestTest {
     private static Grammar laterEditionGrammar() {
         return new Grammar(SemanticType.TIME, "ESJ-L2-TIME", "/BT-166",
                 List.of(plain("09:15:00Z"), plain("00:00:00Z"), plain("23:59:59+14:00"),
-                        plain("12:00:00-05:30"), plain("12:00:00+01:00")),
+                        plain("12:00:00-05:30"), plain("12:00:00+01:00"),
+                        plain("12:00:00-14:00"), plain("12:00:00+13:59"),
+                        plain("12:00:00-00:30"), plain("12:00:00+00:01")),
                 List.of(plain("09:15:00"), plain("09:15:00+00:00"), plain("09:15:00-00:00"),
                         plain("9:15:00Z"), plain("09:15Z"), plain("24:00:00Z"),
                         plain("23:59:60Z"), plain("09:15:00.5Z"), plain("09:15:00z"),
-                        plain("09:15:00+15:00")));
+                        plain("09:15:00+15:00"), plain("12:00:00+14:01"),
+                        plain("12:00:00-14:01"), plain("12:00:00+1:00"),
+                        plain("12:00:00+0100"), plain("09:15:00,5Z"), plain("12:60:00Z"),
+                        plain("12:00:00+01:60"), plain("12:00:00Z\n"), plain("T12:00:00Z")));
     }
 
     // ---------------------------------------------------------------- the tests
@@ -375,7 +508,7 @@ class FixtureManifestTest {
      *
      * <p>The numbers are read from the checked-in files of the whole manifest, the part of
      * the later edition included, because that is what the pages count: each of them says
-     * in the same sentence that one document and one rejected row come from the part a
+     * in the same sentence that two documents and one rejected document come from the part a
      * build without that edition leaves out. Held against one such build the pages would
      * have to carry two numbers and would state neither of them plainly — so a build that
      * carries only the default edition does not hold them at all.
@@ -395,9 +528,8 @@ class FixtureManifestTest {
         }
         for (Path page : BINDING_PAGES) {
             String text = readTree(page);
-            assertCount(page, text, " conformant documents", documents);
-            assertCount(page, text, " rows for the documents that have to be rejected",
-                    invalid);
+            assertCount(page, text, " documents a reader reads", documents);
+            assertCount(page, text, " documents that have to be rejected", invalid);
         }
     }
 
@@ -487,15 +619,20 @@ class FixtureManifestTest {
 
         Manifest.Array invalid = Manifest.array();
         for (String file : invalidFixtures(false)) {
-            invalidRows(file).forEach(invalid::add);
+            invalid.add(invalid(file));
         }
         manifest.put("invalid", invalid);
 
+        manifest.put("bounds", boundSection());
+        manifest.put("registryChecks", registryCheckSection());
         manifest.put("canonicalOrder", canonicalOrder());
 
         Manifest.Array tables = Manifest.array();
         for (Grammar grammar : grammars()) {
             tables.add(grammar(grammar, GRAMMAR_BASE, COMBINED));
+        }
+        for (EnvelopeGrammar grammar : envelopeGrammars()) {
+            tables.add(envelopeGrammar(grammar, GRAMMAR_BASE));
         }
         manifest.put("grammars", tables);
 
@@ -529,7 +666,7 @@ class FixtureManifestTest {
 
         Manifest.Array invalid = Manifest.array();
         for (String file : invalidFixtures(true)) {
-            invalidRows(file).forEach(invalid::add);
+            invalid.add(invalid(file));
         }
         part.put("invalid", invalid);
 
@@ -784,12 +921,16 @@ class FixtureManifestTest {
      */
     private static Manifest.Array registriesOf(SemanticDocument document) {
         Manifest.Array files = Manifest.array();
-        if (COMBINED.describes(document.semanticModel())) {
-            files.add(Manifest.of(CORE_REGISTRY));
-            EXTENSION_REGISTRIES.forEach(file -> files.add(Manifest.of(file)));
-            return files;
+        if (theLaterEditionIsThere()
+                && Registry.forEdition(LATER_EDITION).describes(document.semanticModel())) {
+            return files.add(Manifest.of(LATER_EDITION_REGISTRY));
         }
-        return files.add(Manifest.of(LATER_EDITION_REGISTRY));
+        // The core registry and its extensions, also for an edition no registry describes:
+        // those are what the document was measured with, and they answer that they do not
+        // describe it (specification, section 9.2).
+        files.add(Manifest.of(CORE_REGISTRY));
+        EXTENSION_REGISTRIES.forEach(file -> files.add(Manifest.of(file)));
+        return files;
     }
 
     private Manifest.Object registry(String file, Registry registry) {
@@ -880,7 +1021,8 @@ class FixtureManifestTest {
 
     /** One document: where it is, what it digests to, and what the three layers say. */
     private Manifest.Object document(String file) {
-        SemanticDocument document = reader.read(Fixtures.bytes(file));
+        byte[] bytes = Fixtures.bytes(file);
+        SemanticDocument document = reader.read(bytes);
         Manifest.Object object = Manifest.object().put("file", file);
         String canonical = canonicalFileOf(file);
         if (canonical != null) {
@@ -895,96 +1037,319 @@ class FixtureManifestTest {
                 .put("canonicalBytes", Canonicalizer.canonicalBytes(document).length)
                 .put("semanticDigest", Canonicalizer.semanticDigest(document))
                 .put("documentDigest", Canonicalizer.documentDigest(document))
-                .putUnlessEmpty("findings", findings(document));
+                .put("outcome", outcome(validation(bytes, Limits.defaults(), CARRIED)));
     }
 
-    /** The errors the three layers report, in the order the validator reports them. */
-    private Manifest.Array findings(SemanticDocument document) {
-        Manifest.Array array = Manifest.array();
-        for (Finding finding : StructuralValidator
-                .validate(document, registryFor(document), MODEL_AND_CARDINALITY).findings()) {
-            if (finding.isError()) {
-                Manifest.Object entry = Manifest.object()
-                        .put("path", finding.path().toString())
-                        .put("code", finding.code().code());
-                if (!finding.subject().isEmpty()) {
-                    entry.put("subject", finding.subject());
-                }
-                array.add(entry);
+    /**
+     * Validates the bytes of a document as a binding answers a {@code validate} request: the
+     * reader decides layer L1 under the limits given, and where it built a document the
+     * structural validator decides L2 and L3 against the registry of its edition among those
+     * given; the two results are composed (specification, section 9.5).
+     */
+    private static ValidationResult validation(byte[] bytes, Limits limits, List<Registry> registries) {
+        ReadResult read = EsjReader.withLimits(limits).readWithFindings(bytes);
+        ValidationResult result = read.validation();
+        if (read.isWellFormed()) {
+            result = result.merge(StructuralValidator.validate(read.orElseThrow(), registries,
+                    MODEL_AND_CARDINALITY));
+        }
+        return result;
+    }
+
+    /**
+     * The whole answer of a validation, as the manifest records it: the status, every layer not
+     * evaluated with its reason, and every finding — errors, warnings and information alike —
+     * with its path, code, subject and severity, in the order they were reported. An empty
+     * subject is recorded as the empty string, so that it is compared like any other
+     * (specification, section 9.5).
+     */
+    private static Manifest.Object outcome(ValidationResult result) {
+        Manifest.Array layers = Manifest.array();
+        for (Map.Entry<ValidationLayer, NotEvaluatedReason> layer
+                : new TreeMap<>(result.notEvaluated()).entrySet()) {
+            layers.add(Manifest.object().inline()
+                    .put("layer", layer.getKey().name())
+                    .put("reason", layer.getValue().token()));
+        }
+        Manifest.Array findings = Manifest.array();
+        for (Finding finding : result.findings()) {
+            findings.add(Manifest.object().inline()
+                    .put("path", finding.path().toString())
+                    .put("code", finding.code().code())
+                    .put("subject", finding.subject())
+                    .put("severity", finding.severity().name().toLowerCase(Locale.ROOT)));
+        }
+        return Manifest.object()
+                .put("status", result.status().name())
+                .put("notEvaluated", layers)
+                .put("findings", findings);
+    }
+
+    /**
+     * One negative fixture: the layer that catches the defect and the whole answer of a
+     * validation, which section 9.6 of the specification fixes in full — how far a reader
+     * reads, the order of its findings, and the checks of one path at layer L2. Where the
+     * reader builds a document, the fixture carries its digests as well, because content that
+     * a model layer refuses passes the reader and the canonicalizer unchanged (sections 3.2
+     * and 3.4).
+     *
+     * <p>A fixture of {@code conformance/fixtures/model/} may name the registries it is
+     * validated with ({@link #VALIDATED_WITH}); the runner passes them with the request, and
+     * the binding uses those instead of the ones it carries.
+     *
+     * @param file the fixture, as a path in the repository
+     * @return its entry
+     */
+    private Manifest.Object invalid(String file) {
+        byte[] bytes = Fixtures.bytes(file);
+        List<String> named = VALIDATED_WITH.get(file);
+        List<Registry> registries = named == null ? CARRIED : List.of(combined(named));
+        ReadResult read = reader.readWithFindings(bytes);
+        ValidationResult result = validation(bytes, Limits.defaults(), registries);
+        Manifest.Object entry = Manifest.object()
+                .put("file", file)
+                .put("layer", layer(read, result));
+        if (named != null) {
+            entry.put("registries", Manifest.of(named));
+        }
+        if (read.isWellFormed()) {
+            SemanticDocument document = read.orElseThrow();
+            entry.put("values", document.values().size())
+                    .put("canonicalBytes", Canonicalizer.canonicalBytes(document).length)
+                    .put("semanticDigest", Canonicalizer.semanticDigest(document))
+                    .put("documentDigest", Canonicalizer.documentDigest(document));
+        }
+        return entry.put("outcome", outcome(result));
+    }
+
+    /**
+     * The layer that catches the defect of a negative fixture: {@code limit} where the reader
+     * stopped at a bound and found nothing else, {@code L1} where it refused the document, the
+     * layer of the first error a validator reported over a document the reader built, and
+     * {@code business-rule} where no layer of this specification reports one.
+     */
+    private static String layer(ReadResult read, ValidationResult result) {
+        if (!read.isWellFormed()) {
+            boolean limit = read.findings().stream().filter(Finding::isError)
+                    .allMatch(finding -> finding.code() == FindingCode.ESJ_L1_LIMIT);
+            return limit ? "limit" : "L1";
+        }
+        return result.findings().stream().filter(Finding::isError).findFirst()
+                .map(finding -> finding.code().layer().name()).orElse("business-rule");
+    }
+
+    /** Reads registry files of the repository and combines every one after the first with it. */
+    private static Registry combined(List<String> files) {
+        Registry combined = null;
+        for (String file : files) {
+            Registry read;
+            try (InputStream in = resource(file).openStream()) {
+                read = Registry.load(in);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
+            combined = combined == null ? read : combined.withExtension(read);
+        }
+        return combined;
+    }
+
+    // ------------------------------------------------------------- bounds and registries
+
+    /**
+     * A document read under bounds of the specification, section 12.2, each named as
+     * {@link Limits} and every binding name it: the cases of the {@code bounds} section.
+     *
+     * @param file   the document
+     * @param limits the bounds that replace the defaults, in the order they are written
+     */
+    private record Bound(String file, Map<String, Long> limits) {
+    }
+
+    private static Bound bound(String file, Object... pairs) {
+        Map<String, Long> limits = new LinkedHashMap<>();
+        for (int i = 0; i < pairs.length; i += 2) {
+            limits.put((String) pairs[i], ((Number) pairs[i + 1]).longValue());
+        }
+        return new Bound(file, limits);
+    }
+
+    /**
+     * Every bound of the specification, section 12.2 at its limit and one past it, with the
+     * cases that decide what a bound is measured on: the normalized string inside
+     * {@code values} and the raw one outside it, the string bound before the fixed value, the
+     * edition grammar, the owner-token grammar and the path grammar, the number token inside
+     * and outside {@code extensions}, the structure a reader walks past, the two string bounds
+     * on a value object, a member name past the bound in each kind of object, which names the
+     * object and not the name, the formula of the total binary content, the text
+     * order in which a bound stops a reader, and the order of the checks of one token: a
+     * string or a name is read as a whole JSON token before its bound, a lone surrogate comes
+     * before the bound of a string and after the bound of a name. A byte bound is never set
+     * below 64, so that nothing but the member a case is about reaches it.
+     */
+    private static List<Bound> bounds() {
+        String minimal = "examples/minimal.esj.json";
+        long size = Fixtures.bytes(minimal).length;
+        long values = EsjReader.strict().read(Fixtures.bytes(minimal)).values().size();
+        String b = BOUND_FIXTURES + "/";
+        return List.of(
+                bound(minimal, "maxDocumentBytes", size),
+                bound(minimal, "maxDocumentBytes", size - 1),
+                bound(minimal, "maxValues", values),
+                bound(minimal, "maxValues", values - 1),
+                bound(minimal, "maxPathSegments", 4),
+                bound(minimal, "maxPathSegments", 3),
+                bound(minimal, "maxPathBytes", 21),
+                bound(minimal, "maxPathBytes", 20),
+                bound(b + "string.esj.json", "maxStringBytes", 64),
+                bound(b + "string.esj.json", "maxStringBytes", 63),
+                bound(b + "normalized-string.esj.json", "maxStringBytes", 64),
+                bound(b + "normalized-string.esj.json", "maxStringBytes", 63),
+                bound(b + "extension-string.esj.json", "maxStringBytes", 65),
+                bound(b + "extension-string.esj.json", "maxStringBytes", 64),
+                bound(b + "source-syntax.esj.json", "maxStringBytes", 65),
+                bound(b + "source-syntax.esj.json", "maxStringBytes", 64),
+                bound(b + "envelope-string.esj.json", "maxStringBytes", 65),
+                bound(b + "envelope-string.esj.json", "maxStringBytes", 64),
+                bound(b + "semantic-model.esj.json", "maxStringBytes", 65),
+                bound(b + "semantic-model.esj.json", "maxStringBytes", 64),
+                bound(b + "member-name.esj.json", "maxStringBytes", 65),
+                bound(b + "member-name.esj.json", "maxStringBytes", 64),
+                bound(b + "owner-token.esj.json", "maxStringBytes", 129),
+                bound(b + "owner-token.esj.json", "maxStringBytes", 128),
+                bound(b + "long-bad-path.esj.json", "maxPathBytes", 65),
+                bound(b + "long-bad-path.esj.json", "maxPathBytes", 64),
+                bound(b + "long-bad-path.esj.json", "maxStringBytes", 64),
+                bound(b + "name-in-source.esj.json", "maxStringBytes", 65),
+                bound(b + "name-in-source.esj.json", "maxStringBytes", 64),
+                bound(b + "name-in-value-object.esj.json", "maxStringBytes", 65),
+                bound(b + "name-in-value-object.esj.json", "maxStringBytes", 64),
+                bound(b + "name-in-extension.esj.json", "maxStringBytes", 65),
+                bound(b + "name-in-extension.esj.json", "maxStringBytes", 64),
+                bound(b + "number-token.esj.json", "maxStringBytes", 65),
+                bound(b + "number-token.esj.json", "maxStringBytes", 64),
+                bound(b + "number-in-values.esj.json", "maxStringBytes", 65),
+                bound(b + "number-in-values.esj.json", "maxStringBytes", 64),
+                bound(b + "walked-past-string.esj.json", "maxStringBytes", 64),
+                bound(b + "walked-past-number.esj.json", "maxStringBytes", 65),
+                bound(b + "walked-past-number.esj.json", "maxStringBytes", 64),
+                bound(b + "walked-past-name.esj.json", "maxStringBytes", 65),
+                bound(b + "walked-past-name.esj.json", "maxStringBytes", 64),
+                bound(b + "walked-past-depth.esj.json", "maxExtensionDepth", 3),
+                bound(b + "walked-past-depth.esj.json", "maxExtensionDepth", 2),
+                bound(b + "walked-past-value-member.esj.json", "maxExtensionDepth", 3),
+                bound(b + "walked-past-value-member.esj.json", "maxExtensionDepth", 2),
+                bound(b + "value-object-strings.esj.json",
+                        "maxStringBytes", 64, "maxBinaryValueBytes", 128),
+                bound(b + "value-object-strings.esj.json",
+                        "maxStringBytes", 63, "maxBinaryValueBytes", 128),
+                bound(b + "value-object-strings.esj.json",
+                        "maxStringBytes", 64, "maxBinaryValueBytes", 127),
+                bound(b + "value-object-strings.esj.json",
+                        "maxStringBytes", 128, "maxBinaryValueBytes", 64),
+                bound(b + "empty-before-limit.esj.json", "maxStringBytes", 64),
+                bound(b + "limit-before-empty.esj.json", "maxStringBytes", 64),
+                bound(b + "value-object-empty-before-limit.esj.json", "maxStringBytes", 64),
+                bound(b + "value-object-limit-before-empty.esj.json", "maxStringBytes", 64),
+                bound(b + "value-object-members.esj.json", "maxValueMembers", 2),
+                bound(b + "value-object-members.esj.json", "maxValueMembers", 1),
+                bound(b + "binary-total.esj.json", "maxTotalBinaryBytes", 144),
+                bound(b + "binary-total.esj.json", "maxTotalBinaryBytes", 143),
+                bound(b + "binary-total-padding.esj.json", "maxTotalBinaryBytes", 10),
+                bound(b + "binary-total-padding.esj.json", "maxTotalBinaryBytes", 9),
+                bound("examples/extension-depth.esj.json", "maxExtensionDepth", 32),
+                bound("examples/extension-depth.esj.json", "maxExtensionDepth", 31),
+                bound(b + "extension-nodes.esj.json", "maxExtensionNodes", 6),
+                bound(b + "extension-nodes.esj.json", "maxExtensionNodes", 5),
+                bound(b + "long-string-surrogate.esj.json", "maxStringBytes", 64),
+                bound(b + "long-name-surrogate.esj.json", "maxStringBytes", 200),
+                bound(b + "long-name-surrogate.esj.json", "maxStringBytes", 64),
+                bound(b + "long-string-unclosed.esj.json", "maxStringBytes", 64),
+                bound(b + "long-name-bad-escape.esj.json", "maxStringBytes", 64));
+    }
+
+    /** Returns the defaults with every bound a case names replaced. */
+    private static Limits limitsOf(Map<String, Long> named) {
+        Limits limits = Limits.defaults();
+        for (Map.Entry<String, Long> bound : named.entrySet()) {
+            long value = bound.getValue();
+            limits = switch (bound.getKey()) {
+                case "maxDocumentBytes" -> limits.withMaxDocumentBytes(value);
+                case "maxValues" -> limits.withMaxValues(Math.toIntExact(value));
+                case "maxValueMembers" -> limits.withMaxValueMembers(Math.toIntExact(value));
+                case "maxPathSegments" -> limits.withMaxPathSegments(Math.toIntExact(value));
+                case "maxPathBytes" -> limits.withMaxPathBytes(Math.toIntExact(value));
+                case "maxStringBytes" -> limits.withMaxStringBytes(value);
+                case "maxBinaryValueBytes" -> limits.withMaxBinaryValueBytes(value);
+                case "maxTotalBinaryBytes" -> limits.withMaxTotalBinaryBytes(value);
+                case "maxExtensionDepth" -> limits.withMaxExtensionDepth(Math.toIntExact(value));
+                case "maxExtensionNodes" -> limits.withMaxExtensionNodes(Math.toIntExact(value));
+                default -> throw new IllegalArgumentException("no bound is called " + bound.getKey());
+            };
+        }
+        return limits;
+    }
+
+    private Manifest.Array boundSection() {
+        Manifest.Array array = Manifest.array();
+        for (Bound bound : bounds()) {
+            Manifest.Object limits = Manifest.object().inline();
+            bound.limits().forEach(limits::put);
+            array.add(Manifest.object()
+                    .put("file", bound.file())
+                    .put("limits", limits)
+                    .put("outcome", outcome(validation(Fixtures.bytes(bound.file()),
+                            limitsOf(bound.limits()), CARRIED))));
         }
         return array;
     }
 
     /**
-     * One negative fixture, as one row per code it draws: the layer that catches the defect,
-     * the code, the path the finding names and, where section 9.5 requires one, its subject.
-     *
-     * <p>The reader is asked for its findings rather than for the exception it would raise,
-     * because the specification, section 9.5 fixes what {@code path} points at for every
-     * code and an exception carries the member access alone. A binding whose reader named
-     * the document root where the defect has an address would otherwise pass this manifest.
-     *
-     * <p>A document may be wrong in two ways at layer L1 and draw two codes: section 9.6
-     * lets {@code ESJ-L1-SURROGATE} stand beside the code a value object's shape or member
-     * set draws, because the two checks read two different strings. Every error the reader
-     * reports is therefore a row of its own, so that a binding which reports one of the two
-     * and not the other is caught. The model layers answer one code per fixture here: what
-     * a validator reports over a whole document is the business of the {@code documents}
-     * part.
-     *
-     * @param file the fixture, as a path in the repository
-     * @return its rows, in the order the findings were reported
+     * The sets of registry files a loader is asked to read and combine, the first as the core
+     * and every further one as an extension of it (specification, section 10): the registries
+     * of the repository, which it takes, and the registries of
+     * {@code conformance/fixtures/registries/}, each breaking one rule a loader holds a
+     * registry to, alone and combined with the edition it names.
      */
-    private List<Manifest.Object> invalidRows(String file) {
-        byte[] bytes = Fixtures.bytes(file);
-        ReadResult read = reader.readWithFindings(bytes);
-        if (!read.isWellFormed()) {
-            return read.findings().stream().filter(Finding::isError)
-                    .map(finding -> withSubject(Manifest.object().put("file", file)
-                            .put("layer", finding.code() == FindingCode.ESJ_L1_LIMIT
-                                    ? "limit" : finding.code().layer().name())
-                            .put("code", finding.code().code())
-                            .put("path", finding.path().toString()), finding))
-                    .toList();
+    private static List<List<String>> registryChecks() {
+        String core = CORE_REGISTRY;
+        String xr = EXTENSION_REGISTRIES.get(0);
+        String b2c = EXTENSION_REGISTRIES.get(1);
+        String t = TEST_REGISTRIES + "/";
+        List<List<String>> checks = new ArrayList<>();
+        checks.add(List.of(core));
+        checks.add(List.of(core, xr, b2c));
+        checks.add(List.of(core, core));
+        checks.add(List.of(core, xr, xr));
+        checks.add(List.of(t + "cardinality.json"));
+        checks.add(List.of(t + "extension.json"));
+        checks.add(List.of(core, t + "extension.json"));
+        checks.add(List.of(core, xr, t + "extension.json"));
+        checks.add(List.of(t + "cardinality.json", t + "extension.json"));
+        for (String refused : List.of("binary-without-components.json",
+                "scheme-version-without-scheme.json", "mandatory-version-beside-optional-scheme.json",
+                "duplicate-identifier.json", "no-imports.json", "identifier-without-namespace.json",
+                "two-namespaces.json", "redefines-core-term.json", "imports-another-model.json",
+                "identifier-of-another-extension.json")) {
+            checks.add(List.of(t + refused));
+            checks.add(List.of(core, t + refused));
         }
-        SemanticDocument document = read.document().orElseThrow();
-        List<Finding> errors = StructuralValidator
-                .validate(document, registryFor(document), MODEL_AND_CARDINALITY)
-                .findings().stream().filter(Finding::isError).toList();
-        if (errors.isEmpty()) {
-            return List.of(Manifest.object().put("file", file).put("layer", "business-rule"));
-        }
-        Finding first = errors.get(0);
-        return List.of(withSubject(Manifest.object().put("file", file)
-                .put("layer", first.code().layer().name())
-                .put("code", first.code().code())
-                .put("path", first.path().toString()), first));
+        checks.add(List.of(core, xr, t + "identifier-of-another-extension.json"));
+        return List.copyOf(checks);
     }
 
-    /**
-     * Adds the subject of a finding to its row where the specification, section 9.5 requires
-     * one: where the path is empty, because the member name is no semantic path or the place
-     * is the envelope, {@code source} or {@code extensions}, and on a finding of layer L3,
-     * which names the term or group it is about. Elsewhere a reader MAY carry the member
-     * access as well, so the manifest does not pin it there.
-     *
-     * <p>A subject is one of the three fields a program reacts to, and the name it carries is
-     * escaped as a message escapes a fragment of a document. A row that records one therefore
-     * holds a binding to the same set of escaped characters, spelled the same way;
-     * {@code run.py} compares the subject where a row records one and nowhere else. Where this
-     * implementation leaves a required subject empty — a member name carrying a lone
-     * surrogate, which has no UTF-8 encoding a subject could carry — the row records none, and
-     * what a binding answers there is not compared.
-     */
-    private static Manifest.Object withSubject(Manifest.Object row, Finding finding) {
-        return finding.subject().isEmpty() || !subjectRequired(finding)
-                ? row : row.put("subject", finding.subject());
-    }
-
-    /** Whether section 9.5 requires a finding to carry a subject: see {@link #withSubject}. */
-    private static boolean subjectRequired(Finding finding) {
-        return finding.path().isRoot() || finding.code().layer() == ValidationLayer.L3;
+    private Manifest.Array registryCheckSection() {
+        Manifest.Array array = Manifest.array();
+        for (List<String> files : registryChecks()) {
+            boolean accepted;
+            try {
+                combined(files);
+                accepted = true;
+            } catch (de.bsnsoft.esj.EsjFormatException refused) {
+                accepted = false;
+            }
+            array.add(Manifest.object().put("files", Manifest.of(files)).put("accepted", accepted));
+        }
+        return array;
     }
 
     /**
@@ -997,10 +1362,20 @@ class FixtureManifestTest {
         Manifest.Array array = Manifest.array();
         array.add(canonicalOrder(DIRECTORY + "canonical-order/scrambled.esj.json",
                 "examples/extended.canonical.esj.json"));
-        array.add(canonicalOrder(DIRECTORY + "canonical-order/indices.esj.json",
-                DIRECTORY + "canonical-order/indices.canonical.esj.json"));
+        for (String name : CANONICAL_ORDER) {
+            array.add(canonicalOrder(DIRECTORY + "canonical-order/" + name + ".esj.json",
+                    DIRECTORY + "canonical-order/" + name + ".canonical.esj.json"));
+        }
         return array;
     }
+
+    /**
+     * The canonical order cases beside their canonical bytes in
+     * {@code conformance/fixtures/canonical-order/}: indices, every escape of JSON, the corners
+     * of the path order, the numbers of {@code extensions}, and value objects written in reverse.
+     */
+    private static final List<String> CANONICAL_ORDER =
+            List.of("indices", "escaping", "corners", "numbers", "value-object-order");
 
     private Manifest.Object canonicalOrder(String scrambled, String canonical) {
         SemanticDocument document = reader.read(Fixtures.bytes(scrambled));
@@ -1041,6 +1416,78 @@ class FixtureManifestTest {
                 .put("path", grammar.path())
                 .put("accept", accept)
                 .put("reject", reject);
+    }
+
+    /**
+     * One envelope grammar, measured: every candidate is written into the base document — as
+     * the value of {@code semanticModel}, or as the name of the one member of
+     * {@code extensions}, whose value is the string {@code x} — and the codes of the errors
+     * layer L1 reports decide which list it belongs in.
+     */
+    private Manifest.Object envelopeGrammar(EnvelopeGrammar grammar, String base) {
+        String canonical = new String(Canonicalizer.canonicalBytes(reader.read(Fixtures.bytes(base))),
+                StandardCharsets.UTF_8);
+        Manifest.Array accept = Manifest.array();
+        for (String candidate : grammar.accept()) {
+            assertEquals(List.of(), layerOneErrors(written(canonical, grammar.member(), candidate)),
+                    grammar.grammar() + " accepts " + candidate);
+            accept.add(Manifest.of(candidate));
+        }
+        Manifest.Array reject = Manifest.array();
+        for (String candidate : grammar.reject()) {
+            assertEquals(List.of(grammar.code()),
+                    layerOneErrors(written(canonical, grammar.member(), candidate)),
+                    grammar.grammar() + " rejects " + candidate);
+            reject.add(Manifest.of(candidate));
+        }
+        return Manifest.object()
+                .put("grammar", grammar.grammar())
+                .put("code", grammar.code())
+                .put("base", base)
+                .put("member", grammar.member())
+                .put("accept", accept)
+                .put("reject", reject);
+    }
+
+    /** The canonical text of a document with a candidate written into one envelope member. */
+    private static byte[] written(String canonical, String member, String candidate) {
+        String text;
+        if (member.equals("semanticModel")) {
+            int at = canonical.indexOf("\"semanticModel\":\"") + "\"semanticModel\":".length();
+            int end = canonical.indexOf('"', at + 1) + 1;
+            text = canonical.substring(0, at) + jsonString(candidate) + canonical.substring(end);
+        } else {
+            text = canonical.substring(0, canonical.length() - 1)
+                    + ",\"extensions\":{" + jsonString(candidate) + ":\"x\"}}";
+        }
+        return text.getBytes(StandardCharsets.UTF_8);
+    }
+
+    /** A string as JSON writes it, with the escapes of the specification, section 7.5. */
+    private static String jsonString(String value) {
+        StringBuilder out = new StringBuilder("\"");
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c == '"' || c == '\\') {
+                out.append('\\').append(c);
+            } else if (c < 0x20) {
+                out.append(String.format("\\u%04x", (int) c));
+            } else {
+                out.append(c);
+            }
+        }
+        return out.append('"').toString();
+    }
+
+    /** The codes of the errors of layer L1 a validation of some bytes reports. */
+    private static List<String> layerOneErrors(byte[] bytes) {
+        List<String> codes = new ArrayList<>();
+        for (Finding finding : validation(bytes, Limits.defaults(), CARRIED).findings()) {
+            if (finding.isError() && finding.code().layer() == ValidationLayer.L1) {
+                codes.add(finding.code().code());
+            }
+        }
+        return codes;
     }
 
     /** The model layer codes reported about one path after a candidate is put there. */
@@ -1131,14 +1578,6 @@ class FixtureManifestTest {
         return List.copyOf(codes);
     }
 
-    private static Registry registryFor(SemanticDocument document) {
-        if (COMBINED.describes(document.semanticModel())) {
-            return COMBINED;
-        }
-        return Registry.forSemanticModel(document.semanticModel()).orElseThrow(
-                () -> new AssertionError("no registry for " + document.semanticModel()));
-    }
-
     /** The canonical form beside a document, where the repository carries one. */
     private static String canonicalFileOf(String file) {
         String canonical = file.substring(0, file.length() - ".esj.json".length())
@@ -1148,22 +1587,37 @@ class FixtureManifestTest {
 
     // ----------------------------------------------------------------- the files
 
-    /** The documents of the default edition: the examples and the conformance corpus. */
+    /**
+     * The documents of the default edition: the examples, the conformance corpus, the documents
+     * of {@code conformance/fixtures/documents/} and the worked example of the specification,
+     * appendix B.
+     */
     private static List<String> coreDocuments() {
         List<String> files = new ArrayList<>(documentsIn("examples"));
-        files.removeIf(FixtureManifestTest::belongsToTheLaterEdition);
         files.addAll(documentsIn("conformance/esj"));
+        files.addAll(documentsIn(DOCUMENT_FIXTURES));
+        files.addAll(documentsIn(ANNEX_B));
+        files.removeIf(FixtureManifestTest::belongsToTheLaterEdition);
         return List.copyOf(files);
     }
 
+    /** The documents of the later edition, the example its grammar table is measured in first. */
     private static List<String> laterEditionDocuments() {
-        return documentsIn("examples").stream()
-                .filter(FixtureManifestTest::belongsToTheLaterEdition)
-                .toList();
+        List<String> files = new ArrayList<>(documentsIn("examples"));
+        files.addAll(documentsIn(ANNEX_B));
+        return files.stream().filter(FixtureManifestTest::belongsToTheLaterEdition).toList();
     }
 
+    /**
+     * The negative fixtures of an edition: those of {@code examples/invalid/}, one per kind of
+     * error, and those of {@code conformance/fixtures/reader/} and {@code model/}, which pin
+     * every variant the specification decides.
+     */
     private static List<String> invalidFixtures(boolean laterEdition) {
-        return documentsIn("examples/invalid").stream()
+        List<String> files = new ArrayList<>(documentsIn("examples/invalid"));
+        files.addAll(documentsIn(READER_FIXTURES));
+        files.addAll(documentsIn(MODEL_FIXTURES));
+        return files.stream()
                 .filter(file -> belongsToTheLaterEdition(file) == laterEdition)
                 .toList();
     }
@@ -1203,8 +1657,13 @@ class FixtureManifestTest {
         files.addAll(invalidFixtures(false));
         files.add("examples/extended.canonical.esj.json");
         files.add(DIRECTORY + "canonical-order/scrambled.esj.json");
-        files.add(DIRECTORY + "canonical-order/indices.esj.json");
-        files.add(DIRECTORY + "canonical-order/indices.canonical.esj.json");
+        for (String name : CANONICAL_ORDER) {
+            files.add(DIRECTORY + "canonical-order/" + name + ".esj.json");
+            files.add(DIRECTORY + "canonical-order/" + name + ".canonical.esj.json");
+        }
+        bounds().forEach(bound -> files.add(bound.file()));
+        registryChecks().forEach(files::addAll);
+        VALIDATED_WITH.values().forEach(files::addAll);
         files.add(DIRECTORY + CASES);
         files.add(ARITHMETIC_PACK);
         files.add(DIRECTORY + SCHEMA);

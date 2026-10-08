@@ -19,8 +19,9 @@ import { splitSegments } from './paths.ts';
  *
  * L1 is the reader's (`reader.ts`); this module adds the two layers that need a registry.
  * L2 measures one path and one value against the term it sits at, and L3 looks at the
- * document as a whole and counts occurrences per parent instance. A path that failed L2 is
- * not placed in the structure, so the two layers never report one defect twice.
+ * document as a whole and counts occurrences per parent instance. A path whose shape or
+ * chain failed L2 is not placed in the structure, so the two layers never report one defect
+ * twice.
  */
 
 /** The three layers, in the order they are evaluated. */
@@ -64,15 +65,20 @@ export function validate(
   const layers = options.layers ?? ALL_LAYERS;
   if (!layers.includes('L1')) {
     const read = readDocument(input, options);
-    if (read.document !== undefined) {
+    const errors = read.findings.filter((entry) => entry.severity === 'error');
+    if (read.document !== undefined && errors.length === 0) {
       return validateModel(read.document, options, layers, [], []);
     }
-    // A layer the caller did not ask for keeps NOT-REQUESTED whatever else happened
-    // (section 9.5); the two that were asked for never ran, because there is no document.
+    // The reader refused what the model layers would have measured: a document with a member
+    // left out is not the document the bytes carry, so L2 and L3 are not evaluated over it
+    // (section 9.5). A layer the caller did not ask for keeps NOT-REQUESTED whatever else
+    // happened; a bound that stopped the reader is the reason it established first.
+    const reason = errors.some((entry) => entry.code === FindingCode.L1_LIMIT)
+      ? 'LIMIT' : 'PRECEDING-LAYER-FAILED';
     return result([], [], [
       notEvaluated('L1', 'NOT-REQUESTED'),
       ...(['L2', 'L3'] as const).map((layer) => notEvaluated(layer,
-        layers.includes(layer) ? 'PRECEDING-LAYER-FAILED' : 'NOT-REQUESTED')),
+        layers.includes(layer) ? reason : 'NOT-REQUESTED')),
     ]);
   }
   const read = readDocument(input, options);
@@ -136,7 +142,7 @@ function validateModel(
   const placed: Array<{ path: string; steps: Step[] }> = [];
   for (const [path, value] of document.values) {
     const steps = stepsOf(path);
-    if (checkPath(findings, structure, path, steps) && checkValue(findings, structure, path, value)) {
+    if (checkPath(findings, structure, path, steps, value)) {
       placed.push({ path, steps });
     }
   }
@@ -203,81 +209,93 @@ function isExtensionId(id: string): boolean {
 }
 
 /**
- * Checks a path against the registry: that its terms exist, that its index segments stand
- * where the declared cardinalities put them, and that its group chain is one the registries
- * record (sections 5.2, 5.3 and 5.6).
+ * Checks one member of `values` against the registry (sections 5.2, 5.3, 5.6, 6.2, 6.6 and 6.7).
  *
- * @return whether the path is placed in the structure, which is what L3 counts
+ * Every check is made on its own and reports on its own, so that a path with three problems
+ * draws three findings: the existence of every term, the index rule of every term the
+ * registries know, the group chain, the content grammar and the components. Only a term the
+ * registries do not know ends the checks below it, because there is nothing to measure the
+ * rest of the path against.
+ *
+ * A core identifier the registry of the edition does not carry is `ESJ-L2-UNKNOWN-TERM`, one
+ * finding per identifier, whatever else the path carries: an extension mints identifiers in
+ * its own namespace and never supplies one of the core. An extension identifier no loaded
+ * registry carries — its registry is not loaded, or it is newer than the one that is, since a
+ * namespace may grow — is `ESJ-L2-NOT-CHECKED`, once per path (section 5.6). The subject of a
+ * finding about one segment names its identifier, and the subject of a finding about a
+ * component names the component (section 9.5).
+ *
+ * @return whether the path is placed in the structure, which is what L3 counts: every term is
+ *   known, every index segment stands where the cardinalities put it, and the chain is one a
+ *   registry records
  */
 function checkPath(
-  findings: Finding[], structure: Structure, path: string, steps: Step[],
+  findings: Finding[], structure: Structure, path: string, steps: Step[], value: SemanticValue,
 ): boolean {
+  let known = true;
+  let notChecked = false;
+  let shape = true;
   for (const step of steps) {
-    if (structure.term(step.id) !== undefined) {
+    if (structure.term(step.id) === undefined) {
+      if (!isExtensionId(step.id)) {
+        findings.push(finding(FindingCode.L2_UNKNOWN_TERM,
+          step.id + ' is not a term of the registry of ' + structure.core.edition + '.',
+          { path, subject: step.id }));
+      } else if (!notChecked) {
+        findings.push(finding(FindingCode.L2_NOT_CHECKED,
+          step.id + ' is an extension identifier no loaded registry carries, so this path was'
+          + ' not checked against a registry.', { path }));
+        notChecked = true;
+      }
+      known = false;
       continue;
     }
-    if (isExtensionId(step.id)) {
-      findings.push(finding(FindingCode.L2_NOT_CHECKED,
-        step.id + ' belongs to an extension whose registry is not loaded, so nothing about'
-        + ' this path was checked.', { path }));
-      return false;
-    }
-    findings.push(finding(FindingCode.L2_UNKNOWN_TERM,
-      step.id + ' is not a term of the registry of ' + structure.core.edition + '.',
-      { path, subject: step.id }));
-    return false;
-  }
-  let sound = true;
-  for (const step of steps) {
-    const repeatable = structure.repeatable(step.id);
-    if (repeatable && step.index === undefined) {
-      findings.push(finding(FindingCode.L2_INDEX_REQUIRED,
-        step.id + ' is declared repeatable, so its segment carries an occurrence index.',
-        { path, subject: step.id }));
-      sound = false;
-    } else if (!repeatable && step.index !== undefined) {
-      findings.push(finding(FindingCode.L2_INDEX_FORBIDDEN,
-        step.id + ' occurs at most once, so its segment carries no occurrence index.',
-        { path, subject: step.id }));
-      sound = false;
+    if (known) {
+      shape = checkIndex(findings, structure, path, step) && shape;
     }
   }
-  if (!sound) {
+  if (!known) {
     return false;
   }
   const last = steps[steps.length - 1];
   const groups = steps.slice(0, steps.length - 1).map((step) => step.id);
-  if (!structure.isChain(last.id, groups)) {
+  const chain = structure.isChain(last.id, groups);
+  if (!chain) {
     findings.push(finding(FindingCode.L2_PARENT_CHAIN,
       'the group segments of this path are not a chain the loaded registries record for '
       + last.id + '.', { path, subject: last.id }));
+  }
+  const term = structure.term(last.id)!;
+  checkContent(findings, term, path, value);
+  checkComponents(findings, term, path, value);
+  return shape && chain;
+}
+
+/** Checks the index rule of section 5.3 at one step of a path, in both directions. */
+function checkIndex(findings: Finding[], structure: Structure, path: string, step: Step): boolean {
+  const repeatable = structure.repeatable(step.id);
+  if (repeatable && step.index === undefined) {
+    findings.push(finding(FindingCode.L2_INDEX_REQUIRED,
+      step.id + ' is declared repeatable, so its segment carries an occurrence index.',
+      { path, subject: step.id }));
+    return false;
+  }
+  if (!repeatable && step.index !== undefined) {
+    findings.push(finding(FindingCode.L2_INDEX_FORBIDDEN,
+      step.id + ' occurs at most once, so its segment carries no occurrence index.',
+      { path, subject: step.id }));
     return false;
   }
   return true;
 }
 
 /**
- * Checks the content of a value against the semantic data type of its term, and the
- * supplementary components against what the registry lists for it (sections 6.2, 6.6 and
- * 6.7).
+ * Checks the content of a value against the semantic data type of its term (section 6.2).
  *
  * A string carrying a lone surrogate is not measured against a grammar: it has no UTF-8
  * encoding, so it has no content a grammar could read, and L1 has already reported it
  * (section 9.6).
  */
-function checkValue(
-  findings: Finding[], structure: Structure, path: string, value: SemanticValue,
-): boolean {
-  const steps = stepsOf(path);
-  const term = structure.term(steps[steps.length - 1].id);
-  if (term === undefined) {
-    return true;
-  }
-  checkContent(findings, term, path, value);
-  checkComponents(findings, term, path, value);
-  return true;
-}
-
 function checkContent(
   findings: Finding[], term: RegistryTerm, path: string, value: SemanticValue,
 ): void {

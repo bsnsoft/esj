@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace BSNSoft.Esj.Model;
 
@@ -30,6 +31,9 @@ public sealed class Registry
     private const string B2cResource = "model/b2c/0.1.json";
 
     private static readonly string[] CoreEditionKeys = { "2017", "2026" };
+
+    /// <summary>An identifier that carries the namespace of an extension: <c>BT-DEX-001</c>.</summary>
+    private static readonly Regex Namespaced = new("^(?:BT|BG)-([A-Z][A-Z0-9]*)-[0-9]+$", RegexOptions.CultureInvariant);
     private static readonly Dictionary<string, Registry> Loaded = new(StringComparer.Ordinal);
 
     private readonly List<Term> _terms;
@@ -158,9 +162,17 @@ public sealed class Registry
     public static Registry B2cExtension() => Shared(B2cResource);
 
     /// <summary>Reads a registry from a stream.</summary>
+    /// <remarks>
+    /// What can be decided of one file is decided here (specification, section 10): every term
+    /// declares supplementary components a value can satisfy, no identifier is listed twice, a
+    /// registry that names a term it does not define — as the parent of one of its terms, in the
+    /// chain of one, or in <c>reusesTerms</c> — names in <c>imports</c> what it builds on, and a
+    /// registry that names something in <c>imports</c> is an extension and defines identifiers of
+    /// its own namespace only.
+    /// </remarks>
     /// <param name="input">the registry file</param>
     /// <returns>the registry</returns>
-    /// <exception cref="EsjFormatException">if the file is not a registry</exception>
+    /// <exception cref="EsjFormatException">if the file is not a registry or breaks a rule above</exception>
     public static Registry Load(Stream input)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -172,15 +184,26 @@ public sealed class Registry
     /// Returns this registry combined with an extension registry, which is how the terms of
     /// an extension and the positions it gives core terms become visible to a validator.
     /// </summary>
+    /// <remarks>
+    /// An extension defines identifiers of its own namespace only. An extension whose parents or
+    /// <c>reusesTerms</c> name a term it does not define was checked against one list of terms,
+    /// and it says which in its <c>imports</c> member: it is combined only where it imports this
+    /// model with this edition. One that names such a term and imports nothing, or imports another
+    /// model, or this model with another edition, is refused rather than combined (specification,
+    /// section 10). An extension that names no term it does not define stands on its own and
+    /// needs no import.
+    /// </remarks>
     /// <param name="extension">the registry of the extension</param>
     /// <returns>the combined registry, which keeps the model and edition of this one</returns>
     /// <exception cref="EsjFormatException">
-    /// if the extension redefines a term of this registry, or imports this model with a
-    /// different edition
+    /// if the extension defines an identifier outside its own namespace, redefines a term of this
+    /// registry, imports this model with a different edition, or names a term it does not define
+    /// without importing this registry
     /// </exception>
     public Registry WithExtension(Registry extension)
     {
         ArgumentNullException.ThrowIfNull(extension);
+        extension.CheckOwnNamespace();
         foreach (RegistryImport imported in extension._imports)
         {
             if (string.Equals(imported.Model, Model, StringComparison.Ordinal)
@@ -191,19 +214,94 @@ public sealed class Registry
             }
         }
 
+        string? named = extension.ForeignIds().FirstOrDefault();
+        if (named is not null && !extension._imports.Any(imported =>
+                string.Equals(imported.Model, Model, StringComparison.Ordinal)
+                && string.Equals(imported.Edition, Edition, StringComparison.Ordinal)))
+        {
+            throw new EsjFormatException(null, "the extension " + extension.Model + " " + extension.Edition
+                + " places its terms under " + named + ", a term it does not define, and so names the model"
+                + " it builds on in its imports; it imports "
+                + (extension._imports.Count == 0
+                    ? "nothing"
+                    : string.Join(", ", extension._imports.Select(imported => imported.Model + " " + imported.Edition)))
+                + ", not " + Model + " " + Edition);
+        }
+
         List<Term> combined = new(_terms);
         foreach (Term term in extension._terms)
         {
             if (_byId.ContainsKey(term.Id))
             {
                 throw new EsjFormatException(null,
-                    "an extension does not redefine the core term " + term.Id);
+                    "an extension does not redefine the term " + term.Id + ", which this registry already defines");
             }
 
             combined.Add(term);
         }
 
         return new Registry(Model, Edition, Version, _imports, combined);
+    }
+
+    /// <summary>
+    /// Returns the identifiers this registry names and does not define: the parents and the
+    /// chains of its terms, and the terms its groups reuse, in the order they occur. For a core
+    /// registry there are none; for an extension they are the terms of the registry it builds on.
+    /// </summary>
+    private List<string> ForeignIds()
+    {
+        List<string> foreign = new();
+        HashSet<string> seen = new(StringComparer.Ordinal);
+        foreach (Term term in _terms)
+        {
+            IEnumerable<string> named = term.Path.Concat(term.ReusesTerms);
+            if (term.Parent is not null)
+            {
+                named = named.Prepend(term.Parent);
+            }
+
+            foreach (string id in named)
+            {
+                if (!_byId.ContainsKey(id) && seen.Add(id))
+                {
+                    foreign.Add(id);
+                }
+            }
+        }
+
+        return foreign;
+    }
+
+    /// <summary>
+    /// Refuses this registry as an extension unless every identifier it defines carries one
+    /// namespace, its own (specification, sections 5.6 and 10). An identifier without a namespace
+    /// belongs to a core model, and an extension never defines one, whether or not the core it is
+    /// combined with defines it too.
+    /// </summary>
+    private void CheckOwnNamespace()
+    {
+        string? namespaceOf = null;
+        foreach (Term term in _terms)
+        {
+            Match match = Namespaced.Match(term.Id);
+            if (!match.Success)
+            {
+                throw new EsjFormatException(null, "an extension registry defines identifiers of its own"
+                    + " namespace only, and " + term.Id + " carries none");
+            }
+
+            string found = match.Groups[1].Value;
+            if (namespaceOf is null)
+            {
+                namespaceOf = found;
+            }
+            else if (!string.Equals(namespaceOf, found, StringComparison.Ordinal))
+            {
+                throw new EsjFormatException(null, "an extension registry defines identifiers of its own"
+                    + " namespace only, and " + term.Id + " carries " + found + " where its other identifiers carry "
+                    + namespaceOf);
+            }
+        }
     }
 
     /// <summary>Tells whether this registry describes the edition a document names.</summary>
@@ -350,7 +448,20 @@ public sealed class Registry
             terms.Add(ReadTerm(term));
         }
 
-        return new Registry(model, edition, version, imports, terms);
+        Registry registry = new(model, edition, version, imports, terms);
+        string? foreign = registry.ForeignIds().FirstOrDefault();
+        if (foreign is not null && imports.Count == 0)
+        {
+            throw new EsjFormatException(null, "the registry names " + foreign
+                + ", which it does not define, and imports no registry that does");
+        }
+
+        if (imports.Count > 0)
+        {
+            registry.CheckOwnNamespace();
+        }
+
+        return registry;
     }
 
     private static Term ReadTerm(JsonElement json)

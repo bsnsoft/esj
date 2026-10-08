@@ -122,11 +122,17 @@ public sealed class ValidationResult
     public IReadOnlyList<string> Registries => _registries;
 
     /// <summary>
-    /// Composes this result with another, which is how a caller that ran the reader and the
-    /// structural validator reads one verdict off the two. A layer is evaluated where
-    /// either run evaluated it, and where neither did, the reason of higher precedence
-    /// survives (specification, section 9.5).
+    /// Composes this result with another result about the same document. A layer is evaluated
+    /// where either run evaluated it. Where neither did, the layer keeps one reason, chosen by the
+    /// rule of the specification, section 9.5 (see <see cref="Surviving"/>).
     /// </summary>
+    /// <remarks>
+    /// The result of a clean read names the model layers <c>NOT-REQUESTED</c>, since a reader
+    /// answers layer L1 alone; composed with a structural validator that was asked for them and
+    /// had no registry for the edition, they carry <c>EDITION-UNKNOWN</c>.
+    /// <see cref="Validator.Validate(byte[], IEnumerable{Model.Registry}?, Json.Limits?)"/> composes
+    /// the reader and the structural validator this way.
+    /// </remarks>
     /// <param name="other">the other result</param>
     /// <returns>the composed result</returns>
     public ValidationResult Merge(ValidationResult other)
@@ -140,11 +146,36 @@ public sealed class ValidationResult
             if (_notEvaluated.TryGetValue(layer, out NotEvaluatedReason mine)
                 && other._notEvaluated.TryGetValue(layer, out NotEvaluatedReason theirs))
             {
-                reasons[layer] = mine <= theirs ? mine : theirs;
+                reasons[layer] = Surviving(mine, theirs);
             }
         }
 
         return Of(together, reasons, _registries.Concat(other._registries));
+    }
+
+    /// <summary>
+    /// Returns the reason a layer keeps where two runs both did not evaluate it (specification,
+    /// section 9.5). A layer one run names <c>NOT-REQUESTED</c> keeps that reason, unless the
+    /// other run names <c>EDITION-UNKNOWN</c>: only a run asked for a model layer establishes that
+    /// reason, so the layer was asked for. <c>LIMIT</c> and <c>PRECEDING-LAYER-FAILED</c> do not
+    /// displace <c>NOT-REQUESTED</c>, because a run reports them for the layers after the one that
+    /// stopped whether or not anybody asked for those. Of the other three reasons the first in the
+    /// order <c>LIMIT</c>, <c>PRECEDING-LAYER-FAILED</c>, <c>EDITION-UNKNOWN</c> is kept.
+    /// </summary>
+    /// <param name="mine">the reason of one run</param>
+    /// <param name="theirs">the reason of the other</param>
+    /// <returns>the reason the composed result names</returns>
+    public static NotEvaluatedReason Surviving(NotEvaluatedReason mine, NotEvaluatedReason theirs)
+    {
+        if (mine == NotEvaluatedReason.NotRequested || theirs == NotEvaluatedReason.NotRequested)
+        {
+            NotEvaluatedReason other = mine == NotEvaluatedReason.NotRequested ? theirs : mine;
+            return other == NotEvaluatedReason.EditionUnknown
+                ? NotEvaluatedReason.EditionUnknown
+                : NotEvaluatedReason.NotRequested;
+        }
+
+        return mine <= theirs ? mine : theirs;
     }
 
     /// <inheritdoc />

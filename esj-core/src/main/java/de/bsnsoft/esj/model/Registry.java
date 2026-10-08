@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The term registry: the structural facts of a semantic model, loaded from a registry
@@ -82,6 +84,9 @@ public final class Registry {
 
     /** The one value the {@code transport} member of a registry file takes today. */
     private static final String TRANSPORT_NONE = "none";
+
+    /** An identifier that carries the namespace of an extension: {@code BT-DEX-001}. */
+    private static final Pattern NAMESPACED = Pattern.compile("(?:BT|BG)-([A-Z][A-Z0-9]*)-[0-9]+");
 
     private final String model;
     private final String edition;
@@ -276,9 +281,19 @@ public final class Registry {
      * file that reaches a message is truncated for the same reason a document's is
      * (specification, section 12.6).
      *
+     * <p>What can be decided of one file is decided here (specification, section 10): every
+     * term declares supplementary components a value can satisfy, no identifier is listed
+     * twice, and a registry that names a term it does not define — as the parent of one of
+     * its terms, in the chain of one, or in {@code reusesTerms} — is an extension and names
+     * in {@code imports} what it builds on. A registry that names something in
+     * {@code imports} is an extension, and every identifier it defines carries one
+     * namespace, its own. Whether it builds on a given core registry is decided where the
+     * two are combined, by {@link #withExtension(Registry)}.
+     *
      * @param in the registry file, encoded in UTF-8
      * @return the registry
-     * @throws EsjFormatException   if the stream does not hold a registry
+     * @throws EsjFormatException   if the stream does not hold a registry, or holds one that
+     *                              breaks a rule above
      * @throws UncheckedIOException if the stream cannot be read
      * @throws NullPointerException if {@code in} is {@code null}
      */
@@ -286,6 +301,11 @@ public final class Registry {
         Objects.requireNonNull(in, "in");
         try (JsonParser parser = factory().createParser(in)) {
             return read(parser);
+        } catch (IllegalArgumentException e) {
+            // A cardinality below zero or a path that does not end at its own term: facts
+            // no registry can state, refused like any other defect of the file.
+            throw new EsjFormatException("the registry states what no registry can: "
+                    + excerpt(String.valueOf(e.getMessage())), e);
         } catch (StreamConstraintsException e) {
             throw new EsjFormatException("the registry exceeds what this reader accepts: "
                     + excerpt(String.valueOf(e.getOriginalMessage())), e);
@@ -327,20 +347,33 @@ public final class Registry {
      * Returns a registry that knows the terms of this registry and of an extension.
      *
      * <p>An extension registry declares in its {@code imports} member which model it was
-     * written against, and with which edition of it. An import that names this registry's
-     * model with another edition is refused rather than combined: the extension's parents,
-     * its reused terms and its cardinalities were checked against a different list of
-     * terms, and an edition may renumber them (specification, sections 4.4 and 10).
+     * written against, and with which edition of it (specification, section 10). The
+     * combination checks that declaration against what the extension does, and refuses
+     * rather than combines where the two disagree, because the extension's parents, its
+     * reused terms and its cardinalities were checked against one list of terms and an
+     * edition may renumber them (sections 4.4 and 10):
+     *
+     * <ul>
+     *   <li>every identifier the extension defines carries one namespace, its own
+     *       ({@code BT-DEX-001}): an identifier without a namespace belongs to a core
+     *       model, and an extension that defines one is refused (sections 5.6 and 10);</li>
+     *   <li>an import that names this registry's model with another edition is refused;</li>
+     *   <li>an extension that names a term it does not define itself — as the parent of
+     *       one of its terms, in the chain of one, or in {@code reusesTerms} — names this
+     *       registry's model with this edition in its {@code imports}, and is refused
+     *       where it imports nothing or another model only;</li>
+     *   <li>no term of the extension has the identifier of a term of this registry, and
+     *       none occurs twice (section 11.1).</li>
+     * </ul>
      *
      * @param extension the registry of the extension
      * @return the combined registry, which keeps the model and edition of this one
-     * @throws EsjFormatException   if the extension redefines a term of this registry,
-     *                              which the specification, section 11.1 forbids, or if it
-     *                              imports this model with a different edition
+     * @throws EsjFormatException   if the extension is refused for one of the reasons above
      * @throws NullPointerException if {@code extension} is {@code null}
      */
     public Registry withExtension(Registry extension) {
         Objects.requireNonNull(extension, "extension");
+        extension.checkOwnNamespace();
         for (Import imported : extension.imports) {
             if (imported.model().equals(model) && !imported.edition().equals(edition)) {
                 throw new EsjFormatException(
@@ -350,11 +383,19 @@ public final class Registry {
                                 + excerpt(edition));
             }
         }
+        List<String> named = extension.namedTerms();
+        if (!named.isEmpty() && !extension.importsEdition(model, edition)) {
+            throw new EsjFormatException("the extension places its terms under "
+                    + excerpt(named.get(0)) + ", a term it does not define, and so names the"
+                    + " model it builds on in its imports; it imports "
+                    + (extension.imports.isEmpty() ? "nothing" : excerpt(extension.importsText()))
+                    + ", not " + excerpt(model + " " + edition));
+        }
         List<Term> combined = new ArrayList<>(terms);
         for (Term term : extension.terms) {
             if (byId.containsKey(term.id())) {
-                throw new EsjFormatException(
-                        "an extension does not redefine the core term " + excerpt(term.id()));
+                throw new EsjFormatException("an extension does not redefine the term "
+                        + excerpt(term.id()) + ", which this registry already defines");
             }
             combined.add(term);
         }
@@ -362,6 +403,99 @@ public final class Registry {
         // nothing about transport of its own: the declaration belongs to the file that
         // defines the terms, and a caller asks the extension registry that made it.
         return new Registry(model, edition, version, null, imports, combined);
+    }
+
+    /**
+     * Tells whether an extension registry was written against the edition this registry
+     * describes, as far as its {@code imports} member says: it names this registry's
+     * model with no other edition, and it names this model and edition wherever it places
+     * a term under one it does not define itself (specification, section 10).
+     *
+     * <p>This is the question a program that holds registries of several editions asks
+     * before it combines an extension with one of them. An extension it answers
+     * {@code false} for is refused by {@link #withExtension(Registry)}; one it answers
+     * {@code true} for may still be refused there for a defect of its own.
+     *
+     * @param extension the registry of the extension
+     * @return {@code true} if the extension's {@code imports} admit this registry
+     * @throws NullPointerException if {@code extension} is {@code null}
+     */
+    public boolean admits(Registry extension) {
+        Objects.requireNonNull(extension, "extension");
+        for (Import imported : extension.imports) {
+            if (imported.model().equals(model) && !imported.edition().equals(edition)) {
+                return false;
+            }
+        }
+        return extension.namedTerms().isEmpty() || extension.importsEdition(model, edition);
+    }
+
+    /**
+     * Refuses this registry as an extension unless every identifier it defines carries one
+     * namespace, its own (specification, sections 5.6 and 10). An identifier without a
+     * namespace belongs to a core model, and an extension never defines one, whether or not
+     * the core it is combined with defines it too.
+     */
+    private void checkOwnNamespace() {
+        String namespace = null;
+        for (Term term : terms) {
+            Matcher matcher = NAMESPACED.matcher(term.id());
+            if (!matcher.matches()) {
+                throw new EsjFormatException("an extension registry defines identifiers of its"
+                        + " own namespace only, and " + excerpt(term.id()) + " carries none");
+            }
+            if (namespace == null) {
+                namespace = matcher.group(1);
+            } else if (!namespace.equals(matcher.group(1))) {
+                throw new EsjFormatException("an extension registry defines identifiers of its"
+                        + " own namespace only, and " + excerpt(term.id()) + " carries "
+                        + excerpt(matcher.group(1)) + " where its other identifiers carry "
+                        + excerpt(namespace));
+            }
+        }
+    }
+
+    /**
+     * Returns the identifiers this registry names and does not define: the parents and
+     * the chains of its terms, and the terms its groups reuse, in the order they occur.
+     */
+    private List<String> namedTerms() {
+        LinkedHashMap<String, Boolean> named = new LinkedHashMap<>();
+        for (Term term : terms) {
+            term.parent().ifPresent(parent -> named.put(parent, Boolean.TRUE));
+            for (String id : term.path()) {
+                named.put(id, Boolean.TRUE);
+            }
+            for (String id : term.reusesTerms()) {
+                named.put(id, Boolean.TRUE);
+            }
+        }
+        List<String> foreign = new ArrayList<>();
+        for (String id : named.keySet()) {
+            if (!byId.containsKey(id)) {
+                foreign.add(id);
+            }
+        }
+        return foreign;
+    }
+
+    /** Tells whether the {@code imports} member names that model with that edition. */
+    private boolean importsEdition(String importedModel, String importedEdition) {
+        for (Import imported : imports) {
+            if (imported.model().equals(importedModel) && imported.edition().equals(importedEdition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Returns the {@code imports} member as a message writes it. */
+    private String importsText() {
+        List<String> names = new ArrayList<>();
+        for (Import imported : imports) {
+            names.add(imported.model() + " " + imported.edition());
+        }
+        return String.join(", ", names);
     }
 
     /**
@@ -710,7 +844,16 @@ public final class Registry {
         }
         List<Term> ordered = new ArrayList<>(terms);
         ordered.sort((left, right) -> Integer.compare(left.order(), right.order()));
-        return new Registry(model, edition, version, transport, imports, ordered);
+        Registry registry = new Registry(model, edition, version, transport, imports, ordered);
+        List<String> named = registry.namedTerms();
+        if (!named.isEmpty() && imports.isEmpty()) {
+            throw new EsjFormatException("the registry names " + excerpt(named.get(0))
+                    + ", which it does not define, and imports no registry that does");
+        }
+        if (!imports.isEmpty()) {
+            registry.checkOwnNamespace();
+        }
+        return registry;
     }
 
     private static List<Import> readImports(JsonParser parser) throws IOException {

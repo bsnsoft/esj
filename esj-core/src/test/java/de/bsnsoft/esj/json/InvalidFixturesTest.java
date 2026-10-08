@@ -59,6 +59,16 @@ class InvalidFixturesTest {
         table.put("duplicate-in-value-object", "ESJ-L1-DUPLICATE-MEMBER");
         table.put("duplicate-member", "ESJ-L1-DUPLICATE-MEMBER");
         table.put("duplicate-path-of-value-objects", "ESJ-L1-VALUE-SHAPE");
+        table.put("duplicate-envelope-member", "ESJ-L1-DUPLICATE-MEMBER");
+        table.put("duplicate-in-extensions", "ESJ-L1-DUPLICATE-MEMBER");
+        table.put("encoding-byte-order-mark", "ESJ-L1-ENCODING");
+        table.put("encoding-not-utf8", "ESJ-L1-ENCODING");
+        table.put("envelope-missing-values", "ESJ-L1-ENVELOPE-MEMBER");
+        table.put("envelope-wrong-version", "ESJ-L1-ENVELOPE-VALUE");
+        table.put("json-trailing-comma", "ESJ-L1-JSON");
+        table.put("json-utf16-without-bom", "ESJ-L1-JSON");
+        table.put("semantic-model-grammar", "ESJ-L1-ENVELOPE-VALUE");
+        table.put("source-unknown-member", "ESJ-L1-ENVELOPE-MEMBER");
         table.put("empty-extensions", "ESJ-L1-ENVELOPE-VALUE");
         table.put("empty-string-value", "ESJ-L1-EMPTY-STRING");
         table.put("empty-string-with-missing-term", "ESJ-L1-EMPTY-STRING");
@@ -103,6 +113,9 @@ class InvalidFixturesTest {
         table.put("decimal-trailing-zeros", "ESJ-L2-DECIMAL");
         table.put("index-gap", "ESJ-L3-INDEX-GAP");
         table.put("index-on-bt-1", "ESJ-L2-INDEX-FORBIDDEN");
+        table.put("index-required", "ESJ-L2-INDEX-REQUIRED");
+        table.put("missing-mandatory-group", "ESJ-L3-MISSING-GROUP");
+        table.put("parent-chain", "ESJ-L2-PARENT-CHAIN");
         table.put("missing-mandatory-term", "ESJ-L3-MISSING-TERM");
         table.put("scheme-on-text-value", "ESJ-L2-COMPONENT-NOT-ALLOWED");
         table.put("unknown-term", "ESJ-L2-UNKNOWN-TERM");

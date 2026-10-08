@@ -18,8 +18,10 @@
       "const": "0.1"
     },
     "semanticModel": {
-      "description": "Edition of the semantic model whose business terms the paths name. Layer L1 checks the edition grammar of SPEC.md section 4.4 and nothing more: whether a registry for the named edition is available is an L2 question, and a document of an edition no registry describes is well formed and can be read, canonicalized and hashed. ESJ 0.1 ships a registry for EN16931-1:2017+A1:2019/AC:2020; schema/esj-en16931-2017.schema.json is the schema that pins that one edition, because it carries that registry's terms.",
-      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*:[0-9]{4}(?:\\+A[0-9]+:[0-9]{4})?(?:/AC[0-9]*:[0-9]{4})?(?:\\+A[0-9]+:[0-9]{4}(?:/AC[0-9]*:[0-9]{4})?)*$"
+      "description": "Edition of the semantic model whose business terms the paths name. Layer L1 checks the edition grammar of SPEC.md section 4.4 and nothing more: whether a registry for the named edition is available is an L2 question, and a document of an edition no registry describes is well formed and can be read, canonicalized and hashed. The repository generates one schema per registry it ships, schema/esj-en16931-<edition key>.schema.json, and that schema pins its edition, because it carries that registry's terms. maxLength is the default string limit of SPEC.md section 12.2.",
+      "type": "string",
+      "maxLength": 1048576,
+      "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*:[0-9]{4}(?:\\+A[0-9]+:[0-9]{4})?(?:/AC[0-9]*:[0-9]{4})?(?:\\+A[0-9]+:[0-9]{4}(?:/AC[0-9]*:[0-9]{4})?)*(?![\\s\\S])"
     },
     "values": {
       "description": "The document content: one member per business term occurrence, keyed by its semantic path. maxProperties is the default reader limit of SPEC.md section 12.2; a reader configured with another limit is authoritative.",
@@ -41,13 +43,15 @@
       "additionalProperties": false,
       "properties": {
         "syntax": {
-          "description": "Syntax the document was derived from, for example UBL, CII or ESJ.",
-          "$ref": "#/$defs/content"
+          "description": "Syntax the document was derived from, for example UBL, CII or ESJ. Not line-ending normalized, so maxLength is the default string limit of SPEC.md section 12.2 as it stands.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1048576
         },
         "sha256": {
           "description": "SHA-256 of the bytes of the source document, lowercase hexadecimal.",
           "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
         }
       }
     }
@@ -60,7 +64,7 @@
       "type": "string",
       "minLength": 4,
       "maxLength": 256,
-      "pattern": "^(?:/BG-(?:[1-9][0-9]*|[A-Z][A-Z0-9]*-[0-9]+)(?:/(?:0|[1-9][0-9]*))?)*/BT-(?:[1-9][0-9]*|[A-Z][A-Z0-9]*-[0-9]+)(?:/(?:0|[1-9][0-9]*))?$"
+      "pattern": "^(?:/BG-(?:[1-9][0-9]*|[A-Z][A-Z0-9]*-[0-9]+)(?:/(?:0|[1-9][0-9]*))?)*/BT-(?:[1-9][0-9]*|[A-Z][A-Z0-9]*-[0-9]+)(?:/(?:0|[1-9][0-9]*))?(?![\\s\\S])"
     },
 
     "extensionOwner": {
@@ -68,21 +72,21 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 128,
-      "pattern": "^(?!B[TG]-)[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$"
+      "pattern": "^(?!B[TG]-)[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?(?![\\s\\S])"
     },
 
     "content": {
-      "description": "A JSON string with at least one character. Every string inside values is one of these; a business term that is present always carries content. maxLength is the default string limit of SPEC.md section 12.2, expressed here in code points because that is what JSON Schema counts; the reader counts UTF-8 bytes and is authoritative.",
+      "description": "A JSON string with at least one character. Every string inside values is one of these; a business term that is present always carries content. maxLength guards the default string limit of SPEC.md section 12.2. The limit counts UTF-8 bytes after CR LF has become LF (section 6.8), the schema counts code points of the string as written, and normalization can halve a string, so the guard is twice the limit: it refuses no string a reader running the defaults accepts. The reader is authoritative.",
       "type": "string",
       "minLength": 1,
-      "maxLength": 1048576
+      "maxLength": 2097152
     },
 
     "objectContent": {
-      "description": "The content member of a value object. The larger bound of SPEC.md section 12.2 applies here, because this schema cannot make one bound depend on whether mimeCode or filename stands beside the content. It is a guard rather than the limit: section 12.2 applies the larger bound only to an object that carries one of those two members, and the reader is authoritative.",
+      "description": "The content member of a value object. The larger bound of SPEC.md section 12.2 applies here, because this schema cannot make one bound depend on whether mimeCode or filename stands beside the content, and it is doubled for the reason given at content. It is a guard rather than the limit: section 12.2 applies the larger bound only to an object that carries one of those two members, and the reader is authoritative.",
       "type": "string",
       "minLength": 1,
-      "maxLength": 33554432
+      "maxLength": 67108864
     },
 
     "value": {

@@ -19,13 +19,22 @@ namespace BSNSoft.Esj.Fixtures;
 /// binding against the same material as the reference implementation.
 /// </summary>
 /// <remarks>
-/// Six requests exist — <c>editions</c>, <c>digest</c>, <c>canonicalize</c>, <c>validate</c>,
-/// and <c>rules</c> — and the runner's own documentation states what each answers. A document
-/// is named by a path relative to the repository root, or passed inline; an inline document is
-/// written back to bytes and read like any other, because layer L1 is decided by bytes. A
-/// <c>rules</c> request is answered with the pack this binding carries for the edition of the
-/// document, unless it names a pack
-/// of the rule language by its path in the repository.
+/// <para>Six requests exist — <c>editions</c>, <c>digest</c>, <c>canonicalize</c>,
+/// <c>validate</c>, <c>rules</c> and <c>registry</c> — and the runner's own documentation states
+/// what each answers. A document is named by a path relative to the repository root, or passed
+/// inline; an inline document is written back to bytes and read like any other, because layer L1
+/// is decided by bytes. A <c>rules</c> request is answered with the pack this binding carries for
+/// the edition of the document, unless it names a pack of the rule language by its path in the
+/// repository.</para>
+/// <para>A <c>validate</c> request may carry <c>limits</c>, an object of the bounds of the
+/// specification, section 12.2 under the names <see cref="Limits"/> gives them —
+/// <c>maxStringBytes</c>, <c>maxExtensionDepth</c> and so on — each replacing the default; the
+/// answer carries every finding with its path, code, subject and severity, the status, and every
+/// layer not evaluated with its reason. It may also carry <c>registries</c>, registry files of the
+/// repository read and combined as a <c>registry</c> request combines them, and is then validated
+/// with those instead of the registries this binding carries. A <c>registry</c> request names registry files, the
+/// first read on its own and every further one combined with it as an extension, and is answered
+/// with whether this binding accepts them.</para>
 /// </remarks>
 public sealed class Protocol
 {
@@ -59,8 +68,9 @@ public sealed class Protocol
             "editions" => Editions(),
             "digest" => Digest(Bytes(asked)),
             "canonicalize" => Canonicalize(Bytes(asked)),
-            "validate" => Validate(Bytes(asked)),
+            "validate" => Validate(Bytes(asked), LimitsOf(asked), RegistriesOf(asked)),
             "rules" => Rules(Bytes(asked), asked),
+            "registry" => RegistryAnswer(asked),
             _ => throw new ArgumentException("no request of this protocol is called " + operation, nameof(request)),
         };
     }
@@ -143,9 +153,9 @@ public sealed class Protocol
         return Write(writer => writer.WriteString("canonical", EsjWriter.Canonical().ToText(document)));
     }
 
-    private string Validate(byte[] bytes)
+    private string Validate(byte[] bytes, Limits limits, IReadOnlyList<Registry>? registries)
     {
-        ValidationResult result = Validator.Validate(bytes, _registries.Value);
+        ValidationResult result = Validator.Validate(bytes, registries ?? _registries.Value, limits);
         return Write(writer =>
         {
             writer.WriteStartArray("findings");
@@ -155,12 +165,140 @@ public sealed class Protocol
                 writer.WriteString("path", finding.Path.Text);
                 writer.WriteString("code", finding.Code.Code);
                 writer.WriteString("subject", finding.Subject);
+                writer.WriteString("severity", SeverityOf(finding.Severity));
                 writer.WriteEndObject();
             }
 
             writer.WriteEndArray();
             writer.WriteString("status", result.Status.ToString().ToUpperInvariant());
+            writer.WriteStartArray("notEvaluated");
+            foreach (KeyValuePair<ValidationLayer, NotEvaluatedReason> layer in result.NotEvaluated.OrderBy(entry => entry.Key))
+            {
+                writer.WriteStartObject();
+                writer.WriteString("layer", layer.Key.ToString());
+                writer.WriteString("reason", ReasonOf(layer.Value));
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
         });
+    }
+
+    /// <summary>Returns a severity as the protocol writes it: <c>error</c>, <c>warning</c> or <c>info</c>.</summary>
+    private static string SeverityOf(Severity severity) => severity switch
+    {
+        Severity.Error => "error",
+        Severity.Warning => "warning",
+        _ => "info",
+    };
+
+    /// <summary>Returns a reason as the specification, section 9.5 writes it.</summary>
+    private static string ReasonOf(NotEvaluatedReason reason) => reason switch
+    {
+        NotEvaluatedReason.Limit => "LIMIT",
+        NotEvaluatedReason.PrecedingLayerFailed => "PRECEDING-LAYER-FAILED",
+        NotEvaluatedReason.EditionUnknown => "EDITION-UNKNOWN",
+        _ => "NOT-REQUESTED",
+    };
+
+    /// <summary>
+    /// Returns the limits a request asks for: the defaults of the specification, section 12.2,
+    /// with every bound the request names replaced. A name this binding does not know, or a bound
+    /// <see cref="Limits"/> refuses, is an error of the request.
+    /// </summary>
+    private static Limits LimitsOf(JsonElement asked)
+    {
+        if (!asked.TryGetProperty("limits", out JsonElement named))
+        {
+            return Limits.Defaults;
+        }
+
+        Limits.Builder limits = Limits.Defaults.ToBuilder();
+        foreach (JsonProperty bound in named.EnumerateObject())
+        {
+            _ = bound.Name switch
+            {
+                "maxDocumentBytes" => limits.MaxDocumentBytes(bound.Value.GetInt64()),
+                "maxValues" => limits.MaxValues(bound.Value.GetInt32()),
+                "maxValueMembers" => limits.MaxValueMembers(bound.Value.GetInt32()),
+                "maxPathSegments" => limits.MaxPathSegments(bound.Value.GetInt32()),
+                "maxPathBytes" => limits.MaxPathBytes(bound.Value.GetInt32()),
+                "maxStringBytes" => limits.MaxStringBytes(bound.Value.GetInt64()),
+                "maxBinaryValueBytes" => limits.MaxBinaryValueBytes(bound.Value.GetInt64()),
+                "maxTotalBinaryBytes" => limits.MaxTotalBinaryBytes(bound.Value.GetInt64()),
+                "maxExtensionDepth" => limits.MaxExtensionDepth(bound.Value.GetInt32()),
+                "maxExtensionNodes" => limits.MaxExtensionNodes(bound.Value.GetInt32()),
+                _ => throw new ArgumentException("no limit of this binding is called " + bound.Name, nameof(asked)),
+            };
+        }
+
+        return limits.Build();
+    }
+
+    /// <summary>
+    /// Answers whether this binding accepts registry files: the first is read on its own, and
+    /// every further one is read and combined with what came before as an extension, so that the
+    /// rules the specification, section 10 holds a registry and a combination to are applied as a
+    /// validator would apply them. A file that cannot be read is an error of the request, not a
+    /// refusal.
+    /// </summary>
+    private string RegistryAnswer(JsonElement asked)
+    {
+        List<string> files = asked.GetProperty("files").EnumerateArray().Select(file => file.GetString()!).ToList();
+        if (files.Count == 0)
+        {
+            throw new ArgumentException("a registry request names at least one file", nameof(asked));
+        }
+
+        List<byte[]> contents = files.Select(file => File.ReadAllBytes(Path.Combine(_repository, file))).ToList();
+        try
+        {
+            Registry combined = Read(contents[0]);
+            foreach (byte[] extension in contents.Skip(1))
+            {
+                combined = combined.WithExtension(Read(extension));
+            }
+
+            return Write(writer => writer.WriteBoolean("accepted", true));
+        }
+        catch (Exception refused) when (refused is EsjException or JsonException or KeyNotFoundException
+            or InvalidOperationException or FormatException)
+        {
+            return Write(writer =>
+            {
+                writer.WriteBoolean("accepted", false);
+                writer.WriteString("error", refused.Message);
+            });
+        }
+    }
+
+    /// <summary>
+    /// Returns the registries a <c>validate</c> request names, read and combined as a
+    /// <c>registry</c> request combines them, or <c>null</c> where it names none.
+    /// </summary>
+    private IReadOnlyList<Registry>? RegistriesOf(JsonElement asked)
+    {
+        if (!asked.TryGetProperty("registries", out JsonElement named))
+        {
+            return null;
+        }
+
+        Registry? combined = null;
+        foreach (JsonElement file in named.EnumerateArray())
+        {
+            Registry read = Read(File.ReadAllBytes(Path.Combine(_repository, file.GetString()!)));
+            combined = combined is null ? read : combined.WithExtension(read);
+        }
+
+        return combined is null
+            ? throw new ArgumentException("a validate request names its registries as one or more files", nameof(asked))
+            : new[] { combined };
+    }
+
+    private static Registry Read(byte[] file)
+    {
+        using MemoryStream input = new(file);
+        return Registry.Load(input);
     }
 
     private string Rules(byte[] bytes, JsonElement asked)

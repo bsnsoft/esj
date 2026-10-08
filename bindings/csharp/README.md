@@ -58,6 +58,9 @@ digits; no value of a document passes through binary floating point at any point
 section 9.6 in an `EsjFormatException`; `ReadWithFindings` reports instead and returns what it
 could build. A limit of section 12.2 is an `EsjLimitException` and a finding with the code
 `ESJ-L1-LIMIT`, never a verdict on the document (`Limits.Defaults.ToBuilder()` configures them).
+Both exceptions carry the `Code`, `Path` and `Subject` of the finding; the subject is the member
+access of section 9.5 — [`../../docs/bindings-csharp.md`](../../docs/bindings-csharp.md#the-api)
+lists its forms.
 
 ## Business rules
 

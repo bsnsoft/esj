@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BSNSoft.Esj.Json;
 using BSNSoft.Esj.Model;
 
@@ -40,13 +41,15 @@ public static class Validator
     {
         ArgumentNullException.ThrowIfNull(bytes);
         ReadResult read = EsjReader.WithLimits(limits ?? Limits.Defaults).ReadWithFindings(bytes);
-        ValidationResult format = read.Validation();
         if (!read.IsWellFormed)
         {
-            return format;
+            return read.Validation();
         }
 
-        return format.Merge(Validate(read.Document!, registries));
+        // The reader evaluated layer L1 and names the model layers NOT-REQUESTED; the structural
+        // validator evaluated them or names why not, and composing the two keeps that reason
+        // (specification, section 9.5).
+        return read.Validation().Merge(Validate(read.Document!, registries));
     }
 
     /// <summary>

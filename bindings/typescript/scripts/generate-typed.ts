@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import type { RegistryFile, RegistryTerm } from '../src/registry.ts';
 import { Registry, isRepeatable } from '../src/registry.ts';
+import { instanceStem } from './naming.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const data = path.resolve(here, '..', 'data');
@@ -48,22 +49,11 @@ function upperCamel(stem: string): string {
 }
 
 /**
- * Returns the singular of a plural stem, which the registry writes for a repeatable term or
- * group because the stem names the list of the occurrences.
+ * Returns the type name of one instance of a business group, from the singular of a
+ * repeatable group's plural slug (`naming.ts`); a slug that is no plural is refused there.
  */
-function singular(stem: string): string | null {
-  if (stem.length > 3 && stem.endsWith('ies')) {
-    return stem.slice(0, stem.length - 3) + 'y';
-  }
-  if (stem.length > 1 && stem.endsWith('s')) {
-    return stem.slice(0, stem.length - 1);
-  }
-  return null;
-}
-
 function baseName(term: RegistryTerm): string {
-  const stem = isRepeatable(term) ? singular(term.slug) ?? term.slug : term.slug;
-  return upperCamel(stem);
+  return upperCamel(instanceStem(term));
 }
 
 function ancestorsOf(registry: Registry, id: string): RegistryTerm[] {

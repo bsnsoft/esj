@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -104,6 +106,57 @@ class NamingTest {
         assertEquals("Values.UNIT_PRICE_AMOUNT", Naming.valueReader(SemanticType.UNIT_PRICE_AMOUNT));
         assertEquals("Values.BINARY_OBJECT", Naming.valueReader(SemanticType.BINARY_OBJECT));
     }
+
+    /**
+     * A slug is language-neutral, and the reserved words of Java are this generator's
+     * business (specification, section 10): a slug Java reserves, or one that would hide a
+     * member every view carries, is escaped by a trailing underscore rather than refused,
+     * and so is the singular of a repeatable group's slug. A slug never carries an
+     * underscore, so the escaped name is the name of no other member.
+     */
+    @Test
+    void aSlugJavaReservesIsEscapedRatherThanRefused() {
+        Registry registry = Registry.en16931().withExtension(Registry.load(
+                new ByteArrayInputStream(RESERVED_SLUGS.getBytes(StandardCharsets.UTF_8))));
+        Naming naming = new Naming(registry);
+
+        assertEquals("default_", naming.memberName(registry.term("BT-KW-001").orElseThrow()));
+        assertEquals("returns", naming.memberName(registry.term("BG-KW-001").orElseThrow()));
+        assertEquals("return_", naming.singularMemberName(registry.term("BG-KW-001").orElseThrow()));
+        assertEquals("path_", naming.memberName(registry.term("BT-KW-002").orElseThrow()));
+        assertEquals("Return", naming.typeName("BG-KW-001"),
+                "a type name is upper camel case and never a keyword");
+        assertEquals("class_", Naming.escaped("class"));
+        assertEquals("true_", Naming.escaped("true"));
+        assertEquals("toString_", Naming.escaped("toString"));
+        assertEquals("invoiceNumber", Naming.escaped("invoiceNumber"));
+    }
+
+    /** An extension whose slugs are words Java reserves. */
+    private static final String RESERVED_SLUGS = """
+            {
+              "model": "Keyword-Extension",
+              "edition": "Keyword 0.1",
+              "imports": [{"model": "EN16931-1", "edition": "EN 16931-1:2017+A1:2019/AC:2020"}],
+              "terms": [
+                {
+                  "id": "BT-KW-001", "kind": "BT", "name": "Default", "slug": "default",
+                  "parent": null, "path": ["BT-KW-001"], "min": 0, "max": 1,
+                  "datatype": "Text", "components": [], "order": 1, "description": "A term."
+                },
+                {
+                  "id": "BG-KW-001", "kind": "BG", "name": "Returns", "slug": "returns",
+                  "parent": null, "path": ["BG-KW-001"], "min": 0, "max": "n",
+                  "datatype": null, "components": [], "order": 2, "description": "A group."
+                },
+                {
+                  "id": "BT-KW-002", "kind": "BT", "name": "Path", "slug": "path",
+                  "parent": "BG-KW-001", "path": ["BG-KW-001", "BT-KW-002"], "min": 1, "max": 1,
+                  "datatype": "Text", "components": [], "order": 3, "description": "A term."
+                }
+              ]
+            }
+            """;
 
     @Test
     void aMemberNameIsTheSlugOfTheRegistry() {

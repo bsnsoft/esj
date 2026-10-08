@@ -285,6 +285,24 @@ class ValidateCommandTest {
         assertTrue(json.text().contains("\"engine\": \"schematron\""), json.text());
     }
 
+    /**
+     * The subject of a finding is a string in the JSON output, and the empty string where the
+     * finding names none, as the specification, section 9.5 writes a finding: a program that
+     * reads the field does not have to tell {@code null} from {@code ""}.
+     */
+    @Test
+    void theSubjectOfAFindingIsAlwaysAStringInTheJsonOutput() {
+        String file = Fixtures.write(directory, "broken.esj.json",
+                "{\"format\":tru}".getBytes(StandardCharsets.UTF_8));
+
+        Cli.Run json = Cli.run("validate", "--output", "json", file);
+
+        assertEquals(ExitCode.VALIDATION, json.exitCode(), json.err());
+        assertTrue(json.text().contains("\"code\": \"ESJ-L1-JSON\""), json.text());
+        assertTrue(json.text().contains("\"subject\": \"\""), json.text());
+        assertFalse(json.text().contains("\"subject\": null"), json.text());
+    }
+
     @Test
     void stopsAfterTheModelLayerWhenAskedFor() {
         Cli.Run run = Cli.run("validate", "--level", "l2", "--rules", "none",

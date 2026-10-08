@@ -368,15 +368,18 @@ class XrMappingTest {
 
     /**
      * A value that is too large by itself is left out by itself, and the rest of the
-     * document arrives.
+     * document arrives. The bound is 64 bytes, the length of the digest in
+     * {@code source.sha256}: the string bound covers the strings of the envelope as well
+     * (specification, section 12.2), so a reader running a shorter one reads no imported
+     * document back.
      */
     @Test
     void leavesOutAValueLongerThanTheReaderAdmits() {
-        Limits shortStrings = Limits.defaults().withMaxStringBytes(32);
+        Limits shortStrings = Limits.defaults().withMaxStringBytes(64);
         XrImporter narrow = new XrImporter(
                 Registry.en16931WithXrechnung(), XrImporter.defaultMaxInputBytes(), shortStrings);
 
-        ImportResult result = narrow.readUbl(notes("x".repeat(64), "short"));
+        ImportResult result = narrow.readUbl(notes("x".repeat(128), "short"));
 
         assertEquals(List.of("/BG-1/0/BT-22"), notePaths(result.document()));
         assertEquals(SemanticValue.of("short"),

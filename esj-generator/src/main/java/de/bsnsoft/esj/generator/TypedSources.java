@@ -977,11 +977,11 @@ final class TypedSources {
      * two are separate terms that are nevertheless always written together.
      */
     private Optional<Term> unitCodeSibling(Group group, Term child) {
-        String expected = naming.memberName(child) + "UnitCode";
+        String expected = child.slug() + "UnitCode";
         for (Term sibling : group.children()) {
             if (!sibling.isGroup()
                     && sibling.datatype().orElse(null) == SemanticType.CODE
-                    && naming.memberName(sibling).equals(expected)
+                    && sibling.slug().equals(expected)
                     && !sibling.cardinality().isRepeatable()) {
                 return Optional.of(sibling);
             }

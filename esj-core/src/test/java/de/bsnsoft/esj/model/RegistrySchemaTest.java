@@ -2,6 +2,7 @@ package de.bsnsoft.esj.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.Schema;
@@ -123,6 +124,38 @@ class RegistrySchemaTest {
 
         assertFalse(schema.validate(broken, InputFormat.JSON).isEmpty(),
                 "the only value of transport is none");
+    }
+
+    /**
+     * An extension registry whose terms hang under a core group names the core it builds on
+     * in {@code imports} (specification, section 10). The B2C registry without its imports,
+     * and without the transport declaration that asks for them on its own account, is such
+     * a registry: its line terms hang under BG-25.
+     */
+    @Test
+    void anExtensionUnderACoreGroupWithoutImportsFailsTheSchema() {
+        String broken = text("/model/b2c/0.1.json")
+                .replaceFirst("\n  \"imports\": \\[[^\\]]*\\],", "")
+                .replaceFirst("\n  \"transport\": \"none\",", "")
+                .replaceFirst("\n  \"transportNote\": \"[^\"]*\",", "");
+        assertFalse(broken.contains("\"imports\"") || broken.contains("\"transport\""),
+                "the three members are gone");
+        assertFalse(schema.validate(broken, InputFormat.JSON).isEmpty(),
+                "an extension under a core group names the core it builds on");
+    }
+
+    /**
+     * A registry that names in {@code imports} what it builds on is an extension and defines
+     * identifiers of its own namespace only (specification, sections 5.6 and 10). The B2C
+     * registry with its first term renamed to an identifier without a namespace is not one.
+     */
+    @Test
+    void anExtensionThatDefinesAnIdentifierWithoutANamespaceFailsTheSchema() {
+        String broken = text("/model/b2c/0.1.json").replace("BT-B2C-001", "BT-999");
+        assertTrue(broken.contains("\"id\": \"BT-999\""), "the identifier is renamed");
+
+        assertFalse(schema.validate(broken, InputFormat.JSON).isEmpty(),
+                "an extension defines identifiers of its own namespace only");
     }
 
     /** A core registry is what a syntax binds, and states nothing about transport. */

@@ -1,4 +1,5 @@
 import type { JsonObject } from './json/tree.ts';
+import { normalizeLineEndings } from './grammars.ts';
 import { comparePathText } from './paths.ts';
 
 /**
@@ -90,6 +91,12 @@ export interface SemanticDocument {
  * report reads well in, and the order that makes the values of one business group instance
  * one range of the map rather than a scan of the document.
  *
+ * Every string of a value — the content and each component — has its line endings
+ * normalized as the reader normalizes them (section 6.8): a value built here and the same
+ * value read from a document are one value, with one canonical form and one digest. The
+ * strings of `source` and of `extensions` are kept as they are given, because section 6.8
+ * normalizes neither.
+ *
  * @param parts the envelope and the values
  * @return the document
  */
@@ -102,7 +109,10 @@ export function documentOf(parts: {
   source?: Source;
 }): SemanticDocument {
   const values = new Map<string, SemanticValue>(
-    [...parts.values].sort((left, right) => comparePathText(left[0], right[0])));
+    [...parts.values]
+      .map(([path, value]): [string, SemanticValue] => [path, normalizedValue(value)])
+      .sort((left, right) => comparePathText(left[0], right[0])));
+  ORDERED.add(values);
   const document: SemanticDocument = {
     format: parts.format ?? FORMAT,
     version: parts.version ?? VERSION,
@@ -112,4 +122,36 @@ export function documentOf(parts: {
     ...(parts.source === undefined ? {} : { source: parts.source }),
   };
   return document;
+}
+
+/**
+ * The value maps `documentOf` built: in canonical path order and normalized, so that a writer
+ * takes them as they are rather than checking them again.
+ */
+const ORDERED = new WeakSet<ReadonlyMap<string, SemanticValue>>();
+
+/**
+ * Tells whether a map of values is one `documentOf` built, and so is in canonical path order
+ * with its line endings normalized. A map a caller assembled is not, whatever it holds.
+ */
+export function isOrdered(values: ReadonlyMap<string, SemanticValue>): boolean {
+  return ORDERED.has(values);
+}
+
+/**
+ * Returns a value with the line endings of every string it carries normalized (section 6.8),
+ * or the value itself where none carries a carriage return.
+ */
+export function normalizedValue(value: SemanticValue): SemanticValue {
+  let changed = false;
+  const normalized = {} as { -readonly [K in ValueMember]?: string };
+  for (const name of VALUE_MEMBERS) {
+    const member = value[name];
+    if (member !== undefined) {
+      const text = normalizeLineEndings(member);
+      changed ||= text !== member;
+      normalized[name] = text;
+    }
+  }
+  return changed ? normalized as SemanticValue : value;
 }

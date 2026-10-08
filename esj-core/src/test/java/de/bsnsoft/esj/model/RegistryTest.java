@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /** Checks the registry: what it reads, what it answers and how it combines with an extension. */
@@ -402,6 +403,184 @@ class RegistryTest {
         Registry broken = load(redefinition);
 
         assertThrows(EsjFormatException.class, () -> Registry.en16931().withExtension(broken));
+    }
+
+    /**
+     * A registry that names a term it does not define — as a parent, in a chain or among
+     * the terms a group reuses — is an extension, and says in {@code imports} what it builds
+     * on; one that imports nothing is refused when it is read (specification, section 10).
+     */
+    @ParameterizedTest
+    @MethodSource("namingsOfACoreTerm")
+    void aRegistryThatNamesTermsItDoesNotDefineAndImportsNothingIsRefused(String placing) {
+        EsjFormatException refused = assertThrows(EsjFormatException.class,
+                () -> load(extension("", placing)));
+
+        assertTrue(refused.getMessage().contains("imports no registry that does"),
+                refused.getMessage());
+    }
+
+    static List<String> namingsOfACoreTerm() {
+        return List.of(
+                "\"parent\": \"BG-25\", \"path\": [\"BG-25\", \"BT-ZZZ-001\"]",
+                "\"parent\": null, \"path\": [\"BT-ZZZ-001\"], \"reusesTerms\": [\"BT-131\"]");
+    }
+
+    /**
+     * An extension that places its terms under the core names that model with that edition
+     * in its {@code imports}, and is refused rather than combined where it imports another
+     * model only: its parents were checked against one list of terms, and nothing says this
+     * registry's is that list (specification, section 10).
+     */
+    @Test
+    void anExtensionThatPlacesTermsUnderTheCoreImportsIt() {
+        Registry extension = load(extension(
+                "\"imports\": [{\"model\": \"UBL\", \"edition\": \"2.1\"}],", """
+                "parent": "BG-25", "path": ["BG-25", "BT-ZZZ-001"]"""));
+
+        EsjFormatException refused = assertThrows(EsjFormatException.class,
+                () -> Registry.en16931().withExtension(extension));
+
+        assertTrue(refused.getMessage().contains("places its terms under BG-25"),
+                refused.getMessage());
+        assertTrue(refused.getMessage().contains("it imports UBL 2.1"), refused.getMessage());
+        assertFalse(Registry.en16931().admits(extension));
+    }
+
+    /**
+     * No identifier has two definitions in a combination: an extension redefines neither a
+     * term of the core nor one an extension combined before it defines (section 11.1).
+     */
+    @Test
+    void anExtensionDoesNotRedefineATermOfAnotherExtension() {
+        Registry first = load(extension(CORE_2017, """
+                "parent": "BG-25", "path": ["BG-25", "BT-ZZZ-001"]"""));
+        Registry second = load(extension(CORE_2017, """
+                "parent": null, "path": ["BT-ZZZ-001"]"""));
+        Registry combined = Registry.en16931().withExtension(first);
+
+        EsjFormatException refused = assertThrows(EsjFormatException.class,
+                () -> combined.withExtension(second));
+
+        assertTrue(refused.getMessage().contains("does not redefine the term BT-ZZZ-001"),
+                refused.getMessage());
+    }
+
+    /**
+     * A fact no registry can state is a defect of the file and is refused like any other,
+     * with the exception a caller of {@link Registry#load} is told to expect.
+     */
+    @Test
+    void aFactNoRegistryCanStateIsRefusedAsADefectOfTheFile() {
+        assertThrows(EsjFormatException.class, () -> load(extension("", """
+                "parent": null, "path": ["BT-ZZZ-002"]""")));
+        assertThrows(EsjFormatException.class, () -> load(extension("", """
+                "parent": null, "path": ["BT-ZZZ-001"]""").replace("\"min\": 0, \"max\": 1",
+                "\"min\": 2, \"max\": 1")));
+    }
+
+    /**
+     * An extension that names no term it does not define builds on nothing, so there is
+     * nothing its imports must name; one that imports the core and places its terms under
+     * it is combined.
+     */
+    @Test
+    void anExtensionIsCombinedWhereItsImportsAgreeWithWhatItDoes() {
+        Registry standalone = load(extension("", """
+                "parent": null, "path": ["BT-ZZZ-001"]"""));
+        Registry placed = load(extension(CORE_2017, """
+                "parent": "BG-25", "path": ["BG-25", "BT-ZZZ-001"]"""));
+
+        assertTrue(Registry.en16931().admits(standalone));
+        assertEquals(List.of(List.of("BT-ZZZ-001")),
+                Registry.en16931().withExtension(standalone).chains("BT-ZZZ-001"));
+        assertTrue(Registry.en16931().admits(placed));
+        assertEquals(List.of(List.of("BG-25", "BT-ZZZ-001")),
+                Registry.en16931().withExtension(placed).chains("BT-ZZZ-001"));
+    }
+
+    /**
+     * An extension registry defines identifiers of its own namespace only (specification,
+     * sections 5.6 and 10). An identifier without a namespace belongs to a core model, so an
+     * extension that defines one is refused — when it is read, where it imports a core, and
+     * where it is combined, whether or not the core defines that identifier — and so is one
+     * whose identifiers carry two namespaces.
+     */
+    @Test
+    void anExtensionDefinesIdentifiersOfItsOwnNamespaceOnly() {
+        EsjFormatException read = assertThrows(EsjFormatException.class, () -> load(extension(
+                CORE_2017, """
+                "parent": "BG-25", "path": ["BG-25", "BT-999"]""").replace("BT-ZZZ-001", "BT-999")));
+        assertTrue(read.getMessage().contains("own namespace only, and BT-999 carries none"),
+                read.getMessage());
+
+        Registry standalone = load(extension("", """
+                "parent": null, "path": ["BT-999"]""").replace("BT-ZZZ-001", "BT-999"));
+        EsjFormatException combined = assertThrows(EsjFormatException.class,
+                () -> Registry.en16931().withExtension(standalone));
+        assertTrue(combined.getMessage().contains("BT-999 carries none"), combined.getMessage());
+
+        String two = extension(CORE_2017, """
+                "parent": "BG-25", "path": ["BG-25", "BT-ZZZ-001"]""").replace("\"terms\": [",
+                "\"terms\": [{\"id\": \"BT-YYY-001\", \"kind\": \"BT\", \"name\": \"B\","
+                        + " \"slug\": \"b\", \"parent\": \"BG-25\","
+                        + " \"path\": [\"BG-25\", \"BT-YYY-001\"], \"min\": 0, \"max\": 1,"
+                        + " \"datatype\": \"Text\", \"components\": [], \"order\": 2,"
+                        + " \"description\": \"B.\"},");
+        EsjFormatException twoNamespaces = assertThrows(EsjFormatException.class,
+                () -> load(two));
+        assertTrue(twoNamespaces.getMessage().contains("BT-YYY-001 carries YYY"),
+                twoNamespaces.getMessage());
+    }
+
+    /** A shipped extension is admitted by the edition it imports and by no other. */
+    @Test
+    void aShippedExtensionIsAdmittedByTheEditionItImportsAlone() {
+        for (Registry extension : List.of(Registry.xrechnungExtension(), Registry.b2cExtension())) {
+            for (String key : Registry.editionKeys()) {
+                Registry core = Registry.forEdition(key);
+                assertEquals(core.edition().equals(extension.imports().get(0).edition()),
+                        core.admits(extension), key);
+            }
+        }
+    }
+
+    /** An identifier occurs once in a registry file. */
+    @Test
+    void anIdentifierListedTwiceIsRefused() {
+        String once = """
+                {
+                  "id": "BT-ZZZ-001", "kind": "BT", "name": "A term", "slug": "aTerm",
+                  "parent": null, "path": ["BT-ZZZ-001"], "min": 0, "max": 1,
+                  "datatype": "Text", "components": [], "order": 1, "description": "A term."
+                }""";
+
+        EsjFormatException refused = assertThrows(EsjFormatException.class, () -> load("""
+                {"model": "Twice", "edition": "Twice 0.1", "terms": [%s, %s]}
+                """.formatted(once, once.replace("\"order\": 1", "\"order\": 2"))));
+        assertTrue(refused.getMessage().contains("BT-ZZZ-001 twice"), refused.getMessage());
+    }
+
+    /** The {@code imports} member that names the 2017 edition of the core model. */
+    private static final String CORE_2017 = """
+            "imports": [{"model": "EN16931-1", "edition": "EN 16931-1:2017+A1:2019/AC:2020"}],""";
+
+    /** Returns an extension registry of one text term, with the imports and the placing given. */
+    private static String extension(String imports, String placing) {
+        return """
+                {
+                  "model": "ZZZ-Extension",
+                  "edition": "ZZZ 0.1",
+                  %s
+                  "terms": [
+                    {
+                      "id": "BT-ZZZ-001", "kind": "BT", "name": "A term", "slug": "aTerm",
+                      %s, "min": 0, "max": 1,
+                      "datatype": "Text", "components": [], "order": 1, "description": "A term."
+                    }
+                  ]
+                }
+                """.formatted(imports, placing);
     }
 
     @Test

@@ -1,0 +1,26 @@
+{
+  "format": "EN16931-Semantic-JSON",
+  "version": "0.1",
+  "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+  "values": {
+    "/BG-25/18446744073709551616/BT-129": "index 2^64",
+    "/BG-25/18446744073709551615/BT-129": "index 2^64 - 1",
+    "/BG-25/10/BT-129": "ten",
+    "/BG-25/9/BT-129": "nine",
+    "/BG-25/0/BT-129": "zero",
+    "/BG-25/BT-129": "a term where an index could stand",
+    "/BG-25/0/BG-29/BT-146": "a group after a term",
+    "/BT-99999999999999999999": "twenty digits",
+    "/BT-A-10": "namespace A, ten",
+    "/BT-A-010": "namespace A, ten with a leading zero",
+    "/BT-A-2": "namespace A, two",
+    "/BT-ZZZ-1": "namespace ZZZ",
+    "/BT-DEX-001": "namespace DEX",
+    "/BT-AB-1": "namespace AB",
+    "/BT-1/0": "a term with an index",
+    "/BT-1": "the same term without one",
+    "/BG-DEX-09/0/BT-DEX-001": "a group of a namespace",
+    "/BG-4/BT-27": "a core group",
+    "/BT-2": "two"
+  }
+}

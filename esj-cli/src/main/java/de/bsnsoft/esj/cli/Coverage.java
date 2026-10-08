@@ -330,6 +330,17 @@ record Coverage(List<Row> rows) {
         EXTENSION_REGISTRY_MISSING("extension-registry-missing"),
 
         /**
+         * The document carries a path of an extension this run loads, and the run left the
+         * extension out of the registry the document is measured against, because the
+         * extension imports another edition than the one the document names; the path
+         * was not measured. The registry is not missing, so {@code --extension} cannot
+         * close the gap: the extension's parents and cardinalities belong to another list
+         * of terms (specification, section 10), and {@code esj upgrade} or a registry of
+         * the extension written against this edition can.
+         */
+        EXTENSION_FOR_ANOTHER_EDITION("extension-for-another-edition"),
+
+        /**
          * The writer had no place in the target syntax for something the document states,
          * so the XML the official artefacts would have judged is not the document that was
          * handed over. It is a property of the syntax binding and not a defect of the

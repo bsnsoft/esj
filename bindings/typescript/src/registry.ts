@@ -100,6 +100,107 @@ export function semanticModelOf(edition: string): string {
   return edition.split(' ').join('');
 }
 
+/**
+ * What a registry is refused with when it is read or combined: a registry no document can be
+ * measured against is a defect of the registry and not of any invoice, so it is refused where
+ * it is given rather than where a document arrives (section 10).
+ */
+export class RegistryError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RegistryError';
+  }
+}
+
+/** The components a value of each semantic data type may carry (sections 6.6 and 6.7). */
+const COMPONENT_ROLES: Readonly<Record<string, readonly ComponentRole[]>> = {
+  Identifier: ['scheme', 'schemeVersion'],
+  BinaryObject: ['mimeCode', 'filename'],
+};
+
+/**
+ * Checks the components a term declares against the rules of section 10, which follow from
+ * section 6 and are checked when a registry is read, because a term no value can satisfy is a
+ * defect of the registry: a component appears only where the semantic data type has it and
+ * only once; a `BinaryObject` carries exactly `mimeCode` and `filename`, both mandatory;
+ * `schemeVersion` is declared only beside `scheme`, and mandatory only beside a `scheme` that
+ * is mandatory too.
+ */
+function checkComponents(term: RegistryTerm): void {
+  const components = term.components;
+  const roles = new Set<ComponentRole>();
+  for (const component of components) {
+    if (roles.has(component.role)) {
+      throw new RegistryError(term.id + ' lists the component ' + component.role + ' twice');
+    }
+    roles.add(component.role);
+  }
+  const mandatory = (role: ComponentRole) =>
+    components.some((component) => component.role === role && component.min >= 1);
+  if (term.datatype === 'BinaryObject') {
+    if (roles.size !== 2 || !roles.has('mimeCode') || !roles.has('filename')) {
+      throw new RegistryError('the Binary Object ' + term.id
+        + ' carries the components mimeCode and filename');
+    }
+    for (const component of components) {
+      if (component.min < 1) {
+        throw new RegistryError('the component ' + component.role + ' of the Binary Object '
+          + term.id + ' is mandatory');
+      }
+    }
+    return;
+  }
+  if (components.length === 0) {
+    return;
+  }
+  if (term.datatype === null || term.datatype === undefined) {
+    throw new RegistryError(term.id + ' carries supplementary components but no semantic data'
+      + ' type');
+  }
+  const allowed = COMPONENT_ROLES[term.datatype] ?? [];
+  for (const role of roles) {
+    if (!allowed.includes(role)) {
+      throw new RegistryError('the semantic data type ' + term.datatype + ' of ' + term.id
+        + ' has no component ' + role);
+    }
+  }
+  if (roles.has('schemeVersion') && !roles.has('scheme')) {
+    throw new RegistryError(term.id + ' carries a scheme version without a scheme');
+  }
+  if (mandatory('schemeVersion') && !mandatory('scheme')) {
+    throw new RegistryError(term.id + ' declares its scheme version mandatory and its scheme'
+      + ' optional, and no value can satisfy both');
+  }
+}
+
+/**
+ * Checks that a registry file has the members a registry is read by, so that a file of another
+ * shape is refused as one rather than failing somewhere later.
+ */
+function checkShape(file: RegistryFile): void {
+  const text = (value: unknown) => typeof value === 'string' && value !== '';
+  if (typeof file !== 'object' || file === null || !text(file.model) || !text(file.edition)
+    || !Array.isArray(file.terms)) {
+    throw new RegistryError('a registry carries model, edition and terms');
+  }
+  if (file.imports !== undefined && (!Array.isArray(file.imports) || file.imports.some(
+    (entry) => typeof entry !== 'object' || entry === null || !text(entry.model)
+      || !text(entry.edition)))) {
+    throw new RegistryError('imports is a list of imports, each with model and edition');
+  }
+  for (const term of file.terms) {
+    if (typeof term !== 'object' || term === null || !text(term.id)
+      || (term.kind !== 'BT' && term.kind !== 'BG') || !Array.isArray(term.path)
+      || term.path[term.path.length - 1] !== term.id
+      || (term.parent !== null && typeof term.parent !== 'string')
+      || typeof term.min !== 'number' || (typeof term.max !== 'number' && term.max !== 'n')
+      || !Array.isArray(term.components)) {
+      throw new RegistryError('the term ' + (typeof term?.id === 'string' ? term.id : 'of index '
+        + file.terms.indexOf(term)) + ' is not written as section 10 writes a term');
+    }
+  }
+}
+
 /** One registry file, read. */
 export class Registry {
   /** The model the registry describes, for example `EN16931-1`. */
@@ -115,15 +216,58 @@ export class Registry {
   readonly imports: readonly RegistryImport[];
 
   private readonly byId = new Map<string, RegistryTerm>();
+  private readonly foreign: readonly string[];
 
+  /**
+   * Reads a registry file and checks what section 10 has checked when a registry is read: no
+   * identifier is listed twice, every term declares components a value can satisfy, a
+   * registry that names a parent or a reused term it does not define itself — an extension —
+   * says in `imports` what it builds on, and a registry that imports another defines
+   * identifiers of its own namespace only.
+   *
+   * @throws RegistryError where the file breaks one of those rules
+   */
   constructor(file: RegistryFile) {
+    checkShape(file);
     this.model = file.model;
     this.edition = file.edition;
     this.semanticModel = semanticModelOf(file.edition);
     this.imports = file.imports ?? [];
     for (const term of file.terms) {
+      if (this.byId.has(term.id)) {
+        throw new RegistryError('the registry ' + file.edition + ' lists ' + term.id + ' twice');
+      }
+      checkComponents(term);
       this.byId.set(term.id, term);
     }
+    const foreign = new Set<string>();
+    for (const term of file.terms) {
+      const named = [...term.path.slice(0, term.path.length - 1), ...(term.reusesTerms ?? [])];
+      if (term.parent !== null) {
+        named.push(term.parent);
+      }
+      for (const id of named) {
+        if (!this.byId.has(id)) {
+          foreign.add(id);
+        }
+      }
+    }
+    this.foreign = [...foreign];
+    if (this.foreign.length > 0 && this.imports.length === 0) {
+      throw new RegistryError('the registry ' + file.edition + ' names ' + this.foreign[0]
+        + ', which it does not define, and imports no registry that does');
+    }
+    if (this.imports.length > 0) {
+      checkOwnNamespace(this);
+    }
+  }
+
+  /**
+   * Returns the identifiers this registry names as a parent or a reused term without defining
+   * them: the terms of the registry an extension builds on, and none for a core registry.
+   */
+  foreignIds(): readonly string[] {
+    return this.foreign;
   }
 
   /** Returns the term with that identifier, or `undefined`. */
@@ -139,6 +283,34 @@ export class Registry {
   /** Tells whether this registry is an extension, which is one that imports another. */
   isExtension(): boolean {
     return this.imports.length > 0;
+  }
+}
+
+/** An identifier that carries the namespace of an extension: `BT-DEX-001`. */
+const NAMESPACED = /^(?:BT|BG)-([A-Z][A-Z0-9]*)-[0-9]+$/;
+
+/**
+ * Refuses a registry as an extension unless every identifier it defines carries one namespace,
+ * its own (sections 5.6 and 10). An identifier without a namespace belongs to a core model, and
+ * an extension never defines one, whether or not the core it is combined with defines it too.
+ *
+ * @throws RegistryError where an identifier carries no namespace or another one
+ */
+export function checkOwnNamespace(registry: Registry): void {
+  let namespace: string | undefined;
+  for (const term of registry.terms()) {
+    const match = NAMESPACED.exec(term.id);
+    if (match === null) {
+      throw new RegistryError('an extension registry defines identifiers of its own namespace'
+        + ' only, and ' + term.id + ' carries none');
+    }
+    if (namespace === undefined) {
+      namespace = match[1];
+    } else if (namespace !== match[1]) {
+      throw new RegistryError('an extension registry defines identifiers of its own namespace'
+        + ' only, and ' + term.id + ' carries ' + match[1] + ' where its other identifiers carry '
+        + namespace);
+    }
   }
 }
 

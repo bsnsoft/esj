@@ -16,6 +16,14 @@ import java.util.stream.Stream;
 final class Examples {
 
     /**
+     * The negative fixtures that are no JSON text at all — a byte order mark, a comma JSON does
+     * not allow, UTF-16 — which a schema validator cannot parse and therefore says nothing
+     * about. {@code examples/invalid/README.md} marks them so.
+     */
+    static final List<String> NOT_A_JSON_TEXT = List.of(
+            "encoding-byte-order-mark", "json-trailing-comma", "json-utf16-without-bom");
+
+    /**
      * The example documents of the default edition, in the order of the table in
      * {@code examples/README.md}. The example of the 2026 edition is not one of them: it
      * is read where it is measured against the registry of its own edition, and a build

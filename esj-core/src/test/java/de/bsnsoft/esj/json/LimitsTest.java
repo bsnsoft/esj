@@ -98,14 +98,14 @@ class LimitsTest {
     }
 
     /**
-     * The twin of the document bound. A reader enlarges the extension-depth bound by the
-     * nesting of the envelope before it configures its parser with it, so the top of the
-     * {@code int} range is a configuration no reader can enforce and one that a parser
-     * would answer with an exception of its own about a negative depth. The bound is
-     * refused where it is given, and the largest value it accepts is still accepted.
+     * The twin of the document bound. The depth of the whole document is the
+     * extension-depth bound enlarged by the nesting of the envelope, so the top of the
+     * {@code int} range is a configuration no reader can count to, and one that would wrap
+     * around to a negative depth. The bound is refused where it is given, and the largest
+     * value it accepts is still accepted (specification, section 12.2).
      */
     @Test
-    void anExtensionDepthLargerThanAParserCanBeGivenIsRefused() {
+    void anExtensionDepthLargerThanTheDocumentCanBeCountedToIsRefused() {
         assertThrows(EsjFormatException.class,
                 () -> Limits.defaults().withMaxExtensionDepth(Integer.MAX_VALUE));
         assertThrows(EsjFormatException.class,
@@ -116,9 +116,8 @@ class LimitsTest {
     }
 
     /**
-     * A reader built with the largest extension depth there is reads an ordinary document.
-     * The bound reaches the parser as a sum, and this is what says the sum is one a parser
-     * accepts rather than one that wrapped.
+     * A reader built with the largest extension depth there is reads an ordinary document:
+     * nothing the reader derives from the bound wrapped around.
      */
     @Test
     @Timeout(value = 30)

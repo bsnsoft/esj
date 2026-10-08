@@ -565,11 +565,16 @@ class EsjReaderTest {
 
     @Test
     void theLengthOfAStringValueIsLimitedInUtf8Bytes() {
-        Limits three = Limits.defaults().withMaxStringBytes(3);
-        byte[] ascii = oneValue("/BG-4/BT-27", "\"abc\"");
-        byte[] wide = oneValue("/BG-4/BT-27", "\"中中\"");
-        assertEquals(1, EsjReader.withLimits(three).read(ascii).values().size());
-        assertThrows(EsjLimitException.class, () -> EsjReader.withLimits(three).read(wide));
+        // The bound covers the strings and the member names of the envelope as well, and
+        // the longest of them, the edition, is 30 bytes long.
+        Limits thirty = Limits.defaults().withMaxStringBytes(30);
+        byte[] ascii = oneValue("/BG-4/BT-27", "\"" + "a".repeat(30) + "\"");
+        byte[] wide = oneValue("/BG-4/BT-27", "\"" + "中".repeat(10) + "a\"");
+        assertEquals(1, EsjReader.withLimits(thirty).read(ascii).values().size());
+        EsjLimitException thrown = assertThrows(EsjLimitException.class,
+                () -> EsjReader.withLimits(thirty).read(wide));
+        assertEquals("values[\"/BG-4/BT-27\"]", thrown.subject());
+        assertEquals(SemanticPath.of("/BG-4/BT-27"), thrown.path());
     }
 
     @Test
@@ -668,28 +673,28 @@ class EsjReaderTest {
     }
 
     /**
-     * A member name longer than what the parser assembles at all is refused before the
-     * reader holds a character of it, so there is no name to write into {@code subject}
-     * and the finding names the place by the byte offset the reader stopped at
-     * (specification, section 9.5). Without it the finding named nowhere and sent its
-     * reader through the whole file, which is the size a hostile document picks.
+     * A member name longer than the string bound is refused as a limit, and the finding
+     * names the object the name stands in as its subject — the name is not held past the
+     * bound, so it is no part of the finding — and the byte offset the name begins at in its
+     * message (specification, sections 9.5 and 12.2). Without the offset it named nowhere and
+     * sent its reader through the whole file, which is the size a hostile document picks.
      */
     @Test
-    void aMemberNameTooLongForTheParserIsLocatedByAByteOffset() {
+    void aMemberNameLongerThanTheStringBoundNamesItsObjectAndIsLocatedByAByteOffset() {
         Limits small = Limits.defaults().withMaxStringBytes(1024);
-        byte[] document = envelope("\"values\":{\"" + "x".repeat(4096) + "\":\"1\"}");
+        String name = "x".repeat(4096);
+        byte[] document = envelope("\"values\":{\"" + name + "\":\"1\"}");
 
         ReadResult result = EsjReader.withLimits(small).readWithFindings(document);
 
         Finding limit = result.findings().get(0);
         assertEquals(FindingCode.ESJ_L1_LIMIT, limit.code());
-        assertEquals("", limit.subject(), "the parser never handed the name over");
-        Matcher offset = Pattern.compile("stopped at byte (\\d+) of the document")
-                .matcher(limit.message());
+        assertTrue(limit.path().isRoot());
+        assertEquals("values", limit.subject(), "the object the name stands in");
+        Matcher offset = Pattern.compile("at byte (\\d+)").matcher(limit.message());
         assertTrue(offset.find(), limit.message());
-        long at = Long.parseLong(offset.group(1));
-        assertTrue(at > 1024 && at < document.length,
-                "the offset is inside the name the parser refused: " + at);
+        assertEquals(new String(document, StandardCharsets.UTF_8).indexOf("\"" + name),
+                Long.parseLong(offset.group(1)), "the offset is where the name begins");
     }
 
     @Test
@@ -771,8 +776,10 @@ class EsjReaderTest {
                         "{\"value\":\"a\",\"scheme\":\"s\",\"currency\":\"EUR\"}")));
 
         assertEquals("ESJ-L1-VALUE-MEMBER", thrown.code().orElseThrow().code());
-        assertEquals("values[\"/BG-4/BT-27\"].currency", thrown.location().orElseThrow());
-        assertTrue(thrown.getMessage().contains("(at values[\"/BG-4/BT-27\"].currency)"));
+        assertEquals(SemanticPath.of("/BG-4/BT-27"), thrown.path());
+        assertEquals("values[\"/BG-4/BT-27\"][\"currency\"]", thrown.subject());
+        assertEquals(thrown.subject(), thrown.location().orElseThrow());
+        assertTrue(thrown.getMessage().contains("(at values[\"/BG-4/BT-27\"][\"currency\"])"));
     }
 
     /**
@@ -840,11 +847,13 @@ class EsjReaderTest {
 
     @Test
     void aSourceSyntaxLongerThanTheStringBoundIsALimit() {
-        EsjReader small = EsjReader.withLimits(Limits.defaults().withMaxStringBytes(8));
-        byte[] document = envelope("\"values\":{},\"source\":{\"syntax\":\"UBL-and-then-some\"}");
+        EsjReader small = EsjReader.withLimits(Limits.defaults().withMaxStringBytes(30));
+        byte[] document = envelope("\"values\":{},\"source\":{\"syntax\":\"UBL"
+                + "-and-then-some".repeat(3) + "\"}");
         EsjLimitException thrown =
                 assertThrows(EsjLimitException.class, () -> small.read(document));
         assertEquals("ESJ-L1-LIMIT", thrown.code().code());
+        assertEquals("source.syntax", thrown.subject());
         assertTrue(thrown.getMessage().contains("source.syntax"));
     }
 

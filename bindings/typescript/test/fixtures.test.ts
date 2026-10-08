@@ -9,7 +9,9 @@ import { readDocumentOrThrow } from '../src/reader.ts';
 import { validate } from '../src/validate.ts';
 import { Structure } from '../src/structure.ts';
 import type { SemanticDocument } from '../src/document.ts';
-import type { Registry } from '../src/registry.ts';
+import type { Limits } from '../src/limits.ts';
+import type { Registry, RegistryFile } from '../src/registry.ts';
+import { RegistryError, registryOf } from '../src/registry.ts';
 import { compile, type RuleEngine } from '../src/rules/engine.ts';
 import type { RulePackFile } from '../src/rules/pack.ts';
 import { registries, ruleEngine } from '../src/node/data.ts';
@@ -18,10 +20,11 @@ import { registries, ruleEngine } from '../src/node/data.ts';
  * The fixture manifest of `conformance/fixtures/`, run against this implementation.
  *
  * The manifest is written in no programming language: documents with the digests they have to
- * produce, documents that have to be rejected and the finding code for each, the value
- * grammars as accept and reject tables, every mutation of the conformance corpus as a base
- * document and the changes that break it, and a pack of the rule language that pins its
- * division. It is generated from the reference implementation
+ * produce and the whole answer a validator gives about them, documents that have to be rejected
+ * and that answer, documents read under bounds other than the defaults, registries a loader has
+ * to take or refuse, the value grammars and the grammars of the envelope as accept and reject
+ * tables, every mutation of the conformance corpus as a base document and the changes that
+ * break it, and a pack of the rule language that pins its division. It is generated from the reference implementation
  * and compared with what is checked in on every build of it, so it cannot record an
  * expectation that implementation does not meet — which is what makes it a contract rather
  * than a second opinion.
@@ -34,38 +37,54 @@ function read<T>(file: string): T {
   return JSON.parse(readFileSync(file, 'utf8')) as T;
 }
 
+/** A finding as the manifest records it, SPEC.md section 9.5. */
+interface Finding {
+  path: string;
+  code: string;
+  subject: string;
+  severity: string;
+}
+
+/** The whole answer of a validation, as the manifest records it. */
+interface Outcome {
+  status: string;
+  notEvaluated: Array<{ layer: string; reason: string }>;
+  findings: Finding[];
+}
+
+interface Digests {
+  values: number;
+  canonicalBytes: number;
+  semanticDigest: string;
+  documentDigest: string;
+}
+
 interface Manifest {
   part: string;
   parts?: string[];
+  semanticModel?: string;
   registries?: Array<{ file: string; semanticModel: string; terms: number }>;
-  documents?: Array<{
+  documents?: Array<Digests & {
     file: string;
     canonical?: string;
     semanticModel: string;
     registries: string[];
-    values: number;
-    canonicalBytes: number;
-    semanticDigest: string;
-    documentDigest: string;
-    findings?: Array<{ path: string; code: string; subject?: string }>;
+    outcome: Outcome;
   }>;
-  invalid?: Array<Row>;
-  canonicalOrder?: Array<{ scrambled: string; canonical: string }>;
+  invalid?: Array<Partial<Digests> & {
+    file: string; layer: string; registries?: string[]; outcome: Outcome;
+  }>;
+  bounds?: Array<{ file: string; limits: Partial<Limits>; outcome: Outcome }>;
+  registryChecks?: Array<{ files: string[]; accepted: boolean }>;
+  canonicalOrder?: Array<{
+    scrambled: string; canonical: string; values: number; documentDigest: string;
+  }>;
   grammars?: Array<{
-    datatype: string; code: string; base: string; path: string;
-    accept: string[]; reject: string[];
+    datatype?: string; grammar?: string; code: string; base: string; path?: string;
+    member?: string; accept: unknown[]; reject: unknown[];
   }>;
   rules?: { pack: string; version: string; casesFile: string; cases: number };
   arithmetic?: { pack: string; base: string; expect: { rules: string[]; warnings: string[] } };
-}
-
-/** A row of the manifest that names a finding: its file and layer where it is a negative one. */
-interface Row {
-  file?: string;
-  layer?: string;
-  code?: string;
-  path?: string;
-  subject?: string;
 }
 
 interface Case {
@@ -119,48 +138,99 @@ function documentOf(file: string): SemanticDocument {
   return readDocumentOrThrow(readFileSync(path.join(ROOT, file)));
 }
 
-type Triple = [string, string, string];
-
-/** The error findings of a validation, as the runner reads them: path, code and subject. */
-function errorsOf(input: Uint8Array | string): Triple[] {
-  const result = validate(input, { registries: REGISTRIES });
-  return result.findings
-    .filter((entry) => entry.code.startsWith('ESJ-L')
-      && !entry.code.endsWith('NOT-CHECKED') && !entry.code.endsWith('EDITION-UNKNOWN'))
-    .map((entry): Triple => [entry.path, entry.code, entry.subject])
-    .sort(compareTriples);
+/** Reads registry files of the repository, the first as the core and the others as its extensions. */
+function registriesFrom(files: readonly string[]): Registry[] {
+  return files.map((file) => registryOf(read<RegistryFile>(path.join(ROOT, file))));
 }
 
-function compareTriples(left: Triple, right: Triple): number {
-  for (let at = 0; at < 3; at++) {
+/** Validates bytes or a text as a validate request of the runner asks for it. */
+function outcomeOf(input: Uint8Array | string,
+  options: { limits?: Partial<Limits>; registries?: readonly string[] } = {}): Outcome {
+  const result = validate(input, {
+    registries: options.registries === undefined ? REGISTRIES : registriesFrom(options.registries),
+    ...(options.limits === undefined ? {} : { limits: options.limits }),
+  });
+  return {
+    status: result.status,
+    notEvaluated: result.notEvaluated.map((entry) => ({ layer: entry.layer, reason: entry.reason })),
+    findings: result.findings.map((entry) => ({
+      path: entry.path, code: entry.code, subject: entry.subject, severity: entry.severity,
+    })),
+  };
+}
+
+type Row = [string, string, string, string];
+
+function compareRows(left: readonly string[], right: readonly string[]): number {
+  for (let at = 0; at < Math.min(left.length, right.length); at++) {
     if (left[at] !== right[at]) {
       return left[at] < right[at] ? -1 : 1;
     }
   }
-  return 0;
+  return left.length - right.length;
 }
 
 /**
- * The places whose subject the manifest records, as path and code. The manifest records one
- * where SPEC.md section 9.5 requires it, and the runner compares it there and nowhere else.
+ * An outcome in the form the runner compares two outcomes in: the findings of the reader as
+ * a list (SPEC.md section 9.6 fixes how far a reader reads and in which order), the findings
+ * of one path at layer L2 as a list (section 9.2 fixes the order of the checks of a path), and
+ * everything else as a set.
  */
-function pinned(rows: readonly Row[]): Set<string> {
-  return new Set(rows.filter((row) => row.subject !== undefined)
-    .map((row) => (row.path ?? '') + '\u0000' + row.code));
+function normalized(outcome: Outcome): unknown {
+  const reader: Row[] = [];
+  const model = new Map<string, Row[]>();
+  const rest: Row[] = [];
+  for (const finding of outcome.findings) {
+    const row: Row = [finding.path, finding.code, finding.subject, finding.severity];
+    if (finding.code.startsWith('ESJ-L1-')) {
+      reader.push(row);
+    } else if (finding.code.startsWith('ESJ-L2-')) {
+      const rows = model.get(finding.path) ?? [];
+      rows.push(row);
+      model.set(finding.path, rows);
+    } else {
+      rest.push(row);
+    }
+  }
+  return {
+    status: outcome.status,
+    notEvaluated: outcome.notEvaluated.map((entry) => entry.layer + ':' + entry.reason).sort(),
+    reader,
+    model: [...model.entries()].sort(([left], [right]) => compareRows([left], [right])),
+    others: rest.sort(compareRows),
+  };
 }
 
-/** Findings as path, code and subject, the subject kept only at the places pinned. */
-function compared(findings: readonly Triple[], pins: Set<string>): Triple[] {
-  return findings
-    .map(([where, code, subject]): Triple =>
-      [where, code, pins.has(where + '\u0000' + code) ? subject : ''])
-    .sort(compareTriples);
+/** The codes of the errors a validation reports about one path. */
+function errorsAt(outcome: Outcome, at: string): string[] {
+  return outcome.findings
+    .filter((entry) => entry.severity === 'error' && entry.path === at)
+    .map((entry) => entry.code);
 }
 
-/** The rows of the manifest in the form compared() gives an answer. */
-function recorded(rows: readonly Row[]): Triple[] {
-  return compared(rows.map((row): Triple =>
-    [row.path ?? '', row.code as string, row.subject ?? '']), pinned(rows));
+/** The codes of the errors of layer L1 a validation reports. */
+function layerOneErrors(outcome: Outcome): string[] {
+  return outcome.findings
+    .filter((entry) => entry.severity === 'error' && entry.code.startsWith('ESJ-L1-'))
+    .map((entry) => entry.code);
+}
+
+/**
+ * Whether the cases of a manifest file are validated here: a part carries one edition, and
+ * its outcomes were recorded with that edition's registry.
+ */
+function evaluated(manifest: Manifest): boolean {
+  return manifest.semanticModel === undefined || CARRIED.has(manifest.semanticModel);
+}
+
+async function digestsOf(file: string): Promise<Digests> {
+  const document = documentOf(file);
+  return {
+    values: document.values.size,
+    canonicalBytes: new TextEncoder().encode(canonicalize(document)).length,
+    semanticDigest: await semanticDigest(document),
+    documentDigest: await documentDigest(document),
+  };
 }
 
 test('every file the manifest names is in the repository', () => {
@@ -233,72 +303,117 @@ test('a conformant document has the digests and the canonical form the manifest 
     }
   });
 
-test('a conformant document draws exactly the findings the manifest records', () => {
-  for (const manifest of MANIFESTS) {
-    for (const entry of manifest.documents ?? []) {
-      if (!CARRIED.has(entry.semanticModel)) {
-        continue;
-      }
-      const rows = entry.findings ?? [];
-      assert.deepEqual(compared(errorsOf(readFileSync(path.join(ROOT, entry.file))), pinned(rows)),
-        recorded(rows), entry.file);
-    }
-  }
-});
-
 /**
- * The rows of one manifest, gathered per file: a document may be wrong in two ways at layer
- * L1 and draw a row for each code.
+ * Compares every case of a loop before it fails, so that a run names each case this
+ * implementation answers differently and not only the first.
  */
-function invalidByFile(manifest: Manifest): Map<string, Row[]> {
-  const byFile = new Map<string, Row[]>();
-  for (const entry of manifest.invalid ?? []) {
-    const rows = byFile.get(entry.file as string);
-    if (rows === undefined) {
-      byFile.set(entry.file as string, [entry]);
-    } else {
-      rows.push(entry);
-    }
-  }
-  return byFile;
+function mismatches(): { check(name: string, actual: unknown, expected: unknown): void;
+  assertNone(): void; } {
+  const found: string[] = [];
+  return {
+    check(name, actual, expected) {
+      try {
+        assert.deepEqual(actual, expected);
+      } catch {
+        found.push(name + ': expected ' + JSON.stringify(expected) + ', answered '
+          + JSON.stringify(actual));
+      }
+    },
+    assertNone() {
+      assert.deepEqual(found, []);
+    },
+  };
 }
 
-test('a document the manifest calls invalid is rejected at the place it names', () => {
+test('a document draws exactly the outcome the manifest records', () => {
+  const report = mismatches();
   for (const manifest of MANIFESTS) {
-    for (const [file, rows] of invalidByFile(manifest)) {
-      const found = errorsOf(readFileSync(path.join(ROOT, file)));
-      const codes = found.map(([, code]) => code);
-      if (rows[0].layer === 'business-rule') {
-        assert.deepEqual(codes, [], file + ' is structurally sound');
-        continue;
-      }
-      if (rows[0].layer === 'L1' || rows[0].layer === 'limit') {
-        // SPEC.md section 9.6 fixes how far a reader reads, so the rows of a document layer
-        // L1 refused are the whole answer and not a sample of it.
-        assert.deepEqual(compared(found, pinned(rows)), recorded(rows), file);
-        continue;
-      }
-      const [first] = recorded(rows.slice(0, 1));
-      assert.ok(compared(found, pinned(rows.slice(0, 1))).some((entry) =>
-        compareTriples(entry, first) === 0),
-        file + ' draws ' + rows[0].code + ' at ' + JSON.stringify(rows[0].path ?? '')
-        + ', and this reader answered ' + JSON.stringify(found));
+    if (!evaluated(manifest)) {
+      continue;
+    }
+    for (const entry of manifest.documents ?? []) {
+      report.check(entry.file,
+        normalized(outcomeOf(readFileSync(path.join(ROOT, entry.file)))),
+        normalized(entry.outcome));
     }
   }
+  report.assertNone();
 });
 
-test('a document whose members are in the wrong order canonicalizes to the pinned bytes', () => {
+test('a document the manifest calls invalid draws the whole outcome it records', async () => {
+  const report = mismatches();
+  for (const manifest of MANIFESTS) {
+    for (const entry of manifest.invalid ?? []) {
+      if (entry.values !== undefined) {
+        // Content a model layer refuses passes the reader and the canonicalizer unchanged.
+        report.check(entry.file + ' digests', await digestsOf(entry.file), {
+          values: entry.values, canonicalBytes: entry.canonicalBytes,
+          semanticDigest: entry.semanticDigest, documentDigest: entry.documentDigest,
+        });
+      }
+      if (!evaluated(manifest)) {
+        continue;
+      }
+      report.check(entry.file,
+        normalized(outcomeOf(readFileSync(path.join(ROOT, entry.file)),
+          entry.registries === undefined ? {} : { registries: entry.registries })),
+        normalized(entry.outcome));
+    }
+  }
+  report.assertNone();
+});
+
+test('a document read under the bounds of a case draws the outcome the manifest records', () => {
+  const report = mismatches();
+  let run = 0;
+  for (const manifest of MANIFESTS) {
+    for (const entry of manifest.bounds ?? []) {
+      report.check(entry.file + ' under ' + JSON.stringify(entry.limits),
+        normalized(outcomeOf(readFileSync(path.join(ROOT, entry.file)), { limits: entry.limits })),
+        normalized(entry.outcome));
+      run++;
+    }
+  }
+  report.assertNone();
+  assert.ok(run > 0, 'the bounds were run');
+});
+
+test('a set of registries is taken or refused as the manifest records', () => {
+  const report = mismatches();
+  for (const manifest of MANIFESTS) {
+    for (const entry of manifest.registryChecks ?? []) {
+      let accepted: boolean;
+      try {
+        const read = registriesFrom(entry.files);
+        new Structure(read[0], read.slice(1));
+        accepted = true;
+      } catch (failure) {
+        if (!(failure instanceof RegistryError)) {
+          throw failure;
+        }
+        accepted = false;
+      }
+      report.check(entry.files.join(' + '), accepted, entry.accepted);
+    }
+  }
+  report.assertNone();
+});
+
+test('a document not in canonical form canonicalizes to the pinned bytes', async () => {
   for (const manifest of MANIFESTS) {
     for (const entry of manifest.canonicalOrder ?? []) {
-      assert.equal(canonicalize(documentOf(entry.scrambled)),
+      const document = documentOf(entry.scrambled);
+      assert.equal(canonicalize(document),
         readFileSync(path.join(ROOT, entry.canonical), 'utf8'), entry.scrambled);
+      assert.deepEqual({ values: document.values.size, documentDigest: await documentDigest(document) },
+        { values: entry.values, documentDigest: entry.documentDigest }, entry.scrambled);
     }
   }
 });
 
 /** Builds the document of a case: the base document with the changes the manifest gives. */
 function applied(
-  base: Record<string, unknown>, changes: ReadonlyArray<{ path: string; value?: string; remove?: boolean }>,
+  base: Record<string, unknown>, changes: ReadonlyArray<{ path: string; value?: unknown; remove?: boolean }>,
 ): string {
   const document = JSON.parse(JSON.stringify(base)) as { values: Record<string, unknown> };
   for (const change of changes) {
@@ -311,6 +426,17 @@ function applied(
   return JSON.stringify(document);
 }
 
+/** The base document with a candidate written into one member of the envelope. */
+function envelopeDocument(base: Record<string, unknown>, member: string, candidate: string): string {
+  const document = JSON.parse(JSON.stringify(base)) as Record<string, unknown>;
+  if (member === 'semanticModel') {
+    document.semanticModel = candidate;
+  } else {
+    document.extensions = { [candidate]: 'x' };
+  }
+  return JSON.stringify(document);
+}
+
 test('a value is accepted or rejected as the grammar table says', () => {
   for (const manifest of MANIFESTS) {
     for (const grammar of manifest.grammars ?? []) {
@@ -318,16 +444,25 @@ test('a value is accepted or rejected as the grammar table says', () => {
       if (!CARRIED.has(base.semanticModel as string)) {
         continue;
       }
+      if (grammar.member !== undefined) {
+        for (const candidate of grammar.accept as string[]) {
+          assert.deepEqual(layerOneErrors(outcomeOf(envelopeDocument(base, grammar.member, candidate))),
+            [], grammar.grammar + ' accepts ' + JSON.stringify(candidate));
+        }
+        for (const candidate of grammar.reject as string[]) {
+          assert.deepEqual(layerOneErrors(outcomeOf(envelopeDocument(base, grammar.member, candidate))),
+            [grammar.code], grammar.grammar + ' rejects ' + JSON.stringify(candidate));
+        }
+        continue;
+      }
+      const at = grammar.path as string;
       for (const candidate of grammar.accept) {
-        const codes = errorsOf(applied(base, [{ path: grammar.path, value: candidate }]))
-          .filter(([at]) => at === grammar.path).map(([, code]) => code);
-        assert.deepEqual(codes, [], grammar.datatype + ' accepts ' + JSON.stringify(candidate));
+        assert.deepEqual(errorsAt(outcomeOf(applied(base, [{ path: at, value: candidate }])), at),
+          [], grammar.datatype + ' accepts ' + JSON.stringify(candidate));
       }
       for (const candidate of grammar.reject) {
-        const codes = errorsOf(applied(base, [{ path: grammar.path, value: candidate }]))
-          .filter(([at]) => at === grammar.path).map(([, code]) => code);
-        assert.deepEqual(codes, [grammar.code],
-          grammar.datatype + ' rejects ' + JSON.stringify(candidate));
+        assert.deepEqual(errorsAt(outcomeOf(applied(base, [{ path: at, value: candidate }])), at),
+          [grammar.code], grammar.datatype + ' rejects ' + JSON.stringify(candidate));
       }
     }
   }

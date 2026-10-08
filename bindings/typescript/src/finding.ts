@@ -37,14 +37,62 @@ export function finding(
   };
 }
 
-/** Returns the member access a finding names a member of `values` by (section 9.5). */
-export function valuesSubject(name: string): string {
-  return 'values["' + escapeForMessage(name) + '"]';
+/*
+ * The member access a finding names a place by (section 9.5). It is a path of accesses from the
+ * root of the document: a name this specification defines is written in dot form —
+ * `source.syntax`, `values["/BG-4/BT-29/0"].scheme` — and every name the document chose in
+ * bracket form, as a JSON string with the escaping of a message, so that no name the document
+ * chose can be mistaken for one of the specification's or end the access early: `values["/BT-1"]`,
+ * `extensions["de.example"]["a"]`, `source["foo"]`, `["profile"]` for an undefined member of the
+ * envelope. An element of an array is `[1]`. A subject is never cut to an excerpt.
+ */
+
+/** The members of the envelope, which a subject writes in dot form (section 4.1). */
+const ENVELOPE_MEMBERS: readonly string[] = [
+  'format', 'version', 'semanticModel', 'values', 'extensions', 'source',
+];
+
+/** The members of `source`, which a subject writes in dot form (section 4.7). */
+const SOURCE_MEMBERS: readonly string[] = ['syntax', 'sha256'];
+
+/** The members of a value object, which a subject writes in dot form (section 6.1). */
+const VALUE_OBJECT_MEMBERS: readonly string[] = [
+  'value', 'scheme', 'schemeVersion', 'mimeCode', 'filename',
+];
+
+/** Writes a name the document chose as one bracketed step of a member access. */
+export function memberStep(name: string): string {
+  return '["' + escapeForMessage(name) + '"]';
 }
 
-/** Returns the member access a finding names a member of `extensions` by (section 9.5). */
+/** Returns the member access of a member of the envelope. */
+export function envelopeSubject(name: string): string {
+  return ENVELOPE_MEMBERS.includes(name) ? name : memberStep(name);
+}
+
+/** Returns the member access a finding names a member of `values` by. */
+export function valuesSubject(name: string): string {
+  return 'values' + memberStep(name);
+}
+
+/** Returns the member access a finding names a member of `extensions` by. */
 export function extensionsSubject(name: string): string {
-  return 'extensions["' + escapeForMessage(name) + '"]';
+  return 'extensions' + memberStep(name);
+}
+
+/** Returns the member access of a member of `source`. */
+export function sourceSubject(name: string): string {
+  return SOURCE_MEMBERS.includes(name) ? 'source.' + name : 'source' + memberStep(name);
+}
+
+/**
+ * Returns the member access of a member of a value object.
+ *
+ * @param value the member access of the member of `values` the object is written under
+ * @param name the name of the member of the object
+ */
+export function valueMemberSubject(value: string, name: string): string {
+  return VALUE_OBJECT_MEMBERS.includes(name) ? value + '.' + name : value + memberStep(name);
 }
 
 /** What a run says about a layer it did not evaluate. */

@@ -1,9 +1,11 @@
 package de.bsnsoft.esj.cli;
 
+import de.bsnsoft.esj.PathSegment;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.model.Registry;
+import de.bsnsoft.esj.model.Term;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.syntax.ProfileLevels;
 import de.bsnsoft.esj.validate.Finding;
@@ -254,7 +256,8 @@ final class Validation {
         if (document.isPresent() && l1.ok() && en16931) {
             List<Registry> registries = Editions.registries(extension);
             l2 = Layer.checked(StructuralValidator.validate(document.get(), registries,
-                    EnumSet.of(ValidationLayer.L2)));
+                    EnumSet.of(ValidationLayer.L2)))
+                    .explainedBy(document.get(), Editions.leftOut(document.get(), extension));
             // Where no registry describes the edition the document names, layer L2 reports
             // that once and measured nothing; there is then nothing for the cardinality
             // layer to count either, and running it would repeat the same finding under a
@@ -514,23 +517,113 @@ final class Validation {
     /**
      * What one layer has to say.
      *
-     * @param checked  whether the layer ran at all
-     * @param findings what it found, in the order it met them
+     * @param checked      whether the layer ran at all
+     * @param findings     what it found, in the order it met them
+     * @param otherEdition whether every path it reported as not checked belongs to an
+     *                     extension this run loads and left out, because it was written
+     *                     against another edition than the one the document names
      */
-    record Layer(boolean checked, List<Finding> findings) {
+    record Layer(boolean checked, List<Finding> findings, boolean otherEdition) {
 
         /**
          * Copies the findings.
          *
-         * @param checked  whether the layer ran at all
-         * @param findings what it found, in the order it met them
+         * @param checked      whether the layer ran at all
+         * @param findings     what it found, in the order it met them
+         * @param otherEdition whether every path it reported as not checked belongs to an
+         *                     extension this run left out for the edition of the document
          */
         Layer {
             findings = List.copyOf(findings);
         }
 
+        /**
+         * Creates a layer whose paths that were not checked, if any, were not checked for
+         * want of an extension registry.
+         *
+         * @param checked  whether the layer ran at all
+         * @param findings what it found, in the order it met them
+         */
+        Layer(boolean checked, List<Finding> findings) {
+            this(checked, findings, false);
+        }
+
         static Layer checked(List<Finding> findings) {
             return new Layer(true, findings);
+        }
+
+        /**
+         * Returns this layer with every path of an extension that was left out for the
+         * edition of the document explained as such.
+         *
+         * <p>A caller who passed {@code --extension b2c} for a document of an edition the
+         * B2C registry was not written against has not forgotten the registry: the run
+         * loaded it and left it out, because its parents and cardinalities belong to
+         * another list of terms (specification, section 10). The path is not checked
+         * either way, and the finding keeps its code, its path and its subject; its message
+         * says which of the two happened, and so does the cause of the gap, which is
+         * {@link Coverage.Cause#EXTENSION_FOR_ANOTHER_EDITION} where every path that was
+         * not checked is of this kind.
+         *
+         * @param document the document the layer measured
+         * @param left     the extensions this run loads and left out for its edition
+         * @return the layer, unchanged where nothing was left out
+         */
+        Layer explainedBy(SemanticDocument document, List<Extensions.Extension> left) {
+            if (left.isEmpty()) {
+                return this;
+            }
+            List<Finding> explained = new ArrayList<>();
+            boolean every = true;
+            boolean any = false;
+            for (Finding finding : findings) {
+                if (finding.code() != FindingCode.ESJ_L2_NOT_CHECKED) {
+                    explained.add(finding);
+                    continue;
+                }
+                Optional<Extensions.Extension> owner = owner(finding.path(), left);
+                if (owner.isEmpty()) {
+                    every = false;
+                    explained.add(finding);
+                    continue;
+                }
+                any = true;
+                explained.add(new Finding(finding.path(), finding.subject(), finding.code(),
+                        finding.severity(), Editions.otherEdition(owner.get(),
+                                document.semanticModel()) + ", so this path was not checked"
+                                + " against it"));
+            }
+            return new Layer(checked, explained, any && every);
+        }
+
+        /**
+         * Returns the left-out extension whose namespace the first extension segment of a
+         * path carries, where one does.
+         */
+        private static Optional<Extensions.Extension> owner(SemanticPath path,
+                                                            List<Extensions.Extension> left) {
+            for (PathSegment segment : path.segments()) {
+                if (segment instanceof PathSegment.Term term && term.isExtension()) {
+                    for (Extensions.Extension extension : left) {
+                        if (definesNamespace(extension.registry(), term.namespace())) {
+                            return Optional.of(extension);
+                        }
+                    }
+                    return Optional.empty();
+                }
+            }
+            return Optional.empty();
+        }
+
+        /** Tells whether a registry defines a term of that extension namespace. */
+        private static boolean definesNamespace(Registry registry, String namespace) {
+            String infix = "-" + namespace + "-";
+            for (Term term : registry.terms()) {
+                if (term.id().contains(infix)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /**
@@ -595,7 +688,9 @@ final class Validation {
                     return Optional.of(Coverage.Cause.EDITION_UNKNOWN);
                 }
                 if (finding.code() == FindingCode.ESJ_L2_NOT_CHECKED) {
-                    return Optional.of(Coverage.Cause.EXTENSION_REGISTRY_MISSING);
+                    return Optional.of(otherEdition
+                            ? Coverage.Cause.EXTENSION_FOR_ANOTHER_EDITION
+                            : Coverage.Cause.EXTENSION_REGISTRY_MISSING);
                 }
             }
             return Optional.empty();

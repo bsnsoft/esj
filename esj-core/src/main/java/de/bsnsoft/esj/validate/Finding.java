@@ -9,11 +9,14 @@ import java.util.Objects;
  * <p>A caller acts on a finding by its {@link #code()} and by the place it names, so the
  * place is fixed by the specification and not by this implementation. {@link #path()} is
  * that place wherever a semantic path can be it. {@link #subject()} carries what the path
- * cannot: the member name as the document writes it where the defect is about a name that
- * is no path, and the identifier of the term or group where the defect is about one that
- * is missing from the instance the path names or occurs too often in it. Four mandatory
- * terms missing at the root of a document draw four findings with one code and one path,
- * and only the subject tells them apart without the English message being read.
+ * cannot: for a finding of layer L1 the member access of the member it is about —
+ * {@code source.syntax}, {@code values["/BT-1"]}, {@code extensions["de.example"]["a"][0]},
+ * names the document chose in brackets and escaped as a message escapes them; for one of
+ * layer L2 the identifier of the segment, the term whose group chain is wrong, or the
+ * component; for one of layer L3 the term or group that is missing from the instance the
+ * path names or occurs too often in it. Four mandatory terms missing at the root of a
+ * document draw four findings with one code and one path, and only the subject tells them
+ * apart without the English message being read.
  *
  * @param path     the semantic path the finding is about; the root path, whose text is
  *                 the empty string, stands for a finding about the document as a whole

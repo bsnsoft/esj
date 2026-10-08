@@ -50,15 +50,21 @@ export const DEFAULT_LIMITS: Readonly<Limits> = Object.freeze({
 /**
  * Returns the limits a reader runs with: the defaults, with whatever the caller overrode.
  *
- * A bound that is not a positive number is a defect in the call and not in any document, so
- * it is refused when it is given rather than when a document arrives (specification,
- * section 12.2).
+ * A bound that is not a positive whole number, or a name that is none of the ten bounds of
+ * section 12.2, is a defect in the call and not in any document, so it is refused when it is
+ * given rather than when a document arrives (specification, section 12.2). The names are the
+ * ones the Java implementation's `Limits` gives the same bounds.
  */
 export function limitsOf(overrides?: Partial<Limits>): Limits {
+  for (const name of Object.keys(overrides ?? {})) {
+    if (!Object.hasOwn(DEFAULT_LIMITS, name)) {
+      throw new RangeError(`${name} is not a limit of section 12.2`);
+    }
+  }
   const limits: Limits = { ...DEFAULT_LIMITS, ...(overrides ?? {}) };
   for (const [name, value] of Object.entries(limits)) {
-    if (!Number.isFinite(value) || value <= 0) {
-      throw new RangeError(`${name} is a positive number, not ${value}`);
+    if (!Number.isSafeInteger(value) || value <= 0) {
+      throw new RangeError(`${name} is a positive whole number, not ${value}`);
     }
   }
   return limits;

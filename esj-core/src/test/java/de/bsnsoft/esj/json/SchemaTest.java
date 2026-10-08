@@ -13,10 +13,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Checks {@code schema/esj.schema.json}, the machine-readable form of most of validation
@@ -46,6 +51,8 @@ class SchemaTest {
             "empty-string-value",
             "empty-string-with-missing-term",
             "envelope-member-terminal-characters",
+            "envelope-missing-values",
+            "envelope-wrong-version",
             "number-instead-of-string",
             "object-without-component",
             "owner-token-syntax",
@@ -54,8 +61,10 @@ class SchemaTest {
             "path-syntax-terminal-characters",
             "path-syntax-with-array-value",
             "scheme-version-without-scheme",
+            "semantic-model-grammar",
             "source-empty-syntax",
             "source-sha256-uppercase",
+            "source-unknown-member",
             "surrogate-and-duplicate-in-value-object",
             "surrogate-below-bad-owner-token",
             "surrogate-in-envelope-member-name",
@@ -66,8 +75,8 @@ class SchemaTest {
             "unknown-object-member",
             "value-depth-32",
             "value-depth-33",
-            "value-object-members-17",
             "value-not-a-string",
+            "value-object-members-17",
             "values-deep-array");
 
     private static Schema schema;
@@ -104,12 +113,103 @@ class SchemaTest {
     @ParameterizedTest
     @MethodSource("invalidFixtures")
     void aFixtureIsRejectedByTheSchemaExactlyWhereTheFixtureTableSaysSo(String name) {
+        if (Examples.NOT_A_JSON_TEXT.contains(name)) {
+            return;
+        }
         boolean rejected = !validate(Examples.invalid(name)).isEmpty();
         if (REJECTED_BY_THE_SCHEMA.contains(name)) {
             assertTrue(rejected, name + " is expected to fail the schema");
         } else {
             assertFalse(rejected, name + " carries a defect the schema cannot see");
         }
+    }
+
+    /**
+     * {@code semanticModel} is a string. A pattern constrains a string and says nothing
+     * about a value of another JSON type, so without the type a number, {@code null}, an
+     * array or an object passed the schema although a reader refuses each of them as
+     * {@code ESJ-L1-ENVELOPE-VALUE} (specification, sections 4.1 and 9.1).
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"5", "null", "[]", "{}", "true"})
+    void aSemanticModelThatIsNoStringFailsTheSchema(String semanticModel) {
+        assertFalse(validate(document(semanticModel, "{\"/BT-1\":\"x\"}", "")).isEmpty(),
+                semanticModel);
+    }
+
+    /**
+     * A path, an edition, an owner token or a digest followed by LF is not one, and the
+     * schema refuses each of them (specification, section 5.1). The validator here reads
+     * a pattern as ECMA-262 does; the next test is about the engines that do not.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "\"EN16931-1:2017+A1:2019/AC:2020\"|{\"/BT-1\\n\":\"x\"}|",
+        "\"EN16931-1:2017+A1:2019/AC:2020\\n\"|{\"/BT-1\":\"x\"}|",
+        "\"EN16931-1:2017+A1:2019/AC:2020\"|{\"/BT-1\":\"x\"}|,\"extensions\":{\"de.example\\n\":1}",
+        "\"EN16931-1:2017+A1:2019/AC:2020\"|{\"/BT-1\":\"x\"}|,\"source\":{\"sha256\":\""
+                + "0000000000000000000000000000000000000000000000000000000000000000\\n\"}"})
+    void aStringOfAGrammarFollowedByALineFeedFailsTheSchema(String parts) {
+        String[] part = parts.split("\\|", -1);
+        assertFalse(validate(document(part[0], part[1], part[2])).isEmpty(), parts);
+        String withoutTheLineFeed = parts.replace("\\n", "");
+        String[] clean = withoutTheLineFeed.split("\\|", -1);
+        assertEquals(List.of(), validate(document(clean[0], clean[1], clean[2])),
+                "the same document without the line feed passes");
+    }
+
+    /**
+     * Every pattern of the schema ends in {@code (?![\s\S])} — no character follows — and
+     * none in {@code $}. java.util.regex, Python's {@code re} and other engines a JSON Schema
+     * validator may use in place of ECMA-262 also match {@code $} before a final line feed, so
+     * under them a pattern ending in {@code $} let a path followed by LF through
+     * (specification, section 5.1). The path pattern shows both.
+     */
+    @Test
+    void everyPatternEndsWhereTheStringEndsUnderEveryEngine() throws IOException {
+        String text;
+        try (InputStream in = Examples.schema()) {
+            text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+        Matcher member = Pattern.compile("\"pattern\": \"((?:[^\"\\\\]|\\\\.)*)\"").matcher(text);
+        List<String> patterns = new ArrayList<>();
+        while (member.find()) {
+            patterns.add(member.group(1).replace("\\\\", "\\"));
+        }
+        assertEquals(4, patterns.size(), "semanticModel, sha256, a path and an owner token");
+        for (String pattern : patterns) {
+            assertTrue(pattern.endsWith("(?![\\s\\S])"), pattern);
+            assertFalse(pattern.contains("$"), pattern);
+        }
+        String path = patterns.stream().filter(p -> p.contains("/BT-")).findFirst().orElseThrow();
+        assertTrue(Pattern.compile(path).matcher("/BT-1").find());
+        assertFalse(Pattern.compile(path).matcher("/BT-1\n").find());
+        assertTrue(Pattern.compile(path.replace("(?![\\s\\S])", "$")).matcher("/BT-1\n").find(),
+                "the same pattern ending in $ accepts the line feed under java.util.regex");
+    }
+
+    /**
+     * The limit on a string of {@code values} is measured after CR LF has become LF
+     * (specification, section 6.8), and the schema counts the string as it is written. A
+     * string a reader running the defaults accepts — 1 048 575 characters and a CR LF, one
+     * mebibyte once normalized — therefore passes the schema, and the guard refuses only
+     * past twice the limit.
+     */
+    @Test
+    void theStringGuardAdmitsWhatTheNormalizedLimitAdmits() {
+        String atTheLimit = "a".repeat(1_048_575) + "\\r\\n";
+        assertEquals(List.of(),
+                validate(document("\"EN16931-1:2017+A1:2019/AC:2020\"",
+                        "{\"/BG-4/BT-27\":\"" + atTheLimit + "\"}", "")));
+        String pastTheGuard = "a".repeat(2_097_153);
+        assertFalse(validate(document("\"EN16931-1:2017+A1:2019/AC:2020\"",
+                "{\"/BG-4/BT-27\":\"" + pastTheGuard + "\"}", "")).isEmpty());
+    }
+
+    private static byte[] document(String semanticModel, String values, String rest) {
+        return ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\",\"semanticModel\":"
+                + semanticModel + ",\"values\":" + values + rest + "}")
+                .getBytes(StandardCharsets.UTF_8);
     }
 
     @ParameterizedTest

@@ -1,0 +1,14 @@
+{
+  "format": "EN16931-Semantic-JSON",
+  "version": "0.1",
+  "semanticModel": "ESJ-TEST-CARDINALITY:2099",
+  "values": {
+    "/BT-1": "A",
+    "/BT-3/0": "a",
+    "/BT-3/1": "b",
+    "/BT-3/2": "c",
+    "/BG-1/0/BT-2": "x",
+    "/BG-1/1/BT-2": "y",
+    "/BG-1/2/BT-2": "z"
+  }
+}

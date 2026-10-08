@@ -231,6 +231,54 @@ class GenerateTest {
                 "the model schema names the paths of the extension");
     }
 
+    /**
+     * A slug Java reserves reaches the emitted view escaped rather than stopping the run
+     * (specification, section 10): the accessor of {@code default} is {@code default_()},
+     * the appender of one instance of {@code returns} is {@code return_(...)}, and a term
+     * whose slug would hide {@code path()} is read through {@code path_()}.
+     */
+    @Test
+    void aSlugJavaReservesIsEmittedEscaped(@TempDir Path directory) throws IOException {
+        Path extension = directory.resolve("keywords.json");
+        Files.writeString(extension, """
+                {
+                  "model": "Keyword-Extension",
+                  "edition": "Keyword 0.1",
+                  "imports": [{"model": "EN16931-1", "edition": "EN 16931-1:2017+A1:2019/AC:2020"}],
+                  "terms": [
+                    {
+                      "id": "BT-KW-001", "kind": "BT", "name": "Default", "slug": "default",
+                      "parent": null, "path": ["BT-KW-001"], "min": 0, "max": 1,
+                      "datatype": "Text", "components": [], "order": 1, "description": "A term."
+                    },
+                    {
+                      "id": "BG-KW-001", "kind": "BG", "name": "Returns", "slug": "returns",
+                      "parent": null, "path": ["BG-KW-001"], "min": 0, "max": "n",
+                      "datatype": null, "components": [], "order": 2, "description": "A group."
+                    },
+                    {
+                      "id": "BT-KW-002", "kind": "BT", "name": "Path", "slug": "path",
+                      "parent": "BG-KW-001", "path": ["BG-KW-001", "BT-KW-002"], "min": 1,
+                      "max": 1, "datatype": "Text", "components": [], "order": 3,
+                      "description": "A term."
+                    }
+                  ]
+                }
+                """, StandardCharsets.UTF_8);
+        Path typed = directory.resolve("typed");
+
+        Generate.generate(options(typed, directory.resolve(SCHEMA.getFileName()),
+                invoice(directory), Optional.of(extension)));
+        Path emitted = typed.resolve(path(PACKAGE_2017));
+        String invoiceEditor = read(emitted.resolve("InvoiceEditor.java"));
+        String view = read(emitted.resolve("Return.java"));
+
+        assertTrue(invoiceEditor.contains(" default_("), invoiceEditor);
+        assertTrue(invoiceEditor.contains(" return_("), invoiceEditor);
+        assertTrue(invoiceEditor.contains(" returns()"), invoiceEditor);
+        assertTrue(view.contains(" path_()"), view);
+    }
+
     @Test
     void aRecursiveExtensionGroupIsEmittedOnceAsATypeThatRefersToItself(@TempDir Path directory)
             throws IOException {
