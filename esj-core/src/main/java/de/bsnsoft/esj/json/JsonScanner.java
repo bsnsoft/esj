@@ -307,32 +307,29 @@ final class JsonScanner {
     }
 
     /**
-     * Reads the member name {@link #nextMember(boolean)} stands on. The colon after it is
-     * required by the next {@link #peek()}, so that whatever is wrong with the name is said
-     * before whatever is wrong with what follows it (specification, section 9.6).
+     * Scans the member name {@link #nextMember(boolean)} stands on and steps past it without
+     * building it. What the scan learns — its length in UTF-8 bytes, whether it carries a lone
+     * surrogate, where it begins — is available until the next token is scanned, so that the
+     * reader measures the name against its bound before it holds a character of it, and builds
+     * it with {@link #nameText()} only where it is within. The colon after it is required by
+     * the next {@link #peek()}, so that whatever is wrong with the name is said before
+     * whatever is wrong with what follows it (specification, section 9.6).
      *
-     * @return the name, its escapes decoded
      * @throws Malformed if the name is not a JSON string
      */
-    String name() {
+    void scanName() {
         scanString();
-        String name = build(start, end);
         at = end;
         colon = true;
-        return name;
     }
 
     /**
-     * Steps over the member name {@link #nextMember(boolean)} stands on without building it,
-     * for a subtree the reader walks past. Its length and its surrogates stay available until
-     * the next token is scanned.
+     * Builds the member name {@link #scanName()} scanned last.
      *
-     * @throws Malformed if the name is not a JSON string
+     * @return the name, its escapes decoded
      */
-    void skipName() {
-        scanString();
-        at = end;
-        colon = true;
+    String nameText() {
+        return build(start, end);
     }
 
     /**

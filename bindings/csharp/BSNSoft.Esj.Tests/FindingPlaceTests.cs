@@ -130,18 +130,39 @@ public class FindingPlaceTests
     /// <summary>
     /// A member name is held to the string bound in the bytes of its UTF-8 encoding wherever it
     /// stands: 524 289 times <c>ä</c> is 1 048 578 bytes and past the default bound, though it is
-    /// fewer UTF-16 code units than that.
+    /// fewer UTF-16 code units than that. A name past the bound is no part of the finding: the
+    /// subject names the object it stands in, the empty access for the envelope.
     /// </summary>
     [Fact]
     public void AMemberNameIsMeasuredInUtf8Bytes()
     {
         string name = new('ä', 524_289);
-        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "[\"" + name + "\"]") },
+        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "") },
             Read(Head + "\"" + name + "\":\"x\",\"values\":{\"/BT-1\":\"X\"}}"));
-        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "extensions[\"" + name + "\"]") },
+        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "extensions") },
             Read(WithExtensions("\"" + name + "\":1")));
-        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "values[\"" + name + "\"]") },
+        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "values") },
             Read(Values("\"" + name + "\":\"X\"")));
+    }
+
+    /// <summary>
+    /// A member name past the string bound names the object it stands in, wherever that is: a
+    /// member of <c>source</c>, a name inside an owner's subtree with the place of its object, and
+    /// a name inside a value object, which names the value object and carries its path.
+    /// </summary>
+    [Fact]
+    public void AMemberNamePastTheBoundNamesTheObjectItStandsIn()
+    {
+        Limits limits = Strings(64);
+        string name = new('ä', 40);
+        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "source") },
+            Read(WithSource("\"" + name + "\":\"x\""), limits));
+        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "extensions[\"o\"]") },
+            Read(WithExtensions("\"o\":{\"" + name + "\":1}"), limits));
+        Assert.Equal(new[] { ("", "ESJ-L1-LIMIT", "extensions[\"o\"][0]") },
+            Read(WithExtensions("\"o\":[{\"" + name + "\":1}]"), limits));
+        Assert.Equal(new[] { ("/BT-1", "ESJ-L1-LIMIT", "values[\"/BT-1\"]") },
+            Read(Values("\"/BT-1\":{\"value\":\"x\",\"" + name + "\":\"y\"}"), limits));
     }
 
     /// <summary>

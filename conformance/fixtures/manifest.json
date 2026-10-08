@@ -4514,7 +4514,7 @@
           {"layer": "L3", "reason": "LIMIT"}
         ],
         "findings": [
-          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "[\"ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\"]", "severity": "error"}
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "", "severity": "error"}
         ]
       }
     },
@@ -4542,7 +4542,7 @@
           {"layer": "L3", "reason": "LIMIT"}
         ],
         "findings": [
-          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]", "severity": "error"}
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions", "severity": "error"}
         ]
       }
     },
@@ -4584,7 +4584,86 @@
           {"layer": "L3", "reason": "LIMIT"}
         ],
         "findings": [
-          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]", "severity": "error"}
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-source.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-ENVELOPE-MEMBER", "subject": "source[\"sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-source.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "source", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-value-object.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"},
+          {"layer": "L3", "reason": "PRECEDING-LAYER-FAILED"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-VALUE-MEMBER", "subject": "values[\"/BG-4/BT-29/0\"][\"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-value-object.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "/BG-4/BT-29/0", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BG-4/BT-29/0\"]", "severity": "error"}
+        ]
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-extension.esj.json",
+      "limits": {"maxStringBytes": 65},
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/bounds/name-in-extension.esj.json",
+      "limits": {"maxStringBytes": 64},
+      "outcome": {
+        "status": "INDETERMINATE",
+        "notEvaluated": [
+          {"layer": "L2", "reason": "LIMIT"},
+          {"layer": "L3", "reason": "LIMIT"}
+        ],
+        "findings": [
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "extensions[\"de.example.vendor\"][0]", "severity": "error"}
         ]
       }
     },
@@ -5035,7 +5114,7 @@
           {"layer": "L3", "reason": "LIMIT"}
         ],
         "findings": [
-          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values[\"/BT-9xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\\ud800\"]", "severity": "error"}
+          {"path": "", "code": "ESJ-L1-LIMIT", "subject": "values", "severity": "error"}
         ]
       }
     },

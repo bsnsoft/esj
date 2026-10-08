@@ -146,30 +146,31 @@ class ReaderProbesTest {
     }
 
     /**
-     * Every member name is held to the string bound, counted in UTF-8 bytes, and the
-     * finding's subject is the member access with the name in it, whole (specification,
-     * sections 9.5 and 12.2).
+     * Every member name is held to the string bound, counted in UTF-8 bytes, and a name past
+     * it is no part of the finding: the subject names the object the name stands in, the
+     * empty access for the envelope, and the path is the one of section 9.5 — the member of
+     * {@code values} where the name stands in its value object (specification, sections 9.5
+     * and 12.2).
      */
     @Test
     void everyMemberNameIsHeldToTheStringBoundInUtf8Bytes() {
         String wide = "ä".repeat(33);
-        String subject = wide;
 
         assertFinding(only(findings(SMALL, values("\"" + wide + "\":\"x\""))),
-                "ESJ-L1-LIMIT", "", "values[\"" + subject + "\"]");
+                "ESJ-L1-LIMIT", "", "values");
         assertFinding(only(findings(SMALL, utf8("{\"" + wide + "\":1}"))),
-                "ESJ-L1-LIMIT", "", "[\"" + subject + "\"]");
+                "ESJ-L1-LIMIT", "", "");
         assertFinding(only(findings(SMALL, utf8("{\"source\":{\"" + wide + "\":1}}"))),
-                "ESJ-L1-LIMIT", "", "source[\"" + subject + "\"]");
+                "ESJ-L1-LIMIT", "", "source");
         assertFinding(only(findings(SMALL, document(
                         "\"values\":{},\"extensions\":{\"" + wide + "\":1}"))),
-                "ESJ-L1-LIMIT", "", "extensions[\"" + subject + "\"]");
+                "ESJ-L1-LIMIT", "", "extensions");
         assertFinding(only(findings(SMALL, document(
                         "\"values\":{},\"extensions\":{\"de.example\":[{\"" + wide + "\":1}]}"))),
-                "ESJ-L1-LIMIT", "", "extensions[\"de.example\"][0][\"" + subject + "\"]");
+                "ESJ-L1-LIMIT", "", "extensions[\"de.example\"][0]");
         assertFinding(only(findings(SMALL, values(
                         "\"/BT-1\":{\"value\":\"a\",\"" + wide + "\":\"b\"}"))),
-                "ESJ-L1-LIMIT", "/BT-1", "values[\"/BT-1\"][\"" + subject + "\"]");
+                "ESJ-L1-LIMIT", "/BT-1", "values[\"/BT-1\"]");
     }
 
     @Test
@@ -198,7 +199,7 @@ class ReaderProbesTest {
         String longer = "a".repeat(65);
         assertFinding(only(findings(SMALL, document(
                         "\"values\":{},\"extensions\":{\"" + longer + "\":1}"))),
-                "ESJ-L1-LIMIT", "", "extensions[\"" + longer + "\"]");
+                "ESJ-L1-LIMIT", "", "extensions");
     }
 
     /**
@@ -303,7 +304,7 @@ class ReaderProbesTest {
     @Test
     void theBoundOnANameIsAskedBeforeItsSurrogates() {
         assertFinding(only(findings(SMALL, values("\"\\ud800" + "x".repeat(64) + "\":\"a\""))),
-                "ESJ-L1-LIMIT", "", "values[\"\\ud800" + "x".repeat(64) + "\"]");
+                "ESJ-L1-LIMIT", "", "values");
     }
 
 

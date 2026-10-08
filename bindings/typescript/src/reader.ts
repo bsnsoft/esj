@@ -233,7 +233,7 @@ class Parse {
     let any = false;
     while (scanner.nextMember(any)) {
       any = true;
-      const name = scanner.readName();
+      const name = this.readName('');
       const subject = envelopeSubject(name);
       this.nameTheReaderCannotTake(name, subject, seen);
       this.place = subject;
@@ -277,12 +277,31 @@ class Parse {
   }
 
   /**
-   * Holds one member name to what is held against the name itself, before anything is read of
-   * the value written under it (section 9.6): the string bound of section 12.2, which every
-   * member name is held to in UTF-8 bytes and which outranks what it stopped the reader from
-   * judging; a lone surrogate, which names nothing; and a name that has already occurred in
-   * this object, which leaves no one object to judge. Each ends the read with that one code,
-   * and the object is judged no further.
+   * Reads the member name the scanner stands on and holds it to the string bound of section
+   * 12.2, in UTF-8 bytes, before a character of it is kept: the bound outranks what it stopped
+   * the reader from judging (section 9.6). A name past it is not held at all, and the finding
+   * names the object the name stands in, because the name is no longer part of the finding
+   * (section 9.5): the empty access for the envelope, `values`, `source`, `extensions`, the
+   * member of `values` whose value object it is, or the place of an object below an owner token.
+   * So a document cannot decide, through one name, how much a refusal costs.
+   *
+   * @param holder the member access of the object the name stands in
+   */
+  private readName(holder: string | Where): string {
+    const name = this.scanner.readName(this.limits.maxStringBytes);
+    if (name === undefined) {
+      this.limit('a member name is longer than ' + this.limits.maxStringBytes
+        + ' bytes, at offset ' + this.scanner.nameOffset + '.', spelled(holder));
+    }
+    return name;
+  }
+
+  /**
+   * Holds one member name, which is within the string bound, to what is held against the name
+   * itself before anything is read of the value written under it (section 9.6): a lone
+   * surrogate, which names nothing; and a name that has already occurred in this object, which
+   * leaves no one object to judge. Each ends the read with that one code, and the object is
+   * judged no further.
    *
    * The surrogate is asked before the repeated name because the two are ranked by the place the
    * text reaches first and a repeated name is met at its second occurrence, so the earlier of
@@ -291,7 +310,7 @@ class Parse {
    * `extensions`.
    *
    * @param name the member name
-   * @param access the member access of the member, which a bound the name reaches names
+   * @param access the member access of the member
    * @param seen the names the object has carried so far
    * @param judged what a surrogate or a repeated name is reported about: the member, except
    *   inside a value object, whose findings name the object (section 9.5)
@@ -299,10 +318,6 @@ class Parse {
   private nameTheReaderCannotTake(
     name: string, access: string | Where, seen: Set<string>, judged: string | Where = access,
   ): void {
-    if (utf8Length(name) > this.limits.maxStringBytes) {
-      this.limit('a member name is longer than ' + this.limits.maxStringBytes
-        + ' bytes, at offset ' + this.scanner.nameOffset + '.', spelled(access));
-    }
     if (hasLoneSurrogate(name)) {
       this.fatal(FindingCode.L1_SURROGATE,
         'a member name carries a lone surrogate and has no UTF-8 encoding.', spelled(judged));
@@ -384,7 +399,7 @@ class Parse {
     let any = false;
     while (scanner.nextMember(any)) {
       any = true;
-      const name = scanner.readName();
+      const name = this.readName('values');
       const subject = valuesSubject(name);
       this.nameTheReaderCannotTake(name, subject, seen);
       if (++this.valueCount > this.limits.maxValues) {
@@ -479,7 +494,7 @@ class Parse {
     let any = false;
     while (scanner.nextMember(any)) {
       any = true;
-      const name = scanner.readName();
+      const name = this.readName(subject);
       const access = valueMemberSubject(subject, name);
       this.nameTheReaderCannotTake(name, access, seen, subject);
       if (members.length >= this.limits.maxValueMembers) {
@@ -563,9 +578,11 @@ class Parse {
 
   /**
    * Checks the strings of a value object, in the order the document wrote them, and builds
-   * the value. The content of a value that carries a binary component is held to the larger
-   * of the two string bounds of section 12.2: a reader has no registry and cannot know the
-   * semantic data type of the term, and the presence of such a component is what it can see.
+   * the value. The content of a value that carries a binary component is held to the bound on
+   * binary content of section 12.2, and to that one alone, whether it is larger or smaller than
+   * the string bound; every other string to the string bound. A reader has no registry and
+   * cannot know the semantic data type of the term, and the presence of such a component is
+   * what it can see.
    */
   private build(
     named: Map<ValueMember, string>, subject: string, surrogate: boolean,
@@ -648,7 +665,7 @@ class Parse {
     let any = false;
     while (scanner.nextMember(any)) {
       any = true;
-      const owner = scanner.readName();
+      const owner = this.readName('extensions');
       const subject = extensionsSubject(owner);
       this.nameTheReaderCannotTake(owner, subject, seen);
       if (!isOwnerToken(owner)) {
@@ -720,7 +737,7 @@ class Parse {
           open.pop();
           continue;
         }
-        const name = scanner.readName();
+        const name = this.readName(container.where);
         where = new Where(name, container.where);
         this.nameTheReaderCannotTake(name, where, container.names);
         container.pending = name;
@@ -799,7 +816,7 @@ class Parse {
     let any = false;
     while (scanner.nextMember(any)) {
       any = true;
-      const name = scanner.readName();
+      const name = this.readName('source');
       const subject = sourceSubject(name);
       this.nameTheReaderCannotTake(name, subject, seen);
       if (name !== 'syntax' && name !== 'sha256') {

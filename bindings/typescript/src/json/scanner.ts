@@ -23,10 +23,9 @@ import type { Limits } from '../limits.ts';
  * Two bounds are applied here, to every token of the document, because they size what a token
  * may cost before the reader knows where it stands: a number token at the string bound of
  * section 12.2, and a string the reader keeps at the bound the reader names for the place it
- * stands in, both counted in UTF-8 bytes while the token is read. A member name is read whole
- * and handed to the reader, which holds it to the string bound itself, because a finding about
- * a name names the member it stands for; a name below a value the reader walks past is held
- * to that bound here.
+ * stands in, both counted in UTF-8 bytes while the token is read. A member name is measured
+ * against the string bound the same way: one past it is read to its end for the JSON text and
+ * not kept, and the reader names the object it stands in rather than the name (section 9.5).
  *
  * Every offset a message names is the offset in UTF-8 bytes, counted from zero, of the
  * beginning of the token the scanner stopped at (section 9.5).
@@ -211,17 +210,21 @@ export class Scanner {
   }
 
   /**
-   * Reads the member name the scanner stands on.
+   * Reads the member name the scanner stands on, measuring it in UTF-8 bytes against the string
+   * bound of section 12.2 as it is read.
    *
-   * The name is read whole: the reader holds every member name to the string bound of
-   * section 12.2 and names the member in the finding, which takes the name. The document bound
-   * has already sized it. The colon after the name is read where the value is, so that a defect
-   * of the name is judged before the text after it (section 9.6): `"foo" 1` in the envelope is an
-   * undefined member before it is a missing colon.
+   * A name past the bound is read to its end without being kept — for the JSON text and nothing
+   * else, a lone surrogate in it included, because the bound comes first in a name (section 9.6)
+   * — and `undefined` is returned: the reader reports the limit and names the object the name
+   * stands in, so the name is never held (section 9.5). The colon after the name is read where
+   * the value is, so that a defect of the name is judged before the text after it (section 9.6):
+   * `"foo" 1` in the envelope is an undefined member before it is a missing colon.
+   *
+   * @param bound the most UTF-8 bytes a name may take
    */
-  readName(): string {
+  readName(bound: number): string | undefined {
     this.nameAt = this.at;
-    const name = this.string(Number.POSITIVE_INFINITY, false);
+    const name = this.string(bound, false, true);
     this.colonPending = true;
     return name;
   }
@@ -256,7 +259,7 @@ export class Scanner {
   readString(bound: number, normalized: boolean): string {
     this.colon();
     this.skipWhitespace();
-    return this.string(bound, normalized);
+    return this.string(bound, normalized, false) as string;
   }
 
   /**
@@ -378,8 +381,7 @@ export class Scanner {
         if (top.object ? this.nextMember(top.any) : this.nextElement(top.any)) {
           top.any = true;
           if (top.object) {
-            const name = this.readName();
-            if (utf8Length(name) > this.limits.maxStringBytes) {
+            if (this.readName(this.limits.maxStringBytes) === undefined) {
               this.fail(FindingCode.L1_LIMIT, 'a member name is longer than '
                 + this.limits.maxStringBytes + ' bytes, at offset ' + this.nameOffset);
             }
@@ -429,9 +431,10 @@ export class Scanner {
    * normalized, a LF straight after a CR counts nothing, because the two become one LF.
    *
    * Past the bound the rest of the string is read without being kept, looking for a lone
-   * surrogate only: see {@link readString}.
+   * surrogate only: see {@link readString}. A member name past the bound is read on for the JSON
+   * text alone and comes back as `undefined`: see {@link readName}.
    */
-  private string(bound: number, normalized: boolean): string {
+  private string(bound: number, normalized: boolean, name: boolean): string | undefined {
     const text = this.text;
     const start = this.at;
     this.at++;
@@ -454,6 +457,9 @@ export class Scanner {
         }
         if (kept) {
           return value + text.slice(plain, this.at - 1);
+        }
+        if (name) {
+          return undefined;
         }
         if (lone) {
           return LONE_SURROGATE;

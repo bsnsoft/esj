@@ -1178,8 +1178,9 @@ class FixtureManifestTest {
      * cases that decide what a bound is measured on: the normalized string inside
      * {@code values} and the raw one outside it, the string bound before the fixed value, the
      * edition grammar, the owner-token grammar and the path grammar, the number token inside
-     * and outside {@code extensions}, the structure a reader walks past, the larger of the two
-     * string bounds on a value object, the formula of the total binary content, the text
+     * and outside {@code extensions}, the structure a reader walks past, the two string bounds
+     * on a value object, a member name past the bound in each kind of object, which names the
+     * object and not the name, the formula of the total binary content, the text
      * order in which a bound stops a reader, and the order of the checks of one token: a
      * string or a name is read as a whole JSON token before its bound, a lone surrogate comes
      * before the bound of a string and after the bound of a name. A byte bound is never set
@@ -1218,6 +1219,12 @@ class FixtureManifestTest {
                 bound(b + "long-bad-path.esj.json", "maxPathBytes", 65),
                 bound(b + "long-bad-path.esj.json", "maxPathBytes", 64),
                 bound(b + "long-bad-path.esj.json", "maxStringBytes", 64),
+                bound(b + "name-in-source.esj.json", "maxStringBytes", 65),
+                bound(b + "name-in-source.esj.json", "maxStringBytes", 64),
+                bound(b + "name-in-value-object.esj.json", "maxStringBytes", 65),
+                bound(b + "name-in-value-object.esj.json", "maxStringBytes", 64),
+                bound(b + "name-in-extension.esj.json", "maxStringBytes", 65),
+                bound(b + "name-in-extension.esj.json", "maxStringBytes", 64),
                 bound(b + "number-token.esj.json", "maxStringBytes", 65),
                 bound(b + "number-token.esj.json", "maxStringBytes", 64),
                 bound(b + "number-in-values.esj.json", "maxStringBytes", 65),

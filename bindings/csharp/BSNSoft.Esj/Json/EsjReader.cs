@@ -279,7 +279,7 @@ public sealed class EsjReader
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
-            foreach (string name in Members(EnvelopeAccess))
+            foreach (string name in Members(string.Empty))
             {
                 string access = EnvelopeAccess(name);
                 NameTheReaderCannotTake(name, access, seen);
@@ -431,7 +431,7 @@ public sealed class EsjReader
             HashSet<string> seen = new(StringComparer.Ordinal);
             string? syntax = null;
             string? sha256 = null;
-            foreach (string name in Members(SourceAccess))
+            foreach (string name in Members("source"))
             {
                 string access = SourceAccess(name);
                 NameTheReaderCannotTake(name, access, seen);
@@ -484,7 +484,7 @@ public sealed class EsjReader
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
-            foreach (string name in Members(ValuesAccess))
+            foreach (string name in Members("values"))
             {
                 string access = ValuesAccess(name);
                 NameTheReaderCannotTake(name, access, seen);
@@ -566,7 +566,7 @@ public sealed class EsjReader
             List<Member> members = new();
             HashSet<string> seen = new(StringComparer.Ordinal);
             bool component = false;
-            foreach (string name in Members(member => ValueMemberAccess(where, member)))
+            foreach (string name in Members(where))
             {
                 string access = ValueMemberAccess(where, name);
                 NameTheReaderCannotTake(name, where, seen);
@@ -825,8 +825,7 @@ public sealed class EsjReader
                         }
 
                         int start = _at;
-                        string name = ReadName();
-                        CheckNameBound(name, start, () => access);
+                        _ = ReadName() ?? throw NameLimit(start, access);
                         Colon();
                     }
                     else if (!NextElement(container.Any))
@@ -871,7 +870,7 @@ public sealed class EsjReader
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
-            foreach (string owner in Members(OwnerAccess))
+            foreach (string owner in Members("extensions"))
             {
                 string access = OwnerAccess(owner);
                 NameTheReaderCannotTake(owner, access, seen);
@@ -953,9 +952,8 @@ public sealed class EsjReader
                     }
 
                     int start = _at;
-                    string name = ReadName();
+                    string name = ReadName() ?? throw NameLimit(start, container.Where.Text());
                     Where memberWhere = new(container.Where, name);
-                    CheckNameBound(name, start, memberWhere.Text);
                     if (Texts.HasLoneSurrogate(name))
                     {
                         throw Fatal(FindingCode.Surrogate, memberWhere.Text(), "a member name carries an unpaired surrogate");
@@ -1160,10 +1158,15 @@ public sealed class EsjReader
         /// <summary>
         /// Walks the members of an object the reader has opened, handing each name over and
         /// leaving the parser on the value that follows it. Each name is held to the string
-        /// bound of section 12.2 before anything else is asked of it, and a name past it is
-        /// reported under the member access <paramref name="access"/> gives it.
+        /// bound of section 12.2 before anything else is asked of it, and before a character of
+        /// it is kept: a name past the bound is not held, and the finding names
+        /// <paramref name="holder"/>, the object the name stands in (specification, section 9.5).
         /// </summary>
-        private IEnumerable<string> Members(Func<string, string> access)
+        /// <param name="holder">
+        /// the member access of the object: the empty string for the envelope, <c>values</c>,
+        /// <c>source</c>, <c>extensions</c>, or the member of <c>values</c> whose value object it is
+        /// </param>
+        private IEnumerable<string> Members(string holder)
         {
             bool any = false;
             while (true)
@@ -1198,8 +1201,7 @@ public sealed class EsjReader
 
                 int start = _at;
                 _nameStart = start;
-                string name = ReadName();
-                CheckNameBound(name, start, () => access(name));
+                string name = ReadName() ?? throw NameLimit(start, holder);
                 // The colon is read where the value is (PeekKind), so that the caller judges the
                 // name before the text after it (specification, section 9.6).
                 _colonPending = true;
@@ -1209,18 +1211,15 @@ public sealed class EsjReader
         }
 
         /// <summary>
-        /// Holds a member name to the string bound of the specification, section 12.2, counted in
-        /// the bytes of its UTF-8 encoding. The bounds of the grammars a name is measured against
-        /// afterwards — the path, the owner token — apply inside this one.
+        /// Returns the limit of a member name past the string bound of the specification,
+        /// section 12.2, counted in the bytes of its UTF-8 encoding. The name is not part of the
+        /// finding: <paramref name="holder"/> names the object it stands in, or inside a structure
+        /// the reader walks past the member walked past. The bounds of the grammars a name within
+        /// the bound is measured against afterwards — the path, the owner token — apply inside
+        /// this one.
         /// </summary>
-        private void CheckNameBound(string name, int start, Func<string> access)
-        {
-            if (Texts.Utf8Length(name) > _limits.MaxStringBytes)
-            {
-                throw LimitAt("a member name is longer than " + _limits.MaxStringBytes + " bytes"
-                    + TokenAt(start), access());
-            }
-        }
+        private EsjLimitException NameLimit(int start, string holder) =>
+            LimitAt("a member name is longer than " + _limits.MaxStringBytes + " bytes" + TokenAt(start), holder);
 
         /// <summary>
         /// Stands on the next member name of an open object, or on the brace that closes it.
@@ -1347,11 +1346,13 @@ public sealed class EsjReader
         };
 
         /// <summary>
-        /// Reads a member name whole. The name is held to its bound once it is read, because a
-        /// finding about a name names it whole (specification, section 9.5): the document is
-        /// already held, so reading the name costs nothing a bound would have saved.
+        /// Reads a member name, measuring it in UTF-8 bytes against the string bound of section
+        /// 12.2 as it is read, and returns <c>null</c> for a name past the bound. Such a name is
+        /// read to its end for the JSON text and nothing else — a lone surrogate in it included,
+        /// because the bound comes first in a name (specification, section 9.6) — and is never
+        /// kept, so that a document cannot decide through one name how much a refusal costs.
         /// </summary>
-        private string ReadName() => ReadString(long.MaxValue)!;
+        private string? ReadName() => ReadString(_limits.MaxStringBytes, name: true);
 
         /// <summary>
         /// What <see cref="ReadString"/> returns for a string past its bound that carries a lone
@@ -1371,9 +1372,10 @@ public sealed class EsjReader
         /// (specification, section 9.6): one that carries a lone surrogate is returned as
         /// <see cref="LoneSurrogate"/>, which every caller refuses for the surrogate before it asks
         /// anything else, and any other one as <c>null</c>, which the caller refuses with
-        /// <c>ESJ-L1-LIMIT</c>.
+        /// <c>ESJ-L1-LIMIT</c>. A member name past the bound is <c>null</c> either way, because in a
+        /// name the bound comes first.
         /// </remarks>
-        private string? ReadString(long bound, bool normalized = false, bool keep = true)
+        private string? ReadString(long bound, bool normalized = false, bool keep = true, bool name = false)
         {
             SkipWhitespace();
             if (_at >= _text.Length || _text[_at] != '"')
@@ -1405,7 +1407,7 @@ public sealed class EsjReader
                         return value is null ? string.Empty : value.ToString();
                     }
 
-                    return lone ? LoneSurrogate : null;
+                    return lone && !name ? LoneSurrogate : null;
                 }
 
                 if (character < 0x20)

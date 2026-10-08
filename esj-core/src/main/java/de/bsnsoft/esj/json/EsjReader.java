@@ -95,8 +95,11 @@ import java.util.Set;
  * defines in dotted form — {@code source.syntax}, {@code values["/BT-29/0"].scheme} — and a
  * name the document chose in brackets, as a JSON string with the escapes of section 9.5 —
  * {@code values["/BT-1"]}, {@code extensions["de.example"]["a"][0]}, {@code ["profile"]}.
- * It is never shortened. Document content in a <em>message</em> is truncated to a short
- * excerpt, because a message is written to a log and a hostile document would otherwise
+ * It is never shortened. A member name longer than the string bound is the one thing it
+ * does not carry: the reader measures such a name without holding it, and the finding names
+ * the object the name stands in — {@code values}, {@code source}, {@code extensions["o"]},
+ * the empty access for the envelope. Document content in a <em>message</em> is truncated to
+ * a short excerpt, because a message is written to a log and a hostile document would otherwise
  * decide how long that line is (section 12.6). A message that places a defect in the byte
  * sequence names the offset of the token it was met in, counted in bytes from zero.
  *
@@ -554,7 +557,7 @@ public final class EsjReader {
             boolean first = true;
             while (scanner.nextMember(first)) {
                 first = false;
-                String name = scanner.name();
+                String name = name("");
                 String where = ENVELOPE_MEMBERS.contains(name) ? name : bracket("", name);
                 checkName(where);
                 if (!seen.add(name)) {
@@ -664,7 +667,7 @@ public final class EsjReader {
             boolean first = true;
             while (scanner.nextMember(first)) {
                 first = false;
-                String name = scanner.name();
+                String name = name("source");
                 boolean defined = name.equals("syntax") || name.equals("sha256");
                 String where = defined ? "source." + name : bracket("source", name);
                 checkName(where);
@@ -725,7 +728,7 @@ public final class EsjReader {
             boolean first = true;
             while (scanner.nextMember(first)) {
                 first = false;
-                String name = scanner.name();
+                String name = name("values");
                 int nameAt = scanner.tokenStart();
                 long nameBytes = scanner.utf8Length();
                 String where = bracket("values", name);
@@ -855,10 +858,10 @@ public final class EsjReader {
             boolean first = true;
             while (scanner.nextMember(first)) {
                 first = false;
-                String name = scanner.name();
+                String name = name(where);
                 int nameAt = scanner.tokenStart();
                 String member = memberWhere(where, name);
-                checkName(member, where);
+                checkName(where);
                 if (!seen.add(name)) {
                     throw duplicate(name, where);
                 }
@@ -997,9 +1000,10 @@ public final class EsjReader {
          * Checks the strings of a value object and builds the value, or returns
          * {@code null} when a string was reported here or a lone surrogate was reported
          * before. The content of a value that carries a binary component is held to the
-         * larger of the two string bounds of the specification, section 12.2: a reader
-         * has no registry and cannot know the semantic data type of the term, and the
-         * presence of such a component is what it can see.
+         * bound on binary content of the specification, section 12.2, and to that one alone,
+         * whether it is larger or smaller than the string bound; every other string to the
+         * string bound. A reader has no registry and cannot know the semantic data type of
+         * the term, and the presence of such a component is what it can see.
          */
         private SemanticValue build(Map<String, String> members,
                                     String where,
@@ -1087,7 +1091,7 @@ public final class EsjReader {
             boolean first = true;
             while (scanner.nextMember(first)) {
                 first = false;
-                String owner = scanner.name();
+                String owner = name("extensions");
                 String where = bracket("extensions", owner);
                 checkName(where);
                 if (!seen.add(owner)) {
@@ -1150,7 +1154,7 @@ public final class EsjReader {
                         open.pop();
                         continue;
                     }
-                    String name = scanner.name();
+                    String name = name(container.where());
                     Where member = container.where().child(name);
                     checkName(member);
                     if (container.has(name)) {
@@ -1290,11 +1294,9 @@ public final class EsjReader {
                     if (more) {
                         top[1] = false;
                         if (top[0]) {
-                            scanner.skipName();
+                            scanner.scanName();
                             if (scanner.utf8Length() > limits.maxStringBytes()) {
-                                throw limit("a member name is longer than "
-                                        + limits.maxStringBytes() + " bytes", stringBytes(),
-                                        where, scanner.tokenStart());
+                                throw nameLimit(where);
                             }
                         }
                         break;
@@ -1322,33 +1324,53 @@ public final class EsjReader {
         }
 
         /**
-         * Judges the member name the scanner just read against the two rules that hold
-         * against a name wherever it stands: it is no longer than the string bound of
-         * section 12.2, counted in UTF-8 bytes, and it carries no unpaired surrogate, which
-         * would leave it with no UTF-8 encoding (section 6.8). Either ends the read. The bound
-         * is asked first, because it decides whether the name is held at all.
+         * Reads the member name the scanner stands on and holds it to the string bound of the
+         * specification, section 12.2, counted in UTF-8 bytes, before a character of it is
+         * built. A name past the bound is not held at all: the scanner has read it to its end
+         * for the JSON text and nothing else, and the finding names the object the name stands
+         * in, because the name is no longer part of it (section 9.5). That is what keeps a
+         * document from deciding, through one name, how much a refusal costs.
          *
-         * @param where the member access of the member the name belongs to, which is the
-         *              subject of either finding
+         * @param holder the member access of the object the name stands in: the empty string
+         *               for the envelope, {@code values}, {@code source}, {@code extensions},
+         *               or the member of {@code values} whose value object it is
+         * @return the name, built
+         * @throws EsjLimitException if the name is longer than the string bound
          */
-        private void checkName(String where) {
-            checkName(where, where);
+        private String name(String holder) {
+            scanner.scanName();
+            if (scanner.utf8Length() > limits.maxStringBytes()) {
+                throw nameLimit(holder);
+            }
+            return scanner.nameText();
         }
 
         /**
-         * Judges a member name as {@link #checkName(String)} does, naming a surrogate in it by
-         * another subject than the bound: inside a value object, a finding about a member
-         * name is a finding about the value object (specification, section 9.5).
-         *
-         * @param where  the member access of the member the name belongs to, which a bound
-         *               the name reaches names
-         * @param judged what a surrogate in the name is reported about
+         * Reads a member name below an owner token as {@link #name(String)} does, writing the
+         * place of the object it stands in only where the bound needs it.
          */
-        private void checkName(String where, String judged) {
+        private String name(Where holder) {
+            scanner.scanName();
             if (scanner.utf8Length() > limits.maxStringBytes()) {
-                throw limit("a member name is longer than " + limits.maxStringBytes()
-                        + " bytes", stringBytes(), where, scanner.tokenStart());
+                throw nameLimit(holder.text());
             }
+            return scanner.nameText();
+        }
+
+        private EsjLimitException nameLimit(String holder) {
+            return limit("a member name is longer than " + limits.maxStringBytes() + " bytes",
+                    stringBytes(), holder, scanner.tokenStart());
+        }
+
+        /**
+         * Judges the member name the scanner just read, and which is within the string bound,
+         * for an unpaired surrogate, which would leave it with no UTF-8 encoding (section 6.8).
+         * It ends the read.
+         *
+         * @param judged what the finding is about: the member the name belongs to, or inside a
+         *               value object the value object (specification, section 9.5)
+         */
+        private void checkName(String judged) {
             if (scanner.loneSurrogate()) {
                 throw fatal(FindingCode.ESJ_L1_SURROGATE, judged,
                         "a member name carries an unpaired surrogate");
@@ -1357,7 +1379,7 @@ public final class EsjReader {
 
         /** Judges a member name below an owner token, writing its place only if needed. */
         private void checkName(Where where) {
-            if (scanner.loneSurrogate() || scanner.utf8Length() > limits.maxStringBytes()) {
+            if (scanner.loneSurrogate()) {
                 checkName(where.text());
             }
         }

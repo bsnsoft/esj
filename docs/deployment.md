@@ -231,7 +231,7 @@ input **at** the bound is read and judged:
 | Profile | Bound | File argument | Standard input | Resident set at those ceilings |
 |---|---|---|---|---|
 | default | 4 MiB of XML | `64m` | `64m` | 215 MiB / 210 MiB |
-| default | 64 MiB of ESJ | `128m` | `160m` | 291 MiB / 257 MiB |
+| default | 64 MiB of ESJ | `160m` | `160m` | 276 MiB / 251 MiB |
 | default | 64 MiB of PDF | `96m` | `160m` | 271 MiB / 285 MiB |
 | `large` | 256 MiB of XML | `3g` | not measured | 3 477 MiB |
 | `large` | 512 MiB of ESJ | `640m` | `1280m` | 1 259 MiB / 1 308 MiB |

@@ -1624,18 +1624,17 @@ generated from: a document carrying an extension term is outside it and is refus
 statement about the schema and not about the document (sections 5.6 and 6.2).
 
 Where the schema can express a limit of section 12.2 it does, with the default value:
-`maxProperties` on `values`, `maxLength` on string values and on `semanticModel`. Those are
-guards, not the limit: a reader configured with other limits is authoritative, and the code
-point count is at most as strict as the byte count. A string of `values` is measured by the
-limit after CR LF has become LF (section 6.8) and by the schema as it is written, so the schema
-allows twice the limit there — 2 097 152 code points, and 67 108 864 for the content of a value
-object — the most a string can shrink to the limit by normalization. The schema cannot make one
-bound depend on whether a sibling member
-is present, so it applies the larger of the two string bounds to the `value` member of every
-value object, while section 12.2 applies it only where the object carries `mimeCode` or
-`filename` and the smaller one everywhere else. The schema is therefore the more permissive of
-the two here, and a reader is authoritative — a reader that decides by the binary components it
-can see, without a registry and without knowing the term.
+`maxProperties` on `values`, `maxLength` on string values and on `semanticModel`. Those are guards,
+not the limit: a reader configured with other limits is authoritative, and the code point count is
+at most as strict as the byte count. A string of `values` is measured by the limit after CR LF has
+become LF (section 6.8) and by the schema as it is written, so the schema allows twice the limit
+there — 2 097 152 code points, and 67 108 864 for the content of a value object — the most a string
+can shrink to the limit by normalization. The schema cannot make one bound depend on whether a
+sibling member is present, so it applies the bound on binary content to the `value` member of every
+value object, while section 12.2 applies that bound only where the object carries `mimeCode` or
+`filename` and the string bound everywhere else. The schema is therefore the more permissive of the
+two here, and a reader is authoritative — a reader that decides by the binary components it can see,
+without a registry and without knowing the term.
 
 The JSON type of an envelope member is not in the table above, because the schema does check
 it: `{"values": []}`, `{"extensions": "x"}` and `{"source": 5}` are rejected by the schema and
@@ -1813,7 +1812,7 @@ twice, a name past a limit — and every finding outside `values`.
 | `ESJ-L1-JSON-TYPE`, `ESJ-L1-VALUE-SHAPE`, `ESJ-L1-VALUE-MEMBER`, `ESJ-L1-EMPTY-STRING` | by the rule above | the access of the member of `values`, or of the member of its value object that the finding is about (below) |
 | `ESJ-L1-SURROGATE` | by the rule above | the access of the member whose name or whose string value carries the surrogate: `values["/BG-4/BT-27"]`, `values["/BT-1"].scheme`, `source.syntax`, `extensions["o"]["\ud800"]`, `["\ud800"]`; for a name inside a value object the access of the value object, `values["/BT-1"]` (below) |
 | `ESJ-L1-EXT-NUMBER` | empty | the access of the number: `extensions["de.example"]["n"]`, `extensions["de.example"][2]` |
-| `ESJ-L1-LIMIT` | by the rule above | the access of the member or array element whose name or value reaches the bound (section 12.2): for the members of `values` the first member past the count, for the members of a value object the value object, for the nodes inside `extensions` the first node past the count; inside a structure a reader walks past under `values` (section 9.6), the access of the member whose value it walks past, `values["/BT-1"]` or `values["/BT-1"].value`, and nothing deeper; empty for the bound on the document size |
+| `ESJ-L1-LIMIT` | by the rule above | the access of the member or array element whose name or value reaches the bound (section 12.2): for the members of `values` the first member past the count, for the members of a value object the value object, for the nodes inside `extensions` the first node past the count; for a member name past the string bound the access of the object that holds the name, and never the name (below) — `values`, `source`, `extensions`, `extensions["o"][0]`, inside a value object the value object `values["/BT-1"]`, and empty for a name of the envelope; inside a structure a reader walks past under `values` (section 9.6), the access of the member whose value it walks past, `values["/BT-1"]` or `values["/BT-1"].value`, and nothing deeper; empty for the bound on the document size |
 | `ESJ-L2-UNKNOWN-TERM`, `ESJ-L2-INDEX-REQUIRED`, `ESJ-L2-INDEX-FORBIDDEN` | the path | the identifier of the segment the finding is about: `BG-999` |
 | `ESJ-L2-PARENT-CHAIN` | the path | the identifier of the term the path ends at, whose recorded chains its group segments do not match |
 | `ESJ-L2-COMPONENT-NOT-ALLOWED`, `ESJ-L2-COMPONENT-MISSING` | the path | the name of the component: `scheme`, `schemeVersion`, `mimeCode` or `filename` |
@@ -1859,14 +1858,17 @@ array is written as its zero-based index in brackets. So `format`, `source.synta
 place; `values["/BT-1"].f\u001bo\"` is not one.
 
 A `subject` is never shortened, whatever its length: it carries its names whole, escaped and in
-nothing else altered. Only the message is held to an excerpt (section 12.6).
+nothing else altered. Only the message is held to an excerpt (section 12.6). The one name a subject
+does not carry is a member name longer than the string bound: a reader does not hold such a name
+(section 12.2), so the finding names the object the name stands in, and the message names the offset
+at which the name begins.
 
 **The member a finding about a value object names.** A finding about a member **name** inside a
-value object — a name that occurs twice, a name carrying a lone surrogate, a member past the
-bound on the members of a value object — names the value object, `values["/BT-1"]`: such a
-defect leaves no object to judge (section 9.6), and the value object is where a caller mends it.
-A value object draws at most one of the five codes of the order in section 9.6, and the subject
-of that finding is fixed with it:
+value object — a name that occurs twice, a name carrying a lone surrogate, a name past the string
+bound, a member past the bound on the members of a value object — names the value object,
+`values["/BT-1"]`: such a defect leaves no object to judge (section 9.6), and the value object is
+where a caller mends it. A value object draws at most one of the five codes of the order in
+section 9.6, and the subject of that finding is fixed with it:
 
 1. no supplementary component (`ESJ-L1-VALUE-SHAPE`): the member of `values`, `values["/BT-1"]`;
 2. a member that is a JSON object (`ESJ-L1-VALUE-SHAPE`): that member;
@@ -1894,7 +1896,8 @@ the length of the byte sequence. The message of `ESJ-L1-JSON` MUST name the offs
 token that cannot stand where it stands, because neither `path` nor `subject` can point into a
 text that is not JSON: `{"format" 1}` stops at the `1`, and `tru`, `01` and `1.` each at their
 first character. The message of an `ESJ-L1-LIMIT` met at a token SHOULD name that token's
-offset.
+offset, and that of a member name past the string bound MUST, because its subject names only the
+object the name stands in.
 
 A validator MUST set `path` and `subject` as the table gives them. Two findings that would
 otherwise be indistinguishable — four mandatory terms missing at the root of a document draw
@@ -2245,26 +2248,28 @@ and then `ESJ-L1-JSON` at the `01`, and no `ESJ-L1-SURROGATE`.
 A reader that ends with an exception instead of reporting (section 9.5) stops at the first
 finding of that list and carries it, whichever kind of defect it is.
 
-**A limit outranks what the limit stopped the reader from reading.** Where a bound of
-section 12.2 stops a reader before it has judged a member, the finding is `ESJ-L1-LIMIT` and
-not the code that member would have drawn had the reader read it. The reader did not judge the
-member, and the two answers are not interchangeable: `ESJ-L1-LIMIT` leaves the result
-`INDETERMINATE` and invites a retry against a larger bound, while the shape codes of the order
-above make it `INVALID` and tell the next program along to reject the document (section 9.5).
-Within one name or one string, the order of its checks above says where the bound stands: a
-lone surrogate in a string is found before the string bound is measured, however far past the
-bound the string runs, so a reader that stops keeping a string at the bound reads it on to its
-end for a lone surrogate before it reports the limit. A string that carries one is held to no
-bound at all. Inside a value object a reader holds a supplementary component to the string bound
-and the `value` member to the larger of the two string bounds while it reads them, because which
-of the two applies to `value` is decided by members that may still follow (section 12.2); a member
-past that bound stops the reader before the object is judged, and the bound that applies is
-measured once the object is judged.
-A reader that walks past a JSON structure nested deeper than the bound allows, or that meets a
-number token longer than the string bound — inside `extensions` or anywhere else — therefore
-reports the limit and not `ESJ-L1-JSON-TYPE`, `ESJ-L1-VALUE-SHAPE` or `ESJ-L1-EXT-NUMBER`, and a
-member name longer than the string bound is `ESJ-L1-LIMIT` and not `ESJ-L1-OWNER-TOKEN`,
-`ESJ-L1-PATH-SYNTAX` or `ESJ-L1-ENVELOPE-MEMBER` (section 12.2).
+**A limit outranks what the limit stopped the reader from reading.** Where a bound of section 12.2
+stops a reader before it has judged a member, the finding is `ESJ-L1-LIMIT` and not the code that
+member would have drawn had the reader read it. The reader did not judge the member, and the two
+answers are not interchangeable: `ESJ-L1-LIMIT` leaves the result `INDETERMINATE` and invites a
+retry against a larger bound, while the shape codes of the order above make it `INVALID` and tell
+the next program along to reject the document (section 9.5). Within one name or one string, the
+order of its checks above says where the bound stands: a lone surrogate in a string is found before
+the string bound is measured, however far past the bound the string runs, so a reader that stops
+keeping a string at the bound reads it on to its end for a lone surrogate before it reports the
+limit. A string that carries one is held to no bound at all. A member name is the other way round:
+the bound is its first check, so a reader that stops keeping a name at the bound reads it on to its
+end for the JSON text alone — an escape JSON does not define, or a text that ends inside the name,
+is still `ESJ-L1-JSON` — and a lone surrogate in it is no finding. Inside a value object a reader
+holds a supplementary component to the string bound and the `value` member to the larger of the two
+string bounds while it reads them, because which of the two applies to `value` is decided by members
+that may still follow (section 12.2); a member past that bound stops the reader before the object is
+judged, and the bound that applies is measured once the object is judged. A reader that walks past a
+JSON structure nested deeper than the bound allows, or that meets a number token longer than the
+string bound — inside `extensions` or anywhere else — therefore reports the limit and not
+`ESJ-L1-JSON-TYPE`, `ESJ-L1-VALUE-SHAPE` or `ESJ-L1-EXT-NUMBER`, and a member name longer than the
+string bound is `ESJ-L1-LIMIT` and not `ESJ-L1-OWNER-TOKEN`, `ESJ-L1-PATH-SYNTAX` or
+`ESJ-L1-ENVELOPE-MEMBER` (section 12.2).
 
 Outside these rules **one defect draws one code**. Where two findings stand about one input, they
 are about two defects: a member name that is no path and the array written under it are two, and
@@ -2641,19 +2646,28 @@ number of segments, in that order: a name past one of the bounds is `ESJ-L1-LIMI
 object asks of it — the owner-token grammar, the member set of the envelope, of `source` or of a
 value object (section 9.6).
 
+A reader measures a member name against the string bound as it reads it, and holds no more of a name
+than the bound allows: a name past it is read on to its end for the JSON text alone and is not
+built, and the finding names the object the name stands in rather than the name (section 9.5). The
+length of one name then decides nothing about what refusing the document costs; a name within the
+bound is carried whole in a subject, which is never shortened.
+
 Inside a structure a reader walks past (section 9.6) three of these bounds hold: the nesting
 depth, and the string bound on a member name and on a number token. A string there is held to
 no string bound, because what it would have been is unknown; the bound on the document size
 bounds it.
 
-The larger of the two string bounds applies to the `value` member of a value object that
-carries `mimeCode` or `filename`, and the smaller one to every other string inside `values`,
-the supplementary components included, outside a structure a reader walks past. A reader enforcing the bound while it parses has no
-registry and cannot know the semantic data type of the term; the presence of a binary
-component is what it can see, and it is enough. A validator that holds the registry MAY apply
-the bound by datatype instead: the two agree on every document conformant at L2, because a
-binary component at a term that is not a binary object is already an error there
-(section 6.2).
+`maxBinaryValueBytes` applies to the `value` member of a value object that carries `mimeCode` or
+`filename`, and that bound alone, whether it is larger or smaller than `maxStringBytes`;
+`maxStringBytes` applies to every other string inside `values`, the supplementary components
+included, outside a structure a reader walks past. While it reads the members of a value object a
+reader may hold `value` to the larger of the two, because which of them applies is decided by
+members that may still follow; the one that applies is measured once the object is read
+(section 9.6). A reader enforcing the bound while it parses has no registry and cannot know the
+semantic data type of the term; the presence of a binary component is what it can see, and it is
+enough. A validator that holds the registry MAY apply the bound by datatype instead: the two agree
+on every document conformant at L2, because a binary component at a term that is not a binary object
+is already an error there (section 6.2).
 
 The number of members of one value object is bounded for the same reason the members of
 `values` are: a reader that collects the members of an object before it judges them holds
@@ -2731,7 +2745,7 @@ the fixed value, and the limit outranks the comparison (section 9.6).
 The total decoded binary content is computed without decoding. A `value` of length *L* that
 ends in *p* `=` characters adds ⌊*L*/4⌋·3 − min(*p*, 2) bytes, and nothing where that is
 negative. The formula is that of canonical padded base64 (section 6.7) and is applied to every
-`value` the larger string bound applies to, whether or not it is canonical base64: a reader has
+`value` that `maxBinaryValueBytes` applies to, whether or not it is canonical base64: a reader has
 no registry, and the content grammar is an L2 question.
 
 Every length limit is counted in **UTF-8 bytes**, not in characters, code points or UTF-16 code

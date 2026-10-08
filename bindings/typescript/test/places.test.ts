@@ -280,20 +280,23 @@ test('every string of the envelope is held to the string bound and names its mem
 });
 
 test('every member name is held to the string bound in UTF-8 bytes, wherever it stands', () => {
+  // A name past the bound is no part of the finding: the subject names the object it stands in.
   const name = 'ä'.repeat(40);
   const bound = { maxStringBytes: 64 };
   assert.deepEqual(places('{"' + name + '":"x"}', bound),
-    [['', FindingCode.L1_LIMIT, '["' + name + '"]']]);
+    [['', FindingCode.L1_LIMIT, '']]);
   assert.deepEqual(places(HEAD + '"values":{"' + name + '":"x"}}', bound),
-    [['', FindingCode.L1_LIMIT, 'values["' + name + '"]']]);
+    [['', FindingCode.L1_LIMIT, 'values']]);
   assert.deepEqual(places(HEAD + '"values":{},"source":{"' + name + '":"x"}}', bound),
-    [['', FindingCode.L1_LIMIT, 'source["' + name + '"]']]);
+    [['', FindingCode.L1_LIMIT, 'source']]);
   assert.deepEqual(places(HEAD + '"values":{},"extensions":{"' + name + '":1}}', bound),
-    [['', FindingCode.L1_LIMIT, 'extensions["' + name + '"]']]);
+    [['', FindingCode.L1_LIMIT, 'extensions']]);
   assert.deepEqual(places(HEAD + '"values":{},"extensions":{"o":{"' + name + '":1}}}', bound),
-    [['', FindingCode.L1_LIMIT, 'extensions["o"]["' + name + '"]']]);
+    [['', FindingCode.L1_LIMIT, 'extensions["o"]']]);
+  assert.deepEqual(places(HEAD + '"values":{},"extensions":{"o":[{"' + name + '":1}]}}', bound),
+    [['', FindingCode.L1_LIMIT, 'extensions["o"][0]']]);
   assert.deepEqual(places(HEAD + '"values":{"/BT-1":{"value":"x","' + name + '":"y"}}}', bound),
-    [['/BT-1', FindingCode.L1_LIMIT, 'values["/BT-1"]["' + name + '"]']]);
+    [['/BT-1', FindingCode.L1_LIMIT, 'values["/BT-1"]']]);
   assert.deepEqual(places(HEAD + '"values":{"/BT-1":[{"' + name + '":1}]}}', bound),
     [['/BT-1', FindingCode.L1_LIMIT, 'values["/BT-1"]']]);
   // Forty characters are 80 bytes: counted in code units the name would fit, in bytes it does
@@ -310,7 +313,7 @@ test('a name of the default bound counts its bytes, not its code units', () => {
   const text = HEAD + '"values":{},"extensions":{"' + name + '":1}}';
   const [found] = readDocument(text).findings;
   assert.equal(found.code, FindingCode.L1_LIMIT);
-  assert.equal(found.subject, 'extensions["' + name + '"]');
+  assert.equal(found.subject, 'extensions');
   assert.ok(found.message.endsWith('at offset ' + bytesBefore(text, '"ää') + '.'), found.message);
 });
 

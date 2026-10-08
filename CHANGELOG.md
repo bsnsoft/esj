@@ -30,7 +30,7 @@ about.
   the envelope and below an owner token, a parent chain, a missing index, a missing group) and,
   under `conformance/fixtures/`, 64 variants layer L1 refuses, 10 documents whose findings at
   layers L2 and L3 are pinned as a list, 4 documents a reader reads for what a validator says of
-  them, 63 cases under bounds, 30 sets of registries, 4 documents not in canonical form, and the
+  them, 69 cases under bounds, 30 sets of registries, 4 documents not in canonical form, and the
   two documents of `SPEC.md` appendix B with their canonical bytes. A test holds the bytes,
   lengths and digests the appendix prints to those files and to the manifest.
 
@@ -59,7 +59,8 @@ about.
   before it is built; in `values` it was `ESJ-L1-JSON-TYPE` when written with a fraction.
 - `ESJ-L1-LIMIT` carries the path of the member of `values` it was met in and, as its subject,
   the member whose name or value reached the bound — `values["/BT-1"]`, `values["/BT-1"].value`,
-  `extensions["o"][1]` — also for a bound the parser used to apply, which named nothing. Inside a
+  `extensions["o"][1]`; for a member name past the string bound, the object the name stands in —
+  also for a bound the parser used to apply, which named nothing. Inside a
   structure the reader walks past, that is the member walked past; names, numbers and the depth
   are bounded there, strings are not.
 - A message that places a defect in the byte sequence names the byte offset at which the token
@@ -254,6 +255,11 @@ or contradicted itself; the section numbers are the same.
   `values["/BT-1"].value`) and nothing deeper.
 - Section 9.5: a `subject` is never shortened; a lone surrogate is escaped as `\u` and four
   lowercase hexadecimal digits (`\ud800`) in a message and a `subject` alike.
+- Sections 9.5 and 12.2: a member name past the string bound is not held and not part of the
+  finding: `ESJ-L1-LIMIT` names the object the name stands in (`values`, `source`, `extensions`,
+  `extensions["o"][0]`, the value object `values["/BT-1"]`, empty in the envelope), and its
+  message MUST name the byte offset at which the name begins. A reader reads such a name to its end
+  for the JSON text alone, so a 60 MiB name costs a refusal no more than its bytes.
 - Section 9.5: a message names a place as the byte offset of the start of the token, counted from
   zero, also for a token the text ends inside — a string that is not closed at its opening
   quotation mark — and the length of the byte sequence only where the text ends between two
@@ -321,7 +327,8 @@ or contradicted itself; the section numbers are the same.
   the syntax of an extension segment is L1 (5.6, 9.2); "one defect, one code" (9.6); repeatable
   terms and canonical order per edition (5.3, 7.4); the edition mapping runs from registry to
   document only (10); code-list snapshots live in rule packs and the 2026 `schemeList` rests on
-  that edition's usage notes (10); Appendix C lists all twelve examples.
+  that edition's usage notes (10); Appendix C lists all twelve examples; the `value` of a binary
+  object is held to `maxBinaryValueBytes` alone, also where that is the smaller bound (12.2).
 
 ## [0.9.5] — 2026-10-08
 

@@ -9,6 +9,9 @@ the member a case is about reaches it; `../../../examples/minimal.esj.json` and
 `../../../examples/extension-depth.esj.json` are read under bounds as well.
 
 Each file is `../../../examples/minimal.esj.json` with the member named below added or replaced.
+A member name past the string bound is not part of the finding it draws: the subject names the
+object the name stands in (`SPEC.md` sections 9.5 and 12.2), which is why each kind of object has
+a file of its own.
 
 | File | Content |
 |---|---|
@@ -21,6 +24,9 @@ Each file is `../../../examples/minimal.esj.json` with the member named below ad
 | `member-name.esj.json` | an undefined envelope member whose name is 65 bytes long |
 | `owner-token.esj.json` | an owner token of 129 characters, one past its grammar |
 | `long-bad-path.esj.json` | a member of `values` whose name is 65 bytes long and no path |
+| `name-in-source.esj.json` | a member of `source` whose name is 65 bytes long |
+| `name-in-value-object.esj.json` | a value object with a third member whose name is 65 bytes long |
+| `name-in-extension.esj.json` | an object inside an array below an owner token, with a member name of 65 bytes |
 | `number-token.esj.json` | a number of 65 digits inside `extensions` |
 | `number-in-values.esj.json` | a number of 65 digits as the value of `/BT-9` |
 | `walked-past-string.esj.json` | an array under `/BT-9` holding a string of 200 bytes |

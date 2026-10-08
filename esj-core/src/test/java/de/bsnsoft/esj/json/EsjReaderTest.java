@@ -674,12 +674,13 @@ class EsjReaderTest {
 
     /**
      * A member name longer than the string bound is refused as a limit, and the finding
-     * names the member whole in its subject and the byte offset the name begins at in its
-     * message (specification, sections 9.5 and 12.2). Without either it named nowhere and
+     * names the object the name stands in as its subject — the name is not held past the
+     * bound, so it is no part of the finding — and the byte offset the name begins at in its
+     * message (specification, sections 9.5 and 12.2). Without the offset it named nowhere and
      * sent its reader through the whole file, which is the size a hostile document picks.
      */
     @Test
-    void aMemberNameLongerThanTheStringBoundIsNamedWholeAndLocatedByAByteOffset() {
+    void aMemberNameLongerThanTheStringBoundNamesItsObjectAndIsLocatedByAByteOffset() {
         Limits small = Limits.defaults().withMaxStringBytes(1024);
         String name = "x".repeat(4096);
         byte[] document = envelope("\"values\":{\"" + name + "\":\"1\"}");
@@ -689,7 +690,7 @@ class EsjReaderTest {
         Finding limit = result.findings().get(0);
         assertEquals(FindingCode.ESJ_L1_LIMIT, limit.code());
         assertTrue(limit.path().isRoot());
-        assertTrue(limit.subject().equals("values[\"" + name + "\"]"), "the name is whole");
+        assertEquals("values", limit.subject(), "the object the name stands in");
         Matcher offset = Pattern.compile("at byte (\\d+)").matcher(limit.message());
         assertTrue(offset.find(), limit.message());
         assertEquals(new String(document, StandardCharsets.UTF_8).indexOf("\"" + name),
