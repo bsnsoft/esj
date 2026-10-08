@@ -82,6 +82,24 @@ class TerminalCharactersTest {
         assertEquals(expected, Messages.forSubject("a" + Character.toString(codePoint) + "b"));
     }
 
+    /**
+     * A surrogate that is not one half of a pair has no UTF-8 encoding, so a subject or a
+     * message that carried it as it stands could not be written as text at all. It is
+     * escaped as {@code \}{@code udXXX} in lowercase, and a pair is left alone
+     * (specification, section 9.5).
+     */
+    @ParameterizedTest(name = "lone surrogate {0}")
+    @ValueSource(ints = {0xD800, 0xDA12, 0xDBFF, 0xDC00, 0xDE34, 0xDFFF})
+    void aLoneSurrogateIsEscapedInLowercase(int unit) {
+        String fragment = "a" + (char) unit + "b";
+        String escaped = "a\\u" + String.format(Locale.ROOT, "%04x", unit) + "b";
+        assertEquals(escaped, Messages.forSubject(fragment));
+        assertEquals(escaped, Messages.forMessage(fragment, 80));
+        assertEquals("\\udc00\\ud800", Messages.forSubject("\udc00\ud800"),
+                "a low half before a high half is no pair");
+        assertEquals("\ud800\udc00", Messages.forSubject("\ud800\udc00"));
+    }
+
     private static void assertSteersAndIsEscaped(int codePoint) {
         assertTrue(Esj.steersATerminal(codePoint), hex(codePoint));
         String fragment = "RE-" + Character.toString(codePoint) + "1";

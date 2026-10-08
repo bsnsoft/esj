@@ -38,19 +38,19 @@ public final class Limits {
     /**
      * The levels of nesting the envelope itself occupies around an extension subtree.
      * {@link #maxExtensionDepth()} is counted from the value of an owner-token member
-     * (specification, section 12.2), while a streaming parser counts the containers of
-     * the envelope as well, so a reader hands its parser the sum of the two.
+     * (specification, section 12.2), while the document as a whole nests this much
+     * deeper: a reader that counts the depth of the whole document, as a stock streaming
+     * parser does, counts the sum of the two.
      */
     static final int ENVELOPE_NESTING = 3;
 
     /**
-     * The largest value {@link #maxExtensionDepth()} accepts. A reader adds
-     * {@link #ENVELOPE_NESTING} to the bound before it configures its parser with it,
-     * and that sum has to stay a nesting depth a parser can be given — the twin of the
-     * reason {@link #MAX_DOCUMENT_BYTES} exists. A bound this large is already far past
-     * any document a reader could hold; refusing it here makes the refusal an
-     * {@link EsjFormatException} naming the knob, rather than whatever a parser throws
-     * about a negative depth.
+     * The largest value {@link #maxExtensionDepth()} accepts. The depth of the whole
+     * document is the bound plus {@link #ENVELOPE_NESTING}, and that sum has to stay a
+     * depth an {@code int} can count — the twin of the reason {@link #MAX_DOCUMENT_BYTES}
+     * exists. A bound this large is already far past any document a reader could hold;
+     * refusing it here makes the refusal an {@link EsjFormatException} naming the knob,
+     * rather than a count that wraps around to a negative depth.
      */
     public static final int MAX_EXTENSION_DEPTH = Integer.MAX_VALUE - ENVELOPE_NESTING;
 
@@ -94,8 +94,8 @@ public final class Limits {
         }
         if (maxExtensionDepth > MAX_EXTENSION_DEPTH) {
             throw new EsjFormatException("maxExtensionDepth is at most " + MAX_EXTENSION_DEPTH
-                    + ", because a reader adds the nesting of the envelope to it before it"
-                    + " configures its parser, not " + maxExtensionDepth);
+                    + ", because the nesting of the envelope adds to it in the depth of the"
+                    + " whole document, not " + maxExtensionDepth);
         }
         this.maxDocumentBytes = maxDocumentBytes;
         this.maxValues = maxValues;

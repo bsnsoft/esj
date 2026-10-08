@@ -6,8 +6,56 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.6] — unreleased
 
+### Changed
+
+- `EsjReader` reads the bytes with a scanner of its own instead of `jackson-core`: it reads UTF-8
+  and nothing else, and it judges every member name before the value written under it. It is
+  faster than before and holds less while it reads.
+- The `subject` of a reader finding is a member access with one grammar: a name the
+  specification defines at that place is dotted (`source.syntax`, `values["/BT-1"].scheme`),
+  every name the document chose is written in brackets (`["profile"]`, `source["origin"]`,
+  `values["/BT-1"]["note"]`, `extensions["a.b"]["x"][0]`).
+- A duplicate member name is named by its own member access (`values["/BT-1"]`, `format`,
+  `source.syntax`, `extensions["a.b"]["x"]`), not by the object it occurs in; inside a value
+  object, a repeated name or a name with a lone surrogate names the value (`values["/BT-1"]`).
+- Every missing required envelope member is a finding of its own, with the member's name as its
+  subject, in the order `format`, `version`, `semanticModel`, `values`.
+- Every member name is held to `maxStringBytes`, counted in UTF-8 bytes, and so are `format`,
+  `version`, `semanticModel` and `source.sha256` as `source.syntax` was: past the bound each is
+  `ESJ-L1-LIMIT` rather than the code of its grammar. A bound shorter than the envelope's own
+  strings refuses every document; the edition string of 2017 is 30 bytes long.
+- A number token longer than `maxStringBytes` is `ESJ-L1-LIMIT` wherever it stands, measured
+  before it is built; in `values` it was `ESJ-L1-JSON-TYPE` when written with a fraction.
+- `ESJ-L1-LIMIT` carries the path of the member of `values` it was met in and, as its subject,
+  the member whose name or value reached the bound — also for a bound the parser used to apply,
+  which named nothing. Inside a structure the reader walks past, that is the member walked past;
+  names, numbers and the depth are bounded there, strings are not.
+- A message that places a defect in the byte sequence names the byte offset at which the token
+  begins, counted from zero, rather than where the parser stopped.
+- `ESJ-L1-JSON` is a finding about the document: its path and subject are empty, its message
+  names the byte offset. A token where a value belongs that is no complete JSON value — `tru`,
+  `01`, `1.` — is `ESJ-L1-JSON`, before anything is said about its type.
+- `EsjFormatException` and `EsjLimitException` carry `path()` and `subject()` beside `code()`: the
+  path and the subject of the finding they stand for.
+- `esj validate --output json` writes `subject` as a string in every finding, `""` where it
+  names nothing beyond the path, and never `null`.
+
 ### Fixed
 
+- The Java reader read a document written in UTF-16 or UTF-32 without a byte order mark,
+  because its parser guessed the encoding; such a byte sequence is valid UTF-8 and no JSON text
+  in it, and is now `ESJ-L1-JSON`.
+- A defective member name followed by a broken value — `"foo":tru`, a second `"format":tru` — was
+  `ESJ-L1-JSON`, because the parser read the value ahead; the name is judged first and draws its
+  own code.
+- A lone surrogate or a repeated name inside a structure the reader walks past under a defective
+  member was reported, and a lone surrogate there stopped the read; neither is a finding now, and
+  the reader reads on.
+- A member name with a lone surrogate carries its member access as subject (it was empty), and a
+  subject or message escapes every unpaired surrogate as `\udXXX` in lowercase.
+- The subject of an undefined envelope member was cut to 80 characters; a subject is whole.
+- The decoded size of a base64 value counts at most two padding characters and is never
+  negative, so a value that is no base64 cannot lower the total the bound on binary content sees.
 - `publish.yml` deploys on Maven 3.9.16, downloaded and checked against Apache's digest: the
   runner image moved to Maven 3.10.0, with which central-publishing-maven-plugin 0.11.0 put the
   repository metadata of every artifact into the bundle, and the Portal refused the 0.9.5
