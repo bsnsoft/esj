@@ -4,10 +4,13 @@ package de.bsnsoft.esj.validate;
  * Why a validation layer was not evaluated (specification, section 9.5). The vocabulary
  * is closed, so that a caller can branch on it without reading English.
  *
- * <p>The constants are declared in the order of their precedence: where two results about
- * the same document both leave a layer unevaluated for different reasons, the one
+ * <p>The first three constants are declared in the order of their precedence: where two
+ * results about the same document both leave a layer unevaluated for two of them, the one
  * declared first is the one {@link ValidationResult#merge(ValidationResult)} keeps,
- * because it says more about why the answer is missing.
+ * because it says more about why the answer is missing. {@link #NOT_REQUESTED} stands
+ * outside that order: a layer the caller did not ask for keeps it whatever else happened
+ * (specification, section 9.5), and {@link ValidationResult#merge(ValidationResult)} says
+ * how it composes with the other three.
  *
  * <p>The order ranks the reasons a run established, not the ones that would have held had
  * it gone further. {@link #PRECEDING_LAYER_FAILED} therefore comes before

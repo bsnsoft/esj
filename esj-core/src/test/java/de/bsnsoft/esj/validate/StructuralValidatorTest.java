@@ -610,6 +610,156 @@ class StructuralValidatorTest {
                 content);
     }
 
+    /**
+     * A path with a known term draws a finding for every check it fails, and each check
+     * runs on its own: the group chain, the index rule and the content grammar of one path
+     * are three questions with three answers (specification, section 9.2). Each finding of
+     * the index rule and of the chain names its term in the subject.
+     */
+    @Test
+    void everyCheckOfAPathWithKnownTermsReportsOnItsOwn() {
+        List<Finding> findings = validate(SemanticDocument.builder()
+                .put("/BG-25/0/BT-2", SemanticValue.of("2026-02-30"))
+                .put("/BT-2/0", SemanticValue.of("2026-02-30"))
+                .put("/BG-25/BT-146", SemanticValue.of("1"))
+                .build(), EnumSet.of(ValidationLayer.L2));
+
+        assertEquals(List.of(
+                        "/BT-2/0 ESJ-L2-INDEX-FORBIDDEN BT-2",
+                        "/BT-2/0 ESJ-L2-DATE ",
+                        "/BG-25/BT-146 ESJ-L2-INDEX-REQUIRED BG-25",
+                        "/BG-25/BT-146 ESJ-L2-PARENT-CHAIN BT-146",
+                        "/BG-25/0/BT-2 ESJ-L2-PARENT-CHAIN BT-2",
+                        "/BG-25/0/BT-2 ESJ-L2-DATE "),
+                described(findings));
+    }
+
+    /**
+     * Every core identifier the registry does not contain is reported, once per segment and
+     * named in the subject, so that two unknown terms in one path are two findings a
+     * program tells apart without reading the message.
+     */
+    @Test
+    void everyUnknownCoreSegmentIsReportedOnceAndNamed() {
+        List<Finding> findings = validate(SemanticDocument.builder()
+                .put("/BG-998/BT-999", SemanticValue.of("x"))
+                .build(), EnumSet.of(ValidationLayer.L2));
+
+        assertEquals(List.of(
+                        "/BG-998/BT-999 ESJ-L2-UNKNOWN-TERM BG-998",
+                        "/BG-998/BT-999 ESJ-L2-UNKNOWN-TERM BT-999"),
+                described(findings));
+    }
+
+    /**
+     * A core identifier is unknown whatever else the path carries: no extension registry
+     * can supply one, so an extension segment no loaded registry defines does not turn it
+     * into something not checked. The document is invalid and not indeterminate.
+     */
+    @Test
+    void anUnknownCoreSegmentIsUnknownBesideAnExtensionSegmentNoRegistryDefines() {
+        SemanticDocument document = SemanticDocument.builder()
+                .put("/BG-999/BT-ZZZ-1", SemanticValue.of("x"))
+                .build();
+
+        ValidationResult result = StructuralValidator.validate(document, CORE,
+                EnumSet.of(ValidationLayer.L2));
+
+        assertEquals(List.of(
+                        "/BG-999/BT-ZZZ-1 ESJ-L2-UNKNOWN-TERM BG-999",
+                        "/BG-999/BT-ZZZ-1 ESJ-L2-NOT-CHECKED "),
+                described(result.findings()));
+        assertEquals(ValidationStatus.INVALID, result.status());
+    }
+
+    /**
+     * A term no loaded registry defines ends the checks of what lies below it, and only of
+     * that. BG-25 above it is a core group the core registry declares repeatable, and no
+     * extension can change that, so its missing index is reported beside the path that
+     * was not checked.
+     */
+    @Test
+    void theSegmentsAboveAnUndefinedOneAreHeldToTheIndexRule() {
+        List<Finding> findings = validate(SemanticDocument.builder()
+                .put("/BG-25/BG-ZZZ-1/BT-1", SemanticValue.of("x"))
+                .build(), EnumSet.of(ValidationLayer.L2));
+
+        assertEquals(List.of(
+                        "/BG-25/BG-ZZZ-1/BT-1 ESJ-L2-INDEX-REQUIRED BG-25",
+                        "/BG-25/BG-ZZZ-1/BT-1 ESJ-L2-NOT-CHECKED "),
+                described(findings));
+    }
+
+    /**
+     * A namespace may grow (specification, section 5.6): an identifier a loaded registry of
+     * its namespace does not define may be defined by a later one, so the path is not
+     * checked rather than wrong, and the message says that the namespace is loaded.
+     */
+    @Test
+    void anUnknownIdentifierOfALoadedNamespaceIsNotChecked() {
+        List<Finding> findings = StructuralValidator.validate(SemanticDocument.builder()
+                .put("/BG-DEX-09/0/BT-DEX-999", SemanticValue.of("x"))
+                .build(), WITH_EXTENSION, EnumSet.of(ValidationLayer.L2)).findings();
+
+        assertEquals(List.of("/BG-DEX-09/0/BT-DEX-999 ESJ-L2-NOT-CHECKED "), described(findings));
+        assertTrue(findings.get(0).message().contains("loaded registry of the namespace DEX"),
+                findings.get(0).message());
+        assertTrue(validate(SemanticDocument.builder()
+                        .put("/BG-DEX-09/0/BT-DEX-001", SemanticValue.of("x"))
+                        .build(), EnumSet.of(ValidationLayer.L2))
+                .get(0).message().contains("no registry of the namespace DEX"));
+    }
+
+    /**
+     * The component findings name the component, so that the two components a Binary
+     * Object misses are two findings a program tells apart.
+     */
+    @Test
+    void aComponentFindingNamesTheComponent() {
+        List<Finding> findings = validate(SemanticDocument.builder()
+                .put("/BG-24/0/BT-125", SemanticValue.of("QUJD"))
+                .put("/BG-4/BT-30", SemanticValue.identifier("HRB 1", "0094", "1.0"))
+                .put("/BT-1", SemanticValue.identifier("RE-1", "0088"))
+                .build(), EnumSet.of(ValidationLayer.L2));
+
+        assertEquals(List.of(
+                        "/BT-1 ESJ-L2-COMPONENT-NOT-ALLOWED scheme",
+                        "/BG-4/BT-30 ESJ-L2-COMPONENT-NOT-ALLOWED schemeVersion",
+                        "/BG-24/0/BT-125 ESJ-L2-COMPONENT-MISSING mimeCode",
+                        "/BG-24/0/BT-125 ESJ-L2-COMPONENT-MISSING filename"),
+                described(findings));
+    }
+
+    /**
+     * The checks of one path report in one order (specification, section 9.2): its
+     * segments, then the group chain, then the content, then the components — those the
+     * value carries and may not, then those it lacks, each in the order scheme,
+     * schemeVersion, mimeCode, filename.
+     */
+    @Test
+    void theFindingsOfOnePathComeInTheOrderOfTheChecks() {
+        List<Finding> findings = validate(SemanticDocument.builder()
+                .put("/BG-24/BT-125", SemanticValue.identifier("QUJ", "0088", "1.0"))
+                .build(), EnumSet.of(ValidationLayer.L2));
+
+        assertEquals(List.of(
+                        "/BG-24/BT-125 ESJ-L2-INDEX-REQUIRED BG-24",
+                        "/BG-24/BT-125 ESJ-L2-BASE64 ",
+                        "/BG-24/BT-125 ESJ-L2-COMPONENT-NOT-ALLOWED scheme",
+                        "/BG-24/BT-125 ESJ-L2-COMPONENT-NOT-ALLOWED schemeVersion",
+                        "/BG-24/BT-125 ESJ-L2-COMPONENT-MISSING mimeCode",
+                        "/BG-24/BT-125 ESJ-L2-COMPONENT-MISSING filename"),
+                described(findings));
+    }
+
+    /** Writes each finding as its path, its code and its subject. */
+    private static List<String> described(List<Finding> findings) {
+        return findings.stream()
+                .map(finding -> finding.path() + " " + finding.code().code() + " "
+                        + finding.subject())
+                .toList();
+    }
+
     static boolean carriesEdition2026() {
         return Registry.editionKeys().contains("2026");
     }

@@ -474,7 +474,7 @@ $ esj validate examples/invalid/unknown-term.esj.json --output json
       "findings": [
         {
           "path": "/BT-999",
-          "subject": "",
+          "subject": "BT-999",
           "code": "ESJ-L2-UNKNOWN-TERM",
           "severity": "error",
           "message": "the registry of EN 16931-1:2017+A1:2019/AC:2020 does not contain BT-999"
@@ -524,10 +524,12 @@ extension path no loaded registry describes leaves the finding on `l2` and leave
 nothing to count, so both are `null` while only one says why.
 
 Each finding of a layer carries `path`, `code`, `severity`, `message` and `subject`: the member
-access the reader met the problem at, or the term, group or component a finding of the model
-layers is about. `subject` is always a string, and `""` where the finding names nothing beyond its
-path. A missing mandatory term is reported at the path of the instance that lacks it, so `subject`
-is what names the term (specification, section 9.5).
+access the reader met the problem at; for a model finding the identifier of the segment that is
+unknown or breaks the index rule, the term whose group chain is wrong, or the component that is
+missing or not allowed; the term or group a cardinality finding is about. `subject` is always a
+string, and `""` where the finding names nothing beyond its path. A missing mandatory term is
+reported at the path of the instance that lacks it, so `subject` is what names the term
+(specification, section 9.5).
 `notChecked` lists the same thing as stable tokens: `format-l1` for an XML input, which is read
 through the importer rather than as ESJ bytes; `model-l2` and `cardinality-l3` where the layer
 above them ended the run before they were reached, and where they ran and could not measure what

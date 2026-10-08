@@ -39,6 +39,33 @@ still change; a change to it is named here under *Format*.
   path and the subject of the finding they stand for.
 - `esj validate --output json` writes `subject` as a string in every finding, `""` where it
   names nothing beyond the path, and never `null`.
+- Layer L2 checks every path independently (`SPEC.md` 9.2): a core identifier the registry does not
+  contain is `ESJ-L2-UNKNOWN-TERM` once per segment, also beside an extension segment no loaded
+  registry defines, which made the whole path `ESJ-L2-NOT-CHECKED` and the result `INDETERMINATE`
+  before; the segments above an undefined one are held to the index rule; an unknown identifier of
+  a loaded extension namespace stays `ESJ-L2-NOT-CHECKED`, and its message no longer says that the
+  registry is not loaded.
+- The findings of layer L2 name in `subject` what the path cannot tell apart: the identifier of the
+  segment for `ESJ-L2-UNKNOWN-TERM`, `-INDEX-REQUIRED` and `-INDEX-FORBIDDEN`, the term whose group
+  chain is wrong for `ESJ-L2-PARENT-CHAIN`, the component for `ESJ-L2-COMPONENT-NOT-ALLOWED` and
+  `-COMPONENT-MISSING`. The subject was empty.
+- `ValidationResult.merge` keeps `NOT-REQUESTED` for a layer the caller did not ask for: a
+  `LIMIT` or `PRECEDING-LAYER-FAILED` the other result names for it no longer displaces it
+  (`SPEC.md` 9.5). `EDITION-UNKNOWN` of a validator that was asked for the layer is still kept
+  over the `NOT-REQUESTED` of a clean read.
+- `Registry.load` refuses a registry that names terms it does not define — as a parent, in a
+  chain or in `reusesTerms` — and imports nothing, and reports a cardinality below zero or a path
+  that does not end at its term as `EsjFormatException` rather than `IllegalArgumentException`.
+  `Registry.withExtension` refuses such an extension where its `imports` do not name this model
+  with this edition, which it combined silently before; its refusal of a redefined term no longer
+  calls a term of an earlier extension a core term. `Registry.admits(extension)` asks the edition
+  question before combining.
+- `esj validate --extension` for a document of an edition the extension does not import says so:
+  the `ESJ-L2-NOT-CHECKED` finding names the option, the edition the registry imports and that it
+  is not this one, and the cause is the new `extension-for-another-edition` rather than
+  `extension-registry-missing`.
+- The generator escapes a slug Java reserves, or one that would hide a member every view carries,
+  with a trailing underscore (`class_()`) instead of refusing the registry (`SPEC.md` 10).
 
 ### Fixed
 
