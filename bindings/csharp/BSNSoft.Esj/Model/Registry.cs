@@ -172,11 +172,19 @@ public sealed class Registry
     /// Returns this registry combined with an extension registry, which is how the terms of
     /// an extension and the positions it gives core terms become visible to a validator.
     /// </summary>
+    /// <remarks>
+    /// An extension whose parents or <c>reusesTerms</c> name a term of this registry was checked
+    /// against one list of terms, and it says which in its <c>imports</c> member: it is combined
+    /// only where it imports this model with this edition. One that names terms of this registry
+    /// and imports nothing, or imports another model, or this model with another edition, is
+    /// refused rather than combined (specification, section 10). An extension that names no term
+    /// of this registry stands on its own and needs no import.
+    /// </remarks>
     /// <param name="extension">the registry of the extension</param>
     /// <returns>the combined registry, which keeps the model and edition of this one</returns>
     /// <exception cref="EsjFormatException">
-    /// if the extension redefines a term of this registry, or imports this model with a
-    /// different edition
+    /// if the extension redefines a term of this registry, imports this model with a different
+    /// edition, or names a term of this registry without importing it
     /// </exception>
     public Registry WithExtension(Registry extension)
     {
@@ -189,6 +197,18 @@ public sealed class Registry
                 throw new EsjFormatException(null, "the extension was written against "
                     + imported.Model + " " + imported.Edition + " and this registry describes " + Edition);
             }
+        }
+
+        string? named = NamedTermOf(extension);
+        if (named is not null && !extension._imports.Any(imported =>
+                string.Equals(imported.Model, Model, StringComparison.Ordinal)
+                && string.Equals(imported.Edition, Edition, StringComparison.Ordinal)))
+        {
+            throw new EsjFormatException(null, "the extension " + extension.Model + " " + extension.Edition
+                + " names " + named + " of " + Model + " and does not import " + Model + " " + Edition
+                + (extension._imports.Count == 0
+                    ? "; it imports nothing"
+                    : "; it imports " + string.Join(", ", extension._imports.Select(imported => imported.Model + " " + imported.Edition))));
         }
 
         List<Term> combined = new(_terms);
@@ -204,6 +224,32 @@ public sealed class Registry
         }
 
         return new Registry(Model, Edition, Version, _imports, combined);
+    }
+
+    /// <summary>
+    /// Returns the first identifier of this registry that an extension names as a parent, on the
+    /// way to one of its terms, or among the terms it reuses, or <c>null</c> where it names none.
+    /// </summary>
+    private string? NamedTermOf(Registry extension)
+    {
+        foreach (Term term in extension._terms)
+        {
+            IEnumerable<string> named = term.Path.Take(Math.Max(0, term.Path.Count - 1)).Concat(term.ReusesTerms);
+            if (term.Parent is not null)
+            {
+                named = named.Prepend(term.Parent);
+            }
+
+            foreach (string id in named)
+            {
+                if (!extension._byId.ContainsKey(id) && _byId.ContainsKey(id))
+                {
+                    return id;
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>Tells whether this registry describes the edition a document names.</summary>

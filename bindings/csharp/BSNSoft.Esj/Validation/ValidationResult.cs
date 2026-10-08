@@ -122,11 +122,20 @@ public sealed class ValidationResult
     public IReadOnlyList<string> Registries => _registries;
 
     /// <summary>
-    /// Composes this result with another, which is how a caller that ran the reader and the
-    /// structural validator reads one verdict off the two. A layer is evaluated where
-    /// either run evaluated it, and where neither did, the reason of higher precedence
-    /// survives (specification, section 9.5).
+    /// Composes this result with another result about the same document. A layer is evaluated
+    /// where either run evaluated it. Where neither did, a layer either run names
+    /// <c>NOT-REQUESTED</c> keeps that reason whatever the other established, because nothing
+    /// was ever going to answer it; for every other layer the reason of higher precedence
+    /// survives, <c>LIMIT</c> before <c>PRECEDING-LAYER-FAILED</c> before <c>EDITION-UNKNOWN</c>
+    /// (specification, section 9.5).
     /// </summary>
+    /// <remarks>
+    /// The result of a clean read names the model layers <c>NOT-REQUESTED</c>, since a reader
+    /// answers layer L1 alone, so composing it with a validator that could not evaluate them
+    /// keeps that reason. <see cref="Validator.Validate(byte[], IEnumerable{Model.Registry}?, Json.Limits?)"/>
+    /// composes the reader and the structural validator itself and takes the reason of the model
+    /// layers from the run that was asked for them.
+    /// </remarks>
     /// <param name="other">the other result</param>
     /// <returns>the composed result</returns>
     public ValidationResult Merge(ValidationResult other)
@@ -140,11 +149,29 @@ public sealed class ValidationResult
             if (_notEvaluated.TryGetValue(layer, out NotEvaluatedReason mine)
                 && other._notEvaluated.TryGetValue(layer, out NotEvaluatedReason theirs))
             {
-                reasons[layer] = mine <= theirs ? mine : theirs;
+                reasons[layer] = Surviving(mine, theirs);
             }
         }
 
         return Of(together, reasons, _registries.Concat(other._registries));
+    }
+
+    /// <summary>
+    /// Returns the reason that survives where two runs both did not evaluate a layer: a layer
+    /// that was not requested stays so, and of the other three the first in the order of the
+    /// specification, section 9.5 wins.
+    /// </summary>
+    /// <param name="mine">the reason of one run</param>
+    /// <param name="theirs">the reason of the other</param>
+    /// <returns>the reason the composed result names</returns>
+    public static NotEvaluatedReason Surviving(NotEvaluatedReason mine, NotEvaluatedReason theirs)
+    {
+        if (mine == NotEvaluatedReason.NotRequested || theirs == NotEvaluatedReason.NotRequested)
+        {
+            return NotEvaluatedReason.NotRequested;
+        }
+
+        return mine <= theirs ? mine : theirs;
     }
 
     /// <inheritdoc />

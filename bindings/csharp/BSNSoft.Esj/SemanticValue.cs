@@ -1,4 +1,5 @@
 using System;
+using BSNSoft.Esj.Json;
 
 namespace BSNSoft.Esj;
 
@@ -8,7 +9,11 @@ namespace BSNSoft.Esj;
 /// </summary>
 public sealed class SemanticValue
 {
-    /// <summary>Creates a value.</summary>
+    /// <summary>
+    /// Creates a value. Every string is normalized as the specification, section 6.8 asks of
+    /// every string in <c>values</c>: CR LF and a lone CR become LF, so a value built here and the
+    /// same value read from a document are one value with one canonical form and one digest.
+    /// </summary>
     /// <param name="content">the content, which is never empty</param>
     /// <param name="scheme">the identification scheme, or <c>null</c></param>
     /// <param name="schemeVersion">the version of that scheme, or <c>null</c></param>
@@ -21,11 +26,11 @@ public sealed class SemanticValue
         string? mimeCode = null,
         string? filename = null)
     {
-        Content = content ?? throw new ArgumentNullException(nameof(content));
-        Scheme = scheme;
-        SchemeVersion = schemeVersion;
-        MimeCode = mimeCode;
-        Filename = filename;
+        Content = Texts.NormalizeLineEndings(content ?? throw new ArgumentNullException(nameof(content)));
+        Scheme = Normalized(scheme);
+        SchemeVersion = Normalized(schemeVersion);
+        MimeCode = Normalized(mimeCode);
+        Filename = Normalized(filename);
     }
 
     /// <summary>Returns the content of the value.</summary>
@@ -105,4 +110,7 @@ public sealed class SemanticValue
 
     /// <inheritdoc />
     public override string ToString() => Content;
+
+    private static string? Normalized(string? component) =>
+        component is null ? null : Texts.NormalizeLineEndings(component);
 }

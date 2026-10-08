@@ -6,7 +6,62 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.6] — unreleased
 
+### Changed
+
+- C# binding: a finding's subject is the member access of `SPEC.md` section 9.5 — a name the
+  specification defines after a dot, a name the document chose in brackets (`["profile"]`,
+  `source["foo"]`, `values["/BT-1"]["foo"]`) — and carries the name whole, never cut to an excerpt.
+- C# binding: `ESJ-L1-DUPLICATE-MEMBER` names the member that occurs twice (`values["/BT-1"]`,
+  `format`, `source.syntax`, `extensions["a.b"]["x"]`) instead of the object it occurs in; inside
+  a value object it names the object, as a surrogate in a name there does.
+- C# binding: every missing envelope member is one `ESJ-L1-ENVELOPE-MEMBER` finding with its name
+  as subject, in the order `format`, `version`, `semanticModel`, `values`.
+- C# binding: a finding of layer L2 names what it is about: the segment for `ESJ-L2-UNKNOWN-TERM`
+  and the two index codes, the term of the path for `ESJ-L2-PARENT-CHAIN`, the component for the
+  two component codes.
+- C# binding: `EsjFormatException` and `EsjLimitException` carry `Code`, `Path` and `Subject`;
+  `EsjLimitException.Code` is an instance property, `EsjLimitException.LimitCode` the constant.
+- C# binding: `ValidationResult.Merge` keeps `NOT-REQUESTED` for a layer either result names so,
+  and ranks the other three reasons (`ValidationResult.Surviving`); `Validator.Validate(byte[])`
+  takes the reason of the model layers from the structural run, so an unknown edition reads
+  `EDITION-UNKNOWN`.
+- C# binding: the fixture protocol answers `validate` with the severity of every finding, the
+  status and `notEvaluated`, takes `limits` under the names of `Limits`, and answers a new
+  `registry` request with whether the registries it names are accepted.
+
 ### Fixed
+
+- C# binding: `SemanticValue` normalizes CR LF and CR to LF in every string it is built with, so a
+  value built through the API has the canonical form and digests of the same value read.
+- C# binding: `format`, `version`, `semanticModel` and both members of `source` are held to the
+  string bound (`ESJ-L1-LIMIT`, subject the member), which no longer hangs on the binary bound.
+- C# binding: every member name is held to the string bound in UTF-8 bytes, not UTF-16 code
+  units; the owner token and path bounds apply inside it with their own codes.
+- C# binding: a number token longer than the string bound is `ESJ-L1-LIMIT` wherever it stands,
+  measured while it is read.
+- C# binding: an `ESJ-L1-LIMIT` met inside a member of `values` carries the member's path, and
+  its subject names that member, or in a subtree walked past the member walked past.
+- C# binding: an offset in a message is the UTF-8 byte offset, counted from zero, of the token it
+  is about.
+- C# binding: the decoded length of base64 content subtracts at most two padding characters and
+  is never negative, so content of padding alone counts towards the total binary bound.
+- C# binding: `Limits` refuses a `maxExtensionDepth` or a `maxDocumentBytes` past the bound the
+  Java implementation refuses, instead of overflowing when a document arrives.
+- C# binding: a lone surrogate in a subject or a message is escaped as `\u` and four lowercase
+  hexadecimal digits, and the fixture protocol carries it so instead of a replacement character.
+- C# binding: a token that is no complete JSON value (`tru`, `truex`, `01`, `1.`) is
+  `ESJ-L1-JSON` also as the value of an envelope member, and `ESJ-L1-JSON` carries neither path
+  nor subject.
+- C# binding: a subtree walked past inside `values` is held to well-formedness and to the bounds
+  on depth, member names and number tokens, and draws nothing else; a string of the envelope is
+  screened for a lone surrogate before it is held to the string bound.
+- C# binding: a core segment the registry does not know is `ESJ-L2-UNKNOWN-TERM` beside an
+  extension segment that is not checked, one finding per unknown segment, the known segments
+  above an unknown one are still held to the index rule, and the findings of a path stand in the
+  order of its segments.
+- C# binding: reading a registry applies the three component rules of `SPEC.md` section 10, and
+  `WithExtension` refuses an extension that names a term of the core without importing that
+  core's edition.
 
 - `publish.yml` deploys on Maven 3.9.16, downloaded and checked against Apache's digest: the
   runner image moved to Maven 3.10.0, with which central-publishing-maven-plugin 0.11.0 put the

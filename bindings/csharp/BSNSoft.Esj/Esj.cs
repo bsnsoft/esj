@@ -193,11 +193,33 @@ public static class Esj
         return edition.Replace(" ", string.Empty, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// Escapes a fragment as the specification, section 9.5 asks: the five characters written
+    /// by name, every other character of <see cref="SteersATerminal"/> and every surrogate that
+    /// is not one half of a pair as <c>\u</c> and four lowercase hexadecimal digits. A lone
+    /// surrogate has no UTF-8 encoding, so a fragment that carried one could not be written to a
+    /// log line, a terminal or a JSON answer as it stands; escaped, it can, and the escape names
+    /// the code unit the document carries.
+    /// </summary>
     private static string Escape(string value)
     {
         StringBuilder text = new(value.Length);
-        foreach (char character in value)
+        for (int at = 0; at < value.Length; at++)
         {
+            char character = value[at];
+            if (char.IsHighSurrogate(character) && at + 1 < value.Length && char.IsLowSurrogate(value[at + 1]))
+            {
+                text.Append(character).Append(value[at + 1]);
+                at++;
+                continue;
+            }
+
+            if (char.IsSurrogate(character))
+            {
+                text.Append("\\u").Append(((int)character).ToString("x4", CultureInfo.InvariantCulture));
+                continue;
+            }
+
             switch (character)
             {
                 case '\\':
