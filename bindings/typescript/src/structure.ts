@@ -1,5 +1,5 @@
 import type { Registry, RegistryTerm } from './registry.ts';
-import { isRepeatable } from './registry.ts';
+import { RegistryError, isRepeatable } from './registry.ts';
 
 /**
  * The structure a path is measured against: which terms exist, in which chains of groups
@@ -40,11 +40,32 @@ export class Structure {
   /** The key under which the children of the root of a document are held. */
   private static readonly ROOT = '';
 
+  /**
+   * Combines one registry with the extension registries loaded beside it.
+   *
+   * An extension is combined only with the edition it names (section 10): its parents, its
+   * `reusesTerms` and its cardinalities were checked against one list of terms. So an
+   * extension that names a term of another registry and does not import this one — it imports
+   * nothing, another model, or this model in another edition — is refused, and so is one that
+   * defines an identifier this structure already carries, because an extension never redefines
+   * a core term and an identifier has one definition (section 11.1).
+   *
+   * @throws RegistryError where an extension cannot be combined with this registry
+   */
   constructor(core: Registry, extensions: readonly Registry[] = []) {
     this.core = core;
     this.extensions = extensions;
-    for (const registry of [core, ...extensions]) {
-      for (const term of registry.terms()) {
+    for (const term of core.terms()) {
+      this.byId.set(term.id, term);
+    }
+    for (const extension of extensions) {
+      checkImports(core, extension);
+      for (const term of extension.terms()) {
+        if (this.byId.has(term.id)) {
+          throw new RegistryError('the extension ' + extension.edition
+            + ' does not redefine the term ' + term.id + ', which ' + core.edition
+            + (core.term(term.id) === undefined ? ' or another extension' : '') + ' defines');
+        }
         this.byId.set(term.id, term);
       }
     }
@@ -153,6 +174,30 @@ export class Structure {
       out.push(group);
     }
     return out;
+  }
+}
+
+/**
+ * Refuses an extension that builds on another edition of the model of a core registry, or that
+ * names terms it does not define without importing that registry.
+ */
+function checkImports(core: Registry, extension: Registry): void {
+  for (const imported of extension.imports) {
+    if (imported.model === core.model && imported.edition !== core.edition) {
+      throw new RegistryError('the extension ' + extension.edition + ' was written against '
+        + imported.model + ' ' + imported.edition + ', and this registry describes '
+        + core.edition);
+    }
+  }
+  const foreign = extension.foreignIds();
+  const imports = extension.imports.some(
+    (imported) => imported.model === core.model && imported.edition === core.edition);
+  if (foreign.length > 0 && !imports) {
+    throw new RegistryError('the extension ' + extension.edition + ' names ' + foreign[0]
+      + ' of a registry it does not import: it imports '
+      + (extension.imports.length === 0 ? 'nothing'
+        : extension.imports.map((entry) => entry.model + ' ' + entry.edition).join(', '))
+      + ', not ' + core.model + ' ' + core.edition);
   }
 }
 

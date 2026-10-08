@@ -31,7 +31,7 @@ export { digestOfBytes, documentDigest, semanticDigest } from './digest.ts';
 export { finding, findingsOf, statusOf } from './finding.ts';
 export type { Finding, NotEvaluated, ValidationResult } from './finding.ts';
 
-export { Registry, isRepeatable, registryOf, semanticModelOf } from './registry.ts';
+export { Registry, RegistryError, isRepeatable, registryOf, semanticModelOf } from './registry.ts';
 export type {
   ComponentRole, MaxCardinality, RegistryComponent, RegistryFile, RegistryImport, RegistryTerm,
 } from './registry.ts';

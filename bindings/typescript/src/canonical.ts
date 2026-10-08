@@ -1,9 +1,13 @@
 import type { SemanticDocument, SemanticValue } from './document.ts';
-import { VALUE_MEMBERS, hasComponent } from './document.ts';
+import {
+  FORMAT, VALUE_MEMBERS, VERSION, hasComponent, isOrdered, normalizedValue,
+} from './document.ts';
 import { FindingCode } from './codes.ts';
 import { EsjError } from './errors.ts';
+import { valueMemberSubject, valuesSubject } from './finding.ts';
 import type { JsonNode, JsonObject } from './json/tree.ts';
 import { MAX_DECIMAL_LENGTH } from './grammars.ts';
+import { comparePaths, splitSegments, type Segment } from './paths.ts';
 
 /**
  * The canonical form of the specification, section 7, and the pretty form of section 7.7.
@@ -14,19 +18,26 @@ import { MAX_DECIMAL_LENGTH } from './grammars.ts';
  * section 7.4, a number inside `extensions` is canonicalized from its lexical form and never
  * through a binary floating point value, and member names are sorted by Unicode code point
  * rather than by UTF-16 code unit.
+ *
+ * Both forms are written from the content of a document and from nothing a caller could have
+ * left out of order: `format` and `version` are the constants of section 4.3, the values are
+ * put in canonical path order here (section 7.4) and have their line endings normalized
+ * (section 6.8), and an `extensions` or a `source` that carries nothing is left out, which is
+ * how a document without one is written. A document a caller assembled by hand therefore has
+ * the canonical form and the digests the same content has when it is read.
  */
 
 /** Returns the canonical serialization of a document (section 7). */
 export function canonicalize(document: SemanticDocument): string {
   const parts: string[] = [];
-  parts.push(member('format', string(document.format)));
-  parts.push(member('version', string(document.version)));
+  parts.push(member('format', string(FORMAT)));
+  parts.push(member('version', string(VERSION)));
   parts.push(member('semanticModel', string(document.semanticModel)));
   parts.push(member('values', values(document)));
-  if (document.extensions !== undefined) {
-    parts.push(member('extensions', extensions(document.extensions)));
+  if (hasExtensions(document)) {
+    parts.push(member('extensions', extensions(document.extensions!)));
   }
-  if (document.source !== undefined) {
+  if (hasSource(document)) {
     parts.push(member('source', source(document)));
   }
   return '{' + parts.join(',') + '}';
@@ -41,6 +52,55 @@ export function canonicalSemanticContent(document: SemanticDocument): string {
     + ',' + member('values', values(document)) + '}';
 }
 
+function hasExtensions(document: SemanticDocument): boolean {
+  return document.extensions !== undefined && document.extensions.members.length > 0;
+}
+
+function hasSource(document: SemanticDocument): boolean {
+  return document.source !== undefined
+    && (document.source.syntax !== undefined || document.source.sha256 !== undefined);
+}
+
+/**
+ * Returns the values of a document in canonical path order (section 7.4), each with its line
+ * endings normalized (section 6.8). A document built by `documentOf` or read by the reader is
+ * in that order already, and is not sorted again.
+ */
+function orderedValues(document: SemanticDocument): Iterable<[string, SemanticValue]> {
+  if (isOrdered(document.values)) {
+    return document.values;
+  }
+  const entries: Array<{ path: string; segments: Segment[]; value: SemanticValue }> = [];
+  for (const [path, value] of document.values) {
+    entries.push({ path, segments: splitSegments(path), value: normalizedValue(value) });
+  }
+  let sorted = true;
+  for (let i = 1; i < entries.length && sorted; i++) {
+    sorted = comparePaths(entries[i - 1].segments, entries[i].segments) <= 0;
+  }
+  if (!sorted) {
+    entries.sort((left, right) => comparePaths(left.segments, right.segments));
+  }
+  return entries.map((entry) => [entry.path, entry.value]);
+}
+
+/**
+ * Writes one string of a value, and names the value where the string has no canonical form:
+ * the exception carries the path and the member access of the member, as a finding would.
+ */
+function valueString(text: string, path: string, member: string | undefined): string {
+  try {
+    return string(text);
+  } catch (failure) {
+    if (failure instanceof EsjError && failure.path === '') {
+      const subject = valuesSubject(path);
+      throw new EsjError(failure.message, failure.code, path,
+        member === undefined ? subject : valueMemberSubject(subject, member));
+    }
+    throw failure;
+  }
+}
+
 /** Returns the canonical bytes of a document, which is what a digest is computed over. */
 export function canonicalBytes(document: SemanticDocument): Uint8Array {
   return new TextEncoder().encode(canonicalize(document));
@@ -52,21 +112,21 @@ function member(name: string, value: string): string {
 
 function values(document: SemanticDocument): string {
   const parts: string[] = [];
-  for (const [path, value] of document.values) {
-    parts.push(member(path, valueOf(value)));
+  for (const [path, value] of orderedValues(document)) {
+    parts.push(member(path, valueOf(path, value)));
   }
   return '{' + parts.join(',') + '}';
 }
 
-function valueOf(value: SemanticValue): string {
+function valueOf(path: string, value: SemanticValue): string {
   if (!hasComponent(value)) {
-    return string(value.value);
+    return valueString(value.value, path, undefined);
   }
   const parts: string[] = [];
   for (const name of VALUE_MEMBERS) {
     const component = value[name];
     if (component !== undefined) {
-      parts.push(member(name, string(component)));
+      parts.push(member(name, valueString(component, path, name)));
     }
   }
   return '{' + parts.join(',') + '}';
@@ -116,7 +176,7 @@ function writeNode(root: JsonNode, pretty: boolean, level: number): string {
   let pendingLevel = level;
   for (;;) {
     if (pending !== undefined) {
-      const frame = writeScalarOrOpen(pending, pretty, pendingLevel, out);
+      const frame = writeScalarOrOpen(pending, pendingLevel, out);
       if (frame !== undefined) {
         open.push(frame);
       }
@@ -154,12 +214,11 @@ function writeNode(root: JsonNode, pretty: boolean, level: number): string {
  * Writes a scalar, or an empty container, and returns the frame of a container that has
  * members or elements to write.
  *
- * A number keeps its spelling in the pretty form, which section 7.7 allows; in the canonical
- * form it is written in the canonical decimal form of section 7.6, rule 2.
+ * A number is written in the canonical decimal form of section 7.6, rule 2, in both forms:
+ * the pretty form is then a function of the content alone, as the canonical one is
+ * (section 7.7).
  */
-function writeScalarOrOpen(
-  node: JsonNode, pretty: boolean, level: number, out: string[],
-): Frame | undefined {
+function writeScalarOrOpen(node: JsonNode, level: number, out: string[]): Frame | undefined {
   switch (node.t) {
     case 'object': {
       if (node.members.length === 0) {
@@ -188,7 +247,7 @@ function writeScalarOrOpen(
       out.push(string(node.value));
       return undefined;
     case 'number':
-      out.push(pretty ? node.raw : canonicalNumber(node.raw));
+      out.push(canonicalNumber(node.raw));
       return undefined;
     case 'boolean':
       out.push(node.value ? 'true' : 'false');
@@ -422,29 +481,31 @@ export function canonicalNumber(raw: string): string {
 }
 
 /**
- * Returns the pretty form of a document (section 7.7): the canonical content with two spaces
- * of indentation, one member per line, and no trailing newline.
+ * Returns the pretty form of a document (section 7.7): the canonical content in the canonical
+ * order, with two spaces of indentation, one member and one array element per line, LF line
+ * endings and one LF at the end of the text.
  *
- * It is the form the examples of the repository are stored in. Canonicalizing it and
- * canonicalizing any other layout of the same content produce the same bytes.
+ * It is the form the examples of the repository are stored in, byte for byte, and the form the
+ * Java and the C# implementation write. Canonicalizing it and canonicalizing any other layout
+ * of the same content produce the same bytes.
  */
 export function pretty(document: SemanticDocument): string {
   const lines: string[] = [];
   lines.push('{');
   const parts: string[] = [];
-  parts.push(prettyMember('format', string(document.format), 1));
-  parts.push(prettyMember('version', string(document.version), 1));
+  parts.push(prettyMember('format', string(FORMAT), 1));
+  parts.push(prettyMember('version', string(VERSION), 1));
   parts.push(prettyMember('semanticModel', string(document.semanticModel), 1));
   parts.push(prettyMember('values', prettyValues(document, 1), 1));
-  if (document.extensions !== undefined) {
-    parts.push(prettyMember('extensions', writeNode(document.extensions, true, 1), 1));
+  if (hasExtensions(document)) {
+    parts.push(prettyMember('extensions', writeNode(document.extensions!, true, 1), 1));
   }
-  if (document.source !== undefined) {
+  if (hasSource(document)) {
     parts.push(prettyMember('source', prettySource(document, 1), 1));
   }
   lines.push(parts.join(',\n'));
   lines.push('}');
-  return lines.join('\n');
+  return lines.join('\n') + '\n';
 }
 
 function indent(level: number): string {
@@ -460,21 +521,21 @@ function prettyValues(document: SemanticDocument, level: number): string {
     return '{}';
   }
   const parts: string[] = [];
-  for (const [path, value] of document.values) {
-    parts.push(prettyMember(path, prettyValue(value, level + 1), level + 1));
+  for (const [path, value] of orderedValues(document)) {
+    parts.push(prettyMember(path, prettyValue(path, value, level + 1), level + 1));
   }
   return '{\n' + parts.join(',\n') + '\n' + indent(level) + '}';
 }
 
-function prettyValue(value: SemanticValue, level: number): string {
+function prettyValue(path: string, value: SemanticValue, level: number): string {
   if (!hasComponent(value)) {
-    return string(value.value);
+    return valueString(value.value, path, undefined);
   }
   const parts: string[] = [];
   for (const name of VALUE_MEMBERS) {
     const component = value[name];
     if (component !== undefined) {
-      parts.push(prettyMember(name, string(component), level + 1));
+      parts.push(prettyMember(name, valueString(component, path, name), level + 1));
     }
   }
   return '{\n' + parts.join(',\n') + '\n' + indent(level) + '}';

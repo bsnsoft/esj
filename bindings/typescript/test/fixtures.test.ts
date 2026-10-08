@@ -233,17 +233,42 @@ test('a conformant document has the digests and the canonical form the manifest 
     }
   });
 
+/**
+ * Compares every case of a loop before it fails, so that a run names each case this
+ * implementation answers differently and not only the first.
+ */
+function mismatches(): { check(name: string, actual: unknown, expected: unknown): void;
+  assertNone(): void; } {
+  const found: string[] = [];
+  return {
+    check(name, actual, expected) {
+      try {
+        assert.deepEqual(actual, expected);
+      } catch {
+        found.push(name + ': expected ' + JSON.stringify(expected) + ', answered '
+          + JSON.stringify(actual));
+      }
+    },
+    assertNone() {
+      assert.deepEqual(found, []);
+    },
+  };
+}
+
 test('a conformant document draws exactly the findings the manifest records', () => {
+  const report = mismatches();
   for (const manifest of MANIFESTS) {
     for (const entry of manifest.documents ?? []) {
       if (!CARRIED.has(entry.semanticModel)) {
         continue;
       }
       const rows = entry.findings ?? [];
-      assert.deepEqual(compared(errorsOf(readFileSync(path.join(ROOT, entry.file))), pinned(rows)),
-        recorded(rows), entry.file);
+      report.check(entry.file,
+        compared(errorsOf(readFileSync(path.join(ROOT, entry.file))), pinned(rows)),
+        recorded(rows));
     }
   }
+  report.assertNone();
 });
 
 /**
@@ -264,27 +289,28 @@ function invalidByFile(manifest: Manifest): Map<string, Row[]> {
 }
 
 test('a document the manifest calls invalid is rejected at the place it names', () => {
+  const report = mismatches();
   for (const manifest of MANIFESTS) {
     for (const [file, rows] of invalidByFile(manifest)) {
       const found = errorsOf(readFileSync(path.join(ROOT, file)));
       const codes = found.map(([, code]) => code);
       if (rows[0].layer === 'business-rule') {
-        assert.deepEqual(codes, [], file + ' is structurally sound');
+        report.check(file + ' is structurally sound', codes, []);
         continue;
       }
       if (rows[0].layer === 'L1' || rows[0].layer === 'limit') {
         // SPEC.md section 9.6 fixes how far a reader reads, so the rows of a document layer
         // L1 refused are the whole answer and not a sample of it.
-        assert.deepEqual(compared(found, pinned(rows)), recorded(rows), file);
+        report.check(file, compared(found, pinned(rows)), recorded(rows));
         continue;
       }
       const [first] = recorded(rows.slice(0, 1));
-      assert.ok(compared(found, pinned(rows.slice(0, 1))).some((entry) =>
-        compareTriples(entry, first) === 0),
-        file + ' draws ' + rows[0].code + ' at ' + JSON.stringify(rows[0].path ?? '')
-        + ', and this reader answered ' + JSON.stringify(found));
+      report.check(file + ' draws ' + rows[0].code + ' at ' + JSON.stringify(rows[0].path ?? ''),
+        compared(found, pinned(rows.slice(0, 1))).some((entry) =>
+          compareTriples(entry, first) === 0) ? 'drawn' : found, 'drawn');
     }
   }
+  report.assertNone();
 });
 
 test('a document whose members are in the wrong order canonicalizes to the pinned bytes', () => {

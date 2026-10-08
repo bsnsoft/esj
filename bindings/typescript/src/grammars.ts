@@ -483,8 +483,13 @@ export function forMessage(value: string, limit: number = MESSAGE_EXCERPT): stri
 /**
  * Escapes a fragment quoted inside a message or carried in a subject (specification,
  * section 9.5): a backslash and a quotation mark, the line feed, the carriage return and the
- * tab by name, and every other character of {@link steersATerminal} as `\u` and four
- * lowercase hexadecimal digits.
+ * tab by name, and every other character of {@link steersATerminal} and every lone surrogate
+ * as `\u` and four lowercase hexadecimal digits.
+ *
+ * A lone surrogate has no UTF-8 encoding, so a subject that carried it as it stands could not
+ * be written to a log line, a JSON answer or a file at all; written `\ud800` it can, and a
+ * caller still reads which code unit the document carried (section 9.5). A surrogate pair is
+ * one character and is left alone.
  */
 export function escapeForMessage(value: string): string {
   let out = '';
@@ -500,7 +505,7 @@ export function escapeForMessage(value: string): string {
       out += '\\r';
     } else if (c === '\t') {
       out += '\\t';
-    } else if (steersATerminal(code)) {
+    } else if (steersATerminal(code) || (code >= 0xd800 && code <= 0xdfff)) {
       out += `\\u${code.toString(16).padStart(4, '0')}`;
     } else {
       out += c;
