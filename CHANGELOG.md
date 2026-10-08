@@ -6,37 +6,50 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.6] — unreleased
 
+The Java implementation and the TypeScript and C# bindings now read, report and load registries
+alike. An entry without a prefix holds for all three; a prefix names the implementation it is
+about.
+
 ### Changed
 
-- `EsjReader` reads the bytes with a scanner of its own instead of `jackson-core`: it reads UTF-8
-  and nothing else, and it judges every member name before the value written under it. It is
+- Java: `EsjReader` reads the bytes with a scanner of its own instead of `jackson-core`: it reads
+  UTF-8 and nothing else, and it judges every member name before the value written under it. It is
   faster than before and holds less while it reads.
 - The `subject` of a reader finding is a member access with one grammar: a name the
   specification defines at that place is dotted (`source.syntax`, `values["/BT-1"].scheme`),
   every name the document chose is written in brackets (`["profile"]`, `source["origin"]`,
-  `values["/BT-1"]["note"]`, `extensions["a.b"]["x"][0]`).
+  `values["/BT-1"]["note"]`, `extensions["a.b"]["x"][0]`), and the name is never cut to an
+  excerpt. The bindings wrote such a name dotted (`profile`, `source.foo`, `values["/BT-1"].foo`).
 - A duplicate member name is named by its own member access (`values["/BT-1"]`, `format`,
   `source.syntax`, `extensions["a.b"]["x"]`), not by the object it occurs in; inside a value
   object, a repeated name or a name with a lone surrogate names the value (`values["/BT-1"]`).
 - Every missing required envelope member is a finding of its own, with the member's name as its
-  subject, in the order `format`, `version`, `semanticModel`, `values`.
-- Every member name is held to `maxStringBytes`, counted in UTF-8 bytes, and so are `format`,
-  `version`, `semanticModel` and `source.sha256` as `source.syntax` was: past the bound each is
-  `ESJ-L1-LIMIT` rather than the code of its grammar. A bound shorter than the envelope's own
-  strings refuses every document; the edition string of 2017 is 30 bytes long.
+  subject, in the order `format`, `version`, `semanticModel`, `values` (was the first alone).
+- Every member name is held to `maxStringBytes`, counted in UTF-8 bytes (the bindings counted
+  UTF-16 code units), also below a value the reader walks past, and so are `format`, `version`,
+  `semanticModel` and `source.sha256` as `source.syntax` was: past the bound each is
+  `ESJ-L1-LIMIT` rather than the code of its grammar (`ESJ-L1-OWNER-TOKEN`, `ESJ-L1-PATH-SYNTAX`,
+  `ESJ-L1-ENVELOPE-MEMBER`), which still applies inside the bound. A bound shorter than the
+  envelope's own strings refuses every document; the edition string of 2017 is 30 bytes long.
 - A number token longer than `maxStringBytes` is `ESJ-L1-LIMIT` wherever it stands, measured
   before it is built; in `values` it was `ESJ-L1-JSON-TYPE` when written with a fraction.
 - `ESJ-L1-LIMIT` carries the path of the member of `values` it was met in and, as its subject,
-  the member whose name or value reached the bound — also for a bound the parser used to apply,
-  which named nothing. Inside a structure the reader walks past, that is the member walked past;
-  names, numbers and the depth are bounded there, strings are not.
+  the member whose name or value reached the bound — `values["/BT-1"]`, `values["/BT-1"].value`,
+  `extensions["o"][1]` — also for a bound the parser used to apply, which named nothing. Inside a
+  structure the reader walks past, that is the member walked past; names, numbers and the depth
+  are bounded there, strings are not.
 - A message that places a defect in the byte sequence names the byte offset at which the token
-  begins, counted from zero, rather than where the parser stopped.
+  begins, counted from zero, rather than where the parser stopped (Java) or a UTF-16 index (the
+  bindings).
 - `ESJ-L1-JSON` is a finding about the document: its path and subject are empty, its message
   names the byte offset. A token where a value belongs that is no complete JSON value — `tru`,
-  `01`, `1.` — is `ESJ-L1-JSON`, before anything is said about its type.
-- `EsjFormatException` and `EsjLimitException` carry `path()` and `subject()` beside `code()`: the
-  path and the subject of the finding they stand for.
+  `truex`, `01`, `1.` — is `ESJ-L1-JSON`, before anything is said about its type, also where the
+  envelope expects another type (the bindings said `ESJ-L1-ENVELOPE-VALUE` there).
+- An exception carries the path and the subject of the finding it stands for beside its code:
+  `path()` and `subject()` of `EsjFormatException` and `EsjLimitException` in Java; `Path` and
+  `Subject` in C#, where `EsjLimitException.Code` is now an instance property and
+  `EsjLimitException.LimitCode` the constant; `subject` of `EsjError` in TypeScript, whose `path`
+  is the empty string where the finding names none (was `undefined`).
 - `esj validate --output json` writes `subject` as a string in every finding, `""` where it
   names nothing beyond the path, and never `null`.
 - Layer L2 checks every path independently (`SPEC.md` 9.2): a core identifier the registry does not
@@ -44,99 +57,82 @@ still change; a change to it is named here under *Format*.
   registry defines, which made the whole path `ESJ-L2-NOT-CHECKED` and the result `INDETERMINATE`
   before; the segments above an undefined one are held to the index rule; an unknown identifier of
   a loaded extension namespace stays `ESJ-L2-NOT-CHECKED`, and its message no longer says that the
-  registry is not loaded.
+  registry is not loaded. Of a path whose terms are all known, the index rule, the chain, the
+  content and the components are checked and every failure is reported (TypeScript reported the
+  first alone), and the findings of a path stand in the order of its segments.
 - The findings of layer L2 name in `subject` what the path cannot tell apart: the identifier of the
   segment for `ESJ-L2-UNKNOWN-TERM`, `-INDEX-REQUIRED` and `-INDEX-FORBIDDEN`, the term whose group
   chain is wrong for `ESJ-L2-PARENT-CHAIN`, the component for `ESJ-L2-COMPONENT-NOT-ALLOWED` and
-  `-COMPONENT-MISSING`. The subject was empty.
-- `ValidationResult.merge` keeps `NOT-REQUESTED` for a layer the caller did not ask for: a
-  `LIMIT` or `PRECEDING-LAYER-FAILED` the other result names for it no longer displaces it
-  (`SPEC.md` 9.5). `EDITION-UNKNOWN` of a validator that was asked for the layer is still kept
-  over the `NOT-REQUESTED` of a clean read.
-- `Registry.load` refuses a registry that names terms it does not define — as a parent, in a
+  `-COMPONENT-MISSING`. The subject was empty in Java and C#.
+- Java and C#: `ValidationResult.merge` (`Merge`) keeps `NOT-REQUESTED` for a layer the caller did
+  not ask for: a `LIMIT` or `PRECEDING-LAYER-FAILED` the other result names for it no longer
+  displaces it (`SPEC.md` 9.5). `EDITION-UNKNOWN` of a validator that was asked for the layer is
+  still kept over the `NOT-REQUESTED` of a clean read. C#: `Validator.Validate(byte[])` takes the
+  reason of the model layers from the structural run, so an unknown edition reads
+  `EDITION-UNKNOWN`.
+- Java: `Registry.load` refuses a registry that names terms it does not define — as a parent, in a
   chain or in `reusesTerms` — and imports nothing, and reports a cardinality below zero or a path
   that does not end at its term as `EsjFormatException` rather than `IllegalArgumentException`.
   `Registry.withExtension` refuses such an extension where its `imports` do not name this model
   with this edition, which it combined silently before; its refusal of a redefined term no longer
   calls a term of an earlier extension a core term. `Registry.admits(extension)` asks the edition
   question before combining.
-- `esj validate --extension` for a document of an edition the extension does not import says so:
-  the `ESJ-L2-NOT-CHECKED` finding names the option, the edition the registry imports and that it
-  is not this one, and the cause is the new `extension-for-another-edition` rather than
-  `extension-registry-missing`.
-- The generator escapes a slug Java reserves, or one that would hide a member every view carries,
-  with a trailing underscore (`class_()`) instead of refusing the registry (`SPEC.md` 10).
-- TypeScript: a finding names its member by the member access of `SPEC.md` section 9.5: a name the
-  specification defines in dot form, a name the document chose in brackets — `["profile"]`,
-  `source["foo"]`, `values["/BT-1"]["foo"]` (was `profile`, `source.foo`, `values["/BT-1"].foo`).
-- TypeScript: a repeated member name is named by the access of that name — `values["/BT-1"]`,
-  `format`, `source.syntax`, `extensions["a.b"]`, `extensions["a.b"]["x"]` — and no longer by the
-  object it stands in; inside a value object the finding still names the object.
-- TypeScript: every required envelope member that is missing is a finding of its own, its name in
-  `subject`, in the order `format`, `version`, `semanticModel`, `values` (was the first alone).
-- TypeScript: a lone surrogate in a subject or a message is written `\ud800`, four lowercase
-  digits, so that the finding can be written as UTF-8.
-- TypeScript: `ESJ-L1-JSON` is a finding about the document — empty path and subject — and a token
-  that is no whole JSON value (`tru`, `01`, `1.`) is `ESJ-L1-JSON` wherever it stands, where the
-  envelope expects another type too (was `ESJ-L1-ENVELOPE-VALUE` there).
-- TypeScript: the strings `format`, `version`, `semanticModel`, `source.syntax` and
-  `source.sha256` are held to `maxStringBytes` and draw `ESJ-L1-LIMIT` naming the member.
-- TypeScript: every member name is held to `maxStringBytes` in UTF-8 bytes (was UTF-16 code
-  units), below a value the reader walks past as well; past it the name draws `ESJ-L1-LIMIT`
-  before its grammar is asked (`ESJ-L1-OWNER-TOKEN`, `ESJ-L1-PATH-SYNTAX`,
-  `ESJ-L1-ENVELOPE-MEMBER`).
-- TypeScript: a number token longer than `maxStringBytes` is `ESJ-L1-LIMIT` wherever it stands,
-  measured before it is built.
-- TypeScript: an `ESJ-L1-LIMIT` names the member whose name or value reached the bound —
-  `values["/BT-1"]`, `values["/BT-1"].value`, `extensions["o"][1]` — and carries the path of the
-  member of `values` it stands in (the subject was empty for nesting, numbers and long strings).
-- TypeScript: an offset in a message is the UTF-8 byte offset of the beginning of the token (was a
-  UTF-16 index).
-- TypeScript: layer L2 runs every check of a path whose terms are known — index rule, chain,
-  content, components — and reports each (was: the first defect of the path alone); a core
-  segment the registry does not carry is `ESJ-L2-UNKNOWN-TERM`, one per segment, also beside an
-  extension segment that is not checked; an unknown term ends the checks below it.
-- TypeScript: `EsjError` carries `subject` beside `code` and `path`, and `path` is the empty string
-  where the finding names none (was `undefined`); `canonicalize` names the value of a string it
-  cannot write.
 - TypeScript: `registryOf` and `new Structure` refuse a registry the way section 10 does —
   `RegistryError` for components no value can satisfy, an identifier listed twice or defined by
   core and extension (was: the later one won), and an extension combined with an edition it does
   not import, or naming core terms with no `imports` at all.
+- `esj validate --extension` for a document of an edition the extension does not import says so:
+  the `ESJ-L2-NOT-CHECKED` finding names the option, the edition the registry imports and that it
+  is not this one, and the cause is the new `extension-for-another-edition` rather than
+  `extension-registry-missing`.
+- Java: the generator escapes a slug Java reserves, or one that would hide a member every view
+  carries, with a trailing underscore (`class_()`) instead of refusing the registry (`SPEC.md` 10).
 - TypeScript: the view generator refuses a repeatable group whose slug is no plural (was: the slug
   named an instance as it stood).
-- TypeScript: the fixture binding answers `validate` with `status`, `notEvaluated` and each
-  finding's `severity`, takes the bounds of section 12.2 in `limits`, and answers
-  `{"op": "registry", "files": [...]}` with `accepted`.
+- TypeScript and C#: the fixture binding answers `validate` with `status`, `notEvaluated` and each
+  finding's `severity`, takes the bounds of section 12.2 in `limits` under the names of `Limits`,
+  and answers `{"op": "registry", "files": [...]}` with `accepted`.
 - TypeScript: `limitsOf` refuses a name that is no limit of section 12.2 and a bound that is not a
   positive whole number.
 
 ### Fixed
 
-- The Java reader read a document written in UTF-16 or UTF-32 without a byte order mark,
+- Java: the reader read a document written in UTF-16 or UTF-32 without a byte order mark,
   because its parser guessed the encoding; such a byte sequence is valid UTF-8 and no JSON text
   in it, and is now `ESJ-L1-JSON`.
-- A defective member name followed by a broken value — `"foo":tru`, a second `"format":tru` — was
-  `ESJ-L1-JSON`, because the parser read the value ahead; the name is judged first and draws its
-  own code.
+- Java: a defective member name followed by a broken value — `"foo":tru`, a second
+  `"format":tru` — was `ESJ-L1-JSON`, because the parser read the value ahead; the name is judged
+  first and draws its own code.
 - A lone surrogate or a repeated name inside a structure the reader walks past under a defective
-  member was reported, and a lone surrogate there stopped the read; neither is a finding now, and
-  the reader reads on.
-- A member name with a lone surrogate carries its member access as subject (it was empty), and a
-  subject or message escapes every unpaired surrogate as `\udXXX` in lowercase.
+  member was reported, and in Java a lone surrogate there stopped the read; neither is a finding
+  now, and the reader reads on.
+- A member name with a lone surrogate carries its member access as subject (it was empty in
+  Java), and a subject or message escapes every unpaired surrogate as `\u` and four lowercase
+  hexadecimal digits (`\ud800`); the C# fixture protocol carries it so instead of a replacement
+  character.
 - The subject of an undefined envelope member was cut to 80 characters; a subject is whole.
-- The decoded size of a base64 value counts at most two padding characters and is never
-  negative, so a value that is no base64 cannot lower the total the bound on binary content sees.
-- TypeScript: a value built through the API (`documentOf`, or a document assembled by hand) has its
-  line endings normalized as a read one has, in the content and in every component, so both have
-  one canonical form and one digest; `source` and `extensions` stay as written.
+- Java and C#: the decoded size of a base64 value counts at most two padding characters and is
+  never negative, so a value that is no base64 cannot lower the total the bound on binary content
+  sees.
+- TypeScript and C#: a value built through the API (`documentOf`, `SemanticValue`, or a document
+  assembled by hand) has its line endings normalized as a read one has, in the content and in
+  every component, so both have one canonical form and one digest; `source` and `extensions` stay
+  as written.
+- C#: `format`, `version`, `semanticModel` and both members of `source` were held to the binary
+  bound; they are held to the string bound, and a string of the envelope is screened for a lone
+  surrogate before it is measured.
+- C#: `Limits` refuses a `maxExtensionDepth` or a `maxDocumentBytes` past the bound the Java
+  implementation refuses, instead of overflowing when a document arrives.
 - TypeScript: `pretty` ends with one LF and writes a number inside `extensions` in its canonical
   form, as the Java and the C# writer do.
 - TypeScript: `canonicalize` puts the values in canonical path order itself, leaves an empty
-  `extensions` and an empty `source` out, and writes `format` and `version` as the constants.
-- TypeScript: the subject of an undefined envelope member is no longer cut to 80 characters.
+  `extensions` and an empty `source` out, writes `format` and `version` as the constants, and
+  names the value of a string it cannot write.
 - TypeScript: `validate(bytes, {layers})` without L1 no longer measures the model layers over a
   document the reader refused a member of: they are `PRECEDING-LAYER-FAILED`, or `LIMIT`.
+- C#: reading a registry applies the three component rules of `SPEC.md` section 10, and
+  `WithExtension` refuses an extension that names a term of the core without importing that
+  core's edition.
 - `publish.yml` deploys on Maven 3.9.16, downloaded and checked against Apache's digest: the
   runner image moved to Maven 3.10.0, with which central-publishing-maven-plugin 0.11.0 put the
   repository metadata of every artifact into the bundle, and the Portal refused the 0.9.5

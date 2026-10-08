@@ -112,6 +112,8 @@ public sealed class Term
         string? codeList)
     {
         Id = id ?? throw new ArgumentNullException(nameof(id));
+        List<Component> listed = new(components ?? throw new ArgumentNullException(nameof(components)));
+        CheckComponents(id, datatype, listed);
         IsGroup = isGroup;
         Name = name;
         Slug = slug;
@@ -119,7 +121,7 @@ public sealed class Term
         _path = new List<string>(path);
         Cardinality = cardinality;
         Datatype = datatype;
-        _components = new List<Component>(components);
+        _components = listed;
         _reusesTerms = new List<string>(reusesTerms);
         CodeList = codeList;
     }
@@ -181,4 +183,88 @@ public sealed class Term
 
     /// <inheritdoc />
     public override string ToString() => Id + " " + Cardinality;
+
+    /// <summary>
+    /// Holds the components of a term to the three rules of the specification, section 10,
+    /// which a registry is checked against when it is read rather than left to the documents
+    /// measured with it: a component is listed once and only where the semantic data type has
+    /// it; a <c>BinaryObject</c> carries exactly <c>mimeCode</c> and <c>filename</c>, both
+    /// mandatory; <c>schemeVersion</c> is declared only beside <c>scheme</c>, and mandatory only
+    /// beside a <c>scheme</c> that is mandatory too, since no value could satisfy the other way
+    /// round. A term no value can satisfy is a defect of the registry.
+    /// </summary>
+    /// <exception cref="EsjFormatException">if the components break one of the rules</exception>
+    private static void CheckComponents(string id, SemanticType? datatype, List<Component> components)
+    {
+        HashSet<ComponentRole> roles = new();
+        foreach (Component component in components)
+        {
+            if (!roles.Add(component.Role))
+            {
+                throw new EsjFormatException(null, id + " lists the component " + component.JsonMember + " twice");
+            }
+        }
+
+        if (datatype == SemanticType.BinaryObject)
+        {
+            if (roles.Count != 2 || !roles.Contains(ComponentRole.MimeCode) || !roles.Contains(ComponentRole.Filename))
+            {
+                throw new EsjFormatException(null, "the Binary Object " + id + " carries the components mimeCode and filename");
+            }
+
+            foreach (Component component in components)
+            {
+                if (!component.IsMandatory)
+                {
+                    throw new EsjFormatException(null,
+                        "the component " + component.JsonMember + " of the Binary Object " + id + " is mandatory");
+                }
+            }
+
+            return;
+        }
+
+        if (components.Count == 0)
+        {
+            return;
+        }
+
+        if (datatype is null)
+        {
+            throw new EsjFormatException(null, id + " carries supplementary components but no semantic data type");
+        }
+
+        foreach (ComponentRole role in roles)
+        {
+            bool allowed = datatype == SemanticType.Identifier
+                && role is ComponentRole.Scheme or ComponentRole.SchemeVersion;
+            if (!allowed)
+            {
+                throw new EsjFormatException(null, "the semantic data type " + datatype.Value.RegistryDatatype()
+                    + " of " + id + " has no component " + MemberOf(role));
+            }
+        }
+
+        if (roles.Contains(ComponentRole.SchemeVersion) && !roles.Contains(ComponentRole.Scheme))
+        {
+            throw new EsjFormatException(null, id + " carries a scheme version without a scheme");
+        }
+
+        if (Mandatory(components, ComponentRole.SchemeVersion) && !Mandatory(components, ComponentRole.Scheme))
+        {
+            throw new EsjFormatException(null, id + " declares its scheme version mandatory and its scheme"
+                + " optional, and no value can satisfy both");
+        }
+    }
+
+    private static string MemberOf(ComponentRole role) => role switch
+    {
+        ComponentRole.Scheme => "scheme",
+        ComponentRole.SchemeVersion => "schemeVersion",
+        ComponentRole.MimeCode => "mimeCode",
+        _ => "filename",
+    };
+
+    private static bool Mandatory(List<Component> components, ComponentRole role) =>
+        components.Exists(component => component.Role == role && component.IsMandatory);
 }

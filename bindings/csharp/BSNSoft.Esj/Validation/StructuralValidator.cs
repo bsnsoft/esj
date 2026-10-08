@@ -19,13 +19,18 @@ namespace BSNSoft.Esj.Validation;
 /// present in every instance of its parent and at the root, and nothing occurs more often
 /// than its maximum allows.</para>
 /// <para>A path that layer L2 could not place takes no part in layer L3, so the two layers do
-/// not report one defect twice. A path that leads through an extension whose registry is not
-/// loaded is reported as <c>ESJ-L2-NOT-CHECKED</c>, with the severity <c>info</c>: not
-/// knowing is not a defect of the document.</para>
+/// not report one defect twice. A path that leads through an extension segment the registry
+/// does not know is reported as <c>ESJ-L2-NOT-CHECKED</c>, with the severity <c>info</c>: not
+/// knowing is not a defect of the document. A core segment the registry does not know is
+/// <c>ESJ-L2-UNKNOWN-TERM</c> in every path, since no extension supplies a core identifier.</para>
+/// <para>A finding of layer L2 names what it is about in its subject: the identifier of the
+/// segment for <c>ESJ-L2-UNKNOWN-TERM</c> and the two index codes, the term of the path for
+/// <c>ESJ-L2-PARENT-CHAIN</c>, and the component for the two component codes (specification,
+/// section 9.5).</para>
 /// <para>What comes back is a <see cref="ValidationResult"/> and not a list of findings. This
 /// validator implements two of the three layers, so its result always names L1 as not
-/// evaluated and is never <c>VALID</c> on its own; a caller that has also run L1 composes the
-/// two with <see cref="ValidationResult.Merge"/>.</para>
+/// evaluated and is never <c>VALID</c> on its own; <see cref="Validator.Validate(byte[], IEnumerable{Registry}?, Json.Limits?)"/>
+/// runs the reader over the bytes first and composes the three layers into one verdict.</para>
 /// </remarks>
 public static class StructuralValidator
 {
@@ -151,28 +156,57 @@ public static class StructuralValidator
         return findings;
     }
 
+    /// <summary>
+    /// Checks one path at layer L2 (specification, sections 5 and 9.2). Every segment is asked
+    /// whether a registry knows it: a core segment the registry does not contain is
+    /// <c>ESJ-L2-UNKNOWN-TERM</c> whatever else the path carries, because no extension can supply
+    /// an identifier of the core model, and an extension segment the registry does not contain is
+    /// <c>ESJ-L2-NOT-CHECKED</c>, whether its namespace is not loaded or is loaded and does not
+    /// know it, since a namespace may grow (section 5.6); the second is reported once a path. An
+    /// unknown segment ends the checks below it; the segments above it are still held to the index
+    /// rule, and the findings of a path stand in the order of its segments. Where every segment is
+    /// known, the index rule, the parent chain, the content grammar and the components are four
+    /// checks that run independently of each other, so a path with four problems draws four
+    /// findings. A finding about one segment names its identifier as the subject, a finding
+    /// about a component names the component.
+    /// </summary>
+    /// <returns>whether the path is placed in the structure, which is what layer L3 counts</returns>
     private static bool CheckValue(
         SemanticPath path, SemanticValue value, Registry registry, List<Finding> findings)
     {
-        foreach (PathSegment segment in path.Segments)
-        {
-            if (!segment.IsIndex && segment.IsExtension && registry.TermOf(segment.Text) is null)
-            {
-                findings.Add(Finding.Of(path, FindingCode.NotChecked,
-                    "the registry that defines " + segment.Text + " is not loaded, so this path"
-                    + " was not checked against it"));
-                return false;
-            }
-        }
-
+        IReadOnlyList<PathSegment> segments = path.Segments;
         bool known = true;
-        foreach (PathSegment segment in path.Segments)
+        bool notChecked = false;
+        bool shapeIsRight = true;
+        for (int at = 0; at < segments.Count; at++)
         {
-            if (!segment.IsIndex && registry.TermOf(segment.Text) is null)
+            PathSegment segment = segments[at];
+            if (segment.IsIndex)
             {
-                findings.Add(Finding.Of(path, FindingCode.UnknownTerm,
-                    "the registry of " + registry.Edition + " does not contain " + segment.Text));
+                continue;
+            }
+
+            if (registry.TermOf(segment.Text) is null)
+            {
                 known = false;
+                if (!segment.IsExtension)
+                {
+                    findings.Add(Finding.About(path, segment.Text, FindingCode.UnknownTerm,
+                        "the registry of " + registry.Edition + " does not contain " + segment.Text
+                        + ", and no extension can supply an identifier of the core model"));
+                }
+                else if (!notChecked)
+                {
+                    notChecked = true;
+                    findings.Add(Finding.Of(path, FindingCode.NotChecked, NotCheckedMessage(registry, segment.Text)));
+                }
+
+                continue;
+            }
+
+            if (known)
+            {
+                shapeIsRight = CheckIndexAt(path, at, registry, findings) && shapeIsRight;
             }
         }
 
@@ -181,17 +215,39 @@ public static class StructuralValidator
             return false;
         }
 
-        bool shapeIsRight = CheckIndexRule(path, registry, findings);
         bool chainIsRight = RecordsChain(registry, path);
         if (!chainIsRight)
         {
-            findings.Add(Finding.Of(path, FindingCode.ParentChain,
+            findings.Add(Finding.About(path, path.Term, FindingCode.ParentChain,
                 "the group chain of this path is none the registry records for " + path.Term
                 + "; the registry records " + Written(registry.Chains(path.Term))));
         }
 
         CheckContent(path, value, registry, findings);
         return shapeIsRight && chainIsRight;
+    }
+
+    /// <summary>
+    /// Says why an extension segment was not checked: the namespace it names is not loaded at
+    /// all, or it is loaded and does not know the identifier, which a later registry of the
+    /// namespace may add (specification, section 5.6).
+    /// </summary>
+    private static string NotCheckedMessage(Registry registry, string id)
+    {
+        string space = Namespace(id);
+        bool loaded = registry.Terms.Any(term => string.Equals(Namespace(term.Id), space, StringComparison.Ordinal));
+        return loaded
+            ? "the loaded registry of the namespace " + space + " does not define " + id
+                + ", so this path was not checked; a later registry of the namespace may"
+            : "the registry that defines " + id + " is not loaded, so this path was not checked against it";
+    }
+
+    /// <summary>Returns the namespace an extension identifier carries, or the empty string for a core one.</summary>
+    private static string Namespace(string id)
+    {
+        int first = id.IndexOf('-', StringComparison.Ordinal);
+        int last = id.LastIndexOf('-');
+        return first < 0 || last <= first ? string.Empty : id.Substring(first + 1, last - first - 1);
     }
 
     private static string Written(IReadOnlyList<IReadOnlyList<string>> chains) =>
@@ -230,37 +286,33 @@ public static class StructuralValidator
         return collapsed;
     }
 
-    private static bool CheckIndexRule(SemanticPath path, Registry registry, List<Finding> findings)
+    /// <summary>
+    /// Holds one segment to the index rule of section 5.3, in both directions. The finding names
+    /// the segment it is about.
+    /// </summary>
+    private static bool CheckIndexAt(SemanticPath path, int at, Registry registry, List<Finding> findings)
     {
         IReadOnlyList<PathSegment> segments = path.Segments;
-        bool right = true;
-        for (int at = 0; at < segments.Count; at++)
+        string id = segments[at].Text;
+        bool carriesIndex = at + 1 < segments.Count && segments[at + 1].IsIndex;
+        bool repeatable = registry.IsRepeatable(id);
+        if (repeatable && !carriesIndex)
         {
-            if (segments[at].IsIndex)
-            {
-                continue;
-            }
-
-            string id = segments[at].Text;
-            bool carriesIndex = at + 1 < segments.Count && segments[at + 1].IsIndex;
-            bool repeatable = registry.IsRepeatable(id);
-            if (repeatable && !carriesIndex)
-            {
-                findings.Add(Finding.Of(path, FindingCode.IndexRequired,
-                    id + " is declared " + registry.CardinalityOf(id)
-                    + ", so its segment is followed by an occurrence index"));
-                right = false;
-            }
-            else if (!repeatable && carriesIndex)
-            {
-                findings.Add(Finding.Of(path, FindingCode.IndexForbidden,
-                    id + " is declared " + registry.CardinalityOf(id)
-                    + ", so its segment is not followed by an occurrence index"));
-                right = false;
-            }
+            findings.Add(Finding.About(path, id, FindingCode.IndexRequired,
+                id + " is declared " + registry.CardinalityOf(id)
+                + ", so its segment is followed by an occurrence index"));
+            return false;
         }
 
-        return right;
+        if (!repeatable && carriesIndex)
+        {
+            findings.Add(Finding.About(path, id, FindingCode.IndexForbidden,
+                id + " is declared " + registry.CardinalityOf(id)
+                + ", so its segment is not followed by an occurrence index"));
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -315,7 +367,7 @@ public static class StructuralValidator
         {
             if (present.Contains(role) && term.ComponentOf(role) is null)
             {
-                findings.Add(Finding.Of(path, FindingCode.ComponentNotAllowed,
+                findings.Add(Finding.About(path, Member(role), FindingCode.ComponentNotAllowed,
                     "the registry lists no " + Member(role) + " component for " + term.Id));
             }
         }
@@ -324,7 +376,7 @@ public static class StructuralValidator
         {
             if (component.IsMandatory && !present.Contains(component.Role))
             {
-                findings.Add(Finding.Of(path, FindingCode.ComponentMissing,
+                findings.Add(Finding.About(path, component.JsonMember, FindingCode.ComponentMissing,
                     "the registry declares the " + component.JsonMember + " component of "
                     + term.Id + " as mandatory"));
             }

@@ -202,20 +202,42 @@ public static class Texts
 
     /// <summary>
     /// Returns how many bytes a base64 string decodes to, without decoding it
-    /// (specification, section 12.5).
+    /// (specification, sections 12.2 and 12.5): three bytes for every full group of four
+    /// characters, less one for each padding character at the end and never more than two,
+    /// and never less than nothing. The content need not be canonical base64 — that is a
+    /// question of layer L2 — so the count is a function of the length and of the padding
+    /// alone, which every reader can take from the string as it stands.
     /// </summary>
     /// <param name="content">the encoded content</param>
-    /// <returns>the number of bytes the content stands for</returns>
+    /// <returns>the number of bytes the content stands for, zero or more</returns>
     public static long DecodedBase64Length(string content)
     {
         ArgumentNullException.ThrowIfNull(content);
         long padding = 0;
-        for (int at = content.Length - 1; at >= 0 && content[at] == '='; at--)
+        for (int at = content.Length - 1; at >= 0 && content[at] == '=' && padding < 2; at--)
         {
             padding++;
         }
 
-        return (content.Length / 4L * 3L) - padding;
+        return Math.Max(0L, (content.Length / 4L * 3L) - padding);
+    }
+
+    /// <summary>
+    /// Returns how many bytes the UTF-8 encoding of a part of a string takes: the offset, in
+    /// bytes of the encoded document, of a position in the text decoded from it.
+    /// </summary>
+    /// <param name="text">the text</param>
+    /// <param name="length">how many UTF-16 code units from its start to measure</param>
+    /// <returns>the number of bytes</returns>
+    public static long Utf8Length(string text, int length)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        if (length < 0 || length > text.Length)
+        {
+            throw new ArgumentOutOfRangeException(nameof(length), length, "a length inside the text");
+        }
+
+        return Utf8Length(text.Substring(0, length));
     }
 
     /// <summary>

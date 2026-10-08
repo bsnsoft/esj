@@ -44,7 +44,9 @@ public enum ValidationStatus
 
 /// <summary>
 /// Why a layer was not evaluated, from the closed vocabulary of the specification,
-/// section 9.5. The order of the members is the order of precedence that section fixes.
+/// section 9.5. The order of the first three members is the order of precedence that section
+/// fixes; <see cref="NotRequested"/> is not ranked against them, because a layer the caller did
+/// not ask for keeps that reason whatever else happened.
 /// </summary>
 public enum NotEvaluatedReason
 {

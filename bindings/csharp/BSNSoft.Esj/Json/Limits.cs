@@ -6,15 +6,36 @@ namespace BSNSoft.Esj.Json;
 /// The resource bounds a reader enforces (specification, section 12.2).
 /// </summary>
 /// <remarks>
-/// A limit is a policy of the reader and not a property of the document: exceeding one is
+/// <para>A limit is a policy of the reader and not a property of the document: exceeding one is
 /// reported as <c>ESJ-L1-LIMIT</c> and says that this reader, as configured, declines to
 /// process the document. The defaults are those of the specification, so that two
 /// implementations that adopt them refuse the same documents. The 64-character bound on a
 /// decimal form and the 128-character bound on an owner token are deliberately not here:
-/// they belong to the grammars they are stated with and are not configurable.
+/// they belong to the grammars they are stated with and are not configurable.</para>
+/// <para>A bound that is not positive, or that is larger than this reader could ever enforce, is
+/// refused when it is given, with an <see cref="ArgumentOutOfRangeException"/> that names it,
+/// and never clamped (specification, section 12.2).</para>
 /// </remarks>
 public sealed class Limits
 {
+    /// <summary>
+    /// The largest value <see cref="MaxDocumentBytes"/> accepts, the same as the Java
+    /// implementation's: a document is held in one array of bytes, and a bound past the longest
+    /// one could never be reached. Two readers that refuse the same configurations refuse them at
+    /// the same number.
+    /// </summary>
+    public const long MaxDocumentBytesBound = int.MaxValue - 9L;
+
+    /// <summary>
+    /// The largest value <see cref="MaxExtensionDepth"/> accepts, the same as the Java
+    /// implementation's: a reader adds the nesting of the envelope to the bound where it counts
+    /// from the document rather than from the value of a member, and the sum has to stay a
+    /// nesting depth an <see cref="int"/> can hold. A larger bound is refused when it is given,
+    /// with its name, rather than overflowing into a negative depth when a document arrives
+    /// (specification, section 12.2).
+    /// </summary>
+    public const int MaxExtensionDepthBound = int.MaxValue - 3;
+
     private const long Mib = 1024L * 1024L;
 
     private Limits(
@@ -39,6 +60,19 @@ public sealed class Limits
         MaxTotalBinaryBytes = Positive(maxTotalBinaryBytes, nameof(maxTotalBinaryBytes));
         MaxExtensionDepth = (int)Positive(maxExtensionDepth, nameof(maxExtensionDepth));
         MaxExtensionNodes = (int)Positive(maxExtensionNodes, nameof(maxExtensionNodes));
+        if (maxDocumentBytes > MaxDocumentBytesBound)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxDocumentBytes), maxDocumentBytes,
+                "maxDocumentBytes is at most " + MaxDocumentBytesBound
+                + ", because a document is held in one array of bytes");
+        }
+
+        if (maxExtensionDepth > MaxExtensionDepthBound)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maxExtensionDepth), maxExtensionDepth,
+                "maxExtensionDepth is at most " + MaxExtensionDepthBound
+                + ", because a reader adds the nesting of the envelope to it");
+        }
     }
 
     /// <summary>Returns the limits of the specification, section 12.2.</summary>

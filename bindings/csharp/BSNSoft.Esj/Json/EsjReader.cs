@@ -64,6 +64,7 @@ public sealed class ReadResult
             + string.Join("; ", _findings.Select(finding => finding.ToString())));
 }
 
+
 /// <summary>
 /// Reads an ESJ document from bytes and enforces validation layer L1 while it does
 /// (specification, sections 3.2 and 9.1).
@@ -75,27 +76,31 @@ public sealed class ReadResult
 /// or array anywhere inside <c>values</c>, a value whose shape is neither a JSON string nor
 /// a value object with a supplementary component, a lone surrogate and every limit of
 /// section 12.2. It never trims, collapses, reorders or normalizes a value; the one
-/// transformation it applies is the line ending normalization of section 6.8.</para>
+/// transformation it applies is the line ending normalization of section 6.8, and only to the
+/// strings of <c>values</c>.</para>
 /// <para>It needs no registry and makes no check that would need one. Whether the content of
 /// a value is a canonical decimal, a date of the calendar or canonical base64 is decided by
 /// the semantic data type the registry records for the term, so those checks belong to layer
 /// L2. The content passes through this reader exactly as the document spells it,
 /// <c>100.00</c> included: nothing here repairs a spelling.</para>
+/// <para>A finding names its place the way section 9.5 writes it: the path of the member of
+/// <c>values</c> it is about, or the empty path, and a subject that is a member access from the
+/// root of the document — <c>source.syntax</c>, <c>values["/BG-4/BT-29/0"].scheme</c>,
+/// <c>extensions["de.example"]["a"][1]</c>, <c>["profile"]</c> — with the names the
+/// specification defines written after a dot and every name the document chose written in
+/// brackets, escaped and whole. <c>ESJ-L1-JSON</c> and <c>ESJ-L1-ENCODING</c> are findings about
+/// the document and carry neither; their message names the byte, counted from zero, at which the
+/// token that failed begins.</para>
 /// <para><see cref="Read"/> rejects and <see cref="ReadWithFindings"/> reports; both are
-/// conformant and both carry the same finding code (specification, section 9.5).</para>
+/// conformant and both carry the same finding code, path and subject (specification,
+/// section 9.5).</para>
 /// </remarks>
 public sealed class EsjReader
 {
+    private static readonly string[] EnvelopeMembers = { "format", "version", "semanticModel", "values", "extensions", "source" };
+    private static readonly string[] RequiredMembers = { "format", "version", "semanticModel", "values" };
     private static readonly string[] ValueMembers = { "value", "scheme", "schemeVersion", "mimeCode", "filename" };
     private static readonly string[] ComponentMembers = { "scheme", "schemeVersion", "mimeCode", "filename" };
-
-    /// <summary>
-    /// The envelope objects a nesting level is not counted from: the document object and the
-    /// <c>values</c> or <c>extensions</c> object inside it. The bound of the specification,
-    /// section 12.2 is counted below them, so the value of a member of <c>values</c> is
-    /// level 1, exactly as the value of an owner-token member is.
-    /// </summary>
-    private const int EnvelopeNesting = 2;
 
     /// <summary>The longest location a message carries.</summary>
     private const int LocationExcerpt = 512;
@@ -229,6 +234,13 @@ public sealed class EsjReader
 
         // ------------------------------------------------------------ the bytes
 
+        /// <summary>
+        /// Decides the encoding and the size over the whole byte sequence before a token is read,
+        /// so that either finding stands alone. The bytes are decoded as UTF-8 and as nothing
+        /// else: no encoding is guessed, so a byte sequence that is UTF-8 but no JSON text in
+        /// that decoding — UTF-16 or UTF-32 without a byte order mark among them — is
+        /// <c>ESJ-L1-JSON</c> when the parse reaches it (specification, section 4.2).
+        /// </summary>
         private void CheckEncoding()
         {
             if (_bytes.LongLength > _limits.MaxDocumentBytes)
@@ -260,14 +272,15 @@ public sealed class EsjReader
             SkipWhitespace();
             if (_at >= _text.Length || _text[_at] != '{')
             {
-                throw Fatal(FindingCode.JsonCode, string.Empty, "the top level of a document is a JSON object");
+                throw Malformed("the top level of a document is a JSON object", _at);
             }
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
-            foreach (string name in Members(string.Empty))
+            foreach (string name in Members(EnvelopeAccess))
             {
-                NameTheReaderCannotTake(name, Excerpt(name), seen, string.Empty);
+                string access = EnvelopeAccess(name);
+                NameTheReaderCannotTake(name, access, seen);
 
                 switch (name)
                 {
@@ -290,39 +303,52 @@ public sealed class EsjReader
                         ReadSource();
                         break;
                     default:
-                        throw Fatal(FindingCode.EnvelopeMember, Excerpt(name),
+                        throw Fatal(FindingCode.EnvelopeMember, access,
                             "the envelope has no member named " + Excerpt(name));
                 }
             }
 
-            foreach (string required in new[] { "format", "version", "semanticModel", "values" })
-            {
-                if (!seen.Contains(required))
-                {
-                    throw Fatal(FindingCode.EnvelopeMember, string.Empty,
-                        "the envelope member " + required + " is required");
-                }
-            }
+            ReportMissingMembers(seen);
 
             SkipWhitespace();
             if (_at != _text.Length)
             {
-                throw Fatal(FindingCode.JsonCode, string.Empty,
-                    "the document carries content after the object that closes it");
+                throw Malformed("the document carries content after the object that closes it", _at);
             }
+        }
+
+        /// <summary>
+        /// Reports every required envelope member the document lacks, one finding each with the
+        /// member's name as its subject, in the order <c>format</c>, <c>version</c>,
+        /// <c>semanticModel</c>, <c>values</c>, and ends the read there. A reader asked to reject
+        /// raises the first of them.
+        /// </summary>
+        private void ReportMissingMembers(HashSet<string> seen)
+        {
+            List<string> absent = RequiredMembers.Where(required => !seen.Contains(required)).ToList();
+            if (absent.Count == 0)
+            {
+                return;
+            }
+
+            if (_collector is null)
+            {
+                throw new EsjFormatException(FindingCode.EnvelopeMember.Code,
+                    "the envelope member " + absent[0] + " is required", absent[0], SemanticPath.Root());
+            }
+
+            foreach (string member in absent)
+            {
+                _collector.Add(Finding(FindingCode.EnvelopeMember, member, "the envelope member " + member + " is required"));
+            }
+
+            throw new Stop();
         }
 
         private string Edition()
         {
-            JsonKind kind = PeekKind();
-            if (kind != JsonKind.String)
-            {
-                throw Fatal(FindingCode.EnvelopeValue, "semanticModel",
-                    "the envelope member semanticModel is " + Describe(kind) + ", not a string");
-            }
-
-            string value = ReadValueString();
-            RequireUnicode(value, "semanticModel");
+            string value = EnvelopeString("semanticModel", "semanticModel");
+            HoldToStringBound(value, "semanticModel");
             if (!Esj.IsEdition(value))
             {
                 throw Fatal(FindingCode.EnvelopeValue, "semanticModel",
@@ -336,15 +362,8 @@ public sealed class EsjReader
 
         private void Fixed(string member, string expected)
         {
-            JsonKind kind = PeekKind();
-            if (kind != JsonKind.String)
-            {
-                throw Fatal(FindingCode.EnvelopeValue, member,
-                    "the envelope member " + member + " is " + Describe(kind) + ", not a string");
-            }
-
-            string value = ReadValueString();
-            RequireUnicode(value, member);
+            string value = EnvelopeString(member, member);
+            HoldToStringBound(value, member);
             if (!string.Equals(expected, value, StringComparison.Ordinal))
             {
                 throw Fatal(FindingCode.EnvelopeValue, member,
@@ -353,56 +372,109 @@ public sealed class EsjReader
             }
         }
 
+        /// <summary>
+        /// Reads a string of the envelope or of <c>source</c>: one JSON token, read whole under the
+        /// guard of <see cref="Guard"/> and screened for a lone surrogate before any check reads
+        /// it, since a string with no UTF-8 encoding spells no value. The caller then holds it to
+        /// the string bound of section 12.2 as it stands — these strings are never normalized —
+        /// with <see cref="HoldToStringBound"/>.
+        /// </summary>
+        private string EnvelopeString(string name, string access)
+        {
+            JsonKind kind = PeekKind();
+            if (kind != JsonKind.String)
+            {
+                throw RefuseType(kind, access, name + " is " + Describe(kind) + ", not a string");
+            }
+
+            string value = GuardedString(Guard, access);
+            RequireUnicode(value, access);
+            return value;
+        }
+
+        /// <summary>
+        /// The guard a string outside <c>values</c> is read under: the larger of the two string
+        /// bounds, because the scanner reads it before the reader knows which bound applies.
+        /// </summary>
+        private long Guard => Math.Max(_limits.MaxStringBytes, _limits.MaxBinaryValueBytes);
+
+        /// <summary>
+        /// Reads a string under a guard, in raw UTF-8 bytes, and stops at <c>ESJ-L1-LIMIT</c> naming
+        /// <paramref name="access"/> as soon as the content passes it.
+        /// </summary>
+        private string GuardedString(long guard, string access)
+        {
+            int start = _at;
+            return ReadString(guard)
+                ?? throw LimitAt("a string is longer than " + guard + " bytes" + TokenAt(start), access);
+        }
+
+        /// <summary>Holds a string outside <c>values</c> to the string bound of section 12.2, as it stands.</summary>
+        private void HoldToStringBound(string value, string access)
+        {
+            if (Texts.Utf8Length(value) > _limits.MaxStringBytes)
+            {
+                throw LimitAt(access + " is longer than " + _limits.MaxStringBytes + " bytes", access);
+            }
+        }
+
+        private static long Twice(long bound) => bound > long.MaxValue / 2 ? long.MaxValue : 2 * bound;
+
+        /// <summary>
+        /// Refuses a member of the envelope or of <c>source</c> whose JSON type is wrong. A scalar
+        /// is read to its end first, because a token that is no complete JSON value is
+        /// <c>ESJ-L1-JSON</c> and not a value of the wrong type (specification, section 9.6); an
+        /// object or an array is refused at the bracket that opens it, which is a token of its own.
+        /// </summary>
+        private Exception RefuseType(JsonKind kind, string access, string message)
+        {
+            if (kind is not (JsonKind.Object or JsonKind.Array))
+            {
+                ConsumeScalar(kind, access);
+            }
+
+            return Fatal(FindingCode.EnvelopeValue, access, message);
+        }
+
         private void ReadSource()
         {
-            if (PeekKind() != JsonKind.Object)
+            JsonKind kind = PeekKind();
+            if (kind != JsonKind.Object)
             {
-                throw Fatal(FindingCode.EnvelopeValue, "source",
-                    "source is " + Describe(PeekKind()) + ", not a JSON object");
+                throw RefuseType(kind, "source", "source is " + Describe(kind) + ", not a JSON object");
             }
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
             string? syntax = null;
             string? sha256 = null;
-            foreach (string name in Members("source"))
+            foreach (string name in Members(SourceAccess))
             {
-                string where = "source." + Esj.ForSubject(name);
-                NameTheReaderCannotTake(name, where, seen, "source");
+                string access = SourceAccess(name);
+                NameTheReaderCannotTake(name, access, seen);
 
                 if (name != "syntax" && name != "sha256")
                 {
-                    throw Fatal(FindingCode.EnvelopeMember, where,
-                        "source has no member named " + Excerpt(name));
+                    throw Fatal(FindingCode.EnvelopeMember, access, "source has no member named " + Excerpt(name));
                 }
 
-                if (PeekKind() != JsonKind.String)
-                {
-                    throw Fatal(FindingCode.EnvelopeValue, where,
-                        name + " is " + Describe(PeekKind()) + ", not a string");
-                }
-
-                string value = ReadValueString();
-                RequireUnicode(value, where);
+                string value = EnvelopeString(name, access);
                 if (value.Length == 0)
                 {
-                    throw Fatal(FindingCode.EnvelopeValue, where, name + " is the empty string");
+                    throw Fatal(FindingCode.EnvelopeValue, access, name + " is the empty string");
                 }
+
+                HoldToStringBound(value, access);
 
                 if (name == "syntax")
                 {
-                    if (Texts.Utf8Length(value) > _limits.MaxStringBytes)
-                    {
-                        throw LimitAt("source.syntax is longer than " + _limits.MaxStringBytes + " bytes", where);
-                    }
-
                     syntax = value;
                 }
                 else
                 {
                     if (!Texts.IsLowercaseSha256(value))
                     {
-                        throw Fatal(FindingCode.EnvelopeValue, where, "sha256 " + Texts.Sha256Violation(value));
+                        throw Fatal(FindingCode.EnvelopeValue, access, "sha256 " + Texts.Sha256Violation(value));
                     }
 
                     sha256 = value;
@@ -423,32 +495,32 @@ public sealed class EsjReader
 
         private void ReadValues()
         {
-            if (PeekKind() != JsonKind.Object)
+            JsonKind kind = PeekKind();
+            if (kind != JsonKind.Object)
             {
-                throw Fatal(FindingCode.EnvelopeValue, "values",
-                    "values is " + Describe(PeekKind()) + ", not a JSON object");
+                throw RefuseType(kind, "values", "values is " + Describe(kind) + ", not a JSON object");
             }
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
-            foreach (string name in Members("values"))
+            foreach (string name in Members(ValuesAccess))
             {
-                string where = ValuesWhere(name);
-                NameTheReaderCannotTake(name, where, seen, "values");
+                string access = ValuesAccess(name);
+                NameTheReaderCannotTake(name, access, seen);
 
                 if (++_valueCount > _limits.MaxValues)
                 {
-                    throw LimitAt("values carries more than " + _limits.MaxValues + " members", where);
+                    throw LimitAt("values carries more than " + _limits.MaxValues + " members", access);
                 }
 
                 if (Texts.Utf8Length(name) > _limits.MaxPathBytes)
                 {
-                    throw LimitAt("a semantic path is longer than " + _limits.MaxPathBytes + " bytes", where);
+                    throw LimitAt("a semantic path is longer than " + _limits.MaxPathBytes + " bytes", access);
                 }
 
-                SemanticPath? path = ReadPath(name, where);
+                SemanticPath? path = ReadPath(name, access);
                 _currentPath = path;
-                SemanticValue? value = ReadValue(where);
+                SemanticValue? value = ReadValue(access);
                 if (path is not null && value is not null)
                 {
                     _values[path] = value;
@@ -458,41 +530,45 @@ public sealed class EsjReader
             }
         }
 
-        private SemanticPath? ReadPath(string name, string where)
+        private SemanticPath? ReadPath(string name, string access)
         {
             if (!SemanticPath.TryParse(name, out SemanticPath path))
             {
-                Report(FindingCode.PathSyntax, where, Excerpt(name) + " is not a semantic path");
+                Report(FindingCode.PathSyntax, access, Excerpt(name) + " is not a semantic path");
                 return null;
             }
 
             if (path.Segments.Count > _limits.MaxPathSegments)
             {
-                throw LimitAt("a semantic path has more than " + _limits.MaxPathSegments + " segments", where);
+                throw LimitAt("a semantic path has more than " + _limits.MaxPathSegments + " segments", access);
             }
 
             return path;
         }
 
-        private SemanticValue? ReadValue(string where)
+        private SemanticValue? ReadValue(string access)
         {
             JsonKind kind = PeekKind();
             if (kind == JsonKind.String)
             {
-                string? content = String(ReadValueString(), where, "this value", false);
+                // The bound is measured on the normalized content (section 6.8), which is never
+                // less than half the raw one, so a string past twice the bound as it stands is past
+                // it however it reads; the bound itself is applied once the content is normalized.
+                string raw = GuardedString(Twice(_limits.MaxStringBytes), access);
+                string? content = String(raw, access, "this value", false);
                 return content is null ? null : new SemanticValue(content);
             }
 
-            if (kind != JsonKind.Object)
+            if (kind == JsonKind.Object)
             {
-                string type = Describe(kind);
-                SkipValue(2);
-                Report(FindingCode.JsonType, where,
-                    "this member of values is " + type + ", not a string and not a value object");
-                return null;
+                return ReadValueObject(access);
             }
 
-            return ReadValueObject(where);
+            string type = Describe(kind);
+            WalkPast(kind, access, 1);
+            Report(FindingCode.JsonType, access,
+                "this member of values is " + type + ", not a string and not a value object");
+            return null;
         }
 
         /// <summary>
@@ -510,9 +586,11 @@ public sealed class EsjReader
             List<Member> members = new();
             HashSet<string> seen = new(StringComparer.Ordinal);
             bool component = false;
-            foreach (string name in Members(where))
+            long guard = Twice(Guard);
+            foreach (string name in Members(member => ValueMemberAccess(where, member)))
             {
-                NameTheReaderCannotTake(name, where, seen, where);
+                string access = ValueMemberAccess(where, name);
+                NameTheReaderCannotTake(name, where, seen);
 
                 if (members.Count >= _limits.MaxValueMembers)
                 {
@@ -522,10 +600,17 @@ public sealed class EsjReader
                 component |= Array.IndexOf(ComponentMembers, name) >= 0;
                 JsonKind kind = PeekKind();
                 string type = Describe(kind);
-                string? text = kind == JsonKind.String ? ReadValueString() : null;
-                if (text is null)
+                string? text = null;
+                if (kind == JsonKind.String)
                 {
-                    SkipValue(3);
+                    // The guard here takes the larger of the two bounds, because whether this is
+                    // the content of a binary object is decided by members that may follow; the
+                    // finer bound is applied once the object is judged.
+                    text = GuardedString(guard, access);
+                }
+                else
+                {
+                    WalkPast(kind, access, 2);
                 }
 
                 members.Add(new Member(name, kind, text, type));
@@ -544,7 +629,7 @@ public sealed class EsjReader
             {
                 if (member.Kind == JsonKind.Object)
                 {
-                    Report(FindingCode.ValueShape, MemberWhere(where, member.Name),
+                    Report(FindingCode.ValueShape, ValueMemberAccess(where, member.Name),
                         Excerpt(member.Name) + " is an object, not a string");
                     return null;
                 }
@@ -554,7 +639,7 @@ public sealed class EsjReader
             {
                 if (member.Kind != JsonKind.String)
                 {
-                    Report(FindingCode.JsonType, MemberWhere(where, member.Name),
+                    Report(FindingCode.JsonType, ValueMemberAccess(where, member.Name),
                         Excerpt(member.Name) + " is " + member.JsonType + ", not a string");
                     return null;
                 }
@@ -565,7 +650,7 @@ public sealed class EsjReader
             {
                 if (Array.IndexOf(ValueMembers, member.Name) < 0)
                 {
-                    Report(FindingCode.ValueMember, MemberWhere(where, member.Name),
+                    Report(FindingCode.ValueMember, ValueMemberAccess(where, member.Name),
                         "a value object has no member named " + Excerpt(member.Name));
                     return null;
                 }
@@ -602,7 +687,7 @@ public sealed class EsjReader
             {
                 if (member.Kind == JsonKind.String && Texts.HasLoneSurrogate(member.Text!))
                 {
-                    Report(FindingCode.Surrogate, MemberWhere(where, member.Name),
+                    Report(FindingCode.Surrogate, ValueMemberAccess(where, member.Name),
                         "a string carries an unpaired surrogate");
                     found = true;
                 }
@@ -617,7 +702,7 @@ public sealed class EsjReader
             Dictionary<string, string> checkedMembers = new(StringComparer.Ordinal);
             foreach (KeyValuePair<string, string> member in members)
             {
-                string? content = Content(member.Value, MemberWhere(where, member.Key), member.Key,
+                string? content = Content(member.Value, ValueMemberAccess(where, member.Key), member.Key,
                     binary && member.Key == "value");
                 if (content is null)
                 {
@@ -691,30 +776,124 @@ public sealed class EsjReader
             _binaryBytes += decoded;
         }
 
+        /// <summary>
+        /// Walks past a value the specification allows no such JSON type for inside
+        /// <c>values</c>, checking that it is well formed and that it keeps inside the bounds of
+        /// section 12.2 that bind there — the depth, the length of a member name and of a number
+        /// token — and nothing else: no surrogate, no repeated name, no string length and no shape
+        /// below it is reported, because the member it stands in has drawn its code already and
+        /// the subtree is not judged (specification, section 9.6). A bound met there names the
+        /// member walked past. The depth is counted the way it is counted inside
+        /// <c>extensions</c> — the value of a member of <c>values</c> is level 1, the value of a
+        /// member of a value object level 2 — and the walk keeps the containers it has opened on a
+        /// stack of its own, so a bound a caller raised is not answered with a stack overflow.
+        /// </summary>
+        private void WalkPast(JsonKind kind, string access, int level)
+        {
+            if (kind is not (JsonKind.Object or JsonKind.Array))
+            {
+                ConsumeScalar(kind, access);
+                return;
+            }
+
+            Stack<Walked> open = new();
+            int depth = level;
+            JsonKind current = kind;
+            while (true)
+            {
+                if (current is JsonKind.Object or JsonKind.Array)
+                {
+                    if (depth > _limits.MaxExtensionDepth)
+                    {
+                        throw LimitAt("a value nests deeper than " + _limits.MaxExtensionDepth + " levels"
+                            + TokenAt(_at), access);
+                    }
+
+                    _at++;
+                    open.Push(new Walked(current == JsonKind.Object, depth));
+                }
+                else
+                {
+                    ConsumeScalar(current, access);
+                }
+
+                while (true)
+                {
+                    if (open.Count == 0)
+                    {
+                        return;
+                    }
+
+                    Walked container = open.Peek();
+                    SkipWhitespace();
+                    if (container.IsObject)
+                    {
+                        if (!NextMember(container.Any))
+                        {
+                            open.Pop();
+                            continue;
+                        }
+
+                        int start = _at;
+                        string name = ReadName();
+                        Colon();
+                        CheckNameBound(name, start, () => access);
+                    }
+                    else if (!NextElement(container.Any))
+                    {
+                        open.Pop();
+                        continue;
+                    }
+
+                    container.Any = true;
+                    depth = container.Depth + 1;
+                    current = PeekKind();
+                    break;
+                }
+            }
+        }
+
+        /// <summary>One container of a walked-past value that the reader has opened.</summary>
+        private sealed class Walked
+        {
+            internal Walked(bool isObject, int depth)
+            {
+                IsObject = isObject;
+                Depth = depth;
+            }
+
+            internal bool IsObject { get; }
+
+            internal int Depth { get; }
+
+            internal bool Any { get; set; }
+        }
+
         // ------------------------------------------------------------ extensions
 
         private void ReadExtensions()
         {
-            if (PeekKind() != JsonKind.Object)
+            JsonKind kind = PeekKind();
+            if (kind != JsonKind.Object)
             {
-                throw Fatal(FindingCode.EnvelopeValue, "extensions",
-                    "extensions is " + Describe(PeekKind()) + ", not a JSON object");
+                throw RefuseType(kind, "extensions", "extensions is " + Describe(kind) + ", not a JSON object");
             }
 
             _at++;
             HashSet<string> seen = new(StringComparer.Ordinal);
-            foreach (string owner in Members("extensions"))
+            foreach (string owner in Members(OwnerAccess))
             {
-                NameTheReaderCannotTake(owner, OwnerWhere(owner), seen, "extensions");
+                string access = OwnerAccess(owner);
+                NameTheReaderCannotTake(owner, access, seen);
 
                 if (!Texts.IsOwnerToken(owner))
                 {
-                    throw Fatal(FindingCode.OwnerToken, OwnerWhere(owner),
+                    throw Fatal(FindingCode.OwnerToken, access,
                         "the owner token " + Excerpt(owner) + " " + Texts.OwnerTokenViolation(owner));
                 }
 
                 _extensions.Add(new KeyValuePair<string, ExtensionValue>(
-                    owner, ReadExtensionValue(new Where(OwnerWhere(owner)))));
+                    owner, ReadExtensionValue(new Where(access))));
             }
 
             if (seen.Count == 0)
@@ -749,7 +928,7 @@ public sealed class EsjReader
                         if (depth > _limits.MaxExtensionDepth)
                         {
                             throw LimitAt("extensions is nested deeper than "
-                                + _limits.MaxExtensionDepth + " levels", where.Text());
+                                + _limits.MaxExtensionDepth + " levels" + TokenAt(_at), where.Text());
                         }
 
                         _at++;
@@ -776,23 +955,29 @@ public sealed class EsjReader
                 SkipWhitespace();
                 if (container.IsObject)
                 {
-                    if (!NextMember(container.Any, container.Where.Text()))
+                    if (!NextMember(container.Any))
                     {
                         finished = container.Build();
                         open.Pop();
                         continue;
                     }
 
+                    int start = _at;
                     string name = ReadName();
+                    Colon();
                     Where memberWhere = new(container.Where, name);
-                    CheckExtensionString(name, memberWhere);
+                    CheckNameBound(name, start, memberWhere.Text);
+                    if (Texts.HasLoneSurrogate(name))
+                    {
+                        throw Fatal(FindingCode.Surrogate, memberWhere.Text(), "a member name carries an unpaired surrogate");
+                    }
+
                     if (container.Has(name))
                     {
-                        throw Duplicate(name, container.Where.Text());
+                        throw Duplicate(name, memberWhere.Text());
                     }
 
                     container.Expect(name);
-                    Colon();
                     where = memberWhere;
                 }
                 else
@@ -825,8 +1010,20 @@ public sealed class EsjReader
             switch (kind)
             {
                 case JsonKind.String:
-                    string value = ReadValueString();
-                    CheckExtensionString(value, where);
+                    int start = _at;
+                    string value = ReadString(Guard)
+                        ?? throw LimitAt("a string is longer than " + Guard + " bytes" + TokenAt(start), where.Text());
+                    if (Texts.HasLoneSurrogate(value))
+                    {
+                        throw Fatal(FindingCode.Surrogate, where.Text(), "a string carries an unpaired surrogate");
+                    }
+
+                    if (Texts.Utf8Length(value) > _limits.MaxStringBytes)
+                    {
+                        throw LimitAt("a string inside extensions is longer than " + _limits.MaxStringBytes
+                            + " bytes" + TokenAt(start), where.Text());
+                    }
+
                     return ExtensionValue.OfString(value);
                 case JsonKind.Number:
                     return ExtensionValue.OfNumber(Number(where));
@@ -842,20 +1039,6 @@ public sealed class EsjReader
             }
         }
 
-        private void CheckExtensionString(string value, Where where)
-        {
-            if (Texts.HasLoneSurrogate(value))
-            {
-                throw Fatal(FindingCode.Surrogate, where.Text(), "a string carries an unpaired surrogate");
-            }
-
-            if (Texts.Utf8Length(value) > _limits.MaxStringBytes)
-            {
-                throw LimitAt("a string inside extensions is longer than "
-                    + _limits.MaxStringBytes + " bytes", where.Text());
-            }
-        }
-
         /// <summary>
         /// Reads one number of <c>extensions</c> and returns its canonical decimal form. The
         /// spelling is measured against the string bound exactly, because two readers running
@@ -863,7 +1046,7 @@ public sealed class EsjReader
         /// </summary>
         private string Number(Where where)
         {
-            string lexical = ReadNumberToken(where);
+            string lexical = ReadNumberToken(where.Text, true);
             string? canonical = Decimals.Canonicalize(lexical);
             if (canonical is null)
             {
@@ -876,8 +1059,9 @@ public sealed class EsjReader
         }
 
         /// <summary>
-        /// A place inside <c>extensions</c>: the owner, or a member name or an element index
-        /// below a parent place. It is spelled out only where a finding names it.
+        /// A place in the document below a member access the reader knows: the root, or a member
+        /// name or an element index below a parent place. It is spelled out only where a finding
+        /// names it, so a walk pays for the place of a node only when it reports one.
         /// </summary>
         private sealed class Where
         {
@@ -902,7 +1086,7 @@ public sealed class EsjReader
                 _index = index;
             }
 
-            /// <summary>Returns the member access, from <c>extensions</c> down to this place.</summary>
+            /// <summary>Returns the member access, from the root of the document down to this place.</summary>
             internal string Text()
             {
                 List<Where> steps = new();
@@ -921,7 +1105,7 @@ public sealed class EsjReader
                     }
                     else if (step._name is not null)
                     {
-                        text.Append("[\"").Append(Esj.ForSubject(step._name)).Append("\"]");
+                        text.Append(Bracketed(step._name));
                     }
                     else
                     {
@@ -990,9 +1174,11 @@ public sealed class EsjReader
 
         /// <summary>
         /// Walks the members of an object the reader has opened, handing each name over and
-        /// leaving the parser on the value that follows it.
+        /// leaving the parser on the value that follows it. Each name is held to the string
+        /// bound of section 12.2 before anything else is asked of it, and a name past it is
+        /// reported under the member access <paramref name="access"/> gives it.
         /// </summary>
-        private IEnumerable<string> Members(string where)
+        private IEnumerable<string> Members(Func<string, string> access)
         {
             bool any = false;
             while (true)
@@ -1000,7 +1186,7 @@ public sealed class EsjReader
                 SkipWhitespace();
                 if (_at >= _text.Length)
                 {
-                    throw Malformed("an object is not closed", where);
+                    throw Malformed("an object is not closed", _at);
                 }
 
                 if (_text[_at] == '}')
@@ -1013,7 +1199,7 @@ public sealed class EsjReader
                 {
                     if (_text[_at] != ',')
                     {
-                        throw Malformed("a comma separates two members of an object", where);
+                        throw Malformed("a comma separates two members of an object", _at);
                     }
 
                     _at++;
@@ -1022,20 +1208,36 @@ public sealed class EsjReader
 
                 if (_at >= _text.Length || _text[_at] != '"')
                 {
-                    throw Malformed("a member name is a JSON string", where);
+                    throw Malformed("a member name is a JSON string", _at);
                 }
 
+                int start = _at;
                 string name = ReadName();
                 Colon();
+                CheckNameBound(name, start, () => access(name));
                 any = true;
                 yield return name;
             }
         }
 
         /// <summary>
+        /// Holds a member name to the string bound of the specification, section 12.2, counted in
+        /// the bytes of its UTF-8 encoding. The bounds of the grammars a name is measured against
+        /// afterwards — the path, the owner token — apply inside this one.
+        /// </summary>
+        private void CheckNameBound(string name, int start, Func<string> access)
+        {
+            if (Texts.Utf8Length(name) > _limits.MaxStringBytes)
+            {
+                throw LimitAt("a member name is longer than " + _limits.MaxStringBytes + " bytes"
+                    + TokenAt(start), access());
+            }
+        }
+
+        /// <summary>
         /// Stands on the next member name of an open object, or on the brace that closes it.
         /// </summary>
-        private bool NextMember(bool any, string where)
+        private bool NextMember(bool any)
         {
             if (_at < _text.Length && _text[_at] == '}')
             {
@@ -1047,7 +1249,7 @@ public sealed class EsjReader
             {
                 if (_at >= _text.Length || _text[_at] != ',')
                 {
-                    throw Malformed("a comma separates two members of an object", where);
+                    throw Malformed("a comma separates two members of an object", _at);
                 }
 
                 _at++;
@@ -1056,7 +1258,7 @@ public sealed class EsjReader
 
             if (_at >= _text.Length || _text[_at] != '"')
             {
-                throw Malformed("a member name is a JSON string", where);
+                throw Malformed("a member name is a JSON string", _at);
             }
 
             return true;
@@ -1074,7 +1276,7 @@ public sealed class EsjReader
             {
                 if (_at >= _text.Length || _text[_at] != ',')
                 {
-                    throw Malformed("a comma separates two elements of an array", string.Empty);
+                    throw Malformed("a comma separates two elements of an array", _at);
                 }
 
                 _at++;
@@ -1089,7 +1291,7 @@ public sealed class EsjReader
             SkipWhitespace();
             if (_at >= _text.Length || _text[_at] != ':')
             {
-                throw Malformed("a colon separates a member name from its value", string.Empty);
+                throw Malformed("a colon separates a member name from its value", _at);
             }
 
             _at++;
@@ -1110,13 +1312,17 @@ public sealed class EsjReader
             }
         }
 
-        /// <summary>Returns what kind of JSON value the parser stands on, without consuming it.</summary>
+        /// <summary>
+        /// Returns what kind of JSON value the parser stands on, without consuming it. What the
+        /// first character promises is not yet a judgement: a scalar is judged only once it is
+        /// read whole, so that a token that is no JSON value is <c>ESJ-L1-JSON</c>.
+        /// </summary>
         private JsonKind PeekKind()
         {
             SkipWhitespace();
             if (_at >= _text.Length)
             {
-                throw Malformed("the document ends where a value belongs", string.Empty);
+                throw Malformed("the document ends where a value belongs", _at);
             }
 
             char character = _text[_at];
@@ -1131,7 +1337,7 @@ public sealed class EsjReader
                 '-' => JsonKind.Number,
                 _ => char.IsAsciiDigit(character)
                     ? JsonKind.Number
-                    : throw Malformed("a JSON value does not begin with " + Excerpt(character.ToString()), string.Empty),
+                    : throw Malformed("a JSON value does not begin with " + Excerpt(character.ToString()), _at),
             };
         }
 
@@ -1147,111 +1353,109 @@ public sealed class EsjReader
         };
 
         /// <summary>
-        /// Reads a member name, held to the larger of the string bound and the path bound of
-        /// the specification, section 12.2. Like the two below, the bound is a coarse guard
-        /// counted in UTF-16 code units, never more than the UTF-8 bytes of the same string,
-        /// so it never refuses a name the finer bounds of the reader would have taken.
+        /// Reads a member name whole. The name is held to its bound once it is read, because a
+        /// finding about a name names it whole (specification, section 9.5): the document is
+        /// already held, so reading the name costs nothing a bound would have saved.
         /// </summary>
-        private string ReadName() =>
-            ReadString(Math.Max(_limits.MaxStringBytes, _limits.MaxPathBytes), "a member name");
+        private string ReadName() => ReadString(long.MaxValue)!;
 
         /// <summary>
-        /// Reads a string the reader keeps, held to the larger of the two string bounds of the
-        /// specification, section 12.2: the scanner does not know whether it is the content of a
-        /// binary object, and the reader applies the finer bound where it knows.
+        /// Reads one JSON string and returns what it decodes to, or <c>null</c> where its content
+        /// takes more bytes of UTF-8 than <paramref name="bound"/>, in which case the reader stops
+        /// inside it: a limit outranks whatever the reader would have met further on. A lone
+        /// surrogate counts the three bytes of its generalized encoding; it is not judged here.
         /// </summary>
-        private string ReadValueString() =>
-            ReadString(Math.Max(_limits.MaxStringBytes, _limits.MaxBinaryValueBytes), "a string");
-
-        private string ReadString() => ReadString(long.MaxValue, "a string");
-
-        private string ReadString(long bound, string what)
+        private string? ReadString(long bound, bool keep = true)
         {
             SkipWhitespace();
             if (_at >= _text.Length || _text[_at] != '"')
             {
-                throw Malformed("a string begins with a quotation mark", string.Empty);
+                throw Malformed("a string begins with a quotation mark", _at);
             }
 
             int start = _at;
             _at++;
-            StringBuilder value = new();
+            StringBuilder? value = keep ? new StringBuilder() : null;
+            long bytes = 0;
+            bool afterHigh = false;
             while (true)
             {
                 if (_at >= _text.Length)
                 {
-                    throw Malformed("a string is not closed", string.Empty);
+                    throw Malformed("a string is not closed", start);
                 }
 
                 char character = _text[_at++];
                 if (character == '"')
                 {
-                    if (value.Length > bound)
-                    {
-                        throw LimitAt(what + " is longer than this reader accepts (at character "
-                            + start.ToString(CultureInfo.InvariantCulture) + ")", string.Empty);
-                    }
-
-                    return value.ToString();
+                    return value is null ? string.Empty : value.ToString();
                 }
 
                 if (character < 0x20)
                 {
-                    throw Malformed("a control character inside a string is written as an escape", string.Empty);
+                    throw Malformed("a control character inside a string is written as an escape", start);
                 }
 
-                if (character != '\\')
+                if (character == '\\')
                 {
-                    value.Append(character);
-                    continue;
+                    character = Escape(start);
                 }
 
-                if (_at >= _text.Length)
+                if (character < 0x80)
                 {
-                    throw Malformed("a string is not closed", string.Empty);
+                    bytes += 1;
+                }
+                else if (character < 0x800)
+                {
+                    bytes += 2;
+                }
+                else if (char.IsLowSurrogate(character) && afterHigh)
+                {
+                    bytes += 1;
+                }
+                else
+                {
+                    bytes += 3;
                 }
 
-                char escape = _text[_at++];
-                switch (escape)
+                afterHigh = char.IsHighSurrogate(character);
+                if (bytes > bound)
                 {
-                    case '"':
-                        value.Append('"');
-                        break;
-                    case '\\':
-                        value.Append('\\');
-                        break;
-                    case '/':
-                        value.Append('/');
-                        break;
-                    case 'b':
-                        value.Append('\b');
-                        break;
-                    case 'f':
-                        value.Append('\f');
-                        break;
-                    case 'n':
-                        value.Append('\n');
-                        break;
-                    case 'r':
-                        value.Append('\r');
-                        break;
-                    case 't':
-                        value.Append('\t');
-                        break;
-                    case 'u':
-                        value.Append(Hex4());
-                        break;
-                    default:
-                        throw Malformed("a string carries an escape this format does not define", string.Empty);
+                    return null;
                 }
+
+                value?.Append(character);
             }
         }
 
-        private char Hex4()
+        private char Escape(int start)
+        {
+            if (_at >= _text.Length)
+            {
+                throw Malformed("a string is not closed", start);
+            }
+
+            char escape = _text[_at++];
+            return escape switch
+            {
+                '"' => '"',
+                '\\' => '\\',
+                '/' => '/',
+                'b' => '\b',
+                'f' => '\f',
+                'n' => '\n',
+                'r' => '\r',
+                't' => '\t',
+                'u' => Hex4(start),
+                _ => throw Malformed("a string carries an escape this format does not define", start),
+            };
+        }
+
+        private char Hex4(int start)
         {
             if (_at + 4 > _text.Length)
             {
-                throw Malformed("a unicode escape carries four hexadecimal digits", string.Empty);
+                throw Malformed("a unicode escape carries four hexadecimal digits", start);
             }
 
             int value = 0;
@@ -1263,7 +1467,7 @@ public sealed class EsjReader
                     >= '0' and <= '9' => character - '0',
                     >= 'a' and <= 'f' => character - 'a' + 10,
                     >= 'A' and <= 'F' => character - 'A' + 10,
-                    _ => throw Malformed("a unicode escape carries four hexadecimal digits", string.Empty),
+                    _ => throw Malformed("a unicode escape carries four hexadecimal digits", start),
                 };
                 value = (value * 16) + number;
             }
@@ -1273,11 +1477,12 @@ public sealed class EsjReader
 
         /// <summary>
         /// Reads a number token as the document spells it. The spelling is held to the string
-        /// bound of the specification, section 12.2, counted in its own characters, wherever the
-        /// token stands: a spelling of any length may canonicalize to a short number, so this is
-        /// the bound that sizes what the reader reads.
+        /// bound of the specification, section 12.2 wherever the token stands, once the token is
+        /// read and before it is built: a spelling of any length may canonicalize to a short
+        /// number, so this is the bound that sizes what the reader holds. A JSON number is ASCII,
+        /// so its characters are its bytes.
         /// </summary>
-        private string ReadNumberToken(Where? where = null)
+        private string ReadNumberToken(Func<string> access, bool keep)
         {
             SkipWhitespace();
             int start = _at;
@@ -1286,15 +1491,15 @@ public sealed class EsjReader
                 _at++;
             }
 
-            int digits = Digits();
-            if (digits == 0)
+            int integer = _at;
+            if (Digits() == 0)
             {
-                throw Malformed("a number carries at least one digit", string.Empty);
+                throw Malformed("a number carries at least one digit", start);
             }
 
-            if (digits > 1 && _text[start + (_text[start] == '-' ? 1 : 0)] == '0')
+            if (_at - integer > 1 && _text[integer] == '0')
             {
-                throw Malformed("a number carries no leading zero", string.Empty);
+                throw Malformed("a number carries no leading zero", start);
             }
 
             if (_at < _text.Length && _text[_at] == '.')
@@ -1302,7 +1507,7 @@ public sealed class EsjReader
                 _at++;
                 if (Digits() == 0)
                 {
-                    throw Malformed("a fraction carries at least one digit", string.Empty);
+                    throw Malformed("a fraction carries at least one digit", start);
                 }
             }
 
@@ -1316,40 +1521,44 @@ public sealed class EsjReader
 
                 if (Digits() == 0)
                 {
-                    throw Malformed("an exponent carries at least one digit", string.Empty);
+                    throw Malformed("an exponent carries at least one digit", start);
                 }
             }
 
             if (_at - start > _limits.MaxStringBytes)
             {
-                throw LimitAt("a number is spelled in more than " + _limits.MaxStringBytes + " bytes",
-                    where?.Text() ?? string.Empty);
+                throw LimitAt("a number is spelled in more than " + _limits.MaxStringBytes + " bytes"
+                    + TokenAt(start), access());
             }
 
-            return _text.Substring(start, _at - start);
+            return keep ? _text.Substring(start, _at - start) : string.Empty;
         }
 
         private int Digits()
         {
-            int start = _at;
+            int first = _at;
             while (_at < _text.Length && char.IsAsciiDigit(_text[_at]))
             {
                 _at++;
             }
 
-            return _at - start;
+            return _at - first;
         }
 
-        /// <summary>Walks past a scalar the reader neither keeps nor judges.</summary>
-        private void ConsumeScalar(JsonKind kind)
+        /// <summary>
+        /// Reads past a scalar the reader neither keeps nor judges, to its end: a string is checked
+        /// to be JSON and not measured, a number is held to its bound, which names
+        /// <paramref name="access"/>.
+        /// </summary>
+        private void ConsumeScalar(JsonKind kind, string access)
         {
             switch (kind)
             {
                 case JsonKind.String:
-                    ReadString();
+                    ReadString(long.MaxValue, false);
                     break;
                 case JsonKind.Number:
-                    ReadNumberToken();
+                    ReadNumberToken(() => access, false);
                     break;
                 case JsonKind.True:
                     Literal("true");
@@ -1363,102 +1572,47 @@ public sealed class EsjReader
             }
         }
 
+        /// <summary>
+        /// Reads <c>true</c>, <c>false</c> or <c>null</c>. An ASCII letter or digit, <c>_</c> or
+        /// <c>$</c> straight after the word makes the token another word, which is no JSON value.
+        /// </summary>
         private void Literal(string word)
         {
-            if (_at + word.Length > _text.Length
-                || string.CompareOrdinal(_text, _at, word, 0, word.Length) != 0)
+            SkipWhitespace();
+            int end = _at + word.Length;
+            if (end > _text.Length
+                || string.CompareOrdinal(_text, _at, word, 0, word.Length) != 0
+                || (end < _text.Length && IsWordCharacter(_text[end])))
             {
-                throw Malformed("a JSON literal is true, false or null", string.Empty);
+                throw Malformed("a JSON literal is true, false or null", _at);
             }
 
-            _at += word.Length;
+            _at = end;
         }
 
-        /// <summary>
-        /// Walks past a value the reader does not keep. The walk is bounded, because a
-        /// reader that has to get past a structure nested deeper than the bound allows
-        /// reports the limit rather than following it to any depth (specification,
-        /// section 12.2).
-        /// </summary>
-        private void SkipValue(int depth)
-        {
-            int bound = _limits.MaxExtensionDepth + EnvelopeNesting;
-            int level = depth;
-            Stack<char> open = new();
-            bool opened = false;
-            while (true)
-            {
-                JsonKind kind = PeekKind();
-                if (kind is JsonKind.Object or JsonKind.Array)
-                {
-                    if (++level > bound)
-                    {
-                        throw LimitAt("a place in the document nests deeper than "
-                            + _limits.MaxExtensionDepth + " levels", string.Empty);
-                    }
-
-                    open.Push(kind == JsonKind.Object ? '}' : ']');
-                    _at++;
-                    opened = true;
-                }
-                else
-                {
-                    ConsumeScalar(kind);
-                    opened = false;
-                }
-
-                while (open.Count > 0)
-                {
-                    SkipWhitespace();
-                    if (_at >= _text.Length)
-                    {
-                        throw Malformed("a container is not closed", string.Empty);
-                    }
-
-                    if (_text[_at] == open.Peek())
-                    {
-                        _at++;
-                        open.Pop();
-                        level--;
-                        opened = false;
-                        continue;
-                    }
-
-                    if (!opened)
-                    {
-                        if (_text[_at] != ',')
-                        {
-                            throw Malformed("a comma separates two members of a container", string.Empty);
-                        }
-
-                        _at++;
-                        SkipWhitespace();
-                    }
-
-                    if (open.Peek() == '}')
-                    {
-                        ReadName();
-                        Colon();
-                    }
-
-                    opened = false;
-                    break;
-                }
-
-                if (open.Count == 0)
-                {
-                    return;
-                }
-            }
-        }
+        private static bool IsWordCharacter(char character) =>
+            char.IsAsciiLetterOrDigit(character) || character == '_' || character == '$';
 
         // ------------------------------------------------------------ findings
 
-        private string ValuesWhere(string name) => "values[\"" + Esj.ForSubject(name) + "\"]";
+        private static string Bracketed(string name) => "[\"" + Esj.ForSubject(name) + "\"]";
 
-        private static string MemberWhere(string where, string name) => where + "." + Esj.ForSubject(name);
+        /// <summary>
+        /// Returns the member access of a member of the envelope: the name after nothing where
+        /// the specification defines it, in brackets where the document chose it.
+        /// </summary>
+        private static string EnvelopeAccess(string name) =>
+            Array.IndexOf(EnvelopeMembers, name) >= 0 ? name : Bracketed(name);
 
-        private static string OwnerWhere(string owner) => "extensions[\"" + Esj.ForSubject(owner) + "\"]";
+        private static string SourceAccess(string name) =>
+            name is "syntax" or "sha256" ? "source." + name : "source" + Bracketed(name);
+
+        private static string ValuesAccess(string name) => "values" + Bracketed(name);
+
+        private static string ValueMemberAccess(string where, string name) =>
+            Array.IndexOf(ValueMembers, name) >= 0 ? where + "." + name : where + Bracketed(name);
+
+        private static string OwnerAccess(string owner) => "extensions" + Bracketed(owner);
 
         private static string Excerpt(string value) => Esj.ForMessage(value, Esj.MessageExcerpt);
 
@@ -1467,25 +1621,25 @@ public sealed class EsjReader
         /// the JSON text rather than against the value written under the name: a name carrying a
         /// lone surrogate, which names nothing, and a name that has already occurred in this
         /// object, which leaves no one object to judge. Either ends the read with that one code
-        /// and the object is judged no further. The surrogate is asked first because the two are
-        /// ranked by the place the text reaches first and a repeated name is met at its second
-        /// occurrence, so the earlier of the two is always the one reported.
+        /// and the object is judged no further; the finding names the member the name stands
+        /// for, as a member access with the name escaped — inside a value object the object, whose
+        /// findings name it (section 9.5). The surrogate is asked first because
+        /// the two are ranked by the place the text reaches first and a repeated name is met at
+        /// its second occurrence, so the earlier of the two is always the one reported.
         /// </summary>
         /// <param name="name">the member name, as the document spells it</param>
-        /// <param name="where">the member access a finding about this name names</param>
+        /// <param name="access">the member access the finding names</param>
         /// <param name="seen">the names this object has already carried</param>
-        /// <param name="duplicateWhere">the member access a duplicate in this object names</param>
-        private void NameTheReaderCannotTake(
-            string name, string where, HashSet<string> seen, string duplicateWhere)
+        private void NameTheReaderCannotTake(string name, string access, HashSet<string> seen)
         {
             if (Texts.HasLoneSurrogate(name))
             {
-                throw Fatal(FindingCode.Surrogate, where, "a member name carries an unpaired surrogate");
+                throw Fatal(FindingCode.Surrogate, access, "a member name carries an unpaired surrogate");
             }
 
             if (!seen.Add(name))
             {
-                throw Duplicate(name, duplicateWhere);
+                throw Duplicate(name, access);
             }
         }
 
@@ -1501,47 +1655,70 @@ public sealed class EsjReader
             Fatal(FindingCode.DuplicateMember, where,
                 "the member name " + Excerpt(name) + " occurs twice in one object");
 
-        private Exception Malformed(string what, string where) =>
-            Fatal(FindingCode.JsonCode, where,
-                "the document is not a JSON text: " + what + " (at character "
-                + _at.ToString(CultureInfo.InvariantCulture) + ")");
+        /// <summary>
+        /// Returns the finding of a byte sequence that is not a JSON text. It is a finding about
+        /// the document, so it names no path and no subject; its message names the byte, counted
+        /// from zero, at which the token the reader could not read begins (specification,
+        /// section 9.5).
+        /// </summary>
+        private Exception Malformed(string what, int at) =>
+            Fatal(FindingCode.JsonCode, string.Empty,
+                "the document is not a JSON text: " + what + " (at byte " + ByteOffset(at) + ")");
+
+        private string TokenAt(int at) => " (the token begins at byte " + ByteOffset(at) + ")";
+
+        private string ByteOffset(int at) =>
+            Texts.Utf8Length(_text, Math.Min(at, _text.Length)).ToString(CultureInfo.InvariantCulture);
 
         private EsjLimitException LimitAt(string message, string where)
         {
-            _collector?.Add(Finding(FindingCode.Limit, where, message));
-            return new EsjLimitException(message, where);
+            Finding finding = Finding(FindingCode.Limit, where, message);
+            _collector?.Add(finding);
+            return new EsjLimitException(message, where, finding.Path);
         }
 
         /// <summary>Reports a problem that ends the parse, and returns what to throw for it.</summary>
         private Exception Fatal(FindingCode code, string where, string message)
         {
+            Finding finding = Finding(code, where, message);
             if (_collector is not null)
             {
-                _collector.Add(Finding(code, where, message));
+                _collector.Add(finding);
                 return new Stop();
             }
 
-            return new EsjFormatException(code.Code, message, where);
+            return new EsjFormatException(code.Code, message, where, finding.Path);
         }
 
         /// <summary>Reports a problem that is local to one member of <c>values</c>.</summary>
         private void Report(FindingCode code, string where, string message)
         {
+            Finding finding = Finding(code, where, message);
             if (_collector is not null)
             {
-                _collector.Add(Finding(code, where, message));
+                _collector.Add(finding);
                 return;
             }
 
-            throw new EsjFormatException(code.Code, message, where);
+            throw new EsjFormatException(code.Code, message, where, finding.Path);
         }
 
+        /// <summary>
+        /// Returns the finding for a problem met at <paramref name="where"/>: the path of the
+        /// member of <c>values</c> the reader was reading, or the root of the document where it
+        /// was reading none or where the problem is one of the document itself, and the member
+        /// access as the subject, whole. The copy of that place in the message is held to
+        /// <see cref="LocationExcerpt"/>, because the message is a log line (section 12.6).
+        /// </summary>
         private Finding Finding(FindingCode code, string where, string message)
         {
             string text = where.Length == 0
                 ? message
                 : message + " (at " + Esj.Abbreviated(where, LocationExcerpt) + ")";
-            return Validation.Finding.About(_currentPath ?? SemanticPath.Root(), where, code, text);
+            bool documentLevel = ReferenceEquals(code, FindingCode.JsonCode)
+                || ReferenceEquals(code, FindingCode.EncodingCode);
+            SemanticPath path = documentLevel ? SemanticPath.Root() : _currentPath ?? SemanticPath.Root();
+            return Validation.Finding.About(path, documentLevel ? string.Empty : where, code, text);
         }
     }
 }

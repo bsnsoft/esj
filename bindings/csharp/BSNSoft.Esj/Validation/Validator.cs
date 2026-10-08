@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BSNSoft.Esj.Json;
 using BSNSoft.Esj.Model;
 
@@ -40,13 +41,25 @@ public static class Validator
     {
         ArgumentNullException.ThrowIfNull(bytes);
         ReadResult read = EsjReader.WithLimits(limits ?? Limits.Defaults).ReadWithFindings(bytes);
-        ValidationResult format = read.Validation();
         if (!read.IsWellFormed)
         {
-            return format;
+            return read.Validation();
         }
 
-        return format.Merge(Validate(read.Document!, registries));
+        // Layer L1 ran over the bytes, so it is evaluated; the model layers are what the
+        // structural validator says of them, which is why the result of the clean read, which
+        // names them NOT-REQUESTED, is not merged in.
+        ValidationResult model = Validate(read.Document!, registries);
+        Dictionary<ValidationLayer, NotEvaluatedReason> reasons = new();
+        foreach (KeyValuePair<ValidationLayer, NotEvaluatedReason> reason in model.NotEvaluated)
+        {
+            if (reason.Key != ValidationLayer.L1)
+            {
+                reasons[reason.Key] = reason.Value;
+            }
+        }
+
+        return ValidationResult.Of(read.Findings.Concat(model.Findings), reasons, model.Registries);
     }
 
     /// <summary>

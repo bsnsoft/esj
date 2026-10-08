@@ -56,8 +56,17 @@ BigDecimal total = view.DocumentTotals.AmountDueForPayment!.AsDecimal();
 section 9.6 in an `EsjFormatException`; `ReadWithFindings` reports instead and returns what it
 could build. A limit of section 12.2 is an `EsjLimitException` and a finding with the code
 `ESJ-L1-LIMIT`, never a verdict on the document, and `Limits.Defaults.ToBuilder()` configures
-the bounds. `Validator.Validate` answers `VALID`, `INVALID` or `INDETERMINATE` with the
-components that did not run.
+the bounds; a bound past `Limits.MaxDocumentBytesBound` or `Limits.MaxExtensionDepthBound` is
+refused when it is given. `Validator.Validate` answers `VALID`, `INVALID` or `INDETERMINATE` with
+the components that did not run.
+
+Both exceptions carry the `Code`, `Path` and `Subject` of the finding of the same defect. A subject
+is the member access of `SPEC.md` section 9.5, whole: `format`, `source.syntax`,
+`values["/BG-4/BT-29/0"].scheme`, `values["/BT-1"]["foo"]`, `extensions["de.example"]["a"][1]`,
+`["profile"]` — a name the specification defines after a dot, a name the document chose in
+brackets, escaped, a lone surrogate as `\ud800`. `ESJ-L1-JSON` and `ESJ-L1-ENCODING` carry neither
+path nor subject; their message names the byte offset of the token. `SemanticValue` normalizes the
+line endings of every string it is built with (section 6.8), as the reader does.
 
 Every number is a `BigDecimal` of this binding: an arbitrary-precision unscaled value on
 `System.Numerics.BigInteger` and a scale. The runtime's own `decimal` is not used anywhere,
@@ -111,8 +120,9 @@ $ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/cs
 ```
 
 `BSNSoft.Esj.Fixtures` answers the six requests of the runner over a pipe: the
-digests, the canonical bytes, the findings and the rule identifiers of every case of the
-manifest. The same cases run as xunit tests, one test per case, which is what `dotnet test`
+digests, the canonical bytes, the findings with severity, status and the layers not evaluated, the
+rule identifiers, and whether a set of registries is accepted. A `validate` request may carry
+`limits` under the names of `Limits` (`maxStringBytes`, `maxExtensionDepth`, …). The same cases run as xunit tests, one test per case, which is what `dotnet test`
 reports, so a case that the reference implementation writes into the manifest fails here until
 this binding answers it too. The job `bindings` of the CI runs `dotnet test` and the runner on
 every push.
