@@ -69,6 +69,21 @@ test('a validate request may set the bounds of section 12.2 under their names', 
   assert.match(String(refused.error), /maxStringByte is not a limit/);
 });
 
+test('a validate request may name the registries it is validated with', () => {
+  const [named, carried] = ask(
+    { op: 'validate', file: 'conformance/fixtures/model/max-cardinality.esj.json',
+      registries: ['conformance/fixtures/registries/cardinality.json'] },
+    { op: 'validate', file: 'conformance/fixtures/model/max-cardinality.esj.json' },
+  );
+  assert.equal(named.status, 'INVALID');
+  assert.deepEqual((named.findings as Array<{ code: string; subject: string }>)
+    .map((entry) => entry.code + ' ' + entry.subject).sort(),
+  ['ESJ-L3-MAX-CARDINALITY BG-1', 'ESJ-L3-MAX-CARDINALITY BT-3']);
+  assert.equal(carried.status, 'INDETERMINATE');
+  assert.deepEqual((carried.findings as Array<{ code: string }>).map((entry) => entry.code),
+    ['ESJ-L2-EDITION-UNKNOWN']);
+});
+
 test('a registry request says whether the files are accepted, and why not', () => {
   const answers = ask(
     { op: 'registry', files: ['model/en16931/2017.json'] },

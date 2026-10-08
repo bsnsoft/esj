@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using BSNSoft.Esj.Json;
@@ -10,9 +11,10 @@ using Xunit;
 namespace BSNSoft.Esj.Tests;
 
 /// <summary>
-/// The fixture manifest, run against this binding: the registries, the conformant documents
-/// with their digests and their canonical bytes, the documents that have to be rejected, the
-/// value grammars and the canonical order.
+/// The fixture manifest, run against this binding: the registries, the documents with their
+/// digests, their canonical bytes and the whole answer of a validation, the documents that have
+/// to be rejected, the documents read under bounds other than the defaults, the sets of
+/// registries a loader takes or refuses, the grammars and the canonical order.
 /// </summary>
 public class ManifestTests
 {
@@ -28,6 +30,12 @@ public class ManifestTests
 
     /// <summary>The documents of the manifest that have to be rejected.</summary>
     public static IEnumerable<object[]> InvalidCases() => Manifest.Rows(Manifest.Invalid.Keys);
+
+    /// <summary>The documents read under bounds other than the defaults.</summary>
+    public static IEnumerable<object[]> BoundCases() => Manifest.Rows(Manifest.Bounds.Keys);
+
+    /// <summary>The sets of registry files a loader takes or refuses.</summary>
+    public static IEnumerable<object[]> RegistryCheckCases() => Manifest.Rows(Manifest.RegistryChecks.Keys);
 
     /// <summary>The documents whose members are written in the wrong order.</summary>
     public static IEnumerable<object[]> OrderCases() => Manifest.Rows(Manifest.CanonicalOrder.Keys);
@@ -101,62 +109,92 @@ public class ManifestTests
         Assert.Equal(Fixtures.Text(expected.Canonical), EsjWriter.Canonical().ToText(document));
     }
 
-    /// <summary>
-    /// A conformant document draws exactly the errors of layers L2 and L3 the manifest
-    /// records, and none of its own.
-    /// </summary>
+    /// <summary>A document draws exactly the outcome the manifest records.</summary>
     /// <param name="name">the document</param>
     [Theory]
     [MemberData(nameof(DocumentCases))]
-    public void DocumentDrawsTheFindingsTheManifestRecords(string name)
+    public void DocumentDrawsTheOutcomeTheManifestRecords(string name)
     {
         DocumentCase expected = Manifest.Documents[name];
-        if (!Carried.Contains(expected.SemanticModel))
+        if (!expected.Evaluated)
         {
             return;
         }
 
-        Assert.Equal(
-            Recorded(expected.Findings),
-            Compared(Errors(Validator.Validate(Fixtures.Bytes(name))), Pinned(expected.Findings)));
+        Assert.Equal(expected.Outcome.Normalized(), OutcomeOf(Validator.Validate(Fixtures.Bytes(name))).Normalized());
     }
 
     /// <summary>
-    /// A document the manifest lists as invalid draws the code it names, at the path it
-    /// names. A document rejected at layer L1 draws exactly the rows the manifest holds for
-    /// it and no others: the model layers are not evaluated over a document the reader
-    /// refused a member of (specification, section 9.5), and section 9.6 fixes how far a
-    /// reader reads, so the rows are the whole answer.
+    /// A document the manifest lists as invalid draws the whole outcome it records — the status,
+    /// the layers not evaluated and every finding — validated with the registries the case names
+    /// where it names any. Where the reader builds a document from it, the document has the
+    /// digests the case records: content a model layer refuses passes the reader unchanged.
     /// </summary>
     /// <param name="name">the document</param>
     [Theory]
     [MemberData(nameof(InvalidCases))]
-    public void InvalidDocumentIsRejected(string name)
+    public void InvalidDocumentDrawsItsOutcome(string name)
     {
         InvalidCase expected = Manifest.Invalid[name];
-        ValidationResult result = Validator.Validate(Fixtures.Bytes(name));
-        List<(string Path, string Code, string Subject)> errors = Errors(result);
-
-        if (expected.Layer == "business-rule")
+        if (expected.Digests is not null)
         {
-            Assert.Empty(errors);
-            Assert.NotEqual(ValidationStatus.Invalid, result.Status);
+            SemanticDocument document = EsjReader.Strict().Read(Fixtures.Bytes(name));
+            Assert.Equal(
+                expected.Digests,
+                new Digests(
+                    document.Values.Count,
+                    Canonicalizer.CanonicalBytes(document).Length,
+                    Canonicalizer.SemanticDigest(document),
+                    Canonicalizer.DocumentDigest(document)));
+        }
+
+        if (!expected.Evaluated)
+        {
             return;
         }
 
-        if (expected.Layer is "L1" or "limit")
+        ValidationResult result = Validator.Validate(
+            Fixtures.Bytes(name),
+            expected.Registries is null ? null : new[] { Combined(expected.Registries) });
+        Assert.Equal(expected.Outcome.Normalized(), OutcomeOf(result).Normalized());
+        Assert.NotEqual(expected.Layer == "business-rule" ? ValidationStatus.Invalid : ValidationStatus.Valid, result.Status);
+    }
+
+    /// <summary>A document read under the bounds of a case draws the outcome the manifest records.</summary>
+    /// <param name="name">the document and its bounds</param>
+    [Theory]
+    [MemberData(nameof(BoundCases))]
+    public void DocumentUnderBoundsDrawsItsOutcome(string name)
+    {
+        BoundCase expected = Manifest.Bounds[name];
+        Assert.Equal(
+            expected.Outcome.Normalized(),
+            OutcomeOf(Validator.Validate(Fixtures.Bytes(expected.File), null, LimitsOf(expected.Limits))).Normalized());
+    }
+
+    /// <summary>
+    /// A set of registry files is taken or refused as the manifest records: the first read as the
+    /// core, every further one combined with it as an extension (specification, section 10).
+    /// </summary>
+    /// <param name="name">the files, joined</param>
+    [Theory]
+    [MemberData(nameof(RegistryCheckCases))]
+    public void RegistriesAreTakenOrRefused(string name)
+    {
+        RegistryCheckCase expected = Manifest.RegistryChecks[name];
+        bool accepted;
+        try
         {
-            // The specification, section 9.6 fixes how far a reader reads, so the rows of a
-            // document layer L1 refused are the whole answer and not a sample of it.
-            Assert.Equal(Recorded(expected.Rows), Compared(errors, Pinned(expected.Rows)));
+            Combined(expected.Files);
+            accepted = true;
         }
-        else
+        catch (Exception refused) when (refused is EsjException or JsonException or KeyNotFoundException
+            or InvalidOperationException or FormatException)
         {
-            IReadOnlyList<(string Path, string Code, string? Subject)> first = expected.Rows.Take(1).ToList();
-            Assert.Contains(Recorded(first)[0], Compared(errors, Pinned(first)));
+            accepted = false;
         }
 
-        Assert.NotEqual(ValidationStatus.Valid, result.Status);
+        Assert.Equal(expected.Accepted, accepted);
     }
 
     /// <summary>
@@ -191,7 +229,22 @@ public class ManifestTests
             return;
         }
 
-        SemanticPath path = SemanticPath.Parse(grammar.Path);
+        if (grammar.Member is not null)
+        {
+            foreach (JsonElement candidate in grammar.Accept)
+            {
+                Assert.Equal(Array.Empty<string>(), LayerOneErrors(Written(grammar, candidate.GetString()!)));
+            }
+
+            foreach (JsonElement candidate in grammar.Reject)
+            {
+                Assert.Equal(new[] { grammar.Code }, LayerOneErrors(Written(grammar, candidate.GetString()!)));
+            }
+
+            return;
+        }
+
+        SemanticPath path = SemanticPath.Parse(grammar.Path!);
         foreach (JsonElement candidate in grammar.Accept)
         {
             Assert.Equal(
@@ -207,10 +260,48 @@ public class ManifestTests
         }
     }
 
-    private static string[] CodesAt(SemanticDocument document, SemanticPath path) =>
-        Errors(Validator.Validate(document))
-            .Where(finding => finding.Path == path.Text)
-            .Select(finding => finding.Code)
+    /// <summary>
+    /// The base document of an envelope grammar with a candidate written into its member: as the
+    /// value of <c>semanticModel</c>, or as the name of the one member of <c>extensions</c>, whose
+    /// value is the string <c>x</c>.
+    /// </summary>
+    private static byte[] Written(GrammarCase grammar, string candidate)
+    {
+        using JsonDocument parsed = JsonDocument.Parse(Fixtures.Bytes(grammar.Base));
+        using MemoryStream bytes = new();
+        using (Utf8JsonWriter writer = new(bytes))
+        {
+            writer.WriteStartObject();
+            foreach (JsonProperty member in parsed.RootElement.EnumerateObject())
+            {
+                if (grammar.Member == "semanticModel" && member.Name == "semanticModel")
+                {
+                    writer.WriteString("semanticModel", candidate);
+                }
+                else
+                {
+                    member.WriteTo(writer);
+                }
+            }
+
+            if (grammar.Member == "extensions")
+            {
+                writer.WriteStartObject("extensions");
+                writer.WriteString(candidate, "x");
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndObject();
+        }
+
+        return bytes.ToArray();
+    }
+
+    private static string[] LayerOneErrors(byte[] document) =>
+        Validator.Validate(document).Findings
+            .Where(finding => finding.Severity == Severity.Error
+                && finding.Code.Code.StartsWith("ESJ-L1-", StringComparison.Ordinal))
+            .Select(finding => finding.Code.Code)
             .ToArray();
 
     private static void CheckSample(Registry registry, JsonElement sample, string name)
@@ -259,53 +350,75 @@ public class ManifestTests
         return path.ToString();
     }
 
-    /// <summary>
-    /// The error findings of a result, as the runner of the manifest reads them: the codes of
-    /// this specification, without the two that record something not evaluated, each with its
-    /// path and its subject.
-    /// </summary>
-    private static List<(string Path, string Code, string Subject)> Errors(ValidationResult result) =>
-        result.Findings
-            .Where(finding => finding.Code.Code.StartsWith("ESJ-L", StringComparison.Ordinal)
-                && !finding.Code.Code.EndsWith("NOT-CHECKED", StringComparison.Ordinal)
-                && !finding.Code.Code.EndsWith("EDITION-UNKNOWN", StringComparison.Ordinal))
-            .Select(finding => (finding.Path.Text, finding.Code.Code, finding.Subject))
-            .OrderBy(finding => finding, TupleOrder)
-            .ToList();
+    /// <summary>The codes of the errors a validation of a document reports about one path.</summary>
+    private static string[] CodesAt(SemanticDocument document, SemanticPath path) =>
+        Validator.Validate(document).Findings
+            .Where(finding => finding.Severity == Severity.Error && finding.Path.Text == path.Text)
+            .Select(finding => finding.Code.Code)
+            .ToArray();
 
-    /// <summary>
-    /// The places whose subject the manifest records, as path and code. The manifest records one
-    /// where the specification, section 9.5 requires it, and it is compared there and nowhere else.
-    /// </summary>
-    private static HashSet<(string Path, string Code)> Pinned(
-        IEnumerable<(string Path, string Code, string? Subject)> rows) =>
-        rows.Where(row => row.Subject is not null).Select(row => (row.Path, row.Code)).ToHashSet();
-
-    /// <summary>Findings as path, code and subject, the subject kept only at the places pinned.</summary>
-    private static List<(string Path, string Code, string Subject)> Compared(
-        IEnumerable<(string Path, string Code, string Subject)> findings,
-        HashSet<(string Path, string Code)> pins) =>
-        findings
-            .Select(finding => (finding.Path, finding.Code,
-                pins.Contains((finding.Path, finding.Code)) ? finding.Subject : string.Empty))
-            .OrderBy(finding => finding, TupleOrder)
-            .ToList();
-
-    /// <summary>The rows of the manifest in the form <see cref="Compared"/> gives an answer.</summary>
-    private static List<(string Path, string Code, string Subject)> Recorded(
-        IReadOnlyList<(string Path, string Code, string? Subject)> rows) =>
-        Compared(rows.Select(row => (row.Path, row.Code, row.Subject ?? string.Empty)), Pinned(rows));
-
-    private static readonly IComparer<(string Path, string Code, string Subject)> TupleOrder =
-        Comparer<(string Path, string Code, string Subject)>.Create((left, right) =>
+    /// <summary>A result in the form the manifest records it.</summary>
+    private static Outcome OutcomeOf(ValidationResult result) => new(
+        result.Status switch
         {
-            int paths = string.CompareOrdinal(left.Path, right.Path);
-            if (paths != 0)
+            ValidationStatus.Valid => "VALID",
+            ValidationStatus.Invalid => "INVALID",
+            _ => "INDETERMINATE",
+        },
+        result.NotEvaluated.OrderBy(entry => entry.Key)
+            .Select(entry => (entry.Key.ToString(), entry.Value switch
             {
-                return paths;
-            }
+                NotEvaluatedReason.Limit => "LIMIT",
+                NotEvaluatedReason.PrecedingLayerFailed => "PRECEDING-LAYER-FAILED",
+                NotEvaluatedReason.EditionUnknown => "EDITION-UNKNOWN",
+                _ => "NOT-REQUESTED",
+            }))
+            .ToList(),
+        result.Findings
+            .Select(finding => (finding.Path.Text, finding.Code.Code, finding.Subject, finding.Severity switch
+            {
+                Severity.Error => "error",
+                Severity.Warning => "warning",
+                _ => "info",
+            }))
+            .ToList());
 
-            int codes = string.CompareOrdinal(left.Code, right.Code);
-            return codes != 0 ? codes : string.CompareOrdinal(left.Subject, right.Subject);
-        });
+    /// <summary>Reads registry files of the repository and combines every one after the first with it.</summary>
+    private static Registry Combined(IReadOnlyList<string> files)
+    {
+        Registry? combined = null;
+        foreach (string file in files)
+        {
+            using MemoryStream input = new(Fixtures.Bytes(file));
+            Registry read = Registry.Load(input);
+            combined = combined is null ? read : combined.WithExtension(read);
+        }
+
+        return combined!;
+    }
+
+    /// <summary>The defaults of the specification, section 12.2, with every bound a case names replaced.</summary>
+    private static Limits LimitsOf(JsonElement named)
+    {
+        Limits.Builder limits = Limits.Defaults.ToBuilder();
+        foreach (JsonProperty bound in named.EnumerateObject())
+        {
+            _ = bound.Name switch
+            {
+                "maxDocumentBytes" => limits.MaxDocumentBytes(bound.Value.GetInt64()),
+                "maxValues" => limits.MaxValues(bound.Value.GetInt32()),
+                "maxValueMembers" => limits.MaxValueMembers(bound.Value.GetInt32()),
+                "maxPathSegments" => limits.MaxPathSegments(bound.Value.GetInt32()),
+                "maxPathBytes" => limits.MaxPathBytes(bound.Value.GetInt32()),
+                "maxStringBytes" => limits.MaxStringBytes(bound.Value.GetInt64()),
+                "maxBinaryValueBytes" => limits.MaxBinaryValueBytes(bound.Value.GetInt64()),
+                "maxTotalBinaryBytes" => limits.MaxTotalBinaryBytes(bound.Value.GetInt64()),
+                "maxExtensionDepth" => limits.MaxExtensionDepth(bound.Value.GetInt32()),
+                "maxExtensionNodes" => limits.MaxExtensionNodes(bound.Value.GetInt32()),
+                _ => throw new ArgumentException("no bound is called " + bound.Name, nameof(named)),
+            };
+        }
+
+        return limits.Build();
+    }
 }

@@ -153,6 +153,28 @@ public class ProtocolTests
     }
 
     /// <summary>
+    /// A <c>validate</c> request may name the registries it is validated with: a document of an
+    /// edition only a test registry describes is measured against it, and without it the edition
+    /// is unknown.
+    /// </summary>
+    [Fact]
+    public void AValidateRequestMayNameItsRegistries()
+    {
+        JsonElement named = Ask("{\"op\": \"validate\", \"file\": \"conformance/fixtures/model/max-cardinality.esj.json\", "
+            + "\"registries\": [\"conformance/fixtures/registries/cardinality.json\"]}");
+        Assert.Equal("INVALID", named.GetProperty("status").GetString());
+        Assert.Equal(
+            new[] { "ESJ-L3-MAX-CARDINALITY BG-1", "ESJ-L3-MAX-CARDINALITY BT-3" },
+            named.GetProperty("findings").EnumerateArray()
+                .Select(finding => finding.GetProperty("code").GetString() + " " + finding.GetProperty("subject").GetString())
+                .OrderBy(text => text, StringComparer.Ordinal)
+                .ToArray());
+
+        JsonElement carried = Ask("{\"op\": \"validate\", \"file\": \"conformance/fixtures/model/max-cardinality.esj.json\"}");
+        Assert.Equal("INDETERMINATE", carried.GetProperty("status").GetString());
+    }
+
+    /// <summary>
     /// A subject that names a member whose name carries a lone surrogate travels escaped, as the
     /// reader wrote it, and never as a replacement character.
     /// </summary>

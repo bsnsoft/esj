@@ -79,7 +79,19 @@ abstract sealed class Manifest {
 
         private final Map<String, Manifest> members = new LinkedHashMap<>();
 
+        private boolean inline;
+
         private Object() {
+        }
+
+        /**
+         * Writes this object on one line, its members separated by a comma and a space. A
+         * finding is four short members, and a manifest that spread each over six lines would
+         * be read by nobody; an inline object holds scalars only.
+         */
+        Object inline() {
+            inline = true;
+            return this;
         }
 
         /** Adds a member, or replaces one of the same name in place. */
@@ -112,6 +124,21 @@ abstract sealed class Manifest {
         void write(StringBuilder out, int depth) {
             if (members.isEmpty()) {
                 out.append("{}");
+                return;
+            }
+            if (inline) {
+                out.append('{');
+                boolean first = true;
+                for (Map.Entry<String, Manifest> member : members.entrySet()) {
+                    if (!first) {
+                        out.append(", ");
+                    }
+                    first = false;
+                    escape(out, member.getKey());
+                    out.append(": ");
+                    member.getValue().write(out, depth + 1);
+                }
+                out.append('}');
                 return;
             }
             out.append("{\n");

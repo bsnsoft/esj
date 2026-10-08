@@ -2,10 +2,12 @@
 """Run the fixture manifest against an implementation of ESJ.
 
 The manifest beside this script is a list of cases written in no programming language:
-documents with the digests they have to produce, documents that have to be rejected and
-the finding code for each, the value grammars as accept and reject tables, and every
-mutation of the conformance corpus in the form of a base document and the changes that
-break it. A second implementation is conformant when it answers all of them.
+documents with the digests they have to produce and the whole answer a validator gives about
+them, documents that have to be rejected and that answer, documents read under bounds other
+than the defaults, registries a loader has to take or refuse, the value grammars and the two
+grammars of the envelope as accept and reject tables, and every mutation of the conformance
+corpus in the form of a base document and the changes that break it. A second implementation
+is conformant when it answers all of them.
 
     python3 conformance/fixtures/run.py                 # what the manifest contains
     python3 conformance/fixtures/run.py --binding ./my-binding --verbose
@@ -31,18 +33,29 @@ standard input, reading one JSON object per line back. Six requests exist:
 
     {"op": "validate", "file": "..."}            a document read from the repository
     {"op": "validate", "document": { ... }}      a document passed inline
-        -> {"findings": [{"path": "/BT-2", "code": "ESJ-L2-DATE", "subject": ""}]}
+    {"op": "validate", "file": "...", "limits": {"maxStringBytes": 64}}
+    {"op": "validate", "file": "...", "registries": ["conformance/fixtures/registries/x.json"]}
+        -> {"status": "INVALID",
+            "notEvaluated": [{"layer": "L2", "reason": "PRECEDING-LAYER-FAILED"}, ...],
+            "findings": [{"path": "/BT-2", "code": "ESJ-L2-DATE", "subject": "",
+                          "severity": "error"}, ...]}
 
-    A finding carries the path SPEC.md section 9.5 gives its code: the member's path where
-    the finding is about one member of `values`, and the empty string where the member name
-    is no path at all. It carries the subject that section gives it, or the empty string:
-    the member access that names the place, as `values["/BT-1x"]`, with the name escaped as
-    a fragment of a message is; the segment, the term or the component a finding of layer
-    L2 is about; and the term or group a finding of layer L3 is about. The path and the code
-    are compared, and the subject wherever the manifest records one, which it does wherever
-    the reference sets one. A document rejected at layer L1 is expected to
-    draw findings of that layer alone, because the model layers are not evaluated over a
-    document the reader refused a member of (section 9.5).
+    A validate request is answered with the whole result of layers L1 to L3 over the bytes:
+    the status of SPEC.md section 9.5, every layer not evaluated with its reason, and every
+    finding, errors and information alike, with its path, code, subject and severity. Neither
+    path nor subject is ever absent; empty is the empty string. `limits` names bounds of
+    section 12.2 under the names that section gives them, each replacing the default for
+    that one request. `registries` names registry files relative to the repository root,
+    the core registry first and every further one combined with it as an extension; the
+    binding validates with those instead of the ones it carries.
+
+    {"op": "registry", "files": ["model/en16931/2017.json", "model/b2c/0.1.json"]}
+        -> {"accepted": true}   or   {"accepted": false, "error": "..."}
+
+    A registry request names registry files relative to the repository root. The first is
+    read as the core, and every further one is read and combined with it as an extension,
+    with the checks section 10 holds a registry and a combination to. A file that cannot be
+    read at all is an error of the request: {"error": "..."}.
 
     {"op": "rules", "document": { ... }}
         -> {"rules": ["BR-CO-10"], "warnings": []}
@@ -59,12 +72,14 @@ standard input, reading one JSON object per line back. Six requests exist:
     binding compiles it against the registry of the document's edition and answers what
     that pack reports.
 
-A validate answers with every finding of layers L1 to L3, errors and information alike,
-whether the reader refused the document or a validator reported on it; the order does not
-matter, and a finding that is not an error is ignored here. A document of an edition the
-binding does not carry answers ESJ-L2-EDITION-UNKNOWN and nothing else, and its digests
-are still expected to be right: reading, the canonical form and the digests need no
-registry.
+The answer of a validate request is compared with the outcome the manifest records: the
+status, the layers not evaluated, and every finding with its path, code, subject and
+severity. SPEC.md fixes the order of the findings in two places, and they are compared in
+order there: the findings of the reader (section 9.6) and the findings of one path at
+layer L2 (section 9.2). Everything else is compared as a set. A document of an edition the
+binding does not carry is not validated by the runner: its outcome is recorded for the
+registries of that edition. Its digests are still compared, because reading, the canonical
+form and the digests need no registry.
 
 Paths in the manifest are relative to the repository root, which is two directories above
 this script unless --repository says otherwise. The exit code is 0 when every case passed.
@@ -116,6 +131,11 @@ def missing(files, repository):
                 names.append(document["canonical"])
         for document in manifest.get("invalid", []):
             names.append(document["file"])
+            names.extend(document.get("registries", []))
+        for case in manifest.get("bounds", []):
+            names.append(case["file"])
+        for case in manifest.get("registryChecks", []):
+            names.extend(case["files"])
         for case in manifest.get("canonicalOrder", []):
             names.extend([case["scrambled"], case["canonical"]])
         for grammar in manifest.get("grammars", []):
@@ -128,21 +148,6 @@ def missing(files, repository):
         if arithmetic:
             names.extend([arithmetic["pack"], arithmetic["base"]])
     return [name for name in names if not (repository / name).exists()]
-
-
-def invalid(manifest):
-    """The negative fixtures of one manifest, as the rows of each file, in order.
-
-    A file is one case and its rows are one answer: a document may be wrong in two ways at
-    layer L1 and draw two codes, and SPEC.md section 9.6 fixes how far a reader reads, so the
-    rows of such a file are the whole answer and are compared as a list. A fixture caught by a
-    model layer carries the first row alone, because what a validator reports over a whole
-    document is the business of the `documents` part.
-    """
-    rows = {}
-    for document in manifest.get("invalid", []):
-        rows.setdefault(document["file"], []).append(document)
-    return rows
 
 
 def cases(files, repository):
@@ -221,30 +226,52 @@ class Report:
             print("      answered " + json.dumps(actual))
 
 
-def errors(answer):
-    """The error findings of an answer, as path, code and subject, in no particular order."""
-    return sorted((finding["path"], finding["code"], finding.get("subject", ""))
-                  for finding in answer.get("findings", [])
-                  if finding["code"].startswith("ESJ-L")
-                  and not finding["code"].endswith("NOT-CHECKED")
-                  and not finding["code"].endswith("EDITION-UNKNOWN"))
+def normalized(outcome):
+    """An outcome in the form two outcomes are compared in.
+
+    The findings of the reader stay a list, because section 9.6 fixes how far a reader reads
+    and in which order it reports; the findings of one path at layer L2 stay a list, because
+    section 9.2 fixes the order of the checks of a path; everything else is a set.
+    """
+    reader, model, rest = [], {}, []
+    for finding in outcome.get("findings", []):
+        row = [finding.get("path"), finding.get("code"), finding.get("subject"),
+               finding.get("severity")]
+        code = finding.get("code") or ""
+        if code.startswith("ESJ-L1-"):
+            reader.append(row)
+        elif code.startswith("ESJ-L2-"):
+            model.setdefault(finding.get("path") or "", []).append(row)
+        else:
+            rest.append(row)
+    return {
+        "status": outcome.get("status"),
+        "notEvaluated": sorted([entry.get("layer"), entry.get("reason")]
+                               for entry in outcome.get("notEvaluated", [])),
+        "reader": reader,
+        "model": sorted([path, rows] for path, rows in model.items()),
+        "others": sorted(rest),
+    }
 
 
-def pinned(rows):
-    """The places whose subject the manifest records, as pairs of path and code."""
-    return {(row.get("path", ""), row["code"]) for row in rows if "subject" in row}
+def answered(answer):
+    """The outcome of a validate answer, or the answer itself where it is an error."""
+    if "error" in answer:
+        return answer
+    return normalized(answer)
 
 
-def compared(findings, pins):
-    """Findings as path, code and subject, the subject kept only at the places pinned."""
-    return sorted((path, code, subject if (path, code) in pins else "")
-                  for path, code, subject in findings)
+def layer_one_errors(answer):
+    """The codes of the errors of layer L1 a validate answer reports, in order."""
+    return [finding["code"] for finding in answer.get("findings", [])
+            if finding["code"].startswith("ESJ-L1-") and finding.get("severity") == "error"]
 
 
-def recorded(rows):
-    """The rows of the manifest in the form compared() gives an answer."""
-    return compared([(row.get("path", ""), row["code"], row.get("subject", ""))
-                     for row in rows], pinned(rows))
+def errors_at(answer, path):
+    """The codes of the errors a validate answer reports about one path."""
+    return [finding["code"] for finding in answer.get("findings", [])
+            if finding["code"].startswith("ESJ-L") and finding.get("severity") == "error"
+            and finding["path"] == path]
 
 
 def outcome(rule, reported):
@@ -275,66 +302,115 @@ def arithmetic(binding, files, repository, report, carried):
                      answer.get("warnings"))
 
 
+def digests(document):
+    """The digests a manifest entry records, as a digest request answers them."""
+    return {key: document[key] for key in
+            ("semanticDigest", "documentDigest", "canonicalBytes", "values")}
+
+
+def evaluated(manifest, carried):
+    """Whether the binding is asked to validate the cases of a manifest file.
+
+    A part carries the fixtures of one edition, and their outcomes were recorded with the
+    registry of that edition; a binding that does not carry it answers
+    ESJ-L2-EDITION-UNKNOWN, as section 9.2 requires. The core manifest is always evaluated:
+    its documents name the default edition, or an edition no registry describes.
+    """
+    return "semanticModel" not in manifest or manifest["semanticModel"] in carried
+
+
+def envelope_document(base, member, candidate):
+    """The base document with a candidate written into one member of the envelope."""
+    document = json.loads(json.dumps(base))
+    if member == "semanticModel":
+        document["semanticModel"] = candidate
+    else:
+        document["extensions"] = {candidate: "x"}
+    return document
+
+
 def run(binding, files, repository, report):
     carried = set(binding.ask({"op": "editions"})["semanticModels"])
     for manifest, document in documents(files, repository):
         name = document["file"]
         answer = binding.ask({"op": "digest", "file": name})
-        report.check(name + " digests", {
-            "semanticDigest": document["semanticDigest"],
-            "documentDigest": document["documentDigest"],
-            "canonicalBytes": document["canonicalBytes"],
-            "values": document["values"],
-        }, {key: answer.get(key) for key in
-            ("semanticDigest", "documentDigest", "canonicalBytes", "values")})
+        report.check(name + " digests", digests(document),
+                     {key: answer.get(key) for key in
+                      ("semanticDigest", "documentDigest", "canonicalBytes", "values")})
         if "canonical" in document:
             expected = (repository / document["canonical"]).read_text(encoding="utf-8")
             report.check(name + " canonical form", expected,
-                         binding.ask({"op": "canonicalize", "file": name})["canonical"])
-        if document["semanticModel"] in carried:
-            rows = document.get("findings", [])
-            report.check(name + " findings", recorded(rows),
-                         compared(errors(binding.ask({"op": "validate", "file": name})),
-                                  pinned(rows)))
+                         binding.ask({"op": "canonicalize", "file": name}).get("canonical"))
+        if evaluated(manifest, carried):
+            report.check(name + " outcome", normalized(document["outcome"]),
+                         answered(binding.ask({"op": "validate", "file": name})))
 
     for manifest in files:
-        for name, rows in invalid(manifest).items():
-            answer = binding.ask({"op": "validate", "file": name})
-            found = errors(answer)
-            if rows[0]["layer"] == "business-rule":
-                report.check(name + " is structurally sound", [], [code for _, code, _ in found])
+        evaluate = evaluated(manifest, carried)
+        for case in manifest.get("invalid", []):
+            name = case["file"]
+            if "values" in case:
+                answer = binding.ask({"op": "digest", "file": name})
+                report.check(name + " digests", digests(case),
+                             {key: answer.get(key) for key in
+                              ("semanticDigest", "documentDigest", "canonicalBytes", "values")})
+            if not evaluate:
                 continue
-            if rows[0]["layer"] in ("L1", "limit"):
-                # A document layer L1 refused is answered whole: section 9.6 fixes how far a
-                # reader reads, so the rows are the list and not a sample of it.
-                report.check(name + " is rejected at layer L1, with these findings alone",
-                             recorded(rows), compared(found, pinned(rows)))
-                continue
-            report.check(name + " is rejected", True,
-                         recorded(rows[:1])[0] in compared(found, pinned(rows[:1])))
+            request = {"op": "validate", "file": name}
+            if "registries" in case:
+                request["registries"] = case["registries"]
+            report.check(name + " is rejected (" + case["layer"] + ")",
+                         normalized(case["outcome"]), answered(binding.ask(request)))
+
+        for case in manifest.get("bounds", []):
+            name = case["file"] + " under " + json.dumps(case["limits"], sort_keys=True)
+            report.check(name, normalized(case["outcome"]),
+                         answered(binding.ask({"op": "validate", "file": case["file"],
+                                               "limits": case["limits"]})))
+
+        for case in manifest.get("registryChecks", []):
+            answer = binding.ask({"op": "registry", "files": case["files"]})
+            report.check(" + ".join(case["files"]) + (" is taken" if case["accepted"]
+                                                      else " is refused"),
+                         case["accepted"], answer.get("accepted", answer))
 
         for case in manifest.get("canonicalOrder", []):
             expected = (repository / case["canonical"]).read_text(encoding="utf-8")
             report.check(case["scrambled"] + " canonical form", expected,
                          binding.ask({"op": "canonicalize",
-                                      "file": case["scrambled"]})["canonical"])
+                                      "file": case["scrambled"]}).get("canonical"))
+            answer = binding.ask({"op": "digest", "file": case["scrambled"]})
+            report.check(case["scrambled"] + " digest",
+                         {"documentDigest": case["documentDigest"], "values": case["values"]},
+                         {"documentDigest": answer.get("documentDigest"),
+                          "values": answer.get("values")})
 
         for grammar in manifest.get("grammars", []):
             base = load(repository / grammar["base"])
             if base["semanticModel"] not in carried:
                 continue
+            if "member" in grammar:
+                for candidate in grammar["accept"]:
+                    answer = binding.ask({"op": "validate", "document": envelope_document(
+                        base, grammar["member"], candidate)})
+                    report.check(grammar["grammar"] + " accepts " + json.dumps(candidate),
+                                 [], layer_one_errors(answer))
+                for candidate in grammar["reject"]:
+                    answer = binding.ask({"op": "validate", "document": envelope_document(
+                        base, grammar["member"], candidate)})
+                    report.check(grammar["grammar"] + " rejects " + json.dumps(candidate),
+                                 [grammar["code"]], layer_one_errors(answer))
+                continue
             for candidate in grammar["accept"]:
                 document = apply(base, [{"path": grammar["path"], "value": candidate}])
                 answer = binding.ask({"op": "validate", "document": document})
                 report.check(grammar["datatype"] + " accepts " + json.dumps(candidate),
-                             [], [code for path, code, _ in errors(answer)
-                                  if path == grammar["path"]])
+                             [], errors_at(answer, grammar["path"]))
             for candidate in grammar["reject"]:
                 document = apply(base, [{"path": grammar["path"], "value": candidate}])
                 answer = binding.ask({"op": "validate", "document": document})
                 report.check(grammar["datatype"] + " rejects " + json.dumps(candidate),
-                             [grammar["code"]], [code for path, code, _ in errors(answer)
-                                                 if path == grammar["path"]])
+                             [grammar["code"]], errors_at(answer, grammar["path"]))
 
     for case, base in cases(files, repository):
         if base["semanticModel"] not in carried:
@@ -384,11 +460,13 @@ def main():
     if not arguments.binding:
         for manifest in files:
             section = manifest.get("arithmetic")
-            print("%s: %d documents, %d rejected, %d grammars, %d canonical order, %d rule cases,"
-                  " %d arithmetic rules"
+            print("%s: %d documents, %d rejected, %d under bounds, %d registry sets, %d grammars,"
+                  " %d canonical order, %d rule cases, %d arithmetic rules"
                   % (manifest["part"],
                      len(manifest.get("documents", [])),
                      len(manifest.get("invalid", [])),
+                     len(manifest.get("bounds", [])),
+                     len(manifest.get("registryChecks", [])),
                      len(manifest.get("grammars", [])),
                      len(manifest.get("canonicalOrder", [])),
                      manifest.get("rules", {}).get("cases", 0),

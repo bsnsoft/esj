@@ -1,6 +1,6 @@
 {
   "format": "EN16931-Semantic-JSON-Fixtures",
-  "version": "1",
+  "version": "2",
   "part": "en16931-2026",
   "semanticModel": "EN16931-1:2026",
   "whenEditionAbsent": "ESJ-L2-EDITION-UNKNOWN",
@@ -352,15 +352,61 @@
       "values": 50,
       "canonicalBytes": 1713,
       "semanticDigest": "2e584ace78f8e570a2d2bbeebf7704c584868e360d4f381035acbdbe0594e86a",
-      "documentDigest": "117cf345834ddd4dcb7b4a867ad87ba6a43c3852a1245724f445af7e74ce3a3b"
+      "documentDigest": "117cf345834ddd4dcb7b4a867ad87ba6a43c3852a1245724f445af7e74ce3a3b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    },
+    {
+      "file": "conformance/fixtures/annex-b/edition-2026-example.esj.json",
+      "canonical": "conformance/fixtures/annex-b/edition-2026-example.canonical.esj.json",
+      "semanticModel": "EN16931-1:2026",
+      "registries": [
+        "model/en16931/2026.json"
+      ],
+      "values": 5,
+      "canonicalBytes": 247,
+      "semanticDigest": "8f12f3ea4a038fa8877b9b8084793c0ff4d90190dfe6897b4a44b04d464f2d1c",
+      "documentDigest": "38b3abe5cfa1d8f705844b7169b56d8aecd35ffbd9ae65ec0aaa83d4c8b7b10f",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-3", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-5", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-2", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-7", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-22", "severity": "error"},
+          {"path": "", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-23", "severity": "error"},
+          {"path": "/BG-4", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-27", "severity": "error"},
+          {"path": "/BG-4", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-5", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-126", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-129", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-TERM", "subject": "BT-130", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-29", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-30", "severity": "error"},
+          {"path": "/BG-25/0", "code": "ESJ-L3-MISSING-GROUP", "subject": "BG-31", "severity": "error"}
+        ]
+      }
     }
   ],
   "invalid": [
     {
       "file": "examples/invalid/edition-2026-time-without-offset.esj.json",
       "layer": "L2",
-      "code": "ESJ-L2-TIME",
-      "path": "/BT-166"
+      "values": 24,
+      "canonicalBytes": 681,
+      "semanticDigest": "c01076bbeeac429b0848c9da393d03df9f2d170758bcf0f5709d94455bb8199a",
+      "documentDigest": "fd33d824a4b80707068e2ac4dcbc583efc037d38a18070af1546c06d19f4ed89",
+      "outcome": {
+        "status": "INVALID",
+        "notEvaluated": [],
+        "findings": [
+          {"path": "/BT-166", "code": "ESJ-L2-TIME", "subject": "", "severity": "error"}
+        ]
+      }
     }
   ],
   "grammars": [
@@ -374,7 +420,11 @@
         "00:00:00Z",
         "23:59:59+14:00",
         "12:00:00-05:30",
-        "12:00:00+01:00"
+        "12:00:00+01:00",
+        "12:00:00-14:00",
+        "12:00:00+13:59",
+        "12:00:00-00:30",
+        "12:00:00+00:01"
       ],
       "reject": [
         "09:15:00",
@@ -386,7 +436,16 @@
         "23:59:60Z",
         "09:15:00.5Z",
         "09:15:00z",
-        "09:15:00+15:00"
+        "09:15:00+15:00",
+        "12:00:00+14:01",
+        "12:00:00-14:01",
+        "12:00:00+1:00",
+        "12:00:00+0100",
+        "09:15:00,5Z",
+        "12:60:00Z",
+        "12:00:00+01:60",
+        "12:00:00Z\n",
+        "T12:00:00Z"
       ]
     }
   ],

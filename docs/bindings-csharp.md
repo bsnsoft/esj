@@ -126,7 +126,8 @@ $ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/cs
 `BSNSoft.Esj.Fixtures` answers the six requests of the runner over a pipe: the
 digests, the canonical bytes, the findings with severity, status and the layers not evaluated, the
 rule identifiers, and whether a set of registries is accepted. A `validate` request may carry
-`limits` under the names of `Limits` (`maxStringBytes`, `maxExtensionDepth`, …). The same cases run as xunit tests, one test per case, which is what `dotnet test`
+`limits` under the names of `Limits` (`maxStringBytes`, `maxExtensionDepth`, …) and the registry
+files to validate with in `registries`. The same cases run as xunit tests, one test per case, which is what `dotnet test`
 reports, so a case that the reference implementation writes into the manifest fails here until
 this binding answers it too. The job `bindings` of the CI runs `dotnet test` and the runner on
 every push.

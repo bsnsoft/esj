@@ -30,7 +30,9 @@ namespace BSNSoft.Esj.Fixtures;
 /// specification, section 12.2 under the names <see cref="Limits"/> gives them —
 /// <c>maxStringBytes</c>, <c>maxExtensionDepth</c> and so on — each replacing the default; the
 /// answer carries every finding with its path, code, subject and severity, the status, and every
-/// layer not evaluated with its reason. A <c>registry</c> request names registry files, the
+/// layer not evaluated with its reason. It may also carry <c>registries</c>, registry files of the
+/// repository read and combined as a <c>registry</c> request combines them, and is then validated
+/// with those instead of the registries this binding carries. A <c>registry</c> request names registry files, the
 /// first read on its own and every further one combined with it as an extension, and is answered
 /// with whether this binding accepts them.</para>
 /// </remarks>
@@ -66,7 +68,7 @@ public sealed class Protocol
             "editions" => Editions(),
             "digest" => Digest(Bytes(asked)),
             "canonicalize" => Canonicalize(Bytes(asked)),
-            "validate" => Validate(Bytes(asked), LimitsOf(asked)),
+            "validate" => Validate(Bytes(asked), LimitsOf(asked), RegistriesOf(asked)),
             "rules" => Rules(Bytes(asked), asked),
             "registry" => RegistryAnswer(asked),
             _ => throw new ArgumentException("no request of this protocol is called " + operation, nameof(request)),
@@ -151,9 +153,9 @@ public sealed class Protocol
         return Write(writer => writer.WriteString("canonical", EsjWriter.Canonical().ToText(document)));
     }
 
-    private string Validate(byte[] bytes, Limits limits)
+    private string Validate(byte[] bytes, Limits limits, IReadOnlyList<Registry>? registries)
     {
-        ValidationResult result = Validator.Validate(bytes, _registries.Value, limits);
+        ValidationResult result = Validator.Validate(bytes, registries ?? _registries.Value, limits);
         return Write(writer =>
         {
             writer.WriteStartArray("findings");
@@ -268,6 +270,29 @@ public sealed class Protocol
                 writer.WriteString("error", refused.Message);
             });
         }
+    }
+
+    /// <summary>
+    /// Returns the registries a <c>validate</c> request names, read and combined as a
+    /// <c>registry</c> request combines them, or <c>null</c> where it names none.
+    /// </summary>
+    private IReadOnlyList<Registry>? RegistriesOf(JsonElement asked)
+    {
+        if (!asked.TryGetProperty("registries", out JsonElement named))
+        {
+            return null;
+        }
+
+        Registry? combined = null;
+        foreach (JsonElement file in named.EnumerateArray())
+        {
+            Registry read = Read(File.ReadAllBytes(Path.Combine(_repository, file.GetString()!)));
+            combined = combined is null ? read : combined.WithExtension(read);
+        }
+
+        return combined is null
+            ? throw new ArgumentException("a validate request names its registries as one or more files", nameof(asked))
+            : new[] { combined };
     }
 
     private static Registry Read(byte[] file)

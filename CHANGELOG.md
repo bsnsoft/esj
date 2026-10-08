@@ -10,6 +10,30 @@ The Java implementation and the TypeScript and C# bindings now read, report and 
 alike. An entry without a prefix holds for all three; a prefix names the implementation it is
 about.
 
+### Added
+
+- The fixture manifest records the whole answer of a validation (contract version 2): the status,
+  the layers not evaluated with their reasons, and every finding with its path, code, subject —
+  the empty one included — and severity, information findings such as `ESJ-L2-NOT-CHECKED` and
+  `ESJ-L2-EDITION-UNKNOWN` among them. `run.py` compares the findings of the reader and those of
+  one path at layer L2 in order, as `SPEC.md` sections 9.6 and 9.2 fix it, and the rest as a set,
+  and a rejected document by its whole list of findings rather than its first.
+- Fixture manifest: a section `bounds` reads documents under bounds below the defaults, each at a
+  bound and one past it; a section `registryChecks` asks a loader to read and combine registry
+  files and records whether it takes them; the grammar tables cover the edition grammar of
+  `semanticModel` and the owner token, and more decimal, date, time and base64 candidates; a
+  rejected document the reader reads carries its digests; a canonical order case carries its
+  document digest and its number of values. A `validate` request may name the registries to
+  validate with (`registries`), which the fixture bindings of TypeScript and C# answer.
+- Fixtures: 13 documents in `examples/invalid/` (the encoding, the JSON text, a missing envelope
+  member, a wrong version, the edition grammar, an undefined member of `source`, a duplicate in
+  the envelope and below an owner token, a parent chain, a missing index, a missing group) and,
+  under `conformance/fixtures/`, 64 variants layer L1 refuses, 10 documents whose findings at
+  layers L2 and L3 are pinned as a list, 4 documents a reader reads for what a validator says of
+  them, 63 cases under bounds, 30 sets of registries, 4 documents not in canonical form, and the
+  two documents of `SPEC.md` appendix B with their canonical bytes. A test holds the bytes,
+  lengths and digests the appendix prints to those files and to the manifest.
+
 ### Changed
 
 - Java: `EsjReader` reads the bytes with a scanner of its own instead of `jackson-core`: it reads
@@ -110,9 +134,6 @@ about.
   or the segments of a path, the members of a value object or the depth of `extensions` names the
   byte offset of its token, as Java's does; TypeScript's `ESJ-L1-JSON` for a document that is no
   JSON object names it too.
-- The fixture manifest records the subject of every finding that names one, the member access of
-  a finding of layer L1 with a path and the segment, term or component of one of layer L2
-  included.
 - Java: the generator escapes a slug Java reserves, or one that would hide a member every view
   carries, with a trailing underscore (`class_()`) instead of refusing the registry (`SPEC.md` 10).
 - TypeScript: the view generator refuses a repeatable group whose slug is no plural (was: the slug

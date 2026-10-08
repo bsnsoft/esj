@@ -52,18 +52,24 @@ class ModelSchemaTest {
             "empty-string-value",
             "empty-string-with-missing-term",
             "envelope-member-terminal-characters",
+            "envelope-missing-values",
+            "envelope-wrong-version",
             "index-on-bt-1",
+            "index-required",
             "number-instead-of-string",
             "object-without-component",
             "owner-token-syntax",
             "owner-token-terminal-characters",
+            "parent-chain",
             "path-leading-zero-index",
             "path-syntax-terminal-characters",
             "path-syntax-with-array-value",
             "scheme-on-text-value",
             "scheme-version-without-scheme",
+            "semantic-model-grammar",
             "source-empty-syntax",
             "source-sha256-uppercase",
+            "source-unknown-member",
             "surrogate-and-duplicate-in-value-object",
             "surrogate-below-bad-owner-token",
             "surrogate-in-envelope-member-name",
@@ -75,8 +81,8 @@ class ModelSchemaTest {
             "unknown-term",
             "value-depth-32",
             "value-depth-33",
-            "value-object-members-17",
             "value-not-a-string",
+            "value-object-members-17",
             "values-deep-array");
 
     private static Schema schema;
@@ -166,6 +172,9 @@ class ModelSchemaTest {
     @ParameterizedTest
     @MethodSource("invalidFixtures")
     void aFixtureIsRejectedExactlyWhereTheFixtureTableSaysSo(String name) {
+        if (Examples.NOT_A_JSON_TEXT.contains(name)) {
+            return;
+        }
         boolean rejected = !validate(Examples.invalid(name)).isEmpty();
         if (REJECTED.contains(name)) {
             assertTrue(rejected, name + " is expected to fail the model schema");

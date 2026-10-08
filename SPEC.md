@@ -3224,6 +3224,10 @@ base down as a document rather than as prose.
 
 `examples/invalid/` contains documents that MUST be rejected, one per kind of error, with a
 note in its README naming the layer and the finding code that reject each one.
+`conformance/fixtures/` holds the variants of those errors, documents read under bounds below the
+defaults, the two documents of appendix B and registries a loader refuses, and its manifest records
+what an implementation answers about each of them: the status, the layers not evaluated and every
+finding with its path, code, subject and severity.
 
 ---
 

@@ -56,3 +56,5 @@ esj-rules/src/main/resources/META-INF/services/de.bsnsoft.esj.rules.RulePackSour
 conformance/fixtures/cases-en16931-2026-0.1.json
 bindings/typescript/src/rules/native-2026.ts
 bindings/csharp/BSNSoft.Esj/Rules/En16931V2026
+conformance/fixtures/annex-b/edition-2026-example.esj.json
+conformance/fixtures/annex-b/edition-2026-example.canonical.esj.json

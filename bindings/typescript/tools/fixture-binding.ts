@@ -20,6 +20,12 @@
  *         "findings": [{"path": "", "code": "ESJ-L1-LIMIT", "subject": "format",
  *                       "severity": "error"}]}
  *
+ * It may also carry `registries`, registry files relative to the repository root: the first is
+ * read as the core and every further one combined with it as an extension, and the request is
+ * validated with those instead of the registries this build carries:
+ *
+ *     {"op": "validate", "file": "...", "registries": ["conformance/fixtures/registries/x.json"]}
+ *
  * A `registry` request names registry files relative to the repository root. Each is read and
  * checked as section 10 checks a registry when it is read, and every file after the first is
  * then combined with the first as an extension of it:
@@ -92,6 +98,16 @@ function engineFor(semanticModel: string, pack: unknown): RuleEngine | undefined
   return engine;
 }
 
+/** Reads registry files of the repository, as a registry request or a validate request names them. */
+function registriesOf(files: unknown): Registry[] {
+  if (!Array.isArray(files) || files.length === 0
+    || files.some((file) => typeof file !== 'string')) {
+    throw new Error('a request names registries as one or more files');
+  }
+  return (files as string[]).map((file) => registryOf(
+    JSON.parse(readFileSync(path.join(ROOT, file), 'utf8')) as RegistryFile));
+}
+
 /**
  * Reads registry files and combines every one after the first with the first, the way a
  * validator is given an edition and the extensions it carries.
@@ -138,7 +154,7 @@ async function answer(request: Record<string, unknown>): Promise<unknown> {
         ? bytesOf(request.file)
         : JSON.stringify(request.document);
       const result = validate(input, {
-        registries: REGISTRIES,
+        registries: request.registries === undefined ? REGISTRIES : registriesOf(request.registries),
         ...(request.limits === undefined ? {} : { limits: request.limits as Partial<Limits> }),
       });
       return {

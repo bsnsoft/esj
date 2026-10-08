@@ -134,7 +134,8 @@ npm run fixtures
 
 starts `tools/fixture-binding.ts` and answers the requests of `conformance/fixtures/run.py`
 over a pipe: the digests, the canonical bytes, the status, the layers not evaluated and every
-finding with its severity — under the bounds of section 12.2 a request names in `limits` —, the
+finding with its severity — under the bounds a request names in `limits`, with the registries it
+names in `registries` —, the
 rule identifiers of every case of the manifest, 1089 of them where the part of the later edition
 is present, and, for `{"op": "registry", "files": [...]}`, whether those registry files are
 accepted, every file after the first combined with the first. `npm test` runs the same manifest

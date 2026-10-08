@@ -2,9 +2,9 @@
 
 Twelve synthetic ESJ documents in pretty form (SPEC.md section 7.7): canonical member order,
 canonical path order, two-space indentation, LF line endings, UTF-8. Eleven name the 2017 edition of
-the semantic model, `edition-2026.esj.json` the 2026 one. Beside them,
-[`templates/`](templates/README.md) holds four branded render templates and
-[`invalid/`](invalid/README.md) documents that must be rejected, one per kind of error.
+the semantic model, `edition-2026.esj.json` the 2026 one. Beside them, [`templates/`](templates/README.md)
+holds four branded render templates and [`invalid/`](invalid/README.md) documents that must be
+rejected, one per kind of error (their variants: [`conformance/fixtures/`](../conformance/fixtures/README.md)).
 
 Every document here is structurally complete under validation layers L1 to L3 of SPEC.md,
 `b2c-gross.esj.json` with `model/b2c/0.1.json` loaded beside the core registry. The CEN business

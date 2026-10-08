@@ -101,15 +101,16 @@ npm run fixtures  # the manifest through the language-neutral runner
 ```
 
 `npm test` runs the whole fixture manifest of [`conformance/fixtures/`](../../conformance/fixtures/README.md)
-in process: 98 conformant documents with their two digests, their canonical byte length, the
-registries they were measured with and the 46 cardinality findings two of them draw;
-55 rows for the documents that have to be rejected, each with its finding code, the path it
-names and its subject wherever SPEC.md section 9.5 sets one; the canonical bytes of two scrambled documents; the accept and reject tables of the value
-grammars; 448 mutations of the conformance corpus against the rule pack, and 314 cases of the
-later edition's pack; and the rules of the pack that pins division. One document, one rejected
-row and the 314 cases come from the part of the manifest that carries the later edition, which a
-build without that edition leaves out. The
-language-neutral runner answers the same manifest over a pipe.
+in process: 104 documents a reader reads, with their two digests, their canonical byte length,
+the registries they were measured with and the whole outcome a validator gives about each;
+139 documents that have to be rejected, each with that outcome; documents read under bounds below
+the defaults; sets of registries a loader takes or refuses; the canonical bytes of documents not
+in canonical form; the accept and reject tables of the value and envelope grammars; 448 mutations
+of the conformance corpus against the rule pack, and 314 cases of the later edition's pack; and
+the rules of the pack that pins division. Two documents, one rejected document and the 314 cases
+come from the part of the manifest that carries the later edition, which a
+build without that edition leaves out. The language-neutral runner answers the same manifest over
+a pipe.
 
 `data/` holds copies of `model/` and `rules/` taken by `scripts/sync-data.mjs` before every
 build and every test run. Nothing there is edited, and it is not checked in: a binding that

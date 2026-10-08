@@ -2,10 +2,83 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using BSNSoft.Esj.Validation;
 
 namespace BSNSoft.Esj.Tests;
 
-/// <summary>One conformant document of the manifest, with what it has to produce.</summary>
+/// <summary>
+/// The whole answer of a validation as the manifest records it: the status, every layer not
+/// evaluated with its reason, and every finding with its path, code, subject and severity.
+/// </summary>
+internal sealed record Outcome(
+    string Status,
+    IReadOnlyList<(string Layer, string Reason)> NotEvaluated,
+    IReadOnlyList<(string Path, string Code, string Subject, string Severity)> Findings)
+{
+    /// <summary>Reads an outcome of the manifest.</summary>
+    /// <param name="outcome">the <c>outcome</c> member of a case</param>
+    /// <returns>the outcome</returns>
+    internal static Outcome Read(JsonElement outcome) => new(
+        outcome.GetProperty("status").GetString()!,
+        outcome.GetProperty("notEvaluated").EnumerateArray()
+            .Select(entry => (entry.GetProperty("layer").GetString()!, entry.GetProperty("reason").GetString()!))
+            .ToList(),
+        outcome.GetProperty("findings").EnumerateArray()
+            .Select(finding => (finding.GetProperty("path").GetString()!, finding.GetProperty("code").GetString()!,
+                finding.GetProperty("subject").GetString()!, finding.GetProperty("severity").GetString()!))
+            .ToList());
+
+    /// <summary>
+    /// The outcome in the form two outcomes are compared in: the findings of the reader as a
+    /// list, because the specification, section 9.6 fixes how far a reader reads and in which
+    /// order; the findings of one path at layer L2 as a list, because section 9.2 fixes the order
+    /// of the checks of a path; everything else as a set.
+    /// </summary>
+    /// <returns>a text that is equal for two outcomes exactly when they are</returns>
+    internal string Normalized()
+    {
+        static string Row((string Path, string Code, string Subject, string Severity) finding) =>
+            JsonSerializer.Serialize(new[] { finding.Path, finding.Code, finding.Subject, finding.Severity });
+
+        List<string> reader = new();
+        SortedDictionary<string, List<string>> model = new(StringComparer.Ordinal);
+        List<string> others = new();
+        foreach ((string Path, string Code, string Subject, string Severity) finding in Findings)
+        {
+            if (finding.Code.StartsWith("ESJ-L1-", StringComparison.Ordinal))
+            {
+                reader.Add(Row(finding));
+            }
+            else if (finding.Code.StartsWith("ESJ-L2-", StringComparison.Ordinal))
+            {
+                if (!model.TryGetValue(finding.Path, out List<string>? rows))
+                {
+                    rows = new List<string>();
+                    model[finding.Path] = rows;
+                }
+
+                rows.Add(Row(finding));
+            }
+            else
+            {
+                others.Add(Row(finding));
+            }
+        }
+
+        others.Sort(StringComparer.Ordinal);
+        List<string> layers = NotEvaluated.Select(entry => entry.Layer + ":" + entry.Reason).ToList();
+        layers.Sort(StringComparer.Ordinal);
+        return "status " + Status + "\nnot evaluated " + string.Join(", ", layers)
+            + "\nreader\n  " + string.Join("\n  ", reader)
+            + "\nmodel\n  " + string.Join("\n  ", model.Select(path => path.Key + ": " + string.Join(" ", path.Value)))
+            + "\nothers\n  " + string.Join("\n  ", others);
+    }
+}
+
+/// <summary>The digests and sizes of a document the reader builds.</summary>
+internal sealed record Digests(int Values, int CanonicalBytes, string SemanticDigest, string DocumentDigest);
+
+/// <summary>One document of the manifest, with what it has to produce and what a validator says of it.</summary>
 internal sealed record DocumentCase(
     string File,
     string? Canonical,
@@ -15,27 +88,41 @@ internal sealed record DocumentCase(
     int CanonicalBytes,
     string SemanticDigest,
     string DocumentDigest,
-    IReadOnlyList<(string Path, string Code, string? Subject)> Findings);
+    Outcome Outcome,
+    bool Evaluated);
 
-/// <summary>One document of the manifest that has to be rejected.</summary>
+/// <summary>One document of the manifest that has to be rejected, with the whole answer of a validation.</summary>
 /// <remarks>
-/// A document may be wrong in two ways at layer L1 and draw a row for each code, so the rows
-/// of one file are held together: SPEC.md section 9.6 fixes how far a reader reads, and the
-/// rows of a document layer L1 refused are its whole answer. A row carries the subject of its
-/// finding where the specification, section 9.5 requires one, and no subject elsewhere.
+/// A case may name the registries it is validated with instead of the ones a binding carries,
+/// and carries the digests of the document where the reader builds one.
 /// </remarks>
 internal sealed record InvalidCase(
-    string File, string Layer, IReadOnlyList<(string Path, string Code, string? Subject)> Rows);
+    string File,
+    string Layer,
+    IReadOnlyList<string>? Registries,
+    Digests? Digests,
+    Outcome Outcome,
+    bool Evaluated);
+
+/// <summary>One document read under bounds other than the defaults, with what a validator says of it.</summary>
+internal sealed record BoundCase(string File, JsonElement Limits, Outcome Outcome);
+
+/// <summary>A set of registry files to read and combine, and whether a loader takes it.</summary>
+internal sealed record RegistryCheckCase(IReadOnlyList<string> Files, bool Accepted);
 
 /// <summary>One document whose members are in the wrong order, with its canonical bytes.</summary>
 internal sealed record CanonicalOrderCase(string Scrambled, string Canonical, int Values, string DocumentDigest);
 
-/// <summary>One value grammar of the specification, as an accept and a reject table.</summary>
+/// <summary>
+/// One grammar as an accept and a reject table: a value grammar of the specification, section 6,
+/// measured at a path, or a grammar of the envelope, measured in the member it constrains.
+/// </summary>
 internal sealed record GrammarCase(
-    string Datatype,
+    string Name,
     string Code,
     string Base,
-    string Path,
+    string? Path,
+    string? Member,
     IReadOnlyList<JsonElement> Accept,
     IReadOnlyList<JsonElement> Reject);
 
@@ -67,6 +154,8 @@ internal static class Manifest
 {
     private static readonly Lazy<IReadOnlyDictionary<string, DocumentCase>> DocumentCases = new(ReadDocuments);
     private static readonly Lazy<IReadOnlyDictionary<string, InvalidCase>> InvalidCases = new(ReadInvalid);
+    private static readonly Lazy<IReadOnlyDictionary<string, BoundCase>> BoundCases = new(ReadBounds);
+    private static readonly Lazy<IReadOnlyDictionary<string, RegistryCheckCase>> RegistryCheckCases = new(ReadRegistryChecks);
     private static readonly Lazy<IReadOnlyDictionary<string, CanonicalOrderCase>> OrderCases = new(ReadOrder);
     private static readonly Lazy<IReadOnlyDictionary<string, GrammarCase>> GrammarCases = new(ReadGrammars);
     private static readonly Lazy<IReadOnlyDictionary<string, RegistryCase>> RegistryCases = new(ReadRegistries);
@@ -75,6 +164,10 @@ internal static class Manifest
     internal static IReadOnlyDictionary<string, DocumentCase> Documents => DocumentCases.Value;
 
     internal static IReadOnlyDictionary<string, InvalidCase> Invalid => InvalidCases.Value;
+
+    internal static IReadOnlyDictionary<string, BoundCase> Bounds => BoundCases.Value;
+
+    internal static IReadOnlyDictionary<string, RegistryCheckCase> RegistryChecks => RegistryCheckCases.Value;
 
     internal static IReadOnlyDictionary<string, CanonicalOrderCase> CanonicalOrder => OrderCases.Value;
 
@@ -90,19 +183,19 @@ internal static class Manifest
     internal static IEnumerable<object[]> Rows(IEnumerable<string> names) =>
         names.Select(name => new object[] { name });
 
+    /// <summary>
+    /// Whether this binding validates the cases of a manifest file: a part carries one edition,
+    /// and its outcomes were recorded with the registry of that edition.
+    /// </summary>
+    private static bool Evaluated(JsonElement manifest) =>
+        !manifest.TryGetProperty("semanticModel", out JsonElement edition)
+        || Validator.Registries().Any(registry => registry.SemanticModel == edition.GetString());
+
     private static Dictionary<string, DocumentCase> ReadDocuments()
     {
         Dictionary<string, DocumentCase> cases = new(StringComparer.Ordinal);
-        foreach ((JsonElement _, JsonElement entry) in Fixtures.Section("documents"))
+        foreach ((JsonElement manifest, JsonElement entry) in Fixtures.Section("documents"))
         {
-            List<(string, string, string?)> findings = new();
-            if (entry.TryGetProperty("findings", out JsonElement reported))
-            {
-                findings.AddRange(reported.EnumerateArray().Select(finding =>
-                    (finding.GetProperty("path").GetString()!, finding.GetProperty("code").GetString()!,
-                        Fixtures.Optional(finding, "subject"))));
-            }
-
             string file = entry.GetProperty("file").GetString()!;
             cases[file] = new DocumentCase(
                 file,
@@ -114,7 +207,8 @@ internal static class Manifest
                 entry.GetProperty("canonicalBytes").GetInt32(),
                 entry.GetProperty("semanticDigest").GetString()!,
                 entry.GetProperty("documentDigest").GetString()!,
-                findings);
+                Outcome.Read(entry.GetProperty("outcome")),
+                Evaluated(manifest));
         }
 
         return cases;
@@ -123,20 +217,49 @@ internal static class Manifest
     private static Dictionary<string, InvalidCase> ReadInvalid()
     {
         Dictionary<string, InvalidCase> cases = new(StringComparer.Ordinal);
-        foreach ((JsonElement _, JsonElement entry) in Fixtures.Section("invalid"))
+        foreach ((JsonElement manifest, JsonElement entry) in Fixtures.Section("invalid"))
         {
             string file = entry.GetProperty("file").GetString()!;
-            string layer = entry.GetProperty("layer").GetString()!;
-            List<(string, string, string?)> rows = cases.TryGetValue(file, out InvalidCase? known)
-                ? new List<(string, string, string?)>(known.Rows)
-                : new List<(string, string, string?)>();
-            string? code = Fixtures.Optional(entry, "code");
-            if (code is not null)
-            {
-                rows.Add((Fixtures.Optional(entry, "path") ?? string.Empty, code, Fixtures.Optional(entry, "subject")));
-            }
+            cases[file] = new InvalidCase(
+                file,
+                entry.GetProperty("layer").GetString()!,
+                entry.TryGetProperty("registries", out JsonElement registries)
+                    ? registries.EnumerateArray().Select(registry => registry.GetString()!).ToList()
+                    : null,
+                entry.TryGetProperty("values", out JsonElement values)
+                    ? new Digests(
+                        values.GetInt32(),
+                        entry.GetProperty("canonicalBytes").GetInt32(),
+                        entry.GetProperty("semanticDigest").GetString()!,
+                        entry.GetProperty("documentDigest").GetString()!)
+                    : null,
+                Outcome.Read(entry.GetProperty("outcome")),
+                Evaluated(manifest));
+        }
 
-            cases[file] = new InvalidCase(file, layer, rows);
+        return cases;
+    }
+
+    private static Dictionary<string, BoundCase> ReadBounds()
+    {
+        Dictionary<string, BoundCase> cases = new(StringComparer.Ordinal);
+        foreach ((JsonElement _, JsonElement entry) in Fixtures.Section("bounds"))
+        {
+            string file = entry.GetProperty("file").GetString()!;
+            JsonElement limits = entry.GetProperty("limits");
+            cases[file + " " + limits.GetRawText()] = new BoundCase(file, limits, Outcome.Read(entry.GetProperty("outcome")));
+        }
+
+        return cases;
+    }
+
+    private static Dictionary<string, RegistryCheckCase> ReadRegistryChecks()
+    {
+        Dictionary<string, RegistryCheckCase> cases = new(StringComparer.Ordinal);
+        foreach ((JsonElement _, JsonElement entry) in Fixtures.Section("registryChecks"))
+        {
+            List<string> files = entry.GetProperty("files").EnumerateArray().Select(file => file.GetString()!).ToList();
+            cases[string.Join(" + ", files)] = new RegistryCheckCase(files, entry.GetProperty("accepted").GetBoolean());
         }
 
         return cases;
@@ -163,12 +286,17 @@ internal static class Manifest
         Dictionary<string, GrammarCase> cases = new(StringComparer.Ordinal);
         foreach ((JsonElement _, JsonElement entry) in Fixtures.Section("grammars"))
         {
-            string datatype = entry.GetProperty("datatype").GetString()!;
-            cases[datatype] = new GrammarCase(
-                datatype,
+            string? path = Fixtures.Optional(entry, "path");
+            string? member = Fixtures.Optional(entry, "member");
+            string name = path is null
+                ? entry.GetProperty("grammar").GetString()!
+                : entry.GetProperty("datatype").GetString()! + " at " + path;
+            cases[name] = new GrammarCase(
+                name,
                 entry.GetProperty("code").GetString()!,
                 entry.GetProperty("base").GetString()!,
-                entry.GetProperty("path").GetString()!,
+                path,
+                member,
                 entry.GetProperty("accept").EnumerateArray().ToList(),
                 entry.GetProperty("reject").EnumerateArray().ToList());
         }

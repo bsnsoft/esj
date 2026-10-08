@@ -252,12 +252,11 @@ for does not compile.
 ## A binding in another language
 
 `conformance/fixtures/manifest.json` is the contract: every case an implementation of ESJ has to
-pass, written in no programming language — the registries to load, conformant documents with their
-two digests, their canonical byte length and what their model layers report, documents that have
-to be rejected with the finding code and the path of each, documents in the wrong member order
-with their canonical bytes, the accept and reject tables of the value grammars, every rule case as
-a base document plus the changes that break it, and a pack of the rule language that pins its
-division.
+pass, written in no programming language — the registries to load, documents with their digests,
+canonical byte length and the whole answer of a validation, documents that have to be rejected
+with that answer, documents under bounds, registries a loader refuses, documents not in canonical
+form with their canonical bytes, grammar tables, every rule case as a base document plus the
+changes that break it, and a pack of the rule language that pins its division.
 [`conformance/fixtures/README.md`](conformance/fixtures/README.md) is its format and the six
 requests a binding answers over a pipe.
 
