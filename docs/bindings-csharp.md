@@ -98,7 +98,11 @@ one file, such as a pack a caller wrote — and `RuleEngine.Compile` compiles it
 | Validator (3.5) | `Validator`, `StructuralValidator`, layers L1 to L3, tri-state result |
 
 Every registry under `model/en16931/` this build carries is offered by `Registry.Editions()`, with
-the XRechnung 3.0.2 and B2C 0.1 extension registries combined into the default one. A later
+the XRechnung 3.0.2 and B2C 0.1 extension registries combined into the default one.
+`Registry.Load` and `WithExtension` make the checks of `SPEC.md` section 10 and throw
+`EsjFormatException`: components a value can satisfy, no identifier twice, an extension that
+defines identifiers of its own namespace only, and an extension combined only with the edition
+its `imports` names. A later
 edition is separable the way [`editions.md`](editions.md) describes, and this binding builds
 without its files; a document of an edition it has no registry for is read, canonicalized and
 digested like any other and reports `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` sections 4.4 and 9.2).

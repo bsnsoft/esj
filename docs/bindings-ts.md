@@ -111,7 +111,8 @@ edition other than the one the pack was compiled against.
 Every registry under `model/en16931/` this build copies is carried, with the XRechnung 3.0.2 and
 B2C 0.1 extension registries beside the default edition. `registryOf` and `new Structure` make the
 checks of `SPEC.md` section 10 and throw `RegistryError`: components a value can satisfy, no
-identifier twice, and an extension combined only with the edition its `imports` names. A
+identifier twice, an extension that defines identifiers of its own namespace only, and an
+extension combined only with the edition its `imports` names. A
 document of an edition the build has no registry for is read, canonicalized and digested like
 any other and reports `ESJ-L2-EDITION-UNKNOWN` instead of a model layer (`SPEC.md` sections 4.4
 and 9.2).

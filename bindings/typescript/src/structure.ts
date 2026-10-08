@@ -1,5 +1,5 @@
 import type { Registry, RegistryTerm } from './registry.ts';
-import { RegistryError, isRepeatable } from './registry.ts';
+import { RegistryError, checkOwnNamespace, isRepeatable } from './registry.ts';
 
 /**
  * The structure a path is measured against: which terms exist, in which chains of groups
@@ -43,7 +43,8 @@ export class Structure {
   /**
    * Combines one registry with the extension registries loaded beside it.
    *
-   * An extension is combined only with the edition it names (section 10): its parents, its
+   * An extension defines identifiers of its own namespace only (sections 5.6 and 10), and it is
+   * combined only with the edition it names (section 10): its parents, its
    * `reusesTerms` and its cardinalities were checked against one list of terms. So an
    * extension that names a term of another registry and does not import this one — it imports
    * nothing, another model, or this model in another edition — is refused, and so is one that
@@ -59,6 +60,7 @@ export class Structure {
       this.byId.set(term.id, term);
     }
     for (const extension of extensions) {
+      checkOwnNamespace(extension);
       checkImports(core, extension);
       for (const term of extension.terms()) {
         if (this.byId.has(term.id)) {

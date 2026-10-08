@@ -220,9 +220,10 @@ export class Registry {
 
   /**
    * Reads a registry file and checks what section 10 has checked when a registry is read: no
-   * identifier is listed twice, every term declares components a value can satisfy, and a
+   * identifier is listed twice, every term declares components a value can satisfy, a
    * registry that names a parent or a reused term it does not define itself — an extension —
-   * says in `imports` what it builds on.
+   * says in `imports` what it builds on, and a registry that imports another defines
+   * identifiers of its own namespace only.
    *
    * @throws RegistryError where the file breaks one of those rules
    */
@@ -256,6 +257,9 @@ export class Registry {
       throw new RegistryError('the registry ' + file.edition + ' names ' + this.foreign[0]
         + ', which it does not define, and imports no registry that does');
     }
+    if (this.imports.length > 0) {
+      checkOwnNamespace(this);
+    }
   }
 
   /**
@@ -279,6 +283,34 @@ export class Registry {
   /** Tells whether this registry is an extension, which is one that imports another. */
   isExtension(): boolean {
     return this.imports.length > 0;
+  }
+}
+
+/** An identifier that carries the namespace of an extension: `BT-DEX-001`. */
+const NAMESPACED = /^(?:BT|BG)-([A-Z][A-Z0-9]*)-[0-9]+$/;
+
+/**
+ * Refuses a registry as an extension unless every identifier it defines carries one namespace,
+ * its own (sections 5.6 and 10). An identifier without a namespace belongs to a core model, and
+ * an extension never defines one, whether or not the core it is combined with defines it too.
+ *
+ * @throws RegistryError where an identifier carries no namespace or another one
+ */
+export function checkOwnNamespace(registry: Registry): void {
+  let namespace: string | undefined;
+  for (const term of registry.terms()) {
+    const match = NAMESPACED.exec(term.id);
+    if (match === null) {
+      throw new RegistryError('an extension registry defines identifiers of its own namespace'
+        + ' only, and ' + term.id + ' carries none');
+    }
+    if (namespace === undefined) {
+      namespace = match[1];
+    } else if (namespace !== match[1]) {
+      throw new RegistryError('an extension registry defines identifiers of its own namespace'
+        + ' only, and ' + term.id + ' carries ' + match[1] + ' where its other identifiers carry '
+        + namespace);
+    }
   }
 }
 

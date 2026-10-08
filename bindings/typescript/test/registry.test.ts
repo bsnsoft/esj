@@ -131,12 +131,26 @@ test('an extension is combined only with the edition it imports', () => {
 test('an extension does not redefine a term the structure already carries', () => {
   const core = registries().find((registry) => registry.edition === CORE_EDITION)!;
   const imports = [{ model: 'EN16931-1', edition: CORE_EDITION }];
-  const redefines = registryOf(extension({ imports }, [term('BT-1')]));
-  refused(() => new Structure(core, [redefines]), /does not redefine the term BT-1/);
   const one = registryOf(extension({ imports, edition: 'ZZZ 1.0' }));
   const two = registryOf(extension({ imports, edition: 'ZZZ 1.1' }));
   refused(() => new Structure(core, [one, two]),
     /does not redefine the term BT-ZZZ-1, which .* or another extension defines/);
+});
+
+test('an extension defines identifiers of its own namespace only', () => {
+  const core = registries().find((registry) => registry.edition === CORE_EDITION)!;
+  const imports = [{ model: 'EN16931-1', edition: CORE_EDITION }];
+  const core999 = term('BT-999', { parent: 'BG-25', path: ['BG-25', 'BT-999'] });
+  refused(() => registryOf(extension({ imports }, [core999])),
+    /own namespace only, and BT-999 carries none/);
+  refused(() => registryOf(extension({ imports }, [term('BT-1')])),
+    /own namespace only, and BT-1 carries none/);
+  const standalone = registryOf(extension({}, [term('BT-999')]));
+  refused(() => new Structure(core, [standalone]), /BT-999 carries none/);
+  refused(() => registryOf(extension({ imports }, [
+    term('BT-ZZZ-1', { parent: 'BG-25', path: ['BG-25', 'BT-ZZZ-1'] }),
+    term('BT-YYY-1', { parent: 'BG-25', path: ['BG-25', 'BT-YYY-1'] }),
+  ])), /BT-YYY-1 carries YYY where its other identifiers carry ZZZ/);
 });
 
 test('a repeatable group is named by the singular of its plural slug, and no other', () => {

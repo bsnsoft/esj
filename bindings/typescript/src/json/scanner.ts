@@ -42,6 +42,12 @@ export type JsonKind = 'string' | 'number' | 'true' | 'false' | 'null' | 'array'
  */
 export type Failure = (code: FindingCode, message: string) => never;
 
+/**
+ * What {@link Scanner.readString} returns for a string past its bound that carries a lone
+ * surrogate: the surrogate alone, which every caller refuses for the surrogate.
+ */
+export const LONE_SURROGATE = '\ud800';
+
 const QUOTE = 0x22;
 const BACKSLASH = 0x5c;
 const COMMA = 0x2c;
@@ -61,6 +67,8 @@ export class Scanner {
   private readonly fail: Failure;
   private at = 0;
   private nameAt = 0;
+  /** Whether a member name was read and the colon after it not yet. */
+  private colonPending = false;
 
   constructor(text: string, limits: Limits, fail: Failure) {
     this.text = text;
@@ -102,6 +110,7 @@ export class Scanner {
 
   /** Returns what kind of value begins at the next token, without consuming it. */
   peekKind(): JsonKind {
+    this.colon();
     this.skipWhitespace();
     if (this.at >= this.text.length) {
       return this.malformed('the document ends where a value belongs', this.at);
@@ -145,6 +154,7 @@ export class Scanner {
 
   /** Consumes the bracket that opens the object or array the scanner stands on. */
   open(): void {
+    this.colon();
     this.skipWhitespace();
     this.at++;
   }
@@ -201,33 +211,52 @@ export class Scanner {
   }
 
   /**
-   * Reads the member name the scanner stands on and the colon after it.
+   * Reads the member name the scanner stands on.
    *
    * The name is read whole: the reader holds every member name to the string bound of
    * section 12.2 and names the member in the finding, which takes the name. The document bound
-   * has already sized it.
+   * has already sized it. The colon after the name is read where the value is, so that a defect
+   * of the name is judged before the text after it (section 9.6): `"foo" 1` in the envelope is an
+   * undefined member before it is a missing colon.
    */
   readName(): string {
     this.nameAt = this.at;
-    const name = this.string(Number.POSITIVE_INFINITY);
-    this.skipWhitespace();
-    if (this.at >= this.text.length || this.text.charCodeAt(this.at) !== COLON) {
-      return this.malformed('a member name is followed by a colon', this.at);
-    }
-    this.at++;
+    const name = this.string(Number.POSITIVE_INFINITY, false);
+    this.colonPending = true;
     return name;
   }
 
+  /** Reads the colon after the member name read last, where it has not been read yet. */
+  private colon(): void {
+    if (!this.colonPending) {
+      return;
+    }
+    this.colonPending = false;
+    this.skipWhitespace();
+    if (this.at >= this.text.length || this.text.charCodeAt(this.at) !== COLON) {
+      this.malformed('a member name is followed by a colon', this.at);
+    }
+    this.at++;
+  }
+
   /**
-   * Reads the string the scanner stands on, refusing it with `ESJ-L1-LIMIT` as soon as its
-   * content is known to take more UTF-8 bytes than the bound: a guard the reader sets for the
-   * place it stands in, at or above the bound it then applies to the content itself.
+   * Reads the string the scanner stands on and returns what it decodes to, measuring its content
+   * in UTF-8 bytes against the bound the reader sets for the place it stands in.
+   *
+   * A string past the bound is read to its end without being kept, because the checks of one
+   * string run in a fixed order and a lone surrogate comes before the bound (section 9.6): one
+   * that carries a lone surrogate is returned as that surrogate alone, `'\ud800'`, which every
+   * caller refuses for the surrogate before it asks anything else; any other one is refused with
+   * `ESJ-L1-LIMIT`.
    *
    * @param bound the most UTF-8 bytes the content may take here
+   * @param normalized whether the content is measured after CR LF has become LF, as a string
+   *   inside `values` is (section 6.8), or as it stands
    */
-  readString(bound: number): string {
+  readString(bound: number, normalized: boolean): string {
+    this.colon();
     this.skipWhitespace();
-    return this.string(bound);
+    return this.string(bound, normalized);
   }
 
   /**
@@ -239,6 +268,7 @@ export class Scanner {
    * size what the scanner reads, and this one does.
    */
   readNumber(): string {
+    this.colon();
     this.skipWhitespace();
     const start = this.at;
     return this.text.slice(start, this.number());
@@ -295,6 +325,7 @@ export class Scanner {
    * makes the token another word, which is not a JSON value.
    */
   literal(word: 'true' | 'false' | 'null'): void {
+    this.colon();
     this.skipWhitespace();
     const start = this.at;
     if (!this.text.startsWith(word, start) || isWordCharacter(
@@ -390,14 +421,17 @@ export class Scanner {
   }
 
   /**
-   * Reads one JSON string, the opening quotation mark included, and refuses it where its
-   * content takes more UTF-8 bytes than the bound. The bytes are counted as the string is read:
-   * a code unit below U+0080 is one, below U+0800 two, any other three, and a low surrogate
-   * that completes a pair one more, which makes the pair four. A lone surrogate counts three,
-   * the bytes of the replacement character an encoder would write; the reader refuses such a
-   * string for the surrogate wherever it keeps one (section 6.8).
+   * Reads one JSON string, the opening quotation mark included. The bytes are counted as the
+   * string is read: a code unit below U+0080 is one, below U+0800 two, any other three, and a
+   * low surrogate that completes a pair one more, which makes the pair four. A lone surrogate
+   * counts three, the bytes of the replacement character an encoder would write; the reader
+   * refuses such a string for the surrogate wherever it keeps one (section 6.8). Measured
+   * normalized, a LF straight after a CR counts nothing, because the two become one LF.
+   *
+   * Past the bound the rest of the string is read without being kept, looking for a lone
+   * surrogate only: see {@link readString}.
    */
-  private string(bound: number): string {
+  private string(bound: number, normalized: boolean): string {
     const text = this.text;
     const start = this.at;
     this.at++;
@@ -405,22 +439,38 @@ export class Scanner {
     let plain = this.at;
     let bytes = 0;
     let high = false;
+    let lone = false;
+    let cr = false;
+    let kept = true;
     for (;;) {
       if (this.at >= text.length) {
         return this.malformed('the document ends inside a string', start);
       }
       const c = text.charCodeAt(this.at);
       if (c === QUOTE) {
-        value += text.slice(plain, this.at);
         this.at++;
-        return value;
+        if (high) {
+          lone = true;
+        }
+        if (kept) {
+          return value + text.slice(plain, this.at - 1);
+        }
+        if (lone) {
+          return LONE_SURROGATE;
+        }
+        return this.fail(FindingCode.L1_LIMIT, 'a string is longer than ' + bound
+          + ' bytes, at offset ' + this.bytesBefore(start));
       }
       let unit = c;
       if (c === BACKSLASH) {
-        value += text.slice(plain, this.at);
+        if (kept) {
+          value += text.slice(plain, this.at);
+        }
         this.at++;
         const decoded = this.escape(start);
-        value += decoded;
+        if (kept) {
+          value += decoded;
+        }
         plain = this.at;
         unit = decoded.charCodeAt(0);
       } else if (c < 0x20) {
@@ -432,12 +482,18 @@ export class Scanner {
         bytes += 1;
         high = false;
       } else {
-        bytes += unit < 0x80 ? 1 : unit < 0x800 ? 2 : 3;
+        if (high || (unit >= 0xdc00 && unit <= 0xdfff)) {
+          lone = true;
+        }
+        if (!(normalized && cr && unit === 0x0a)) {
+          bytes += unit < 0x80 ? 1 : unit < 0x800 ? 2 : 3;
+        }
         high = unit >= 0xd800 && unit <= 0xdbff;
       }
-      if (bytes > bound) {
-        return this.fail(FindingCode.L1_LIMIT, 'a string is longer than ' + bound
-          + ' bytes, at offset ' + this.bytesBefore(start));
+      cr = unit === 0x0d;
+      if (kept && bytes > bound) {
+        kept = false;
+        value = '';
       }
     }
   }

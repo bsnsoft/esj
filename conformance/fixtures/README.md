@@ -27,7 +27,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 |---|---|---|
 | `registries` | the registries to load before anything else | term counts, and a sample of paths with datatype, cardinality and components |
 | `documents` | a conformant document | `semanticDigest`, `documentDigest`, the length of the canonical bytes, the number of values, the registry files it was measured with, and the errors layers L2 and L3 report, with the term or group each L3 finding names as its subject |
-| `invalid` | a document that has to be rejected | the layer, the finding code of SPEC.md section 9.6, the path that finding names and, where section 9.5 requires one, its subject, one row per code where a document is wrong in two ways at L1; for a document rejected at layer L1, that those rows are the whole answer and nothing stands beside them |
+| `invalid` | a document that has to be rejected | the layer, the finding code of SPEC.md section 9.6, the path that finding names and its subject where it names something, one row per code where a document is wrong in two ways at L1; for a document rejected at layer L1, that those rows are the whole answer and nothing stands beside them |
 | `canonicalOrder` | a document whose members are in the wrong order | the canonical bytes, byte for byte |
 | `grammars` | a value substituted into a base document at one path | the finding code reported about that path, or none |
 | `rules` | a base document plus changes, answered by the pack of the document's edition | the rule identifiers the pack reports, and which of them decide no verdict |
@@ -53,10 +53,11 @@ The rows of one `invalid` document that names layer `L1` or `limit` are its whol
 sample of it: SPEC.md section 9.6 fixes how far a reader reads, so a second implementation that
 reports one finding more or one fewer differs from the reference and the runner says so.
 
-A row that records a `subject` holds a binding to it: section 9.5 requires one where the path is
-empty — the member access that names the place, its name escaped as a message escapes a fragment
-of a document — and on a finding of layer L3. The manifest records it there and nowhere else, as
-the reference writes it; a subject a reader MAY carry beside a path is not compared. The three
+A row that records a `subject` holds a binding to it. Section 9.5 fixes the subject of every
+code: the member access of a finding of layer L1, its names escaped as a message escapes a
+fragment of a document; the segment, the term or the component a finding of layer L2 is about;
+the term or group of a finding of layer L3. The manifest records it wherever the reference sets
+one, as the reference writes it; an empty subject is not recorded and not compared. The three
 `*-terminal-characters` documents of `examples/invalid/` carry every class of character section
 9.5 escapes in such a name.
 

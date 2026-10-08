@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The term registry: the structural facts of a semantic model, loaded from a registry
@@ -82,6 +84,9 @@ public final class Registry {
 
     /** The one value the {@code transport} member of a registry file takes today. */
     private static final String TRANSPORT_NONE = "none";
+
+    /** An identifier that carries the namespace of an extension: {@code BT-DEX-001}. */
+    private static final Pattern NAMESPACED = Pattern.compile("(?:BT|BG)-([A-Z][A-Z0-9]*)-[0-9]+");
 
     private final String model;
     private final String edition;
@@ -280,8 +285,10 @@ public final class Registry {
      * term declares supplementary components a value can satisfy, no identifier is listed
      * twice, and a registry that names a term it does not define — as the parent of one of
      * its terms, in the chain of one, or in {@code reusesTerms} — is an extension and names
-     * in {@code imports} what it builds on. Whether it builds on a given core registry is
-     * decided where the two are combined, by {@link #withExtension(Registry)}.
+     * in {@code imports} what it builds on. A registry that names something in
+     * {@code imports} is an extension, and every identifier it defines carries one
+     * namespace, its own. Whether it builds on a given core registry is decided where the
+     * two are combined, by {@link #withExtension(Registry)}.
      *
      * @param in the registry file, encoded in UTF-8
      * @return the registry
@@ -347,6 +354,9 @@ public final class Registry {
      * edition may renumber them (sections 4.4 and 10):
      *
      * <ul>
+     *   <li>every identifier the extension defines carries one namespace, its own
+     *       ({@code BT-DEX-001}): an identifier without a namespace belongs to a core
+     *       model, and an extension that defines one is refused (sections 5.6 and 10);</li>
      *   <li>an import that names this registry's model with another edition is refused;</li>
      *   <li>an extension that names a term it does not define itself — as the parent of
      *       one of its terms, in the chain of one, or in {@code reusesTerms} — names this
@@ -363,6 +373,7 @@ public final class Registry {
      */
     public Registry withExtension(Registry extension) {
         Objects.requireNonNull(extension, "extension");
+        extension.checkOwnNamespace();
         for (Import imported : extension.imports) {
             if (imported.model().equals(model) && !imported.edition().equals(edition)) {
                 throw new EsjFormatException(
@@ -417,6 +428,31 @@ public final class Registry {
             }
         }
         return extension.namedTerms().isEmpty() || extension.importsEdition(model, edition);
+    }
+
+    /**
+     * Refuses this registry as an extension unless every identifier it defines carries one
+     * namespace, its own (specification, sections 5.6 and 10). An identifier without a
+     * namespace belongs to a core model, and an extension never defines one, whether or not
+     * the core it is combined with defines it too.
+     */
+    private void checkOwnNamespace() {
+        String namespace = null;
+        for (Term term : terms) {
+            Matcher matcher = NAMESPACED.matcher(term.id());
+            if (!matcher.matches()) {
+                throw new EsjFormatException("an extension registry defines identifiers of its"
+                        + " own namespace only, and " + excerpt(term.id()) + " carries none");
+            }
+            if (namespace == null) {
+                namespace = matcher.group(1);
+            } else if (!namespace.equals(matcher.group(1))) {
+                throw new EsjFormatException("an extension registry defines identifiers of its"
+                        + " own namespace only, and " + excerpt(term.id()) + " carries "
+                        + excerpt(matcher.group(1)) + " where its other identifiers carry "
+                        + excerpt(namespace));
+            }
+        }
     }
 
     /**
@@ -813,6 +849,9 @@ public final class Registry {
         if (!named.isEmpty() && imports.isEmpty()) {
             throw new EsjFormatException("the registry names " + excerpt(named.get(0))
                     + ", which it does not define, and imports no registry that does");
+        }
+        if (!imports.isEmpty()) {
+            registry.checkOwnNamespace();
         }
         return registry;
     }

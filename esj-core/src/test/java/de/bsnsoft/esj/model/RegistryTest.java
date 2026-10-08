@@ -499,6 +499,40 @@ class RegistryTest {
                 Registry.en16931().withExtension(placed).chains("BT-ZZZ-001"));
     }
 
+    /**
+     * An extension registry defines identifiers of its own namespace only (specification,
+     * sections 5.6 and 10). An identifier without a namespace belongs to a core model, so an
+     * extension that defines one is refused — when it is read, where it imports a core, and
+     * where it is combined, whether or not the core defines that identifier — and so is one
+     * whose identifiers carry two namespaces.
+     */
+    @Test
+    void anExtensionDefinesIdentifiersOfItsOwnNamespaceOnly() {
+        EsjFormatException read = assertThrows(EsjFormatException.class, () -> load(extension(
+                CORE_2017, """
+                "parent": "BG-25", "path": ["BG-25", "BT-999"]""").replace("BT-ZZZ-001", "BT-999")));
+        assertTrue(read.getMessage().contains("own namespace only, and BT-999 carries none"),
+                read.getMessage());
+
+        Registry standalone = load(extension("", """
+                "parent": null, "path": ["BT-999"]""").replace("BT-ZZZ-001", "BT-999"));
+        EsjFormatException combined = assertThrows(EsjFormatException.class,
+                () -> Registry.en16931().withExtension(standalone));
+        assertTrue(combined.getMessage().contains("BT-999 carries none"), combined.getMessage());
+
+        String two = extension(CORE_2017, """
+                "parent": "BG-25", "path": ["BG-25", "BT-ZZZ-001"]""").replace("\"terms\": [",
+                "\"terms\": [{\"id\": \"BT-YYY-001\", \"kind\": \"BT\", \"name\": \"B\","
+                        + " \"slug\": \"b\", \"parent\": \"BG-25\","
+                        + " \"path\": [\"BG-25\", \"BT-YYY-001\"], \"min\": 0, \"max\": 1,"
+                        + " \"datatype\": \"Text\", \"components\": [], \"order\": 2,"
+                        + " \"description\": \"B.\"},");
+        EsjFormatException twoNamespaces = assertThrows(EsjFormatException.class,
+                () -> load(two));
+        assertTrue(twoNamespaces.getMessage().contains("BT-YYY-001 carries YYY"),
+                twoNamespaces.getMessage());
+    }
+
     /** A shipped extension is admitted by the edition it imports and by no other. */
     @Test
     void aShippedExtensionIsAdmittedByTheEditionItImportsAlone() {

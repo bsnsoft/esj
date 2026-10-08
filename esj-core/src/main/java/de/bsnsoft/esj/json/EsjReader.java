@@ -139,6 +139,13 @@ public final class EsjReader {
     private static final int MESSAGE_EXCERPT = 80;
 
     /**
+     * What a member string of a value object that carries a lone surrogate is kept as: the
+     * surrogate alone. Such a string is reported for the surrogate and checked for nothing
+     * else, so its text is never needed.
+     */
+    private static final String LONE_SURROGATE = String.valueOf((char) 0xD800);
+
+    /**
      * The longest location a message carries. Every segment of a location is held to
      * {@link #MESSAGE_EXCERPT} on its own, and the whole chain to this, so that a document
      * cannot decide how long a log line is however deeply it nests (specification,
@@ -865,8 +872,16 @@ public final class EsjReader {
                 Kind kind = scanner.peek();
                 switch (kind) {
                     case STRING -> {
-                        boundMemberString(name, member);
-                        members.add(new Member(name, kind, scanner.text(), "a string"));
+                        if (scanner.loneSurrogate()) {
+                            // Reported once the object is judged, and held to no bound: the
+                            // surrogate is the first check of the string that fails
+                            // (specification, section 9.6), so its text is not built.
+                            scanner.consume();
+                            members.add(new Member(name, kind, LONE_SURROGATE, "a string"));
+                        } else {
+                            boundMemberString(name, member);
+                            members.add(new Member(name, kind, scanner.text(), "a string"));
+                        }
                     }
                     case OBJECT, ARRAY -> {
                         String type = describe(kind);
@@ -933,7 +948,9 @@ public final class EsjReader {
          * the string bound, and the {@code value} member to the larger of the two string
          * bounds, because whether it is the content of a binary object is decided by the
          * members that may still follow. The exact bound of the {@code value} member is
-         * applied once the object is read.
+         * applied once the object is read. A string that carries a lone surrogate is held to
+         * no bound, because the surrogate is the first of its checks that fails
+         * (section 9.6); the caller asks that first.
          */
         private void boundMemberString(String name, String member) {
             boolean value = name.equals("value");
@@ -991,6 +1008,11 @@ public final class EsjReader {
             Map<String, String> checked = new LinkedHashMap<>();
             for (Map.Entry<String, String> entry : members.entrySet()) {
                 String name = entry.getKey();
+                if (Texts.hasLoneSurrogate(entry.getValue())) {
+                    // Reported already, and the first check of the string that fails: it is
+                    // held neither to emptiness nor to a bound (specification, section 9.6).
+                    continue;
+                }
                 String content = content(entry.getValue(), memberWhere(where, name), name,
                         binary && name.equals("value"));
                 if (content == null) {

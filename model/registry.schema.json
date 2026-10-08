@@ -37,7 +37,7 @@
       "minLength": 1
     },
     "imports": {
-      "description": "The models this registry builds on. An extension registry whose terms hang under a parent of another model, or whose groups carry terms of another model through reusesTerms, names that model and the exact edition string of the registry it was written against. A loader refuses to combine a registry with a core registry whose model and edition its imports do not name, and refuses an extension registry whose parents or reusesTerms name a core identifier while it names no core here (specification, section 10). It names the edition of another model and never a version of this registry's own namespace: an extension namespace is permanent, so a published identifier keeps its meaning, its datatype and its structural semantics in every later registry of that namespace, and an incompatible revision takes a new namespace (specification, sections 5.6 and 10).",
+      "description": "The models this registry builds on. An extension registry whose terms hang under a parent of another model, or whose groups carry terms of another model through reusesTerms, names that model and the exact edition string of the registry it was written against. A loader refuses to combine a registry with a core registry whose model and edition its imports do not name, and refuses an extension registry whose parents or reusesTerms name an identifier it does not define while it names no core here (specification, section 10). It names the edition of another model and never a version of this registry's own namespace: an extension namespace is permanent, so a published identifier keeps its meaning, its datatype and its structural semantics in every later registry of that namespace, and an incompatible revision takes a new namespace (specification, sections 5.6 and 10).",
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/import" }
@@ -121,6 +121,21 @@
         "required": ["terms"]
       },
       "then": { "required": ["imports"] }
+    },
+    {
+      "description": "A registry that names in imports what it builds on is an extension, and an extension defines identifiers of its own namespace only: every identifier it defines carries a namespace (BT-DEX-001, BG-DEX-01), because one without a namespace belongs to a core model. A loader also refuses an extension whose identifiers carry two namespaces, and one it is asked to combine that defines an identifier without a namespace (specification, sections 5.6 and 10).",
+      "if": { "required": ["imports"] },
+      "then": {
+        "properties": {
+          "terms": {
+            "items": {
+              "properties": {
+                "id": { "type": "string", "pattern": "^(BT|BG)-[A-Z][A-Z0-9]*-[0-9]+(?![\\s\\S])" }
+              }
+            }
+          }
+        }
+      }
     },
     {
       "description": "A registry that declares its terms untransported says why, and is an extension of a model whose own terms do travel: a registry describing a model of its own is the thing a syntax binds.",

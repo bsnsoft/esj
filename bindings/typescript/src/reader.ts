@@ -225,8 +225,8 @@ class Parse {
   private readEnvelope(): void {
     const scanner = this.scanner;
     if (scanner.peekKind() !== 'object') {
-      this.fatal(FindingCode.L1_JSON, 'the top level of an ESJ document is a JSON object.', '',
-        '');
+      this.fatal(FindingCode.L1_JSON, 'the document is not a JSON text: the top level of a'
+        + ' document is a JSON object, at offset ' + scanner.bytesBefore(scanner.offset), '', '');
     }
     scanner.open();
     const seen = new Set<string>();
@@ -341,8 +341,9 @@ class Parse {
    * Reads one envelope member that is a JSON string, screening it for a lone surrogate before
    * any check that reads its content: a string with no UTF-8 encoding spells no fixed value and
    * no edition, so a grammar cannot be the first thing said about it (sections 6.8 and 9.6).
-   * The string is then held to the string bound of section 12.2, as every string of the
-   * envelope is, before its value is compared with anything.
+   * The scanner holds the string to the string bound of section 12.2 as it stands, as every
+   * string of the envelope is, once it has found no lone surrogate in it, and before its value
+   * is compared with anything.
    */
   private envelopeString(name: string): string {
     const kind = this.scanner.peekKind();
@@ -351,12 +352,11 @@ class Parse {
       this.fatal(FindingCode.L1_ENVELOPE_VALUE,
         name + ' is ' + describe(kind) + ', not a JSON string.', name);
     }
-    const value = this.scanner.readString(this.guard());
+    const value = this.scanner.readString(this.limits.maxStringBytes, false);
     if (hasLoneSurrogate(value)) {
       this.fatal(FindingCode.L1_SURROGATE,
         'a string carries a lone surrogate and has no UTF-8 encoding.', name);
     }
-    this.holdToStringBound(value, name);
     return value;
   }
 
@@ -367,18 +367,6 @@ class Parse {
    */
   private wrongType(kind: JsonKind): void {
     this.scanner.checkToken(kind);
-  }
-
-  /** The guard the scanner reads a string of the envelope or of `extensions` with. */
-  private guard(): number {
-    return Math.max(this.limits.maxStringBytes, this.limits.maxBinaryValueBytes);
-  }
-
-  /** Holds a string outside `values` to the string bound of section 12.2, as it stands. */
-  private holdToStringBound(value: string, subject: string): void {
-    if (utf8Length(value) > this.limits.maxStringBytes) {
-      this.limit(subject + ' is longer than ' + this.limits.maxStringBytes + ' bytes.', subject);
-    }
   }
 
   // ------------------------------------------------------------------ values
@@ -400,7 +388,8 @@ class Parse {
       const subject = valuesSubject(name);
       this.nameTheReaderCannotTake(name, subject, seen);
       if (++this.valueCount > this.limits.maxValues) {
-        this.limit('values carries more than ' + this.limits.maxValues + ' members.', subject);
+        this.limit('values carries more than ' + this.limits.maxValues + ' members, at offset '
+          + scanner.nameOffset + '.', subject);
       }
       const path = this.checkPath(name, subject);
       this.currentPath = path;
@@ -420,7 +409,8 @@ class Parse {
    */
   private checkPath(name: string, subject: string): string | undefined {
     if (utf8Length(name) > this.limits.maxPathBytes) {
-      this.limit('a path is longer than ' + this.limits.maxPathBytes + ' bytes.', subject);
+      this.limit('a path is longer than ' + this.limits.maxPathBytes + ' bytes, at offset '
+        + this.scanner.nameOffset + '.', subject);
     }
     if (!isPath(name)) {
       this.report(FindingCode.L1_PATH_SYNTAX,
@@ -429,8 +419,8 @@ class Parse {
       return undefined;
     }
     if (splitSegments(name).length > this.limits.maxPathSegments) {
-      this.limit('a path carries more than ' + this.limits.maxPathSegments + ' segments.',
-        subject);
+      this.limit('a path carries more than ' + this.limits.maxPathSegments
+        + ' segments, at offset ' + this.scanner.nameOffset + '.', subject);
     }
     return name;
   }
@@ -444,9 +434,9 @@ class Parse {
     const scanner = this.scanner;
     const kind = scanner.peekKind();
     if (kind === 'string') {
-      // The bound is measured on the normalized content (section 6.8), which is never less
-      // than half the raw one: a string past twice the bound is past it however it reads.
-      const raw = scanner.readString(2 * this.limits.maxStringBytes);
+      // The bound is measured on the normalized content (section 6.8), and after the string has
+      // been found free of a lone surrogate (section 9.6).
+      const raw = scanner.readString(this.limits.maxStringBytes, true);
       if (hasLoneSurrogate(raw)) {
         this.report(FindingCode.L1_SURROGATE,
           'a string carries a lone surrogate and has no UTF-8 encoding.', subject);
@@ -494,14 +484,20 @@ class Parse {
       this.nameTheReaderCannotTake(name, access, seen, subject);
       if (members.length >= this.limits.maxValueMembers) {
         this.limit('a value object carries more than ' + this.limits.maxValueMembers
-          + ' members.', subject);
+          + ' members, at offset ' + scanner.nameOffset + '.', subject);
       }
       component ||= COMPONENTS.includes(name);
       this.place = access;
       const kind = scanner.peekKind();
       if (kind === 'string') {
-        members.push({ name, kind, text: scanner.readString(
-          2 * Math.max(this.limits.maxStringBytes, this.limits.maxBinaryValueBytes)) });
+        // A supplementary component is held to the string bound as it is read; the value member
+        // to the larger of the two bounds, because whether it is the content of a binary object
+        // is decided by members that may still follow, and to its own bound once the object is
+        // judged (section 12.2). A string with a lone surrogate is held to neither (section 9.6).
+        const bound = name === 'value'
+          ? Math.max(this.limits.maxStringBytes, this.limits.maxBinaryValueBytes)
+          : this.limits.maxStringBytes;
+        members.push({ name, kind, text: scanner.readString(bound, true) });
       } else {
         scanner.skipValue(2);
         members.push({ name, kind });
@@ -577,6 +573,10 @@ class Parse {
     const binary = named.has('mimeCode') || named.has('filename');
     const checked = new Map<ValueMember, string>();
     for (const [name, raw] of named) {
+      if (hasLoneSurrogate(raw)) {
+        // Reported already, and the first check of the string that fails (section 9.6).
+        continue;
+      }
       const content = this.content(raw, valueMemberSubject(subject, name), 'the member ' + name,
         binary && name === 'value');
       if (content === undefined) {
@@ -690,7 +690,7 @@ class Parse {
         if (kind === 'object' || kind === 'array') {
           if (depth > this.limits.maxExtensionDepth) {
             this.limit('extensions is nested deeper than ' + this.limits.maxExtensionDepth
-              + ' levels.', where.text());
+              + ' levels, at offset ' + scanner.bytesBefore(scanner.offset) + '.', where.text());
           }
           scanner.open();
           open.push({
@@ -749,7 +749,7 @@ class Parse {
     const scanner = this.scanner;
     switch (kind) {
       case 'string': {
-        const value = scanner.readString(this.guard());
+        const value = scanner.readString(this.limits.maxStringBytes, false);
         this.checkExtensionString(value, where);
         return { t: 'string', value };
       }
@@ -772,15 +772,14 @@ class Parse {
     }
   }
 
-  /** Holds a string of `extensions` to sections 6.8 and 12.2. */
+  /**
+   * Holds a string of `extensions` to section 6.8. The scanner has held it to the string bound
+   * of section 12.2 as it stands, once it found no lone surrogate in it.
+   */
   private checkExtensionString(value: string, where: Where): void {
     if (hasLoneSurrogate(value)) {
       this.fatal(FindingCode.L1_SURROGATE,
         'a string carries a lone surrogate and has no UTF-8 encoding.', where.text());
-    }
-    if (utf8Length(value) > this.limits.maxStringBytes) {
-      this.limit('a string inside extensions is longer than ' + this.limits.maxStringBytes
-        + ' bytes.', where.text());
     }
   }
 
@@ -817,7 +816,7 @@ class Parse {
           subject);
       }
       // A string of source is never normalized (section 6.8), so its bound is the raw one.
-      const text = scanner.readString(this.guard());
+      const text = scanner.readString(this.limits.maxStringBytes, false);
       if (hasLoneSurrogate(text)) {
         this.fatal(FindingCode.L1_SURROGATE,
           'a string carries a lone surrogate and has no UTF-8 encoding.', subject);
@@ -826,7 +825,6 @@ class Parse {
         this.fatal(FindingCode.L1_ENVELOPE_VALUE, 'source.' + name + ' is the empty string.',
           subject);
       }
-      this.holdToStringBound(text, subject);
       this.place = 'source';
       if (name === 'syntax') {
         source.syntax = text;

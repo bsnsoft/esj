@@ -1886,10 +1886,13 @@ named by its own access, `values["/BT-1"]`.
 **Offsets.** Where a message names a place in the byte sequence, it names it as an offset: the
 number of bytes before the first byte of the token at that place, counted from zero — the
 quotation mark that opens a string or a member name, the first character of a number or of a
-literal, the bracket that opens an object or an array — and, where the text ends before it is
-complete, the length of the byte sequence. The message of `ESJ-L1-JSON` MUST name the offset of
-the first token that cannot stand where it stands, because neither `path` nor `subject` can point
-into a text that is not JSON: `{"a" 1}` stops at the `1`, and `tru`, `01` and `1.` each at their
+literal, the bracket that opens an object or an array. A token the text ends inside is placed
+where it begins, as any other: a string that is not closed at the quotation mark that opens it,
+`{"format":"EN16931` at 10. Only where the text ends between two tokens — where a value, a
+colon, a comma or a closing bracket should follow, or in an empty byte sequence — is the offset
+the length of the byte sequence. The message of `ESJ-L1-JSON` MUST name the offset of the first
+token that cannot stand where it stands, because neither `path` nor `subject` can point into a
+text that is not JSON: `{"format" 1}` stops at the `1`, and `tru`, `01` and `1.` each at their
 first character. The message of an `ESJ-L1-LIMIT` met at a token SHOULD name that token's
 offset.
 
@@ -2001,9 +2004,20 @@ next — raise a bound, or read the earlier layer's findings — and not a claim
 was in the way.
 
 Where two results about one document are composed into one (section 3.5), a layer either of them
-evaluated is evaluated. A layer neither evaluated keeps `NOT-REQUESTED` where neither was asked
-for it; where one of them was asked for it, the composition was, and the layer carries the first
-reason in the order above that a result asked for it established.
+evaluated is evaluated. A layer neither evaluated keeps one reason, read off the two reasons the
+results name for it, so that two implementations compose alike without knowing what each result
+was asked for:
+
+* `NOT-REQUESTED` and `EDITION-UNKNOWN` give `EDITION-UNKNOWN`: only a run that was asked for a
+  model layer decides the edition question, so the composition was asked for the layer;
+* `NOT-REQUESTED` and `LIMIT`, `PRECEDING-LAYER-FAILED` or `NOT-REQUESTED` give `NOT-REQUESTED`:
+  a run that stopped names the layers after the one it stopped in for that reason whether or not
+  anybody asked for them, so those two do not say that the layer was asked for;
+* any other two give the first of them in the order above.
+
+So a reader whose L1 failed, composed with a validator that holds no registry for the edition,
+gives `PRECEDING-LAYER-FAILED`, as section 9.3 requires, and a clean read composed with that
+validator gives `EDITION-UNKNOWN`.
 
 A check narrower than a whole layer is reported the same way but as a finding:
 `ESJ-L2-NOT-CHECKED` says that one path could not be checked because the extension registry
@@ -2177,15 +2191,18 @@ A byte sequence refused for one of them draws that one finding and no other, wha
 before or after the byte that decided it carries.
 
 The text is then read from its start, and **the first defect the text reaches is the one that
-counts**. A member name comes before the value written under it, so a defect of the name — a name
-that occurs twice, an undefined member of the envelope or of `source`, a name carrying a lone
-surrogate, a name of `extensions` that is no owner token, a name of `values` that is no path — is
-established before any defect of its value: `"foo": tru` in the envelope draws
-`ESJ-L1-ENVELOPE-MEMBER`, and a second `"format": tru` draws `ESJ-L1-DUPLICATE-MEMBER`, not
-`ESJ-L1-JSON`. A value is read as a whole token before its JSON type is judged: a token that is
-not a complete JSON value where a value stands — `tru`, `01`, `1.`, and a literal with letters or
-digits run on, `truex` — makes the text not JSON and is `ESJ-L1-JSON`, whatever type its first
-character announces, inside `values` and in the envelope alike.
+counts**. A member name comes before the colon after it and before the value written under it,
+so a defect of the name — a name that occurs twice, an undefined member of the envelope or of
+`source`, a name carrying a lone surrogate, a name of `extensions` that is no owner token, a name
+of `values` that is no path — is established before the text after the name is read:
+`"foo": tru` and `"foo" 1` in the envelope draw `ESJ-L1-ENVELOPE-MEMBER`, and a second
+`"format": tru` draws `ESJ-L1-DUPLICATE-MEMBER`, not `ESJ-L1-JSON`; a name of `values` that is no
+path, being confined to its member, draws `ESJ-L1-PATH-SYNTAX` and the reader reads on, so
+`"/BT-1x" "a"` draws it and then `ESJ-L1-JSON` at the `"a"`. A value is read as a whole token
+before its JSON type is judged: a token that is not a complete JSON value where a value stands —
+`tru`, `01`, `1.`, and a literal with letters or digits run on, `truex` — makes the text not JSON
+and is `ESJ-L1-JSON`, whatever type its first character announces, inside `values` and in the
+envelope alike.
 
 **The checks of one name and of one string.** Where one name or one string could draw more than
 one finding, a reader holds it to its checks in this order and reports the first that fails:
@@ -2235,7 +2252,14 @@ member, and the two answers are not interchangeable: `ESJ-L1-LIMIT` leaves the r
 `INDETERMINATE` and invites a retry against a larger bound, while the shape codes of the order
 above make it `INVALID` and tell the next program along to reject the document (section 9.5).
 Within one name or one string, the order of its checks above says where the bound stands: a
-lone surrogate in a string the reader holds is found before the string bound is measured.
+lone surrogate in a string is found before the string bound is measured, however far past the
+bound the string runs, so a reader that stops keeping a string at the bound reads it on to its
+end for a lone surrogate before it reports the limit. A string that carries one is held to no
+bound at all. Inside a value object a reader holds a supplementary component to the string bound
+and the `value` member to the larger of the two string bounds while it reads them, because which
+of the two applies to `value` is decided by members that may still follow (section 12.2); a member
+past that bound stops the reader before the object is judged, and the bound that applies is
+measured once the object is judged.
 A reader that walks past a JSON structure nested deeper than the bound allows, or that meets a
 number token longer than the string bound — inside `extensions` or anywhere else — therefore
 reports the limit and not `ESJ-L1-JSON-TYPE`, `ESJ-L1-VALUE-SHAPE` or `ESJ-L1-EXT-NUMBER`, and a
@@ -2382,21 +2406,29 @@ Combining an extension with a core registry whose model and edition it does not 
 error: the extension's parents, its `reusesTerms` and its cardinalities were all checked against
 one list of terms.
 
-Four further rules are checked when registries are loaded and combined, by every implementation
-that loads one, and a registry that breaks one is refused rather than used:
+Five further rules are checked when registries are loaded and combined, by every implementation
+that loads one, and a registry that breaks one is refused rather than used. An extension registry
+here is a registry that names something in `imports`, and a registry an implementation is asked to
+combine with a core registry as an extension:
 
 1. An identifier occurs once in a registry file, and once among the registries combined for a
    document.
 2. An extension registry does not define a term the core registry it is combined with defines:
    it may place a core term under its own group through `reusesTerms`, and it may not restate it
    (sections 5.6 and 11.1).
-3. An extension registry whose parents or `reusesTerms` name a core identifier names the core it
-   builds on in `imports`. Without `imports` it cannot be combined with any core, because which
-   terms its core identifiers mean is not said.
+3. An extension registry whose parents, chains or `reusesTerms` name an identifier it does not
+   define itself names the core it builds on in `imports`, and one that names such an identifier
+   and imports nothing is refused when it is read. Without `imports` it cannot be combined with
+   any core, because which terms those identifiers mean is not said.
 4. An extension registry is combined only with a core registry whose `model` and `edition` its
    `imports` names, character for character. A registry of the same model in another edition,
    and a registry of another model, are refused alike: an extension written against the 2017
    edition is not combined with the 2026 registry.
+5. An extension registry defines identifiers of one namespace, its own (section 5.6): every term
+   and group it defines carries that namespace, as `BT-DEX-001` and `BG-DEX-01` do. An
+   identifier without a namespace belongs to a core model, so an extension that defines one —
+   `BT-999` as well as `BT-1` — is refused, whether or not the core it is combined with defines
+   it, and so is an extension whose identifiers carry two namespaces.
 
 `imports` names the **edition of another model** an extension builds on, and never a version of
 the extension's own namespace. It does not have to, because a namespace is permanent

@@ -268,7 +268,8 @@ ValidationResult verdict = read.isWellFormed()
 
 Layer L1 is the reader's: it is decided by the bytes, so the validator refuses to be asked
 for it. An extension registry is loaded beside the core one, and the paths it describes are
-then checked rather than reported as unchecked. `withExtension` refuses an extension whose
+then checked rather than reported as unchecked. `withExtension` refuses an extension that
+defines an identifier outside its own namespace (`BT-999` as well as `BT-1`), and one whose
 `imports` disagree with what it does — one that places terms under core terms without naming
 that model and edition — and `Registry.admits(extension)` asks the edition question before
 combining.

@@ -32,11 +32,11 @@ public class ModelLayerTests
     private static (string Code, string Subject)[] FindingsAt(string member, string path) =>
         At(Validator.Validate(MinimalWith(member)), path);
 
-    // ------------------------------------------------------------ D21, D22
+    // ------------------------------------------------------------ the model layer, path by path
 
     /// <summary>
     /// Where every segment of a path is known, the index rule, the parent chain, the content and
-    /// the components are checked apart, so each problem draws its own finding (val-01, vld-12).
+    /// the components are checked apart, so each problem draws its own finding.
     /// </summary>
     [Fact]
     public void EveryCheckOfAKnownPathRunsOnItsOwn()
@@ -53,7 +53,7 @@ public class ModelLayerTests
     /// A core segment the registry does not know is <c>ESJ-L2-UNKNOWN-TERM</c> even beside an
     /// extension segment no loaded registry describes, which is <c>ESJ-L2-NOT-CHECKED</c>: no
     /// extension supplies a core identifier, so the document is wrong whatever registry is loaded
-    /// (val-02, vld-13).
+    ///.
     /// </summary>
     [Fact]
     public void AnUnknownCoreSegmentIsUnknownBesideAnUncheckedExtension()
@@ -66,7 +66,7 @@ public class ModelLayerTests
             FindingsAt("\"/BG-ZZZ-1/BT-999\": \"x\"", "/BG-ZZZ-1/BT-999"));
     }
 
-    /// <summary>One <c>ESJ-L2-UNKNOWN-TERM</c> for each unknown segment, each naming its segment (val-03).</summary>
+    /// <summary>One <c>ESJ-L2-UNKNOWN-TERM</c> for each unknown segment, each naming its segment.</summary>
     [Fact]
     public void EachUnknownSegmentIsOneFinding() =>
         Assert.Equal(new[] { ("ESJ-L2-UNKNOWN-TERM", "BG-998"), ("ESJ-L2-UNKNOWN-TERM", "BT-999") },
@@ -74,8 +74,7 @@ public class ModelLayerTests
 
     /// <summary>
     /// An identifier a loaded namespace does not define is not checked rather than unknown, since
-    /// a namespace may grow, and the message says it is the loaded registry that lacks it (val-17,
-    /// vld-14, reg-11).
+    /// a namespace may grow, and the message says it is the loaded registry that lacks it.
     /// </summary>
     [Fact]
     public void AnUnknownIdentifierOfALoadedNamespaceIsNotChecked()
@@ -89,7 +88,7 @@ public class ModelLayerTests
 
     /// <summary>
     /// An unknown segment ends the checks below it, and the known segments above it are still held
-    /// to the index rule; the findings stand in the order of the segments (val-02).
+    /// to the index rule; the findings stand in the order of the segments.
     /// </summary>
     [Fact]
     public void TheSegmentsAboveAnUnknownOneAreStillHeldToTheIndexRule() =>
@@ -98,7 +97,7 @@ public class ModelLayerTests
 
     /// <summary>
     /// A component finding names the component, so two of them about one value are told apart
-    /// without the message being read (val-04, vld-11).
+    /// without the message being read.
     /// </summary>
     [Fact]
     public void AComponentFindingNamesTheComponent()
@@ -113,24 +112,55 @@ public class ModelLayerTests
             At(Validator.Validate(Fixtures.Bytes("examples/invalid/index-on-bt-1.esj.json")), "/BT-1/0"));
     }
 
-    // ------------------------------------------------------------ D25
+    // ------------------------------------------------------------ composing two results
 
     /// <summary>
-    /// A layer the caller did not ask for keeps <c>NOT-REQUESTED</c> in a composed result whatever
-    /// the other run established; the other three reasons are ranked (vld-21).
+    /// A layer the caller did not ask for keeps <c>NOT-REQUESTED</c> in a composed result, unless
+    /// the other run was asked for it and established <c>EDITION-UNKNOWN</c>; the other three
+    /// reasons are ranked. The table is the one the Java implementation composes by.
+    /// </summary>
+    [Theory]
+    [InlineData("LIMIT", "LIMIT", "LIMIT")]
+    [InlineData("LIMIT", "PRECEDING-LAYER-FAILED", "LIMIT")]
+    [InlineData("LIMIT", "EDITION-UNKNOWN", "LIMIT")]
+    [InlineData("LIMIT", "NOT-REQUESTED", "NOT-REQUESTED")]
+    [InlineData("PRECEDING-LAYER-FAILED", "LIMIT", "LIMIT")]
+    [InlineData("PRECEDING-LAYER-FAILED", "PRECEDING-LAYER-FAILED", "PRECEDING-LAYER-FAILED")]
+    [InlineData("PRECEDING-LAYER-FAILED", "EDITION-UNKNOWN", "PRECEDING-LAYER-FAILED")]
+    [InlineData("PRECEDING-LAYER-FAILED", "NOT-REQUESTED", "NOT-REQUESTED")]
+    [InlineData("EDITION-UNKNOWN", "LIMIT", "LIMIT")]
+    [InlineData("EDITION-UNKNOWN", "PRECEDING-LAYER-FAILED", "PRECEDING-LAYER-FAILED")]
+    [InlineData("EDITION-UNKNOWN", "EDITION-UNKNOWN", "EDITION-UNKNOWN")]
+    [InlineData("EDITION-UNKNOWN", "NOT-REQUESTED", "EDITION-UNKNOWN")]
+    [InlineData("NOT-REQUESTED", "LIMIT", "NOT-REQUESTED")]
+    [InlineData("NOT-REQUESTED", "PRECEDING-LAYER-FAILED", "NOT-REQUESTED")]
+    [InlineData("NOT-REQUESTED", "EDITION-UNKNOWN", "EDITION-UNKNOWN")]
+    [InlineData("NOT-REQUESTED", "NOT-REQUESTED", "NOT-REQUESTED")]
+    public void TheCompositionOfTwoReasonsFollowsOneTable(string mine, string theirs, string kept)
+    {
+        Assert.Equal(Reason(kept), ValidationResult.Surviving(Reason(mine), Reason(theirs)));
+        ValidationResult left = ValidationResult.Of(Array.Empty<Finding>(),
+            new Dictionary<ValidationLayer, NotEvaluatedReason> { [ValidationLayer.L2] = Reason(mine) });
+        ValidationResult right = ValidationResult.Of(Array.Empty<Finding>(),
+            new Dictionary<ValidationLayer, NotEvaluatedReason> { [ValidationLayer.L2] = Reason(theirs) });
+        Assert.Equal(Reason(kept), left.Merge(right).NotEvaluated[ValidationLayer.L2]);
+    }
+
+    private static NotEvaluatedReason Reason(string token) => token switch
+    {
+        "LIMIT" => NotEvaluatedReason.Limit,
+        "PRECEDING-LAYER-FAILED" => NotEvaluatedReason.PrecedingLayerFailed,
+        "EDITION-UNKNOWN" => NotEvaluatedReason.EditionUnknown,
+        _ => NotEvaluatedReason.NotRequested,
+    };
+
+    /// <summary>
+    /// A composition with a run that asked for fewer layers keeps the layer neither run evaluated
+    /// as not requested.
     /// </summary>
     [Fact]
     public void NotRequestedSurvivesAComposition()
     {
-        Assert.Equal(NotEvaluatedReason.NotRequested,
-            ValidationResult.Surviving(NotEvaluatedReason.Limit, NotEvaluatedReason.NotRequested));
-        Assert.Equal(NotEvaluatedReason.NotRequested,
-            ValidationResult.Surviving(NotEvaluatedReason.NotRequested, NotEvaluatedReason.EditionUnknown));
-        Assert.Equal(NotEvaluatedReason.Limit,
-            ValidationResult.Surviving(NotEvaluatedReason.PrecedingLayerFailed, NotEvaluatedReason.Limit));
-        Assert.Equal(NotEvaluatedReason.PrecedingLayerFailed,
-            ValidationResult.Surviving(NotEvaluatedReason.EditionUnknown, NotEvaluatedReason.PrecedingLayerFailed));
-
         ValidationResult asked = ValidationResult.Of(Array.Empty<Finding>(),
             new Dictionary<ValidationLayer, NotEvaluatedReason> { [ValidationLayer.L3] = NotEvaluatedReason.NotRequested });
         ValidationResult limited = ValidationResult.Of(Array.Empty<Finding>(),
@@ -162,7 +192,7 @@ public class ModelLayerTests
         Assert.Equal("ESJ-L2-EDITION-UNKNOWN", Assert.Single(result.Findings).Code.Code);
     }
 
-    // ------------------------------------------------------------ D28
+    // ------------------------------------------------------------ loading registries
 
     private static string Term(string id, string datatype, string components, string parent = "null", string path = "") =>
         "{\"id\":\"" + id + "\",\"kind\":\"" + id.Substring(0, 2) + "\",\"name\":\"n\",\"slug\":\"s\",\"parent\":" + parent
@@ -185,7 +215,7 @@ public class ModelLayerTests
 
     /// <summary>
     /// A term no value can satisfy is a defect of the registry, refused when the registry is read
-    /// (specification, section 10; reg-07).
+    /// (specification, section 10).
     /// </summary>
     /// <param name="term">the term the registry carries</param>
     [Theory]
@@ -217,17 +247,56 @@ public class ModelLayerTests
         Assert.Equal(3, registry.Terms.Count);
     }
 
-    /// <summary>An identifier a registry lists twice is refused rather than overwritten (reg-08).</summary>
+    /// <summary>An identifier a registry lists twice is refused rather than overwritten.</summary>
     [Fact]
     public void ARegistryThatListsAnIdentifierTwiceIsRefused() =>
         Assert.Throws<EsjFormatException>(() => Load(RegistryText(Term("BT-1", "Text", string.Empty) + "," + Term("BT-1", "Text", string.Empty))));
 
-    /// <summary>An extension that redefines a core term is refused rather than combined (reg-08).</summary>
+    /// <summary>
+    /// An extension defines identifiers of its own namespace only (specification, sections 5.6 and
+    /// 10). An identifier without a namespace belongs to a core model, so an extension that defines
+    /// one is refused — when it is read, where it imports a core, and where it is combined, whether
+    /// or not the core defines that identifier — and so is one whose identifiers carry two
+    /// namespaces.
+    /// </summary>
     [Fact]
-    public void AnExtensionThatRedefinesACoreTermIsRefused()
+    public void AnExtensionDefinesIdentifiersOfItsOwnNamespaceOnly()
     {
-        Registry extension = Load(RegistryText(Term("BT-1", "Text", string.Empty), Import("2017+A1:2019/AC:2020"), "Ext", "Ext 1"));
-        Assert.Throws<EsjFormatException>(() => Registry.ForEdition("2017").WithExtension(extension));
+        string imports = Import("2017+A1:2019/AC:2020");
+        EsjFormatException core = Assert.Throws<EsjFormatException>(() =>
+            Load(RegistryText(Term("BT-1", "Text", string.Empty), imports, "Ext", "Ext 1")));
+        Assert.Contains("own namespace only, and BT-1 carries none", core.Message, StringComparison.Ordinal);
+        EsjFormatException unknown = Assert.Throws<EsjFormatException>(() => Load(RegistryText(
+            Term("BT-999", "Text", string.Empty, "\"BG-25\"", "\"BG-25\",\"BT-999\""), imports, "Ext", "Ext 1")));
+        Assert.Contains("own namespace only, and BT-999 carries none", unknown.Message, StringComparison.Ordinal);
+
+        Registry standalone = Load(RegistryText(Term("BT-999", "Text", string.Empty), string.Empty, "Ext", "Ext 1"));
+        EsjFormatException combined = Assert.Throws<EsjFormatException>(() =>
+            Registry.ForEdition("2017").WithExtension(standalone));
+        Assert.Contains("BT-999 carries none", combined.Message, StringComparison.Ordinal);
+
+        EsjFormatException two = Assert.Throws<EsjFormatException>(() => Load(RegistryText(
+            Term("BT-ZZZ-1", "Text", string.Empty, "\"BG-25\"", "\"BG-25\",\"BT-ZZZ-1\"") + ","
+            + Term("BT-YYY-1", "Text", string.Empty, "\"BG-25\"", "\"BG-25\",\"BT-YYY-1\""), imports, "Ext", "Ext 1")));
+        Assert.Contains("BT-YYY-1 carries YYY where its other identifiers carry ZZZ", two.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// An extension whose terms name an identifier neither it nor the core defines still builds on
+    /// the core it places them under, so it imports that core: every identifier an extension does
+    /// not define itself counts, not only those of the core (specification, section 10).
+    /// </summary>
+    [Fact]
+    public void EveryIdentifierAnExtensionDoesNotDefineAsksForItsImports()
+    {
+        string below999 = Term("BT-X-1", "Text", string.Empty, "\"BG-999\"", "\"BG-999\",\"BT-X-1\"");
+        EsjFormatException read = Assert.Throws<EsjFormatException>(() =>
+            Load(RegistryText(below999, string.Empty, "Ext", "Ext 1")));
+        Assert.Contains("names BG-999, which it does not define", read.Message, StringComparison.Ordinal);
+        Registry other = Load(RegistryText(below999, "{\"model\":\"Other\",\"edition\":\"Other 1\"}", "Ext", "Ext 1"));
+        EsjFormatException combined = Assert.Throws<EsjFormatException>(() =>
+            Registry.ForEdition("2017").WithExtension(other));
+        Assert.Contains("places its terms under BG-999", combined.Message, StringComparison.Ordinal);
     }
 
     private static string Import(string edition) =>
@@ -238,7 +307,7 @@ public class ModelLayerTests
 
     /// <summary>
     /// An extension whose terms hang below a core group is combined only with the edition it
-    /// imports: one that imports nothing, another model, or another edition is refused (reg-09).
+    /// imports: one that imports nothing, another model, or another edition is refused.
     /// </summary>
     [Fact]
     public void AnExtensionThatNamesACoreTermImportsThatCore()
@@ -253,11 +322,12 @@ public class ModelLayerTests
         Assert.Throws<EsjFormatException>(() => core2017.WithExtension(BelowLines(Import("2026"))));
         Assert.Throws<EsjFormatException>(() => Registry.ForEdition("2026").WithExtension(Registry.XRechnungExtension()));
 
-        Registry reusing = Load(RegistryText(
+        EsjFormatException reusing = Assert.Throws<EsjFormatException>(() => Load(RegistryText(
             Term("BG-X-1", "null", string.Empty).Replace("\"max\":1", "\"max\":\"n\"", StringComparison.Ordinal)
                 .Replace("\"components\":[]", "\"components\":[],\"reusesTerms\":[\"BT-1\"]", StringComparison.Ordinal),
-            string.Empty, "Ext", "Ext 1"));
-        Assert.Throws<EsjFormatException>(() => core2017.WithExtension(reusing));
+            string.Empty, "Ext", "Ext 1")));
+        Assert.Contains("names BT-1, which it does not define, and imports no registry that does", reusing.Message,
+            StringComparison.Ordinal);
 
         Registry standalone = Load(RegistryText(Term("BT-X-2", "Text", string.Empty), string.Empty, "Ext", "Ext 1"));
         Assert.NotNull(core2017.WithExtension(standalone).TermOf("BT-X-2"));

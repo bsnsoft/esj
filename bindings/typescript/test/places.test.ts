@@ -159,6 +159,88 @@ test('a defect of a name is found before any defect of the value written under i
     [['', FindingCode.L1_PATH_SYNTAX, 'values["BT 1"]']]);
 });
 
+test('a name is judged before the colon after it, and the colon before the value', () => {
+  assert.deepEqual(places('{"a" 1}'), [['', FindingCode.L1_ENVELOPE_MEMBER, '["a"]']]);
+  assert.deepEqual(places('{"profile"'), [['', FindingCode.L1_ENVELOPE_MEMBER, '["profile"]']]);
+  assert.deepEqual(places('{"format":"EN16931-Semantic-JSON","format" 1}'),
+    [['', FindingCode.L1_DUPLICATE_MEMBER, 'format']]);
+  assert.deepEqual(places(HEAD + '"values":{},"source":{"foo" "x"}}'),
+    [['', FindingCode.L1_ENVELOPE_MEMBER, 'source["foo"]']]);
+  assert.deepEqual(places(HEAD + '"values":{},"extensions":{"urn:x/2" {}}}'),
+    [['', FindingCode.L1_OWNER_TOKEN, 'extensions["urn:x/2"]']]);
+  // A name that is no path is confined to its member: the reader reads on to the colon.
+  assert.deepEqual(places(HEAD + '"values":{"/BT-1x" "a"}}'), [
+    ['', FindingCode.L1_PATH_SYNTAX, 'values["/BT-1x"]'],
+    ['', FindingCode.L1_JSON, ''],
+  ]);
+  const format = '{"format" 1}';
+  assert.deepEqual(places(format), [['', FindingCode.L1_JSON, '']]);
+  assert.ok(messageOf(format).endsWith('at offset ' + bytesBefore(format, '1}')),
+    messageOf(format));
+});
+
+test('a string that does not close is placed at the quotation mark that opens it', () => {
+  for (const text of [
+    '{"format":"EN16931-Sem',
+    HEAD + '"values":{"/BT-1":"RE-1',
+    HEAD + '"values":{"/BT-1":"RE\\',
+    '{"form',
+  ]) {
+    const opening = text.lastIndexOf('"');
+    assert.deepEqual(places(text), [['', FindingCode.L1_JSON, '']], text);
+    assert.ok(messageOf(text).endsWith('at offset ' + Buffer.byteLength(text.slice(0, opening))),
+      messageOf(text));
+  }
+  assert.ok(messageOf('[]').endsWith('at offset 0'), messageOf('[]'));
+});
+
+test('a lone surrogate is found before the bound, however far past it a string runs', () => {
+  const small = { maxStringBytes: 64, maxBinaryValueBytes: 64 };
+  const long = 'x'.repeat(200);
+  const surrogate = (subject: string, path = ''): Place[] =>
+    [[path, FindingCode.L1_SURROGATE, subject]];
+  assert.deepEqual(places('{"format":"' + long + '\\ud800"}', small), surrogate('format'));
+  assert.deepEqual(places(HEAD + '"values":{},"source":{"syntax":"' + long + '\\ud800"}}', small),
+    surrogate('source.syntax'));
+  assert.deepEqual(places(HEAD + '"values":{},"extensions":{"de.example":"' + long
+    + '\\ud800"}}', small), surrogate('extensions["de.example"]'));
+  assert.deepEqual(places(HEAD + '"values":{"/BT-1":"' + long + '\\ud800"}}', small),
+    surrogate('values["/BT-1"]', '/BT-1'));
+  assert.deepEqual(places(HEAD + '"values":{"/BT-1":"\\ud800' + long + '"}}', small),
+    surrogate('values["/BT-1"]', '/BT-1'));
+  // Inside a value object the surrogate stands beside the code of the object, and a string that
+  // carries one is held to no bound.
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"value":"' + long
+    + '\\ud800","scheme":"0088"}}}', small),
+  surrogate('values["/BG-4/BT-29/0"].value', '/BG-4/BT-29/0'));
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"value":"' + long
+    + '\\ud800","scheme":"0088"}}}', { maxStringBytes: 64 }),
+  surrogate('values["/BG-4/BT-29/0"].value', '/BG-4/BT-29/0'));
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"value":"' + long
+    + '\\ud800","scheme":"0088","foo":"z"}}}', small), [
+    ['/BG-4/BT-29/0', FindingCode.L1_SURROGATE, 'values["/BG-4/BT-29/0"].value'],
+    ['/BG-4/BT-29/0', FindingCode.L1_VALUE_MEMBER, 'values["/BG-4/BT-29/0"]["foo"]'],
+  ]);
+});
+
+test('a member of a value object past every bound that could apply stops the reader', () => {
+  const small = { maxStringBytes: 64, maxBinaryValueBytes: 64 };
+  const limit: Place[] =
+    [['/BG-4/BT-29/0', FindingCode.L1_LIMIT, 'values["/BG-4/BT-29/0"].value']];
+  const mid = 'y'.repeat(100);
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"value":"' + mid
+    + '","scheme":"0088","foo":"z"}}}', small), limit);
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"foo":"z","scheme":"0088",'
+    + '"value":"' + mid + '"}}}', small), limit);
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"value":"' + mid
+    + '","scheme":{"a":"b"}}}}', small), limit);
+  // A supplementary component is held to the string bound while it is read, so a lone surrogate
+  // in a member read before it is never judged.
+  assert.deepEqual(places(HEAD + '"values":{"/BG-4/BT-29/0":{"value":"a\\ud800","scheme":"'
+    + 'x'.repeat(200) + '"}}}', { maxStringBytes: 64 }),
+  [['/BG-4/BT-29/0', FindingCode.L1_LIMIT, 'values["/BG-4/BT-29/0"].scheme']]);
+});
+
 test('below a value the reader walks past, only the JSON text and the bounds are judged', () => {
   assert.deepEqual(places(HEAD + '"values":{"/BT-1":["\\uD800"],"/BT-2":01}}'), [
     ['/BT-1', FindingCode.L1_JSON_TYPE, 'values["/BT-1"]'],

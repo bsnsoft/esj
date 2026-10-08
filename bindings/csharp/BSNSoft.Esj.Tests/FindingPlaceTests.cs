@@ -35,11 +35,11 @@ public class FindingPlaceTests
 
     private static Limits Strings(long bytes) => Limits.Defaults.ToBuilder().MaxStringBytes(bytes).Build();
 
-    // ------------------------------------------------------------ D2: line endings
+    // ------------------------------------------------------------ line endings
 
     /// <summary>
     /// A value built through the API is normalized the way a value read from a document is, so the
-    /// two are one value with one canonical form and one digest (can-01).
+    /// two are one value with one canonical form and one digest.
     /// </summary>
     [Fact]
     public void AValueBuiltThroughTheApiNormalizesItsLineEndings()
@@ -58,7 +58,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// A string of <c>source</c> or of <c>extensions</c> is never normalized, and its bound is
-    /// measured on the string as it stands (env-16).
+    /// measured on the string as it stands.
     /// </summary>
     [Fact]
     public void SourceAndExtensionStringsKeepTheirLineEndingsAndAreMeasuredRaw()
@@ -88,11 +88,11 @@ public class FindingPlaceTests
             Read(Values("\"/BT-22/0\":\"" + new string('a', 63) + "\\r\\n\\r\\n\""), limits));
     }
 
-    // ------------------------------------------------------------ D6, D7, D8, D9: limits
+    // ------------------------------------------------------------ limits
 
     /// <summary>
     /// Every string of the envelope is held to the string bound, whatever it carries, and the
-    /// finding names the member (env-06, reg-04).
+    /// finding names the member.
     /// </summary>
     /// <param name="member">the envelope member</param>
     [Theory]
@@ -130,7 +130,7 @@ public class FindingPlaceTests
     /// <summary>
     /// A member name is held to the string bound in the bytes of its UTF-8 encoding wherever it
     /// stands: 524 289 times <c>ä</c> is 1 048 578 bytes and past the default bound, though it is
-    /// fewer UTF-16 code units than that (env-04, env-05, reg-03).
+    /// fewer UTF-16 code units than that.
     /// </summary>
     [Fact]
     public void AMemberNameIsMeasuredInUtf8Bytes()
@@ -162,7 +162,7 @@ public class FindingPlaceTests
     /// <summary>
     /// A number token longer than the string bound is a limit wherever it stands, before it is
     /// built: as a member of <c>values</c>, in a value object, inside <c>extensions</c> and as an
-    /// envelope member of the wrong type (reg-01, reg-02, vld-18).
+    /// envelope member of the wrong type.
     /// </summary>
     [Fact]
     public void ANumberTokenPastTheStringBoundIsALimitEverywhere()
@@ -187,7 +187,7 @@ public class FindingPlaceTests
     /// <summary>
     /// A limit met inside a member of <c>values</c> carries that member's path, and a limit met in
     /// a subtree the reader walks past names the member walked past: the member of <c>values</c>,
-    /// or the member of its value object (vld-18).
+    /// or the member of its value object.
     /// </summary>
     [Fact]
     public void ALimitInsideAValueCarriesThePathAndTheMember()
@@ -216,8 +216,8 @@ public class FindingPlaceTests
 
     /// <summary>
     /// The checks of one string are ordered: a lone surrogate before the bound before the value
-    /// in the envelope, a lone surrogate before the bound inside <c>values</c> wherever the guard
-    /// of twice the bound let the reader read the string whole.
+    /// in the envelope, a lone surrogate before the bound inside <c>values</c> and
+    /// <c>extensions</c>, however far past the bound the string runs.
     /// </summary>
     [Fact]
     public void ASurrogateIsJudgedBeforeTheBoundOfItsString()
@@ -229,17 +229,24 @@ public class FindingPlaceTests
             Read(WithSource("\"syntax\":\"\\ud800" + new string('x', 70) + "\""), limits));
         Assert.Equal(new[] { ("/BT-22/0", "ESJ-L1-SURROGATE", "values[\"/BT-22/0\"]") },
             Read(Values("\"/BT-22/0\":\"\\ud800" + new string('x', 70) + "\""), limits));
+        Assert.Equal(new[] { ("/BT-22/0", "ESJ-L1-SURROGATE", "values[\"/BT-22/0\"]") },
+            Read(Values("\"/BT-22/0\":\"" + new string('x', 130) + "\\ud800\""), limits));
         Assert.Equal(new[] { ("/BT-22/0", "ESJ-L1-LIMIT", "values[\"/BT-22/0\"]") },
-            Read(Values("\"/BT-22/0\":\"\\ud800" + new string('x', 130) + "\""), limits));
+            Read(Values("\"/BT-22/0\":\"" + new string('x', 130) + "\""), limits));
+        Assert.Equal(new[] { ("", "ESJ-L1-SURROGATE", "extensions[\"de.example\"]") },
+            Read(WithExtensions("\"de.example\":\"" + new string('x', 130) + "\\ud800\""), limits));
+        Assert.Equal(new[] { ("", "ESJ-L1-SURROGATE", "format") },
+            Read(Values("\"/BT-1\":\"X\"").Replace("\"format\":\"EN16931-Semantic-JSON\"",
+                "\"format\":\"" + new string('x', 130) + "\\ud800\"", StringComparison.Ordinal), limits));
         Assert.Equal(new[] { ("", "ESJ-L1-SURROGATE", "extensions[\"de.example\"]") },
             Read(WithExtensions("\"de.example\":\"\\ud800" + new string('x', 70) + "\""), limits));
     }
 
-    // ------------------------------------------------------------ D10: offsets
+    // ------------------------------------------------------------ offsets
 
     /// <summary>
     /// A message names the byte, counted from zero, at which the token it is about begins, in
-    /// bytes of the encoded document and not in characters (vld-17).
+    /// bytes of the encoded document and not in characters.
     /// </summary>
     [Fact]
     public void AMessageNamesTheByteTheTokenBeginsAt()
@@ -259,11 +266,11 @@ public class FindingPlaceTests
         Assert.Contains("byte " + start + ")", limit.Message, StringComparison.Ordinal);
     }
 
-    // ------------------------------------------------------------ D11, D12
+    // ------------------------------------------------------------ binary content and configuration
 
     /// <summary>
     /// The decoded length of base64 content is three bytes a group of four, less the padding at
-    /// the end counted at most twice, and never less than nothing (reg-06).
+    /// the end counted at most twice, and never less than nothing.
     /// </summary>
     /// <param name="content">the content</param>
     /// <param name="decoded">the bytes it stands for</param>
@@ -282,7 +289,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// Content that is all padding counts towards the total binary bound like any other, so a
-    /// lowered bound is reached and reported as a limit (reg-06).
+    /// lowered bound is reached and reported as a limit.
     /// </summary>
     [Fact]
     public void PaddingDoesNotSubtractFromTheBinaryTotal()
@@ -295,7 +302,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// A bound the reader would have to enlarge past what an integer holds is refused when it is
-    /// given, with its name, and the largest bound accepted reads a document (reg-13).
+    /// given, with its name, and the largest bound accepted reads a document.
     /// </summary>
     [Fact]
     public void ABoundThatWouldOverflowIsRefusedWhenItIsGiven()
@@ -314,12 +321,12 @@ public class FindingPlaceTests
         Assert.Equal(new[] { ("/BT-1", "ESJ-L1-JSON-TYPE", "values[\"/BT-1\"]") }, Read(Values("\"/BT-1\":[[[[1]]]]"), largest));
     }
 
-    // ------------------------------------------------------------ D13, D14, D15, D16
+    // ------------------------------------------------------------ member accesses
 
     /// <summary>
     /// A name the document chose is written in brackets, a name the specification defines after a
     /// dot, so a member of the envelope called <c>source.foo</c> and a member <c>foo</c> of
-    /// <c>source</c> are two places (env-13, vld-20).
+    /// <c>source</c> are two places.
     /// </summary>
     [Fact]
     public void ADocumentChosenNameIsWrittenInBrackets()
@@ -335,7 +342,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// A duplicate names the member whose name occurs twice, at its second occurrence, in every
-    /// object of the document (vld-01, vld-02, env-07, env-08).
+    /// object of the document.
     /// </summary>
     [Fact]
     public void ADuplicateNamesTheMemberThatOccursTwice()
@@ -357,7 +364,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// Every required envelope member a document lacks is one finding with its name as the subject,
-    /// in a fixed order (vld-04, env-09).
+    /// in a fixed order.
     /// </summary>
     [Fact]
     public void EveryMissingEnvelopeMemberIsOneFinding()
@@ -379,7 +386,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// The subject of an undefined envelope member carries the name whole, however long; only the
-    /// message holds it to an excerpt (vld-03, env-10, reg-05).
+    /// message holds it to an excerpt.
     /// </summary>
     [Fact]
     public void ASubjectIsNeverShortened()
@@ -389,11 +396,11 @@ public class FindingPlaceTests
         Assert.Equal(new[] { ("", "ESJ-L1-ENVELOPE-MEMBER", "[\"" + name + "\"]") }, found);
     }
 
-    // ------------------------------------------------------------ D17: surrogates
+    // ------------------------------------------------------------ surrogates
 
     /// <summary>
     /// A lone surrogate is escaped as <c>\u</c> and four lowercase hexadecimal digits, and a pair is
-    /// left alone (vld-05).
+    /// left alone.
     /// </summary>
     [Fact]
     public void ALoneSurrogateIsEscaped()
@@ -406,7 +413,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// A member name with a lone surrogate names its member with the surrogate escaped, in every
-    /// object, and inside a value object as a duplicate there does (vld-05, vld-06, env-11, K2).
+    /// object, and inside a value object as a duplicate there does.
     /// </summary>
     [Fact]
     public void ANameWithALoneSurrogateIsNamedEscaped()
@@ -423,12 +430,76 @@ public class FindingPlaceTests
             Read(Values("\"/BT-1\":{\"value\":\"A\",\"\\ud800\":\"y\"}")));
     }
 
-    // ------------------------------------------------------------ D18, D19, D20
+    // ------------------------------------------------------------ the JSON text, names before values, structures walked past
+
+    /// <summary>
+    /// A member name is judged before the colon after it, which is read where the value is: an
+    /// undefined envelope member, a repeated name or a name that is no owner token is that
+    /// before it is a missing colon, and a name that is no path, being confined to its member, is
+    /// reported before the text after it ends the read (specification, section 9.6).
+    /// </summary>
+    [Fact]
+    public void ANameIsJudgedBeforeTheColonAfterIt()
+    {
+        Assert.Equal(new[] { ("", "ESJ-L1-ENVELOPE-MEMBER", "[\"a\"]") }, Read("{\"a\" 1}"));
+        Assert.Equal(new[] { ("", "ESJ-L1-ENVELOPE-MEMBER", "[\"profile\"]") }, Read("{\"profile\""));
+        Assert.Equal(new[] { ("", "ESJ-L1-DUPLICATE-MEMBER", "format") },
+            Read("{\"format\":\"EN16931-Semantic-JSON\",\"format\" 1}"));
+        Assert.Equal(new[] { ("", "ESJ-L1-ENVELOPE-MEMBER", "source[\"foo\"]") }, Read(WithSource("\"foo\" \"x\"")));
+        Assert.Equal(new[] { ("", "ESJ-L1-OWNER-TOKEN", "extensions[\"urn:x/2\"]") },
+            Read(WithExtensions("\"urn:x/2\" {}")));
+        Assert.Equal(new[] { ("", "ESJ-L1-PATH-SYNTAX", "values[\"/BT-1x\"]"), ("", "ESJ-L1-JSON", "") },
+            Read(Values("\"/BT-1x\" \"a\"")));
+        Finding colon = Assert.Single(EsjReader.Strict().ReadWithFindings(Encoding.UTF8.GetBytes("{\"format\" 1}")).Findings);
+        Assert.Equal("ESJ-L1-JSON", colon.Code.Code);
+        Assert.Contains("(at byte 10)", colon.Message, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// A string that does not close is placed at the quotation mark that opens it.
+    /// </summary>
+    [Theory]
+    [InlineData("{\"format\":\"EN16931-Sem")]
+    [InlineData("{\"form")]
+    [InlineData(Head + "\"values\":{\"/BT-1\":\"RE-1")]
+    [InlineData(Head + "\"values\":{\"/BT-1\":\"RE\\")]
+    public void AStringThatDoesNotCloseIsPlacedAtItsOpeningQuotationMark(string json)
+    {
+        Finding finding = Assert.Single(EsjReader.Strict().ReadWithFindings(Encoding.UTF8.GetBytes(json)).Findings);
+        Assert.Equal("ESJ-L1-JSON", finding.Code.Code);
+        Assert.Contains("(at byte " + Encoding.UTF8.GetByteCount(json[..json.LastIndexOf('"')]) + ")", finding.Message,
+            StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Inside a value object a string that carries a lone surrogate is held to no bound and the
+    /// surrogate stands beside the code of the object, while a member past every bound that could
+    /// apply to it stops the reader before the object is judged (specification, sections 9.6 and
+    /// 12.2).
+    /// </summary>
+    [Fact]
+    public void AValueObjectMemberIsHeldToItsBoundAfterItsSurrogate()
+    {
+        Limits small = Limits.Defaults.ToBuilder().MaxStringBytes(64).MaxBinaryValueBytes(64).Build();
+        string text = new('x', 200);
+        const string Path = "/BG-4/BT-29/0";
+        const string Value = "values[\"" + Path + "\"].value";
+        Assert.Equal(new[] { (Path, "ESJ-L1-SURROGATE", Value) },
+            Read(Values("\"" + Path + "\":{\"value\":\"" + text + "\\ud800\",\"scheme\":\"0088\"}"), small));
+        Assert.Equal(new[] { (Path, "ESJ-L1-SURROGATE", Value) },
+            Read(Values("\"" + Path + "\":{\"value\":\"" + text + "\\ud800\",\"scheme\":\"0088\"}"), Strings(64)));
+        Assert.Equal(new[] { (Path, "ESJ-L1-SURROGATE", Value), (Path, "ESJ-L1-VALUE-MEMBER", "values[\"" + Path + "\"][\"foo\"]") },
+            Read(Values("\"" + Path + "\":{\"value\":\"" + text + "\\ud800\",\"scheme\":\"0088\",\"foo\":\"z\"}"), small));
+        Assert.Equal(new[] { (Path, "ESJ-L1-LIMIT", Value) },
+            Read(Values("\"" + Path + "\":{\"foo\":\"z\",\"scheme\":\"0088\",\"value\":\"" + new string('y', 100) + "\"}"), small));
+        Assert.Equal(new[] { (Path, "ESJ-L1-LIMIT", "values[\"" + Path + "\"].scheme") },
+            Read(Values("\"" + Path + "\":{\"value\":\"a\\ud800\",\"scheme\":\"" + text + "\"}"), Strings(64)));
+    }
 
     /// <summary>
     /// A token that is no complete JSON value is <c>ESJ-L1-JSON</c> wherever it stands, also as
     /// the value of an envelope member, and a finding about the document: no path, no subject
-    /// (vld-07, env-02, env-12).
+    ///.
     /// </summary>
     /// <param name="json">the document</param>
     [Theory]
@@ -463,7 +534,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// A defect of a member name is decided before anything about the value written under it:
-    /// the text reaches the name first (env-03, K4).
+    /// the text reaches the name first.
     /// </summary>
     [Fact]
     public void TheNameIsJudgedBeforeItsValue()
@@ -479,7 +550,7 @@ public class FindingPlaceTests
     /// <summary>
     /// A subtree the reader walks past is held to well-formedness and to the bounds, and to nothing
     /// else: a lone surrogate or a repeated name in it draws nothing, and the reader reads on
-    /// (vld-08, vld-09, env-24).
+    ///.
     /// </summary>
     [Fact]
     public void AWalkedPastSubtreeIsHeldToWellFormednessAlone()
@@ -496,11 +567,11 @@ public class FindingPlaceTests
             Read(Head + "\"profile\":\"\\ud800\",\"values\":{\"/BT-1\":\"X\"}}"));
     }
 
-    // ------------------------------------------------------------ D23: exceptions
+    // ------------------------------------------------------------ exceptions
 
     /// <summary>
     /// An exception carries the code, the path and the subject the finding of the same defect
-    /// carries (vld-19).
+    /// carries.
     /// </summary>
     [Fact]
     public void AnExceptionCarriesCodePathAndSubject()
@@ -530,7 +601,7 @@ public class FindingPlaceTests
 
     /// <summary>
     /// UTF-8 is the one encoding read: a document in UTF-16 without a byte order mark is valid
-    /// UTF-8 of no JSON text, so it is <c>ESJ-L1-JSON</c>; with a mark it is the encoding (env-01).
+    /// UTF-8 of no JSON text, so it is <c>ESJ-L1-JSON</c>; with a mark it is the encoding.
     /// </summary>
     [Fact]
     public void NoEncodingIsGuessed()

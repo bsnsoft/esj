@@ -918,7 +918,7 @@ class FixtureManifestTest {
 
     /**
      * One negative fixture, as one row per code it draws: the layer that catches the defect,
-     * the code, the path the finding names and, where section 9.5 requires one, its subject.
+     * the code, the path the finding names and its subject, where it names something.
      *
      * <p>The reader is asked for its findings rather than for the exception it would raise,
      * because the specification, section 9.5 fixes what {@code path} points at for every
@@ -963,28 +963,19 @@ class FixtureManifestTest {
     }
 
     /**
-     * Adds the subject of a finding to its row where the specification, section 9.5 requires
-     * one: where the path is empty, because the member name is no semantic path or the place
-     * is the envelope, {@code source} or {@code extensions}, and on a finding of layer L3,
-     * which names the term or group it is about. Elsewhere a reader MAY carry the member
-     * access as well, so the manifest does not pin it there.
+     * Adds the subject of a finding to its row wherever it names something: the specification,
+     * section 9.5 fixes the subject of every code — the member access of an L1 finding, the
+     * identifier of the segment, the term or the component an L2 finding is about, the term or
+     * group of an L3 finding — so a binding is held to it wherever the reference sets one.
      *
      * <p>A subject is one of the three fields a program reacts to, and the name it carries is
-     * escaped as a message escapes a fragment of a document. A row that records one therefore
-     * holds a binding to the same set of escaped characters, spelled the same way;
-     * {@code run.py} compares the subject where a row records one and nowhere else. Where this
-     * implementation leaves a required subject empty — a member name carrying a lone
-     * surrogate, which has no UTF-8 encoding a subject could carry — the row records none, and
-     * what a binding answers there is not compared.
+     * escaped as a message escapes a fragment of a document, a lone surrogate included. A row
+     * that records one therefore holds a binding to the same set of escaped characters, spelled
+     * the same way; {@code run.py} compares the subject where a row records one and nowhere
+     * else, so an empty subject is not recorded.
      */
     private static Manifest.Object withSubject(Manifest.Object row, Finding finding) {
-        return finding.subject().isEmpty() || !subjectRequired(finding)
-                ? row : row.put("subject", finding.subject());
-    }
-
-    /** Whether section 9.5 requires a finding to carry a subject: see {@link #withSubject}. */
-    private static boolean subjectRequired(Finding finding) {
-        return finding.path().isRoot() || finding.code().layer() == ValidationLayer.L3;
+        return finding.subject().isEmpty() ? row : row.put("subject", finding.subject());
     }
 
     /**

@@ -268,6 +268,37 @@ class ReaderProbesTest {
                 "ESJ-L1-JSON-TYPE", "/BT-1", "values[\"/BT-1\"][\"note\"]");
     }
 
+    /**
+     * A lone surrogate is the first check of a string that fails, however far past the bound the
+     * string runs, and a string that carries one is held to no bound: inside a value object it
+     * stands beside the code of the object (specification, sections 9.6 and 12.2). A member
+     * past every bound that could apply to it stops the reader before the object is judged.
+     */
+    @Test
+    void aLoneSurrogateIsFoundBeforeTheBoundHoweverFarPastItAStringRuns() {
+        Limits small = SMALL.withMaxBinaryValueBytes(64);
+        String text = "x".repeat(200);
+        String path = "/BG-4/BT-29/0";
+        String value = "values[\"" + path + "\"].value";
+
+        assertFinding(only(findings(small, values("\"/BT-1\":\"" + text + "\\ud800\""))),
+                "ESJ-L1-SURROGATE", "/BT-1", "values[\"/BT-1\"]");
+        assertFinding(only(findings(small, values("\"" + path + "\":{\"value\":\"" + text
+                        + "\\ud800\",\"scheme\":\"0088\"}"))),
+                "ESJ-L1-SURROGATE", path, value);
+        assertFinding(only(findings(SMALL, values("\"" + path + "\":{\"value\":\"" + text
+                        + "\\ud800\",\"scheme\":\"0088\"}"))),
+                "ESJ-L1-SURROGATE", path, value);
+        List<Finding> beside = findings(small, values("\"" + path + "\":{\"value\":\"" + text
+                + "\\ud800\",\"scheme\":\"0088\",\"foo\":\"z\"}"));
+        assertEquals(2, beside.size(), beside::toString);
+        assertFinding(beside.get(0), "ESJ-L1-SURROGATE", path, value);
+        assertFinding(beside.get(1), "ESJ-L1-VALUE-MEMBER", path, "values[\"" + path + "\"][\"foo\"]");
+        assertFinding(only(findings(small, values("\"" + path + "\":{\"foo\":\"z\",\"scheme\":"
+                        + "\"0088\",\"value\":\"" + "y".repeat(100) + "\"}"))),
+                "ESJ-L1-LIMIT", path, value);
+    }
+
     /** A name past the string bound is a limit before a surrogate in it is anything. */
     @Test
     void theBoundOnANameIsAskedBeforeItsSurrogates() {

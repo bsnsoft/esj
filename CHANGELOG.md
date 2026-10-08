@@ -67,9 +67,10 @@ about.
 - Java and C#: `ValidationResult.merge` (`Merge`) keeps `NOT-REQUESTED` for a layer the caller did
   not ask for: a `LIMIT` or `PRECEDING-LAYER-FAILED` the other result names for it no longer
   displaces it (`SPEC.md` 9.5). `EDITION-UNKNOWN` of a validator that was asked for the layer is
-  still kept over the `NOT-REQUESTED` of a clean read. C#: `Validator.Validate(byte[])` takes the
-  reason of the model layers from the structural run, so an unknown edition reads
-  `EDITION-UNKNOWN`.
+  still kept over the `NOT-REQUESTED` of a clean read, which `Merge` of C# answered with
+  `NOT-REQUESTED`; both now compose every pair of reasons by one table. C#:
+  `Validator.Validate(byte[])` composes the read and the structural run with `Merge`, so an unknown
+  edition reads `EDITION-UNKNOWN`.
 - Java: `Registry.load` refuses a registry that names terms it does not define — as a parent, in a
   chain or in `reusesTerms` — and imports nothing, and reports a cardinality below zero or a path
   that does not end at its term as `EsjFormatException` rather than `IllegalArgumentException`.
@@ -85,6 +86,33 @@ about.
   the `ESJ-L2-NOT-CHECKED` finding names the option, the edition the registry imports and that it
   is not this one, and the cause is the new `extension-for-another-edition` rather than
   `extension-registry-missing`.
+- An extension registry defines identifiers of its own namespace only: one that defines an
+  identifier without a namespace — `BT-999` as well as `BT-1` — or identifiers of two namespaces
+  is refused when it is read, where it imports a core, and where it is combined with one.
+  `model/registry.schema.json` states the same for a registry that carries `imports`.
+- C#: `Registry.Load` refuses a registry that names an identifier it does not define and imports
+  nothing, and `WithExtension` asks for the imports wherever an extension names an identifier it
+  does not define, as Java and TypeScript do, not only one of the core.
+- TypeScript and C#: a member name is judged before the colon after it, as in Java: `{"a" 1}` is
+  `ESJ-L1-ENVELOPE-MEMBER` rather than `ESJ-L1-JSON`, and a name of `values` that is no path draws
+  `ESJ-L1-PATH-SYNTAX` before the missing colon ends the read.
+- A string past its bound is read on to its end for a lone surrogate, which comes first:
+  TypeScript and C# refused a string of the envelope, of `source` or of `extensions` past the
+  larger of the two string bounds, and a string of `values` past twice the string bound, for its
+  length alone. Strings of the envelope, of `source`, of `extensions` and of `values` are held to
+  the string bound while they are read, in TypeScript and C# as in Java.
+- Inside a value object a string with a lone surrogate is held to no bound: it drew
+  `ESJ-L1-LIMIT` beside `ESJ-L1-SURROGATE`, and in Java past the larger of the two string bounds
+  `ESJ-L1-LIMIT` alone. TypeScript and C#: a member of a value object past every bound that could
+  apply to it stops the reader before the object is judged, as in Java, rather than after its
+  shape and member set.
+- TypeScript and C#: the message of an `ESJ-L1-LIMIT` about the members of `values`, the length
+  or the segments of a path, the members of a value object or the depth of `extensions` names the
+  byte offset of its token, as Java's does; TypeScript's `ESJ-L1-JSON` for a document that is no
+  JSON object names it too.
+- The fixture manifest records the subject of every finding that names one, the member access of
+  a finding of layer L1 with a path and the segment, term or component of one of layer L2
+  included.
 - Java: the generator escapes a slug Java reserves, or one that would hide a member every view
   carries, with a trailing underscore (`class_()`) instead of refusing the registry (`SPEC.md` 10).
 - TypeScript: the view generator refuses a repeatable group whose slug is no plural (was: the slug
@@ -206,7 +234,9 @@ or contradicted itself; the section numbers are the same.
 - Section 9.5: a `subject` is never shortened; a lone surrogate is escaped as `\u` and four
   lowercase hexadecimal digits (`\ud800`) in a message and a `subject` alike.
 - Section 9.5: a message names a place as the byte offset of the start of the token, counted from
-  zero; `ESJ-L1-JSON` MUST name it, `ESJ-L1-LIMIT` SHOULD.
+  zero, also for a token the text ends inside — a string that is not closed at its opening
+  quotation mark — and the length of the byte sequence only where the text ends between two
+  tokens; `ESJ-L1-JSON` MUST name it, `ESJ-L1-LIMIT` SHOULD.
 - Section 9.5: `path` and `subject` are the empty string where empty, never absent or null.
 - Section 9.5: an exception carries code, path and subject of the finding it stopped at.
 - Section 9.6: `ESJ-L1-JSON` is a finding about the document (empty path and subject), and a
@@ -217,7 +247,12 @@ or contradicted itself; the section numbers are the same.
   surrogate, string bound, value; a member of `source`: lone surrogate, empty string, string
   bound, `sha256` grammar; a string of `values`: lone surrogate, empty string, string bound.
 - Section 9.6: the first defect the text reaches is the one that counts, and a member name is
-  judged before the value written under it.
+  judged before the colon after it and before the value written under it.
+- Section 9.6: a lone surrogate is found before the string bound however far past the bound a
+  string runs, and a string that carries one is held to no bound; inside a value object a reader
+  holds a supplementary component to the string bound and `value` to the larger of the two
+  string bounds while it reads them, and a member past that stops it before the object is
+  judged.
 - Sections 9.6 and 12.2: inside a structure a reader walks past only well-formedness and three
   limits are checked — the depth, and the string bound on names and number tokens; a string there
   is held to no string bound; no `ESJ-L1-SURROGATE` or `ESJ-L1-DUPLICATE-MEMBER` comes from it,
@@ -233,12 +268,16 @@ or contradicted itself; the section numbers are the same.
 - Section 9.3: a validator handed bytes and asked for L2 or L3 alone names them
   `PRECEDING-LAYER-FAILED` where the reader found an L1 error.
 - Section 9.5: `NOT-REQUESTED` stands outside the precedence of the other reasons, and a
-  composition of two results is stated rule by rule.
+  composition of two results is stated by the two reasons the results name:
+  `NOT-REQUESTED` and `EDITION-UNKNOWN` give `EDITION-UNKNOWN`, `NOT-REQUESTED` and `LIMIT` or
+  `PRECEDING-LAYER-FAILED` give `NOT-REQUESTED`, any other two the first in the order of
+  precedence.
 - Sections 9.1 and 9.5: a validator handed an already parsed document MAY check the limits.
 - Section 10: loading registries refuses an identifier defined twice, an extension that defines a
   term of the core it is combined with, an extension whose parents or `reusesTerms` name a core
   identifier without `imports`, and a combination with a core whose model and edition `imports`
-  does not name; the three component rules are checked by every implementation.
+  does not name; the three component rules are checked by every implementation. A fifth rule:
+  an extension registry defines identifiers of its own namespace only.
 - Section 10: a generator refuses a repeatable group whose slug is not a plural and escapes a
   reserved word rather than refuse it; rule 3 is about groups, and the repeatable terms BT-10 and
   BT-46 of the 2026 registry keep their singular slugs.

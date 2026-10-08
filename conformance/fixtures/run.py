@@ -36,11 +36,11 @@ standard input, reading one JSON object per line back. Six requests exist:
     A finding carries the path SPEC.md section 9.5 gives its code: the member's path where
     the finding is about one member of `values`, and the empty string where the member name
     is no path at all. It carries the subject that section gives it, or the empty string:
-    the member access that names the place where the path is empty, as `values["/BT-1x"]`,
-    with the name escaped as a fragment of a message is, and the term or group a finding of
-    layer L3 is about. The path and the code are compared, and the subject wherever the
-    manifest records one, which it does where section 9.5 requires one; a subject a reader
-    MAY carry beside a path is not compared. A document rejected at layer L1 is expected to
+    the member access that names the place, as `values["/BT-1x"]`, with the name escaped as
+    a fragment of a message is; the segment, the term or the component a finding of layer
+    L2 is about; and the term or group a finding of layer L3 is about. The path and the code
+    are compared, and the subject wherever the manifest records one, which it does wherever
+    the reference sets one. A document rejected at layer L1 is expected to
     draw findings of that layer alone, because the model layers are not evaluated over a
     document the reader refused a member of (section 9.5).
 

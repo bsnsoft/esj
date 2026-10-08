@@ -46,20 +46,10 @@ public static class Validator
             return read.Validation();
         }
 
-        // Layer L1 ran over the bytes, so it is evaluated; the model layers are what the
-        // structural validator says of them, which is why the result of the clean read, which
-        // names them NOT-REQUESTED, is not merged in.
-        ValidationResult model = Validate(read.Document!, registries);
-        Dictionary<ValidationLayer, NotEvaluatedReason> reasons = new();
-        foreach (KeyValuePair<ValidationLayer, NotEvaluatedReason> reason in model.NotEvaluated)
-        {
-            if (reason.Key != ValidationLayer.L1)
-            {
-                reasons[reason.Key] = reason.Value;
-            }
-        }
-
-        return ValidationResult.Of(read.Findings.Concat(model.Findings), reasons, model.Registries);
+        // The reader evaluated layer L1 and names the model layers NOT-REQUESTED; the structural
+        // validator evaluated them or names why not, and composing the two keeps that reason
+        // (specification, section 9.5).
+        return read.Validation().Merge(Validate(read.Document!, registries));
     }
 
     /// <summary>

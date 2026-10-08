@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 /** Checks the three states of a validation result (specification, sections 9.5 and 9.6). */
@@ -231,6 +232,45 @@ class ValidationResultTest {
                         ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED),
                 read.merge(model).notEvaluated());
         assertEquals(read.merge(model).notEvaluated(), model.merge(read).notEvaluated());
+    }
+
+    /**
+     * The reason a layer keeps where neither of two composed results evaluated it, for
+     * every pair of reasons (specification, section 9.5). The bindings compose by the same
+     * table, so that a caller that branches on the reason gets one token from all three.
+     */
+    @ParameterizedTest
+    @CsvSource({
+        "LIMIT, LIMIT, LIMIT",
+        "LIMIT, PRECEDING-LAYER-FAILED, LIMIT",
+        "LIMIT, EDITION-UNKNOWN, LIMIT",
+        "LIMIT, NOT-REQUESTED, NOT-REQUESTED",
+        "PRECEDING-LAYER-FAILED, LIMIT, LIMIT",
+        "PRECEDING-LAYER-FAILED, PRECEDING-LAYER-FAILED, PRECEDING-LAYER-FAILED",
+        "PRECEDING-LAYER-FAILED, EDITION-UNKNOWN, PRECEDING-LAYER-FAILED",
+        "PRECEDING-LAYER-FAILED, NOT-REQUESTED, NOT-REQUESTED",
+        "EDITION-UNKNOWN, LIMIT, LIMIT",
+        "EDITION-UNKNOWN, PRECEDING-LAYER-FAILED, PRECEDING-LAYER-FAILED",
+        "EDITION-UNKNOWN, EDITION-UNKNOWN, EDITION-UNKNOWN",
+        "EDITION-UNKNOWN, NOT-REQUESTED, EDITION-UNKNOWN",
+        "NOT-REQUESTED, LIMIT, NOT-REQUESTED",
+        "NOT-REQUESTED, PRECEDING-LAYER-FAILED, NOT-REQUESTED",
+        "NOT-REQUESTED, EDITION-UNKNOWN, EDITION-UNKNOWN",
+        "NOT-REQUESTED, NOT-REQUESTED, NOT-REQUESTED"})
+    void theCompositionOfTwoReasonsFollowsOneTable(String mine, String theirs, String kept) {
+        ValidationResult left = ValidationResult.of(List.of(),
+                Map.of(ValidationLayer.L2, reason(mine)));
+        ValidationResult right = ValidationResult.of(List.of(),
+                Map.of(ValidationLayer.L2, reason(theirs)));
+
+        assertEquals(reason(kept), left.merge(right).notEvaluated().get(ValidationLayer.L2));
+    }
+
+    private static NotEvaluatedReason reason(String token) {
+        return EnumSet.allOf(NotEvaluatedReason.class).stream()
+                .filter(reason -> reason.token().equals(token))
+                .findFirst()
+                .orElseThrow();
     }
 
     @Test

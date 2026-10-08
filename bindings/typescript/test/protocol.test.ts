@@ -80,6 +80,6 @@ test('a registry request says whether the files are accepted, and why not', () =
   assert.deepEqual(answers[0], { accepted: true });
   assert.deepEqual(answers[1], { accepted: true });
   assert.equal(answers[2].accepted, false);
-  assert.match(String(answers[2].error), /does not redefine the term BT-1/);
+  assert.match(String(answers[2].error), /own namespace only, and BT-1 carries none/);
   assert.ok(typeof answers[3].error === 'string');
 });

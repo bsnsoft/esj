@@ -166,8 +166,9 @@ public class ProtocolTests
 
     /// <summary>
     /// A registry request reads the first file and combines every further one with it, and answers
-    /// whether the binding accepts them: the XRechnung extension imports the 2017 edition and is
-    /// refused beside the 2026 one.
+    /// whether the binding accepts them: the core registry is no extension of itself, and the
+    /// XRechnung extension imports the 2017 edition and is refused beside the 2026 one, where this
+    /// build carries that edition.
     /// </summary>
     [Fact]
     public void ARegistryRequestSaysWhetherTheRegistriesAreAccepted()
@@ -176,9 +177,16 @@ public class ProtocolTests
         Assert.True(accepted.GetProperty("accepted").GetBoolean());
         Assert.False(accepted.TryGetProperty("error", out _));
 
-        JsonElement refused = Ask("{\"op\": \"registry\", \"files\": [\"model/en16931/2026.json\", \"model/xrechnung/3.0.2.json\"]}");
-        Assert.False(refused.GetProperty("accepted").GetBoolean());
-        Assert.False(string.IsNullOrEmpty(refused.GetProperty("error").GetString()));
+        JsonElement twice = Ask("{\"op\": \"registry\", \"files\": [\"model/en16931/2017.json\", \"model/en16931/2017.json\"]}");
+        Assert.False(twice.GetProperty("accepted").GetBoolean());
+        Assert.Contains("own namespace only", twice.GetProperty("error").GetString(), StringComparison.Ordinal);
+
+        if (File.Exists(Path.Combine(Fixtures.Repository, "model/en16931/2026.json")))
+        {
+            JsonElement refused = Ask("{\"op\": \"registry\", \"files\": [\"model/en16931/2026.json\", \"model/xrechnung/3.0.2.json\"]}");
+            Assert.False(refused.GetProperty("accepted").GetBoolean());
+            Assert.False(string.IsNullOrEmpty(refused.GetProperty("error").GetString()));
+        }
     }
 
     /// <summary>

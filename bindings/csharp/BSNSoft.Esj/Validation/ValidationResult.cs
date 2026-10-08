@@ -123,18 +123,15 @@ public sealed class ValidationResult
 
     /// <summary>
     /// Composes this result with another result about the same document. A layer is evaluated
-    /// where either run evaluated it. Where neither did, a layer either run names
-    /// <c>NOT-REQUESTED</c> keeps that reason whatever the other established, because nothing
-    /// was ever going to answer it; for every other layer the reason of higher precedence
-    /// survives, <c>LIMIT</c> before <c>PRECEDING-LAYER-FAILED</c> before <c>EDITION-UNKNOWN</c>
-    /// (specification, section 9.5).
+    /// where either run evaluated it. Where neither did, the layer keeps one reason, chosen by the
+    /// rule of the specification, section 9.5 (see <see cref="Surviving"/>).
     /// </summary>
     /// <remarks>
     /// The result of a clean read names the model layers <c>NOT-REQUESTED</c>, since a reader
-    /// answers layer L1 alone, so composing it with a validator that could not evaluate them
-    /// keeps that reason. <see cref="Validator.Validate(byte[], IEnumerable{Model.Registry}?, Json.Limits?)"/>
-    /// composes the reader and the structural validator itself and takes the reason of the model
-    /// layers from the run that was asked for them.
+    /// answers layer L1 alone; composed with a structural validator that was asked for them and
+    /// had no registry for the edition, they carry <c>EDITION-UNKNOWN</c>.
+    /// <see cref="Validator.Validate(byte[], IEnumerable{Model.Registry}?, Json.Limits?)"/> composes
+    /// the reader and the structural validator this way.
     /// </remarks>
     /// <param name="other">the other result</param>
     /// <returns>the composed result</returns>
@@ -157,9 +154,13 @@ public sealed class ValidationResult
     }
 
     /// <summary>
-    /// Returns the reason that survives where two runs both did not evaluate a layer: a layer
-    /// that was not requested stays so, and of the other three the first in the order of the
-    /// specification, section 9.5 wins.
+    /// Returns the reason a layer keeps where two runs both did not evaluate it (specification,
+    /// section 9.5). A layer one run names <c>NOT-REQUESTED</c> keeps that reason, unless the
+    /// other run names <c>EDITION-UNKNOWN</c>: only a run asked for a model layer establishes that
+    /// reason, so the layer was asked for. <c>LIMIT</c> and <c>PRECEDING-LAYER-FAILED</c> do not
+    /// displace <c>NOT-REQUESTED</c>, because a run reports them for the layers after the one that
+    /// stopped whether or not anybody asked for those. Of the other three reasons the first in the
+    /// order <c>LIMIT</c>, <c>PRECEDING-LAYER-FAILED</c>, <c>EDITION-UNKNOWN</c> is kept.
     /// </summary>
     /// <param name="mine">the reason of one run</param>
     /// <param name="theirs">the reason of the other</param>
@@ -168,7 +169,10 @@ public sealed class ValidationResult
     {
         if (mine == NotEvaluatedReason.NotRequested || theirs == NotEvaluatedReason.NotRequested)
         {
-            return NotEvaluatedReason.NotRequested;
+            NotEvaluatedReason other = mine == NotEvaluatedReason.NotRequested ? theirs : mine;
+            return other == NotEvaluatedReason.EditionUnknown
+                ? NotEvaluatedReason.EditionUnknown
+                : NotEvaluatedReason.NotRequested;
         }
 
         return mine <= theirs ? mine : theirs;

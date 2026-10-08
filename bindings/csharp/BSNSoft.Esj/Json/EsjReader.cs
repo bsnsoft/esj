@@ -217,6 +217,8 @@ public sealed class EsjReader
         private long _binaryBytes;
         private int _extensionNodes;
         private SemanticPath? _currentPath;
+        private bool _colonPending;
+        private int _nameStart;
 
         internal Parse(byte[] bytes, Limits limits, List<Finding>? collector)
         {
@@ -348,7 +350,6 @@ public sealed class EsjReader
         private string Edition()
         {
             string value = EnvelopeString("semanticModel", "semanticModel");
-            HoldToStringBound(value, "semanticModel");
             if (!Esj.IsEdition(value))
             {
                 throw Fatal(FindingCode.EnvelopeValue, "semanticModel",
@@ -363,7 +364,6 @@ public sealed class EsjReader
         private void Fixed(string member, string expected)
         {
             string value = EnvelopeString(member, member);
-            HoldToStringBound(value, member);
             if (!string.Equals(expected, value, StringComparison.Ordinal))
             {
                 throw Fatal(FindingCode.EnvelopeValue, member,
@@ -373,11 +373,10 @@ public sealed class EsjReader
         }
 
         /// <summary>
-        /// Reads a string of the envelope or of <c>source</c>: one JSON token, read whole under the
-        /// guard of <see cref="Guard"/> and screened for a lone surrogate before any check reads
-        /// it, since a string with no UTF-8 encoding spells no value. The caller then holds it to
-        /// the string bound of section 12.2 as it stands — these strings are never normalized —
-        /// with <see cref="HoldToStringBound"/>.
+        /// Reads a string of the envelope or of <c>source</c>: one JSON token, screened for a lone
+        /// surrogate before any check reads it, since a string with no UTF-8 encoding spells no
+        /// value, and then held to the string bound of section 12.2 as it stands — these strings are
+        /// never normalized.
         /// </summary>
         private string EnvelopeString(string name, string access)
         {
@@ -387,38 +386,22 @@ public sealed class EsjReader
                 throw RefuseType(kind, access, name + " is " + Describe(kind) + ", not a string");
             }
 
-            string value = GuardedString(Guard, access);
+            string value = BoundString(_limits.MaxStringBytes, access, false);
             RequireUnicode(value, access);
             return value;
         }
 
         /// <summary>
-        /// The guard a string outside <c>values</c> is read under: the larger of the two string
-        /// bounds, because the scanner reads it before the reader knows which bound applies.
+        /// Reads a string under a bound, in UTF-8 bytes, as it stands or
+        /// <paramref name="normalized"/>, and stops at <c>ESJ-L1-LIMIT</c> naming
+        /// <paramref name="access"/> where the content passes it and carries no lone surrogate.
         /// </summary>
-        private long Guard => Math.Max(_limits.MaxStringBytes, _limits.MaxBinaryValueBytes);
-
-        /// <summary>
-        /// Reads a string under a guard, in raw UTF-8 bytes, and stops at <c>ESJ-L1-LIMIT</c> naming
-        /// <paramref name="access"/> as soon as the content passes it.
-        /// </summary>
-        private string GuardedString(long guard, string access)
+        private string BoundString(long bound, string access, bool normalized)
         {
             int start = _at;
-            return ReadString(guard)
-                ?? throw LimitAt("a string is longer than " + guard + " bytes" + TokenAt(start), access);
+            return ReadString(bound, normalized)
+                ?? throw LimitAt("a string is longer than " + bound + " bytes" + TokenAt(start), access);
         }
-
-        /// <summary>Holds a string outside <c>values</c> to the string bound of section 12.2, as it stands.</summary>
-        private void HoldToStringBound(string value, string access)
-        {
-            if (Texts.Utf8Length(value) > _limits.MaxStringBytes)
-            {
-                throw LimitAt(access + " is longer than " + _limits.MaxStringBytes + " bytes", access);
-            }
-        }
-
-        private static long Twice(long bound) => bound > long.MaxValue / 2 ? long.MaxValue : 2 * bound;
 
         /// <summary>
         /// Refuses a member of the envelope or of <c>source</c> whose JSON type is wrong. A scalar
@@ -464,8 +447,6 @@ public sealed class EsjReader
                     throw Fatal(FindingCode.EnvelopeValue, access, name + " is the empty string");
                 }
 
-                HoldToStringBound(value, access);
-
                 if (name == "syntax")
                 {
                     syntax = value;
@@ -510,12 +491,12 @@ public sealed class EsjReader
 
                 if (++_valueCount > _limits.MaxValues)
                 {
-                    throw LimitAt("values carries more than " + _limits.MaxValues + " members", access);
+                    throw LimitAt("values carries more than " + _limits.MaxValues + " members" + TokenAt(_nameStart), access);
                 }
 
                 if (Texts.Utf8Length(name) > _limits.MaxPathBytes)
                 {
-                    throw LimitAt("a semantic path is longer than " + _limits.MaxPathBytes + " bytes", access);
+                    throw LimitAt("a semantic path is longer than " + _limits.MaxPathBytes + " bytes" + TokenAt(_nameStart), access);
                 }
 
                 SemanticPath? path = ReadPath(name, access);
@@ -540,7 +521,7 @@ public sealed class EsjReader
 
             if (path.Segments.Count > _limits.MaxPathSegments)
             {
-                throw LimitAt("a semantic path has more than " + _limits.MaxPathSegments + " segments", access);
+                throw LimitAt("a semantic path has more than " + _limits.MaxPathSegments + " segments" + TokenAt(_nameStart), access);
             }
 
             return path;
@@ -551,10 +532,9 @@ public sealed class EsjReader
             JsonKind kind = PeekKind();
             if (kind == JsonKind.String)
             {
-                // The bound is measured on the normalized content (section 6.8), which is never
-                // less than half the raw one, so a string past twice the bound as it stands is past
-                // it however it reads; the bound itself is applied once the content is normalized.
-                string raw = GuardedString(Twice(_limits.MaxStringBytes), access);
+                // The bound is measured on the normalized content (section 6.8), and after the
+                // string has been found free of a lone surrogate (section 9.6).
+                string raw = BoundString(_limits.MaxStringBytes, access, true);
                 string? content = String(raw, access, "this value", false);
                 return content is null ? null : new SemanticValue(content);
             }
@@ -586,7 +566,6 @@ public sealed class EsjReader
             List<Member> members = new();
             HashSet<string> seen = new(StringComparer.Ordinal);
             bool component = false;
-            long guard = Twice(Guard);
             foreach (string name in Members(member => ValueMemberAccess(where, member)))
             {
                 string access = ValueMemberAccess(where, name);
@@ -594,7 +573,7 @@ public sealed class EsjReader
 
                 if (members.Count >= _limits.MaxValueMembers)
                 {
-                    throw LimitAt("a value object carries more than " + _limits.MaxValueMembers + " members", where);
+                    throw LimitAt("a value object carries more than " + _limits.MaxValueMembers + " members" + TokenAt(_nameStart), where);
                 }
 
                 component |= Array.IndexOf(ComponentMembers, name) >= 0;
@@ -603,10 +582,15 @@ public sealed class EsjReader
                 string? text = null;
                 if (kind == JsonKind.String)
                 {
-                    // The guard here takes the larger of the two bounds, because whether this is
-                    // the content of a binary object is decided by members that may follow; the
-                    // finer bound is applied once the object is judged.
-                    text = GuardedString(guard, access);
+                    // A supplementary component is held to the string bound as it is read; the
+                    // value member to the larger of the two bounds, because whether it is the
+                    // content of a binary object is decided by members that may follow, and to its
+                    // own bound once the object is judged (section 12.2). A string with a lone
+                    // surrogate is held to neither (section 9.6).
+                    long bound = name == "value"
+                        ? Math.Max(_limits.MaxStringBytes, _limits.MaxBinaryValueBytes)
+                        : _limits.MaxStringBytes;
+                    text = BoundString(bound, access, true);
                 }
                 else
                 {
@@ -702,6 +686,12 @@ public sealed class EsjReader
             Dictionary<string, string> checkedMembers = new(StringComparer.Ordinal);
             foreach (KeyValuePair<string, string> member in members)
             {
+                if (Texts.HasLoneSurrogate(member.Value))
+                {
+                    // Reported already, and the first check of the string that fails (section 9.6).
+                    continue;
+                }
+
                 string? content = Content(member.Value, ValueMemberAccess(where, member.Key), member.Key,
                     binary && member.Key == "value");
                 if (content is null)
@@ -836,8 +826,8 @@ public sealed class EsjReader
 
                         int start = _at;
                         string name = ReadName();
-                        Colon();
                         CheckNameBound(name, start, () => access);
+                        Colon();
                     }
                     else if (!NextElement(container.Any))
                     {
@@ -964,7 +954,6 @@ public sealed class EsjReader
 
                     int start = _at;
                     string name = ReadName();
-                    Colon();
                     Where memberWhere = new(container.Where, name);
                     CheckNameBound(name, start, memberWhere.Text);
                     if (Texts.HasLoneSurrogate(name))
@@ -977,6 +966,7 @@ public sealed class EsjReader
                         throw Duplicate(name, memberWhere.Text());
                     }
 
+                    Colon();
                     container.Expect(name);
                     where = memberWhere;
                 }
@@ -1011,17 +1001,12 @@ public sealed class EsjReader
             {
                 case JsonKind.String:
                     int start = _at;
-                    string value = ReadString(Guard)
-                        ?? throw LimitAt("a string is longer than " + Guard + " bytes" + TokenAt(start), where.Text());
+                    string value = ReadString(_limits.MaxStringBytes)
+                        ?? throw LimitAt("a string is longer than " + _limits.MaxStringBytes + " bytes"
+                            + TokenAt(start), where.Text());
                     if (Texts.HasLoneSurrogate(value))
                     {
                         throw Fatal(FindingCode.Surrogate, where.Text(), "a string carries an unpaired surrogate");
-                    }
-
-                    if (Texts.Utf8Length(value) > _limits.MaxStringBytes)
-                    {
-                        throw LimitAt("a string inside extensions is longer than " + _limits.MaxStringBytes
-                            + " bytes" + TokenAt(start), where.Text());
                     }
 
                     return ExtensionValue.OfString(value);
@@ -1212,9 +1197,12 @@ public sealed class EsjReader
                 }
 
                 int start = _at;
+                _nameStart = start;
                 string name = ReadName();
-                Colon();
                 CheckNameBound(name, start, () => access(name));
+                // The colon is read where the value is (PeekKind), so that the caller judges the
+                // name before the text after it (specification, section 9.6).
+                _colonPending = true;
                 any = true;
                 yield return name;
             }
@@ -1319,6 +1307,12 @@ public sealed class EsjReader
         /// </summary>
         private JsonKind PeekKind()
         {
+            if (_colonPending)
+            {
+                _colonPending = false;
+                Colon();
+            }
+
             SkipWhitespace();
             if (_at >= _text.Length)
             {
@@ -1360,12 +1354,26 @@ public sealed class EsjReader
         private string ReadName() => ReadString(long.MaxValue)!;
 
         /// <summary>
-        /// Reads one JSON string and returns what it decodes to, or <c>null</c> where its content
-        /// takes more bytes of UTF-8 than <paramref name="bound"/>, in which case the reader stops
-        /// inside it: a limit outranks whatever the reader would have met further on. A lone
-        /// surrogate counts the three bytes of its generalized encoding; it is not judged here.
+        /// What <see cref="ReadString"/> returns for a string past its bound that carries a lone
+        /// surrogate: the surrogate alone, which every caller refuses for the surrogate.
         /// </summary>
-        private string? ReadString(long bound, bool keep = true)
+        private static readonly string LoneSurrogate = new('\uD800', 1);
+
+        /// <summary>
+        /// Reads one JSON string and returns what it decodes to, measuring its content in UTF-8
+        /// bytes against <paramref name="bound"/>. A lone surrogate counts the three bytes of its
+        /// generalized encoding, and measured <paramref name="normalized"/>, a LF straight after a
+        /// CR counts nothing, because the two become one LF (specification, section 6.8).
+        /// </summary>
+        /// <remarks>
+        /// A string past the bound is read to its end without being kept, because the checks of
+        /// one string run in a fixed order and a lone surrogate comes before the bound
+        /// (specification, section 9.6): one that carries a lone surrogate is returned as
+        /// <see cref="LoneSurrogate"/>, which every caller refuses for the surrogate before it asks
+        /// anything else, and any other one as <c>null</c>, which the caller refuses with
+        /// <c>ESJ-L1-LIMIT</c>.
+        /// </remarks>
+        private string? ReadString(long bound, bool normalized = false, bool keep = true)
         {
             SkipWhitespace();
             if (_at >= _text.Length || _text[_at] != '"')
@@ -1375,9 +1383,12 @@ public sealed class EsjReader
 
             int start = _at;
             _at++;
-            StringBuilder? value = keep ? new StringBuilder() : null;
+            StringBuilder? value = keep ? new() : null;
+            bool over = false;
             long bytes = 0;
             bool afterHigh = false;
+            bool lone = false;
+            bool afterCr = false;
             while (true)
             {
                 if (_at >= _text.Length)
@@ -1388,7 +1399,13 @@ public sealed class EsjReader
                 char character = _text[_at++];
                 if (character == '"')
                 {
-                    return value is null ? string.Empty : value.ToString();
+                    lone |= afterHigh;
+                    if (!over)
+                    {
+                        return value is null ? string.Empty : value.ToString();
+                    }
+
+                    return lone ? LoneSurrogate : null;
                 }
 
                 if (character < 0x20)
@@ -1401,27 +1418,27 @@ public sealed class EsjReader
                     character = Escape(start);
                 }
 
-                if (character < 0x80)
+                if (char.IsLowSurrogate(character) && afterHigh)
                 {
                     bytes += 1;
-                }
-                else if (character < 0x800)
-                {
-                    bytes += 2;
-                }
-                else if (char.IsLowSurrogate(character) && afterHigh)
-                {
-                    bytes += 1;
+                    afterHigh = false;
                 }
                 else
                 {
-                    bytes += 3;
+                    lone |= afterHigh || char.IsLowSurrogate(character);
+                    if (!(normalized && afterCr && character == '\n'))
+                    {
+                        bytes += character < 0x80 ? 1 : character < 0x800 ? 2 : 3;
+                    }
+
+                    afterHigh = char.IsHighSurrogate(character);
                 }
 
-                afterHigh = char.IsHighSurrogate(character);
-                if (bytes > bound)
+                afterCr = character == '\r';
+                if (!over && bytes > bound)
                 {
-                    return null;
+                    over = true;
+                    value = null;
                 }
 
                 value?.Append(character);
@@ -1555,7 +1572,7 @@ public sealed class EsjReader
             switch (kind)
             {
                 case JsonKind.String:
-                    ReadString(long.MaxValue, false);
+                    ReadString(long.MaxValue, keep: false);
                     break;
                 case JsonKind.Number:
                     ReadNumberToken(() => access, false);
