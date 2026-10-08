@@ -250,9 +250,12 @@ configuration and not a defect of the document.
 
 `evaluated()` and `notEvaluated()` partition the three layers, so every result states what it
 did not do; the reason comes from the closed vocabulary `NotEvaluatedReason` — `LIMIT`,
-`PRECEDING-LAYER-FAILED`, `EDITION-UNKNOWN`, `NOT-REQUESTED`, in the order of precedence
-`SPEC.md` 9.5 fixes, which also decides which survives a `merge`. `registries()` names what the
-run measured against. A structural validator never evaluates L1 and a reader evaluates nothing
+`PRECEDING-LAYER-FAILED` and `EDITION-UNKNOWN` in the order of precedence `SPEC.md` 9.5 fixes,
+and `NOT-REQUESTED`, which a layer the caller did not ask for keeps whatever else happened. A
+`merge` follows the same rule: a `LIMIT` or `PRECEDING-LAYER-FAILED` a reader names for the model
+layers does not displace the `NOT-REQUESTED` of a validator not asked for one, and the
+`EDITION-UNKNOWN` of a validator that was asked is kept over the `NOT-REQUESTED` of a clean read.
+`registries()` names what the run measured against. A structural validator never evaluates L1 and a reader evaluates nothing
 else, so neither alone may say `VALID`; `merge` composes them (`SPEC.md` 3.5).
 
 ```java
@@ -265,7 +268,10 @@ ValidationResult verdict = read.isWellFormed()
 
 Layer L1 is the reader's: it is decided by the bytes, so the validator refuses to be asked
 for it. An extension registry is loaded beside the core one, and the paths it describes are
-then checked rather than reported as unchecked.
+then checked rather than reported as unchecked. `withExtension` refuses an extension whose
+`imports` disagree with what it does — one that places terms under core terms without naming
+that model and edition — and `Registry.admits(extension)` asks the edition question before
+combining.
 
 ```java
 Registry registry = Registry.en16931().withExtension(Registry.xrechnungExtension());

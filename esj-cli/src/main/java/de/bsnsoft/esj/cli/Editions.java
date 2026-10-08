@@ -193,7 +193,7 @@ final class Editions {
     private static Registry withExtensions(Registry core, Extensions extensions) {
         Registry combined = core;
         for (Registry extension : extensions.registries()) {
-            if (fits(core, extension)) {
+            if (core.admits(extension)) {
                 combined = combined.withExtension(extension);
             }
         }
@@ -201,16 +201,51 @@ final class Editions {
     }
 
     /**
-     * Tells whether an extension registry was written against the edition of a core
-     * registry.
+     * Returns the extensions this run loads that were left out of the registry a document
+     * is measured against, because each of them was written against another edition than
+     * the one the document names.
+     *
+     * <p>A path of such an extension is reported as not checked, as it would be without
+     * the option; what differs is why, and a caller who passed {@code --extension} is told
+     * that the registry was there and imports another edition, not that it was missing.
+     *
+     * @param document  the document
+     * @param extension the extension registries this run loads
+     * @return the extensions left out, empty where every one of them fits or where this
+     *         build carries no registry of the edition at all
      */
-    private static boolean fits(Registry core, Registry extension) {
-        for (Registry.Import imported : extension.imports()) {
-            if (imported.model().equals(core.model())
-                    && !imported.edition().equals(core.edition())) {
-                return false;
+    static List<Extensions.Extension> leftOut(SemanticDocument document, Extensions extension) {
+        Objects.requireNonNull(document, "document");
+        Optional<Registry> core = Registry.forSemanticModel(document.semanticModel());
+        if (core.isEmpty()) {
+            return List.of();
+        }
+        List<Extensions.Extension> left = new ArrayList<>();
+        for (Extensions.Extension loaded : Extensions.Extension.values()) {
+            if (extension.loaded().contains(loaded) && !core.get().admits(loaded.registry())) {
+                left.add(loaded);
             }
         }
-        return true;
+        return List.copyOf(left);
+    }
+
+    /**
+     * Returns what a run says of a path of an extension it loads and left out for the
+     * edition of the document: the option that loaded it, the edition it imports and that
+     * it is not this one.
+     *
+     * @param loaded        the extension
+     * @param semanticModel the {@code semanticModel} of the document
+     * @return the sentence, without a closing full stop
+     */
+    static String otherEdition(Extensions.Extension loaded, String semanticModel) {
+        Registry registry = loaded.registry();
+        List<String> imported = new ArrayList<>();
+        for (Registry.Import entry : registry.imports()) {
+            imported.add(entry.edition().replace(" ", ""));
+        }
+        return "--extension " + loaded.token() + " loads " + registry.edition()
+                + ", which imports " + String.join(", ", imported)
+                + ", not this edition (" + semanticModel + ")";
     }
 }

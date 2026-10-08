@@ -146,8 +146,8 @@ class ValidationResultTest {
     @Test
     void mergeKeepsTheFindingsTheRegistriesAndTheStrongerReason() {
         ValidationResult left = ValidationResult.of(List.of(finding(FindingCode.ESJ_L1_LIMIT)),
-                Map.of(ValidationLayer.L2, NotEvaluatedReason.NOT_REQUESTED,
-                        ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED),
+                Map.of(ValidationLayer.L2, NotEvaluatedReason.PRECEDING_LAYER_FAILED,
+                        ValidationLayer.L3, NotEvaluatedReason.PRECEDING_LAYER_FAILED),
                 List.of("a"));
         ValidationResult right = ValidationResult.of(List.of(finding(FindingCode.ESJ_L2_DATE)),
                 Map.of(ValidationLayer.L2, NotEvaluatedReason.EDITION_UNKNOWN,
@@ -158,7 +158,7 @@ class ValidationResultTest {
 
         assertEquals(List.of(FindingCode.ESJ_L1_LIMIT, FindingCode.ESJ_L2_DATE),
                 both.findings().stream().map(Finding::code).toList());
-        assertEquals(NotEvaluatedReason.EDITION_UNKNOWN,
+        assertEquals(NotEvaluatedReason.PRECEDING_LAYER_FAILED,
                 both.notEvaluated().get(ValidationLayer.L2));
         assertEquals(NotEvaluatedReason.LIMIT, both.notEvaluated().get(ValidationLayer.L3));
         assertEquals(List.of("a", "b"), both.registries());
@@ -185,6 +185,52 @@ class ValidationResultTest {
                 both.notEvaluated().get(ValidationLayer.L2));
         assertEquals(NotEvaluatedReason.PRECEDING_LAYER_FAILED,
                 both.notEvaluated().get(ValidationLayer.L3));
+    }
+
+    /**
+     * A layer the caller did not ask for keeps {@code NOT-REQUESTED} whatever else happened
+     * (specification, section 9.5). A reader whose layer L1 failed or met a limit names
+     * the model layers as not evaluated for that reason whether or not anybody asked for
+     * them, so the composition of its result with a validator asked for L2 alone leaves
+     * L3 not requested rather than failed.
+     */
+    @Test
+    void aLayerTheCallerDidNotAskForStaysNotRequested() {
+        ValidationResult modelOnly = ValidationResult.of(List.of(),
+                Map.of(ValidationLayer.L1, NotEvaluatedReason.NOT_REQUESTED,
+                        ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED));
+        for (NotEvaluatedReason stopped : List.of(NotEvaluatedReason.LIMIT,
+                NotEvaluatedReason.PRECEDING_LAYER_FAILED)) {
+            ValidationResult read = ValidationResult.of(List.of(),
+                    Map.of(ValidationLayer.L2, stopped, ValidationLayer.L3, stopped));
+
+            assertEquals(Map.of(ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED),
+                    read.merge(modelOnly).notEvaluated(), stopped.token());
+            assertEquals(Map.of(ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED),
+                    modelOnly.merge(read).notEvaluated(), stopped.token());
+        }
+    }
+
+    /**
+     * The reader of a clean read names the model layers {@code NOT-REQUESTED}, because it
+     * does not run them; a validator that was asked for them and holds no registry of the
+     * edition establishes {@code EDITION-UNKNOWN}, and that is what the composition says.
+     * A layer neither of them was asked for stays not requested.
+     */
+    @Test
+    void anUnknownEditionOfALayerThatWasAskedForIsKept() {
+        ValidationResult read = ValidationResult.of(List.of(),
+                Map.of(ValidationLayer.L2, NotEvaluatedReason.NOT_REQUESTED,
+                        ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED));
+        ValidationResult model = ValidationResult.of(List.of(),
+                Map.of(ValidationLayer.L1, NotEvaluatedReason.NOT_REQUESTED,
+                        ValidationLayer.L2, NotEvaluatedReason.EDITION_UNKNOWN,
+                        ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED));
+
+        assertEquals(Map.of(ValidationLayer.L2, NotEvaluatedReason.EDITION_UNKNOWN,
+                        ValidationLayer.L3, NotEvaluatedReason.NOT_REQUESTED),
+                read.merge(model).notEvaluated());
+        assertEquals(read.merge(model).notEvaluated(), model.merge(read).notEvaluated());
     }
 
     @Test

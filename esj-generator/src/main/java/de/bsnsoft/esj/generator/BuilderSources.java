@@ -207,11 +207,11 @@ final class BuilderSources {
         if (TypedSources.datatype(child) != SemanticType.QUANTITY) {
             return null;
         }
-        String expected = naming.memberName(child) + "UnitCode";
+        String expected = child.slug() + "UnitCode";
         for (Term sibling : children.get(key)) {
             if (!sibling.isGroup()
                     && sibling.datatype().orElse(null) == SemanticType.CODE
-                    && naming.memberName(sibling).equals(expected)
+                    && sibling.slug().equals(expected)
                     && !sibling.isRepeatable()) {
                 return sibling;
             }
@@ -311,7 +311,7 @@ final class BuilderSources {
         if (index == 0) {
             return "Start";
         }
-        return "With" + Naming.upperCamel(naming.memberName(chain.get(index - 1).term()));
+        return "With" + Naming.upperCamel(chain.get(index - 1).term().slug());
     }
 
     // ------------------------------------------------------------------ the interfaces

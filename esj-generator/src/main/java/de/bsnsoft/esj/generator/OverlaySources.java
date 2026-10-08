@@ -231,7 +231,7 @@ final class OverlaySources {
         List<Child> children = new ArrayList<>();
         for (int i = 0; i < exposed.size(); i++) {
             Term child = exposed.get(i);
-            children.add(new Child(child, names.get(i), singular(child, names, i)));
+            children.add(new Child(child, Naming.escaped(names.get(i)), singular(child, names, i)));
         }
         return children;
     }
@@ -246,11 +246,11 @@ final class OverlaySources {
                     + child.id() + " has no singular form: " + member);
         }
         String singular = member.substring(0, member.length() - 1);
-        if (!Naming.isUsableMemberName(singular) || names.contains(singular)) {
+        if (names.contains(singular)) {
             throw new IllegalStateException("the singular of the overlay member of " + child.id()
                     + " is not a member name it can have: " + singular);
         }
-        return singular;
+        return Naming.escaped(singular);
     }
 
     private String typeName(Group group) {

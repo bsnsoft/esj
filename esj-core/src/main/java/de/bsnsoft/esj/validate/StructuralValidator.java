@@ -70,9 +70,21 @@ import java.util.TreeSet;
  * layer L3. Layer L3 would otherwise report a second, derived problem for every path whose
  * position is already in doubt.
  *
- * <p>A path that leads through an extension whose registry is not loaded is reported as
- * {@link FindingCode#ESJ_L2_NOT_CHECKED}, with the severity {@code info}: not knowing is
- * not a defect of the document (specification, section 5.6).
+ * <p>A path that leads through an extension identifier no loaded registry defines is
+ * reported as {@link FindingCode#ESJ_L2_NOT_CHECKED}, with the severity {@code info}: not
+ * knowing is not a defect of the document (specification, section 5.6). A core identifier
+ * the registry does not contain is {@link FindingCode#ESJ_L2_UNKNOWN_TERM} in every path,
+ * also beside such an extension identifier, because no extension can supply one.
+ *
+ * <p>A finding of layer L2 names in its subject what the path alone cannot tell apart
+ * (specification, section 9.5): the identifier of the segment for
+ * {@link FindingCode#ESJ_L2_UNKNOWN_TERM}, {@link FindingCode#ESJ_L2_INDEX_REQUIRED} and
+ * {@link FindingCode#ESJ_L2_INDEX_FORBIDDEN}, the identifier of the term whose group chain
+ * is wrong for {@link FindingCode#ESJ_L2_PARENT_CHAIN}, and the name of the component for
+ * {@link FindingCode#ESJ_L2_COMPONENT_NOT_ALLOWED} and
+ * {@link FindingCode#ESJ_L2_COMPONENT_MISSING}. A finding about the content of a value has
+ * the path alone, and so has a finding that a path was not checked. A finding of layer L3
+ * names the term or group it is about.
  */
 public final class StructuralValidator {
 
@@ -230,8 +242,9 @@ public final class StructuralValidator {
                                           Set<ValidationLayer> layers) {
         List<Finding> model = new ArrayList<>();
         List<SemanticPath> placed = new ArrayList<>();
+        Set<String> namespaces = namespaces(registry);
         for (Map.Entry<SemanticPath, SemanticValue> entry : document.values().entrySet()) {
-            if (checkValue(entry.getKey(), entry.getValue(), registry, model)) {
+            if (checkValue(entry.getKey(), entry.getValue(), registry, namespaces, model)) {
                 placed.add(entry.getKey());
             }
         }
@@ -255,41 +268,102 @@ public final class StructuralValidator {
         }
     }
 
+    /**
+     * Checks one path and its value at layer L2, and tells whether the path is placed in
+     * the structure of the document, which is what layer L3 counts.
+     *
+     * <p>Every check whose answer is certain is made, and each one reports on its own: a
+     * document with fifty problems draws fifty findings (specification, section 9.2). Only
+     * a term the registries do not define ends the checks, and only those below it, because
+     * what lies under a term nobody describes has no position anyone could measure:
+     *
+     * <ul>
+     *   <li>Every term segment is looked up. A core identifier the registry does not
+     *       contain is {@link FindingCode#ESJ_L2_UNKNOWN_TERM}, once for every such
+     *       segment and with that identifier as the subject, whatever else the path
+     *       carries: an extension can never supply a core identifier, so no registry that
+     *       is not loaded could make it known. An extension identifier the registries do
+     *       not define makes the path {@link FindingCode#ESJ_L2_NOT_CHECKED}, once, whether
+     *       its namespace is not loaded at all or is loaded and does not define that
+     *       identifier — a namespace may grow, so a later registry of it may (section 5.6).</li>
+     *   <li>Every segment above the first one that is not defined is held to the index
+     *       rule of section 5.3. Its cardinality comes from the registry that defines it,
+     *       and nothing below it changes that.</li>
+     *   <li>Where every term is defined, the group chain, the content grammar and the
+     *       supplementary components are checked as well, each independently of the
+     *       others and of the index rule.</li>
+     * </ul>
+     */
     private static boolean checkValue(SemanticPath path,
                                       SemanticValue value,
                                       Registry registry,
+                                      Set<String> namespaces,
                                       List<Finding> findings) {
-        for (PathSegment segment : path.segments()) {
-            if (segment instanceof PathSegment.Term term
-                    && term.isExtension()
-                    && registry.term(term.id()).isEmpty()) {
+        List<PathSegment> segments = path.segments();
+        boolean defined = true;
+        boolean shapeIsRight = true;
+        boolean notChecked = false;
+        for (int i = 0; i < segments.size(); i++) {
+            if (!(segments.get(i) instanceof PathSegment.Term term)) {
+                continue;
+            }
+            if (registry.term(term.id()).isPresent()) {
+                if (defined) {
+                    shapeIsRight &= checkIndexRule(path, i, term, registry, findings);
+                }
+                continue;
+            }
+            defined = false;
+            if (!term.isExtension()) {
+                findings.add(Finding.about(path, term.id(), FindingCode.ESJ_L2_UNKNOWN_TERM,
+                        "the registry of " + registry.edition() + " does not contain "
+                                + term.id()));
+            } else if (!notChecked) {
+                notChecked = true;
                 findings.add(Finding.of(path, FindingCode.ESJ_L2_NOT_CHECKED,
-                        "the registry that defines " + term.id() + " is not loaded,"
-                                + " so this path was not checked against it"));
-                return false;
+                        notCheckedMessage(term, namespaces)));
             }
         }
-        boolean known = true;
-        for (PathSegment segment : path.segments()) {
-            if (segment instanceof PathSegment.Term term && registry.term(term.id()).isEmpty()) {
-                findings.add(Finding.of(path, FindingCode.ESJ_L2_UNKNOWN_TERM,
-                        "the registry of " + registry.edition() + " does not contain " + term.id()));
-                known = false;
-            }
-        }
-        if (!known) {
+        if (!defined) {
             return false;
         }
 
-        boolean shapeIsRight = checkIndexRule(path, registry, findings);
         boolean chainIsRight = recordsChain(registry, path);
         if (!chainIsRight) {
-            findings.add(Finding.of(path, FindingCode.ESJ_L2_PARENT_CHAIN,
+            findings.add(Finding.about(path, path.term(), FindingCode.ESJ_L2_PARENT_CHAIN,
                     "the group chain of this path is none the registry records for "
                             + path.term() + "; the registry records " + registry.chains(path.term())));
         }
         checkContent(path, value, registry, findings);
         return shapeIsRight && chainIsRight;
+    }
+
+    /**
+     * Says why a path through an extension identifier was not checked: either no registry
+     * of its namespace is loaded, or one is and does not define it. The second is not a
+     * defect either, because a namespace may grow and a later registry of it may define
+     * the identifier (specification, section 5.6).
+     */
+    private static String notCheckedMessage(PathSegment.Term term, Set<String> namespaces) {
+        if (namespaces.contains(term.namespace())) {
+            return "the loaded registry of the namespace " + term.namespace()
+                    + " does not define " + term.id() + ", and a later registry of that"
+                    + " namespace may, so this path was not checked against it";
+        }
+        return "no registry of the namespace " + term.namespace() + ", which defines "
+                + term.id() + ", is loaded, so this path was not checked against it";
+    }
+
+    /** Returns the extension namespaces the registry defines terms of. */
+    private static Set<String> namespaces(Registry registry) {
+        Set<String> namespaces = new TreeSet<>();
+        for (Term term : registry.terms()) {
+            String[] parts = term.id().split("-", -1);
+            if (parts.length == 3) {
+                namespaces.add(parts[1]);
+            }
+        }
+        return namespaces;
     }
 
     /**
@@ -329,28 +403,35 @@ public final class StructuralValidator {
         return registry.children(id).stream().anyMatch(child -> child.id().equals(id));
     }
 
-    private static boolean checkIndexRule(SemanticPath path, Registry registry, List<Finding> findings) {
+    /**
+     * Holds one term segment of a path to the index rule of section 5.3, in both
+     * directions, and names the term in the finding's subject: a path may break the rule at
+     * more than one of its segments, and the subject tells those findings apart.
+     *
+     * @return whether the segment obeys the rule
+     */
+    private static boolean checkIndexRule(SemanticPath path,
+                                          int position,
+                                          PathSegment.Term term,
+                                          Registry registry,
+                                          List<Finding> findings) {
         List<PathSegment> segments = path.segments();
-        boolean right = true;
-        for (int i = 0; i < segments.size(); i++) {
-            if (!(segments.get(i) instanceof PathSegment.Term term)) {
-                continue;
-            }
-            boolean carriesIndex = i + 1 < segments.size() && segments.get(i + 1) instanceof PathSegment.Index;
-            boolean repeatable = registry.isRepeatable(term.id());
-            if (repeatable && !carriesIndex) {
-                findings.add(Finding.of(path, FindingCode.ESJ_L2_INDEX_REQUIRED,
-                        term.id() + " is declared " + registry.cardinality(term.id())
-                                + ", so its segment is followed by an occurrence index"));
-                right = false;
-            } else if (!repeatable && carriesIndex) {
-                findings.add(Finding.of(path, FindingCode.ESJ_L2_INDEX_FORBIDDEN,
-                        term.id() + " is declared " + registry.cardinality(term.id())
-                                + ", so its segment is not followed by an occurrence index"));
-                right = false;
-            }
+        boolean carriesIndex = position + 1 < segments.size()
+                && segments.get(position + 1) instanceof PathSegment.Index;
+        boolean repeatable = registry.isRepeatable(term.id());
+        if (repeatable && !carriesIndex) {
+            findings.add(Finding.about(path, term.id(), FindingCode.ESJ_L2_INDEX_REQUIRED,
+                    term.id() + " is declared " + registry.cardinality(term.id())
+                            + ", so its segment is followed by an occurrence index"));
+            return false;
         }
-        return right;
+        if (!repeatable && carriesIndex) {
+            findings.add(Finding.about(path, term.id(), FindingCode.ESJ_L2_INDEX_FORBIDDEN,
+                    term.id() + " is declared " + registry.cardinality(term.id())
+                            + ", so its segment is not followed by an occurrence index"));
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -390,6 +471,13 @@ public final class StructuralValidator {
         checkComponents(path, value, term, findings);
     }
 
+    /**
+     * Checks the supplementary components of a value: first every component the value
+     * carries and the registry does not list, then every component the registry declares
+     * mandatory and the value does not carry, each in the order {@code scheme},
+     * {@code schemeVersion}, {@code mimeCode}, {@code filename}, so that two validators
+     * report the findings of one value in one order (specification, section 9.2).
+     */
     private static void checkComponents(SemanticPath path,
                                         SemanticValue value,
                                         Term term,
@@ -397,14 +485,17 @@ public final class StructuralValidator {
         Set<Component.Role> present = presentComponents(value);
         for (Component.Role role : present) {
             if (term.component(role).isEmpty()) {
-                findings.add(Finding.of(path, FindingCode.ESJ_L2_COMPONENT_NOT_ALLOWED,
+                findings.add(Finding.about(path, role.jsonMember(),
+                        FindingCode.ESJ_L2_COMPONENT_NOT_ALLOWED,
                         "the registry lists no " + role.jsonMember() + " component for " + term.id()));
             }
         }
-        for (Component component : term.components()) {
-            if (component.isMandatory() && !present.contains(component.role())) {
-                findings.add(Finding.of(path, FindingCode.ESJ_L2_COMPONENT_MISSING,
-                        "the registry declares the " + component.role().jsonMember()
+        for (Component.Role role : Component.Role.values()) {
+            Optional<Component> declared = term.component(role);
+            if (declared.isPresent() && declared.get().isMandatory() && !present.contains(role)) {
+                findings.add(Finding.about(path, role.jsonMember(),
+                        FindingCode.ESJ_L2_COMPONENT_MISSING,
+                        "the registry declares the " + role.jsonMember()
                                 + " component of " + term.id() + " as mandatory"));
             }
         }
