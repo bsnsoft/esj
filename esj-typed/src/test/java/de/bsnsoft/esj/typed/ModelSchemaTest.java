@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Checks {@code schema/esj-en16931-2017.schema.json}, the generated schema that narrows
@@ -143,6 +144,25 @@ class ModelSchemaTest {
         assertEquals(List.of(), validate(Examples.canonical(name)), name);
     }
 
+    /**
+     * A decimal, a date or a path followed by LF is none, and the generated schema refuses
+     * each of them. Its patterns end in a lookahead rather than in {@code $}, which several
+     * engines also match before a final line feed (specification, section 5.1); the test
+     * below pins that form. The replaced spelling sits in {@code minimal}.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "\"/BG-22/BT-106\": \"100\"|\"/BG-22/BT-106\": \"100\\n\"",
+        "\"/BT-2\": \"2026-01-15\"|\"/BT-2\": \"2026-01-15\\n\"",
+        "\"/BT-1\": \"RE-2026-0001\"|\"/BT-1\\n\": \"RE-2026-0001\""})
+    void aContentOrAPathFollowedByALineFeedFailsTheModelSchema(String replacement) {
+        String[] pair = replacement.split("\\|");
+        String minimal = new String(Examples.pretty("minimal"), StandardCharsets.UTF_8);
+        assertTrue(minimal.contains(pair[0]), pair[0]);
+        String broken = minimal.replace(pair[0], pair[1]);
+        assertFalse(validate(broken.getBytes(StandardCharsets.UTF_8)).isEmpty(), pair[1]);
+    }
+
     @ParameterizedTest
     @MethodSource("invalidFixtures")
     void aFixtureIsRejectedExactlyWhereTheFixtureTableSaysSo(String name) {
@@ -204,12 +224,20 @@ class ModelSchemaTest {
                 path);
     }
 
+    /**
+     * How a pattern of the schema ends, as the JSON text of the file spells it: no character
+     * follows (specification, section 5.1).
+     */
+    private static final String END = "(?![\\\\s\\\\S])";
+
     @Test
     void theModelSchemaNamesTheTermsAndRefusesEverythingElse() {
         String model = Examples.schema("esj-en16931-2017.schema.json");
-        assertTrue(model.contains("\"^/BT-1$\""), "a term at the root");
-        assertTrue(model.contains("\"^/BG-25/(?:0|[1-9][0-9]*)/BG-29/BT-146$\""),
+        assertTrue(model.contains("\"^/BT-1" + END + "\""), "a term at the root");
+        assertTrue(model.contains("\"^/BG-25/(?:0|[1-9][0-9]*)/BG-29/BT-146" + END + "\""),
                 "a term under a repeatable group");
+        assertFalse(model.contains("$\"") || model.contains("$)"),
+                "no pattern ends in $, and no lookahead inside one does");
         assertFalse(model.contains("\"^/BG-31"), "no term is addressed without its parent chain");
         assertTrue(model.contains("\"additionalProperties\": false"), "unknown terms are refused");
         assertFalse(model.contains("DEX"), "ESJ 0.1 generates the core registry alone");

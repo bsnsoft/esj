@@ -125,6 +125,24 @@ class RegistrySchemaTest {
                 "the only value of transport is none");
     }
 
+    /**
+     * An extension registry whose terms hang under a core group names the core it builds on
+     * in {@code imports} (specification, section 10). The B2C registry without its imports,
+     * and without the transport declaration that asks for them on its own account, is such
+     * a registry: its line terms hang under BG-25.
+     */
+    @Test
+    void anExtensionUnderACoreGroupWithoutImportsFailsTheSchema() {
+        String broken = text("/model/b2c/0.1.json")
+                .replaceFirst("\n  \"imports\": \\[[^\\]]*\\],", "")
+                .replaceFirst("\n  \"transport\": \"none\",", "")
+                .replaceFirst("\n  \"transportNote\": \"[^\"]*\",", "");
+        assertFalse(broken.contains("\"imports\"") || broken.contains("\"transport\""),
+                "the three members are gone");
+        assertFalse(schema.validate(broken, InputFormat.JSON).isEmpty(),
+                "an extension under a core group names the core it builds on");
+    }
+
     /** A core registry is what a syntax binds, and states nothing about transport. */
     @Test
     void aRegistryOfAModelOfItsOwnDoesNotDeclareItsTermsUntransported() {
