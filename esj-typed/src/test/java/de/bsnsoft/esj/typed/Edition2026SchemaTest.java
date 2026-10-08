@@ -140,15 +140,22 @@ class Edition2026SchemaTest {
                 "a time without an offset is outside the grammar of section 6.5");
     }
 
+    /**
+     * How a pattern of the schema ends, as the JSON text of the file spells it: no character
+     * follows (specification, section 5.1).
+     */
+    private static final String END = "(?![\\\\s\\\\S])";
+
     @Test
     @EnabledIf("carriesTheSchema")
     void theSchemaNamesTheTermsOfItsOwnEdition() {
         String model = Examples.schema(FILE);
 
-        assertTrue(model.contains("\"^/BT-166$\""), "the term of the new semantic data type Time");
-        assertTrue(model.contains("\"^/BG-33/(?:0|[1-9][0-9]*)/BT-20$\""),
+        assertTrue(model.contains("\"^/BT-166" + END + "\""),
+                "the term of the new semantic data type Time");
+        assertTrue(model.contains("\"^/BG-33/(?:0|[1-9][0-9]*)/BT-20" + END + "\""),
                 "a term the 2026 edition places inside a group");
-        assertFalse(model.contains("\"^/BT-20$\""),
+        assertFalse(model.contains("\"^/BT-20" + END + "\""),
                 "and no longer at the root, where the 2017 edition has it");
         assertTrue(model.contains("\"const\": \"EN16931-1:2026\""), "it pins its own edition");
     }

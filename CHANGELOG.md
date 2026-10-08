@@ -13,6 +13,131 @@ still change; a change to it is named here under *Format*.
   repository metadata of every artifact into the bundle, and the Portal refused the 0.9.5
   deployment. The release itself was not affected.
 
+### Format
+
+The format version stays 0.1, and the canonical bytes and both digests of every document a
+reader accepts are unchanged. `SPEC.md` now says what an implementation does where it was silent
+or contradicted itself; the section numbers are the same.
+
+- Section 4.2: a reader detects no encoding. Bytes that are not UTF-8 (RFC 3629: an overlong
+  form, an encoded surrogate, a code point past U+10FFFF) or begin with a byte order mark are
+  `ESJ-L1-ENCODING`; UTF-8 that decodes to no JSON text — UTF-16 or UTF-32 without a byte order
+  mark among it — is `ESJ-L1-JSON`.
+- Section 9.6: the document size, a byte order mark and UTF-8 are decided over the whole byte
+  sequence before any JSON is read, in that order, and a document refused for one of them draws
+  that one finding.
+- Section 6.8: CR LF and a lone CR become LF also when a value of `values` is built through an
+  interface; strings outside `values` (envelope, `source`, `extensions`) are never normalized and
+  are measured as they stand; a reader may accept a string early by its length before
+  normalization, and never refuse one by it.
+- Section 7.2, rule 5: a canonicalizer never re-encodes a binary object; the sentence about an
+  implementation that holds an attachment as bytes is gone.
+- Section 7.3: `format` and `version` are written as their fixed values, and an `extensions` or
+  `source` without members counts as absent.
+- Section 7.7: the pretty form ends in exactly one LF and writes every number inside `extensions`
+  in its canonical form, so it has one byte sequence per document content.
+- Section 12.2: the string bound (`maxStringBytes`) covers every string of the envelope
+  (`format`, `version`, `semanticModel`, `source.syntax`, `source.sha256`); "need no bound" is
+  gone.
+- Section 12.2: every member name of the document is held to the string bound in UTF-8 bytes,
+  before the grammar of its object; the owner-token and decimal bounds apply inside the limits,
+  and "never as `ESJ-L1-LIMIT`" holds only there.
+- Section 12.2: every number token, wherever it stands, is held to the string bound as it is
+  written and before it is built; past it the finding is `ESJ-L1-LIMIT`, not `ESJ-L1-JSON-TYPE`
+  or `ESJ-L1-EXT-NUMBER`.
+- Section 12.2: the table names every limit (`maxDocumentBytes`, `maxValues`,
+  `maxValueMembers`, `maxPathSegments`, `maxPathBytes`, `maxStringBytes`, `maxBinaryValueBytes`,
+  `maxTotalBinaryBytes`, `maxExtensionDepth`, `maxExtensionNodes`), and says how each is measured:
+  after JSON escapes are read, a lone surrogate counting three bytes, a count reached by the first
+  member or node past it.
+- Section 12.2: a member name of `values` is held to the string bound and the path length before
+  the path grammar, and its segments are counted once it satisfies the grammar.
+- Section 12.2: the total decoded binary content adds ⌊L/4⌋·3 − min(p, 2) bytes for a `value` of
+  length L ending in p `=`, never less than nothing, whether or not the value is canonical base64.
+- Section 9.5: `path` and `subject` are fixed for every code in one table. At L1 the path is the
+  member's path for a finding about the value of a member of `values` and empty otherwise; at L2
+  `ESJ-L2-UNKNOWN-TERM` and `ESJ-L2-INDEX-*` name the segment, `ESJ-L2-PARENT-CHAIN` the term the
+  path ends at, `ESJ-L2-COMPONENT-*` the component, and the content codes, `ESJ-L2-NOT-CHECKED`
+  and `ESJ-L2-EDITION-UNKNOWN` nothing.
+- Section 9.5: an L1 `subject` is a member access with a grammar (also in Appendix A): a name the
+  specification defines in that object after `.`, every other name in brackets as a JSON string
+  (`values["/BT-1"]`, `extensions["de.example"]["a"][0]`, an undefined top-level member
+  `["profile"]`, also `["value"]`, `source["foo"]`), an array element as `[n]`.
+- Section 9.5: `ESJ-L1-DUPLICATE-MEMBER` names the access of the name that occurs twice
+  (`values["/BT-1"]`, `format`, `source.syntax`, `extensions["a.b"]["x"]`), no longer the object
+  it occurs in; inside a value object it names the value object, as a lone surrogate in a name
+  there does.
+- Section 9.5: each missing required envelope member draws its own `ESJ-L1-ENVELOPE-MEMBER`,
+  `subject` its name, in the order `format`, `version`, `semanticModel`, `values`.
+- Section 9.5: a finding about a value object names the member the step of the order of
+  section 9.6 that applies is about, the first in document order where several are, and the
+  value object where the step is about the object as a whole.
+- Section 9.5: `ESJ-L1-LIMIT` carries the member's path where the bound is reached inside the
+  value of a member of `values`, and as `subject` the access of the member or element whose name
+  or value reaches the bound — the surplus member for `maxValues` (path empty), the value object
+  for `maxValueMembers`, the full access with indices inside `extensions`, and inside a structure
+  walked past under `values` the member walked past (`values["/BT-1"]`,
+  `values["/BT-1"].value`) and nothing deeper.
+- Section 9.5: a `subject` is never shortened; a lone surrogate is escaped as `\u` and four
+  lowercase hexadecimal digits (`\ud800`) in a message and a `subject` alike.
+- Section 9.5: a message names a place as the byte offset of the start of the token, counted from
+  zero; `ESJ-L1-JSON` MUST name it, `ESJ-L1-LIMIT` SHOULD.
+- Section 9.5: `path` and `subject` are the empty string where empty, never absent or null.
+- Section 9.5: an exception carries code, path and subject of the finding it stopped at.
+- Section 9.6: `ESJ-L1-JSON` is a finding about the document (empty path and subject), and a
+  token that is not a complete JSON value where a value stands (`tru`, `01`, `1.`, `truex`) is
+  `ESJ-L1-JSON`, not `ESJ-L1-ENVELOPE-VALUE` or `ESJ-L1-JSON-TYPE`.
+- Section 9.6: the checks of one name or string run in a fixed order — a member name: string
+  bound, lone surrogate, repeated name, then its object's checks; a string of the envelope: lone
+  surrogate, string bound, value; a member of `source`: lone surrogate, empty string, string
+  bound, `sha256` grammar; a string of `values`: lone surrogate, empty string, string bound.
+- Section 9.6: the first defect the text reaches is the one that counts, and a member name is
+  judged before the value written under it.
+- Sections 9.6 and 12.2: inside a structure a reader walks past only well-formedness and three
+  limits are checked — the depth, and the string bound on names and number tokens; a string there
+  is held to no string bound; no `ESJ-L1-SURROGATE` or `ESJ-L1-DUPLICATE-MEMBER` comes from it,
+  and the reader reads on. An undefined envelope or
+  `source` member draws `ESJ-L1-ENVELOPE-MEMBER` alone, whatever its value carries.
+- Sections 5.6 and 9.2: L2 walks the segments of a path from the left. A core segment the core
+  registry lacks is always `ESJ-L2-UNKNOWN-TERM`, one per segment, even beside an unloaded
+  extension segment; an extension segment no loaded registry carries — the namespace not loaded,
+  or an identifier the loaded registry lacks — draws one `ESJ-L2-NOT-CHECKED` per path, `subject`
+  empty; the index rule holds at every segment before the first unknown one; of a path whose
+  segments are all known, the parent chain, the content and the components are checked as well,
+  every failure reported, in that order.
+- Section 9.3: a validator handed bytes and asked for L2 or L3 alone names them
+  `PRECEDING-LAYER-FAILED` where the reader found an L1 error.
+- Section 9.5: `NOT-REQUESTED` stands outside the precedence of the other reasons, and a
+  composition of two results is stated rule by rule.
+- Sections 9.1 and 9.5: a validator handed an already parsed document MAY check the limits.
+- Section 10: loading registries refuses an identifier defined twice, an extension that defines a
+  term of the core it is combined with, an extension whose parents or `reusesTerms` name a core
+  identifier without `imports`, and a combination with a core whose model and edition `imports`
+  does not name; the three component rules are checked by every implementation.
+- Section 10: a generator refuses a repeatable group whose slug is not a plural and escapes a
+  reserved word rather than refuse it; rule 3 is about groups, and the repeatable terms BT-10 and
+  BT-46 of the 2026 registry keep their singular slugs.
+- Grammar: the two `year` productions are `edition-year` and `date-year`; `b64tail2`,
+  `b64tail4` and the owner-token rule use case-sensitive literals (`%s"c"`, `%s"BT-"`); the
+  value object of Appendix A is an informative sketch of exactly the objects section 6.1 admits.
+- Regular expressions are those of ECMA-262 and end in `(?![\s\S])` rather than `$`, in
+  section 5.1, in `schema/esj.schema.json`, in the generated `schema/esj-en16931-*.schema.json`
+  and in `model/registry.schema.json`, so that no engine accepts a string followed by LF.
+- `schema/esj.schema.json`: `semanticModel` is typed `string` (5, `null`, `[]` and `{}` passed
+  before) and bounded; the guard on a string of `values` is 2 097 152 code points and on the
+  content of a value object 67 108 864, twice the limit, because the limit is measured after CR LF
+  has become LF; `source.syntax` keeps 1 048 576.
+- `model/registry.schema.json`: a registry whose namespaced terms hang under a core identifier, or
+  carry one through `reusesTerms`, requires `imports`.
+- Clarified, with no change to what conforms: business rules are "not part of ESJ conformance"
+  (sections 1.2, 9.4, 9.5); `100.00` is refused by a validator and passed through by a reader and a
+  canonicalizer (6.4); the sign rule of a decimal is a lookahead in the generated schemas (6.4);
+  serializing an ESJ document again is canonicalizer or pretty form, not the writer class (3.3);
+  the syntax of an extension segment is L1 (5.6, 9.2); "one defect, one code" (9.6); repeatable
+  terms and canonical order per edition (5.3, 7.4); the edition mapping runs from registry to
+  document only (10); code-list snapshots live in rule packs and the 2026 `schemeList` rests on
+  that edition's usage notes (10); Appendix C lists all twelve examples.
+
 ## [0.9.5] — 2026-10-08
 
 ### Added

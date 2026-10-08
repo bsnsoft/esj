@@ -31,34 +31,44 @@ final class ModelSchema {
     private static final String INDEX = "/(?:0|[1-9][0-9]*)";
 
     /**
+     * The end of a pattern: no character follows. Written as a lookahead rather than as
+     * {@code $}, because several regular expression engines also match {@code $} before a
+     * final line feed, and under them {@code $} would accept a path or a content followed
+     * by LF (specification, section 5.1).
+     */
+    private static final String END = "(?![\\s\\S])";
+
+    /**
      * The canonical decimal form of the specification, section 6.4: an optional sign, an
      * integer part without a leading zero, an optional fraction without a trailing zero,
      * and no sign on a zero, which is what the leading lookahead removes.
      */
-    private static final String DECIMAL_PATTERN = "^(?!-0$)-?(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?$";
+    private static final String DECIMAL_PATTERN =
+            "^(?!-0" + END + ")-?(?:0|[1-9][0-9]*)(?:\\.[0-9]*[1-9])?" + END;
 
     /** The bound section 6.4 puts on the canonical decimal form, in characters. */
     private static final int DECIMAL_MAX_LENGTH = 64;
 
     /** The calendar date of the specification, section 6.5. */
     private static final String DATE_PATTERN =
-            "^[1-9][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$";
+            "^[1-9][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])" + END;
 
     /**
      * The time of day of the specification, section 6.5: two-digit hours, minutes and
      * seconds and an offset that is always present, where the leading lookahead removes the
      * numeric spelling of the zero offset, which is written {@code Z}.
      */
-    private static final String TIME_PATTERN = "^(?![0-9:]+[+-]00:00$)"
+    private static final String TIME_PATTERN = "^(?![0-9:]+[+-]00:00" + END + ")"
             + "(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
-            + "(?:Z|[+-](?:(?:0[0-9]|1[0-3]):[0-5][0-9]|14:00))$";
+            + "(?:Z|[+-](?:(?:0[0-9]|1[0-3]):[0-5][0-9]|14:00))" + END;
 
     /**
      * The canonical padded base64 of the specification, section 6.7, including the rule
      * that the pad bits of the last quantum are zero.
      */
     private static final String BASE64_PATTERN = "^(?:[A-Za-z0-9+/]{4})*"
-            + "(?:[A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)$";
+            + "(?:[A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9+/][AQgw]==)"
+            + END;
 
     private final Registry registry;
     private final String fileName;
@@ -262,7 +272,7 @@ final class ModelSchema {
                 pattern.append(INDEX);
             }
         }
-        return pattern.append('$').toString();
+        return pattern.append(END).toString();
     }
 
     private SemanticPath example(List<String> chain) {
