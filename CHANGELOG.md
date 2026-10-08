@@ -6,7 +6,65 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.6] — unreleased
 
+### Changed
+
+- TypeScript: a finding names its member by the member access of `SPEC.md` section 9.5: a name the
+  specification defines in dot form, a name the document chose in brackets — `["profile"]`,
+  `source["foo"]`, `values["/BT-1"]["foo"]` (was `profile`, `source.foo`, `values["/BT-1"].foo`).
+- TypeScript: a repeated member name is named by the access of that name — `values["/BT-1"]`,
+  `format`, `source.syntax`, `extensions["a.b"]`, `extensions["a.b"]["x"]` — and no longer by the
+  object it stands in; inside a value object the finding still names the object.
+- TypeScript: every required envelope member that is missing is a finding of its own, its name in
+  `subject`, in the order `format`, `version`, `semanticModel`, `values` (was the first alone).
+- TypeScript: a lone surrogate in a subject or a message is written `\ud800`, four lowercase
+  digits, so that the finding can be written as UTF-8.
+- TypeScript: `ESJ-L1-JSON` is a finding about the document — empty path and subject — and a token
+  that is no whole JSON value (`tru`, `01`, `1.`) is `ESJ-L1-JSON` wherever it stands, where the
+  envelope expects another type too (was `ESJ-L1-ENVELOPE-VALUE` there).
+- TypeScript: the strings `format`, `version`, `semanticModel`, `source.syntax` and
+  `source.sha256` are held to `maxStringBytes` and draw `ESJ-L1-LIMIT` naming the member.
+- TypeScript: every member name is held to `maxStringBytes` in UTF-8 bytes (was UTF-16 code
+  units), below a value the reader walks past as well; past it the name draws `ESJ-L1-LIMIT`
+  before its grammar is asked (`ESJ-L1-OWNER-TOKEN`, `ESJ-L1-PATH-SYNTAX`,
+  `ESJ-L1-ENVELOPE-MEMBER`).
+- TypeScript: a number token longer than `maxStringBytes` is `ESJ-L1-LIMIT` wherever it stands,
+  measured before it is built.
+- TypeScript: an `ESJ-L1-LIMIT` names the member whose name or value reached the bound —
+  `values["/BT-1"]`, `values["/BT-1"].value`, `extensions["o"][1]` — and carries the path of the
+  member of `values` it stands in (the subject was empty for nesting, numbers and long strings).
+- TypeScript: an offset in a message is the UTF-8 byte offset of the beginning of the token (was a
+  UTF-16 index).
+- TypeScript: layer L2 runs every check of a path whose terms are known — index rule, chain,
+  content, components — and reports each (was: the first defect of the path alone); a core
+  segment the registry does not carry is `ESJ-L2-UNKNOWN-TERM`, one per segment, also beside an
+  extension segment that is not checked; an unknown term ends the checks below it.
+- TypeScript: `EsjError` carries `subject` beside `code` and `path`, and `path` is the empty string
+  where the finding names none (was `undefined`); `canonicalize` names the value of a string it
+  cannot write.
+- TypeScript: `registryOf` and `new Structure` refuse a registry the way section 10 does —
+  `RegistryError` for components no value can satisfy, an identifier listed twice or defined by
+  core and extension (was: the later one won), and an extension combined with an edition it does
+  not import, or naming core terms with no `imports` at all.
+- TypeScript: the view generator refuses a repeatable group whose slug is no plural (was: the slug
+  named an instance as it stood).
+- TypeScript: the fixture binding answers `validate` with `status`, `notEvaluated` and each
+  finding's `severity`, takes the bounds of section 12.2 in `limits`, and answers
+  `{"op": "registry", "files": [...]}` with `accepted`.
+- TypeScript: `limitsOf` refuses a name that is no limit of section 12.2 and a bound that is not a
+  positive whole number.
+
 ### Fixed
+
+- TypeScript: a value built through the API (`documentOf`, or a document assembled by hand) has its
+  line endings normalized as a read one has, in the content and in every component, so both have
+  one canonical form and one digest; `source` and `extensions` stay as written.
+- TypeScript: `pretty` ends with one LF and writes a number inside `extensions` in its canonical
+  form, as the Java and the C# writer do.
+- TypeScript: `canonicalize` puts the values in canonical path order itself, leaves an empty
+  `extensions` and an empty `source` out, and writes `format` and `version` as the constants.
+- TypeScript: the subject of an undefined envelope member is no longer cut to 80 characters.
+- TypeScript: `validate(bytes, {layers})` without L1 no longer measures the model layers over a
+  document the reader refused a member of: they are `PRECEDING-LAYER-FAILED`, or `LIMIT`.
 
 - `publish.yml` deploys on Maven 3.9.16, downloaded and checked against Apache's digest: the
   runner image moved to Maven 3.10.0, with which central-publishing-maven-plugin 0.11.0 put the

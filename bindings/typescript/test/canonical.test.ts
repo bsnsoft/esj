@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import {
@@ -65,8 +65,27 @@ test('canonicalizing a pretty document and a scrambled one gives the same bytes'
 });
 
 test('the pretty form is the layout the examples of the repository are stored in', () => {
-  const stored = example('minimal.esj.json');
-  assert.equal(pretty(readDocumentOrThrow(stored)) + '\n', stored);
+  const stored = readdirSync(path.join(ROOT, 'examples')).filter((name) =>
+    name.endsWith('.esj.json') && !name.endsWith('.canonical.esj.json')
+    && name !== 'extended.esj.json');
+  assert.ok(stored.length >= 10, stored.join(', '));
+  for (const name of stored) {
+    const text = example(name);
+    assert.equal(pretty(readDocumentOrThrow(text)), text, name);
+    assert.ok(text.endsWith('}\n'), name + ' ends with one line feed');
+  }
+});
+
+test('the pretty form writes a number of extensions in its canonical form and ends with LF', () => {
+  // extended.esj.json keeps the spellings it was written with, so that reading it exercises
+  // the canonical form of a number; the pretty form is written from the content alone.
+  const written = pretty(readDocumentOrThrow(example('extended.esj.json')));
+  assert.ok(written.includes('"exponentNegativeSeven": 0.0000001'), written);
+  assert.ok(!written.includes('1e-7'));
+  assert.ok(written.endsWith('}\n') && !written.endsWith('\n\n'));
+  const again = readDocumentOrThrow(written);
+  assert.equal(pretty(again), written, 'the pretty form is a fixed point');
+  assert.equal(canonicalize(again), example('extended.canonical.esj.json'));
 });
 
 test('a line ending is normalized when the document is read, and once', () => {
@@ -120,4 +139,65 @@ test('a lone surrogate has no canonical form and is refused, never replaced', as
   })), refused);
   assert.equal(canonicalize(lone('X\u{1F4B6}')).includes('X\u{1F4B6}'), true,
     'a surrogate pair is one code point and is written as it stands');
+});
+
+test('a value built through the API has its line endings normalized as a read one', async () => {
+  const built = documentOf({
+    semanticModel: 'EN16931-1:2017+A1:2019/AC:2020',
+    values: [
+      ['/BG-1/0/BT-22', { value: 'a\r\nb\rc\r\r\nd' }],
+      ['/BG-4/BT-29/0', { value: 'X\r\n1', scheme: '00\r88' }],
+    ],
+    source: { syntax: 'U\r\nBL' },
+    extensions: {
+      t: 'object', members: [{ name: 'de.example', value: { t: 'string', value: 'x\r\ny' } }],
+    },
+  });
+  assert.equal(built.values.get('/BG-1/0/BT-22')!.value, 'a\nb\nc\n\nd');
+  assert.deepEqual(built.values.get('/BG-4/BT-29/0'), { value: 'X\n1', scheme: '00\n88' });
+  const read = readDocumentOrThrow(JSON.stringify({
+    format: 'EN16931-Semantic-JSON',
+    version: '0.1',
+    semanticModel: 'EN16931-1:2017+A1:2019/AC:2020',
+    values: {
+      '/BG-1/0/BT-22': 'a\r\nb\rc\r\r\nd',
+      '/BG-4/BT-29/0': { value: 'X\r\n1', scheme: '00\r88' },
+    },
+    extensions: { 'de.example': 'x\r\ny' },
+    source: { syntax: 'U\r\nBL' },
+  }));
+  assert.equal(canonicalize(built), canonicalize(read));
+  assert.equal(await semanticDigest(built), await semanticDigest(read));
+  // Neither source nor extensions is normalized, built or read.
+  assert.ok(canonicalize(read).includes('"syntax":"U\\r\\nBL"'));
+  assert.ok(canonicalize(read).includes('"de.example":"x\\r\\ny"'));
+  // A document assembled without documentOf is normalized where it is written.
+  const literal = { ...read, values: new Map([['/BT-1', { value: 'a\r\nb' }]]) };
+  assert.ok(canonicalize(literal).includes('"/BT-1":"a\\nb"'));
+});
+
+test('the canonical form is written from the content, whatever order a caller assembled', () => {
+  const read = readDocumentOrThrow(example('minimal.esj.json'));
+  const reversed = new Map([...read.values].reverse());
+  const assembled = {
+    format: 'something else',
+    version: '9.9',
+    semanticModel: read.semanticModel,
+    values: reversed,
+    extensions: { t: 'object' as const, members: [] },
+    source: {},
+  };
+  assert.equal(canonicalize(assembled), canonicalize(read));
+  assert.equal(pretty(assembled), pretty(read));
+  assert.equal(canonicalize(assembled), example('minimal.canonical.esj.json'));
+});
+
+test('a string with no canonical form names the value it stands in', () => {
+  const document = documentOf({
+    semanticModel: 'EN16931-1:2017+A1:2019/AC:2020',
+    values: [['/BG-4/BT-29/0', { value: 'X', scheme: 'a\uD800' }]],
+  });
+  assert.throws(() => canonicalize(document), (failure: unknown) => failure instanceof EsjError
+    && failure.code === FindingCode.L1_SURROGATE && failure.path === '/BG-4/BT-29/0'
+    && failure.subject === 'values["/BG-4/BT-29/0"].scheme');
 });

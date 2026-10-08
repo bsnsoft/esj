@@ -3,11 +3,29 @@
  *
  * It reads one JSON request per line from the standard input and answers one JSON object per
  * line: which editions this build carries, the digests and the canonical form of a document,
- * the findings of layers L1 to L3, and the rule identifiers the pack reports — the pack this
- * build carries, or one of the rule language a request names. The manifest is the contract;
- * this file is only the pipe.
+ * the result of layers L1 to L3, the rule identifiers the pack reports — the pack this build
+ * carries, or one of the rule language a request names — and whether a set of registry files
+ * is accepted. The manifest is the contract; this file is only the pipe.
  *
  *     python3 conformance/fixtures/run.py --binding node tools/fixture-binding.ts
+ *
+ * A `validate` request may carry `limits`, an object of bounds of section 12.2 under the names
+ * `Limits` gives them, which replace the defaults for that one request. Its answer carries the
+ * status, every layer not evaluated with its reason, and every finding with its path, code,
+ * subject and severity:
+ *
+ *     {"op": "validate", "file": "...", "limits": {"maxStringBytes": 16}}
+ *     -> {"status": "INDETERMINATE",
+ *         "notEvaluated": [{"layer": "L2", "reason": "LIMIT"}, {"layer": "L3", "reason": "LIMIT"}],
+ *         "findings": [{"path": "", "code": "ESJ-L1-LIMIT", "subject": "format",
+ *                       "severity": "error"}]}
+ *
+ * A `registry` request names registry files relative to the repository root. Each is read and
+ * checked as section 10 checks a registry when it is read, and every file after the first is
+ * then combined with the first as an extension of it:
+ *
+ *     {"op": "registry", "files": ["model/en16931/2017.json", "model/b2c/0.1.json"]}
+ *     -> {"accepted": true}   or   {"accepted": false, "error": "..."}
  */
 
 import { createInterface } from 'node:readline';
@@ -19,7 +37,9 @@ import { documentDigest, semanticDigest } from '../src/digest.ts';
 import { readDocumentOrThrow } from '../src/reader.ts';
 import { validate } from '../src/validate.ts';
 import { Structure } from '../src/structure.ts';
-import type { Registry } from '../src/registry.ts';
+import type { Limits } from '../src/limits.ts';
+import type { Registry, RegistryFile } from '../src/registry.ts';
+import { RegistryError, registryOf } from '../src/registry.ts';
 import { compile, type RuleEngine } from '../src/rules/engine.ts';
 import type { RulePackFile } from '../src/rules/pack.ts';
 import { registries, ruleEngine } from '../src/node/data.ts';
@@ -72,6 +92,28 @@ function engineFor(semanticModel: string, pack: unknown): RuleEngine | undefined
   return engine;
 }
 
+/**
+ * Reads registry files and combines every one after the first with the first, the way a
+ * validator is given an edition and the extensions it carries.
+ */
+function registry(files: unknown): unknown {
+  if (!Array.isArray(files) || files.length === 0
+    || files.some((file) => typeof file !== 'string')) {
+    return { error: 'a registry request names one or more files' };
+  }
+  try {
+    const read = (files as string[]).map((file) => registryOf(
+      JSON.parse(readFileSync(path.join(ROOT, file), 'utf8')) as RegistryFile));
+    new Structure(read[0], read.slice(1));
+    return { accepted: true };
+  } catch (failure) {
+    if (failure instanceof RegistryError) {
+      return { accepted: false, error: failure.message };
+    }
+    throw failure;
+  }
+}
+
 async function answer(request: Record<string, unknown>): Promise<unknown> {
   switch (request.op) {
     case 'editions':
@@ -95,14 +137,22 @@ async function answer(request: Record<string, unknown>): Promise<unknown> {
       const input = typeof request.file === 'string'
         ? bytesOf(request.file)
         : JSON.stringify(request.document);
-      const result = validate(input, { registries: REGISTRIES });
+      const result = validate(input, {
+        registries: REGISTRIES,
+        ...(request.limits === undefined ? {} : { limits: request.limits as Partial<Limits> }),
+      });
       return {
-        findings: result.findings.map((entry) => ({
-          path: entry.path, code: entry.code, subject: entry.subject,
-        })),
         status: result.status,
+        notEvaluated: result.notEvaluated.map((entry) => ({
+          layer: entry.layer, reason: entry.reason,
+        })),
+        findings: result.findings.map((entry) => ({
+          path: entry.path, code: entry.code, subject: entry.subject, severity: entry.severity,
+        })),
       };
     }
+    case 'registry':
+      return registry(request.files);
     case 'rules': {
       const document = documentOf(request);
       const engine = engineFor(document.semanticModel, request.pack);

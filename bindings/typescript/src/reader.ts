@@ -5,10 +5,13 @@ import {
   type ValueMember, documentOf,
 } from './document.ts';
 import type { Finding } from './finding.ts';
-import { extensionsSubject, finding, valuesSubject } from './finding.ts';
 import {
-  escapeForMessage, forMessage, hasLoneSurrogate, isEdition, isOwnerToken, isPath, isSha256,
-  normalizeLineEndings, utf8Length,
+  envelopeSubject, extensionsSubject, finding, memberStep, sourceSubject, valueMemberSubject,
+  valuesSubject,
+} from './finding.ts';
+import {
+  forMessage, hasLoneSurrogate, isEdition, isOwnerToken, isPath, isSha256, normalizeLineEndings,
+  utf8Length,
 } from './grammars.ts';
 import { canonicalDecimalForm } from './canonical.ts';
 import type { Limits } from './limits.ts';
@@ -34,11 +37,21 @@ import { splitSegments } from './paths.ts';
  * A reader and a validator answer differently and both are conformant (section 9.5).
  * {@link readDocument} reports the findings and hands back the document where it could build
  * one; {@link readDocumentOrThrow} raises {@link EsjError} carrying the first finding. The
- * code is the same either way.
+ * code, the path and the subject are the same either way.
+ *
+ * Where a finding points (section 9.5): a finding about one member of `values` carries the
+ * member's path where its name is a path, and every finding carries in `subject` the member
+ * access of the member it is about — the one whose name or value is wrong or reaches a bound —
+ * written as `finding.ts` spells it. `ESJ-L1-JSON` is about the text and not about a member:
+ * its path and its subject are empty, and its message names the offset in UTF-8 bytes of the
+ * token the reader stopped at.
  */
 
 /** The members of a value object that make it one (sections 6.1, 6.6 and 6.7). */
 const COMPONENTS = ['scheme', 'schemeVersion', 'mimeCode', 'filename'];
+
+/** The members the envelope requires, in the order a finding reports their absence. */
+const REQUIRED = ['format', 'version', 'semanticModel', 'values'];
 
 /** How a reader was configured. */
 export interface ReadOptions {
@@ -103,7 +116,7 @@ class Where {
       const step = steps[i];
       out += i === steps.length - 1
         ? extensionsSubject(step as string)
-        : typeof step === 'number' ? '[' + step + ']' : '["' + escapeForMessage(step) + '"]';
+        : typeof step === 'number' ? '[' + step + ']' : memberStep(step);
     }
     return out;
   }
@@ -147,6 +160,11 @@ class Parse {
    * its value object.
    */
   private currentPath?: string;
+  /**
+   * The member the scanner is reading the value of, as a member access: a bound the scanner
+   * meets inside it is a finding about that member (section 9.5).
+   */
+  private place: string | Where = '';
 
   constructor(limits: Limits) {
     this.limits = limits;
@@ -155,8 +173,8 @@ class Parse {
   run(text: string): SemanticDocument {
     this.scanner = new Scanner(text, this.limits,
       (code, message) => code === FindingCode.L1_LIMIT
-        ? this.limit(message, '')
-        : this.fatal(code, message, ''));
+        ? this.limit(message, spelled(this.place))
+        : this.fatal(code, message, '', ''));
     this.readEnvelope();
     // The loop of readEnvelope ended the read where one of the four required members was
     // missing or was not what section 4.1 asks for, so each of them is set here.
@@ -170,20 +188,30 @@ class Parse {
     });
   }
 
-  report(code: FindingCode, message: string, subject: string): void {
-    this.findings.push(finding(code, message, { path: this.currentPath ?? '', subject }));
+  /**
+   * Reports a finding. Its path is the path of the member of `values` the reader is inside,
+   * where the member's name is a path, and empty elsewhere, unless the caller names one.
+   */
+  report(
+    code: FindingCode, message: string, subject: string, path: string = this.currentPath ?? '',
+  ): void {
+    this.findings.push(finding(code, message, { path, subject }));
   }
 
   /**
    * Reports a defect the reader cannot read past and ends the read (section 9.6). Every
    * defect of layer L1 but the ones confined to one member of `values` comes through here.
    */
-  private fatal(code: FindingCode, message: string, subject: string): never {
-    this.report(code, message, subject);
+  private fatal(code: FindingCode, message: string, subject: string, path?: string): never {
+    this.report(code, message, subject, path);
     throw new Stop();
   }
 
-  /** Reports a bound of section 12.2 and ends the read: a limit is no verdict (section 9.6). */
+  /**
+   * Reports a bound of section 12.2 and ends the read: a limit is no verdict (section 9.6).
+   * The finding names the member whose name or value reached the bound, and carries the path
+   * of the member of `values` it stands in, where there is one.
+   */
   private limit(message: string, subject: string): never {
     return this.fatal(FindingCode.L1_LIMIT, message, subject);
   }
@@ -197,7 +225,8 @@ class Parse {
   private readEnvelope(): void {
     const scanner = this.scanner;
     if (scanner.peekKind() !== 'object') {
-      this.fatal(FindingCode.L1_JSON, 'the top level of an ESJ document is a JSON object.', '');
+      this.fatal(FindingCode.L1_JSON, 'the top level of an ESJ document is a JSON object.', '',
+        '');
     }
     scanner.open();
     const seen = new Set<string>();
@@ -205,8 +234,9 @@ class Parse {
     while (scanner.nextMember(any)) {
       any = true;
       const name = scanner.readName();
-      const subject = forMessage(name);
-      this.nameTheReaderCannotTake(name, subject, seen, subject);
+      const subject = envelopeSubject(name);
+      this.nameTheReaderCannotTake(name, subject, seen);
+      this.place = subject;
       switch (name) {
         case 'format':
           this.fixed('format', FORMAT);
@@ -228,41 +258,58 @@ class Parse {
           break;
         default:
           this.fatal(FindingCode.L1_ENVELOPE_MEMBER,
-            'the envelope carries the member ' + subject
+            'the envelope carries the member ' + forMessage(name)
             + ', which this specification does not define.', subject);
       }
+      this.place = '';
     }
-    for (const name of ['format', 'version', 'semanticModel', 'values']) {
-      if (!seen.has(name)) {
-        this.fatal(FindingCode.L1_ENVELOPE_MEMBER,
+    // Every required member that is missing is a finding of its own, named in its subject, so
+    // that a caller learns all of them from one read; none of them leaves a document to read on.
+    const missing = REQUIRED.filter((name) => !seen.has(name));
+    if (missing.length > 0) {
+      for (const name of missing) {
+        this.report(FindingCode.L1_ENVELOPE_MEMBER,
           'the envelope member ' + name + ' is missing.', name);
       }
+      throw new Stop();
     }
     scanner.end();
   }
 
   /**
-   * Holds one member name to the two defects section 9.6 holds against the JSON text rather
-   * than against the value written under it: a name carrying a lone surrogate, which names
-   * nothing, and a name that has already occurred in this object, which leaves no one object
-   * to judge. Either ends the read with that one code, and the object is judged no further.
+   * Holds one member name to what is held against the name itself, before anything is read of
+   * the value written under it (section 9.6): the string bound of section 12.2, which every
+   * member name is held to in UTF-8 bytes and which outranks what it stopped the reader from
+   * judging; a lone surrogate, which names nothing; and a name that has already occurred in
+   * this object, which leaves no one object to judge. Each ends the read with that one code,
+   * and the object is judged no further.
    *
-   * The surrogate is asked first because the two are ranked by the place the text reaches
-   * first and a repeated name is met at its second occurrence, so the earlier of the two is
-   * always the one reported. The rule reaches every object of a document alike: a value
-   * object, `values`, the envelope, `source`, and every object below an owner token of
+   * The surrogate is asked before the repeated name because the two are ranked by the place the
+   * text reaches first and a repeated name is met at its second occurrence, so the earlier of
+   * the two is always the one reported. The rule reaches every object of a document alike: a
+   * value object, `values`, the envelope, `source`, and every object below an owner token of
    * `extensions`.
+   *
+   * @param name the member name
+   * @param access the member access of the member, which a bound the name reaches names
+   * @param seen the names the object has carried so far
+   * @param judged what a surrogate or a repeated name is reported about: the member, except
+   *   inside a value object, whose findings name the object (section 9.5)
    */
   private nameTheReaderCannotTake(
-    name: string, subject: string, seen: Set<string>, duplicateSubject: string,
+    name: string, access: string | Where, seen: Set<string>, judged: string | Where = access,
   ): void {
+    if (utf8Length(name) > this.limits.maxStringBytes) {
+      this.limit('a member name is longer than ' + this.limits.maxStringBytes
+        + ' bytes, at offset ' + this.scanner.nameOffset + '.', spelled(access));
+    }
     if (hasLoneSurrogate(name)) {
       this.fatal(FindingCode.L1_SURROGATE,
-        'a member name carries a lone surrogate and has no UTF-8 encoding.', subject);
+        'a member name carries a lone surrogate and has no UTF-8 encoding.', spelled(judged));
     }
     if (seen.has(name)) {
       this.fatal(FindingCode.L1_DUPLICATE_MEMBER,
-        'the member ' + forMessage(name) + ' occurs twice in one object.', duplicateSubject);
+        'the member ' + forMessage(name) + ' occurs twice in one object.', spelled(judged));
     }
     seen.add(name);
   }
@@ -294,19 +341,44 @@ class Parse {
    * Reads one envelope member that is a JSON string, screening it for a lone surrogate before
    * any check that reads its content: a string with no UTF-8 encoding spells no fixed value and
    * no edition, so a grammar cannot be the first thing said about it (sections 6.8 and 9.6).
+   * The string is then held to the string bound of section 12.2, as every string of the
+   * envelope is, before its value is compared with anything.
    */
   private envelopeString(name: string): string {
     const kind = this.scanner.peekKind();
     if (kind !== 'string') {
+      this.wrongType(kind);
       this.fatal(FindingCode.L1_ENVELOPE_VALUE,
         name + ' is ' + describe(kind) + ', not a JSON string.', name);
     }
-    const value = this.scanner.readString();
+    const value = this.scanner.readString(this.guard());
     if (hasLoneSurrogate(value)) {
       this.fatal(FindingCode.L1_SURROGATE,
         'a string carries a lone surrogate and has no UTF-8 encoding.', name);
     }
+    this.holdToStringBound(value, name);
     return value;
+  }
+
+  /**
+   * Reads a token of the wrong JSON type to its end before the type is refused: a token that
+   * is no whole JSON value is not JSON at all, and that is said first (section 9.6). An object
+   * or an array is told by its bracket.
+   */
+  private wrongType(kind: JsonKind): void {
+    this.scanner.checkToken(kind);
+  }
+
+  /** The guard the scanner reads a string of the envelope or of `extensions` with. */
+  private guard(): number {
+    return Math.max(this.limits.maxStringBytes, this.limits.maxBinaryValueBytes);
+  }
+
+  /** Holds a string outside `values` to the string bound of section 12.2, as it stands. */
+  private holdToStringBound(value: string, subject: string): void {
+    if (utf8Length(value) > this.limits.maxStringBytes) {
+      this.limit(subject + ' is longer than ' + this.limits.maxStringBytes + ' bytes.', subject);
+    }
   }
 
   // ------------------------------------------------------------------ values
@@ -315,6 +387,7 @@ class Parse {
     const scanner = this.scanner;
     const kind = scanner.peekKind();
     if (kind !== 'object') {
+      this.wrongType(kind);
       this.fatal(FindingCode.L1_ENVELOPE_VALUE,
         'values is ' + describe(kind) + ', not a JSON object.', 'values');
     }
@@ -325,14 +398,13 @@ class Parse {
       any = true;
       const name = scanner.readName();
       const subject = valuesSubject(name);
-      // A name that occurs twice in values draws a finding about the object, whose subject is
-      // values, as the Java and the C# reader write it.
-      this.nameTheReaderCannotTake(name, subject, seen, 'values');
+      this.nameTheReaderCannotTake(name, subject, seen);
       if (++this.valueCount > this.limits.maxValues) {
         this.limit('values carries more than ' + this.limits.maxValues + ' members.', subject);
       }
       const path = this.checkPath(name, subject);
       this.currentPath = path;
+      this.place = subject;
       const value = this.readValue(subject);
       if (path !== undefined && value !== undefined) {
         this.values.set(path, value);
@@ -372,7 +444,9 @@ class Parse {
     const scanner = this.scanner;
     const kind = scanner.peekKind();
     if (kind === 'string') {
-      const raw = scanner.readString();
+      // The bound is measured on the normalized content (section 6.8), which is never less
+      // than half the raw one: a string past twice the bound is past it however it reads.
+      const raw = scanner.readString(2 * this.limits.maxStringBytes);
       if (hasLoneSurrogate(raw)) {
         this.report(FindingCode.L1_SURROGATE,
           'a string carries a lone surrogate and has no UTF-8 encoding.', subject);
@@ -416,26 +490,30 @@ class Parse {
     while (scanner.nextMember(any)) {
       any = true;
       const name = scanner.readName();
-      this.nameTheReaderCannotTake(name, subject, seen, subject);
+      const access = valueMemberSubject(subject, name);
+      this.nameTheReaderCannotTake(name, access, seen, subject);
       if (members.length >= this.limits.maxValueMembers) {
         this.limit('a value object carries more than ' + this.limits.maxValueMembers
           + ' members.', subject);
       }
       component ||= COMPONENTS.includes(name);
+      this.place = access;
       const kind = scanner.peekKind();
       if (kind === 'string') {
-        members.push({ name, kind, text: scanner.readString() });
+        members.push({ name, kind, text: scanner.readString(
+          2 * Math.max(this.limits.maxStringBytes, this.limits.maxBinaryValueBytes)) });
       } else {
         scanner.skipValue(2);
         members.push({ name, kind });
       }
     }
+    this.place = subject;
     let surrogate = false;
     for (const entry of members) {
       if (entry.text !== undefined && hasLoneSurrogate(entry.text)) {
         this.report(FindingCode.L1_SURROGATE,
           'a string carries a lone surrogate and has no UTF-8 encoding.',
-          memberSubject(subject, entry.name));
+          valueMemberSubject(subject, entry.name));
         surrogate = true;
       }
     }
@@ -449,7 +527,7 @@ class Parse {
       if (entry.kind === 'object') {
         this.report(FindingCode.L1_VALUE_SHAPE,
           'the member ' + forMessage(entry.name) + ' of the value is a JSON object.',
-          memberSubject(subject, entry.name));
+          valueMemberSubject(subject, entry.name));
         return undefined;
       }
     }
@@ -458,7 +536,7 @@ class Parse {
         this.report(FindingCode.L1_JSON_TYPE,
           'the member ' + forMessage(entry.name) + ' of the value is ' + describe(entry.kind)
           + '; every member of a value object is a JSON string.',
-          memberSubject(subject, entry.name));
+          valueMemberSubject(subject, entry.name));
         return undefined;
       }
     }
@@ -468,7 +546,7 @@ class Parse {
         this.report(FindingCode.L1_VALUE_MEMBER,
           'the value carries the member ' + forMessage(entry.name)
           + ', which is not one of the five of section 6.1.',
-          memberSubject(subject, entry.name));
+          valueMemberSubject(subject, entry.name));
         return undefined;
       }
       named.set(entry.name as ValueMember, entry.text as string);
@@ -481,7 +559,7 @@ class Parse {
     if (named.has('schemeVersion') && !named.has('scheme')) {
       this.report(FindingCode.L1_VALUE_MEMBER,
         'the value carries schemeVersion without scheme; a scheme version is the version of a'
-        + ' scheme.', memberSubject(subject, 'schemeVersion'));
+        + ' scheme.', valueMemberSubject(subject, 'schemeVersion'));
       return undefined;
     }
     return this.build(named, subject, surrogate);
@@ -499,7 +577,7 @@ class Parse {
     const binary = named.has('mimeCode') || named.has('filename');
     const checked = new Map<ValueMember, string>();
     for (const [name, raw] of named) {
-      const content = this.content(raw, memberSubject(subject, name), 'the member ' + name,
+      const content = this.content(raw, valueMemberSubject(subject, name), 'the member ' + name,
         binary && name === 'value');
       if (content === undefined) {
         return undefined;
@@ -560,6 +638,7 @@ class Parse {
     const scanner = this.scanner;
     const kind = scanner.peekKind();
     if (kind !== 'object') {
+      this.wrongType(kind);
       this.fatal(FindingCode.L1_ENVELOPE_VALUE,
         'extensions is ' + describe(kind) + ', not a JSON object.', 'extensions');
     }
@@ -571,7 +650,7 @@ class Parse {
       any = true;
       const owner = scanner.readName();
       const subject = extensionsSubject(owner);
-      this.nameTheReaderCannotTake(owner, subject, seen, 'extensions');
+      this.nameTheReaderCannotTake(owner, subject, seen);
       if (!isOwnerToken(owner)) {
         this.fatal(FindingCode.L1_OWNER_TOKEN,
           'the member name ' + forMessage(owner)
@@ -605,6 +684,7 @@ class Parse {
     let finished: JsonNode | undefined;
     for (;;) {
       if (finished === undefined) {
+        this.place = where;
         this.countExtensionNode(where);
         const kind = scanner.peekKind();
         if (kind === 'object' || kind === 'array') {
@@ -642,13 +722,7 @@ class Parse {
         }
         const name = scanner.readName();
         where = new Where(name, container.where);
-        this.checkExtensionString(name, where);
-        if (container.names.has(name)) {
-          this.fatal(FindingCode.L1_DUPLICATE_MEMBER,
-            'the member ' + forMessage(name) + ' occurs twice in one object.',
-            container.where.text());
-        }
-        container.names.add(name);
+        this.nameTheReaderCannotTake(name, where, container.names);
         container.pending = name;
       } else {
         if (!scanner.nextElement(container.any)) {
@@ -675,7 +749,7 @@ class Parse {
     const scanner = this.scanner;
     switch (kind) {
       case 'string': {
-        const value = scanner.readString();
+        const value = scanner.readString(this.guard());
         this.checkExtensionString(value, where);
         return { t: 'string', value };
       }
@@ -698,7 +772,7 @@ class Parse {
     }
   }
 
-  /** Holds a string of `extensions`, a member name included, to sections 6.8 and 12.2. */
+  /** Holds a string of `extensions` to sections 6.8 and 12.2. */
   private checkExtensionString(value: string, where: Where): void {
     if (hasLoneSurrogate(value)) {
       this.fatal(FindingCode.L1_SURROGATE,
@@ -716,6 +790,7 @@ class Parse {
     const scanner = this.scanner;
     const kind = scanner.peekKind();
     if (kind !== 'object') {
+      this.wrongType(kind);
       this.fatal(FindingCode.L1_ENVELOPE_VALUE,
         'source is ' + describe(kind) + ', not a JSON object.', 'source');
     }
@@ -726,21 +801,23 @@ class Parse {
     while (scanner.nextMember(any)) {
       any = true;
       const name = scanner.readName();
-      // The member access the Java and the C# reader write for a member of source.
-      const subject = 'source.' + escapeForMessage(name);
-      this.nameTheReaderCannotTake(name, subject, seen, 'source');
+      const subject = sourceSubject(name);
+      this.nameTheReaderCannotTake(name, subject, seen);
       if (name !== 'syntax' && name !== 'sha256') {
         this.fatal(FindingCode.L1_ENVELOPE_MEMBER,
           'source carries the member ' + forMessage(name)
           + ', which section 4.7 does not define.', subject);
       }
+      this.place = subject;
       const member = scanner.peekKind();
       if (member !== 'string') {
+        this.wrongType(member);
         this.fatal(FindingCode.L1_ENVELOPE_VALUE,
           'the member ' + name + ' of source is ' + describe(member) + ', not a JSON string.',
           subject);
       }
-      const text = scanner.readString();
+      // A string of source is never normalized (section 6.8), so its bound is the raw one.
+      const text = scanner.readString(this.guard());
       if (hasLoneSurrogate(text)) {
         this.fatal(FindingCode.L1_SURROGATE,
           'a string carries a lone surrogate and has no UTF-8 encoding.', subject);
@@ -749,11 +826,9 @@ class Parse {
         this.fatal(FindingCode.L1_ENVELOPE_VALUE, 'source.' + name + ' is the empty string.',
           subject);
       }
+      this.holdToStringBound(text, subject);
+      this.place = 'source';
       if (name === 'syntax') {
-        if (utf8Length(text) > this.limits.maxStringBytes) {
-          this.limit('source.syntax is longer than ' + this.limits.maxStringBytes + ' bytes.',
-            subject);
-        }
         source.syntax = text;
         continue;
       }
@@ -772,9 +847,9 @@ class Parse {
   }
 }
 
-/** The member access of one member of a value object, for the subject of a finding. */
-function memberSubject(subject: string, name: string): string {
-  return subject + '.' + escapeForMessage(name);
+/** Spells a place out as a member access, where it is still a chain of steps. */
+function spelled(place: string | Where): string {
+  return typeof place === 'string' ? place : place.text();
 }
 
 /**
@@ -794,7 +869,7 @@ export function readDocument(input: Uint8Array | string, options?: ReadOptions):
     if (!(failure instanceof EsjError)) {
       throw failure;
     }
-    parse.report(failure.code ?? FindingCode.L1_ENCODING, failure.message, '');
+    parse.report(failure.code ?? FindingCode.L1_ENCODING, failure.message, '', '');
     return { findings: parse.findings };
   }
   try {
@@ -814,7 +889,8 @@ export function readDocument(input: Uint8Array | string, options?: ReadOptions):
  * @param input the document, as bytes or as decoded text
  * @param options how the reader is configured
  * @return the document
- * @throws EsjError carrying the first finding, where the document is not well formed
+ * @throws EsjError carrying the code, the path and the subject of the first finding, where
+ *   the document is not well formed
  */
 export function readDocumentOrThrow(
   input: Uint8Array | string, options?: ReadOptions,
@@ -822,7 +898,7 @@ export function readDocumentOrThrow(
   const result = readDocument(input, options);
   const first = result.findings.find((entry) => entry.severity === 'error');
   if (first !== undefined) {
-    throw new EsjError(first.message, first.code, first.path === '' ? undefined : first.path);
+    throw new EsjError(first.message, first.code, first.path, first.subject);
   }
   if (result.document === undefined) {
     throw new EsjError('the document could not be read', FindingCode.L1_JSON);

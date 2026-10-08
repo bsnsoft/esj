@@ -68,10 +68,10 @@ language cannot express are `src/rules/native-2026.ts`, left out with that editi
 | Module | What it does |
 |---|---|
 | `src/json/scanner.ts` | a JSON scanner that keeps duplicate members and the spelling of a number, walks past what the reader refuses without building it, and enforces the limits while it reads |
-| `src/reader.ts` | layer L1: the envelope, the paths, the shape of every value |
+| `src/reader.ts` | layer L1: the envelope, the paths, the shape of every value; every finding names its member as section 9.5 writes a member access |
 | `src/canonical.ts` | the canonical form, the pretty form, the lexical canonical form of a number |
 | `src/digest.ts` | the semantic digest and the document digest, over canonical bytes |
-| `src/registry.ts`, `src/structure.ts` | the registries, their parent chains and the children of a group |
+| `src/registry.ts`, `src/structure.ts` | the registries, checked as section 10 checks one read or combined, their parent chains and the children of a group |
 | `src/validate.ts` | layers L2 and L3, and the three states a result has |
 | `src/rules/` | the JSON rule language, its engine, and the rules written here |
 | `src/typed/runtime.ts` | what the generated view is built from |
