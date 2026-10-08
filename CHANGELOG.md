@@ -4,7 +4,7 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). Until 1.0 the format itself may
 still change; a change to it is named here under *Format*.
 
-## [0.9.6] — unreleased
+## [0.9.6] — 2026-10-08
 
 The Java implementation and the TypeScript and C# bindings now read, report and load registries
 alike. An entry without a prefix holds for all three; a prefix names the implementation it is

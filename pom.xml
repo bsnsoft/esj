@@ -7,7 +7,7 @@
 
   <groupId>de.bsnsoft.esj</groupId>
   <artifactId>en16931-semantic-json</artifactId>
-  <version>0.9.6-SNAPSHOT</version>
+  <version>0.9.6</version>
   <packaging>pom</packaging>
 
   <name>EN16931 Semantic JSON</name>
@@ -83,7 +83,7 @@
       moment of the build, so two builds of one commit write the same bytes. It is set
       to the date of the release being prepared (docs/releasing.md).
     -->
-    <project.build.outputTimestamp>2026-10-07T23:14:55Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2026-10-08T00:00:00Z</project.build.outputTimestamp>
     <!--
       A -Dtest pattern that matches no test fails the module it ran in, so that a
       misspelt name is not a green run. With -pl <module> -am the modules built for it
