@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.internal;
 
 import de.bsnsoft.esj.Esj;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -8,8 +9,9 @@ import java.util.Objects;
  * section 9.5 requires of a finding message, and held to a length a log line can carry.
  *
  * <p>The characters it escapes are the set of {@link Esj#steersATerminal(int)}, which is
- * the API; this class is the one implementation of the escaping that the modules of this
- * project share.
+ * the API, and every surrogate that is not one half of a pair, written as
+ * {@code \}{@code udXXX} with four lowercase hexadecimal digits; this class is the one
+ * implementation of the escaping that the modules of this project share.
  */
 public final class Messages {
 
@@ -26,8 +28,10 @@ public final class Messages {
      * {@code \n}, a carriage return {@code \r} and a tab {@code \t}; every other character
      * of {@link Esj#steersATerminal(int)} — the C0 and C1 controls, the delete character, the
      * line and paragraph separators and the bidirectional formatting characters — becomes
-     * {@code \}{@code uXXXX}. That list is the one the specification, section 9.5
-     * requires of a finding message, and section 12.6 is the reason for it: a value is
+     * {@code \}{@code uXXXX}, and so does a surrogate that is not one half of a pair,
+     * which has no UTF-8 encoding a log line could carry. That list is the one the
+     * specification, section 9.5 requires of a finding message, and section 12.6 is the
+     * reason for it: a value is
      * content a stranger wrote, an escape sequence inside one rewrites the line a
      * terminal shows, and a quotation mark inside one forges the rest of a location. The
      * bound is there for the same reason: a hostile document does not get to decide how
@@ -130,8 +134,11 @@ public final class Messages {
                 case '\r' -> text.append("\\r");
                 case '\t' -> text.append("\\t");
                 default -> {
-                    if (Esj.steersATerminal(c)) {
-                        text.append(String.format("\\u%04x", (int) c));
+                    if (Character.isHighSurrogate(c) && i + 1 < value.length()
+                            && Character.isLowSurrogate(value.charAt(i + 1))) {
+                        text.append(c).append(value.charAt(++i));
+                    } else if (Esj.steersATerminal(c) || Character.isSurrogate(c)) {
+                        text.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
                     } else {
                         text.append(c);
                     }

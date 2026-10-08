@@ -84,10 +84,11 @@ enum Bound {
     VALUES("--max-values", true, "values carries more than",
             "values this importer writes within"),
 
-    /** The largest string value, in bytes of its UTF-8 encoding. */
+    /** The longest string, member name or number token, in bytes of its UTF-8 encoding. */
     STRING_BYTES("--max-string-bytes", false, "a string value is longer than",
             "a string inside extensions is longer than", "source.syntax is longer than",
             "a number inside extensions is spelled in more than",
+            "a number is spelled in more than", "a member name is longer than",
             "the string value of", "a supplementary component of"),
 
     /** The largest binary value, in bytes of its base64 encoding. */

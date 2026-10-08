@@ -76,9 +76,9 @@ Every snippet below is a test, in the `ReadmeExamplesTest.java` of the module it
 
 ## Reading a document
 
-A reader is strict: what fails layer L1 is not a document. `read` throws `EsjFormatException`
-with the finding code of `SPEC.md` section 9.6 and the place of the problem, or
-`EsjLimitException` for a limit of section 12.2.
+A reader is strict: what fails layer L1 is not a document. `read` throws `EsjFormatException`,
+or `EsjLimitException` for a limit of section 12.2; either carries the `code()`, `path()` and
+`subject()` the finding of `SPEC.md` section 9.5 would carry.
 
 ```java
 SemanticDocument document = EsjReader.strict().read(Files.readAllBytes(file));

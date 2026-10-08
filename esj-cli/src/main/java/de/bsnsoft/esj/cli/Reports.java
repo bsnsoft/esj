@@ -1543,8 +1543,9 @@ final class Reports {
      * question is the one {@code reasons} answers, and {@link #covered} asks it there.
      *
      * <p>Every finding carries its {@code subject} beside its {@code path}: the member
-     * access the reader met the problem at, or the term or group a cardinality finding is
-     * about (specification, section 9.5). It is {@code null} where the path says it all.
+     * access the reader met the problem at, or the term or group a finding of the model
+     * layers is about (specification, section 9.5). It is always a string, and the empty
+     * string where the path says it all, as the specification writes a finding.
      */
     private static void layerJson(JsonGenerator generator,
                                   String name,
@@ -1563,11 +1564,7 @@ final class Reports {
         for (Finding finding : layer.findings()) {
             generator.writeStartObject();
             generator.writeStringField("path", finding.path().toString());
-            if (finding.subject().isEmpty()) {
-                generator.writeNullField("subject");
-            } else {
-                generator.writeStringField("subject", finding.subject());
-            }
+            generator.writeStringField("subject", finding.subject());
             generator.writeStringField("code", finding.code().code());
             generator.writeStringField("severity", finding.severity().token());
             generator.writeStringField("message", finding.message());

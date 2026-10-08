@@ -64,6 +64,14 @@ public class EsjLimitException extends EsjException {
     private final Bound bound;
 
     /**
+     * The semantic path of the finding this exception stands for.
+     *
+     * @serial the text of the path, the empty string for the root path, or {@code null}
+     *         where the thrower named none
+     */
+    private final String path;
+
+    /**
      * A bound that was reached: the setting it is configured with, the value it had and
      * what that value counts.
      *
@@ -152,12 +160,34 @@ public class EsjLimitException extends EsjException {
      * @param cause    the underlying failure, or {@code null}
      */
     public EsjLimitException(String message, Bound bound, String location, Throwable cause) {
+        this(message, bound, null, location, cause);
+    }
+
+    /**
+     * Creates an exception that carries the fields of the finding {@code ESJ-L1-LIMIT} a
+     * reader would have reported: the bound, the semantic path and the subject
+     * (specification, section 9.5).
+     *
+     * @param message  the detail message, in English
+     * @param bound    the bound, or {@code null} where it is not known
+     * @param path     the semantic path the finding names, the root path where it names
+     *                 none, or {@code null}
+     * @param location the subject: the place in the document written as a member access,
+     *                 or {@code null}
+     * @param cause    the underlying failure, or {@code null}
+     */
+    public EsjLimitException(String message,
+                             Bound bound,
+                             SemanticPath path,
+                             String location,
+                             Throwable cause) {
         super(location == null || location.isEmpty()
                 ? message
                 : message + " (at " + Messages.abbreviated(location, LOCATION_IN_MESSAGE) + ")",
                 cause);
         this.bound = bound;
         this.location = location;
+        this.path = path == null ? null : path.toString();
     }
 
     /**
@@ -186,5 +216,27 @@ public class EsjLimitException extends EsjException {
      */
     public Optional<String> location() {
         return Optional.ofNullable(location);
+    }
+
+    /**
+     * Returns the semantic path of the finding this exception stands for: the member of
+     * {@code values} the bound was reached in, and the root path where it was reached
+     * outside such a member or the thrower named no place (specification, section 9.5).
+     *
+     * @return the path, the root path where there is none
+     */
+    public SemanticPath path() {
+        return path == null || path.isEmpty() ? SemanticPath.root() : SemanticPath.of(path);
+    }
+
+    /**
+     * Returns the subject of the finding this exception stands for: the member access
+     * {@link #location()} names, whole, or the empty string where it names none
+     * (specification, section 9.5).
+     *
+     * @return the subject, or the empty string
+     */
+    public String subject() {
+        return location == null ? "" : location;
     }
 }
