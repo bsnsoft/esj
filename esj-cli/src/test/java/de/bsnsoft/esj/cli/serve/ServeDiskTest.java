@@ -177,6 +177,17 @@ class ServeDiskTest {
             assertTrue(refused.headers().firstValue("Retry-After").isPresent());
             assertTrue(disk.used() <= maxDisk && disk.free() < mib, disk.used() + " of "
                     + maxDisk);
+            // Refused by its length before it is read, an upload is answered whole however
+            // often it is tried — the rest of its body is read and dropped before the
+            // connection is closed, never written: the account does not move.
+            long used = disk.used();
+            for (int again = 0; again < 40; again++) {
+                HttpResponse<byte[]> response = ServeFixture.post(http.url() + "/api/documents",
+                        upload);
+                assertEquals(503, response.statusCode());
+                assertEquals("full", ServeFixture.json(response).string("error").orElseThrow());
+            }
+            assertEquals(used, disk.used(), "a refused body lands nowhere");
 
             String content = java.util.Base64.getEncoder().encodeToString(upload);
             HttpResponse<byte[]> mcpUpload = ServeFixture.post(http.url() + "/mcp",

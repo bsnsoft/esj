@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HexFormat;
@@ -25,8 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,8 +40,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>It is the HTTP server of the JDK, bounded where that server is not bounded by itself:
  * the time a request may take to arrive and an answer to leave, the size and number of its
  * header fields, the number of connections and of idle ones, and a body, which is cut off at
- * {@code --max-upload} while it is read rather than after. Nothing in a request is evaluated
- * here: a document goes to a child process, and what the child says comes back.
+ * {@code --max-upload} while it is read rather than after. A request refused before its body
+ * was read is answered first, and the rest of its body is then read and dropped before the
+ * connection is closed ({@link Linger}), so that the client gets the answer rather than a
+ * reset. Nothing in a request is evaluated here: a document goes to a child process, and what
+ * the child says comes back.
  *
  * <p>Every request to {@code /api} and {@code /mcp} passes two checks before anything else.
  * A browser origin that is neither a loopback address nor one of {@code --allow-origin} is
@@ -123,11 +127,15 @@ public final class Http implements AutoCloseable {
                 arguments -> source(arguments.string(Tools.DOCUMENT).orElse(null),
                         arguments.string(Tools.PATH).orElse(null)),
                 arguments -> calls.toStore(currentBase.get())), Tools.Mode.HTTP);
-        this.sweeper = Executors.newSingleThreadScheduledExecutor(runnable -> {
+        ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(1, runnable -> {
             Thread thread = new Thread(runnable, "esj-serve-sweeper");
             thread.setDaemon(true);
             return thread;
         });
+        // It also keeps the ends of lingering closes, which are cancelled far more often than
+        // they ring.
+        scheduler.setRemoveOnCancelPolicy(true);
+        this.sweeper = scheduler;
         long period = Math.max(1, Math.min(30, config.ttl().toSeconds() / 2));
         this.sweeper.scheduleAtFixedRate(store::sweep, period, period, TimeUnit.SECONDS);
         this.hook = new Thread(this::shutdown, "esj-serve-shutdown");
@@ -256,6 +264,11 @@ public final class Http implements AutoCloseable {
         bounds.put("sun.net.httpserver.idleInterval", "30");
         bounds.put("sun.net.httpserver.maxIdleConnections", "32");
         bounds.put("jdk.httpserver.maxConnections", Integer.toString(connections));
+        // The JDK's server writes an answer as two packets, its head and then its body. With
+        // Nagle's algorithm the body waits until the head is acknowledged, which a client
+        // delays — by 40 ms on Linux — on a connection that stays open: one kept alive, or
+        // one open while the rest of a refused body is read (Linger).
+        bounds.put("sun.net.httpserver.nodelay", "true");
         bounds.forEach((name, value) -> {
             if (System.getProperty(name) == null) {
                 System.setProperty(name, value);
@@ -276,18 +289,23 @@ public final class Http implements AutoCloseable {
 
     /** What one request came to, for the log line. */
     private static final class Record {
+        final Linger linger;
         int status;
-        long in;
         long out;
         int exit = -1;
         String sha = "";
+
+        Record(Linger linger) {
+            this.linger = linger;
+        }
     }
 
     private void handle(HttpExchange exchange) {
         long started = System.nanoTime();
-        Record record = new Record();
         String method = exchange.getRequestMethod();
         String path = exchange.getRequestURI().getRawPath();
+        Record record = new Record(Linger.install(exchange, "/mcp".equals(path) ? mcpMost()
+                : config.maxUpload(), lingerTime(), sweeper));
         try {
             exchange.getResponseHeaders().set("X-Content-Type-Options", "nosniff");
             exchange.getResponseHeaders().set("Cache-Control", "no-store");
@@ -304,8 +322,9 @@ public final class Http implements AutoCloseable {
             exchange.close();
             long millis = (System.nanoTime() - started) / 1_000_000;
             config.log().accept(Instant.now() + " " + loggable(method) + " " + loggable(path)
-                    + " " + record.status + " in=" + record.in + " out=" + record.out + " " + millis
-                    + "ms" + (record.exit >= 0 ? " exit=" + record.exit : "")
+                    + " " + record.status + " in=" + record.linger.received() + " out="
+                    + record.out + " " + millis + "ms"
+                    + (record.exit >= 0 ? " exit=" + record.exit : "")
                     + (record.sha.isEmpty() ? "" : " sha256=" + record.sha));
         }
     }
@@ -354,8 +373,7 @@ public final class Http implements AutoCloseable {
         origin.filter(this::originListed).ifPresent(allowed -> cors(exchange, allowed));
         if ("OPTIONS".equals(method)) {
             exchange.getResponseHeaders().set("Allow", "GET, POST, OPTIONS");
-            record.status = 204;
-            exchange.sendResponseHeaders(204, -1);
+            empty(exchange, record, 204);
             return;
         }
         if (token.isPresent() && !authorized(exchange)) {
@@ -558,8 +576,8 @@ public final class Http implements AutoCloseable {
         if (tooLong(exchange, config.maxUpload(), record) || noRoom(exchange, record)) {
             return;
         }
-        try (InputStream in = new Counting(exchange.getRequestBody(), record)) {
-            Store.Entry entry = store.upload(in, null);
+        try {
+            Store.Entry entry = store.upload(exchange.getRequestBody(), null);
             record.sha = entry.sha256().substring(0, 12);
             respond(exchange, record, 201, Calls.uploaded(entry).structured());
         } catch (Store.TooLarge e) {
@@ -605,7 +623,7 @@ public final class Http implements AutoCloseable {
         }
         Body body;
         try {
-            body = Body.read(exchange, store.disk(), config.maxUpload(), record);
+            body = Body.read(exchange, store.disk(), config.maxUpload());
         } catch (Store.TooLarge e) {
             tooLarge(exchange, record, e.getMessage());
             return;
@@ -854,7 +872,7 @@ public final class Http implements AutoCloseable {
         }
         String protocol = header == null ? Mcp.ASSUMED : header;
         long upload = Calls.base64Length(config.maxUpload());
-        long most = upload + MCP_OVERHEAD;
+        long most = mcpMost();
         if (tooLong(exchange, most, record)) {
             return;
         }
@@ -863,12 +881,14 @@ public final class Http implements AutoCloseable {
         List<Path> files = new ArrayList<>();
         try {
             Jv message;
-            try (InputStream in = new Bounded(new Counting(exchange.getRequestBody(), record),
-                    most)) {
+            try (InputStream in = new Bounded(exchange.getRequestBody(), most)) {
                 message = Messages.read(in, Optional.of(new Messages.Uploads(store.disk(),
                         upload, files)));
             } catch (Disk.Full full) {
                 // The content of an upload, which goes to a file as it is read, did not fit.
+                // What of it was written is given back before the answer, which waits for the
+                // rest of the body.
+                release(files);
                 exchange.getResponseHeaders().set("Connection", "close");
                 exchange.getResponseHeaders().set("Retry-After",
                         Long.toString(Disk.RETRY_AFTER));
@@ -876,13 +896,16 @@ public final class Http implements AutoCloseable {
                         full.getMessage()));
                 return;
             } catch (Bounded.Past e) {
+                release(files);
                 tooLarge(exchange, record, "the message is larger than the " + most
                         + " bytes this server takes");
                 return;
             } catch (Messages.TooLarge e) {
+                release(files);
                 tooLarge(exchange, record, e.getMessage());
                 return;
             } catch (Jv.JsonException e) {
+                release(files);
                 respond(exchange, record, 400, Mcp.error(Jv.NULL, Mcp.PARSE_ERROR,
                         e.getMessage()));
                 return;
@@ -928,19 +951,35 @@ public final class Http implements AutoCloseable {
                 Jv.release(response.get());
             }
         } finally {
-            files.forEach(store.disk()::delete);
+            release(files);
         }
     }
 
+    /**
+     * Returns the largest MCP message this server takes, in bytes: the content of an upload
+     * in base64 and the rest of a message.
+     */
+    private long mcpMost() {
+        return Calls.base64Length(config.maxUpload()) + MCP_OVERHEAD;
+    }
+
+    /** Gives back the files of the uploads of a message. */
+    private void release(List<Path> files) {
+        files.forEach(store.disk()::delete);
+        files.clear();
+    }
+
     private static void accepted(HttpExchange exchange, Record record) throws IOException {
-        record.status = 202;
-        exchange.sendResponseHeaders(202, -1);
+        empty(exchange, record, 202);
     }
 
     // ---------------------------------------------------------------------------------
     // Bodies and answers
 
-    /** Refuses a body whose declared length is past a bound, before a byte of it is read. */
+    /**
+     * Refuses a body whose declared length is past a bound, before a byte of it is read; the
+     * body is not read after the answer either ({@link Linger}).
+     */
     private boolean tooLong(HttpExchange exchange, long most, Record record) throws IOException {
         String length = exchange.getRequestHeaders().getFirst("Content-Length");
         if (length == null) {
@@ -986,7 +1025,8 @@ public final class Http implements AutoCloseable {
 
     /** Refuses a request for want of room on the disk: 503, to be tried again later. */
     private void full(HttpExchange exchange, Record record, Disk.Full full) throws IOException {
-        // The rest of a body is not read: the connection is closed after the answer.
+        // The connection is closed after the answer, once the rest of the body has been read
+        // and dropped, within the bounds of a lingering close (Linger).
         exchange.getResponseHeaders().set("Connection", "close");
         exchange.getResponseHeaders().set("Retry-After", Long.toString(Disk.RETRY_AFTER));
         respond(exchange, record, 503, Calls.noRoom(full).structured());
@@ -994,7 +1034,8 @@ public final class Http implements AutoCloseable {
 
     private void tooLarge(HttpExchange exchange, Record record, String message)
             throws IOException {
-        // The rest of the body is not read: the connection is closed after the answer.
+        // The connection is closed after the answer; the rest of a body within the bound of
+        // its door is read and dropped first (Linger), one announced past it is not.
         exchange.getResponseHeaders().set("Connection", "close");
         respond(exchange, record, 413, Outcome.error(Outcome.Status.TOO_LARGE, -1, message)
                 .structured());
@@ -1054,12 +1095,12 @@ public final class Http implements AutoCloseable {
         Counter counter = new Counter();
         body.writeTo(counter, pretty);
         exchange.getResponseHeaders().set("Content-Type", JSON);
-        record.status = status;
         record.out = counter.count;
         if ("HEAD".equals(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(status, -1);
+            empty(exchange, record, status);
             return;
         }
+        record.status = status;
         exchange.sendResponseHeaders(status, counter.count);
         try (OutputStream out = new java.io.BufferedOutputStream(exchange.getResponseBody(),
                 16 * 1024)) {
@@ -1085,16 +1126,33 @@ public final class Http implements AutoCloseable {
     private static void send(HttpExchange exchange, Record record, int status, Spool body)
             throws IOException {
         exchange.getResponseHeaders().set("Content-Type", JSON);
-        record.status = status;
         record.out = body.size();
         if ("HEAD".equals(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(status, -1);
+            empty(exchange, record, status);
             return;
         }
+        record.status = status;
         exchange.sendResponseHeaders(status, body.size());
         try (OutputStream out = exchange.getResponseBody()) {
             body.copyTo(out);
         }
+    }
+
+    /**
+     * Sends the headers of an answer without a body. The JDK's server ends the exchange as it
+     * sends them, so the rest of the request body is read and dropped before.
+     */
+    private static void empty(HttpExchange exchange, Record record, int status)
+            throws IOException {
+        record.linger.beforeEmptyAnswer();
+        record.status = status;
+        exchange.sendResponseHeaders(status, -1);
+    }
+
+    /** Returns how long the rest of a refused body is read: a few seconds at most. */
+    private Duration lingerTime() {
+        return config.requestTimeout().compareTo(Linger.TIME) < 0 ? config.requestTimeout()
+                : Linger.TIME;
     }
 
     /** A body that may carry no more than so many bytes; past them, reading fails. */
@@ -1139,34 +1197,6 @@ public final class Http implements AutoCloseable {
         }
     }
 
-    /** Counts the bytes a request body carried, for the log line. */
-    private static final class Counting extends java.io.FilterInputStream {
-        private final Record record;
-
-        Counting(InputStream in, Record record) {
-            super(in);
-            this.record = record;
-        }
-
-        @Override
-        public int read() throws IOException {
-            int b = super.read();
-            if (b >= 0) {
-                record.in++;
-            }
-            return b;
-        }
-
-        @Override
-        public int read(byte[] buffer, int offset, int length) throws IOException {
-            int read = super.read(buffer, offset, length);
-            if (read > 0) {
-                record.in += read;
-            }
-            return read;
-        }
-    }
-
     /**
      * A request body, read into a file of this process within the bound.
      *
@@ -1177,14 +1207,14 @@ public final class Http implements AutoCloseable {
      */
     private record Body(Optional<Path> file, String sha256, String contentType, Disk disk) {
 
-        static Body read(HttpExchange exchange, Disk disk, long most, Record record)
+        static Body read(HttpExchange exchange, Disk disk, long most)
                 throws IOException, Store.TooLarge {
             String contentType = Optional.ofNullable(
                     exchange.getRequestHeaders().getFirst("Content-Type")).orElse("");
             Path file = disk.newFile("body-", ".in");
             MessageDigest digest = Store.sha256();
             long count = 0;
-            try (InputStream in = new Counting(exchange.getRequestBody(), record);
+            try (InputStream in = exchange.getRequestBody();
                  OutputStream out = disk.write(file)) {
                 byte[] buffer = new byte[64 * 1024];
                 int read;

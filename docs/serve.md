@@ -173,6 +173,12 @@ file's bytes to `POST /api/validate`; esj ships none.
   does not read holds a thread, `--max-jobs` + `--max-queue` + 16 of them, until
   `--queue-wait` + `--job-timeout` + 125 s after its request was read, the response time of
   the JDK's server, which has no shorter write timeout; it holds no more heap than a spool.
+  A request refused before its body was read — 401, 403, 503, a message that is not JSON — is
+  answered at once, and the rest of its body is then read and dropped, up to its
+  `Content-Length` and for at most 5 s, before the connection is closed, so that the client
+  reads the answer and not a TCP reset. A body announced past the bound of its door
+  (`--max-upload`, for `/mcp` its base64 and the message around it) is not read: 413, and the
+  connection is closed, which a client that is still sending may see as a reset.
 - **Disk.** `--max-disk` (448M) bounds what the temporary directory holds at once: request
   bodies and uploads as they are read, copies of files named by `path`, artefacts, answers that
   wait for their client, and 64 MiB for each running child from its start — the most it may

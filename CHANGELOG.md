@@ -32,8 +32,11 @@ still change; a change to it is named here under *Format*.
   most it may write — is held to `--max-disk` (448M, within the tmpfs of `dist/compose.yaml`;
   `--max-stored-bytes` 256M within it): a call that does not fit is refused with 503 and
   `Retry-After`, never cut, and a call whose child the server ends as it stops is told so with
-  503, not 502. `dist/compose.yaml` runs it as the service `esj-api`; `dist/serve-smoke.sh`
-  holds every packaged artefact's server against the jar's. [`docs/serve.md`](docs/serve.md).
+  503, not 502. A request refused before its body was read is answered first, and the rest of
+  its body is read and dropped, for at most 5 s, before the connection is closed, so that the
+  client reads the answer and not a TCP reset. `dist/compose.yaml` runs it as the service
+  `esj-api`; `dist/serve-smoke.sh` holds every packaged artefact's server against the jar's.
+  [`docs/serve.md`](docs/serve.md).
 
 ### Fixed
 
