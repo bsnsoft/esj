@@ -246,3 +246,8 @@ jobs:
         run: |
           native=$(echo dist/out/*-native-linux-*/esj)
           dist/smoke.sh "$native" --small-heap "$native -Xmx16m"
+
+      - name: Compare esj serve and esj mcp of both with the jar's
+        run: |
+          dist/serve-smoke.sh "$(echo dist/out/*-linux-*/bin/esj)"
+          dist/serve-smoke.sh "$(echo dist/out/*-native-linux-*/esj)"
