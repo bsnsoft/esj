@@ -321,7 +321,7 @@ class DistributionTest {
     @DisabledOnOs(OS.WINDOWS)
     @ParameterizedTest(name = "sh -n dist/{0}")
     @ValueSource(strings = {"package.sh", "smoke.sh", "cases.sh", "checks.sh",
-                            "native-image.sh", "docker-entrypoint.sh"})
+                            "native-image.sh", "docker-entrypoint.sh", "serve-smoke.sh"})
     void theScriptsOfTheDistributionParse(String script) throws Exception {
         Path file = Files.createTempFile("esj-dist-", ".sh");
         Files.write(file, Fixtures.bytes("dist/" + script));
@@ -422,7 +422,7 @@ class DistributionTest {
                 }
             }
         }
-        assertEquals(12, commands.size(), "the commands of the help text: " + commands);
+        assertEquals(14, commands.size(), "the commands of the help text: " + commands);
         return commands;
     }
 }

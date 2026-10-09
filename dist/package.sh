@@ -24,8 +24,9 @@
 #   zip             the release archives of whatever has been built, each
 #                   with its checksum beside it; the platform-independent one,
 #                   esj-<version>.zip, carries fixed times, modes and order
-#   smoke           dist/smoke.sh against every artefact that has been built,
-#                   and a failure when none has; the container image only
+#   smoke           dist/smoke.sh and dist/serve-smoke.sh against every
+#                   artefact that has been built, and a failure when none
+#                   has; the container image only
 #                   when the docker target built it from the jar it is
 #                   compared with, and a failure when that target built one
 #                   that no longer is
@@ -363,11 +364,13 @@ run_smoke() {
     echo "-- $image/bin/esj"
     smoke_run "$image/bin/esj" --small-heap \
       "$image/bin/java -Xmx16m -XX:+ExitOnOutOfMemoryError -jar $image/app/esj.jar"
+    serve_smoke_run "$image/bin/esj"
     compared=yes
   fi
   if [ -x "$native/esj" ]; then
     echo "-- $native/esj"
     smoke_run "$native/esj" --small-heap "$native/esj -Xmx16m"
+    serve_smoke_run "$native/esj"
     compared=yes
   fi
   # The container image, where the repository is its working directory: the cases
@@ -397,6 +400,7 @@ run_smoke() {
         echo "-- $image_name:$version ($platform)"
         container="docker run --rm -i --pull never --platform $platform --user $(id -u):$(id -g)"
         smoke_run "$container -v $root:/work -w /work $built"
+        serve_smoke_run --docker "$built"
         compared=yes
       fi
     elif [ -n "$present" ]; then
@@ -408,6 +412,21 @@ run_smoke() {
   # A comparison with nothing to compare is not a pass: the release job that
   # builds only the container image fails here when there is no image.
   [ -n "$compared" ] || fail "no packaged artefact of esj $version to compare with the jar"
+}
+
+# Runs dist/serve-smoke.sh, the servers of the artefact against the jar's, the
+# same way.
+serve_smoke_run() {
+  serve_log=$(mktemp)
+  if sh "$here/serve-smoke.sh" "$@" >"$serve_log" 2>&1; then
+    tail -2 "$serve_log"
+  else
+    cat "$serve_log"
+    rm -f "$serve_log"
+    fail "serve smoke test failed for $*"
+    return 1
+  fi
+  rm -f "$serve_log"
 }
 
 # Runs dist/smoke.sh with the given arguments, shows its last lines and fails

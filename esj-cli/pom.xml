@@ -263,7 +263,9 @@
           docs/b2c.md, docs/storage.md, docs/bindings-ts.md and docs/bindings-csharp.md,
           which that test compares them with so that an answer cannot outlive the API it
           shows. The image docs/install.md and the README tell a reader to pull is held
-          against the one .github/workflows/release.yml pushes.
+          against the one .github/workflows/release.yml pushes. docs/serve.md runs its curl
+          lines against esj serve and names the tools, statuses and endpoints the server has,
+          and docs/compatibility.md names it as a preview.
         -->
         <directory>${project.basedir}/..</directory>
         <includes>
@@ -272,6 +274,8 @@
           <include>docs/cli.md</include>
           <include>docs/conformance.md</include>
           <include>docs/deployment.md</include>
+          <include>docs/serve.md</include>
+          <include>docs/compatibility.md</include>
           <include>docs/validation.md</include>
           <include>docs/b2c.md</include>
           <include>docs/install.md</include>

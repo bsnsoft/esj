@@ -55,9 +55,10 @@ esj_cases | while IFS= read -r line; do
     esac
     args="$args $argument"
   done
+  # No run reads the case list it is started from: esj mcp reads its standard input.
   "$graal"/bin/java \
     "-agentlib:native-image-agent=config-merge-dir=$target/metadata/traced" \
-    -jar "$jar" $args >/dev/null 2>&1 || true
+    -jar "$jar" $args </dev/null >/dev/null 2>&1 || true
 done
 runs=$(esj_cases | grep -cv '^convert-stdin-')
 [ -f "$target/metadata/traced/reachability-metadata.json" ] ||

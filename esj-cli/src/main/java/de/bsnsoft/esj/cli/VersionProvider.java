@@ -61,7 +61,7 @@ final class VersionProvider implements picocli.CommandLine.IVersionProvider {
         return "esj " + artifactVersion();
     }
 
-    private static String artifactVersion() {
+    static String artifactVersion() {
         Properties properties = new Properties();
         try (InputStream in = VersionProvider.class.getResourceAsStream(RESOURCE)) {
             if (in == null) {

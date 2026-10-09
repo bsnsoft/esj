@@ -242,4 +242,14 @@ final class GlobalOptions {
     Optional<String> environment(String name) {
         return Optional.ofNullable(environment.get(name));
     }
+
+    /**
+     * Returns the whole environment the run was started with, for {@code esj serve} and
+     * {@code esj mcp}, which choose the environment of their children from it.
+     *
+     * @return the variables, by name
+     */
+    Map<String, String> environment() {
+        return environment;
+    }
 }

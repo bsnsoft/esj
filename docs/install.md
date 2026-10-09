@@ -35,9 +35,7 @@ process per document cheap ([`deployment.md`](deployment.md)). Built with GraalV
 Edition 25.
 
 It carries the defaults of the process boundary built in — a heap ceiling of 512 MiB and an
-abort on heap exhaustion, the same two the other artefacts pass on their command line — so a
-heap that runs out ends the process with exit code 3 and not a process that is alive and
-useless ([`deployment.md`](deployment.md)).
+abort on heap exhaustion, exit code 3 ([`deployment.md`](deployment.md)).
 
 Its limits: `-Xmx` replaces the ceiling at run time, as does the container, but most of the
 options of a virtual machine are not there to be set; and a compiler that never warms up is the
@@ -75,12 +73,16 @@ options of the process boundary, and the same `ESJ_JAVA_OPTS`, as the one in a c
 $ docker pull ghcr.io/bsnsoft/esj:latest
 $ docker run --rm -i --memory 1g --network none -v "$PWD:/work:ro" -w /work \
       ghcr.io/bsnsoft/esj:latest validate invoice.xml
+$ docker run --rm -p 8080:8080 ghcr.io/bsnsoft/esj:latest serve
 ```
 
 Every release from 0.9.2 on publishes the image at `ghcr.io/bsnsoft/esj`, for linux/amd64 and
 linux/arm64. `latest` follows the newest release; a deployment pins the version it was tested
 with, `ghcr.io/bsnsoft/esj:<version>`. Java 25, an unprivileged account, the ahead-of-time cache
 recorded on the architecture it runs on, and `ESJ_MAX_HEAP` for the ceiling (512 MiB by default).
+`esj serve` listens on port 8080 of every interface of the container (`ESJ_SERVE_BIND`), and
+serves the tools over HTTP ([`serve.md`](serve.md)); its own process has `ESJ_SERVE_HEAP`
+(256 MiB), and every child it starts `ESJ_MAX_HEAP`.
 
 A pack made with `esj packs fetch` ([`validation.md`](validation.md#packs-made-on-this-machine))
 is fetched once, in a run that is given the network and writes as the owner of the directory,
@@ -99,9 +101,8 @@ $ dist/package.sh docker              # the image of a checkout: esj:<version> a
 ```
 
 The same image, built from the checkout the script runs in and for the platform of the Docker
-host; `ESJ_IMAGE` gives it another name. [`dist/compose.yaml`](../dist/compose.yaml) runs it as a
-service: one container run per document, a memory limit above the heap, a read-only mount and no
-network.
+host; `ESJ_IMAGE` gives it another name. [`dist/compose.yaml`](../dist/compose.yaml) runs it as
+one container per document, and as `esj serve` (`esj-api`).
 
 ## Homebrew
 
@@ -124,7 +125,7 @@ $ dist/package.sh native smoke        # one of them, and the comparison with the
 | `linux-native` | the Linux executable | Docker |
 | `docker` | the container image, for the platform of the Docker host | Docker |
 | `zip` | the archives of a release | `zip` |
-| `smoke` | nothing; compares every artefact with the jar | — |
+| `smoke` | nothing; compares every artefact with the jar, its servers included | — |
 
 Nothing is listed by hand: the modules of the runtime image come from `jdeps` over the jar,
 what the native executable must reach is recorded by running the cases of

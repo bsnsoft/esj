@@ -1,9 +1,16 @@
-# A service that hands documents to esj one process at a time. Each request is
-# its own container run with its own heap ceiling, which is what makes an
-# invoice that exhausts memory cost one document rather than the service
-# (docs/deployment.md).
+# Two ways to put esj beside a service (docs/deployment.md, docs/serve.md).
+#
+# esj: one document per container run, with its own heap ceiling, which is what
+# makes an invoice that exhausts memory cost one document rather than the
+# service.
 #
 #   docker compose -f dist/compose.yaml run --rm esj validate /work/invoice.xml
+#
+# esj-api: esj serve, the REST API and the MCP server, running on; it starts
+# every call as a child process of its own with --job-heap and --job-timeout.
+#
+#   docker compose -f dist/compose.yaml up esj-api
+#   curl --data-binary @invoice.xml http://127.0.0.1:8080/api/validate
 #
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 services:
@@ -24,3 +31,46 @@ services:
       - ./work:/work:ro
     # Nothing this tool does needs a network.
     network_mode: none
+
+  esj-api:
+    image: esj:latest
+    build:
+      context: ..
+      dockerfile: dist/Dockerfile
+    # Another container of this project reaches it as esj-api:8080, and the links
+    # to artefacts it is given are built from that name (docs/serve.md, Links).
+    command: ["serve", "--max-jobs", "2", "--max-queue", "4", "--job-heap", "512m",
+              "--job-timeout", "2m", "--max-stored-bytes", "256M", "--max-disk", "448M",
+              "--allow-host", "esj-api:8080"]
+    environment:
+      # The heap of the server process itself: it holds no document and no answer of
+      # a child whole, and starts only with the --max-jobs and --max-queue that fit
+      # into it (32 MiB + 2 x 6 MiB + (4 + 16) x 1 MiB = 64 MiB; docs/serve.md).
+      ESJ_SERVE_HEAP: 128m
+      # The heap of every child: --job-heap, which the command names as well.
+      ESJ_MAX_HEAP: 512m
+      # With a token, every request to /api and /mcp has to carry it:
+      # ESJ_TOKEN_FILE: /run/secrets/esj_token
+    # secrets: [esj_token]
+    # Only this host reaches the port; put a reverse proxy with TLS in front of it
+    # for anything else (docs/serve.md).
+    ports:
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    # Uploads, artefacts and the working directories of the children, in memory and
+    # removed with the container: nothing is kept beyond --ttl. --max-disk holds the
+    # server to 448 MiB of it, 64 MiB for each running child among them, and leaves one
+    # child's 64 MiB to spare (docs/serve.md, Disk).
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    # The server, 128 MiB of heap and about 200 MiB beside it, two children of
+    # 512 MiB of heap and about 200 MiB beside each, and the tmpfs, which is
+    # memory: 0.33 + 2 x 0.7 + 0.5 GiB, rounded up. A container sized below the
+    # sum is killed by the kernel instead of a child being ended by its own
+    # ceiling, which costs every call that runs and not the one that was too big.
+    mem_limit: 2304m
+    cpus: 2.0
+    user: "10001"
+# secrets:
+#   esj_token:
+#     file: ./esj-token

@@ -43,10 +43,14 @@ below are written as `esj` and name files of this repository, so they can be pas
 | `canonicalize` | the canonical bytes, or the two digests taken over them |
 | `upgrade` | write an ESJ document as a document of another edition of the semantic model |
 | `packs` | list the validation packs a run chooses among, or make one from a recipe ([below](#packs)) |
+| `serve` | the tools over HTTP: a REST API with its OpenAPI description, and an MCP server |
+| `mcp` | the tools as an MCP server over the standard streams, for an agent on this machine |
 
 [`editions.md`](editions.md) is the reference for `upgrade` and for editions: its option table,
 what every other command does with a document of a non-default edition, and the refusals. A
 component written for one edition refuses a document of another with exit code 4, naming both.
+[`serve.md`](serve.md) is the reference for `serve` and `mcp`, a preview: every call they take
+runs `esj` again as a child process with a heap ceiling and a deadline.
 
 Every command reads a file name, or `-` for the standard input — `diff` reads two — and takes
 `--from` to name the syntax instead of recognizing it, `--importer` to choose the reader,
@@ -1411,16 +1415,10 @@ The exit codes are the interface a script is written against; their meanings do 
 | 8 | the conversion cannot be completed as constrained: `esj convert --fail-on-loss` found part of the document the target syntax has no place for, and nothing was written |
 | 9 | nothing fatal was found and a component of the complete check did not run or did not complete: no verdict, and the report names which and why |
 
-**Code 0 is a claim about coverage as well as about findings.** A command that reaches a verdict
-returns it only where the complete check for that kind of input ran — the table of
-[`validation.md`](validation.md#the-complete-check) — and nothing fatal was found; a run that
-left part of it out leaves with 9, and `reasons` names each component and its cause. That is why
-`esj inspect` never leaves with 0: it names the pack and runs none of it.
-
-**A resource failure must be distinguishable from an invoice being invalid**, which is what
-code 7 is for. Such a run carries no verdict word at all — the last line reads `NO VERDICT — a
-limit of this run was reached …`, the `verdict` member is `null`, and `reasons` names the cause
-`limit-reached` under each component the limit cut short.
+**Code 0 is a claim about coverage** ([`validation.md`](validation.md#the-complete-check)): a run
+that left part of the check out leaves with 9, which is why `esj inspect` never leaves with 0.
+**Code 7 is no verdict**: the last line reads `NO VERDICT — a limit of this run was reached …`,
+`verdict` is `null`, and `reasons` names `limit-reached` under each component the limit cut short.
 
 A consumer that closes the pipe is not a failure. `esj list x | head -1` means "I have seen
 enough", so the tool stops writing, says nothing, and leaves with the code the command reached;

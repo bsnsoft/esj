@@ -183,7 +183,9 @@ public final class Main {
                 .addSubcommand(new ListCommand(console))
                 .addSubcommand(new DiffCommand(console))
                 .addSubcommand(new CanonicalizeCommand(console))
-                .addSubcommand(PacksCommand.tree(console));
+                .addSubcommand(PacksCommand.tree(console))
+                .addSubcommand(new ServeCommand(console))
+                .addSubcommand(new McpCommand(console));
         command.setOut(console.outWriter());
         command.setErr(console.errWriter());
         command.setExecutionExceptionHandler(

@@ -17,6 +17,9 @@
 #
 # Every command the tool offers has at least one case: smoke.sh takes the list
 # of commands from --help and fails when one of them appears in no case here.
+# The two servers are run where they end by themselves: esj mcp on a standard
+# input that is closed at once, and esj serve with its help and with an option
+# it refuses; dist/serve-smoke.sh is what talks to them.
 #
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
@@ -127,6 +130,10 @@ upgrade-2026 upgrade $EXAMPLES/standard-invoice.esj.json --to 2026 --out @OUT
 upgrade-2017 upgrade @FROM:upgrade-2026 --to 2017 --out @OUT
 upgrade-json upgrade $EXAMPLES/minimal.esj.json --to 2026 --output json --out @OUT
 upgrade-refused upgrade $CORPUS/01.01a-INVOICE_ubl.xml --to 2026
+serve-help serve --help
+serve-refused serve --job-heap 1x
+mcp-closed mcp --max-jobs 1 --max-queue 1
+mcp-help mcp --help
 CASES
   if [ "${1-}" = "--full" ]; then
     for instance in "$CORPUS"/*.xml; do

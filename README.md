@@ -61,7 +61,9 @@ often and of what type are facts of one registry per edition ([`model/README.md`
   address field where DIN 5008 puts it, the reference line across the text area, and the EPC QR
   code in the payment block ([`docs/letter-layout.md`](docs/letter-layout.md)).
 - A command line tool for every runtime that is not Java, packaged for machines without one, and
-  a process boundary for untrusted input ([`docs/deployment.md`](docs/deployment.md)).
+  a process boundary for untrusted input ([`docs/deployment.md`](docs/deployment.md)); `esj serve`
+  offers its tools over HTTP — REST, OpenAPI, MCP — and `esj mcp` to an AI agent on the same
+  machine, every call a process of its own ([`docs/serve.md`](docs/serve.md), a preview).
 - An invoice written in the words of the domain: enums, profile defaults and derived totals,
   with the gross figures a consumer was shown kept beside the net ones of the standard
   ([`docs/b2c.md`](docs/b2c.md)).
@@ -221,6 +223,7 @@ manifest. Changes: [`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.m
 - [`docs/bindings-csharp.md`](docs/bindings-csharp.md) — the C# implementation of the format
 - [`docs/install.md`](docs/install.md) — the artefacts, what each needs, measured start-up
 - [`docs/deployment.md`](docs/deployment.md) — running `esj` from a service
+- [`docs/serve.md`](docs/serve.md) — `esj serve` and `esj mcp`: REST, OpenAPI and MCP
 - [`docs/conformance.md`](docs/conformance.md) — the corpus, the litmus test and the ledgers
 - [`docs/why.md`](docs/why.md) — why this exists
 - [`docs/design-decisions.md`](docs/design-decisions.md) — the trade-offs, and the non-goals

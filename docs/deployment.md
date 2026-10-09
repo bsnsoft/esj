@@ -287,16 +287,14 @@ asks for a different class of resources.
 
 ## From a shell
 
-`timeout(1)` is the obvious form where it exists. It is GNU coreutils, so it is on every Linux
-and, as `gtimeout`, on a macOS with coreutils installed:
+`timeout(1)` is GNU coreutils: on every Linux, and as `gtimeout` on a macOS with coreutils:
 
 ```text
 timeout 30 java -Xmx512m -XX:+ExitOnOutOfMemoryError -jar esj.jar \
     validate - --output json < invoice.xml
 ```
 
-Where it does not exist, `perl` does, on both systems, and an alarm is the same thing spelled
-differently — the signal arrives on the schedule the shell set, whatever the child is doing:
+Where it does not exist, `perl` does, and its alarm arrives whatever the child is doing:
 
 ```text
 perl -e 'alarm shift @ARGV; exec @ARGV or die $!' 30 \
@@ -304,9 +302,7 @@ perl -e 'alarm shift @ARGV; exec @ARGV or die $!' 30 \
     validate - --output json < invoice.xml
 ```
 
-Either way the exit code is what the script branches on: `0` completely checked and nothing
-fatal, `1` findings, `9` nothing fatal and part of the check did not run or did not complete,
-`7` or a signal code no verdict, anything else a crash.
+Either way the script branches on the exit code of [the table above](#the-contract).
 
 ## From Java
 
@@ -388,8 +384,13 @@ document's failure one document's failure.
 One statement covers it, and it names the input it is for: a long-lived process, or a batch,
 for input you own or that is already isolated behind another boundary — your own archive, a
 regression run, a migration; one process per document, with a heap ceiling on its command line
-and a timeout from outside, for input from strangers. For the second, pay the start-up cost:
-[`deployment-measurements.md`](deployment-measurements.md) measures it and says what an AppCDS
-archive and `-XX:TieredStopAtLevel=1` take off it, and
+and a timeout from outside, for input from strangers. `esj serve` and `esj mcp`
+([`serve.md`](serve.md)) are that model as a server: every call is a process of its own with
+`--job-heap` as its `-Xmx`, `--job-timeout` as its deadline and a kill from outside, at most
+`--max-jobs` at once, so a document that exhausts a child costs that call and never the server;
+the server holds no document and no answer of a child whole, and its own heap is bounded by
+`--max-jobs`, not by the documents, as its temporary directory is by `--max-disk`. For the
+second, pay the start-up cost: [`deployment-measurements.md`](deployment-measurements.md)
+measures it and says what an AppCDS archive and `-XX:TieredStopAtLevel=1` take off it, and
 [`validation-measurements.md`](validation-measurements.md) is what the check itself costs once
 a process is running.

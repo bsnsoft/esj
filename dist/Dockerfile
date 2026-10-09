@@ -9,6 +9,11 @@
 #   docker run --rm -i --read-only --memory 1g -v "$PWD:/work:ro" esj:0.9.0 \
 #       validate /work/invoice.xml
 #
+# The same image serves the tools over HTTP (docs/serve.md); ESJ_SERVE_BIND makes
+# esj serve listen on every interface of the container rather than on loopback:
+#
+#   docker run --rm -p 8080:8080 esj:0.9.0 serve
+#
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
 # The base image is named by its tag and pinned by the digest of its manifest
@@ -49,6 +54,11 @@ RUN chmod 0555 /opt/esj/entrypoint.sh \
     && useradd --uid 10001 --create-home --shell /usr/sbin/nologin esj
 USER 10001
 WORKDIR /work
-ENV ESJ_MAX_HEAP=512m
+# The heap of a command and of every child esj serve starts, the heap of the server
+# process itself, which holds no document (docs/serve.md), and its address.
+ENV ESJ_MAX_HEAP=512m \
+    ESJ_SERVE_HEAP=256m \
+    ESJ_SERVE_BIND=0.0.0.0
+EXPOSE 8080
 ENTRYPOINT ["/opt/esj/entrypoint.sh"]
 CMD ["--help"]

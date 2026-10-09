@@ -6,6 +6,40 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.7] — unreleased
 
+### Added
+
+- `esj serve` (preview): the tools of the command line over HTTP — a REST API under `/api`, its
+  OpenAPI 3.1 description at `/openapi.json`, and an MCP server over Streamable HTTP at `/mcp` —
+  and `esj mcp` (preview), the same tools as an MCP server over the standard streams. Seven tools
+  from one table: `validate`, `summary`, `get`, `convert`, `render`, `extract` and `inspect`, and
+  `upload` over HTTP. The server reads no document itself: every call runs `esj` as a child process
+  with `--job-heap`, `--job-timeout` and an environment of its own, at most `--max-jobs` at once.
+  `POST /api/validate` answers with the report of `esj validate --output json`, byte for byte.
+  Loopback by default and `0.0.0.0` in both container images (`ESJ_SERVE_BIND`, port 8080
+  exposed), a bearer token from `--token-file`, `Origin` checked, `path` only below
+  `--allow-dir`, uploads and artefacts kept for `--ttl` in one temporary directory that `SIGTERM`
+  removes. The server holds no document and no answer whole: it reads what a child wrote from
+  its file, keeps what a result carries and writes the answer into a spool before the call gives
+  back its child's place, so a call costs its heap at most 6 MiB whatever `--limits` lets a
+  child read and a client that reads slowly costs none of it, and it starts only with the
+  `--max-jobs` its heap holds (`ESJ_SERVE_HEAP` in the container image, beside `ESJ_MAX_HEAP`
+  for the children); an MCP batch carries at most 16 messages and one `tools/call`. Links are
+  built from `--public-url` or a `Host` the server answers to (`--allow-host`) and are paths
+  otherwise; a file with a second name below `--allow-dir` is refused; the texts a model reads
+  escape every invisible character; `notifications/cancelled` ends the child of its call.
+  Everything the server holds on disk — request bodies and uploads as they are read, artefacts,
+  answers that wait for their client, and 64 MiB for each running child from its start, the
+  most it may write — is held to `--max-disk` (448M, within the tmpfs of `dist/compose.yaml`;
+  `--max-stored-bytes` 256M within it): a call that does not fit is refused with 503 and
+  `Retry-After`, never cut, and a call whose child the server ends as it stops is told so with
+  503, not 502. `dist/compose.yaml` runs it as the service `esj-api`; `dist/serve-smoke.sh`
+  holds every packaged artefact's server against the jar's. [`docs/serve.md`](docs/serve.md).
+
+### Fixed
+
+- The image stage of `dist/Dockerfile.native` carries the runtime libraries beside the executable,
+  without which a rendering in it failed to load the AWT library.
+
 ## [0.9.6] — 2026-10-08
 
 The Java implementation and the TypeScript and C# bindings now read, report and load registries

@@ -26,7 +26,9 @@ Covered: command names, option names and their meaning, the exit codes 0–2 and
 the members of `--output json` — none is removed, renamed or retyped within a major version; new
 commands, options and members may appear. Not covered: the text written for people, messages on
 the error stream, the layout of HTML and PDF reports and renderings. Output is deterministic
-within one version, not across versions.
+within one version, not across versions. A preview, and not covered: `esj serve` and `esj mcp`,
+the REST API, the MCP tools and the JSON they answer with ([`serve.md`](serve.md)); the body of
+`POST /api/validate` is the report of `esj validate --output json` and is covered as that.
 
 ## The Java libraries
 

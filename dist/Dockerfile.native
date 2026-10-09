@@ -26,11 +26,19 @@ FROM scratch AS artefact
 COPY --from=build /artefact /
 
 # The same executable in an image that can run it: a base with the C library it
-# is linked against and nothing else to speak of.
+# is linked against and nothing else to speak of. The runtime libraries the
+# executable loads from beside itself when it renders travel with it.
 FROM gcr.io/distroless/base-debian12:nonroot@sha256:7f0c72cd138b442ae0deeb69c08b1acf5525439ba251a49ad93c320a061567e5 AS image
-COPY --from=build /out/esj /opt/esj/esj
-COPY --from=build /src/LICENSE /src/NOTICE /opt/esj/
+COPY --from=build /artefact/ /opt/esj/
 WORKDIR /work
 USER nonroot
+# esj serve listens on every interface of the container (docs/serve.md), and gives
+# every child the heap of ESJ_MAX_HEAP. There is no shell to choose the heap of the
+# server process itself: it keeps the ceiling built into the executable (512 MiB), of
+# which it uses little, unless the command line names another before the command:
+#   docker run ... <image> -Xmx128m serve
+ENV ESJ_MAX_HEAP=512m \
+    ESJ_SERVE_BIND=0.0.0.0
+EXPOSE 8080
 ENTRYPOINT ["/opt/esj/esj"]
 CMD ["--help"]

@@ -1,0 +1,95 @@
+[
+  {
+    "name": "the handshake of the newest revision, the tools, and a call",
+    "steps": [
+      {"send": {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}}},
+       "expect": {"jsonrpc": "2.0", "id": 1, "result": {"protocolVersion": "2025-11-25", "capabilities": {"tools": {"listChanged": false}}, "serverInfo": {"name": "esj", "version": "$any"}, "instructions": "$contains:never type"}}},
+      {"send": {"jsonrpc": "2.0", "method": "notifications/initialized"}, "expect": null},
+      {"send": {"jsonrpc": "2.0", "id": 2, "method": "ping"}, "expect": {"jsonrpc": "2.0", "id": 2, "result": {}}},
+      {"send": {"jsonrpc": "2.0", "id": 3, "method": "tools/list"},
+       "expect": {"id": 3, "result": {"tools": [
+         {"name": "validate", "inputSchema": {"type": "object", "additionalProperties": false}, "annotations": {"readOnlyHint": true}},
+         {"name": "summary"}, {"name": "get"}, {"name": "convert"}, {"name": "render"},
+         {"name": "extract"}, {"name": "inspect"}, "$more"]}}},
+      {"send": {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "validate", "arguments": {"$doc": "examples/standard-invoice.esj.json"}}},
+       "expect": {"id": 4, "result": {"content": [{"type": "text", "text": "$contains:VALID: the complete check"}, {"type": "text", "text": "$contains:\"verdict\":\"VALID\""}], "structuredContent": {"verdict": "VALID", "exitCode": 0, "findingsTotal": "$any"}, "isError": false}}},
+      {"send": {"jsonrpc": "2.0", "id": "five", "method": "tools/call", "params": {"name": "get", "arguments": {"$doc": "examples/standard-invoice.esj.json", "paths": ["/BT-1", "/BG-4/BT-27", "/BT-22"]}}},
+       "expect": {"id": "five", "result": {"structuredContent": {"values": {"/BT-1": "RE-2026-0042", "/BG-4/BT-27": "Example GmbH"}, "missing": ["/BT-22"], "truncated": false}, "isError": false}}},
+      {"send": {"jsonrpc": "2.0", "id": 6, "method": "tools/call", "params": {"name": "validate", "arguments": {"$doc": "examples/invalid/arithmetic-mismatch.esj.json"}}},
+       "expect": {"id": 6, "result": {"content": [{"type": "text", "text": "$contains:INVALID"}, "$more"], "structuredContent": {"verdict": "INVALID", "exitCode": 1, "findings": [{"check": "rules", "code": "BR-48", "severity": "fatal", "paths": ["/BG-23/0/BT-118", "/BG-23/0/BT-119"]}, "$more"]}, "isError": false}}}
+    ]
+  },
+  {
+    "name": "an older revision is answered with itself and without structured content",
+    "steps": [
+      {"send": {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}}},
+       "expect": {"id": 1, "result": {"protocolVersion": "2025-03-26"}}},
+      {"send": {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "summary", "arguments": {"$doc": "examples/standard-invoice.esj.json"}}},
+       "expect": {"id": 2, "result": {"content": [{"type": "text", "text": "$contains:RE-2026-0042"}, {"type": "text", "text": "$contains:\"invoiceNumber\":\"RE-2026-0042\""}], "structuredContent": "$absent", "isError": false}}}
+    ]
+  },
+  {
+    "name": "a revision this server does not speak is answered with the newest it does",
+    "steps": [
+      {"send": {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "1999-01-01", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}}},
+       "expect": {"id": 1, "result": {"protocolVersion": "2025-11-25"}}},
+      {"send": {"jsonrpc": "2.0", "id": 2, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}}},
+       "expect": {"id": 2, "result": {"protocolVersion": "2024-11-05"}}}
+    ]
+  },
+  {
+    "name": "the errors of the protocol",
+    "steps": [
+      {"send": {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "no-such-tool", "arguments": {}}},
+       "expect": {"id": 1, "error": {"code": -32602, "message": "$contains:unknown tool"}}},
+      {"send": {"jsonrpc": "2.0", "id": 2, "method": "server/discover", "params": {}},
+       "expect": {"id": 2, "error": {"code": -32601}}},
+      {"send": {"jsonrpc": "2.0", "id": 3, "method": "resources/list"},
+       "expect": {"id": 3, "error": {"code": -32601}}},
+      {"send": {"jsonrpc": "1.0", "id": 4, "method": "ping"},
+       "expect": {"id": 4, "error": {"code": -32600}}},
+      {"send": {"jsonrpc": "2.0", "id": {"an": "object"}, "method": "ping"},
+       "expect": {"id": null, "error": {"code": -32600}}},
+      {"send": {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": "not an object"},
+       "expect": {"id": 5, "error": {"code": -32602}}},
+      {"send": {"jsonrpc": "2.0", "id": 6, "method": "tools/call", "params": {"arguments": {}}},
+       "expect": {"id": 6, "error": {"code": -32602}}},
+      {"sendRaw": "{\"jsonrpc\": \"2.0\", \"id\": 7, \"method\": ",
+       "expect": {"id": null, "error": {"code": -32700}}},
+      {"send": {"jsonrpc": "2.0", "method": "notifications/cancelled", "params": {"requestId": 99}}, "expect": null},
+      {"send": {"jsonrpc": "2.0", "id": 8, "result": {}}, "expect": null}
+    ]
+  },
+  {
+    "name": "a call the tool refuses is a result that says so, not a protocol error",
+    "steps": [
+      {"send": {"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}}},
+       "expect": {"id": 0, "result": {"protocolVersion": "2025-06-18"}}},
+      {"send": {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "validate", "arguments": {"$doc": "examples/standard-invoice.esj.json", "report": "docx"}}},
+       "expect": {"id": 1, "result": {"content": [{"type": "text", "text": "$contains:report takes none, pdf, html"}, "$more"], "structuredContent": {"error": "bad-arguments"}, "isError": true}}},
+      {"send": {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "summary", "arguments": {"$doc": "examples/standard-invoice.esj.json", "colour": "red"}}},
+       "expect": {"id": 2, "result": {"structuredContent": {"error": "bad-arguments", "message": "$contains:takes no parameter colour"}, "isError": true}}},
+      {"send": {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "get", "arguments": {"$doc": "examples/standard-invoice.esj.json", "paths": ["BT-1"]}}},
+       "expect": {"id": 3, "result": {"structuredContent": {"error": "bad-arguments", "message": "$contains:is not a semantic path"}, "isError": true}}},
+      {"send": {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "summary", "arguments": {}}},
+       "expect": {"id": 4, "result": {"structuredContent": {"error": "bad-arguments"}, "isError": true}}},
+      {"send": {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": {"name": "validate", "arguments": {"$doc": "examples/invalid/README.md"}}},
+       "expect": {"id": 5, "result": {"structuredContent": {"error": "input", "exitCode": 2}, "isError": true}}}
+    ]
+  },
+  {
+    "name": "a file a call writes: an artefact over HTTP, the out of the call over the standard streams",
+    "steps": [
+      {"send": {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}}},
+       "expect": {"id": 1, "result": {"protocolVersion": "2025-11-25"}}},
+      {"send": {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "validate", "arguments": {"$doc": "examples/standard-invoice.esj.json", "report": "html"}}},
+       "expectHttp": {"id": 2, "result": {"structuredContent": {"verdict": "VALID", "files": [{"role": "report", "mediaType": "text/html", "url": "$contains:/api/artifacts/"}]}, "isError": false}},
+       "expectStdio": {"id": 2, "result": {"structuredContent": {"error": "bad-arguments", "message": "$contains:needs out"}, "isError": true}}},
+      {"send": {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "extract", "arguments": {"$doc": "conformance/pdf/factur-x.pdf"}}},
+       "expect": {"id": 3, "result": {"structuredContent": {"xml": "$contains:CrossIndustryInvoice"}, "isError": false}}},
+      {"send": {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "upload", "arguments": {"content_base64": "PGEvPg==", "name": "a.xml"}}},
+       "expectHttp": {"id": 4, "result": {"structuredContent": {"id": "$any", "bytes": 4, "sha256": "$any"}, "isError": false}},
+       "expectStdio": {"id": 4, "error": {"code": -32602, "message": "$contains:unknown tool"}}}
+    ]
+  }
+]
