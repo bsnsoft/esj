@@ -32,6 +32,14 @@ still change; a change to it is named here under *Format*.
 
 ### Fixed
 
+- `esj serve` kept the connection of an early refusal alive — an answer sent before the request
+  body was read to its end — though it closes that connection where the lingering read of the
+  rest ends at its time bound or at the bound of the door; a client that had already sent its
+  next request on it lost that answer (`HTTP/1.1 header parser received no bytes`: once in 420
+  requests on a CI runner, in a test run some 3.5 s longer than usual, past the test's 3 s
+  bounds; every time behind a chunked body past the bound). Such an answer now says
+  `Connection: close`, so the next request goes on a new connection; a request whose body was
+  read to its end keeps its connection.
 - The native executables ended `esj render --template` with exit 5 on a JPEG letterhead or logo
   (`NoSuchMethodError: …JPEGImageReader.readInputData`) and on every PNG that is not plain RGB or
   a palette — with an ICC profile or an `sRGB` chunk, in grey, interlaced or with an alpha channel

@@ -41,10 +41,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * the time a request may take to arrive and an answer to leave, the size and number of its
  * header fields, the number of connections and of idle ones, and a body, which is cut off at
  * {@code --max-upload} while it is read rather than after. A request refused before its body
- * was read is answered first, and the rest of its body is then read and dropped before the
- * connection is closed ({@link Linger}), so that the client gets the answer rather than a
- * reset. Nothing in a request is evaluated here: a document goes to a child process, and what
- * the child says comes back.
+ * was read is answered first, with {@code Connection: close}, and the rest of its body is then
+ * read and dropped before the connection is closed ({@link Linger}), so that the client gets
+ * the answer rather than a reset, and sends its next request on a new connection rather than
+ * on one the server is about to close. Nothing in a request is evaluated here: a document goes
+ * to a child process, and what the child says comes back.
  *
  * <p>Every request to {@code /api} and {@code /mcp} passes two checks before anything else.
  * A browser origin that is neither a loopback address nor one of {@code --allow-origin} is
@@ -610,7 +611,7 @@ public final class Http implements AutoCloseable {
                 + " 'unsafe-inline'; img-src data:");
         record.status = 200;
         record.out = entry.get().bytes();
-        exchange.sendResponseHeaders(200, entry.get().bytes());
+        head(exchange, record, 200, entry.get().bytes());
         try (OutputStream out = exchange.getResponseBody()) {
             Files.copy(entry.get().file(), out);
         }
@@ -776,7 +777,7 @@ public final class Http implements AutoCloseable {
             headers.set("Content-Type", JSON);
             record.status = 200;
             record.out = length;
-            exchange.sendResponseHeaders(200, length);
+            head(exchange, record, 200, length);
             try (OutputStream out = exchange.getResponseBody()) {
                 Files.copy(raw, out);
             }
@@ -1101,7 +1102,7 @@ public final class Http implements AutoCloseable {
             return;
         }
         record.status = status;
-        exchange.sendResponseHeaders(status, counter.count);
+        head(exchange, record, status, counter.count);
         try (OutputStream out = new java.io.BufferedOutputStream(exchange.getResponseBody(),
                 16 * 1024)) {
             body.writeTo(out, pretty);
@@ -1132,7 +1133,7 @@ public final class Http implements AutoCloseable {
             return;
         }
         record.status = status;
-        exchange.sendResponseHeaders(status, body.size());
+        head(exchange, record, status, body.size());
         try (OutputStream out = exchange.getResponseBody()) {
             body.copyTo(out);
         }
@@ -1146,7 +1147,17 @@ public final class Http implements AutoCloseable {
             throws IOException {
         record.linger.beforeEmptyAnswer();
         record.status = status;
-        exchange.sendResponseHeaders(status, -1);
+        head(exchange, record, status, -1);
+    }
+
+    /**
+     * Sends the headers of an answer, every answer's. One that goes out before the request
+     * body was read to its end closes its connection ({@link Linger#beforeHead}).
+     */
+    private static void head(HttpExchange exchange, Record record, int status, long length)
+            throws IOException {
+        record.linger.beforeHead(exchange.getResponseHeaders());
+        exchange.sendResponseHeaders(status, length);
     }
 
     /** Returns how long the rest of a refused body is read: a few seconds at most. */

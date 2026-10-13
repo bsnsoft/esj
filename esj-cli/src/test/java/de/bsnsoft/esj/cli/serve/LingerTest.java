@@ -2,6 +2,7 @@ package de.bsnsoft.esj.cli.serve;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.sun.net.httpserver.Headers;
@@ -131,6 +132,54 @@ class LingerTest {
         assertEquals(0, body.available());
         assertEquals(3_000, linger.received());
         assertFalse(Thread.interrupted());
+    }
+
+    @Test
+    void anAnswerBeforeTheEndOfTheBodyClosesItsConnection() throws IOException {
+        Exchange unread = new Exchange(new Original(new ByteArrayInputStream(new byte[50_000])),
+                "Content-Length", "50000");
+        Linger.install(unread, BOUND, Duration.ofSeconds(5), alarms).beforeHead(
+                unread.getResponseHeaders());
+        assertEquals("close", unread.getResponseHeaders().getFirst("Connection"));
+
+        Exchange read = new Exchange(new Original(new ByteArrayInputStream(new byte[50_000])),
+                "Content-Length", "50000");
+        Linger lingerOfRead = Linger.install(read, BOUND, Duration.ofSeconds(5), alarms);
+        assertEquals(50_000, read.getRequestBody().readNBytes(50_000).length);
+        lingerOfRead.beforeHead(read.getResponseHeaders());
+        assertNull(read.getResponseHeaders().getFirst("Connection"),
+                "read to its announced end, though not to the end of the stream");
+
+        Exchange empty = new Exchange(new Original(new ByteArrayInputStream(new byte[0])),
+                "Content-Length", "0");
+        Linger.install(empty, BOUND, Duration.ofSeconds(5), alarms).beforeHead(
+                empty.getResponseHeaders());
+        assertNull(empty.getResponseHeaders().getFirst("Connection"), "no body");
+
+        Exchange chunked = new Exchange(new Original(new ByteArrayInputStream(new byte[3_000])),
+                "Transfer-Encoding", "chunked");
+        Linger lingerOfChunked = Linger.install(chunked, BOUND, Duration.ofSeconds(5), alarms);
+        lingerOfChunked.beforeEmptyAnswer();
+        lingerOfChunked.beforeHead(chunked.getResponseHeaders());
+        assertNull(chunked.getResponseHeaders().getFirst("Connection"),
+                "read to its end before an answer without a body");
+
+        Exchange endless = new Exchange(new Original(new InputStream() {
+            @Override
+            public int read() {
+                return 'x';
+            }
+
+            @Override
+            public int read(byte[] bytes, int offset, int length) {
+                return length;
+            }
+        }), "Transfer-Encoding", "chunked");
+        Linger lingerOfEndless = Linger.install(endless, BOUND, Duration.ofSeconds(5), alarms);
+        lingerOfEndless.beforeEmptyAnswer();
+        lingerOfEndless.beforeHead(endless.getResponseHeaders());
+        assertEquals("close", endless.getResponseHeaders().getFirst("Connection"),
+                "read to the bound, not to its end");
     }
 
     /** The original request body, which only the server closes. */

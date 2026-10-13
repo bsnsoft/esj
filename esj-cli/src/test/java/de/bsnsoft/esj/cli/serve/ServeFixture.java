@@ -27,13 +27,16 @@ import java.util.Optional;
  *
  * <p>The bounds of the JDK's HTTP server are read once per process, when its classes are
  * first used, and the server sets them only where nobody did. This class sets the time a
- * request may take to arrive to three seconds before any server of these tests is made, so
- * that a client that sends a request slowly is cut off within a test's patience.
+ * request may take to arrive to ten seconds before any server of these tests is made, so
+ * that a client that sends a request slowly is cut off within a test's patience — and not
+ * sooner: the request timeout is wall-clock time, and a shared machine that stalls the tests
+ * for a few seconds makes the JDK's server close the requests in flight, as a request
+ * timeout of three seconds did on a CI runner.
  */
 final class ServeFixture {
 
     /** How long a request may take to arrive, in every server of these tests. */
-    static final int REQUEST_SECONDS = 3;
+    static final int REQUEST_SECONDS = 10;
 
     static {
         System.setProperty("sun.net.httpserver.maxReqTime", Integer.toString(REQUEST_SECONDS));

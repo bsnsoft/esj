@@ -38,6 +38,17 @@ import java.util.concurrent.TimeUnit;
  * only way to end a read the JDK's server blocks in, and a client too slow for it may lose
  * the answer, as before.
  *
+ * <p>An answer that goes out before the body was read to its end closes its connection
+ * ({@code Connection: close}, {@link #beforeHead}) once the rest has been read. When the answer
+ * goes out, nobody knows whether the rest will arrive within the bounds — the client may be
+ * slow, the server may stall, the body may run past the bound — and a connection whose rest
+ * did not arrive is closed. A client that has sent its whole body, read the answer and found
+ * the connection kept alive sends its next request on it, and when the server then closes the
+ * connection, that request is lost with it: the client sees a connection that ends before a
+ * byte of its answer. So such a connection is never offered for another request; the client
+ * opens a new one, and only the refused request depends on the rest of its body, whose answer
+ * it already has. A request whose body was read to its end keeps its connection.
+ *
  * <p>The request's stream is replaced by one that counts what the handler reads and that
  * closing does not close: the JDK's server closes the original when the answer ends, and a
  * handler that closes its stream on a refusal — every {@code try} with resources does — would
@@ -100,6 +111,27 @@ final class Linger {
      */
     void beforeEmptyAnswer() {
         rest();
+    }
+
+    /**
+     * Prepares the headers of the answer, just before they are sent: where the body has not
+     * been read to its end, the answer closes its connection, so that no client sends another
+     * request on a connection that the server closes once it has lingered.
+     *
+     * @param answer the headers of the answer
+     */
+    void beforeHead(Headers answer) {
+        if (!complete()) {
+            answer.set("Connection", "close");
+        }
+    }
+
+    /**
+     * Tells whether the body was read to its end: to the end of the stream, or to the length it
+     * announced, the end of which the JDK's server sees without waiting.
+     */
+    private boolean complete() {
+        return body.ended || (declared >= 0 && body.read >= declared);
     }
 
     /**
