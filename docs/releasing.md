@@ -2,8 +2,9 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-A release is a tag. `release.yml` builds the archives of the command line tool from it, attaches
-them to the GitHub release and pushes the container image to the GitHub container registry;
+A release is a tag. `release.yml` builds the archives and the Linux packages of the command line
+tool from it, attaches them to the GitHub release, pushes the container image to the GitHub
+container registry and the packages to the apt and dnf repositories at `https://apt.bsnsoft.de`;
 publishing that release runs `publish.yml`, which deploys the libraries to Maven Central. Nothing
 is published from a workstation.
 
@@ -12,7 +13,8 @@ is published from a workstation.
 | Channel | Artefacts |
 |---|---|
 | Maven Central, `de.bsnsoft.esj` | the ten modules a build can depend on, each with its source and Javadoc jar; the aggregator POM they inherit from; `esj-bom`, flattened (no parent, only these modules managed) |
-| GitHub release assets | the native executables, the runtime image, the release zip and their checksums ([`install.md`](install.md)) |
+| GitHub release assets | the native executables, the runtime image, the release zip, the four Linux packages and their checksums ([`install.md`](install.md)) |
+| Package repositories, `https://apt.bsnsoft.de` | the `.deb` and `.rpm` packages in an apt repository at the root and a dnf repository under `rpm/`, in the suite `stable` for a release and `testing` for a pre-release, served by GitHub Pages from the branch `gh-pages` ([`install.md`](install.md#debian-and-ubuntu-apt)) |
 | GitHub container registry, `ghcr.io/bsnsoft/esj` | the container image of `dist/Dockerfile` for linux/amd64 and linux/arm64: the tags `<version>` and `latest` name both platforms, `<version>-linux-amd64` and `<version>-linux-arm64` one each ([`install.md`](install.md#container-image)) |
 
 `esj-cli` and `esj-generator` are not on Central: one is the tool, the other the build tool of
@@ -83,6 +85,50 @@ pushes only from a `v*` tag that names the version of the jar — started by han
 builds and compares the image and pushes nothing — and every run on a tag moves `latest` to that
 tag, so re-running the workflow of an older release moves `latest` back.
 
+## The Linux packages and their repositories
+
+The job *Linux packages* packs the native executables of the two Linux jobs into
+`esj_<version>_<amd64|arm64>.deb` and `esj-<version>-1.<x86_64|aarch64>.rpm` with nfpm
+(`dist/packages.sh`, nfpm pinned by version and SHA-256 in `dist/nfpm.sh`): a pre-release
+`1.2.3-rc.1` becomes `1.2.3~rc.1`, which apt and dnf sort before `1.2.3`. Every executable is
+checked first against the oldest C library the packages require, `ESJ_GLIBC_FLOOR` in
+`dist/checks.sh` (glibc 2.34), as the native build checks it. On a runner of each processor the
+job *Linux packages on …* then installs them in Debian, Ubuntu, Fedora and Rocky Linux and runs
+the tool there (`dist/packages-smoke.sh`), and publishes them into apt and dnf repositories signed
+with a throwaway key and installs them from there with the commands of
+[`install.md`](install.md#debian-and-ubuntu-apt) (`dist/repositories-test.sh`). The release job
+attaches them with the archives, checked and attested the same way, and only after both tests.
+
+The job *Package repositories* runs on a `v*` tag, after the release job, one tag at a time. It
+checks out the branch `gh-pages` (or starts it as an orphan where there is none), imports the
+release key from the secrets `GPG_PRIVATE_KEY` and `GPG_PASSPHRASE` and makes one signature with
+it before anything else, adds the four packages to the suite of the tag (`stable` for a release,
+`testing` for a pre-release), regenerates every index from the packages on the branch
+(`dist/repositories.sh`: `apt-ftparchive`, `createrepo_c`), signs the indices and every rpm that
+has no signature yet, and pushes the branch as `github-actions[bot]`; GitHub Pages then publishes
+it. Only this job reads the release key. The rpm in the repository is the attached package with a
+signature added (the header digest is the same); the `.deb` is the same file. A published package
+is never replaced: a package of the same name with other contents stops the job.
+
+The branch is the whole state of the repositories: every version stays on it, and nothing else is
+kept. GitHub Pages publishes at most 1 GB, and every release adds about 120 MB, so the job warns
+above 750 MB and stops above 1 GB. Pruning is by hand: delete the old packages from
+`pool/main/e/esj/` and `rpm/<suite>/<arch>/` on `gh-pages`, push, and at once re-run the job
+*Package repositories* of the latest release, which regenerates every index from what is left and
+signs it — until it has, the indices name packages that are gone:
+
+```sh
+gh run list --workflow release.yml --limit 5          # the run of the latest tag
+gh run view <run-id> --json jobs --jq '.jobs[] | select(.name == "Package repositories") | .databaseId'
+gh run rerun <run-id> --job <that id>
+```
+
+The same re-run repeats a publication that failed, for as long as the run keeps its artifacts
+(90 days); a package already on the branch is left as it is. The history of `gh-pages` keeps the
+pruned files; to shrink the branch itself, replace it by a single commit of its current tree. The
+site has the custom domain `apt.bsnsoft.de`, which GitHub keeps in the file `CNAME` at the root of
+the branch; the job leaves that file alone.
+
 ## Set up once
 
 1. An account on [central.sonatype.com](https://central.sonatype.com) for the publisher.
@@ -99,7 +145,9 @@ The four secrets are the whole configuration `publish.yml` reads; they are organ
 that only this repository may read. A deployment cannot be withdrawn once it is published, and a
 version cannot be published twice.
 
-The container image and the attestations need no secret: `release.yml` pushes the image with the
+The package repositories are signed with the same key, read from `GPG_PRIVATE_KEY` and
+`GPG_PASSPHRASE` by the job *Package repositories*; `release.yml` names its fingerprint and stops
+when the secret holds another key. The container image and the attestations need no secret: `release.yml` pushes the image with the
 token of the workflow run and signs the attestations with a certificate issued to that run.
 Once, after the first release that pushes it, check the package `esj` among the organisation's
 packages on GitHub. A package a workflow creates is private, whatever the visibility of the

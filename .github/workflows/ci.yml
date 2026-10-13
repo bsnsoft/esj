@@ -199,11 +199,15 @@ jobs:
 
   # The packaged tool has to answer exactly as the jar does. dist/smoke.sh runs
   # every command of the tool with both and compares what they write, the
-  # verdict they reach and the code they leave with.
+  # verdict they reach and the code they leave with. The native executable is
+  # then packaged as a .deb and an .rpm, installed in the distributions those
+  # are for, and published into apt and dnf repositories signed with a
+  # throwaway key, which the commands of docs/install.md install it from.
   package:
     name: Package and smoke test
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - name: Check out the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -251,3 +255,16 @@ jobs:
         run: |
           dist/serve-smoke.sh "$(echo dist/out/*-linux-*/bin/esj)"
           dist/serve-smoke.sh "$(echo dist/out/*-native-linux-*/esj)"
+
+      # A snapshot version, 1.2.3-SNAPSHOT, is packaged as 1.2.3~SNAPSHOT, a
+      # pre-release, and goes through the testing suite of the repositories.
+      - name: Build the .deb and the .rpm of the native executable
+        run: |
+          version=$(java -jar esj-cli/target/esj.jar --version | awk 'NR == 1 { print $2 }')
+          sh dist/packages.sh dist/out "$version" dist/out/packages
+
+      - name: Install the packages in Debian, Ubuntu, Fedora and Rocky Linux
+        run: sh dist/packages-smoke.sh dist/out/packages
+
+      - name: Install them from repositories signed with a throwaway key
+        run: sh dist/repositories-test.sh dist/out/packages

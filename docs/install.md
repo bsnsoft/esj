@@ -2,12 +2,14 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-`brew install bsnsoft/tap/esj` installs the native executable on macOS (Apple silicon) and Linux;
-the archives below are attached to the [release](https://github.com/bsnsoft/esj/releases) with
-their SHA-256, and from 0.9.2 on the container image is published at `ghcr.io/bsnsoft/esj`. Four
-artefacts, one tool: each of them answers exactly as the self-contained jar does, which
-`dist/smoke.sh` checks by running every command of the tool with both and comparing what they
-write, the verdict they reach and the code they leave with.
+`brew install bsnsoft/tap/esj` installs the native executable on macOS (Apple silicon) and Linux,
+and from 0.9.8 on `apt-get install esj` and `dnf install esj` install it from the
+[package repositories](#debian-and-ubuntu-apt) of this project; the archives below are attached to
+the [release](https://github.com/bsnsoft/esj/releases) with their SHA-256, and from 0.9.2 on the
+container image is published at `ghcr.io/bsnsoft/esj`. Four artefacts, one tool: each of them
+answers exactly as the self-contained jar does, which `dist/smoke.sh` checks by running every
+command of the tool with both and comparing what they write, the verdict they reach and the code
+they leave with.
 
 | Artefact | Needs | Size | `validate` of a 7 kB invoice | Resident set |
 |---|---|---|---|---|
@@ -20,6 +22,78 @@ Measured as in [`deployment-measurements.md`](deployment-measurements.md#start-u
 artefact with its own defaults, at a load average of 8 to 40: an order of magnitude, not a ratio.
 The container row is a whole `docker run` on a host where that starts a virtual machine; what the
 tool costs inside it is the runtime image row.
+
+## Debian and Ubuntu (apt)
+
+<!-- repositories-test: apt stable -->
+```console
+$ sudo apt-get update && sudo apt-get install ca-certificates curl
+$ sudo install -d -m 0755 /etc/apt/keyrings
+$ curl -fsSL https://apt.bsnsoft.de/bsnsoft-esj.gpg | sudo tee /etc/apt/keyrings/bsnsoft-esj.gpg > /dev/null
+$ echo 'deb [signed-by=/etc/apt/keyrings/bsnsoft-esj.gpg] https://apt.bsnsoft.de stable main' | sudo tee /etc/apt/sources.list.d/esj.list
+$ sudo apt-get update && sudo apt-get install esj
+```
+
+The native executable as a package, from 0.9.8 on, for amd64 and arm64: `/usr/bin/esj`, a link to
+`/usr/lib/esj/esj`, which lies beside its shared libraries. `apt-get upgrade` follows every release
+from then on. The repository and its key are served by GitHub Pages from the branch `gh-pages` of
+this repository; the key is the one the libraries on Maven Central are signed with, BSNSoft
+Solutions GmbH, `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`, which
+`gpg --show-keys /etc/apt/keyrings/bsnsoft-esj.gpg` prints.
+
+A release goes to the suite `stable`, a release candidate to `testing` only, as the version
+`1.0.0~rc.1`, which sorts before `1.0.0`. One more line adds `testing` beside `stable`, and apt
+takes the newer of the two:
+
+<!-- repositories-test: apt testing -->
+```console
+$ echo 'deb [signed-by=/etc/apt/keyrings/bsnsoft-esj.gpg] https://apt.bsnsoft.de testing main' | sudo tee -a /etc/apt/sources.list.d/esj.list
+```
+
+## Fedora and RHEL-family (dnf)
+
+<!-- repositories-test: dnf stable -->
+```console
+$ sudo curl -fsSL -o /etc/yum.repos.d/esj.repo https://apt.bsnsoft.de/rpm/esj.repo
+$ sudo dnf install esj
+```
+
+The rpm repository is served from the same host, under `/rpm/`, with the same key: dnf prints
+its fingerprint before it imports it, and checks every package and the metadata against it
+(`gpgcheck=1`, `repo_gpgcheck=1`). `dnf upgrade` follows every release. Instead of the `curl`
+line, `sudo dnf config-manager addrepo --from-repofile=https://apt.bsnsoft.de/rpm/esj.repo` (dnf5,
+Fedora 41 and later) or `sudo dnf config-manager --add-repo https://apt.bsnsoft.de/rpm/esj.repo`
+(dnf4 with `dnf-plugins-core`, RHEL 9) does the same. Release candidates:
+
+<!-- repositories-test: dnf testing -->
+```console
+$ sudo curl -fsSL -o /etc/yum.repos.d/esj-testing.repo https://apt.bsnsoft.de/rpm/esj-testing.repo
+```
+
+### Which systems
+
+The executable needs the GNU C library 2.34 or newer and nothing else but zlib: Debian 12 and
+later, Ubuntu 22.04 and later, Fedora, and RHEL, Rocky Linux and AlmaLinux 9 and later, on
+x86_64 and arm64. Debian 11 and Ubuntu 20.04 (glibc 2.31) are below that; the container image
+runs there. The packages are installed and exercised — validation, a rendered letter, a PDF
+report, a request to `esj serve` — in `debian:12-slim`, `ubuntu:22.04`, `ubuntu:24.04`,
+`fedora:latest` and `rockylinux:9` by [`dist/packages-smoke.sh`](../dist/packages-smoke.sh), and
+the repositories with the commands above by
+[`dist/repositories-test.sh`](../dist/repositories-test.sh). No X11 and no FreeType are needed:
+the executable renders headless and draws its fonts itself.
+
+### A package without the repository
+
+```console
+$ sudo apt-get install ./esj_<version>_amd64.deb
+$ sudo dnf install ./esj-<version>-1.x86_64.rpm
+```
+
+The four packages — `esj_<version>_<amd64|arm64>.deb`, `esj-<version>-1.<x86_64|aarch64>.rpm` —
+are attached to every release from 0.9.8 on, with their checksums and attestations
+([below](#checking-a-download)); a package installed this way is not upgraded. The rpm of the
+repository is the same package with a signature added when it is published:
+`rpm -qp --qf '%{SHA256HEADER}\n'` prints the same header digest for both.
 
 ## Native executable
 
@@ -157,10 +231,12 @@ the subset, and `dist/package.sh smoke` runs it against every artefact that has 
 | `esj-<version>-native-<os>-<arch>.zip` | the executable, its shared libraries, `LICENSE`, `NOTICE`, the licences of the Java runtime parts in it (`legal/`) |
 | `esj-<version>-<os>-<arch>.zip` | the runtime image, `bin/esj`, the jar, the cache, `LICENSE`, `NOTICE` |
 | `esj-<version>.zip` | the jar, `bin/esj`, `LICENSE`, `NOTICE`, the documentation of the command line |
+| `esj_<version>_<arch>.deb`, `esj-<version>-1.<arch>.rpm` | the native Linux executable as a package for apt and dnf, for x64 and arm64 ([above](#a-package-without-the-repository)) |
 
-Beside each archive a `.sha256` file with its checksum, written by `dist/package.sh zip`. A
-tag builds all three on Linux (x64 and arm64) and macOS (arm64) and attaches them, with their
-checksums, to its release. A Windows artefact is not built: `jpackage` and `native-image`
+Beside each archive and package a `.sha256` file with its checksum, written by
+`dist/package.sh zip` and `dist/packages.sh`. A tag builds the archives on Linux (x64 and arm64)
+and macOS (arm64), packs the two Linux executables into the four packages, and attaches them, with
+their checksums, to its release. A Windows artefact is not built: `jpackage` and `native-image`
 produce one from the same jar on a Windows runner, and no one has run it.
 
 ## Checking a download
@@ -173,7 +249,8 @@ $ gh attestation verify oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj
 
 The checksum catches a damaged download. From 0.9.5 on, the archives and the image carry a build
 provenance attestation, signed through Sigstore and kept by GitHub, that names the workflow, the
-commit and the tag they were built from. The artefacts on Maven Central are signed with the key
-`39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8` (BSNSoft Solutions GmbH). The macOS
+commit and the tag they were built from, and from 0.9.8 on the packages do. The artefacts on Maven
+Central, the indices of the package repositories and the rpm packages in them are signed with the
+key `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8` (BSNSoft Solutions GmbH). The macOS
 executable is signed ad hoc and not notarised: downloaded with a browser, Gatekeeper blocks it
 until `xattr -dr com.apple.quarantine` is run on its directory; Homebrew sets no quarantine flag.

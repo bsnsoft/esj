@@ -1,18 +1,22 @@
 name: Release
 
-# A tag is built, packaged and attached to its release, and its container image
-# is pushed to the GitHub container registry as ghcr.io/bsnsoft/esj. The
-# libraries go to Maven Central from publish.yml.
+# A tag is built, packaged and attached to its release, its container image is
+# pushed to the GitHub container registry as ghcr.io/bsnsoft/esj, and its Linux
+# packages go to the apt and dnf repositories at https://apt.bsnsoft.de, which
+# GitHub Pages serves from the branch gh-pages. The libraries go to Maven
+# Central from publish.yml.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
 
 # Every action is pinned to a commit, with its release beside it for Dependabot.
-# Only the job that attaches the archives may write the repository, only the
-# two jobs that push the container image may write packages, and only the two
-# jobs that attest may ask for a signing identity: the job that attaches the
-# archives and the one that joins the image. Neither runs a build.
+# Only the job that attaches the archives and the job that pushes the branch
+# gh-pages may write the repository, only the two jobs that push the container
+# image may write packages, and only the two jobs that attest may ask for a
+# signing identity: the job that attaches the archives and the one that joins
+# the image. Neither runs a build. The release key (GPG_PRIVATE_KEY) is read by
+# the job that writes the package repositories and by no other.
 permissions:
   contents: read
 
@@ -136,36 +140,125 @@ jobs:
             dist/out/*.zip.sha256
           if-no-files-found: error
 
+  # The .deb and the .rpm of both Linux processors, from the native executables
+  # the two Linux jobs built. nfpm only packs files, so one runner writes all
+  # four, from the archives that are attached beside them.
+  packages:
+    name: Linux packages
+    needs: artefacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Collect the native executables of both Linux jobs
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: esj-linux-*
+          path: archives
+          merge-multiple: true
+
+      # The version is the one the archives carry, which the version job held
+      # against the tag; packages.sh checks each archive against its checksum.
+      - name: Build the packages
+        run: |
+          set -eu
+          version=$(cd archives && ls esj-*-native-linux-x64.zip |
+            sed -n 's/^esj-\(.*\)-native-linux-x64\.zip$/\1/p')
+          test -n "$version"
+          test -f "archives/esj-$version-native-linux-arm64.zip"
+          sh dist/packages.sh archives "$version" packages
+          test "$(ls packages/*.deb packages/*.rpm | wc -l)" -eq 4
+
+      - name: Keep the packages
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: esj-linux-packages
+          path: |
+            packages/*.deb
+            packages/*.rpm
+            packages/*.sha256
+          if-no-files-found: error
+
+  # The packages of each processor, on a runner of that processor: installed in
+  # Debian, Ubuntu, Fedora and Rocky Linux and run there (dist/packages-smoke.sh),
+  # and published into a repository with a throwaway key and installed from it
+  # with the commands of docs/install.md (dist/repositories-test.sh). Nothing is
+  # attached before both have passed.
+  package-tests:
+    name: Linux packages on ${{ matrix.label }}
+    needs: packages
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: linux-x64
+            runner: ubuntu-latest
+          - label: linux-arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Collect the packages
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: esj-linux-packages
+          path: packages
+
+      - name: Install the packages in Debian, Ubuntu, Fedora and Rocky Linux
+        run: sh dist/packages-smoke.sh packages
+
+      - name: Install them from repositories signed with a throwaway key
+        run: sh dist/repositories-test.sh packages
+
   release:
     name: Attach the archives to the release
-    needs: artefacts
+    needs: [artefacts, packages, package-tests]
     runs-on: ubuntu-latest
     permissions:
       contents: write # attach the archives to the release
       id-token: write # a signing certificate for the attestation
       attestations: write # store the attestation
     steps:
-      - name: Collect the archives
+      # Only for dist/packages.sh, which names the versions the packages carry.
+      - name: Check out the packaging scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: dist
+
+      - name: Collect the archives and the packages
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: archives
 
       # Nothing is attached before every checksum has been checked against the
-      # archive beside it, in what each job delivered and in what is attached, and
-      # before every name is known to come from one job, or to carry the same bytes
-      # from each job that delivered it. A failure here leaves the release untouched.
-      - name: Check every archive against its checksum
+      # archive or package beside it, in what each job delivered and in what is
+      # attached, and before every name is known to come from one job, or to carry
+      # the same bytes from each job that delivered it. A failure here leaves the
+      # release untouched.
+      - name: Check every archive and package against its checksum
         run: |
           set -eu
-          # Each archive has its checksum beside it, and each checksum is one line in
-          # the form dist/package.sh writes, naming the archive beside it; then the
-          # check a reader makes.
+          # Each archive and package has its checksum beside it, and each checksum is
+          # one line in the form dist/package.sh and dist/packages.sh write, naming
+          # the file beside it; then the check a reader makes.
           check() {
             ( cd "$1"
-              ls ./*.zip > /dev/null 2>&1 || { echo "::error::$1 holds no archive"; exit 1; }
-              for archive in *.zip; do
+              found=
+              for archive in *.zip *.deb *.rpm; do
+                [ -f "$archive" ] || continue
+                found=yes
                 [ -f "$archive.sha256" ] || { echo "::error::$1: $archive has no checksum"; exit 1; }
               done
+              [ -n "$found" ] || { echo "::error::$1 holds no archive or package"; exit 1; }
               for sum in *.sha256; do
                 archive=${sum%.sha256}
                 [ -f "$archive" ] || { echo "::error::$1: $sum has no archive beside it"; exit 1; }
@@ -195,28 +288,38 @@ jobs:
             fi
           done
           check assets
-          # On a tag, the platform-independent archive of the version it names is there.
+          # On a tag, the platform-independent archive and the four Linux packages
+          # of the version it names are there.
           case $GITHUB_REF in
             refs/tags/v*)
-              if [ ! -f "assets/esj-${GITHUB_REF_NAME#v}.zip" ]; then
-                echo "::error::no esj-${GITHUB_REF_NAME#v}.zip among the archives of $GITHUB_REF_NAME"
-                exit 1
-              fi ;;
+              version=${GITHUB_REF_NAME#v}
+              deb=$(sh dist/packages.sh --versions "$version" | sed -n 's/^deb //p')
+              rpm=$(sh dist/packages.sh --versions "$version" | sed -n 's/^rpm //p')
+              for file in "esj-$version.zip" "esj_${deb}_amd64.deb" "esj_${deb}_arm64.deb" \
+                  "esj-$rpm.x86_64.rpm" "esj-$rpm.aarch64.rpm"; do
+                if [ ! -f "assets/$file" ]; then
+                  echo "::error::no $file among the assets of $GITHUB_REF_NAME"
+                  exit 1
+                fi
+              done ;;
           esac
 
       - name: Say that nothing is attached
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
-        run: echo "::notice::$GITHUB_REF is not a v* tag; the archives were built and checked, and nothing is attested or attached"
+        run: echo "::notice::$GITHUB_REF is not a v* tag; the archives and packages were built and checked, and nothing is attested, attached or published"
 
-      # A signed statement, kept by GitHub, that each archive was built by this
-      # workflow from this commit: gh attestation verify <archive> --repo
-      # bsnsoft/esj checks it (docs/install.md). It is made only for archives
-      # whose checksums have just been checked, and before anything is attached.
-      - name: Attest the provenance of the archives
+      # A signed statement, kept by GitHub, that each archive and package was built
+      # by this workflow from this commit: gh attestation verify <file> --repo
+      # bsnsoft/esj checks it (docs/install.md). It is made only for files whose
+      # checksums have just been checked, and before anything is attached.
+      - name: Attest the provenance of the archives and packages
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: assets/*.zip
+          subject-path: |
+            assets/*.zip
+            assets/*.deb
+            assets/*.rpm
 
       - name: Attach them
         if: startsWith(github.ref, 'refs/tags/v')
@@ -225,8 +328,141 @@ jobs:
           files: |
             assets/*.zip
             assets/*.zip.sha256
+            assets/*.deb
+            assets/*.deb.sha256
+            assets/*.rpm
+            assets/*.rpm.sha256
           fail_on_unmatched_files: true
           generate_release_notes: true
+
+  # The apt and dnf repositories at https://apt.bsnsoft.de: GitHub Pages serves
+  # them from the branch gh-pages, which is their whole state. The packages of
+  # the tag go to the suite it maps to (stable for a release, testing for a
+  # pre-release; dist/packages.sh --versions), every index is regenerated from
+  # the packages on the branch and signed with the release key, the rpm packages
+  # are signed with it, and the branch is pushed. It runs once the release is
+  # attached, and one tag at a time: a second tag waits for the first push.
+  repositories:
+    name: Package repositories
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    # The release of Ubuntu dist/repositories-test.sh writes its site in, so that
+    # apt-ftparchive, createrepo_c and rpmsign are the versions the test ran.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write # push the branch gh-pages
+    concurrency:
+      group: package-repositories
+      cancel-in-progress: false
+    env:
+      # The release key; the secret has to hold this one (docs/install.md, SECURITY.md).
+      ESJ_SIGNING_KEY: 39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: source
+          persist-credentials: false
+
+      # The branch exists from the first publication on; before that the site
+      # starts as an orphan branch. A failure to ask is not taken for a missing
+      # branch: an orphan could not be pushed over an existing one anyway.
+      - name: Look for the branch gh-pages
+        id: pages
+        run: |
+          status=0
+          git ls-remote --exit-code --heads "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" gh-pages \
+            > /dev/null || status=$?
+          case $status in
+            0) echo "ref=gh-pages" >> "$GITHUB_OUTPUT" ;;
+            2) echo "::notice::no branch gh-pages yet; it starts here as an orphan"
+               echo "ref=" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::git ls-remote failed with $status"; exit 1 ;;
+          esac
+
+      # The one checkout that keeps the token of the run: it pushes.
+      - name: Check out the site
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.pages.outputs.ref }}
+          path: site
+          fetch-depth: 1
+
+      - name: Start the branch gh-pages
+        if: steps.pages.outputs.ref == ''
+        working-directory: site
+        run: git switch --orphan gh-pages
+
+      - name: Collect the packages
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: esj-linux-packages
+          path: packages
+
+      # From the archive of the runner's Ubuntu release, which apt checks.
+      - name: Install apt-ftparchive, createrepo_c and rpmsign
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends apt-utils createrepo-c rpm
+
+      # The key goes into a keyring of this job only. As in publish.yml, the
+      # passphrase is given through the loopback pinentry and one signature is
+      # made with it before anything else, so a wrong or missing secret is named
+      # here; then it is preset in the agent, because rpmsign and the other
+      # signing commands of dist/repositories.sh run in batch mode
+      # (dist/repositories.sh --unlock). The secret has to hold the release key.
+      - name: Import the release key and unlock it for batch use
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          set -eu
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          install -d -m 700 "$GNUPGHOME"
+          echo "GNUPGHOME=$GNUPGHOME" >> "$GITHUB_ENV"
+          gpg --version | head -1
+          printf '%s\n' "$GPG_PRIVATE_KEY" | gpg --batch --import
+          if ! gpg --batch --list-secret-keys --keyid-format long "$ESJ_SIGNING_KEY"; then
+            echo "::error::GPG_PRIVATE_KEY does not hold the release key $ESJ_SIGNING_KEY"
+            exit 1
+          fi
+          printf '%s\n' "$GPG_PASSPHRASE" | sh source/dist/repositories.sh --unlock "$ESJ_SIGNING_KEY"
+
+      # GitHub Pages publishes at most 1 GB; every release adds about 120 MB of
+      # packages, and old versions are pruned by hand (docs/releasing.md).
+      - name: Write the repositories
+        run: |
+          set -eu
+          version=${GITHUB_REF_NAME#v}
+          suite=$(sh source/dist/packages.sh --versions "$version" | sed -n 's/^suite //p')
+          echo "esj $version goes to $suite"
+          sh source/dist/repositories.sh packages site "$suite" "$ESJ_SIGNING_KEY"
+          size=$(du -sm --exclude=.git site | cut -f1)
+          if [ "$size" -gt 1000 ]; then
+            echo "::error::the site holds $size MB, over the 1 GB GitHub Pages publishes; prune old versions (docs/releasing.md)"
+            exit 1
+          elif [ "$size" -gt 750 ]; then
+            echo "::warning::the site holds $size MB of the 1 GB GitHub Pages publishes; prune old versions soon (docs/releasing.md)"
+          fi
+
+      - name: Push the branch gh-pages
+        working-directory: site
+        run: |
+          set -eu
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::notice::nothing to push: the site is as it was"
+            exit 0
+          fi
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -q -m "esj ${GITHUB_REF_NAME#v}: packages and repositories"
+          git push origin HEAD:gh-pages
+
+      - name: Stop the agent that holds the key
+        if: always()
+        run: gpgconf --kill gpg-agent || true
 
   # The container image of dist/Dockerfile, built on each Linux runner for that
   # runner's own processor: the training run inside the Dockerfile runs at native
