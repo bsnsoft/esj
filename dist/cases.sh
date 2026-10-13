@@ -21,6 +21,15 @@
 # input that is closed at once, and esj serve with its help and with an option
 # it refuses; dist/serve-smoke.sh is what talks to them.
 #
+# A command is not all a case has to cover. The images a render template brings
+# are decoded by code of the Java runtime that a native image carries only where
+# a traced run reached it: a JPEG goes through the decoder in libjavajpeg, an
+# image with a colour profile through the colour management of the runtime, and
+# a PNG that is not plain 8-bit RGB through the PNG reader of ImageIO, whose
+# rasters and colour models differ by bit depth. The templates under
+# dist/artwork bring one of each, as letterhead and as logo; without them a
+# native executable ended on the first JPEG logo with an internal error.
+#
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
 set -eu
@@ -29,6 +38,7 @@ CORPUS=conformance/kosit/business-cases/standard
 TECHNICAL=conformance/kosit/technical-cases
 EXAMPLES=examples
 PDF=conformance/pdf/factur-x.pdf
+ARTWORK=dist/artwork
 
 esj_cases() {
   cat <<CASES
@@ -114,6 +124,10 @@ render-embed render --template $EXAMPLES/templates/letterhead.json --embed cii -
 render-template-b2c render --extension b2c --template $EXAMPLES/templates/gross.json --out @OUT $EXAMPLES/b2c-gross.esj.json
 render-layout-generic render --layout generic --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-template-letter render --template $EXAMPLES/templates/letter.json --out @OUT $EXAMPLES/standard-invoice.esj.json
+render-artwork-jpeg render --template $ARTWORK/jpeg.json --out @OUT $EXAMPLES/standard-invoice.esj.json
+render-artwork-icc render --template $ARTWORK/icc.json --out @OUT $EXAMPLES/standard-invoice.esj.json
+render-artwork-png render --template $ARTWORK/png.json --out @OUT $EXAMPLES/standard-invoice.esj.json
+render-artwork-grey render --template $ARTWORK/grey.json --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-no-payment-code render --no-payment-code --out @OUT $EXAMPLES/standard-invoice.esj.json
 render-letter-pages render --out @OUT $EXAMPLES/multiple-lines.esj.json
 validate-hybrid validate @FROM:render-embed

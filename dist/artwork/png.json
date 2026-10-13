@@ -1,0 +1,11 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Smoke: grey, sRGB-tagged and transparent PNG artwork",
+  "layout": "generic",
+  "letterhead": {
+    "first":     { "file": "sheet-grey8.png" },
+    "following": { "file": "sheet-srgb.png" }
+  },
+  "logo": { "file": "logo-alpha.png", "x": 501, "y": 49, "width": 66, "height": 19.8,
+            "pages": "all" }
+}

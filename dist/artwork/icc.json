@@ -1,0 +1,11 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Smoke: artwork with a colour profile",
+  "layout": "letter",
+  "letterhead": {
+    "first":     { "file": "sheet-icc.png" },
+    "following": { "file": "sheet-icc.jpg" }
+  },
+  "logo": { "file": "logo-icc.png", "x": 501, "y": 49, "width": 66, "height": 19.8,
+            "pages": "all" }
+}
