@@ -30,6 +30,16 @@ still change; a change to it is named here under *Format*.
   symbol version newer than `ESJ_GLIBC_FLOOR` (2.34), the floor the packages require; the native
   build and `dist/packages.sh` run the check.
 
+### Fixed
+
+- The native executables ended `esj render --template` with exit 5 on a JPEG letterhead or logo
+  (`NoSuchMethodError: …JPEGImageReader.readInputData`) and on every PNG that is not plain RGB or
+  a palette — with an ICC profile or an `sRGB` chunk, in grey, interlaced or with an alpha channel
+  (`sun/java2d/Disposer`, `CMMException`): no case had used such an image, so the native image
+  lacked the JNI and resource metadata of the JPEG decoder, of the rasters and colour models of
+  ImageIO and of the colour management of the Java runtime. Four template cases over
+  `dist/artwork/` record it, and the smoke compares their renderings with the jar's.
+
 ## [0.9.7] — 2026-10-10
 
 ### Added

@@ -1,0 +1,11 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Smoke: JPEG artwork",
+  "layout": "generic",
+  "letterhead": {
+    "first":     { "file": "sheet.jpg" },
+    "following": { "file": "sheet-grey.jpg" }
+  },
+  "logo": { "file": "logo.jpg", "x": 501, "y": 49, "width": 66, "height": 19.8,
+            "pages": "all" }
+}

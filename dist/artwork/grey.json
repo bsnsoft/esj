@@ -1,0 +1,11 @@
+{
+  "template": "esj-render-template/0.1",
+  "name": "Smoke: grey PNG artwork at one and sixteen bits and with an alpha channel",
+  "layout": "letter",
+  "letterhead": {
+    "first":     { "file": "sheet-grey1.png" },
+    "following": { "file": "sheet-grey16.png" }
+  },
+  "logo": { "file": "logo-grey-alpha.png", "x": 501, "y": 49, "width": 66, "height": 19.8,
+            "pages": "all" }
+}
