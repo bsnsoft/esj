@@ -1,6 +1,7 @@
 package de.bsnsoft.esj.cli.serve;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -27,8 +28,11 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * A request the server refuses before it has read its body is answered, and then what is left
  * of the body is read and thrown away before the connection is closed: a client gets the
- * status and the whole body of the answer, never a connection reset in their place. A body
- * announced past the bound is not read; one that does not come is waited for only briefly.
+ * status and the whole body of the answer, never a connection reset in their place. The answer
+ * says {@code Connection: close}, so that a client sends its next request on a new connection
+ * and never on one the server closes once it has lingered. A body announced past the bound is
+ * not read; one that does not come is waited for only briefly. A request whose body was read
+ * to its end keeps its connection.
  */
 class ServeLingerTest {
 
@@ -41,10 +45,10 @@ class ServeLingerTest {
 
     /**
      * Deterministic, whatever the operating system does with a reset: the answer arrives
-     * before a byte of the body has been sent, the body is then sent in full, and the
-     * connection ends with a close the client reads as the end of the stream. A server that
-     * closed after the answer with the body unread would make the client's writes, or its
-     * read, fail.
+     * before a byte of the body has been sent and says that the connection ends with it, the
+     * body is then sent in full, and the server ends the connection with a close the client
+     * reads as the end of the stream. A server that closed after the answer with the body
+     * unread would make the client's writes, or its read, fail.
      */
     @Test
     void aRefusedBodyIsReadToItsEndAfterTheAnswer() throws Exception {
@@ -62,10 +66,11 @@ class ServeLingerTest {
             assertEquals(401, answer.status(), "answered before a byte of the body was sent");
             assertEquals("unauthorized", ServeFixture.json(answer.body()).string("error")
                     .orElseThrow());
+            assertEquals("close", answer.headers().get("connection"), "a client does not send"
+                    + " another request on this connection");
 
             out.write(body);
             out.flush();
-            socket.shutdownOutput();
             assertEquals(-1, socket.getInputStream().read(), "the server read the body and"
                     + " closed the connection, rather than resetting it");
             String line = awaitLine(log, "POST /api/validate 401 ");
@@ -76,7 +81,8 @@ class ServeLingerTest {
     /**
      * Uploads, MCP messages, calls and wrong paths with a body of a megabyte, each refused
      * before the body was read or while it was: every answer arrives with its status and its
-     * whole body, however often it is tried.
+     * whole body, however often it is tried, and closes its connection, so that the next
+     * request goes on a new one.
      */
     @Test
     void everyEarlyRefusalOfALargeBodyArrivesWhole() throws Exception {
@@ -113,12 +119,15 @@ class ServeLingerTest {
                                 door.body(), door.headers());
                         if (response.statusCode() != door.status()) {
                             failures.add(door.what() + ": " + response.statusCode());
+                        } else if (!"close".equals(response.headers().firstValue("Connection")
+                                .orElse(""))) {
+                            failures.add(door.what() + ": the connection is kept alive");
                         } else {
                             // The whole body: it is one JSON object.
                             ServeFixture.json(response);
                         }
                     } catch (RuntimeException e) {
-                        failures.add(door.what() + ": " + e);
+                        failures.add(door.what() + ", request " + (i + 1) + ": " + causes(e));
                     }
                 }
             }
@@ -148,6 +157,7 @@ class ServeLingerTest {
             socket.getOutputStream().flush();
             Answer answer = Answer.read(socket.getInputStream());
             assertEquals(401, answer.status());
+            assertEquals("close", answer.headers().get("connection"));
             long started = System.nanoTime();
             int read;
             try {
@@ -192,8 +202,96 @@ class ServeLingerTest {
             Answer answer = Answer.read(socket.getInputStream());
             assertEquals(413, answer.status());
             assertEquals("close", answer.headers().get("connection"));
+            // The JDK's server would otherwise wait for a little of the body before it ends
+            // the exchange, up to the request timeout.
+            socket.shutdownOutput();
             String line = awaitLine(log, "POST /api/documents 413 ");
             assertEquals(0, bytesIn(line), line);
+        }
+    }
+
+    /**
+     * A body without a length, past the bound of its door, refused before it is read: the
+     * answer closes its connection, the server reads to the bound and closes, and the next
+     * request, on a new connection, is answered. Kept alive, the connection would have carried
+     * the next request of a client that had sent its whole body before the server read it — a
+     * request the server's close would have lost.
+     */
+    @Test
+    void aChunkedBodyPastTheBoundClosesItsConnection() throws Exception {
+        List<String> log = ServeFixture.log();
+        ServeConfig config = ServeFixture.config(temp, log).withToken(Optional.of(TOKEN));
+        config = config.withStorage(MIB, config.requestTimeout(), config.ttl(),
+                config.maxStored(), config.maxStoredBytes(), temp);
+        ByteArrayOutputStream chunked = new ByteArrayOutputStream();
+        byte[] chunk = random(16 * 1024);
+        for (int sent = 0; sent < MIB + 64 * 1024; sent += chunk.length) {
+            chunked.write((Integer.toHexString(chunk.length) + "\r\n")
+                    .getBytes(StandardCharsets.US_ASCII));
+            chunked.write(chunk);
+            chunked.write("\r\n".getBytes(StandardCharsets.US_ASCII));
+        }
+        chunked.write("0\r\n\r\n".getBytes(StandardCharsets.US_ASCII));
+        try (Http http = Http.start(config);
+             Socket socket = new Socket("127.0.0.1", http.port())) {
+            socket.setSoTimeout(10_000);
+            OutputStream out = socket.getOutputStream();
+            out.write(("POST /api/validate HTTP/1.1\r\nHost: 127.0.0.1\r\n"
+                    + "Transfer-Encoding: chunked\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            Answer answer = Answer.read(socket.getInputStream());
+            assertEquals(401, answer.status());
+            assertEquals("close", answer.headers().get("connection"));
+            try {
+                out.write(chunked.toByteArray());
+                out.flush();
+            } catch (IOException e) {
+                // The server closed the connection at the bound, with the rest unread.
+            }
+            String line = awaitLine(log, "POST /api/validate 401 ");
+            assertTrue(bytesIn(line) > MIB && bytesIn(line) < MIB + 64 * 1024, "read to the"
+                    + " bound and no further: " + line);
+            assertEquals(401, ServeFixture.post(http.url() + "/api/validate",
+                    "{}".getBytes(StandardCharsets.US_ASCII)).statusCode(), "the next request");
+        }
+    }
+
+    /**
+     * Requests whose bodies are read to their end, or that have none, keep their connection,
+     * whether they are answered with a result or refused: three of them on one connection.
+     */
+    @Test
+    void aRequestReadToItsEndKeepsItsConnection() throws Exception {
+        ServeConfig config = ServeFixture.config(temp, ServeFixture.log())
+                .withToken(Optional.of(TOKEN));
+        byte[] document = ServeFixture.bytes("examples/standard-invoice.esj.json");
+        try (Http http = Http.start(config);
+             Socket socket = new Socket("127.0.0.1", http.port())) {
+            socket.setSoTimeout(10_000);
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream();
+            out.write(("POST /api/documents HTTP/1.1\r\nHost: 127.0.0.1\r\nAuthorization: Bearer "
+                    + TOKEN + "\r\nContent-Length: " + document.length + "\r\n\r\n")
+                    .getBytes(StandardCharsets.US_ASCII));
+            out.write(document);
+            out.flush();
+            Answer uploaded = Answer.read(in);
+            assertEquals(201, uploaded.status());
+            assertNull(uploaded.headers().get("connection"), "kept alive");
+
+            out.write("GET /api/artifacts/none HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"
+                    .getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            Answer refused = Answer.read(in);
+            assertEquals(401, refused.status());
+            assertNull(refused.headers().get("connection"), "a refusal of a request without a"
+                    + " body keeps the connection");
+
+            // The last one ends the connection, as a client that is done does.
+            out.write("GET /openapi.json HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n"
+                    .getBytes(StandardCharsets.US_ASCII));
+            out.flush();
+            assertEquals(200, Answer.read(in).status(), "the third request on the connection");
         }
     }
 
@@ -203,6 +301,15 @@ class ServeLingerTest {
         byte[] bytes = new byte[length];
         new Random(7).nextBytes(bytes);
         return bytes;
+    }
+
+    /** Returns an exception and every cause under it, which says how the answer was lost. */
+    private static String causes(Throwable e) {
+        StringBuilder text = new StringBuilder(e.toString());
+        for (Throwable cause = e.getCause(); cause != null; cause = cause.getCause()) {
+            text.append(" <- ").append(cause);
+        }
+        return text.toString();
     }
 
     private static String awaitLine(List<String> log, String part) throws InterruptedException {
