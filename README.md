@@ -75,10 +75,11 @@ often and of what type are facts of one registry per edition ([`model/README.md`
 
 ## Quick start
 
-`brew install bsnsoft/tap/esj` on macOS and Linux, `docker pull ghcr.io/bsnsoft/esj` from 0.9.2,
-or an archive of the [release](https://github.com/bsnsoft/esj/releases): a native executable
-needing no Java, a Java 25 runtime image, or the jar ([`docs/install.md`](docs/install.md)). From
-source, three lines build the same executable:
+`brew install bsnsoft/tap/esj` on macOS and Linux, `apt-get install esj` or `dnf install esj` from
+the [package repositories](docs/install.md#debian-and-ubuntu-apt) from 0.9.8, `docker pull
+ghcr.io/bsnsoft/esj` from 0.9.2, or an archive of the [release](https://github.com/bsnsoft/esj/releases):
+a native executable needing no Java, a Java 25 runtime image, or the jar ([`docs/install.md`](docs/install.md)).
+From source, three lines build the same executable:
 
 ```sh
 mvn -B verify                                 # the self-contained jar, on JDK 17, 21 or 25
@@ -87,10 +88,9 @@ dist/out/esj-<version>-native-<os>-<arch>/esj validate invoice.xml
 ```
 
 `bin/esj` runs the jar unpackaged; the transcripts here and under `docs/` write `esj` for that
-script with `bin/` on the `PATH`, and [`docs/install.md`](docs/install.md) has what each artefact
-needs. From 0.9.0 the libraries come from Maven Central: `de.bsnsoft.esj:esj-bom:0.9.7` imported once,
-then a module by name ([`docs/java-api.md`](docs/java-api.md)); `mvn -B install` builds
-`de.bsnsoft.esj:esj-core` and its siblings from source.
+script with `bin/` on the `PATH`. From 0.9.0 the libraries come from Maven Central:
+`de.bsnsoft.esj:esj-bom:0.9.7` imported once, then a module by name ([`docs/java-api.md`](docs/java-api.md));
+`mvn -B install` builds `de.bsnsoft.esj:esj-core` and its siblings from source.
 
 ```console
 $ esj validate conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml

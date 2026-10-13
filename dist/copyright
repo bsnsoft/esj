@@ -1,0 +1,26 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: esj
+Upstream-Contact: BSNSoft Solutions GmbH <info@bsnsoft.de>
+Source: https://github.com/bsnsoft/esj
+Comment: The command line tool of EN16931 Semantic JSON (ESJ), as a native
+ executable. The third-party components it contains, their licences and the
+ attribution of EN 16931 are listed in /usr/share/doc/esj/NOTICE.
+
+Files: *
+Copyright: 2026 BSNSoft Solutions GmbH
+License: Apache-2.0
+ Licensed under the Apache License, Version 2.0; the full text is in
+ /usr/share/doc/esj/LICENSE, and on Debian systems also in
+ /usr/share/common-licenses/Apache-2.0.
+
+Files: usr/lib/esj/lib*.so usr/lib/esj/legal/*
+Copyright: Oracle and/or its affiliates, and the other contributors to OpenJDK
+ and GraalVM named in the files under /usr/lib/esj/legal
+License: GPL-2 with Classpath exception
+ The executable /usr/lib/esj/esj contains parts of the Substrate VM runtime of
+ GraalVM Community Edition, and the shared libraries beside it are libraries
+ of the Java runtime, all under the GNU General Public License, Version 2,
+ with the Classpath Exception. Their licences and notices are in
+ /usr/lib/esj/legal; on Debian systems the text of the GNU General Public
+ License, Version 2, is also in /usr/share/common-licenses/GPL-2. Source:
+ https://github.com/oracle/graal and https://github.com/openjdk/jdk.

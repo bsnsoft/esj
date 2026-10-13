@@ -16,11 +16,16 @@
 FROM ghcr.io/graalvm/native-image-community:25@sha256:0d936f32bb8acb5bc60c41b33e05f064d7a6aaf36b726538296c54949bd4a3c0 AS build
 WORKDIR /src
 COPY . /src
+# Every step stops the build when it fails: native-image.sh with its checks (the
+# runtime libraries beside the executable, the glibc floor), and the copies. The
+# shared libraries are no longer optional — native-image.sh fails without them —
+# so their copy is not either; a trailing "|| true" once meant for it made a
+# failed build look like a finished one.
 RUN dist/native-image.sh esj-cli/target/esj.jar /out \
     && mkdir /artefact \
     && cp /out/esj /src/LICENSE /src/NOTICE /artefact/ \
     && cp -R /out/legal /artefact/legal \
-    && cp /out/*.so* /artefact/ 2>/dev/null || true
+    && cp /out/*.so* /artefact/
 
 FROM scratch AS artefact
 COPY --from=build /artefact /

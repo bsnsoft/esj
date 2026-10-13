@@ -6,6 +6,30 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.8] — unreleased
 
+### Added
+
+- Linux packages and package repositories: the native executable as `esj_<version>_<arch>.deb`
+  and `esj-<version>-1.<arch>.rpm` for x86_64 and arm64, built with nfpm (`dist/packages.sh`,
+  nfpm 2.47.0 pinned by SHA-256 in `dist/nfpm.sh`), attached to the release with their checksums
+  and build provenance attestations, and published in an apt repository and a dnf repository at
+  `https://apt.bsnsoft.de`, served by GitHub Pages from the branch `gh-pages`:
+  `apt-get install esj` and `dnf install esj` after adding a keyring and a source line or a
+  `.repo` file ([`docs/install.md`](docs/install.md#debian-and-ubuntu-apt)). The executable is
+  installed under `/usr/lib/esj` beside its shared libraries, with `/usr/bin/esj` a link to it;
+  the packages require glibc 2.34 and zlib and nothing else, measured on `debian:12-slim`,
+  `ubuntu:22.04`, `ubuntu:24.04`, `fedora:latest` and `rockylinux:9` (`dist/packages-smoke.sh`).
+  A release goes to the suite `stable`, a pre-release to `testing` as `1.2.3~rc.1`, which sorts
+  before `1.2.3`. The indices are signed with the release key, the key the artefacts on Maven
+  Central are signed with, inline and detached (`InRelease`, `Release.gpg`, `repomd.xml.asc`),
+  and so is every rpm; apt reads the indices by hash. `dist/repositories.sh` regenerates both
+  repositories from the packages on the branch, which is their whole state; the job *Package
+  repositories* of `release.yml` runs it on a tag, and `dist/repositories-test.sh` puts both
+  through apt and dnf end to end with a throwaway key and the commands of the install page, in
+  the CI and before a release attaches anything.
+- `dist/checks.sh` fails a native Linux executable, or a library beside it, that needs a glibc
+  symbol version newer than `ESJ_GLIBC_FLOOR` (2.34), the floor the packages require; the native
+  build and `dist/packages.sh` run the check.
+
 ## [0.9.7] — 2026-10-10
 
 ### Added

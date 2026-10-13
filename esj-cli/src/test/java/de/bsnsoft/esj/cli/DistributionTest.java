@@ -11,8 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
@@ -97,6 +100,29 @@ class DistributionTest {
     private static final Pattern FORMULA_VERSION = Pattern.compile("^  version \"([^\"]+)\"$",
             Pattern.MULTILINE);
 
+    /** A Linux package of {@code dist/packages.sh}, as the script names it. */
+    private static final Pattern PACKAGE_OF_SCRIPT =
+            Pattern.compile("^\\s*(?:deb|rpm)\\) target=\\$out/(esj[-_][^\\s;]+) ;;$");
+
+    /** The name of a Linux package printed on {@code docs/install.md}. */
+    private static final Pattern PACKAGE_ON_PAGE =
+            Pattern.compile("esj[-_](?:<version>|[0-9])[0-9A-Za-z.<>+~_|-]*\\.(?:deb|rpm)");
+
+    /** The oldest C library the native Linux executable runs on, as {@code dist/checks.sh} sets it. */
+    private static final Pattern GLIBC_FLOOR =
+            Pattern.compile("^ESJ_GLIBC_FLOOR=([0-9]+\\.[0-9]+)$", Pattern.MULTILINE);
+
+    /** The address of the package repositories, the default of {@code dist/repositories.sh}. */
+    private static final Pattern REPOSITORY_URL =
+            Pattern.compile("^url=\\$\\{ESJ_REPOSITORY_URL:-(https://[^}]+)}$", Pattern.MULTILINE);
+
+    /** The release key the repositories job of the release workflow signs with. */
+    private static final Pattern SIGNING_KEY =
+            Pattern.compile("^ +ESJ_SIGNING_KEY: ([0-9A-F]{40})$", Pattern.MULTILINE);
+
+    /** A console block of {@code docs/install.md} that dist/repositories-test.sh runs. */
+    private static final String REPOSITORY_BLOCK = "<!-- repositories-test: ";
+
     /**
      * Every artefact and every image tag printed on {@code docs/install.md} is one the
      * packaging writes.
@@ -114,6 +140,18 @@ class DistributionTest {
         String script = Fixtures.text("dist/package.sh");
         List<Pattern> forms = artefactForms();
         String page = Fixtures.text("docs/install.md");
+        List<Pattern> packageForms = packageForms();
+        Matcher packages = PACKAGE_ON_PAGE.matcher(page);
+        int packagesNamed = 0;
+        while (packages.find()) {
+            String name = packages.group();
+            packagesNamed++;
+            assertTrue(packageForms.stream().anyMatch(form -> form.matcher(name).matches()),
+                    "docs/install.md prints " + name + ", which dist/packages.sh does not"
+                            + " write; it writes " + packageForms);
+        }
+        assertTrue(packagesNamed >= 4, "package names on docs/install.md: " + packagesNamed);
+        page = PACKAGE_ON_PAGE.matcher(page).replaceAll("");
         int named = 0;
         Matcher names = ARTEFACT_ON_PAGE.matcher(page);
         while (names.find()) {
@@ -254,6 +292,26 @@ class DistributionTest {
         return forms;
     }
 
+    /**
+     * Returns the forms of the package names {@code dist/packages.sh} writes, with the
+     * processors either spelled out or given as the choice the page prints.
+     */
+    private static List<Pattern> packageForms() {
+        List<Pattern> forms = new ArrayList<>();
+        for (String line : Fixtures.text("dist/packages.sh").lines().toList()) {
+            Matcher matcher = PACKAGE_OF_SCRIPT.matcher(line);
+            if (matcher.matches()) {
+                forms.add(Pattern.compile(matcher.group(1).replace(".", "\\.")
+                        .replace("${pkgver}", "$pkgver")
+                        .replace("$pkgver", "(?:<version>|[0-9][0-9A-Za-z.+~]*)")
+                        .replace("$deb_arch", "(?:amd64|arm64|<amd64\\|arm64>|<arch>)")
+                        .replace("$rpm_arch", "(?:x86_64|aarch64|<x86_64\\|aarch64>|<arch>)")));
+            }
+        }
+        assertEquals(2, forms.size(), "the packages dist/packages.sh names: " + forms);
+        return forms;
+    }
+
     /** Returns the targets the argument parser of {@code dist/package.sh} accepts. */
     private static Set<String> targetsOfTheScript() {
         Set<String> targets = new TreeSet<>();
@@ -321,7 +379,9 @@ class DistributionTest {
     @DisabledOnOs(OS.WINDOWS)
     @ParameterizedTest(name = "sh -n dist/{0}")
     @ValueSource(strings = {"package.sh", "smoke.sh", "cases.sh", "checks.sh",
-                            "native-image.sh", "docker-entrypoint.sh", "serve-smoke.sh"})
+                            "native-image.sh", "docker-entrypoint.sh", "serve-smoke.sh",
+                            "graalvm.sh", "nfpm.sh", "packages.sh", "packages-smoke.sh",
+                            "repositories.sh", "repositories-test.sh"})
     void theScriptsOfTheDistributionParse(String script) throws Exception {
         Path file = Files.createTempFile("esj-dist-", ".sh");
         Files.write(file, Fixtures.bytes("dist/" + script));
@@ -404,6 +464,167 @@ class DistributionTest {
         assertTrue(Files.isRegularFile(work.resolve("out/esj-" + STAND_IN_VERSION
                 + ".zip.sha256")), "and its checksum stands beside it");
         assertFalse(Files.exists(root.resolve("out")), "nothing went under the repository");
+    }
+
+    /**
+     * The version a package carries and the suite it goes to follow from the version of the
+     * tool: a release as it is and to {@code stable}, a pre-release with {@code ~} for its
+     * hyphen, which apt and dnf sort before the release, and to {@code testing}. The rpm has
+     * the release number 1, the deb no revision. Anything else is refused with exit code 2.
+     *
+     * @param version the version of the tool
+     * @param deb     the version of the .deb, or {@code refused}
+     * @param rpm     the version and release of the .rpm
+     * @param suite   the suite of the repositories
+     * @param directory a directory of this test
+     * @throws Exception if the shell cannot be started or does not finish
+     */
+    @DisabledOnOs(OS.WINDOWS)
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({
+        "0.9.8, 0.9.8, 0.9.8-1, stable",
+        "1.0.0-rc.1, 1.0.0~rc.1, 1.0.0~rc.1-1, testing",
+        "1.2.3-SNAPSHOT, 1.2.3~SNAPSHOT, 1.2.3~SNAPSHOT-1, testing",
+        "v1.0.0, refused, , ",
+        "1.0, refused, , ",
+        "1.0.0-rc-1, refused, , "
+    })
+    void aVersionMapsToThePackageVersionsAndTheSuite(String version, String deb, String rpm,
+            String suite, @TempDir Path directory) throws Exception {
+        Path dist = Files.createDirectories(directory.resolve("dist"));
+        for (String script : List.of("packages.sh", "checks.sh")) {
+            Files.write(dist.resolve(script), Fixtures.bytes("dist/" + script));
+        }
+        Process process = new ProcessBuilder("sh", dist.resolve("packages.sh").toString(),
+                "--versions", version).redirectErrorStream(true).start();
+        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        assertTrue(process.waitFor(2, TimeUnit.MINUTES), "dist/packages.sh finished");
+        if ("refused".equals(deb)) {
+            assertEquals(2, process.exitValue(), "dist/packages.sh --versions " + version + ": "
+                    + output);
+        } else {
+            assertEquals(0, process.exitValue(), output);
+            assertEquals("deb " + deb + "\nrpm " + rpm + "\nsuite " + suite + "\n", output);
+        }
+    }
+
+    /**
+     * The C library the packages require, the one the build refuses to exceed and the one
+     * the pages name are one value, {@code ESJ_GLIBC_FLOOR} of {@code dist/checks.sh}.
+     */
+    @Test
+    void theGlibcFloorIsOneValueForTheBuildThePackagesAndThePages() {
+        Matcher floor = GLIBC_FLOOR.matcher(Fixtures.text("dist/checks.sh"));
+        assertTrue(floor.find(), "dist/checks.sh sets ESJ_GLIBC_FLOOR");
+        String version = floor.group(1);
+        String packages = Fixtures.text("dist/packages.sh");
+        assertTrue(packages.contains("'libc6 (>= $ESJ_GLIBC_FLOOR)'")
+                        && packages.contains("'glibc >= $ESJ_GLIBC_FLOOR'"),
+                "the .deb and the .rpm require the floor of dist/checks.sh");
+        assertTrue(packages.contains("esj_glibc_floor \"$native\""),
+                "dist/packages.sh checks every executable against the floor before it packs it");
+        assertTrue(Fixtures.text("dist/native-image.sh").contains("esj_glibc_floor \"$target\""),
+                "dist/native-image.sh checks the Linux executable it builds against the floor");
+        assertTrue(Fixtures.text("docs/install.md").contains("GNU C library " + version + " or newer"),
+                "docs/install.md names glibc " + version);
+        assertTrue(Fixtures.text("dist/repositories-index.html").contains("glibc " + version + " or newer"),
+                "the page of the package site names glibc " + version);
+    }
+
+    /**
+     * The commands the install page and the page of the package site give a reader name the
+     * site {@code dist/repositories.sh} writes, at the address it writes it for, with the
+     * suites and the .repo files it writes; the release workflow writes that site from the
+     * suite of the tag and pushes it to the branch GitHub Pages serves; and the key the
+     * workflow signs with is the one the pages tell a reader to compare.
+     */
+    @Test
+    void theRepositoryPagesNameTheSiteTheReleasePublishes() {
+        String script = Fixtures.text("dist/repositories.sh");
+        Matcher url = REPOSITORY_URL.matcher(script);
+        assertTrue(url.find(), "dist/repositories.sh has a default address");
+        String site = url.group(1);
+        assertTrue(Fixtures.text("dist/repositories-test.sh").contains("public=" + site + "\n"),
+                "dist/repositories-test.sh exchanges the address the pages print");
+        for (String file : List.of("rpm/esj.repo", "rpm/esj-testing.repo")) {
+            assertTrue(script.contains("> \"$site/" + file + "\""),
+                    "dist/repositories.sh writes " + file);
+        }
+        assertTrue(script.contains("cp \"$work/key.gpg\" \"$site/bsnsoft-esj.gpg\""),
+                "dist/repositories.sh writes the keyring at the root of the site");
+        assertTrue(script.contains("case $suite in stable|testing) ;;"),
+                "dist/repositories.sh knows the suites stable and testing");
+
+        Map<String, String> blocks = repositoryBlocks();
+        assertEquals(List.of("apt stable", "apt testing", "dnf stable", "dnf testing"),
+                List.copyOf(blocks.keySet()), "the blocks dist/repositories-test.sh runs");
+        assertTrue(blocks.get("apt stable").contains("curl -fsSL " + site + "/bsnsoft-esj.gpg |"),
+                "the apt block fetches the keyring of the site");
+        assertTrue(blocks.get("apt stable").contains(site + " stable main'"),
+                "the apt block adds the suite stable");
+        assertTrue(blocks.get("apt stable").endsWith("sudo apt-get install esj\n"),
+                "the apt block ends with the installation");
+        assertTrue(blocks.get("apt testing").contains(site + " testing main'"),
+                "the testing block adds the suite testing");
+        assertTrue(blocks.get("dnf stable").contains(site + "/rpm/esj.repo\n"),
+                "the dnf block fetches esj.repo");
+        assertTrue(blocks.get("dnf stable").endsWith("sudo dnf install esj\n"),
+                "the dnf block ends with the installation");
+        assertTrue(blocks.get("dnf testing").contains(site + "/rpm/esj-testing.repo\n"),
+                "the testing block fetches esj-testing.repo");
+
+        // The page of the site prints the same two installations.
+        String index = Fixtures.text("dist/repositories-index.html")
+                .replace("@URL@", site).replace("&amp;", "&").replace("&gt;", ">");
+        for (String kind : List.of("apt stable", "dnf stable")) {
+            assertTrue(index.contains(blocks.get(kind).strip()),
+                    "the page of the package site prints the " + kind + " block of docs/install.md");
+        }
+
+        // No page sends a reader to another address of the same site.
+        for (String page : List.of("docs/install.md", "README.md", "SECURITY.md")) {
+            assertFalse(Fixtures.text(page).contains("github.io"),
+                    page + " names the github.io address of the site instead of " + site);
+        }
+        assertFalse(index.contains("github.io"), "the page of the site names " + site);
+
+        // The release writes the site for the suite of its tag and pushes the branch Pages serves.
+        String workflow = Fixtures.text(".github/workflows/release.yml");
+        assertTrue(workflow.contains("suite=$(sh source/dist/packages.sh --versions \"$version\""),
+                "release.yml takes the suite of the tag from dist/packages.sh");
+        assertTrue(workflow.contains("sh source/dist/repositories.sh packages site \"$suite\""),
+                "release.yml writes the site with dist/repositories.sh");
+        assertTrue(workflow.contains("git push origin HEAD:gh-pages"),
+                "release.yml pushes the branch gh-pages");
+
+        // One key: the workflow signs with the one the pages name.
+        Matcher key = SIGNING_KEY.matcher(workflow);
+        assertTrue(key.find(), "release.yml names the key the repositories are signed with");
+        for (String page : List.of("docs/install.md", "SECURITY.md")) {
+            assertTrue(Fixtures.text(page).contains(key.group(1)),
+                    page + " names the key the repositories are signed with, " + key.group(1));
+        }
+    }
+
+    /** Returns the console blocks of {@code docs/install.md} behind a repositories-test marker. */
+    private static Map<String, String> repositoryBlocks() {
+        Map<String, String> blocks = new LinkedHashMap<>();
+        List<String> lines = Fixtures.text("docs/install.md").lines().toList();
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (!line.startsWith(REPOSITORY_BLOCK)) {
+                continue;
+            }
+            String name = line.substring(REPOSITORY_BLOCK.length(), line.length() - " -->".length());
+            assertEquals("```console", lines.get(i + 1), "a console block follows " + line);
+            StringBuilder block = new StringBuilder();
+            for (int j = i + 2; !lines.get(j).equals("```"); j++) {
+                assertTrue(lines.get(j).startsWith("$ "), "a command of " + name + ": " + lines.get(j));
+                block.append(lines.get(j).substring(2)).append('\n');
+            }
+            blocks.put(name, block.toString());
+        }
+        return blocks;
     }
 
     /** Returns the commands the tool's own help lists. */

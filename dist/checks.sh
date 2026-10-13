@@ -1,8 +1,9 @@
 #!/bin/sh
 #
 # What the packaging checks about the artefacts rather than about the tool
-# inside them: which revision an image may claim to have been built from, and
-# that nothing a reader downloads carries a path of the machine that built it.
+# inside them: which revision an image may claim to have been built from, that
+# nothing a reader downloads carries a path of the machine that built it, and
+# which release of the C library a Linux executable needs.
 #
 # Sourced, like dist/cases.sh, by dist/package.sh and dist/native-image.sh, so
 # that the host build and the container build make the same checks and a test
@@ -134,4 +135,62 @@ esj_runtime_libraries() {
     return 1
   fi
   echo "checks.sh: $(ls "$target"/lib*."$ext" | wc -l | tr -d ' ') runtime libraries beside the executable"
+}
+
+# The oldest GNU C library the native Linux executable runs on: the release the
+# Linux packages require (libc6 (>= 2.34), glibc >= 2.34) and docs/install.md
+# names. RHEL 9 and its rebuilds ship exactly this release, Debian 12, Ubuntu
+# 22.04 and newer ship later ones; Debian 11 and Ubuntu 20.04 (2.31) are below it.
+ESJ_GLIBC_FLOOR=2.34
+
+# Fails when the native Linux executable in a directory, or a shared library
+# beside it, needs a symbol version of the GNU C library newer than
+# $ESJ_GLIBC_FLOOR: a GraalVM built on a newer system would otherwise raise the
+# floor without anyone deciding to, and the packages would install on systems
+# the executable does not start on. The versions are the GLIBC_x.y strings of
+# each file, read from its bytes so that no binutils are needed; for the
+# executables of 0.9.7 they are exactly what readelf -V lists as needed.
+#
+#   esj_glibc_floor <directory>
+esj_glibc_floor() {
+  esj_glibc_directory=${1:?usage: esj_glibc_floor <directory>}
+  [ -f "$esj_glibc_directory/esj" ] ||
+    { echo "checks.sh: no executable esj in $esj_glibc_directory" >&2; return 1; }
+  esj_glibc_report=$(
+    for esj_glibc_file in "$esj_glibc_directory"/esj "$esj_glibc_directory"/lib*.so; do
+      [ -f "$esj_glibc_file" ] || continue
+      LC_ALL=C grep -a -o 'GLIBC_[0-9][0-9.]*[0-9]' "$esj_glibc_file" |
+        sed "s|^GLIBC_||; s|\$| ${esj_glibc_file##*/}|"
+    done |
+      awk -v floor="$ESJ_GLIBC_FLOOR" '
+        # -1, 0 or 1 as version a is older than, the same as or newer than b.
+        function compare(a, b,    x, y, n, m, i, p, q) {
+          n = split(a, x, "."); m = split(b, y, ".")
+          for (i = 1; i <= (n > m ? n : m); i++) {
+            p = (i <= n) ? x[i] + 0 : 0; q = (i <= m) ? y[i] + 0 : 0
+            if (p > q) return 1
+            if (p < q) return -1
+          }
+          return 0
+        }
+        {
+          if (newest == "" || compare($1, newest) > 0) newest = $1
+          if (compare($1, floor) > 0 && !(($2, $1) in seen)) {
+            seen[$2, $1] = 1; above = above "  " $2 " needs GLIBC_" $1 "\n"
+          }
+        }
+        END {
+          if (newest == "") { print "none"; exit 2 }
+          printf "%s\n%s", newest, above
+          if (above != "") exit 1
+        }') && esj_glibc_status=0 || esj_glibc_status=$?
+  case $esj_glibc_status in
+    0) echo "checks.sh: the executable and its libraries need glibc $(echo "$esj_glibc_report" |
+         head -1) at most; the floor is $ESJ_GLIBC_FLOOR" ;;
+    1) echo "checks.sh: newer than the glibc floor $ESJ_GLIBC_FLOOR:" >&2
+       echo "$esj_glibc_report" | sed 1d >&2
+       return 1 ;;
+    *) echo "checks.sh: $esj_glibc_directory/esj names no glibc version; not a Linux executable" >&2
+       return 1 ;;
+  esac
 }

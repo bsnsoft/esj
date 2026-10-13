@@ -18,9 +18,10 @@ a fix in the next release rather than in a dated window.
 ## Checking a release
 
 The archives of a release and its container image carry, from 0.9.5 on, a build provenance
-attestation that `gh attestation verify <file> --repo bsnsoft/esj` checks; the artefacts on Maven
-Central are signed with the OpenPGP key of BSNSoft Solutions GmbH, fingerprint
-`39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`. The macOS executable is signed ad hoc and
+attestation that `gh attestation verify <file> --repo bsnsoft/esj` checks, and its Linux packages
+from 0.9.8 on; the artefacts on Maven Central, the indices of the apt and dnf repositories at
+`https://apt.bsnsoft.de` and the rpm packages in them are signed with the OpenPGP key of BSNSoft
+Solutions GmbH, fingerprint `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`. The macOS executable is signed ad hoc and
 not notarised. The commands: [`docs/install.md`](docs/install.md#checking-a-download).
 
 ## What counts
