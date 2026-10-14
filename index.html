@@ -1,4 +1,50 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>EN 16931 Semantic JSON — package repositories</title>
-<p>Package repositories for <a href="https://github.com/bsnsoft/esj">EN 16931 Semantic JSON</a> (apt, dnf) will be published here with the next release. Until then, see <a href="https://github.com/bsnsoft/esj/blob/main/docs/install.md">docs/install.md</a>.</p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>esj package repositories</title>
+<style>
+  :root { color-scheme: light dark; --fg: #1d2330; --bg: #ffffff; --muted: #5a6472; --code: #f2f4f7; --link: #123a63; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg: #e4e7ec; --bg: #14181f; --muted: #9aa3b0; --code: #1f2530; --link: #8db4e2; }
+  }
+  body { margin: 0 auto; max-width: 46rem; padding: 2rem 1rem; font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+  h1 { font-size: 1.5rem; margin: 0 0 .5rem; }
+  h2 { font-size: 1.1rem; margin: 2rem 0 .5rem; }
+  p { margin: .5rem 0; }
+  a { color: var(--link); }
+  pre { background: var(--code); padding: .75rem 1rem; overflow-x: auto; font-size: .85rem; line-height: 1.45; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<h1>esj package repositories</h1>
+<p>The apt repository (here) and the dnf repository (under <code>rpm/</code>) of <code>esj</code>, the command line tool of
+<a href="https://github.com/bsnsoft/esj">EN16931 Semantic JSON</a>: the native executable for
+Linux on x86_64 and arm64, with glibc 2.34 or newer. Every release goes to the suite
+<code>stable</code>, every release candidate to <code>testing</code>.</p>
+
+<h2>Debian and Ubuntu (apt)</h2>
+<pre><code>sudo apt-get update &amp;&amp; sudo apt-get install ca-certificates curl
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://apt.bsnsoft.de/bsnsoft-esj.gpg | sudo tee /etc/apt/keyrings/bsnsoft-esj.gpg &gt; /dev/null
+echo 'deb [signed-by=/etc/apt/keyrings/bsnsoft-esj.gpg] https://apt.bsnsoft.de stable main' | sudo tee /etc/apt/sources.list.d/esj.list
+sudo apt-get update &amp;&amp; sudo apt-get install esj</code></pre>
+
+<h2>Fedora and RHEL-family (dnf)</h2>
+<pre><code>sudo curl -fsSL -o /etc/yum.repos.d/esj.repo https://apt.bsnsoft.de/rpm/esj.repo
+sudo dnf install esj</code></pre>
+
+<p>The indices and the rpm packages are signed with the key of BSNSoft Solutions GmbH,
+fingerprint <code>39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8</code>
+(<a href="https://apt.bsnsoft.de/bsnsoft-esj.asc">armoured</a>), the key the libraries on Maven Central
+are signed with. dnf shows it before it imports it.</p>
+
+<p class="muted">Release candidates, upgrades, the packages as downloads and how to check them:
+<a href="https://github.com/bsnsoft/esj/blob/main/docs/install.md">docs/install.md</a>.
+Every release with its archives and packages:
+<a href="https://github.com/bsnsoft/esj/releases">github.com/bsnsoft/esj/releases</a>.</p>
+</body>
+</html>

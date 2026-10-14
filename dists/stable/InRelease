@@ -1,0 +1,39 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Acquire-By-Hash: yes
+Architectures: amd64 arm64
+Codename: stable
+Components: main
+Date: Wed, 14 Oct 2026 00:58:51 +0000
+Description: esj, the command line tool of EN16931 Semantic JSON: releases
+Label: esj
+Origin: BSNSoft Solutions GmbH
+Suite: stable
+MD5Sum:
+ 6c6e8d8ef73386429bba29c27e088977             1189 main/binary-amd64/Packages
+ c73ae59de78386fb58090a44acd8c227              789 main/binary-amd64/Packages.gz
+ 05599336af42280e3f30645f41388cf0             1189 main/binary-arm64/Packages
+ 1063e7b622a2abd11a3653fb108ce1f0              789 main/binary-arm64/Packages.gz
+SHA1:
+ ae38474d7c70698efeb7ef1a798978f580201df5             1189 main/binary-amd64/Packages
+ b942cd5369a48c869ccab6cff2690f0c087e36fa              789 main/binary-amd64/Packages.gz
+ 807f8ffa51b2d4ca98d9f964281a58f109ac44a6             1189 main/binary-arm64/Packages
+ 08dff0fef8e60d5b8d86f4be9e4d155f28456a3b              789 main/binary-arm64/Packages.gz
+SHA256:
+ f4627b8351169200eccea411c793bd58cd1dc6bf70f3f5d8f16ce95295071470             1189 main/binary-amd64/Packages
+ 3752d94846a5700a8d1b11747e6b95b9ffa06b6b5cdf8491f1253125dfdc984a              789 main/binary-amd64/Packages.gz
+ 24be0d92046492926b80fb506ef33bc8affdf42982ae2a507cc3176111d6ff5e             1189 main/binary-arm64/Packages
+ f6c7a9a7b08aa2c87d3118a3e57316916bef9e921bafc5989435d0659a5b95d3              789 main/binary-arm64/Packages.gz
+SHA512:
+ f0ded0a9f8d4d220fbc28f6b072ef755e4f9b44cbdb8e224befdaadbbd98277347018aa7832b6b1d602dc55c8d16e1732beafe1038ffb247cf1837cea53ce5aa             1189 main/binary-amd64/Packages
+ e20217f574de967b3b9d1c3d27a160b6cb6243bf3f8dbd0e6992dcba032b7463a013cfcf04bb257f2b90c7efb429702620ce4b8477b1ba673735c0877daa3c4a              789 main/binary-amd64/Packages.gz
+ f06a57df85ad222668ec0a27087b22b09c0aac56e8ed1a58963237a254e82de5cb93bead3313d31c1f3bd1196c743779c58ffb377f567aba87da407dd71b5c66             1189 main/binary-arm64/Packages
+ a322303535ada53d7df9d7ab2b40e0fe400cc53c50363367dfb51727c06a29ac561025a61833036f3a884183a37330364ef4eb5d3eeec98a7abc71947abde7b4              789 main/binary-arm64/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQQ5uh52Ct5pQFWLbuwl/SovW1IOuAUCas7TzAAKCRAl/SovW1IO
+uNC0AQCu1BQrZW6wUos0D+Qt0X3Z4qlxLZuWabeGighKRJMy6QD7BQ9Olt8Yp8pD
+N7hhO1aDMjft+yM+5DvDxqTe/iCHVQM=
+=Bt6X
+-----END PGP SIGNATURE-----
