@@ -330,7 +330,8 @@ row runs; `--no-syntax` takes the row out, and a profile with no artefact leaves
 corpus, which is what the coverage of this row rests on.
 
 **PDF/A conformance is outside the verdict** unless [`--verapdf`](cli.md#validating-the-pdfa-claim)
-names a validator; without it the row reads what the file declares ([`pdf-input.md`](pdf-input.md)).
+names a validator, whose refusal makes the container `INVALID`; without it the row reads what the
+file declares ([`pdf-input.md`](pdf-input.md)).
 
 ## Verdict and exit code
 
@@ -341,6 +342,13 @@ The verdict is one word over both engines, and there are three of them:
 | `VALID` | the complete check for this input ran and nothing fatal was found | 0 |
 | `INVALID` | a fatal finding in anything that ran, whatever the coverage | 1 |
 | `INDETERMINATE` | nothing fatal was found and a component of the complete check did not run or did not complete | 9 |
+
+**The verdict is technical conformance** with EN 16931 and the official artefacts: a fatal
+business-rule finding is `INVALID`, as for the KoSIT validator. For German VAT the [BMF letter of
+15 October 2026](https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Steuerarten/Umsatzsteuer/Umsatzsteuer-Anwendungserlass/2026-10-15-obligatorische-elektronische-rechnung.html) (Rn. 22 f.) tells format, business-rule and content errors apart: a file
+with a business-rule error and no format error stays an e-invoice under § 14 UStG where its
+mandatory details are complete and correct. Those mandatory details are not checked in this
+version ([`legal-de.md`](legal-de.md)).
 
 A run stopped by a **bound of this run** reaches none of the three. Exit code **7** means that:
 a bound was met and the document was not judged, so read it again against a larger bound rather
@@ -374,15 +382,11 @@ carries the same as a `reasons` array of `{component, cause}`, from a closed voc
 
 ### The container
 
-A PDF input adds two more ways for the verdict to be `INVALID`, both about the container rather
-than the invoice: a container whose own checks failed, and a container whose profile carries no
-invoice line — `INVALID` with exit 1, the reason "not an EN 16931 invoice" and an `Invoice:`
-line reading `NOT CHECKED (profile MINIMUM)`, so that nobody books a conformant MINIMUM file as
-a bad invoice. The report keeps the two apart, in two lines and two members;
-[`pdf-input.md`](pdf-input.md) is their page. PDF/A conformance is among them only where
-`--verapdf` was given: without it the row reads what the file declares, and a run that named a
-validator of its own turns a refusal into `Container: INVALID`
-([`cli.md`](cli.md#validating-the-pdfa-claim)).
+A PDF input adds two more ways for the verdict to be `INVALID`, both about the container rather than
+the invoice: a container whose own checks failed, and a container whose profile carries no invoice
+line — `INVALID` with exit 1, the reason "not an EN 16931 invoice" and an `Invoice:` line reading
+`NOT CHECKED (profile MINIMUM)`, so that nobody books a conformant MINIMUM file as a bad invoice.
+The report keeps the two apart, in two lines and two members ([`pdf-input.md`](pdf-input.md)).
 
 ### Exit codes
 
@@ -399,12 +403,9 @@ validator of its own turns a refusal into `Container: INVALID`
 | 8 | the conversion cannot be completed as constrained: `esj convert --fail-on-loss` found part of the document the target syntax has no place for | nothing was written; keep the ESJ document, or convert without the option and accept what the warnings name |
 | 9 | nothing fatal, and part of the check did not run or did not complete | read `reasons`; supply what is missing, or accept the reduced check deliberately |
 
-**7 is never invalidity.** A document the tool gave up on is not a document the tool rejected,
-and a pipeline that read a 1 there would quarantine a sound invoice. The message names the step
-the time ran out in. `--max-runtime` is one number over the whole command — taking the bytes in,
-reading the document into the model, running the artefacts, and a validator lent by `--verapdf`
-— because a bound covering only the last would be no bound for a caller who set one because the
-document came from a stranger.
+`--max-runtime` is one number over the whole command — taking the bytes in, reading the document
+into the model, running the artefacts, and a validator lent by `--verapdf` — and the message of a
+run it stopped names the step the time ran out in.
 
 ### When a profile brings no rules with it
 
@@ -428,14 +429,13 @@ verdict, the rows and the exit code the command printed, never a second run ([`c
 | Two languages | `--report-lang de` (the default) or `en`, for the report's own words and for the invoice in it. A rule, a check or a pack someone else named keeps the name it came with |
 | The same bytes | the same input and the same options give the same file: no clock, no duration, no build stamp. `--report-time` prints the moment the caller passes, exactly as written |
 
-It claims no more than the run did. The PDF/A row is what the container declares, and says so
-rather than `OK`, unless `--verapdf` ran — then it is the validator's answer, and a refusal makes
-the container `INVALID` there as in the lines. The syntax block over an input that was never XML is
-`not applicable`, never a pass. A check that did not run says so and why, an `INDETERMINATE`
-verdict names each component, and a levelled finding carries both levels. A document no renderer
-of this build takes is reported all the same, with the sentence that says what refused it where the
-invoice would be; so is one whose rendering would be larger than the HTML form carries
-([`cli.md`](cli.md#the-report)).
+It claims no more than the run did: a line under the verdict says that it is technical conformance,
+the PDF/A row reads what the container declares, not `OK`, unless `--verapdf` ran, and the syntax
+block over an input that was never XML is `not applicable`, never a pass. A check that did not run
+says so and why, an `INDETERMINATE` verdict names each component, and a levelled finding carries
+both levels. A document no renderer of this build takes is reported all the same, with the sentence
+that says what refused it where the invoice would be; so is one whose rendering would be larger than
+the HTML form carries ([`cli.md`](cli.md#the-report)).
 
 ## `--no-syntax` and `--rules`
 

@@ -183,6 +183,29 @@ esj render invoice.esj.json --out invoice.pdf   # das Brief-Layout setzt ihn in 
 esj render examples/b2c-gross.esj.json --extension b2c --template examples/templates/gross.json --out invoice.pdf
 ```
 
+**Wie stelle ich eine Endrechnung nach Abschlagsrechnungen aus?** Jede Abschlagsrechnung in BG-3
+nennen, die vereinnahmten Teilentgelte als eine Summe in BT-113 angeben und die Einzelheiten in
+BT-22 oder in einem eingebetteten Anhang (BG-24); `derive()` rechnet den Zahlbetrag BT-115 mit
+abgezogenem BT-113. In der Domänen-API sind das `precedingInvoice(number, issued)`,
+`paidAmount(...)`, `note(...)` und `attachment(Attachment.embedded(...))`. Das BMF-Schreiben vom
+15.10.2026 lässt das bis zum 30.06.2030 zu (Rn. 3 f., [`legal-de.md`](legal-de.md)).
+
+**Wie rechne ich Bauleistungen mit Leistungsverzeichnis ab?** Die Gewerke als Rechnungspositionen,
+das Leistungsverzeichnis als eingebetteter menschenlesbarer Anhang (BG-24) oder strukturiert als
+Unterpositionen BG-DEX-01 der XRechnung-Erweiterung (BMF-Schreiben vom 15.10.2026, Rn. 13 f.).
+```sh
+esj get --extension xrechnung conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml /BG-25/0/BG-DEX-01/0/BT-131   # der Nettobetrag der ersten Unterposition von Position 1
+```
+
+**Wie berichtige ich eine Rechnung?** Mit einer E-Rechnung eines Berichtigungstyps — 384, einer
+kaufmännischen Gutschrift (381, `Invoice.creditNote(profile)`) oder einer Gutschrift des
+Leistungsempfängers (389) —, die die berichtigte Rechnung in BG-3 nennt
+(`precedingInvoice(number, issued)`); das Brief-Layout druckt diesen Bezug unter den Titel
+(BMF-Schreiben vom 15.10.2026, Rn. 20 f.).
+```sh
+esj render examples/credit-note.esj.json --out credit-note.pdf   # der Titel nennt die Gutschrift, die Zeile darunter die berichtigte Rechnung
+```
+
 **Wie hebe ich eine Rechnung auf EN 16931-1:2026, die als Vorschau unterstützte Ausgabe?**
 ```sh
 esj upgrade invoice.esj.json --to 2026 --out invoice-2026.esj.json   # nennt jeden offenen Punkt, rundet nie

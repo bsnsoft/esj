@@ -160,6 +160,8 @@ final class ReportHtml {
                 .append(escape(ReportContent.resolve(detail, language))).append("</span>"));
         out.append("</p>\n");
         subjects();
+        out.append("<p class=\"note\">").append(escape(ReportWord.SCOPE.in(language)))
+                .append("</p>\n");
         out.append("<dl>\n");
         for (ReportContent.Line line : ReportContent.identity(outcome, options)) {
             out.append("<dt>").append(escape(line.label())).append("</dt><dd class=\"mono\">")
