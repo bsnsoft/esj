@@ -35,6 +35,16 @@ enum ReportWord {
     /** The label of the verdict. */
     VERDICT("Verdict", "Urteil"),
 
+    /**
+     * The line under the verdict that says which question it answers: conformance with the
+     * standard and the official artefacts, which the German VAT classification of an invoice
+     * is not (BMF letter of 15 October 2026, paragraphs 22 and 23).
+     */
+    SCOPE("Technical conformance with EN 16931; the German VAT classification (BMF letter of"
+            + " 15 October 2026) is a separate question.",
+            "Technische Prüfung nach EN 16931; die umsatzsteuerliche Einordnung (BMF-Schreiben"
+                    + " vom 15.10.2026, Rn. 22 f.) ist davon getrennt."),
+
     /** The heading over what was judged. */
     IDENTITY("Identity", "Identität"),
 

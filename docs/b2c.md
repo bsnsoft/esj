@@ -2,8 +2,9 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-An EN 16931 invoice is a net invoice. This extension records the gross figures a consumer was
-shown; the invoice stays net. Module `esj-b2c`, package `de.bsnsoft.esj.b2c`.
+An EN 16931 invoice is a net invoice. This extension records the gross figures of an invoice whose
+prices are agreed gross — to a consumer, the case the name names, or between businesses, as for
+books at a fixed price; the invoice stays net. Module `esj-b2c`, package `de.bsnsoft.esj.b2c`.
 
 ## The four terms
 
@@ -59,6 +60,12 @@ No policy writes a term of the extension; `GROSS_TOTAL_AUTHORING` puts its per-l
 report and in no BT-B2C-002, and refuses a line that carries one. `AuthoringReport` carries the
 policy, every value written, every price cut, the BT-114 step, notes and the `DerivationReport`.
 
+The [BMF letter of 15 October 2026](https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Steuerarten/Umsatzsteuer/Umsatzsteuer-Anwendungserlass/2026-10-15-obligatorische-elektronische-rechnung.html) (Rn. 17–19) names prices
+agreed gross as a rounding question of the core model and allows a transition until 31 December
+2027: the structured part carrying only the sums per VAT rate, the lines in an embedded
+human-readable attachment with a note. The way above — the net price at the scale of the policy, the
+difference in BT-114 — stays within the core model and needs no transition rule.
+
 ## Options
 
 | Option | Default | Without it |
@@ -74,10 +81,9 @@ GrossAuthoring policy = GrossAuthoring.GROSS_UNIT_AUTHORING.with(
 ```
 
 With `withLineAllowancesAndCharges(true)` a displayed unit price is the price before the line
-allowances and charges, and a displayed line total, or a share of an agreed total, the figure
-after them; with `withBaseQuantity(true)` a unit price is the price of one base quantity. A policy
-refuses rather than guesses: `PolicyPreconditionException` names the precondition, the term and
-the group instance.
+allowances and charges, and a displayed line total, or a share of an agreed total, the figure after
+them; with `withBaseQuantity(true)` a unit price is the price of one base quantity. Where a
+precondition fails, `PolicyPreconditionException` names it, the term and the group instance.
 
 ## What a policy guarantees
 
@@ -91,8 +97,7 @@ engine — category `B2C`, engine `native`, pack `b2c/0.1`.
 | `B2C-03` | all | BT-131 is what the line's price, quantity, charges and allowances come to |
 | `B2C-04` | `GROSS_LINE_AUTHORING`, `GROSS_TOTAL_AUTHORING` | BT-131 is BT-B2C-002 at the line's rate |
 
-These are the guarantees of a policy and no relations the extension states, which is why the
-policy is an argument; a check the document carries no figure for is an information finding.
+A check the document carries no figure for is an information finding.
 
 ## Decimals
 
@@ -148,24 +153,22 @@ $ esj render examples/b2c-gross.esj.json --extension b2c \
 
 `--extension b2c` loads the registry, so every command checks, lists and renders the four terms;
 `--extension xrechnung,b2c` loads both. Without it the four paths are `ESJ-L2-NOT-CHECKED`, the
-reason is `extension-registry-missing` and the verdict is `INDETERMINATE`. The registry imports
-the 2017 edition, so for a document of another edition the run leaves it out: the paths are not
-checked either, the finding says that the registry imports another edition, and the reason is
-`extension-for-another-edition`.
+reason is `extension-registry-missing` and the verdict is `INDETERMINATE`. The registry imports the
+2017 edition, so a document of another edition leaves the four paths unchecked as well, with the
+reason `extension-for-another-edition`.
 
 `model/b2c/0.1.json` declares `"transport": "none"`: these terms are bound by no transport syntax by
 design, so the XML written from such a document is the whole invoice. `validate` runs the official
-artefacts over it, counts the row and names the terms left behind ([validation.md](validation.md#verdict-and-exit-code));
-`convert`, `embed` and `render --embed cii` name them on one `info:` line and count them as no
-loss, and `--fail-on-loss` lets the conversion through ([cli.md](cli.md#writing-ubl-and-cii)). In
-Java the writer knows the declaration when it is handed the registry:
-`WriterOptions.defaults().withExtensions(List.of(Registry.b2cExtension()))`.
+artefacts over it, counts the row and names the terms left behind
+([validation.md](validation.md#verdict-and-exit-code)); `convert`, `embed` and `render --embed cii`
+name them on one `info:` line and count them as no loss, and `--fail-on-loss` lets the conversion
+through ([cli.md](cli.md#writing-ubl-and-cii)). In Java the writer knows the declaration when it is
+handed the registry: `WriterOptions.defaults().withExtensions(List.of(Registry.b2cExtension()))`.
 
 ## In a syntax and in a rendering
 
-The extension travels in ESJ. The invoice XML of a hybrid PDF carries the net core terms and not
-the four, which stay in the ESJ document and on the page ([pdf-output.md](pdf-output.md)).
-The baseline PDF rendering prints the figures marked `(B2C)` and never inside a core totals row; the
-baseline HTML rendering, built from the XR representation, has no element for them and names every
-one in its report; a branded template gives them places of their own
-([templates.md](templates.md), `examples/templates/gross.json`).
+The four stay in the ESJ document and, in a hybrid PDF, on the page
+([pdf-output.md](pdf-output.md)). The baseline PDF rendering prints the figures marked `(B2C)` and
+never inside a core totals row; the baseline HTML rendering, built from the XR representation, has
+no element for them and names every one in its report; a branded template gives them places of their
+own ([templates.md](templates.md), `examples/templates/gross.json`).

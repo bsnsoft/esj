@@ -183,6 +183,28 @@ esj render invoice.esj.json --out invoice.pdf   # the letter layout puts it in t
 esj render examples/b2c-gross.esj.json --extension b2c --template examples/templates/gross.json --out invoice.pdf
 ```
 
+**How do I issue a final invoice after partial invoices?** Name each partial invoice in BG-3, put
+the partial amounts paid as one sum into BT-113 and the details into BT-22 or an embedded attachment
+(BG-24); `derive()` computes the amount due, BT-115, with BT-113 taken off. In the domain API that
+is `precedingInvoice(number, issued)`, `paidAmount(...)`, `note(...)` and
+`attachment(Attachment.embedded(...))`. The BMF letter of 15 October 2026 allows this until 30 June
+2030 (Rn. 3 f., [`legal-de.md`](legal-de.md)).
+
+**How do I invoice construction work with a bill of quantities?** The trades as invoice lines, the
+bill of quantities as an embedded human-readable attachment (BG-24) or, structured, as the sub-lines
+BG-DEX-01 of the XRechnung extension (BMF letter of 15 October 2026, Rn. 13 f.).
+```sh
+esj get --extension xrechnung conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml /BG-25/0/BG-DEX-01/0/BT-131   # the net amount of the first sub-line of line 1
+```
+
+**How do I correct an invoice?** With an e-invoice of a correction type — 384, a credit note (381,
+`Invoice.creditNote(profile)`) or a self-billed invoice (389) — that names the corrected invoice in
+BG-3 (`precedingInvoice(number, issued)`); the letter layout prints that reference under the title
+(BMF letter of 15 October 2026, Rn. 20 f.).
+```sh
+esj render examples/credit-note.esj.json --out credit-note.pdf   # the title names the credit note, the line under it the invoice it corrects
+```
+
 **How do I lift an invoice to EN 16931-1:2026, the edition supported as a preview?**
 ```sh
 esj upgrade invoice.esj.json --to 2026 --out invoice-2026.esj.json   # names every open point, never rounds

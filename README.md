@@ -153,7 +153,9 @@ nothing fatal; `INVALID` and 1 follow a fatal finding in anything that ran; `IND
 name the components that did not run and why; a limit leaves with 7 and no verdict at all. A
 container is judged beside the invoice, and its PDF/A conformance is what the file declares unless
 `--verapdf` names a veraPDF of your own. `--report <file.html|file.pdf>` writes the run as one file
-([`docs/validation.md`](docs/validation.md) has the table per input kind).
+([`docs/validation.md`](docs/validation.md) has the table per input kind). ESJ is checked against the
+BMF letter of 15 October 2026 on mandatory e-invoicing in Germany, and nothing had to change
+([`docs/legal-de.md`](docs/legal-de.md)).
 
 ## Conformance
 
@@ -228,7 +230,7 @@ manifest. Changes: [`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.m
 - [`docs/why.md`](docs/why.md) — why this exists
 - [`docs/design-decisions.md`](docs/design-decisions.md) — the trade-offs, and the non-goals
 - [`docs/related-work.md`](docs/related-work.md) — the neighbours, verified
-- [`docs/legal-de.md`](docs/legal-de.md) — § 14 UStG and the interoperability wording
+- [`docs/legal-de.md`](docs/legal-de.md) — § 14 UStG, the interoperability wording and the BMF letters
 - [`docs/sources.md`](docs/sources.md) — every source, its licence and its digest
 - [`model/README.md`](model/README.md) — how each column of every registry was derived
 - [`docs/releasing.md`](docs/releasing.md) — how a version is cut, and where it goes

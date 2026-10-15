@@ -235,6 +235,9 @@ final class ReportLayout {
             sheet.down(2f);
             pair(line.label() + ":", line.value(), IDENTITY_SHARE);
         }
+        sheet.down(2f);
+        sheet.block(ReportWord.SCOPE.in(language), sheet.left(), sheet.width(),
+                sheet.fonts().regular(), FIELD_SIZE, sheet.palette().muted());
     }
 
     private void identity() {

@@ -6,6 +6,18 @@ still change; a change to it is named here under *Format*.
 
 ## [0.9.9] — unreleased
 
+### Changed
+
+- The validation report says under its verdict, in German and in English, that the verdict is
+  technical conformance with EN 16931 and that the German VAT classification is a separate question
+  (BMF letter of 15 October 2026, Rn. 22 f.). The documentation is checked against that letter, the
+  third on mandatory e-invoicing in Germany; nothing in the format, the registries, the bindings or
+  the rule packs had to change. [`docs/legal-de.md`](docs/legal-de.md) maps it paragraph by paragraph
+  to what ESJ offers, [`docs/validation.md`](docs/validation.md) separates the verdict from the VAT
+  view, [`docs/b2c.md`](docs/b2c.md) covers prices agreed gross between businesses as well, and both
+  FAQ pages answer for a final invoice after partial invoices, construction work with a bill of
+  quantities and a correction.
+
 ## [0.9.8] — 2026-10-14
 
 ### Added
