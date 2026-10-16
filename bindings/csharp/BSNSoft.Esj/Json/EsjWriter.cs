@@ -16,6 +16,9 @@ namespace BSNSoft.Esj.Json;
 /// it stands: this writer serializes a document and never rewrites what a value holds. A
 /// JSON number inside <c>extensions</c> is written in the canonical decimal form of
 /// section 7.6, rule 2, which is string processing over the digits the document carried.
+/// <c>format</c> is the one value the specification gives it; <c>version</c> is the format
+/// version the document carries (<see cref="SemanticDocument.Version"/>), so that a document
+/// of version 0.1 keeps its canonical bytes and its document digest.
 /// </remarks>
 public sealed class EsjWriter
 {
@@ -86,7 +89,7 @@ public sealed class EsjWriter
         WriteMember(bytes, 1, true, "format");
         bytes.String(Esj.Format);
         WriteMember(bytes, 1, false, "version");
-        bytes.String(Esj.Version);
+        bytes.String(document.Version);
         WriteMember(bytes, 1, false, "semanticModel");
         bytes.String(document.SemanticModel);
         WriteMember(bytes, 1, false, "values");
