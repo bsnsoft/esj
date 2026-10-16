@@ -416,7 +416,7 @@ class ReadmeExamplesTest {
         InvoiceEditor amended = En16931.edit(document);
         amended.invoiceLines().remove(0);
         amended.buyerReference("KOST-4711");
-        // an extension term has no generated setter in 0.1; the builder is the way to it
+        // an extension term has no generated setter; the builder is the way to it
         amended.builder().put("/BG-DEX-09/0/BT-DEX-001", "retention");
         SemanticDocument changed = amended.document();
 

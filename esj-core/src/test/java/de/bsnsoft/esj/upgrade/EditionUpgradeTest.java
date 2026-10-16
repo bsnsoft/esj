@@ -158,6 +158,25 @@ class EditionUpgradeTest {
         assertEquals(E2017, result.report().from());
     }
 
+    /**
+     * A change of edition is no change of format: the document written up to 2026 and back
+     * carries the format version of the document it came from (specification, section 4.3).
+     */
+    @Test
+    @EnabledIf("carries2026")
+    void theDocumentKeepsTheFormatVersionItWasWrittenIn() {
+        for (String version : List.of("1.0", "0.1")) {
+            SemanticDocument document = invoice().formatVersion(version).build();
+            SemanticDocument upgraded = to2026(document).require();
+            SemanticDocument back = EditionUpgrade.apply(upgraded, "2017",
+                    UpgradeOptions.defaults()).require();
+
+            assertEquals(version, upgraded.formatVersion());
+            assertEquals(version, back.formatVersion());
+            assertEquals(document, back, "written up and back, the document is the one it was");
+        }
+    }
+
     @Test
     @EnabledIf("carries2026")
     void anIdentifierWithoutTheSchemeTheEditionRequiresIsReportedAndNeverInvented() {

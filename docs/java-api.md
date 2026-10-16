@@ -437,7 +437,7 @@ immutable. A list handle appends with `add`, reads with `get`, counts with `size
 InvoiceEditor amended = En16931.edit(document);
 amended.invoiceLines().remove(0);
 amended.buyerReference("KOST-4711");
-// an extension term has no generated setter in 0.1; the builder is the way to it
+// an extension term has no generated setter; the builder is the way to it
 amended.builder().put("/BG-DEX-09/0/BT-DEX-001", "retention");
 SemanticDocument changed = amended.document();
 ```
@@ -909,14 +909,18 @@ which must leave the tree unchanged; `.github/workflows/ci.yml` fails where it d
 
 | Number | Where it is written | Value today |
 |---|---|---|
-| format version | the `version` member of every document, `SPEC.md` | `0.1` |
+| format version | the `version` member of every document, `SPEC.md` | `1.0` written; `1.0` and `0.1` read |
 | semantic model edition | the `semanticModel` member of every document, the `edition` member of the registry | `EN16931-1:2017+A1:2019/AC:2020`, `EN16931-1:2026` |
 | artifact version | `pom.xml` | `0.9.9-SNAPSHOT` |
 
-The format version follows `MAJOR.MINOR`; a reader rejects a version it does not implement. A reader
+The format version follows `MAJOR.MINOR`; a reader rejects a version it does not implement.
+`SemanticDocument.formatVersion()` is the version a document carries: the one it was read in, kept
+by `toBuilder()`, the editor, `derive` and the upgrade, or `Esj.formatVersion()` for a document
+built here; the writers write it, so a document of 0.1 keeps its canonical bytes. A reader
 needs no registry for the edition a document names; the model layers then report
 `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` 9.2). The artifact version says nothing about the format; the
 libraries are on Maven Central from 0.9.0 ([`releasing.md`](releasing.md)). `Esj.formatVersion()`
-and `Esj.defaultSemanticModel()` return the first two of this build; a registry names an edition by
+and `Esj.defaultSemanticModel()` return the first two of this build, `Esj.acceptedFormatVersions()`
+the versions its reader reads; a registry names an edition by
 `editionKey()` (`2017`), `edition()` (`EN 16931-1:2017+A1:2019/AC:2020`) and `semanticModel()`
 (`EN16931-1:2017+A1:2019/AC:2020`). [`compatibility.md`](compatibility.md) is what each promises.

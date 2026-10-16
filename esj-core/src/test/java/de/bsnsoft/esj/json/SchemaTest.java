@@ -207,7 +207,7 @@ class SchemaTest {
     }
 
     private static byte[] document(String semanticModel, String values, String rest) {
-        return ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\",\"semanticModel\":"
+        return ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\",\"semanticModel\":"
                 + semanticModel + ",\"values\":" + values + rest + "}")
                 .getBytes(StandardCharsets.UTF_8);
     }

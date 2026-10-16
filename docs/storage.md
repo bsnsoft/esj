@@ -274,6 +274,10 @@ serialization and `document` the queryable copy of it. Two added columns rather 
 | Do I have this invoice already, in any syntax? | `semantic_digest` |
 | Did the invoice change, or only its packaging? | `semantic_digest` |
 
+A document stored while the format was 0.1 keeps its bytes and both digests: a reader of 1.0
+reads it and writes it in version 0.1 (`SPEC.md` section 4.3). The same values written now carry
+`1.0`, the same semantic digest and another document digest.
+
 ## Validate before you store
 
 Incoming bytes, ESJ reader, validation, canonical bytes and digests, insert. Generic JSON

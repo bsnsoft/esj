@@ -57,9 +57,9 @@
  * options, report and exception, the two value records, the two exceptions of the view,
  * the three handle interfaces, and the resolvers a generated view calls.
  *
- * <p>ESJ 0.1 generates the core model only. A document may carry extension terms; the
- * typed view does not show them and the typed editor has no setter for them, which is
- * what {@link de.bsnsoft.esj.typed.InvoiceEditor#builder()} is for.
+ * <p>The generated view and editor cover the core model only. A document may carry
+ * extension terms; the typed view does not show them and the typed editor has no setter
+ * for them, which is what {@link de.bsnsoft.esj.typed.InvoiceEditor#builder()} is for.
  * {@link de.bsnsoft.esj.SemanticDocument#values()} remains the complete
  * content of the document.
  */

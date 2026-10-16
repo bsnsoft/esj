@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class EsjReaderTest {
 
     private static final String HEAD = """
-            {"format":"EN16931-Semantic-JSON","version":"0.1",\
+            {"format":"EN16931-Semantic-JSON","version":"1.0",\
             "semanticModel":"EN16931-1:2017+A1:2019/AC:2020",""";
 
     private final EsjReader reader = EsjReader.strict();
@@ -208,7 +208,7 @@ class EsjReaderTest {
      */
     @Test
     void anEditionThisImplementationHasNoRegistryForIsReadLikeAnyOther() {
-        byte[] document = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        byte[] document = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2026\",\"values\":{\"/BT-1\":\"RE-1\"}}")
                 .getBytes(StandardCharsets.UTF_8);
 
@@ -237,7 +237,7 @@ class EsjReaderTest {
             "EN16931-1:20177", "en16931-1:2017+A1:2019/AC:2020 "})
     void aSemanticModelThatIsNotAnEditionIsRejected(String value) {
         EsjFormatException thrown = assertThrows(EsjFormatException.class, () -> reader.read(
-                ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+                ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                         + "\"semanticModel\":\"" + value + "\",\"values\":{}}")
                         .getBytes(StandardCharsets.UTF_8)));
 
@@ -256,10 +256,60 @@ class EsjReaderTest {
         assertEquals(name, thrown.location().orElseThrow());
     }
 
+    /**
+     * The versions of the specification, section 4.3: a reader of format 1.0 reads a
+     * document of version 1.0 and one of version 0.1, the release candidate of 1.0, and
+     * carries the version it read into the document it builds.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"1.0", "0.1"})
+    void aVersionThisReaderReadsIsReadAndKept(String version) {
+        byte[] document = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"" + version
+                + "\",\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\","
+                + "\"values\":{\"/BT-1\":\"RE-1\"}}").getBytes(StandardCharsets.UTF_8);
+
+        SemanticDocument read = reader.read(document);
+
+        assertEquals(version, read.formatVersion());
+        assertTrue(reader.readWithFindings(document).isWellFormed());
+        assertArrayEquals(document, Canonicalizer.canonicalize(document),
+                "the canonical form writes the version the document carries");
+        assertEquals(version, read.toBuilder().put("/BT-2", "2026-01-15").build().formatVersion(),
+                "a changed copy keeps the version");
+    }
+
+    /**
+     * Every other version is one this reader does not implement (specification, section
+     * 4.3): a later major version, a version without its minor part, a later minor
+     * version, and the versions the release candidate never had. The message names the
+     * versions this reader reads.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"2.0", "1", "1.1", "0.2", "1.00", "01.0", "1.0 ", ""})
+    void aVersionThisReaderDoesNotReadIsRejected(String version) {
+        byte[] document = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"" + version
+                + "\",\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\","
+                + "\"values\":{\"/BT-1\":\"RE-1\"}}").getBytes(StandardCharsets.UTF_8);
+
+        EsjFormatException thrown = assertThrows(EsjFormatException.class,
+                () -> reader.read(document));
+
+        assertEquals("ESJ-L1-ENVELOPE-VALUE", thrown.code().orElseThrow().code());
+        assertEquals("version", thrown.location().orElseThrow());
+        assertTrue(thrown.getMessage().contains("1.0") && thrown.getMessage().contains("0.1"),
+                thrown.getMessage());
+        List<Finding> findings = reader.readWithFindings(document).findings();
+        assertEquals(1, findings.size(), findings.toString());
+        assertEquals(FindingCode.ESJ_L1_ENVELOPE_VALUE, findings.get(0).code());
+        assertEquals("version", findings.get(0).subject());
+        assertTrue(findings.get(0).message().contains(
+                "; this reader reads the versions 1.0 and 0.1"), findings.get(0).message());
+    }
+
     @Test
     void aMissingRequiredEnvelopeMemberIsRejected() {
         assertEquals("ESJ-L1-ENVELOPE-MEMBER", codeOf(
-                "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\"}"
+                "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\"}"
                         .getBytes(StandardCharsets.UTF_8)));
     }
 
@@ -391,7 +441,7 @@ class EsjReaderTest {
                 codeOf(envelope("\"values\":{},\"source\":{\"syntax\":\"A\\udc00B\"}")));
         assertEquals("ESJ-L1-SURROGATE",
                 codeOf(envelope("\"values\":{},\"source\":{\"sha256\":\"\\ud800\"}")));
-        assertEquals("ESJ-L1-SURROGATE", codeOf(("{\"format\":\"\\ud800\",\"version\":\"0.1\","
+        assertEquals("ESJ-L1-SURROGATE", codeOf(("{\"format\":\"\\ud800\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{}}")
                 .getBytes(StandardCharsets.UTF_8)));
     }
@@ -922,7 +972,7 @@ class EsjReaderTest {
 
     @Test
     void aSyntaxErrorBeforeALoneSurrogateIsNotASurrogate() {
-        byte[] document = ("{\"format\":\"EN16931-Semantic-JSON\",,\"version\":\"0.1\","
+        byte[] document = ("{\"format\":\"EN16931-Semantic-JSON\",,\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":"
                 + "{\"/BT-1\":\"\\ud800\"}}")
                 .getBytes(StandardCharsets.UTF_8);

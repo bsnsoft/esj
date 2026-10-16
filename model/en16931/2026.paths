@@ -58,3 +58,5 @@ bindings/typescript/src/rules/native-2026.ts
 bindings/csharp/BSNSoft.Esj/Rules/En16931V2026
 conformance/fixtures/annex-b/edition-2026-example.esj.json
 conformance/fixtures/annex-b/edition-2026-example.canonical.esj.json
+conformance/fixtures/version-0.1/edition-2026.esj.json
+conformance/fixtures/version-0.1/edition-2026.canonical.esj.json

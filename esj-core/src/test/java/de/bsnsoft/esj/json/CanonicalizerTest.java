@@ -21,7 +21,7 @@ class CanonicalizerTest {
     private static final String APPENDIX_B = """
             {
               "format": "EN16931-Semantic-JSON",
-              "version": "0.1",
+              "version": "1.0",
               "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
               "values": {
                 "/BT-1": "RE-2026-0001",
@@ -33,7 +33,7 @@ class CanonicalizerTest {
             """;
 
     private static final String CANONICAL =
-            "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+            "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                     + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{"
                     + "\"/BT-1\":\"RE-2026-0001\","
                     + "\"/BT-2\":\"2026-01-15\","
@@ -51,7 +51,7 @@ class CanonicalizerTest {
     private static final String APPENDIX_B_2026 = """
             {
               "format": "EN16931-Semantic-JSON",
-              "version": "0.1",
+              "version": "1.0",
               "semanticModel": "EN16931-1:2026",
               "values": {
                 "/BT-1": "RE-2026-0001",
@@ -64,7 +64,7 @@ class CanonicalizerTest {
             """;
 
     private static final String CANONICAL_2026 =
-            "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+            "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                     + "\"semanticModel\":\"EN16931-1:2026\",\"values\":{"
                     + "\"/BT-1\":\"RE-2026-0001\","
                     + "\"/BT-2\":\"2026-01-15\","
@@ -102,7 +102,7 @@ class CanonicalizerTest {
     void theDigestsOfTheWorkedExampleAreTheOnesTheSpecificationPrints() {
         assertEquals("27d43ab507a929218e8278be315a736467d9a5f881bf232fe1843b06bd6105b8",
                 Canonicalizer.semanticDigest(appendixB()));
-        assertEquals("fdc75e42190b6aec5cf5454fe07e615af71f33fc275e297cb6aeefec0525e42a",
+        assertEquals("a0c7676f92be041f21c5ed606d34452422c76fcace28539cbf206c02e2c8b24d",
                 Canonicalizer.documentDigest(appendixB()));
     }
 
@@ -160,7 +160,7 @@ class CanonicalizerTest {
         assertEquals(198, Canonicalizer.canonicalSemanticBytes(appendixB2026()).length);
         assertEquals("8f12f3ea4a038fa8877b9b8084793c0ff4d90190dfe6897b4a44b04d464f2d1c",
                 Canonicalizer.semanticDigest(appendixB2026()));
-        assertEquals("38b3abe5cfa1d8f705844b7169b56d8aecd35ffbd9ae65ec0aaa83d4c8b7b10f",
+        assertEquals("b67916682ed2b76bffea3a3c7acc61e5cdc90e746900fc74fc3b909fb3f8bc5e",
                 Canonicalizer.documentDigest(appendixB2026()));
         assertNotEquals(Canonicalizer.semanticDigest(appendixB()),
                 Canonicalizer.semanticDigest(appendixB2026()));
@@ -194,7 +194,7 @@ class CanonicalizerTest {
      */
     @Test
     void aDecimalSpelledSomeOtherWayPassesThroughUnchanged() {
-        String document = "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        String document = "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\","
                 + "\"values\":{\"/BG-22/BT-106\":\"100.00\"}}";
 
@@ -214,7 +214,7 @@ class CanonicalizerTest {
                     "/BT-1" : "RE-2026-0001"
                   },
                   "semanticModel" : "EN16931-1:2017+A1:2019/AC:2020",
-                  "version" : "0.1",
+                  "version" : "1.0",
                   "format" : "EN16931-Semantic-JSON"
                 }
                 """;
@@ -239,6 +239,39 @@ class CanonicalizerTest {
         String text = new String(canonical, StandardCharsets.UTF_8);
         assertEquals(levels, text.chars().filter(c -> c == '[').count());
         assertEquals(64, Canonicalizer.documentDigest(document).length());
+    }
+
+    /**
+     * A document of format version 0.1 is written in that version (specification, sections
+     * 4.3 and 7.3): the version is part of the document, so the canonical bytes of a 0.1
+     * document read today are the ones it had before, and only the document digest tells it
+     * from the same values written as a 1.0 document.
+     */
+    @Test
+    void theDocumentDigestCoversTheFormatVersionAndTheSemanticDigestDoesNot() {
+        SemanticDocument current = appendixB();
+        SemanticDocument earlier = current.toBuilder().formatVersion("0.1").build();
+
+        assertEquals("1.0", current.formatVersion());
+        assertEquals("0.1", earlier.formatVersion());
+        assertEquals(CANONICAL.replace("\"version\":\"1.0\"", "\"version\":\"0.1\""),
+                new String(Canonicalizer.canonicalBytes(earlier), StandardCharsets.UTF_8));
+        assertEquals(Canonicalizer.semanticDigest(current), Canonicalizer.semanticDigest(earlier));
+        assertNotEquals(Canonicalizer.documentDigest(current), Canonicalizer.documentDigest(earlier));
+        assertEquals("fdc75e42190b6aec5cf5454fe07e615af71f33fc275e297cb6aeefec0525e42a",
+                Canonicalizer.documentDigest(earlier),
+                "the document digest Appendix B printed while the format was 0.1");
+        assertNotEquals(current, earlier);
+    }
+
+    @Test
+    void aDocumentOfVersionZeroPointOneCanonicalizesToTheBytesItHadBefore() {
+        String earlier = APPENDIX_B.replace("\"version\": \"1.0\"", "\"version\": \"0.1\"");
+
+        byte[] canonical = Canonicalizer.canonicalize(earlier.getBytes(StandardCharsets.UTF_8));
+
+        assertEquals(CANONICAL.replace("\"version\":\"1.0\"", "\"version\":\"0.1\""),
+                new String(canonical, StandardCharsets.UTF_8));
     }
 
     @Test

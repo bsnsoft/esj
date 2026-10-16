@@ -125,13 +125,15 @@
           The cross-check report of the binding tables, so that a test can check the
           claim of model/bindings/README.md that it leaves no difference unexplained; the
           corpus as semantic documents and the upgrade ledger, so that the measurement of
-          conformance/editions/upgrade.md is recomputed from the corpus on every build.
+          conformance/editions/upgrade.md is recomputed from the corpus on every build; the
+          documents of format version 0.1 with the canonical bytes they had in that version.
         -->
         <directory>${project.basedir}/../conformance</directory>
         <targetPath>conformance</targetPath>
         <includes>
           <include>bindings/crosscheck.md</include>
           <include>esj/**/*.esj.json</include>
+          <include>fixtures/version-0.1/*.esj.json</include>
           <include>editions/upgrade.json</include>
           <include>editions/upgrade.md</include>
         </includes>

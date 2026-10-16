@@ -12,9 +12,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
- * One ESJ document: the semantic model it refers to, the values addressed by their
- * semantic paths, the extension subtrees and the provenance metadata
- * (specification, section 4).
+ * One ESJ document: the format version it is written in, the semantic model it refers to,
+ * the values addressed by their semantic paths, the extension subtrees and the provenance
+ * metadata (specification, section 4).
  *
  * <p>Instances are immutable and are built with {@link #builder()}. The values are held
  * in canonical path order (specification, section 7.4), so iterating them is iterating
@@ -27,15 +27,18 @@ import java.util.TreeMap;
  */
 public final class SemanticDocument {
 
+    private final String formatVersion;
     private final String semanticModel;
     private final SortedMap<SemanticPath, SemanticValue> values;
     private final Map<String, ExtensionValue> extensions;
     private final Source source;
 
-    private SemanticDocument(String semanticModel,
+    private SemanticDocument(String formatVersion,
+                             String semanticModel,
                              SortedMap<SemanticPath, SemanticValue> values,
                              Map<String, ExtensionValue> extensions,
                              Source source) {
+        this.formatVersion = formatVersion;
         this.semanticModel = semanticModel;
         this.values = values;
         this.extensions = extensions;
@@ -43,13 +46,30 @@ public final class SemanticDocument {
     }
 
     /**
-     * Returns a builder for a document of the edition the bundled registry describes
+     * Returns a builder for a document of the format version of this implementation
+     * ({@link Esj#formatVersion()}) and of the edition the bundled registry describes
      * ({@link Esj#defaultSemanticModel()}).
      *
      * @return a new builder
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * Returns the version of the format this document is written in: the {@code version}
+     * member it was read with, or {@link Esj#formatVersion()} for a document built here
+     * (specification, section 4.3).
+     *
+     * <p>The canonical form and the pretty form write this value, so a document read in
+     * an earlier format version is written again in that version, and its canonical bytes
+     * and its document digest do not change. A changed copy made with
+     * {@link #toBuilder()} keeps it.
+     *
+     * @return one of {@link Esj#acceptedFormatVersions()}, for example {@code 1.0}
+     */
+    public String formatVersion() {
+        return formatVersion;
     }
 
     /**
@@ -111,6 +131,7 @@ public final class SemanticDocument {
      */
     public Builder toBuilder() {
         Builder builder = new Builder();
+        builder.formatVersion = formatVersion;
         builder.semanticModel = semanticModel;
         builder.values.putAll(values);
         builder.extensions.putAll(extensions);
@@ -121,6 +142,7 @@ public final class SemanticDocument {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof SemanticDocument other
+                && formatVersion.equals(other.formatVersion)
                 && semanticModel.equals(other.semanticModel)
                 && values.equals(other.values)
                 && extensions.equals(other.extensions)
@@ -129,18 +151,19 @@ public final class SemanticDocument {
 
     @Override
     public int hashCode() {
-        return Objects.hash(semanticModel, values, extensions, source);
+        return Objects.hash(formatVersion, semanticModel, values, extensions, source);
     }
 
     /**
-     * Returns a description naming the edition and the number of values, and not the
-     * content of the invoice.
+     * Returns a description naming the format version, the edition and the number of
+     * values, and not the content of the invoice.
      *
      * @return a short description of the document
      */
     @Override
     public String toString() {
-        return "SemanticDocument[semanticModel=" + semanticModel + ", values=" + values.size()
+        return "SemanticDocument[version=" + formatVersion + ", semanticModel=" + semanticModel
+                + ", values=" + values.size()
                 + ", extensions=" + extensions.size() + ", source=" + (source == null ? "absent" : "present") + "]";
     }
 
@@ -242,10 +265,46 @@ public final class SemanticDocument {
                 new TreeMap<>(SemanticPath.canonicalOrder());
         private final TreeMap<String, ExtensionValue> extensions =
                 new TreeMap<>(ExtensionValue.memberOrder());
+        private String formatVersion = Esj.formatVersion();
         private String semanticModel = Esj.defaultSemanticModel();
         private Source source;
 
         private Builder() {
+        }
+
+        /**
+         * Sets the version of the format the document is written in. The default is
+         * {@link Esj#formatVersion()}, the version a document created here carries; a
+         * builder made by {@link SemanticDocument#toBuilder()} starts with the version of
+         * the document it was made from.
+         *
+         * <p>Only a version this implementation reads is accepted
+         * ({@link Esj#acceptedFormatVersions()}), so that a document never carries a
+         * version that a reader of this implementation would refuse.
+         *
+         * @param formatVersion the format version, for example {@code 1.0}
+         * @return this builder
+         * @throws EsjFormatException   if the version is not one this implementation reads
+         * @throws NullPointerException if {@code formatVersion} is {@code null}
+         */
+        public Builder formatVersion(String formatVersion) {
+            Objects.requireNonNull(formatVersion, "formatVersion");
+            if (!Esj.acceptedFormatVersions().contains(formatVersion)) {
+                throw new EsjFormatException("not a format version this implementation reads: "
+                        + Messages.forMessage(formatVersion, MESSAGE_EXCERPT) + "; it reads "
+                        + String.join(" and ", Esj.acceptedFormatVersions()));
+            }
+            this.formatVersion = formatVersion;
+            return this;
+        }
+
+        /**
+         * Returns the version of the format the document will be written in.
+         *
+         * @return the {@code version} member the document will carry
+         */
+        public String formatVersion() {
+            return formatVersion;
         }
 
         /**
@@ -584,7 +643,7 @@ public final class SemanticDocument {
             copiedValues.putAll(values);
             Map<String, ExtensionValue> copiedExtensions =
                     Collections.unmodifiableMap(new LinkedHashMap<>(extensions));
-            return new SemanticDocument(semanticModel,
+            return new SemanticDocument(formatVersion, semanticModel,
                     Collections.unmodifiableSortedMap(copiedValues),
                     copiedExtensions,
                     source);

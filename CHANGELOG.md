@@ -1,10 +1,41 @@
 # Changelog
 
 The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses
-[semantic versioning](https://semver.org/spec/v2.0.0.html). Until 1.0 the format itself may
-still change; a change to it is named here under *Format*.
+[semantic versioning](https://semver.org/spec/v2.0.0.html). A change to the format itself is
+named here under *Format*.
 
-## [0.9.9] — unreleased
+## [1.0.0-rc.1] — unreleased
+
+### Format
+
+- The format is 1.0, and the specification is `SPEC.md` version 1.0, a release candidate: a
+  document written now carries `"version": "1.0"`. Nothing else of the format changed — the path
+  grammar, the value model, the canonical form, the digests, the finding codes, the registries
+  and the limits are those of 0.1 (`SPEC.md` appendix D).
+- A reader of 1.0 reads documents of version `1.0` and of `0.1`, the release candidate, both by
+  the rules of 1.0, and refuses every other value with `ESJ-L1-ENVELOPE-VALUE`, whose message
+  names the two; in general a reader of 1.*x* reads 1.*y* for *y* ≤ *x* and 0.1 (section 4.3).
+- A document keeps the version it was read in. The canonical and the pretty form write it, so a
+  stored 0.1 document keeps its canonical bytes and both digests, and a document derived from one
+  — edited, given derived totals, written up to another edition and back — stays 0.1. A document
+  built from nothing, by the domain API or the typed builder, or imported from UBL, CII or PDF
+  carries 1.0. The same values as 0.1 and as 1.0 share the semantic digest and differ in the
+  document digest (sections 7.3 and 8.3); no command rewrites a 0.1 document as 1.0.
+- `schema/esj.schema.json` takes `version` from `["1.0", "0.1"]`, and the schema identifiers move
+  from `tag:bsnsoft.de,2026:esj/schema/0.1/…` to `…/schema/1.0/…`; the generated schemata of the
+  two editions follow.
+- The fixture manifest records documents of version 0.1 with the canonical bytes they had in a
+  new section `earlierVersions` (`conformance/fixtures/version-0.1/`), a case of the canonical
+  order whose bytes carry 0.1, and rejected documents with the versions `2.0`, `1` and `1.1`.
+  Every other document of the repository — examples, corpus, fixtures, appendix B — is written in
+  1.0, and its document digest moved with it; no semantic digest did.
+
+### Added
+
+- `Esj.acceptedFormatVersions()`, `SemanticDocument.formatVersion()` and
+  `SemanticDocument.Builder.formatVersion(String)`, which accepts only a version this
+  implementation reads. `Esj.formatVersion()` answers `1.0`. Two documents that differ in their
+  format version alone are not `equals`, as their document digests differ.
 
 ### Changed
 

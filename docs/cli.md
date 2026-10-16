@@ -75,7 +75,7 @@ A UBL invoice in, an ESJ document out, in the pretty form of `SPEC.md` section 7
 $ esj convert conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
   "values": {
     "/BT-1": "123456XX",
@@ -1096,7 +1096,7 @@ Total with VAT (BT-112):    2915.5
 Amount due (BT-115):        2915.5
 Validation pack:            not applicable (no XML)
 Semantic digest:            6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a
-Document digest:            951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4
+Document digest:            0c8521c18f12bfdc90713cda4dafd8e0f171094c63c5d2201b82a4be9fa8ba94
 
 Syntax
   not run (esj validate runs the official artefacts)
@@ -1231,7 +1231,7 @@ without a line feed; `--digest` writes the two digests of section 8 taken over t
 ```console
 $ esj canonicalize examples/standard-invoice.esj.json --digest
 semantic: 6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a
-document: 951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4
+document: 0c8521c18f12bfdc90713cda4dafd8e0f171094c63c5d2201b82a4be9fa8ba94
 ```
 
 The semantic digest is taken over the semantic model and the `values` object and answers *did

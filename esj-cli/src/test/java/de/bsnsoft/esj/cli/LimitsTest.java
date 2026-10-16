@@ -251,7 +251,7 @@ class LimitsTest {
 
     @Test
     void saysPlainlyWhereNoConfigurationOfThisVersionRaisesTheBound() {
-        String nested = "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        String nested = "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{},"
                 + "\"extensions\":{\"de.example.vendor\":" + "[".repeat(64) + "]".repeat(64) + "}}";
         Cli.Run run = Cli.run(nested.getBytes(StandardCharsets.UTF_8),

@@ -93,7 +93,7 @@ class ScaleValidationTest {
     static byte[] invoice(int lines) {
         long total = (long) lines * LINE_NET;
         StringBuilder json = new StringBuilder(lines * 200)
-                .append("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\",")
+                .append("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\",")
                 .append("\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{");
         value(json, "/BT-1", "RE-2026-0001", true);
         value(json, "/BT-2", "2026-01-15", false);

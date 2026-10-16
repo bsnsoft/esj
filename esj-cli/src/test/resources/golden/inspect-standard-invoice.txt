@@ -17,7 +17,7 @@ Total with VAT (BT-112):    2915.5
 Amount due (BT-115):        2915.5
 Validation pack:            not applicable (no XML)
 Semantic digest:            6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a
-Document digest:            951a8ecf27a1d831f6ff042fd59445e7dec602547385f78337912820986964a4
+Document digest:            0c8521c18f12bfdc90713cda4dafd8e0f171094c63c5d2201b82a4be9fa8ba94
 
 Syntax
   not run (esj validate runs the official artefacts)

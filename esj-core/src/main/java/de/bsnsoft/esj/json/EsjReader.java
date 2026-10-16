@@ -37,7 +37,8 @@ import java.util.Set;
  * UTF-8 — it reads the bytes as UTF-8 and never guesses another encoding, so a document
  * written in UTF-16 or UTF-32 without a byte order mark is a byte sequence that is no JSON
  * text — a duplicate member name in every object it judges, a member the specification
- * does not define at any level of the envelope, a {@code semanticModel} that is not an
+ * does not define at any level of the envelope, a {@code version} it does not read
+ * ({@link Esj#acceptedFormatVersions()}), a {@code semanticModel} that is not an
  * edition string, a JSON number, boolean, {@code null} or array anywhere inside
  * {@code values}, a value whose shape is neither a JSON string nor a value object with a
  * supplementary component, an unpaired surrogate and every limit of section 12.2. It never
@@ -565,7 +566,7 @@ public final class EsjReader {
                 }
                 switch (name) {
                     case "format" -> fixed(name, Esj.FORMAT);
-                    case "version" -> fixed(name, Esj.formatVersion());
+                    case "version" -> builder.formatVersion(version());
                     case "semanticModel" -> builder.semanticModel(edition());
                     case "values" -> readValues();
                     case "extensions" -> readExtensions();
@@ -615,6 +616,24 @@ public final class EsjReader {
                         "the envelope member semanticModel carries " + excerpt(value)
                                 + ", which is not an edition of the semantic model;"
                                 + " one is written " + Esj.defaultSemanticModel());
+            }
+            return value;
+        }
+
+        /**
+         * Reads the {@code version} member and holds it to the versions this reader reads:
+         * the version of this specification and 0.1, the release candidate of 1.0, which is
+         * read by the rules of this specification (section 4.3). Any other value is a
+         * version this reader does not implement.
+         */
+        private String version() {
+            String value = envelopeString("version");
+            List<String> accepted = Esj.acceptedFormatVersions();
+            if (!accepted.contains(value)) {
+                throw fatal(FindingCode.ESJ_L1_ENVELOPE_VALUE, "version",
+                        "the envelope member version carries " + excerpt(value)
+                                + "; this reader reads the versions "
+                                + String.join(" and ", accepted));
             }
             return value;
         }

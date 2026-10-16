@@ -25,6 +25,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | [`registries/`](registries/README.md) | registries written for the manifest: one a validator measures with, and the ones a loader refuses |
 | [`canonical-order/`](canonical-order/README.md) | documents not in canonical form, with their canonical bytes |
 | [`annex-b/`](annex-b/README.md) | the two documents of `SPEC.md` appendix B, with their canonical bytes |
+| [`version-0.1/`](version-0.1/README.md) | documents of format version 0.1, with the canonical bytes they had in that version |
 | `run.py` | the runner, and the request protocol a binding answers |
 
 ## Sections
@@ -33,6 +34,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 |---|---|---|
 | `registries` | the registries to load before anything else | term counts, and a sample of paths with datatype, cardinality and components |
 | `documents` | a document the reader reads | `semanticDigest`, `documentDigest`, the length of the canonical bytes, the number of values, the canonical bytes where a twin is checked in, and the outcome |
+| `earlierVersions` | a document of format version 0.1, which a reader of 1.0 reads (`SPEC.md` section 4.3) | as for `documents`; the canonical bytes keep the version `0.1`, and the digests are the ones the document had |
 | `invalid` | a document that has to be rejected | the outcome, and the digests where the reader reads the document; a case that names `registries` is validated with those |
 | `bounds` | a document and bounds of `SPEC.md` section 12.2 | the outcome under those bounds |
 | `registryChecks` | registry files, the first the core and every further one an extension | whether a loader takes them (`SPEC.md` section 10) |

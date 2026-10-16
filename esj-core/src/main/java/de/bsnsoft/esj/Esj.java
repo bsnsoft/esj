@@ -1,19 +1,23 @@
 package de.bsnsoft.esj;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
- * The fixed envelope constants of the EN16931 Semantic JSON format, the one
+ * The envelope values of the EN16931 Semantic JSON format, the one
  * transformation the format applies to string content, and the two string rules an
  * implementation needs before it has a registry: the edition grammar of the
  * specification, section 4.4 and the characters the message escaping of section 9.5
  * escapes.
  *
- * <p>Every ESJ document carries {@link #FORMAT} and the {@link #formatVersion()} of the
- * implementation that wrote it. {@link #defaultSemanticModel()} is the edition this
- * implementation writes by default; it is not the only value the format defines for that
- * member. The two are methods rather than constants because their values change with a
- * release, and a constant would be compiled into the caller.
+ * <p>Every ESJ document carries {@link #FORMAT} and a format version: a document this
+ * implementation creates carries {@link #formatVersion()}, and a document it read and
+ * changed keeps the version it was read with (specification, section 4.3).
+ * {@link #acceptedFormatVersions()} are the versions its reader reads.
+ * {@link #defaultSemanticModel()} is the edition this implementation writes by default; it
+ * is not the only value the format defines for that member. These are methods rather than
+ * constants because their values change with a release, and a constant would be compiled
+ * into the caller.
  */
 public final class Esj {
 
@@ -21,7 +25,13 @@ public final class Esj {
     public static final String FORMAT = "EN16931-Semantic-JSON";
 
     /** The value {@link #formatVersion()} returns. */
-    private static final String VERSION = "0.1";
+    private static final String VERSION = "1.0";
+
+    /**
+     * The value {@link #acceptedFormatVersions()} returns: the version of this specification
+     * first, then the version 0.1 of the documents written before 1.0.0-rc.1.
+     */
+    private static final List<String> ACCEPTED_VERSIONS = List.of(VERSION, "0.1");
 
     /** The value {@link #defaultSemanticModel()} returns. */
     private static final String SEMANTIC_MODEL = "EN16931-1:2017+A1:2019/AC:2020";
@@ -37,13 +47,31 @@ public final class Esj {
     }
 
     /**
-     * Returns the value of the {@code version} member this implementation writes and the
-     * only one its reader accepts: {@code 0.1} in this release.
+     * Returns the value of the {@code version} member of a document this implementation
+     * creates: {@code 1.0} in this release.
+     *
+     * <p>A document that was read keeps the version it was read with when it is
+     * canonicalized, edited, derived or written up to another edition
+     * ({@link SemanticDocument#formatVersion()}); a document built from nothing, imported
+     * from another syntax or produced by the domain interface carries this one.
      *
      * @return the format version
      */
     public static String formatVersion() {
         return VERSION;
+    }
+
+    /**
+     * Returns the values of the {@code version} member the reader of this implementation
+     * accepts, newest first: {@code 1.0} and {@code 0.1} in this release (specification,
+     * section 4.3). A reader of format 1.x reads every document of version 1.y with y ≤ x,
+     * and documents of version 0.1, the release candidate of 1.0, by the rules of this
+     * specification.
+     *
+     * @return an unmodifiable list of format versions, {@link #formatVersion()} first
+     */
+    public static List<String> acceptedFormatVersions() {
+        return ACCEPTED_VERSIONS;
     }
 
     /**

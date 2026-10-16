@@ -1,6 +1,6 @@
 # EN16931 Semantic JSON (ESJ) — Specification
 
-**Version 0.1 — release candidate: expected to become 1.0 unchanged unless review finds a defect**
+**Version 1.0 — release candidate (1.0.0-rc.1): final with release 1.0.0 unless review finds a defect**
 
 Author: Christian Bürckert
 Publisher: BSNSoft Solutions GmbH
@@ -239,11 +239,11 @@ A conformant reader:
 
 ### 3.3 Conformant writer
 
-A conformant writer produces documents that satisfy section 3.1, in canonical form
-(section 7) or in pretty form (section 7.7). It knows the registry, so it knows the semantic
-data type of every term it writes: it MUST write a decimal in the canonical decimal form of
-section 6.4, a date and a time in the forms of section 6.5 and a binary object in the
-canonical base64 of section 6.7, and it MUST write a value as a string where the content
+A conformant writer produces documents that satisfy section 3.1 and carry the `version` `1.0`,
+in canonical form (section 7) or in pretty form (section 7.7). It knows the registry, so it
+knows the semantic data type of every term it writes: it MUST write a decimal in the canonical
+decimal form of section 6.4, a date and a time in the forms of section 6.5 and a binary object
+in the canonical base64 of section 6.7, and it MUST write a value as a string where the content
 carries no supplementary component and as an object where it does (section 6.1).
 
 A writer is the only party in ESJ that turns a value of some other model into an ESJ value, so
@@ -252,7 +252,8 @@ writes `100`, because the trailing fraction zeros carry no numeric information a
 canonical decimal form has none (section 6.4). No later stage repeats that step for it.
 
 Writing out a document that is already an ESJ document — its content read by a reader or built
-value by value in ESJ form — is not this class. It needs no registry and converts no spelling:
+value by value in ESJ form — is not this class. It keeps the `version` the document carries
+(section 4.3), needs no registry and converts no spelling:
 the canonical form of section 7 is what a canonicalizer produces (section 3.4), and the pretty
 form of section 7.7 is the same content with the layout of that section.
 
@@ -335,7 +336,7 @@ An ESJ document is a JSON object with the following members.
 | Member | Required | Type | Section |
 |---|---|---|---|
 | `format` | yes | string, fixed | 4.3 |
-| `version` | yes | string, fixed | 4.3 |
+| `version` | yes | string | 4.3 |
 | `semanticModel` | yes | string | 4.4 |
 | `values` | yes | object | 4.5 |
 | `extensions` | no | object | 4.6 |
@@ -347,7 +348,7 @@ for the smallest document that satisfies all three validation layers):
 ```json
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
   "values": {
     "/BT-1": "RE-2026-0001"
@@ -394,13 +395,29 @@ for the smallest document that satisfies all three validation layers):
 ### 4.3 `format` and `version`
 
 `format` MUST be the exact string `EN16931-Semantic-JSON`. `version` MUST be the exact string
-`0.1`.
+`1.0`.
 
 `version` identifies the version of **this specification**, not the version of the semantic
-model. A reader that does not implement the version it finds MUST reject the document.
+model. Version numbering follows `MAJOR.MINOR`. A reader that does not implement the version
+it finds MUST reject the document; the finding is `ESJ-L1-ENVELOPE-VALUE` (section 9.6).
 
-Version numbering follows `MAJOR.MINOR`. Until 1.0, any version MAY change the format in
-incompatible ways.
+**The versions a reader reads.** A reader of format 1.*x* MUST accept a document whose
+`version` is 1.*y* with *y* ≤ *x*, and a document whose `version` is `0.1`. It MUST reject every
+other value: a later minor version, another major version, and a version without its minor part
+such as `1`. A reader of this specification therefore reads `1.0` and `0.1`, and nothing else. A
+later minor version of 1 may add to the format; a document of an earlier minor version means
+under it what it meant before. A later major version may change the format in incompatible ways.
+
+**Documents of version 0.1.** Version 0.1 was the release candidate of 1.0. A document of
+version 0.1 is read, validated, canonicalized and digested by the rules of this specification;
+there is no second set of rules. It keeps its version: the canonical form and the pretty form
+write the `version` a document carries (section 7.3), so a document of version 0.1 has the
+canonical bytes and the two digests it had before (section 8). A document derived from one
+that was read — a changed copy, totals derived for it, the same document under another
+edition — keeps the version of the document it was derived from; a document created from
+nothing or from another syntax carries `1.0`. This specification defines no rewriting of a
+document from 0.1 to 1.0: the rewritten document would differ in its document digest and in
+nothing else (section 8.3).
 
 ### 4.4 `semanticModel`
 
@@ -1232,8 +1249,10 @@ document does not have to be stored in canonical form to be conformant.
 ### 7.3 Member order
 
 1. Top level: `format`, `version`, `semanticModel`, `values`, `extensions`, `source`. Absent
-   members are omitted; present members keep this relative order. `format` and `version` are
-   written as the fixed values of section 4.3. An implementation that holds a document in memory
+   members are omitted; present members keep this relative order. `format` is written as the
+   fixed value of section 4.3. `version` is written as the value the document carries, so a
+   document of version 0.1 is written as one, with the canonical bytes it had before
+   (section 4.3). An implementation that holds a document in memory
    treats an `extensions` or a `source` without members as absent (sections 4.6 and 4.7), so
    that the canonical form never carries one.
 2. `values`: members in canonical path order (section 7.4).
@@ -1506,7 +1525,7 @@ is an address relative to an edition, and a later edition may number its terms d
 Without the edition in the digest, two documents carrying the same strings under two editions
 would collide — one digest for two different sets of business terms — and a deduplication key
 or an equivalence test built on it would be silently wrong for exactly the documents that
-straddle an edition change. ESJ 0.1 defines two editions (section 4.4), so the same invoice
+straddle an edition change. ESJ 1.0 defines two editions (section 4.4), so the same invoice
 content under both has two semantic digests. That is correct and deliberate: they are two
 statements about two models, and a migration of a document from one edition to the other —
 which lies outside this specification — changes the digest by design.
@@ -1515,6 +1534,11 @@ which lies outside this specification — changes the digest by design.
 
 The **document digest** is SHA-256 over the whole canonical document, including `format`,
 `version`, `semanticModel`, `extensions` and `source`.
+
+Because it covers `version`, a document of version 0.1 and the same content written as a
+document of version 1.0 have different document digests and the same semantic digest. A
+document of version 0.1 keeps its document digest when a reader of this specification reads
+it, since the canonical form writes the version the document carries (section 7.3).
 
 It identifies the canonical content of the document: the semantic content together with
 everything the envelope says about it. It does not identify a file (section 8.1).
@@ -1545,7 +1569,7 @@ are those of the **source** document the content was extracted from — the UBL 
 — never those of the ESJ file carrying it (section 4.7).
 
 A digest is not a signature: it protects against accidental change, not against a forger who
-can also change the digest. Signing is out of scope for ESJ 0.1.
+can also change the digest. Signing is out of scope for ESJ 1.0.
 
 ---
 
@@ -1561,9 +1585,9 @@ states and the result that carries them.
 L1 needs no registry. It checks:
 
 * the document is well-formed JSON in UTF-8, with no BOM and no duplicate member names;
-* the envelope members, their types and the fixed values of section 4, and that
-  `semanticModel` satisfies the edition grammar of section 4.4 — not that a registry for that
-  edition exists, which is an L2 question (sections 4.4 and 9.2);
+* the envelope members, their types, the fixed value of `format` and the versions of
+  section 4.3, and that `semanticModel` satisfies the edition grammar of section 4.4 — not that
+  a registry for that edition exists, which is an L2 question (sections 4.4 and 9.2);
 * the path grammar of section 5.1, and nothing else about a path: which parents a term has and
   whether it carries an index are facts of the registry and belong to L2 (sections 5.2, 5.3
   and 9.2), and whether the indices under one parent are dense is a property of the whole
@@ -1906,7 +1930,7 @@ English message being parsed.
 
 `error` means the document fails the layer the finding belongs to. `warning` means that the
 finding does not by itself make the document fail that layer, but that something is worth
-saying. `info` carries no judgement about the document at all; its use in ESJ 0.1 is the report
+saying. `info` carries no judgement about the document at all; its use in ESJ 1.0 is the report
 that something could not be checked, which is not a defect and MUST NOT be presented as one.
 
 A severity is a property of one finding. Whether the document is conformant is a property of
@@ -2214,8 +2238,8 @@ one finding, a reader holds it to its checks in this order and reports the first
   a name that occurs twice, then what the object asks of its names — for `values` the bound on
   its members, the path length, the path grammar and the segment count (section 12.2), for
   `extensions` the owner-token grammar, for the envelope and `source` the defined member set;
-* a string of the envelope: a lone surrogate, then the string bound, then the fixed value or
-  the edition grammar;
+* a string of the envelope: a lone surrogate, then the string bound, then the fixed value, the
+  versions of section 4.3 or the edition grammar;
 * a member of `source`: a lone surrogate, then the empty string, then the string bound, then,
   for `sha256`, its grammar;
 * a string inside `values`: a lone surrogate, then the empty string, then the string bound;
@@ -2287,7 +2311,7 @@ knows that the second says nothing extra.
 | `ESJ-L1-JSON` | L1 | error | the byte sequence, decoded as UTF-8, is not a JSON text — a token that is not a complete JSON value where a value stands included — or its top level is not an object |
 | `ESJ-L1-DUPLICATE-MEMBER` | L1 | error | a member name occurs twice in one object the reader judges, at any depth (not inside a structure it walks past) |
 | `ESJ-L1-ENVELOPE-MEMBER` | L1 | error | a required envelope member is missing, one finding for each, or an undefined one is present, including inside `source` |
-| `ESJ-L1-ENVELOPE-VALUE` | L1 | error | `format` or `version` does not carry its fixed value, `semanticModel` does not satisfy the edition grammar of section 4.4, an envelope member is not of the JSON type section 4.1 gives it, `extensions` or `source` is present but empty, or a member of `source` does not satisfy section 4.7 |
+| `ESJ-L1-ENVELOPE-VALUE` | L1 | error | `format` does not carry its fixed value, `version` is not a version the reader reads (section 4.3), `semanticModel` does not satisfy the edition grammar of section 4.4, an envelope member is not of the JSON type section 4.1 gives it, `extensions` or `source` is present but empty, or a member of `source` does not satisfy section 4.7 |
 | `ESJ-L1-OWNER-TOKEN` | L1 | error | a member name of `extensions` is not an owner token (section 4.6) |
 | `ESJ-L1-PATH-SYNTAX` | L1 | error | a member name of `values` does not match the path grammar (section 5.1) |
 | `ESJ-L1-JSON-TYPE` | L1 | error | a JSON number, `true`, `false`, `null` or array appears anywhere inside `values` |
@@ -2740,7 +2764,7 @@ happened to apply — in one implementation an accidental function of the *binar
 lowering `maxBinaryValueBytes` would silently start refusing a document a default reader
 accepts. A sender cannot predict that, and section 3.1 promises it does not have to. `format`
 and `version` fall under the bound too: a reader meets the string before it compares it with
-the fixed value, and the limit outranks the comparison (section 9.6).
+the values section 4.3 allows, and the limit outranks the comparison (section 9.6).
 
 The total decoded binary content is computed without decoding. A `value` of length *L* that
 ends in *p* `=` characters adds ⌊*L*/4⌋·3 − min(*p*, 2) bytes, and nothing where that is
@@ -2834,7 +2858,7 @@ is a field a program reads rather than a line anyone writes out.
 ### 12.7 Digests and signatures
 
 The digests of section 8 detect accidental modification and identify content. They are not
-authentication: anyone who can change the document can change the digest. ESJ 0.1 defines no
+authentication: anyone who can change the document can change the digest. ESJ 1.0 defines no
 signature format. An application that needs authenticity should sign the canonical bytes with
 an established mechanism and keep the result outside the document.
 
@@ -3074,7 +3098,7 @@ and are written as strings; the fourth carries a scheme and is written as an obj
 ```json
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
   "values": {
     "/BT-1": "RE-2026-0001",
@@ -3091,14 +3115,14 @@ and are written as strings; the fourth carries a scheme and is written as an obj
 Its canonical form is these 236 bytes, on one line:
 
 ```
-{"format":"EN16931-Semantic-JSON","version":"0.1","semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"/BT-1":"RE-2026-0001","/BT-2":"2026-01-15","/BG-4/BT-29/0":{"value":"0088123456785","scheme":"0088"},"/BG-25/0/BT-131":"100"}}
+{"format":"EN16931-Semantic-JSON","version":"1.0","semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"/BT-1":"RE-2026-0001","/BT-2":"2026-01-15","/BG-4/BT-29/0":{"value":"0088123456785","scheme":"0088"},"/BG-25/0/BT-131":"100"}}
 ```
 
 Digests:
 
 ```
 semantic digest  27d43ab507a929218e8278be315a736467d9a5f881bf232fe1843b06bd6105b8
-document digest  fdc75e42190b6aec5cf5454fe07e615af71f33fc275e297cb6aeefec0525e42a
+document digest  a0c7676f92be041f21c5ed606d34452422c76fcace28539cbf206c02e2c8b24d
 ```
 
 The document digest is SHA-256 over those 236 bytes. The semantic digest is SHA-256 over the
@@ -3132,7 +3156,7 @@ that edition adds (section 6.5).
 ```json
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "EN16931-1:2026",
   "values": {
     "/BT-1": "RE-2026-0001",
@@ -3150,14 +3174,14 @@ that edition adds (section 6.5).
 Its canonical form is these 247 bytes, on one line:
 
 ```
-{"format":"EN16931-Semantic-JSON","version":"0.1","semanticModel":"EN16931-1:2026","values":{"/BT-1":"RE-2026-0001","/BT-2":"2026-01-15","/BT-166":"09:30:00+02:00","/BG-4/BT-29/0":{"value":"0088123456785","scheme":"0088"},"/BG-25/0/BT-131":"100"}}
+{"format":"EN16931-Semantic-JSON","version":"1.0","semanticModel":"EN16931-1:2026","values":{"/BT-1":"RE-2026-0001","/BT-2":"2026-01-15","/BT-166":"09:30:00+02:00","/BG-4/BT-29/0":{"value":"0088123456785","scheme":"0088"},"/BG-25/0/BT-131":"100"}}
 ```
 
 Digests:
 
 ```
 semantic digest  8f12f3ea4a038fa8877b9b8084793c0ff4d90190dfe6897b4a44b04d464f2d1c
-document digest  38b3abe5cfa1d8f705844b7169b56d8aecd35ffbd9ae65ec0aaa83d4c8b7b10f
+document digest  b67916682ed2b76bffea3a3c7acc61e5cdc90e746900fc74fc3b909fb3f8bc5e
 ```
 
 The document digest is SHA-256 over those 247 bytes, and the semantic digest over the 198
@@ -3242,6 +3266,19 @@ note in its README naming the layer and the finding code that reject each one.
 defaults, the two documents of appendix B and registries a loader refuses, and its manifest records
 what an implementation answers about each of them: the status, the layers not evaluated and every
 finding with its path, code, subject and severity.
+
+---
+
+## Appendix D. Changes since 0.1 (informative)
+
+Version 1.0 changes one thing against version 0.1: the value of `version` in a document
+written to it, which is `1.0` (section 4.3). The path grammar, the value model and its
+grammars, the canonical form, the two digests, the validation layers, the finding codes, the
+registry and the limits are those of 0.1.
+
+A reader of 1.0 reads documents of version 0.1 by the rules of this specification, and writes
+them out in version 0.1: their canonical bytes, their semantic digests and their document
+digests do not change (sections 4.3, 7.3 and 8.3).
 
 ---
 

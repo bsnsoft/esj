@@ -24,7 +24,7 @@ grammars and catches the first and the third.
 | `json-utf16-without-bom.esj.json` | the document encoded in UTF-16LE without a byte order mark: valid UTF-8, with a NUL byte after every character | L1 | `ESJ-L1-JSON` | no, not a JSON text |
 | `json-trailing-comma.esj.json` | a comma after the last member of `values` | L1 | `ESJ-L1-JSON` | no, not a JSON text |
 | `envelope-missing-values.esj.json` | the envelope has no `values` | L1 | `ESJ-L1-ENVELOPE-MEMBER` | yes |
-| `envelope-wrong-version.esj.json` | `version` is `1.0` | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
+| `envelope-wrong-version.esj.json` | `version` is `2.0`, a version a reader of format 1.0 does not read | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `semantic-model-grammar.esj.json` | `semanticModel` is `EN16931-1`, without the year the edition grammar of SPEC.md section 4.4 requires | L1 | `ESJ-L1-ENVELOPE-VALUE` | yes |
 | `source-unknown-member.esj.json` | `source` carries a member `profile`, which SPEC.md section 4.7 does not define | L1 | `ESJ-L1-ENVELOPE-MEMBER` | yes |
 | `number-instead-of-string.esj.json` | BT-129 is the JSON number `1` instead of a string | L1 | `ESJ-L1-JSON-TYPE` | yes |
