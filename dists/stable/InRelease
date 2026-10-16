@@ -5,7 +5,7 @@ Acquire-By-Hash: yes
 Architectures: amd64 arm64
 Codename: stable
 Components: main
-Date: Wed, 14 Oct 2026 00:58:51 +0000
+Date: Fri, 16 Oct 2026 19:18:35 +0000
 Description: esj, the command line tool of EN16931 Semantic JSON: releases
 Label: esj
 Origin: BSNSoft Solutions GmbH
@@ -32,8 +32,8 @@ SHA512:
  a322303535ada53d7df9d7ab2b40e0fe400cc53c50363367dfb51727c06a29ac561025a61833036f3a884183a37330364ef4eb5d3eeec98a7abc71947abde7b4              789 main/binary-arm64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYKAB0WIQQ5uh52Ct5pQFWLbuwl/SovW1IOuAUCas7TzAAKCRAl/SovW1IO
-uNC0AQCu1BQrZW6wUos0D+Qt0X3Z4qlxLZuWabeGighKRJMy6QD7BQ9Olt8Yp8pD
-N7hhO1aDMjft+yM+5DvDxqTe/iCHVQM=
-=Bt6X
+iHUEARYKAB0WIQQ5uh52Ct5pQFWLbuwl/SovW1IOuAUCatJ4jAAKCRAl/SovW1IO
+uPBuAQDaZolposDDKtY8krNxDkzZsRDu7rzM0mR5T4yguDVIsAD9HaD/qztSaLy2
+pxkMiyCZxpkeTeb2by5rvABPhiv2+A0=
+=BJVP
 -----END PGP SIGNATURE-----
