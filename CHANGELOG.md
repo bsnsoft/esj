@@ -4,6 +4,16 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). A change to the format itself is
 named here under *Format*.
 
+## [1.0.0-rc.2] — unreleased
+
+### Fixed
+
+- `release.yml` creates a pre-release as a draft, attaches the assets and publishes it then:
+  releases are immutable once published, so assets can be attached only before publication, and
+  the release action publishes a pre-release before it uploads them. The tag `v1.0.0-rc.1` was
+  published that way, got no assets, and is on no other channel; its release is deleted, and
+  1.0.0-rc.2 is the same software with this fix ([`docs/releasing.md`](docs/releasing.md#pre-releases)).
+
 ## [1.0.0-rc.1] — 2026-10-16
 
 ### Format
