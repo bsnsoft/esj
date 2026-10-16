@@ -15,7 +15,8 @@ export { DEFAULT_LIMITS, limitsOf } from './limits.ts';
 export type { Limits } from './limits.ts';
 
 export {
-  EDITION_2017, FORMAT, VALUE_MEMBERS, VERSION, documentOf, hasComponent, isBinary,
+  ACCEPTED_VERSIONS, EDITION_2017, FORMAT, VALUE_MEMBERS, VERSION, documentOf, hasComponent,
+  isAcceptedVersion, isBinary,
 } from './document.ts';
 export type { SemanticDocument, SemanticValue, Source, ValueMember } from './document.ts';
 

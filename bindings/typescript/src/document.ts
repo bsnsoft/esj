@@ -1,5 +1,7 @@
+import { FindingCode } from './codes.ts';
+import { EsjError } from './errors.ts';
 import type { JsonObject } from './json/tree.ts';
-import { normalizeLineEndings } from './grammars.ts';
+import { forMessage, normalizeLineEndings } from './grammars.ts';
 import { comparePathText } from './paths.ts';
 
 /**
@@ -15,8 +17,37 @@ import { comparePathText } from './paths.ts';
 /** The fixed value of the `format` member (section 4.3). */
 export const FORMAT = 'EN16931-Semantic-JSON';
 
-/** The fixed value of the `version` member (section 4.3). */
-export const VERSION = '0.1';
+/**
+ * The format version of this specification (section 4.3): the `version` a document built here
+ * from nothing carries.
+ */
+export const VERSION = '1.0';
+
+/**
+ * The format versions a reader of this version accepts (section 4.3): this one, and 0.1, the
+ * version of the documents written before 1.0.0-rc.1. A document of 0.1 is read by the rules
+ * of this specification and keeps its version, so its canonical bytes and its digests are the
+ * ones it always had.
+ */
+export const ACCEPTED_VERSIONS = [VERSION, '0.1'] as const;
+
+/** Tells whether a format version is one a reader of this version accepts (section 4.3). */
+export function isAcceptedVersion(version: string): boolean {
+  return (ACCEPTED_VERSIONS as readonly string[]).includes(version);
+}
+
+/**
+ * Returns what `ESJ-L1-ENVELOPE-VALUE` says about a `version` a reader of this version does not
+ * accept, or `undefined` where it accepts it. The reader and the canonicalizer say it alike.
+ */
+export function versionViolation(version: unknown): string | undefined {
+  if (typeof version === 'string' && isAcceptedVersion(version)) {
+    return undefined;
+  }
+  return 'version carries '
+    + (typeof version === 'string' ? forMessage(version) : 'no string')
+    + ' where ' + ACCEPTED_VERSIONS.join(' or ') + ' belongs.';
+}
 
 /** The edition the reference registry of this library describes (section 4.4). */
 export const EDITION_2017 = 'EN16931-1:2017+A1:2019/AC:2020';
@@ -71,7 +102,12 @@ export interface Source {
 export interface SemanticDocument {
   /** The `format` member, which is always {@link FORMAT}. */
   readonly format: string;
-  /** The `version` member, which is always {@link VERSION}. */
+  /**
+   * The `version` member: one of {@link ACCEPTED_VERSIONS}. A document read carries the version
+   * its bytes give, a document built here from nothing {@link VERSION}, and a document derived
+   * from another the version of its source. The canonical and the pretty form write it as it
+   * stands (section 7).
+   */
   readonly version: string;
   /** The edition the paths of this document are addresses in (section 4.4). */
   readonly semanticModel: string;
@@ -97,8 +133,14 @@ export interface SemanticDocument {
  * strings of `source` and of `extensions` are kept as they are given, because section 6.8
  * normalizes neither.
  *
+ * A document built from nothing leaves `version` out and carries {@link VERSION}; one built
+ * from another document passes that document's `version`, so that what is derived keeps the
+ * version of its source.
+ *
  * @param parts the envelope and the values
  * @return the document
+ * @throws EsjError carrying `ESJ-L1-ENVELOPE-VALUE` where `version` is not one of
+ *   {@link ACCEPTED_VERSIONS}: a document of another version has no canonical form here
  */
 export function documentOf(parts: {
   format?: string;
@@ -108,6 +150,11 @@ export function documentOf(parts: {
   extensions?: JsonObject;
   source?: Source;
 }): SemanticDocument {
+  const version = parts.version ?? VERSION;
+  const violation = versionViolation(version);
+  if (violation !== undefined) {
+    throw new EsjError(violation, FindingCode.L1_ENVELOPE_VALUE, '', 'version');
+  }
   const values = new Map<string, SemanticValue>(
     [...parts.values]
       .map(([path, value]): [string, SemanticValue] => [path, normalizedValue(value)])
@@ -115,7 +162,7 @@ export function documentOf(parts: {
   ORDERED.add(values);
   const document: SemanticDocument = {
     format: parts.format ?? FORMAT,
-    version: parts.version ?? VERSION,
+    version,
     semanticModel: parts.semanticModel,
     values,
     ...(parts.extensions === undefined ? {} : { extensions: parts.extensions }),
