@@ -334,6 +334,10 @@ jobs:
             assets/*.rpm.sha256
           fail_on_unmatched_files: true
           generate_release_notes: true
+          # A tag with a pre-release part (v1.0.0-rc.1) publishes a pre-release: GitHub
+          # does not mark it as the latest release, and installers that follow the
+          # latest release keep the release before it.
+          prerelease: ${{ contains(github.ref_name, '-') }}
 
   # The apt and dnf repositories at https://apt.bsnsoft.de: GitHub Pages serves
   # them from the branch gh-pages, which is their whole state. The packages of
@@ -539,7 +543,9 @@ jobs:
           docker push "$tag"
 
   # The tags a reader pulls: one manifest list over the two images, as the
-  # version and as latest. It is made only when both platforms were pushed.
+  # version and, for a release, as latest; a pre-release (1.0.0-rc.1) is joined
+  # under its version only, so that latest stays the last release. It is made
+  # only when both platforms were pushed.
   manifest:
     name: Multi-platform image
     needs: image
@@ -559,17 +565,32 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Join the two platforms under the version and latest
+      - name: Name the tags of this version
+        id: tags
+        shell: bash
         run: |
           version=${GITHUB_REF_NAME#v}
-          docker buildx imagetools create \
-            --tag "$ESJ_IMAGE:$version" --tag "$ESJ_IMAGE:latest" \
+          case $version in
+            *-*) echo "pre-release $version: joined under $version only, latest stays"
+                 echo "tags=$version" >> "$GITHUB_OUTPUT" ;;
+            *)   echo "release $version: joined under $version and latest"
+                 echo "tags=$version latest" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Join the two platforms under the tags of this version
+        env:
+          TAGS: ${{ steps.tags.outputs.tags }}
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          set -- ; for tag in $TAGS; do set -- "$@" --tag "$ESJ_IMAGE:$tag"; done
+          docker buildx imagetools create "$@" \
             "$ESJ_IMAGE:$version-linux-amd64" "$ESJ_IMAGE:$version-linux-arm64"
 
-      - name: Check that both tags list both platforms
+      - name: Check that every tag lists both platforms
+        env:
+          TAGS: ${{ steps.tags.outputs.tags }}
         run: |
-          version=${GITHUB_REF_NAME#v}
-          for tag in "$version" latest; do
+          for tag in $TAGS; do
             docker buildx imagetools inspect "$ESJ_IMAGE:$tag"
             platforms=$(docker buildx imagetools inspect --raw "$ESJ_IMAGE:$tag" |
               jq -r '.manifests[].platform | "\(.os)/\(.architecture)"')
@@ -581,8 +602,8 @@ jobs:
             done
           done
 
-      # The attestation is made for the manifest list the version and latest
-      # name, which is the digest a pull by either tag resolves, and is pushed
+      # The attestation is made for the manifest list the version (and, for a
+      # release, latest) names, which is the digest a pull by the tag resolves, and is pushed
       # beside the image: gh attestation verify
       # oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj checks it. No
       # storage record: that is metadata of the organisation, not part of what a

@@ -82,8 +82,20 @@ natively, compares it with the jar and pushes it as `<version>-linux-amd64` and
 `<version>-linux-arm64`; once both are there, it joins them under `<version>` and `latest` and
 checks that both tags list both platforms, and attests the provenance of the joined image. It
 pushes only from a `v*` tag that names the version of the jar — started by hand on a branch, it
-builds and compares the image and pushes nothing — and every run on a tag moves `latest` to that
-tag, so re-running the workflow of an older release moves `latest` back.
+builds and compares the image and pushes nothing — and every run on a tag of a release moves
+`latest` to that tag, so re-running the workflow of an older release moves `latest` back.
+
+## Pre-releases
+
+A release candidate is cut like a release, with the version `1.0.0-rc.1` and the tag
+`v1.0.0-rc.1`; its changelog heading is `[1.0.0-rc.1]`, and the tree is `1.0.0-SNAPSHOT` before
+and after it. What differs is where it lands: `release.yml` publishes the GitHub release as a
+pre-release, which GitHub does not show as the latest release; the container image is joined
+under `1.0.0-rc.1` only and `latest` stays on the last release; the Linux packages go to the
+suite `testing` as `1.0.0~rc.1` ([`install.md`](install.md#debian-and-ubuntu-apt)); `publish.yml`
+deploys the libraries to Maven Central under that version. The Homebrew formula and the
+coordinates the pages offer stay on the last release: a reader who wants the candidate names
+its version. After it, `esj.api-baseline` is the candidate, which the API check compares with.
 
 ## The Linux packages and their repositories
 
