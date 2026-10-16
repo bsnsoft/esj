@@ -1,6 +1,6 @@
 import type { SemanticDocument, SemanticValue } from './document.ts';
 import {
-  FORMAT, VALUE_MEMBERS, VERSION, hasComponent, isOrdered, normalizedValue,
+  FORMAT, VALUE_MEMBERS, hasComponent, isOrdered, normalizedValue, versionViolation,
 } from './document.ts';
 import { FindingCode } from './codes.ts';
 import { EsjError } from './errors.ts';
@@ -20,18 +20,26 @@ import { comparePaths, splitSegments, type Segment } from './paths.ts';
  * rather than by UTF-16 code unit.
  *
  * Both forms are written from the content of a document and from nothing a caller could have
- * left out of order: `format` and `version` are the constants of section 4.3, the values are
- * put in canonical path order here (section 7.4) and have their line endings normalized
- * (section 6.8), and an `extensions` or a `source` that carries nothing is left out, which is
- * how a document without one is written. A document a caller assembled by hand therefore has
- * the canonical form and the digests the same content has when it is read.
+ * left out of order: `format` is the constant of section 4.3, `version` is the format version
+ * the document carries (a document read keeps the one its bytes give, so a document of 0.1
+ * canonicalizes to the bytes and the digests it always had), the values are put in canonical
+ * path order here (section 7.4) and have their line endings normalized (section 6.8), and an
+ * `extensions` or a `source` that carries nothing is left out, which is how a document without
+ * one is written. A document a caller assembled by hand therefore has the canonical form and
+ * the digests the same content has when it is read. A document whose `version` is not one a
+ * reader accepts has no canonical form, and neither form is written of it.
  */
 
-/** Returns the canonical serialization of a document (section 7). */
+/**
+ * Returns the canonical serialization of a document (section 7).
+ *
+ * @throws EsjError carrying `ESJ-L1-ENVELOPE-VALUE` where the document's `version` is not one a
+ *   reader of this version accepts, and the `EsjError` of a string with no canonical form
+ */
 export function canonicalize(document: SemanticDocument): string {
   const parts: string[] = [];
   parts.push(member('format', string(FORMAT)));
-  parts.push(member('version', string(VERSION)));
+  parts.push(member('version', string(versionOf(document))));
   parts.push(member('semanticModel', string(document.semanticModel)));
   parts.push(member('values', values(document)));
   if (hasExtensions(document)) {
@@ -50,6 +58,18 @@ export function canonicalize(document: SemanticDocument): string {
 export function canonicalSemanticContent(document: SemanticDocument): string {
   return '{' + member('semanticModel', string(document.semanticModel))
     + ',' + member('values', values(document)) + '}';
+}
+
+/**
+ * Returns the format version a document carries, which both forms write as it stands (sections
+ * 4.3 and 7): there is no second version to write a document in.
+ */
+function versionOf(document: SemanticDocument): string {
+  const violation = versionViolation(document.version);
+  if (violation !== undefined) {
+    throw new EsjError(violation, FindingCode.L1_ENVELOPE_VALUE, '', 'version');
+  }
+  return document.version;
 }
 
 function hasExtensions(document: SemanticDocument): boolean {
@@ -488,13 +508,15 @@ export function canonicalNumber(raw: string): string {
  * It is the form the examples of the repository are stored in, byte for byte, and the form the
  * Java and the C# implementation write. Canonicalizing it and canonicalizing any other layout
  * of the same content produce the same bytes.
+ *
+ * @throws EsjError as {@link canonicalize} does
  */
 export function pretty(document: SemanticDocument): string {
   const lines: string[] = [];
   lines.push('{');
   const parts: string[] = [];
   parts.push(prettyMember('format', string(FORMAT), 1));
-  parts.push(prettyMember('version', string(VERSION), 1));
+  parts.push(prettyMember('version', string(versionOf(document)), 1));
   parts.push(prettyMember('semanticModel', string(document.semanticModel), 1));
   parts.push(prettyMember('values', prettyValues(document, 1), 1));
   if (hasExtensions(document)) {

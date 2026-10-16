@@ -1,7 +1,7 @@
 # EN16931 Semantic JSON — TypeScript
 
 *Part of [EN16931 Semantic JSON](../../README.md). The format is [`SPEC.md`](../../SPEC.md); this
-package is one implementation of it. Release candidate; format version 0.1. The package is
+package is one implementation of it. Release candidate; format version 1.0. The package is
 `@bsnsoft/esj`, versioned with the project; nothing is published on a registry yet.*
 
 Reader, canonical form, digests, validator (L1–L3) and the semantic rule engine, in TypeScript,
@@ -22,6 +22,10 @@ const result = validate(await readFile('invoice.esj.json'), { registries: regist
 result.status;                                     // VALID | INVALID | INDETERMINATE
 result.findings;                                   // path, subject, code, severity, message
 ```
+
+A document built here is of format version 1.0. A document of 0.1, the version written before
+1.0.0-rc.1, is read by the same rules and keeps its version: its canonical bytes and both digests
+are the ones it always had. Any other `version` is `ESJ-L1-ENVELOPE-VALUE`.
 
 ## The typed view
 
