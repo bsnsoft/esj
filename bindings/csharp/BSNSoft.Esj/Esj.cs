@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -10,8 +11,18 @@ public static class Esj
     /// <summary>The value of the <c>format</c> member of every document.</summary>
     public const string Format = "EN16931-Semantic-JSON";
 
-    /// <summary>The version of the specification this implementation carries.</summary>
-    public const string Version = "0.1";
+    /// <summary>
+    /// The version of the specification this implementation carries, which is the value of the
+    /// <c>version</c> member of every document it builds (specification, section 4.3).
+    /// </summary>
+    public const string Version = "1.0";
+
+    /// <summary>
+    /// The values of <c>version</c> a reader of this implementation accepts, this version first:
+    /// <c>1.0</c>, and <c>0.1</c>, the release candidate of 1.0, whose documents are read by the
+    /// rules of this specification — there is no second set of rules (section 4.3).
+    /// </summary>
+    public static IReadOnlyList<string> AcceptedVersions { get; } = Array.AsReadOnly(new[] { Version, "0.1" });
 
     /// <summary>The edition a document names unless it is asked for another.</summary>
     public const string DefaultSemanticModel = "EN16931-1:2017+A1:2019/AC:2020";
@@ -191,6 +202,27 @@ public static class Esj
     {
         ArgumentNullException.ThrowIfNull(edition);
         return edition.Replace(" ", string.Empty, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Returns the accepted format version a value of <c>version</c> spells, or <c>null</c>
+    /// where a reader of this implementation does not accept it (<see cref="AcceptedVersions"/>).
+    /// The comparison is exact: <c>1</c>, <c>1.00</c> and <c>2.0</c> are no accepted version.
+    /// </summary>
+    /// <param name="version">the value of the member</param>
+    /// <returns>the accepted version, or <c>null</c></returns>
+    public static string? AcceptedVersion(string version)
+    {
+        ArgumentNullException.ThrowIfNull(version);
+        foreach (string accepted in AcceptedVersions)
+        {
+            if (string.Equals(accepted, version, StringComparison.Ordinal))
+            {
+                return accepted;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

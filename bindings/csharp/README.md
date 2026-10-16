@@ -62,6 +62,12 @@ Both exceptions carry the `Code`, `Path` and `Subject` of the finding; the subje
 access of section 9.5 — [`../../docs/bindings-csharp.md`](../../docs/bindings-csharp.md#the-api)
 lists its forms.
 
+A document this binding builds carries format version `1.0` (`Esj.Version`). The reader also
+takes `0.1`, the release candidate of 1.0, reads it by the same rules and keeps that version in
+`SemanticDocument.Version`: written back, such a document has the canonical bytes and both digests
+it had, and a document derived from it with `With` stays `0.1`. Any other `version` is
+`ESJ-L1-ENVELOPE-VALUE` (`SPEC.md` section 4.3).
+
 ## Business rules
 
 ```csharp

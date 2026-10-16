@@ -1,0 +1,1 @@
+{"format":"EN16931-Semantic-JSON","version":"0.1","semanticModel":"EN16931-1:2017+A1:2019/AC:2020","values":{"/BT-1":"RE-2026-0001","/BG-4/BT-27":"Example \"GmbH\" \\ / éé \b\f\t\u0000\u001f  💶 \n \n"},"extensions":{"de.example.vendor":{"a":"kept\r\n\u000bas é 💶","b/c":" "}},"source":{"syntax":"UBL\r\n/"}}
