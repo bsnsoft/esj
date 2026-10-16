@@ -155,7 +155,7 @@ One invoice in any of the three syntaxes in, an ESJ document out:
 $ esj convert conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
   "values": {
     "/BT-1": "123456XX",

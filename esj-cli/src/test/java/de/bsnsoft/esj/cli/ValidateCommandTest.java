@@ -97,7 +97,7 @@ class ValidateCommandTest {
      */
     private static byte[] manyNegativePrices(int lines) {
         StringBuilder json = new StringBuilder()
-                .append("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\",")
+                .append("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\",")
                 .append("\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{")
                 .append("\"/BT-1\":\"RE-2026-0001\",\"/BT-2\":\"2026-01-15\",")
                 .append("\"/BT-3\":\"380\",\"/BT-5\":\"EUR\",")
@@ -826,7 +826,7 @@ class ValidateCommandTest {
 
     @Test
     void escapesDocumentContentItQuotesInAFinding() {
-        byte[] fixture = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        byte[] fixture = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{"
                 + "\"/BT-2\":\"2026-01-0\\u001b[2K1\"}}")
                 .getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -849,7 +849,7 @@ class ValidateCommandTest {
      */
     @Test
     void reachesNoVerdictOnADocumentOfAnEditionItHasNoRegistryFor() {
-        byte[] future = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        byte[] future = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2099\",\"values\":{"
                 + "\"/BT-1\":\"RE-2099-0001\"}}")
                 .getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -872,7 +872,7 @@ class ValidateCommandTest {
      */
     @Test
     void reachesNoVerdictWhereAnExtensionPathWasNotMeasured() {
-        byte[] extended = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        byte[] extended = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{"
                 + "\"/BG-25/0/BG-DEX-01/0/BG-DEX-07/BT-146\":\"12.5\"}}")
                 .getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -900,7 +900,7 @@ class ValidateCommandTest {
      */
     @Test
     void reportsAnErrorOfALayerTheCoverageAlsoNamesAsAGap() {
-        byte[] extended = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+        byte[] extended = ("{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                 + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",\"values\":{"
                 + "\"/BG-25/0/BG-DEX-01/0/BG-DEX-07/BT-146\":\"12.5\"}}")
                 .getBytes(java.nio.charset.StandardCharsets.UTF_8);

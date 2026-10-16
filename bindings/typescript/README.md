@@ -1,7 +1,7 @@
 # EN16931 Semantic JSON — TypeScript
 
 *Part of [EN16931 Semantic JSON](../../README.md). The format is [`SPEC.md`](../../SPEC.md); this
-package is one implementation of it. Release candidate; format version 0.1. The package is
+package is one implementation of it. Release candidate; format version 1.0. The package is
 `@bsnsoft/esj`, versioned with the project; nothing is published on a registry yet.*
 
 Reader, canonical form, digests, validator (L1–L3) and the semantic rule engine, in TypeScript,
@@ -22,6 +22,10 @@ const result = validate(await readFile('invoice.esj.json'), { registries: regist
 result.status;                                     // VALID | INVALID | INDETERMINATE
 result.findings;                                   // path, subject, code, severity, message
 ```
+
+A document built here is of format version 1.0. A document of 0.1, the version written before
+1.0.0-rc.1, is read by the same rules and keeps its version: its canonical bytes and both digests
+are the ones it always had. Any other `version` is `ESJ-L1-ENVELOPE-VALUE`.
 
 ## The typed view
 
@@ -103,7 +107,7 @@ npm run fixtures  # the manifest through the language-neutral runner
 `npm test` runs the whole fixture manifest of [`conformance/fixtures/`](../../conformance/fixtures/README.md)
 in process: 104 documents a reader reads, with their two digests, their canonical byte length,
 the registries they were measured with and the whole outcome a validator gives about each;
-139 documents that have to be rejected, each with that outcome; documents read under bounds below
+141 documents that have to be rejected, each with that outcome; documents read under bounds below
 the defaults; sets of registries a loader takes or refuses; the canonical bytes of documents not
 in canonical form; the accept and reject tables of the value and envelope grammars; 448 mutations
 of the conformance corpus against the rule pack, and 314 cases of the later edition's pack; and

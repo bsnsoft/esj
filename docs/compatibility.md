@@ -10,13 +10,16 @@ the data they ship.
 
 ## The format
 
-The format is 0.1 until 1.0.0-rc.1, which raises it to 1.0 unchanged unless review finds a
-defect. `SPEC.md` 1.0 fixes the document, the path grammar, the value shape, the canonical form
-and both digests. A 1.x reader reads every 1.y document with y ≤ x, and reads documents of
-format 0.1.
+The format is 1.0 since 1.0.0-rc.1; documents of 0.1 are read, and their digests do not change.
+`SPEC.md` 1.0 fixes the document, the path grammar, the value shape, the canonical form and both
+digests, and differs from 0.1 in the value of `version` alone (appendix D). A 1.x reader reads
+every 1.y document with y ≤ x, and reads documents of format 0.1 by the rules of 1.0. A document
+keeps the version it was read in when it is canonicalized, written out, edited, given derived
+totals or written up to another edition; a document created from nothing or imported from UBL
+or CII carries 1.0. No command rewrites a 0.1 document as a 1.0 document.
 The semantic digest does not depend on the format version (section 8.2); the document digest
-covers the `version` member (section 8.3), so a 0.1 document and its 1.0 rewrite have different
-document digests. Finding codes keep their meaning once released (section 9.6), and an extension
+covers the `version` member (section 8.3), so a 0.1 document and the same values as a 1.0
+document have different document digests. Finding codes keep their meaning once released (section 9.6), and an extension
 namespace is permanent (section 5.6).
 
 ## The command line tool

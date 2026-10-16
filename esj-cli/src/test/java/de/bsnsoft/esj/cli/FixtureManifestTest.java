@@ -7,6 +7,7 @@ import com.networknt.schema.InputFormat;
 import com.networknt.schema.Schema;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.SpecificationVersion;
+import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
@@ -162,6 +163,23 @@ class FixtureManifestTest {
 
     /** The two documents of the specification, appendix B, as files with their twins. */
     private static final String ANNEX_B = DIRECTORY + "annex-b";
+
+    /**
+     * Documents of format version 0.1, with the canonical bytes they had while the format was
+     * 0.1: a reader of this version reads them and writes them in the version they carry
+     * (specification, sections 4.3 and 7.3). The twins are not regenerated from this
+     * implementation; the comparison below holds it to them.
+     */
+    private static final String EARLIER_VERSION = DIRECTORY + "version-0.1";
+
+    /** The format version of the documents of {@link #EARLIER_VERSION}. */
+    private static final String EARLIER = "0.1";
+
+    /**
+     * The document of {@link #EARLIER_VERSION} written in the wrong order, a case of the
+     * {@code canonicalOrder} section rather than a document of its own.
+     */
+    private static final String EARLIER_SCRAMBLED = EARLIER_VERSION + "/scrambled.esj.json";
 
     /** Documents read under the bounds a case of the {@code bounds} section names. */
     private static final String BOUND_FIXTURES = DIRECTORY + "bounds";
@@ -616,6 +634,7 @@ class FixtureManifestTest {
             documents.add(document(file));
         }
         manifest.put("documents", documents);
+        manifest.put("earlierVersions", earlierVersions(false));
 
         Manifest.Array invalid = Manifest.array();
         for (String file : invalidFixtures(false)) {
@@ -663,6 +682,7 @@ class FixtureManifestTest {
             documents.add(document(file));
         }
         part.put("documents", documents);
+        part.put("earlierVersions", earlierVersions(true));
 
         Manifest.Array invalid = Manifest.array();
         for (String file : invalidFixtures(true)) {
@@ -1019,11 +1039,33 @@ class FixtureManifestTest {
                 : COMBINED.isRepeatable(id);
     }
 
-    /** One document: where it is, what it digests to, and what the three layers say. */
+    /**
+     * The documents of format version 0.1 of an edition, each with the canonical bytes it had
+     * in that version beside it: the same entries as the {@code documents} section, with the
+     * version they carry.
+     */
+    private Manifest.Array earlierVersions(boolean laterEdition) {
+        Manifest.Array array = Manifest.array();
+        for (String file : earlierVersionDocuments(laterEdition)) {
+            SemanticDocument read = reader.read(Fixtures.bytes(file));
+            assertEquals(EARLIER, read.formatVersion(), file + " is a document of format " + EARLIER);
+            assertNotNull(canonicalFileOf(file), file + " has its canonical bytes beside it");
+            array.add(document(file));
+        }
+        return array;
+    }
+
+    /**
+     * One document: where it is, the format version it is written in where that is not the
+     * version of this specification, what it digests to, and what the three layers say.
+     */
     private Manifest.Object document(String file) {
         byte[] bytes = Fixtures.bytes(file);
         SemanticDocument document = reader.read(bytes);
         Manifest.Object object = Manifest.object().put("file", file);
+        if (!document.formatVersion().equals(Esj.formatVersion())) {
+            object.put("version", document.formatVersion());
+        }
         String canonical = canonicalFileOf(file);
         if (canonical != null) {
             object.put("canonical", canonical);
@@ -1356,7 +1398,8 @@ class FixtureManifestTest {
      * The canonical order cases: a document whose members are written in the wrong order,
      * and the bytes a canonicalizer has to produce from it. The first is the extended
      * example scrambled, so that its canonical form is the one already checked in beside
-     * that example and this repository states it once.
+     * that example and this repository states it once. The last is the same example as a
+     * document of format version 0.1, whose canonical bytes carry that version.
      */
     private Manifest.Array canonicalOrder() {
         Manifest.Array array = Manifest.array();
@@ -1366,6 +1409,7 @@ class FixtureManifestTest {
             array.add(canonicalOrder(DIRECTORY + "canonical-order/" + name + ".esj.json",
                     DIRECTORY + "canonical-order/" + name + ".canonical.esj.json"));
         }
+        array.add(canonicalOrder(EARLIER_SCRAMBLED, EARLIER_VERSION + "/extended.canonical.esj.json"));
         return array;
     }
 
@@ -1601,6 +1645,17 @@ class FixtureManifestTest {
         return List.copyOf(files);
     }
 
+    /**
+     * The documents of format version 0.1 of one edition, the one written in the wrong order
+     * aside: that one is a case of the canonical order.
+     */
+    private static List<String> earlierVersionDocuments(boolean laterEdition) {
+        return documentsIn(EARLIER_VERSION).stream()
+                .filter(file -> !file.equals(EARLIER_SCRAMBLED))
+                .filter(file -> belongsToTheLaterEdition(file) == laterEdition)
+                .toList();
+    }
+
     /** The documents of the later edition, the example its grammar table is measured in first. */
     private static List<String> laterEditionDocuments() {
         List<String> files = new ArrayList<>(documentsIn("examples"));
@@ -1654,6 +1709,10 @@ class FixtureManifestTest {
     private List<String> referencedFiles() {
         List<String> files = new ArrayList<>();
         files.addAll(coreDocuments());
+        files.addAll(earlierVersionDocuments(false));
+        earlierVersionDocuments(false).forEach(file -> files.add(canonicalFileOf(file)));
+        files.add(EARLIER_SCRAMBLED);
+        files.add(EARLIER_VERSION + "/extended.canonical.esj.json");
         files.addAll(invalidFixtures(false));
         files.add("examples/extended.canonical.esj.json");
         files.add(DIRECTORY + "canonical-order/scrambled.esj.json");

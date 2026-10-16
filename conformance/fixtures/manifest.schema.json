@@ -59,6 +59,16 @@
       "type": "array",
       "items": { "$ref": "#/$defs/document" }
     },
+    "earlierVersions": {
+      "description": "Documents of an earlier format version a reader of this one reads (SPEC.md section 4.3), each with the canonical bytes it had in that version: they carry that version, and their digests are the ones they had.",
+      "type": "array",
+      "items": {
+        "allOf": [
+          { "$ref": "#/$defs/document" },
+          { "required": ["version", "canonical"] }
+        ]
+      }
+    },
     "invalid": {
       "description": "Documents that must be rejected, with the layer that catches the defect and the whole answer of a validation.",
       "type": "array",
@@ -260,6 +270,10 @@
         "file": {
           "description": "The document in pretty form, relative to the repository root.",
           "type": "string"
+        },
+        "version": {
+          "description": "The format version the document carries, where it is not the version of the specification: an earlier version a reader reads, which its canonical form keeps.",
+          "enum": ["0.1"]
         },
         "canonical": {
           "description": "The canonical bytes, where the repository carries them. Where it does not, documentDigest is what pins them.",

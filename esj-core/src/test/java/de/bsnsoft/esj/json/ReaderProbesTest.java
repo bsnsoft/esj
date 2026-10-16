@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class ReaderProbesTest {
 
     private static final String FORMAT = "\"format\":\"EN16931-Semantic-JSON\"";
-    private static final String VERSION = "\"version\":\"0.1\"";
+    private static final String VERSION = "\"version\":\"1.0\"";
     private static final String MODEL = "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\"";
     private static final String HEAD = "{" + FORMAT + "," + VERSION + "," + MODEL + ",";
 

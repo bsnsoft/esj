@@ -1,6 +1,6 @@
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA:2099",
   "values": {
     "/BT-1": "RE-2026-0001",

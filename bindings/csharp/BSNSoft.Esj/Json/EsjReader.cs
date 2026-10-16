@@ -72,7 +72,8 @@ public sealed class ReadResult
 /// <remarks>
 /// <para>The reader is strict on purpose. It rejects a byte order mark, anything that is not
 /// UTF-8, a duplicate member name at any depth, a member the specification does not define,
-/// a <c>semanticModel</c> that is not an edition string, a JSON number, boolean, <c>null</c>
+/// a <c>version</c> that is none of <see cref="Esj.AcceptedVersions"/>, a <c>semanticModel</c>
+/// that is not an edition string, a JSON number, boolean, <c>null</c>
 /// or array anywhere inside <c>values</c>, a value whose shape is neither a JSON string nor
 /// a value object with a supplementary component, a lone surrogate and every limit of
 /// section 12.2. It never trims, collapses, reorders or normalizes a value; the one
@@ -211,6 +212,7 @@ public sealed class EsjReader
 
         private string _text = string.Empty;
         private int _at;
+        private string? _version;
         private string? _semanticModel;
         private DocumentSource? _source;
         private int _valueCount;
@@ -231,7 +233,7 @@ public sealed class EsjReader
         {
             CheckEncoding();
             ReadEnvelope();
-            return new SemanticDocument(_semanticModel!, _values, _extensions, _source);
+            return new SemanticDocument(_semanticModel!, _values, _extensions, _source, _version!);
         }
 
         // ------------------------------------------------------------ the bytes
@@ -290,7 +292,7 @@ public sealed class EsjReader
                         Fixed(name, Esj.Format);
                         break;
                     case "version":
-                        Fixed(name, Esj.Version);
+                        _version = FormatVersion();
                         break;
                     case "semanticModel":
                         _semanticModel = Edition();
@@ -359,6 +361,19 @@ public sealed class EsjReader
             }
 
             return value;
+        }
+
+        /// <summary>
+        /// Reads <c>version</c>: one of <see cref="Esj.AcceptedVersions"/>, compared exactly, and
+        /// carried into the document, so that a document of version 0.1 is written back as one
+        /// (specification, section 4.3).
+        /// </summary>
+        private string FormatVersion()
+        {
+            string value = EnvelopeString("version", "version");
+            return Esj.AcceptedVersion(value) ?? throw Fatal(FindingCode.EnvelopeValue, "version",
+                "the envelope member version carries " + Excerpt(value)
+                + "; the versions this reader accepts are " + string.Join(" and ", Esj.AcceptedVersions));
         }
 
         private void Fixed(string member, string expected)

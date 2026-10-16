@@ -12,12 +12,12 @@ directly usable by software: a flat JSON map keyed by the standard's business te
 same invoice gives the same map whichever it arrived in, so an application stores, indexes, queries,
 compares and hashes invoices without XML. A Java library reads, builds, validates, renders and
 writes such documents back out as CII or UBL; the command line tool `esj` does the same for every
-other runtime. Release candidate: not a CEN or KoSIT deliverable; format 0.1 is expected to become 1.0 unchanged.
+other runtime. Release candidate of format 1.0, not a CEN or KoSIT deliverable; documents of 0.1 keep their digests.
 
 ```json
 {
   "format": "EN16931-Semantic-JSON",
-  "version": "0.1",
+  "version": "1.0",
   "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
   "values": {
     "/BT-1": "RE-2026-0042",

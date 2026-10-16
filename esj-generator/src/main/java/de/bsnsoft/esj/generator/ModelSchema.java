@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.generator;
 
+import de.bsnsoft.esj.Esj;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.model.Component;
@@ -163,7 +164,8 @@ final class ModelSchema {
     }
 
     private String title() {
-        return "EN16931 Semantic JSON 0.1 with the terms of " + registry.edition();
+        return "EN16931 Semantic JSON " + Esj.formatVersion() + " with the terms of "
+                + registry.edition();
     }
 
     private String provenance() {
@@ -172,7 +174,8 @@ final class ModelSchema {
     }
 
     private String description() {
-        return "The format schema of ESJ 0.1, narrowed to the business terms of the semantic model."
+        return "The format schema of ESJ " + Esj.formatVersion()
+                + ", narrowed to the business terms of the semantic model."
                 + " Every member name of values must be the path of a term the registry knows, and"
                 + " the value at it must satisfy the content grammar and carry the supplementary"
                 + " components the semantic data type of that term allows. This is a convenience"

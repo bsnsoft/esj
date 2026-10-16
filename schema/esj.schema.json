@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tag:bsnsoft.de,2026:esj/schema/0.1/esj.schema.json",
+  "$id": "tag:bsnsoft.de,2026:esj/schema/1.0/esj.schema.json",
   "$comment": "Provisional identifier. It is a tag URI (RFC 4151) because no schema is published under an https URL yet; the identifier will move to an https URL when the project publishes one, and the change will be noted in SPEC.md.",
-  "title": "EN16931 Semantic JSON 0.1",
+  "title": "EN16931 Semantic JSON 1.0",
   "description": "Format schema for an ESJ document. It is the machine-readable form of most of validation layer L1 of SPEC.md: envelope members, semantic path grammar and the shape of a value. It deliberately knows nothing about EN 16931 business terms: which terms exist, which semantic data type each one has, which grammar a term's content must satisfy, which supplementary components a term allows, which terms are repeatable and which are mandatory is decided by the term registry in model/en16931/2017.json at layers L2 and L3. schema/esj-en16931-2017.schema.json is generated from that registry and adds the per-term typing to JSON Schema users. What this schema cannot check is listed in SPEC.md section 9.1: duplicate member names, lone surrogates, the encoding and a leading byte order mark, the number of path segments, the nesting depth inside extensions, and the fact that the length limits are counted in UTF-8 bytes rather than in code points.",
 
   "type": "object",
@@ -14,8 +14,8 @@
       "const": "EN16931-Semantic-JSON"
     },
     "version": {
-      "description": "Version of the ESJ format, not of the semantic model.",
-      "const": "0.1"
+      "description": "Version of the ESJ format, not of the semantic model. 1.0 is the version of this specification; 0.1 is the version of the documents written before 1.0.0-rc.1, which a reader of 1.0 reads by the rules of this specification (SPEC.md section 4.3).",
+      "enum": ["1.0", "0.1"]
     },
     "semanticModel": {
       "description": "Edition of the semantic model whose business terms the paths name. Layer L1 checks the edition grammar of SPEC.md section 4.4 and nothing more: whether a registry for the named edition is available is an L2 question, and a document of an edition no registry describes is well formed and can be read, canonicalized and hashed. The repository generates one schema per registry it ships, schema/esj-en16931-<edition key>.schema.json, and that schema pins its edition, because it carries that registry's terms. maxLength is the default string limit of SPEC.md section 12.2.",

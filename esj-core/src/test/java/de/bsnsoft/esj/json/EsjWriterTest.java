@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 class EsjWriterTest {
 
     private static final String HEAD =
-            "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"0.1\","
+            "{\"format\":\"EN16931-Semantic-JSON\",\"version\":\"1.0\","
                     + "\"semanticModel\":\"EN16931-1:2017+A1:2019/AC:2020\",";
 
     @Test
@@ -153,13 +153,30 @@ class EsjWriterTest {
         assertEquals("""
                 {
                   "format": "EN16931-Semantic-JSON",
-                  "version": "0.1",
+                  "version": "1.0",
                   "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
                   "values": {
                     "/BT-2": "2026-01-15"
                   }
                 }
                 """, EsjWriter.pretty().toText(document));
+    }
+
+    /**
+     * Both forms write the version the document carries, and not the one this
+     * implementation creates documents in (specification, sections 4.3 and 7.3).
+     */
+    @Test
+    void bothFormsWriteTheVersionTheDocumentCarries() {
+        SemanticDocument document = SemanticDocument.builder()
+                .formatVersion("0.1")
+                .put("/BT-1", SemanticValue.of("RE-1"))
+                .build();
+
+        assertEquals(HEAD.replace("\"version\":\"1.0\"", "\"version\":\"0.1\"")
+                + "\"values\":{\"/BT-1\":\"RE-1\"}}", EsjWriter.canonical().toText(document));
+        assertTrue(EsjWriter.pretty().toText(document).contains("\n  \"version\": \"0.1\",\n"));
+        assertEquals(document, EsjReader.strict().read(EsjWriter.pretty().toBytes(document)));
     }
 
     @Test

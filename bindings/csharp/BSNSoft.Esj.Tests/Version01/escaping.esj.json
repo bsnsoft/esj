@@ -1,0 +1,11 @@
+{
+  "source": {"syntax": "U\u0042L\r\n\/"},
+  "extensions": {"de.example.vendor": {"\u0061": "kept\r\n\u000bas \u00E9 \ud83d\udcb6", "b\/c": "\u2028\u007f"}},
+  "values": {
+    "\/BG-4\/BT-27": "\u0045xample \"GmbH\" \\ \/ \u00e9\u00E9 \b\f\t\u0000\u001f\u007f\u0080\u2028 \ud83d\udcb6 \r\n \r",
+    "/BT-1": "RE-2026-0001"
+  },
+  "semanticModel": "EN16931-1:2017+A1:2019\/AC:2020",
+  "version": "0.\u0031",
+  "format": "EN16931-Semantic-JSON"
+}

@@ -8,7 +8,7 @@ import {
 } from '../src/canonical.ts';
 import { FindingCode } from '../src/codes.ts';
 import { semanticDigest } from '../src/digest.ts';
-import { documentOf } from '../src/document.ts';
+import { VERSION, documentOf } from '../src/document.ts';
 import { EsjError } from '../src/errors.ts';
 import type { JsonObject } from '../src/json/tree.ts';
 import { comparePathText } from '../src/paths.ts';
@@ -155,9 +155,11 @@ test('a value built through the API has its line endings normalized as a read on
   });
   assert.equal(built.values.get('/BG-1/0/BT-22')!.value, 'a\nb\nc\n\nd');
   assert.deepEqual(built.values.get('/BG-4/BT-29/0'), { value: 'X\n1', scheme: '00\n88' });
+  // A document built from nothing is of the format version of this specification, so the same
+  // content read is the one written in that version.
   const read = readDocumentOrThrow(JSON.stringify({
     format: 'EN16931-Semantic-JSON',
-    version: '0.1',
+    version: VERSION,
     semanticModel: 'EN16931-1:2017+A1:2019/AC:2020',
     values: {
       '/BG-1/0/BT-22': 'a\r\nb\rc\r\r\nd',
@@ -179,9 +181,12 @@ test('a value built through the API has its line endings normalized as a read on
 test('the canonical form is written from the content, whatever order a caller assembled', () => {
   const read = readDocumentOrThrow(example('minimal.esj.json'));
   const reversed = new Map([...read.values].reverse());
+  // `format` is a constant and is written as one; `version` is content and is written as the
+  // document carries it — a version a reader refuses has no canonical form at all
+  // (format-version.test.ts).
   const assembled = {
     format: 'something else',
-    version: '9.9',
+    version: read.version,
     semanticModel: read.semanticModel,
     values: reversed,
     extensions: { t: 'object' as const, members: [] },

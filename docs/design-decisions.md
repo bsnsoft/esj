@@ -548,6 +548,25 @@ precondition it cannot satisfy stops with an exception instead of producing a pl
 and the consistency check needs the policy as an argument for the same reason: what it checks are
 the guarantees a policy gave, not relations the extension states.
 
+## A document keeps the format version it was written in
+
+**Decided on 2026-10-16, for 1.0.0-rc.1.** The format became 1.0 with no change but the value of
+`version`. A reader of 1.0 reads a document of 0.1 by the rules of 1.0, and the canonical form
+writes the version a document carries rather than the one the implementation writes: a document
+read as 0.1 is canonicalized, edited, given derived totals and written up to another edition as
+0.1, and only a document created from nothing or imported from another syntax is 1.0.
+
+Writing every document out as 1.0 would have put one version into every canonical form. It
+would also have changed the document digest of every stored document the moment it was read
+again, and a digest a database keeps as a key, or one a recipient compares with the one it was
+sent, would stop matching content nobody had changed. Persistence is one of the uses the format
+is for, so the digests stay.
+
+**What it costs.** Two documents with the same values can differ in their document digest by
+their version alone, and stay that way, because no command rewrites a 0.1 document as 1.0. The
+semantic digest does not cover the version, and it is the digest that answers whether two
+documents carry the same invoice.
+
 ## Non-goals
 
 ESJ does not:

@@ -249,6 +249,6 @@ class ModelSchemaTest {
                 "no pattern ends in $, and no lookahead inside one does");
         assertFalse(model.contains("\"^/BG-31"), "no term is addressed without its parent chain");
         assertTrue(model.contains("\"additionalProperties\": false"), "unknown terms are refused");
-        assertFalse(model.contains("DEX"), "ESJ 0.1 generates the core registry alone");
+        assertFalse(model.contains("DEX"), "the schema is generated from the core registry alone");
     }
 }

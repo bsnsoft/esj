@@ -647,9 +647,13 @@ public final class EditionUpgrade {
             }
         }
 
-        /** Builds the document of the target edition. */
+        /**
+         * Builds the document of the target edition. It keeps the format version of the
+         * document it was written up from: a change of edition is no change of format.
+         */
         private SemanticDocument build() {
             SemanticDocument.Builder builder = SemanticDocument.builder()
+                    .formatVersion(document.formatVersion())
                     .semanticModel(target.semanticModel());
             for (Map.Entry<SemanticPath, SemanticValue> entry : values.entrySet()) {
                 builder.put(entry.getKey(), entry.getValue());

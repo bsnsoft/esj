@@ -141,6 +141,10 @@ esj canonicalize invoice.xml --digest       # semantic: gleich für UBL und CII 
 esj canonicalize invoice.esj.json --digest  # semantic: der Inhalt; document: die ganze Datei
 ```
 
+**Bleiben Dokumente im Format 0.1, wie sie sind?** Ja. Ein Leser des Formats 1.0 liest ein
+Dokument der Version 0.1 und schreibt es in dieser Version, kanonische Bytes und beide Digests
+ändern sich nicht; ein jetzt erzeugtes Dokument trägt `1.0` ([`compatibility.md`](compatibility.md#the-format)).
+
 **Wie behalte ich den Bezug zu den Bytes, die ankamen?**
 ```sh
 esj convert invoice.xml                     # endet mit "source": Syntax und SHA-256 der Eingabe

@@ -9,14 +9,18 @@ namespace BSNSoft.Esj;
 public sealed record DocumentSource(string? Syntax, string? Sha256);
 
 /// <summary>
-/// An ESJ document: the edition it addresses, its values in canonical path order, and what
-/// the envelope says around them.
+/// An ESJ document: the format version it is written in, the edition it addresses, its values
+/// in canonical path order, and what the envelope says around them.
 /// </summary>
 /// <remarks>
-/// The values are held in the canonical path order of the specification, section 7.4 and the
-/// extension subtrees under owner tokens sorted by Unicode code point, so that a document
+/// <para>The values are held in the canonical path order of the specification, section 7.4 and
+/// the extension subtrees under owner tokens sorted by Unicode code point, so that a document
 /// assembled through this API serializes to the same bytes as the same document read from a
-/// file, whatever order either was built in.
+/// file, whatever order either was built in.</para>
+/// <para>The format version is the one the document was read with, and <see cref="Esj.Version"/>
+/// for a document built from nothing. A document derived from another — <see cref="With"/> —
+/// keeps the version of its source, so that a document of version 0.1 is written back with the
+/// canonical bytes and the digests it always had (specification, sections 4.3 and 8).</para>
 /// </remarks>
 public sealed class SemanticDocument
 {
@@ -28,14 +32,25 @@ public sealed class SemanticDocument
     /// <param name="values">the values, keyed by path</param>
     /// <param name="extensions">the extension subtrees, keyed by owner token</param>
     /// <param name="source">where the document came from, or <c>null</c></param>
+    /// <param name="version">
+    /// the format version, one of <see cref="Esj.AcceptedVersions"/>, or <c>null</c> for
+    /// <see cref="Esj.Version"/>
+    /// </param>
+    /// <exception cref="ArgumentException">if the version is not one a reader accepts</exception>
     public SemanticDocument(
         string semanticModel,
         IEnumerable<KeyValuePair<SemanticPath, SemanticValue>> values,
         IEnumerable<KeyValuePair<string, ExtensionValue>>? extensions = null,
-        DocumentSource? source = null)
+        DocumentSource? source = null,
+        string? version = null)
     {
         ArgumentNullException.ThrowIfNull(semanticModel);
         ArgumentNullException.ThrowIfNull(values);
+        Version = version is null
+            ? Esj.Version
+            : Esj.AcceptedVersion(version) ?? throw new ArgumentException(
+                "a document is written in format version " + string.Join(" or ", Esj.AcceptedVersions)
+                + ", not " + Esj.ForMessage(version), nameof(version));
         SemanticModel = semanticModel;
         _values = new SortedDictionary<SemanticPath, SemanticValue>(SemanticPath.CanonicalOrder);
         foreach (KeyValuePair<SemanticPath, SemanticValue> value in values)
@@ -49,6 +64,12 @@ public sealed class SemanticDocument
         _extensions.Sort((left, right) => Json.Texts.CompareByCodePoint(left.Key, right.Key));
         Source = source;
     }
+
+    /// <summary>
+    /// Returns the format version of this document: the value of its <c>version</c> member,
+    /// which the canonical and the pretty form write as it stands.
+    /// </summary>
+    public string Version { get; }
 
     /// <summary>Returns the edition the paths of this document address.</summary>
     public string SemanticModel { get; }
@@ -81,7 +102,7 @@ public sealed class SemanticDocument
 
     /// <summary>
     /// Returns a copy of this document with one value set, or removed where the value is
-    /// <c>null</c>.
+    /// <c>null</c>. The copy keeps the format version of this document.
     /// </summary>
     /// <param name="path">the path</param>
     /// <param name="value">the value, or <c>null</c> to remove it</param>
@@ -99,11 +120,11 @@ public sealed class SemanticDocument
             values[path] = value;
         }
 
-        return new SemanticDocument(SemanticModel, values, _extensions, Source);
+        return new SemanticDocument(SemanticModel, values, _extensions, Source, Version);
     }
 
     /// <inheritdoc />
     public override string ToString() =>
-        "SemanticDocument[" + SemanticModel + ", values=" + _values.Count
+        "SemanticDocument[" + SemanticModel + ", version=" + Version + ", values=" + _values.Count
         + ", extensions=" + _extensions.Count + ", source=" + (Source is null ? "absent" : "present") + "]";
 }

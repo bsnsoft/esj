@@ -34,10 +34,43 @@ class SemanticDocumentTest {
     void anEmptyDocumentCarriesTheFixedEnvelopeOnly() {
         SemanticDocument document = SemanticDocument.builder().build();
 
+        assertEquals(Esj.formatVersion(), document.formatVersion());
         assertEquals(Esj.defaultSemanticModel(), document.semanticModel());
         assertTrue(document.values().isEmpty());
         assertTrue(document.extensions().isEmpty());
         assertEquals(Optional.empty(), document.source());
+    }
+
+    /**
+     * A document carries its format version (specification, section 4.3): one built here
+     * carries the version of this implementation, a changed copy keeps the one of the
+     * document it was made from, and two documents that differ in it alone are two
+     * documents, as their document digests are two.
+     */
+    @Test
+    void aDocumentCarriesItsFormatVersionAndAChangedCopyKeepsIt() {
+        SemanticDocument current = SemanticDocument.builder().put("/BT-1", "RE-1").build();
+        SemanticDocument earlier = SemanticDocument.builder()
+                .formatVersion("0.1")
+                .put("/BT-1", "RE-1")
+                .build();
+
+        assertEquals("1.0", current.formatVersion());
+        assertEquals("0.1", earlier.formatVersion());
+        assertEquals("0.1", earlier.toBuilder().formatVersion());
+        assertEquals("0.1", earlier.toBuilder().put("/BT-2", "2026-01-15").build().formatVersion());
+        assertEquals("1.0", earlier.toBuilder().formatVersion("1.0").build().formatVersion());
+        assertNotEquals(current, earlier);
+        assertEquals(current, earlier.toBuilder().formatVersion("1.0").build());
+        assertTrue(earlier.toString().contains("version=0.1"), earlier.toString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"2.0", "1", "1.1", "0.2", ""})
+    void aFormatVersionNoReaderOfThisImplementationReadsIsRefused(String version) {
+        EsjFormatException thrown = assertThrows(EsjFormatException.class,
+                () -> SemanticDocument.builder().formatVersion(version));
+        assertTrue(thrown.getMessage().endsWith("; it reads 1.0 and 0.1"), thrown.getMessage());
     }
 
     @Test

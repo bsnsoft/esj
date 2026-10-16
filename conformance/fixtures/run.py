@@ -28,6 +28,10 @@ standard input, reading one JSON object per line back. Six requests exist:
         -> {"semanticDigest": "...", "documentDigest": "...",
             "canonicalBytes": 1234, "values": 24}
 
+    A document of an earlier format version (the earlierVersions section) is asked for in
+    the same requests as any other. Its canonical bytes carry the version it was written in,
+    and its digests are the ones it had there (SPEC.md section 4.3).
+
     {"op": "canonicalize", "file": "..."}
         -> {"canonical": "<the canonical JSON text>"}
 
@@ -112,9 +116,13 @@ def manifests():
 
 
 def documents(files, repository):
-    """The documents of every manifest, each with the manifest it came from."""
+    """The documents of every manifest, each with the manifest it came from.
+
+    The documents of an earlier format version are documents like the others: a reader of
+    this version reads them, and their canonical bytes and digests are the ones they had.
+    """
     for manifest in files:
-        for document in manifest.get("documents", []):
+        for document in manifest.get("documents", []) + manifest.get("earlierVersions", []):
             yield manifest, document
 
 
@@ -124,7 +132,7 @@ def missing(files, repository):
     for manifest in files:
         for registry in manifest.get("registries", []):
             names.append(registry["file"])
-        for document in manifest.get("documents", []):
+        for document in manifest.get("documents", []) + manifest.get("earlierVersions", []):
             names.append(document["file"])
             names.extend(document.get("registries", []))
             if "canonical" in document:
@@ -460,10 +468,12 @@ def main():
     if not arguments.binding:
         for manifest in files:
             section = manifest.get("arithmetic")
-            print("%s: %d documents, %d rejected, %d under bounds, %d registry sets, %d grammars,"
+            print("%s: %d documents, %d of an earlier format version, %d rejected,"
+                  " %d under bounds, %d registry sets, %d grammars,"
                   " %d canonical order, %d rule cases, %d arithmetic rules"
                   % (manifest["part"],
                      len(manifest.get("documents", [])),
+                     len(manifest.get("earlierVersions", [])),
                      len(manifest.get("invalid", [])),
                      len(manifest.get("bounds", [])),
                      len(manifest.get("registryChecks", [])),

@@ -53,6 +53,8 @@ printed, because several of them are no JSON text at all.
 | `envelope-unknown-member-long-name.esj.json` | an undefined top-level member with a name of 100 characters |
 | `envelope-member-named-value.esj.json` | a top-level member named `value` |
 | `envelope-wrong-format.esj.json` | `format` is `EN16931-Semantic-JSON-2` |
+| `envelope-version-without-minor.esj.json` | `version` is `1`, without the minor version that `MAJOR.MINOR` requires |
+| `envelope-version-later-minor.esj.json` | `version` is `1.1`, a later minor version than a reader of format 1.0 reads |
 | `envelope-format-not-a-string.esj.json` | `format` is the number `1` |
 | `envelope-semantic-model-null.esj.json` | `semanticModel` is `null` |
 | `envelope-values-not-an-object.esj.json` | `values` is a string |

@@ -189,7 +189,7 @@ expression transcribed into a method, a rule's message text pasted into a resour
 rule's logic restated on a documentation page are derivations of somebody else's licensed work.
 What may be taken is what a report needs in order to be read — a rule identifier, the flag the
 artefact set, the message the artefact emits at run time — and what a table maps to a finding
-category. A pull request that reimplements a rule will be declined; see **Not part of 0.1**.
+category. A pull request that reimplements a rule will be declined; see **Not part of 1.0**.
 
 A level table in `pack.json` is transcription of statements, not of text: one line per rule
 saying that a named profile treats it as fatal, a warning or information, its source in
@@ -373,7 +373,7 @@ ledger itself honest.
 * No `System.out` or `System.err` in main code, no `TODO` or `FIXME` comments, no dead code.
 * English only, in code, comments, documentation and commit messages.
 
-## Not part of 0.1
+## Not part of 1.0
 
 What follows will be declined, and not because they are bad ideas:
 
@@ -393,7 +393,7 @@ What follows will be declined, and not because they are bad ideas:
   a layer of their own and never ESJ conformance (`SPEC.md` section 9.4), a case, a mutation and
   an entry in the oracle ledger. A pull request that adds such a check inside the L1 to L3
   layers, or without that pack identity and that verification, will be declined. A rule set of a
-  core invoice usage specification is a pack of its own and is not in 0.1: the syntax engine runs
+  core invoice usage specification is a pack of its own and is not in 1.0: the syntax engine runs
   the published artefacts for it;
 * transport, signing, encryption and archiving;
 * a registry for a semantic model other than EN 16931-1. Its editions live beside each other

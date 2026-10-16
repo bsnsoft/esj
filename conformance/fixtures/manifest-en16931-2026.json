@@ -352,7 +352,7 @@
       "values": 50,
       "canonicalBytes": 1713,
       "semanticDigest": "2e584ace78f8e570a2d2bbeebf7704c584868e360d4f381035acbdbe0594e86a",
-      "documentDigest": "117cf345834ddd4dcb7b4a867ad87ba6a43c3852a1245724f445af7e74ce3a3b",
+      "documentDigest": "e2a6b99b0e9bbdfbb183c2eaa05471b23f907389ee455b8c9bc57939ed335dba",
       "outcome": {
         "status": "VALID",
         "notEvaluated": [],
@@ -369,7 +369,7 @@
       "values": 5,
       "canonicalBytes": 247,
       "semanticDigest": "8f12f3ea4a038fa8877b9b8084793c0ff4d90190dfe6897b4a44b04d464f2d1c",
-      "documentDigest": "38b3abe5cfa1d8f705844b7169b56d8aecd35ffbd9ae65ec0aaa83d4c8b7b10f",
+      "documentDigest": "b67916682ed2b76bffea3a3c7acc61e5cdc90e746900fc74fc3b909fb3f8bc5e",
       "outcome": {
         "status": "INVALID",
         "notEvaluated": [],
@@ -392,6 +392,26 @@
       }
     }
   ],
+  "earlierVersions": [
+    {
+      "file": "conformance/fixtures/version-0.1/edition-2026.esj.json",
+      "version": "0.1",
+      "canonical": "conformance/fixtures/version-0.1/edition-2026.canonical.esj.json",
+      "semanticModel": "EN16931-1:2026",
+      "registries": [
+        "model/en16931/2026.json"
+      ],
+      "values": 50,
+      "canonicalBytes": 1713,
+      "semanticDigest": "2e584ace78f8e570a2d2bbeebf7704c584868e360d4f381035acbdbe0594e86a",
+      "documentDigest": "117cf345834ddd4dcb7b4a867ad87ba6a43c3852a1245724f445af7e74ce3a3b",
+      "outcome": {
+        "status": "VALID",
+        "notEvaluated": [],
+        "findings": []
+      }
+    }
+  ],
   "invalid": [
     {
       "file": "examples/invalid/edition-2026-time-without-offset.esj.json",
@@ -399,7 +419,7 @@
       "values": 24,
       "canonicalBytes": 681,
       "semanticDigest": "c01076bbeeac429b0848c9da393d03df9f2d170758bcf0f5709d94455bb8199a",
-      "documentDigest": "fd33d824a4b80707068e2ac4dcbc583efc037d38a18070af1546c06d19f4ed89",
+      "documentDigest": "01055e21c6a5f210a8de9a3e747a24473549674d7f28ab5d057a9dd9f2bd4382",
       "outcome": {
         "status": "INVALID",
         "notEvaluated": [],

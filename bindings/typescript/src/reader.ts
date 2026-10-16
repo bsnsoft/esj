@@ -1,8 +1,8 @@
 import { FindingCode } from './codes.ts';
 import { EsjError } from './errors.ts';
 import {
-  FORMAT, VERSION, VALUE_MEMBERS, type SemanticDocument, type SemanticValue, type Source,
-  type ValueMember, documentOf,
+  FORMAT, VALUE_MEMBERS, type SemanticDocument, type SemanticValue, type Source,
+  type ValueMember, documentOf, versionViolation,
 } from './document.ts';
 import type { Finding } from './finding.ts';
 import {
@@ -147,6 +147,7 @@ class Parse {
   private readonly limits: Limits;
   private scanner!: Scanner;
   private readonly values = new Map<string, SemanticValue>();
+  private version?: string;
   private semanticModel?: string;
   private extensions?: JsonObject;
   private source?: Source;
@@ -177,10 +178,11 @@ class Parse {
         : this.fatal(code, message, '', ''));
     this.readEnvelope();
     // The loop of readEnvelope ended the read where one of the four required members was
-    // missing or was not what section 4.1 asks for, so each of them is set here.
+    // missing or was not what section 4.1 asks for, so each of them is set here. The document
+    // keeps the version it was written in, which is what its canonical form writes.
     return documentOf({
       format: FORMAT,
-      version: VERSION,
+      version: this.version as string,
       semanticModel: this.semanticModel as string,
       values: this.values,
       ...(this.extensions === undefined ? {} : { extensions: this.extensions }),
@@ -242,7 +244,7 @@ class Parse {
           this.fixed('format', FORMAT);
           break;
         case 'version':
-          this.fixed('version', VERSION);
+          this.version = this.formatVersion();
           break;
         case 'semanticModel':
           this.semanticModel = this.edition();
@@ -336,6 +338,21 @@ class Parse {
       this.fatal(FindingCode.L1_ENVELOPE_VALUE,
         name + ' carries ' + forMessage(value) + ' where ' + expected + ' belongs.', name);
     }
+  }
+
+  /**
+   * Reads `version` and holds it to the format versions a reader of this version accepts
+   * (section 4.3): this version, and 0.1. Any other value — a later major version, a version
+   * this reader does not know, another spelling of a known one — is the one finding the
+   * envelope has for a wrong value, and its message names both versions this reader takes.
+   */
+  private formatVersion(): string {
+    const value = this.envelopeString('version');
+    const violation = versionViolation(value);
+    if (violation !== undefined) {
+      this.fatal(FindingCode.L1_ENVELOPE_VALUE, violation, 'version');
+    }
+    return value;
   }
 
   /**

@@ -43,7 +43,8 @@ export async function semanticDigest(document: SemanticDocument): Promise<string
  *
  * It answers *did anything around the invoice change* — the format version, the
  * `extensions` member, the recorded provenance — and identifies canonical content, never a
- * file.
+ * file. A document of format version 0.1 keeps the document digest it always had, and the same
+ * content written as 1.0 has another; the semantic digest of the two is one.
  *
  * @param document the document
  * @return the digest, as 64 lowercase hexadecimal digits; a document with no canonical form

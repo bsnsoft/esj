@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.bsnsoft.esj.Esj;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -60,6 +61,37 @@ class ConvertCommandTest {
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         assertArrayEquals(Fixtures.bytes(MINIMAL), run.out());
         assertEquals("", run.err());
+    }
+
+    /**
+     * The format version a conversion writes (specification, section 4.3): a document
+     * imported from UBL or CII is created here and carries the version of this
+     * implementation, and a document read in version 0.1 is written in that version, its
+     * pretty form and its canonical bytes those it had.
+     */
+    @Test
+    void writesTheVersionOfThisImplementationForAnImportAndKeepsTheVersionOfADocumentItRead() {
+        Cli.Run imported = Cli.run("convert", Fixtures.file(directory, UBL));
+        assertEquals(ExitCode.SUCCESS, imported.exitCode(), imported.err());
+        assertEquals("1.0", Esj.formatVersion());
+        assertTrue(imported.text().startsWith("{\n  \"format\": \"EN16931-Semantic-JSON\",\n"
+                + "  \"version\": \"" + Esj.formatVersion() + "\",\n"), imported.text());
+
+        String earlier = "conformance/fixtures/version-0.1/01.01a-INVOICE_ubl.xml.esj.json";
+        Cli.Run kept = Cli.run("convert", Fixtures.file(directory, earlier));
+        assertEquals(ExitCode.SUCCESS, kept.exitCode(), kept.err());
+        assertArrayEquals(Fixtures.bytes(earlier), kept.out());
+        Cli.Run canonical = Cli.run("canonicalize", Fixtures.file(directory, earlier));
+        assertArrayEquals(Fixtures.bytes(
+                "conformance/fixtures/version-0.1/01.01a-INVOICE_ubl.xml.canonical.esj.json"),
+                canonical.out());
+
+        Cli.Run current = Cli.run("canonicalize", "--digest",
+                Fixtures.file(directory, "conformance/esj/business-cases/standard/"
+                        + "01.01a-INVOICE_ubl.xml.esj.json"));
+        Cli.Run before = Cli.run("canonicalize", "--digest", Fixtures.file(directory, earlier));
+        assertEquals(current.lines()[0], before.lines()[0], "one semantic digest");
+        assertFalse(current.lines()[1].equals(before.lines()[1]), "two document digests");
     }
 
     /**

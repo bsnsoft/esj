@@ -6,7 +6,7 @@
   "bases": {
     "standard": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -68,7 +68,7 @@
     },
     "zero": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -130,7 +130,7 @@
     },
     "exempt": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -193,7 +193,7 @@
     },
     "reverse": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -257,7 +257,7 @@
     },
     "intra": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -323,7 +323,7 @@
     },
     "export": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -386,7 +386,7 @@
     },
     "not-subject": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -447,7 +447,7 @@
     },
     "canary": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -509,7 +509,7 @@
     },
     "ceuta": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
@@ -571,7 +571,7 @@
     },
     "national": {
       "format": "EN16931-Semantic-JSON",
-      "version": "0.1",
+      "version": "1.0",
       "semanticModel": "EN16931-1:2026",
       "values": {
         "/BT-1": "1234567",
