@@ -25,3 +25,6 @@ conformance/scale/out/
 
 # Artefacts of dist/package.sh
 dist/out/
+
+# Coordinator notes live outside this repository; the name is never committed here.
+/CLAUDE.md
