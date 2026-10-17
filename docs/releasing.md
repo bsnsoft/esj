@@ -99,8 +99,9 @@ attached as `esj_1.0.0.rc.1_<arch>.deb` and `esj-1.0.0.rc.1-1.<arch>.rpm`, the n
 stores a `~` under, with checksum files that name them so (`dist/packages.sh --release-names`;
 the checksum files of `v1.0.0-rc.2` still name the `~`); `publish.yml`
 deploys the libraries to Maven Central under that version. The Homebrew formula and the
-coordinates the pages offer stay on the last release: a reader who wants the candidate names
-its version. After it, `esj.api-baseline` is the candidate, which the API check compares with.
+coordinates the pages offer name the candidate, as they name a release: it is the version to
+try. The suite `stable` and the image tag `latest` keep the last release. After it,
+`esj.api-baseline` is the candidate, which the API check compares with.
 
 ## The Linux packages and their repositories
 

@@ -40,7 +40,7 @@ version of its own; the two tools are on no repository ([`releasing.md`](releasi
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-bom</artifactId>
-      <version>0.9.8</version>
+      <version>1.0.0-rc.2</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>

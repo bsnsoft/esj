@@ -264,7 +264,7 @@ class DistributionTest {
         assertTrue(version.find(), "docs/homebrew/esj.rb names a version");
         // The formula installs a release, so it names the last one the changelog dates; between
         // releases the tree is a snapshot beyond it, and before the first one it is the snapshot.
-        Matcher released = Pattern.compile("^## \\[(\\d+\\.\\d+\\.\\d+)\\] \u2014 \\d{4}-\\d{2}-\\d{2}",
+        Matcher released = Pattern.compile("^## \\[(\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.]+)?)\\] \u2014 \\d{4}-\\d{2}-\\d{2}",
                 Pattern.MULTILINE).matcher(Fixtures.text("CHANGELOG.md"));
         String last = released.find() ? released.group(1) : null;
         assertTrue(version.group(1).equals(last)

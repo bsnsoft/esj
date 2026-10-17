@@ -169,7 +169,7 @@ class MavenCoordinatesTest {
      * {@code null} while nothing has been released.
      */
     private static String lastRelease(Path repository) throws IOException {
-        Pattern dated = Pattern.compile("^## \\[(\\d+\\.\\d+\\.\\d+)\\] \u2014 \\d{4}-\\d{2}-\\d{2}", Pattern.MULTILINE);
+        Pattern dated = Pattern.compile("^## \\[(\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.]+)?)\\] \u2014 \\d{4}-\\d{2}-\\d{2}", Pattern.MULTILINE);
         Matcher found = dated.matcher(read(repository.resolve("CHANGELOG.md")));
         return found.find() ? found.group(1) : null;
     }

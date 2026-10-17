@@ -6,6 +6,13 @@ named here under *Format*.
 
 ## [1.0.0] — unreleased
 
+### Changed
+
+- The macOS executable and its archives are built on GitHub's `macos-15` runner; `macos-14`, which
+  built them until 1.0.0-rc.2, is being retired by GitHub. The pages and the Homebrew formula name
+  the release candidate as the version to use; the apt suite `stable` and the image tag `latest`
+  keep the last release ([`docs/releasing.md`](docs/releasing.md#pre-releases)).
+
 ### Fixed
 
 - The Linux packages of a pre-release are attached to the GitHub release with a dot in place of
