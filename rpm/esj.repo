@@ -1,5 +1,5 @@
 [esj]
-name=esj (EN16931 Semantic JSON), releases
+name=esj (EN16931 Semantic JSON)
 baseurl=https://apt.bsnsoft.de/rpm/stable/$basearch/
 enabled=1
 gpgcheck=1

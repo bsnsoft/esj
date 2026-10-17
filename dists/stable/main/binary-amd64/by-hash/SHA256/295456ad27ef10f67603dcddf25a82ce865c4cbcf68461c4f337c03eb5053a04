@@ -1,5 +1,30 @@
 Package: esj
 Architecture: amd64
+Version: 0.9.8
+Priority: optional
+Section: utils
+Maintainer: BSNSoft Solutions GmbH <info@bsnsoft.de>
+Installed-Size: 92262
+Depends: libc6 (>= 2.34), zlib1g
+Filename: pool/main/e/esj/esj_0.9.8_amd64.deb
+Size: 30642292
+MD5sum: 757da6895bc36d560d3f200f05d6ab75
+SHA1: f8a09c61fe55d2d0d7e41e26341089bdbedcea74
+SHA256: 359e51fc5103e723f80e1b0babdd6d2d3bf4eaf0267b448dbcf2c2bb6d725e98
+SHA512: 7103ed1c5f95b90cdae1c13d2c7362791ed7d09b4bbe42be95a25221611620b0bb58ea3c7a11b9186aaba018cab55951ff1f4584a4056afbe73a76d0225a696b
+Homepage: https://github.com/bsnsoft/esj
+Description: command line tool of EN16931 Semantic JSON (ESJ)
+ ESJ is an application format for EN 16931, the European standard for
+ electronic invoices: a flat JSON map keyed by the business terms of the
+ standard. UBL and CII stay transport bindings; the same invoice gives the
+ same map whichever of them it arrived in. esj reads UBL, CII and hybrid PDF
+ invoices, validates them against EN 16931 and the official artefacts of
+ their profile, converts between ESJ, UBL and CII, renders an invoice as
+ HTML or as a PDF/A-3 with the invoice embedded, and serves the same tools
+ over HTTP and MCP.
+
+Package: esj
+Architecture: amd64
 Version: 1.0.0~rc.2
 Priority: optional
 Section: utils
