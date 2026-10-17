@@ -173,6 +173,9 @@ file's bytes to `POST /api/validate`; esj ships none.
   does not read holds a thread, `--max-jobs` + `--max-queue` + 16 of them, until
   `--queue-wait` + `--job-timeout` + 125 s after its request was read, the response time of
   the JDK's server, which has no shorter write timeout; it holds no more heap than a spool.
+  The JDK's server keeps both times on the wall clock: a machine that sleeps past one of them
+  while a request is read or answered, or whose clock is set forward past it, closes that
+  connection when it wakes, without an answer.
   A request refused before its body was read — 401, 403, 503, a message that is not JSON — is
   answered at once with `Connection: close`, and the rest of its body is then read and dropped,
   up to its `Content-Length` and for at most 5 s, before the connection is closed, so that the
