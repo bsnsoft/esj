@@ -256,8 +256,8 @@ jobs:
           dist/serve-smoke.sh "$(echo dist/out/*-linux-*/bin/esj)"
           dist/serve-smoke.sh "$(echo dist/out/*-native-linux-*/esj)"
 
-      # A snapshot version, 1.2.3-SNAPSHOT, is packaged as 1.2.3~SNAPSHOT, a
-      # pre-release, and goes through the testing suite of the repositories.
+      # A snapshot version, 1.2.3-SNAPSHOT, is packaged as 1.2.3~SNAPSHOT, as a
+      # pre-release is, and goes through the one suite of the repositories.
       - name: Build the .deb and the .rpm of the native executable
         run: |
           version=$(java -jar esj-cli/target/esj.jar --version | awk 'NR == 1 { print $2 }')

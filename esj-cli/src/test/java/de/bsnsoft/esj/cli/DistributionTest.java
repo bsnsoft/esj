@@ -471,30 +471,29 @@ class DistributionTest {
     }
 
     /**
-     * The version a package carries and the suite it goes to follow from the version of the
-     * tool: a release as it is and to {@code stable}, a pre-release with {@code ~} for its
-     * hyphen, which apt and dnf sort before the release, and to {@code testing}. The rpm has
-     * the release number 1, the deb no revision. Anything else is refused with exit code 2.
+     * The version a package carries follows from the version of the tool: a release as it is,
+     * a pre-release with {@code ~} for its hyphen, which apt and dnf sort before the release.
+     * Both go to the one suite of the repositories, so no suite is named. The rpm has the
+     * release number 1, the deb no revision. Anything else is refused with exit code 2.
      *
      * @param version the version of the tool
      * @param deb     the version of the .deb, or {@code refused}
      * @param rpm     the version and release of the .rpm
-     * @param suite   the suite of the repositories
      * @param directory a directory of this test
      * @throws Exception if the shell cannot be started or does not finish
      */
     @DisabledOnOs(OS.WINDOWS)
     @ParameterizedTest(name = "{0}")
     @CsvSource({
-        "0.9.8, 0.9.8, 0.9.8-1, stable",
-        "1.0.0-rc.1, 1.0.0~rc.1, 1.0.0~rc.1-1, testing",
-        "1.2.3-SNAPSHOT, 1.2.3~SNAPSHOT, 1.2.3~SNAPSHOT-1, testing",
-        "v1.0.0, refused, , ",
-        "1.0, refused, , ",
-        "1.0.0-rc-1, refused, , "
+        "0.9.8, 0.9.8, 0.9.8-1",
+        "1.0.0-rc.1, 1.0.0~rc.1, 1.0.0~rc.1-1",
+        "1.2.3-SNAPSHOT, 1.2.3~SNAPSHOT, 1.2.3~SNAPSHOT-1",
+        "v1.0.0, refused, ",
+        "1.0, refused, ",
+        "1.0.0-rc-1, refused, "
     })
-    void aVersionMapsToThePackageVersionsAndTheSuite(String version, String deb, String rpm,
-            String suite, @TempDir Path directory) throws Exception {
+    void aVersionMapsToThePackageVersions(String version, String deb, String rpm,
+            @TempDir Path directory) throws Exception {
         Path dist = Files.createDirectories(directory.resolve("dist"));
         for (String script : List.of("packages.sh", "checks.sh")) {
             Files.write(dist.resolve(script), Fixtures.bytes("dist/" + script));
@@ -508,7 +507,7 @@ class DistributionTest {
                     + output);
         } else {
             assertEquals(0, process.exitValue(), output);
-            assertEquals("deb " + deb + "\nrpm " + rpm + "\nsuite " + suite + "\n", output);
+            assertEquals("deb " + deb + "\nrpm " + rpm + "\n", output);
         }
     }
 
@@ -671,10 +670,11 @@ class DistributionTest {
 
     /**
      * The commands the install page and the page of the package site give a reader name the
-     * site {@code dist/repositories.sh} writes, at the address it writes it for, with the
-     * suites and the .repo files it writes; the release workflow writes that site from the
-     * suite of the tag and pushes it to the branch GitHub Pages serves; and the key the
-     * workflow signs with is the one the pages tell a reader to compare.
+     * site {@code dist/repositories.sh} writes, at the address it writes it for, with its one
+     * suite and its one .repo file, and no page names the suite {@code testing} the site had
+     * up to 1.0.0-rc.2; the release workflow writes that site and pushes it to the branch
+     * GitHub Pages serves, and checks that the packages of the version are in it; and the key
+     * the workflow signs with is the one the pages tell a reader to compare.
      */
     @Test
     void theRepositoryPagesNameTheSiteTheReleasePublishes() {
@@ -684,17 +684,19 @@ class DistributionTest {
         String site = url.group(1);
         assertTrue(Fixtures.text("dist/repositories-test.sh").contains("public=" + site + "\n"),
                 "dist/repositories-test.sh exchanges the address the pages print");
-        for (String file : List.of("rpm/esj.repo", "rpm/esj-testing.repo")) {
-            assertTrue(script.contains("> \"$site/" + file + "\""),
-                    "dist/repositories.sh writes " + file);
-        }
+        assertTrue(script.contains("> \"$site/rpm/esj.repo\""),
+                "dist/repositories.sh writes rpm/esj.repo");
+        assertFalse(script.contains("> \"$site/rpm/esj-testing.repo\""),
+                "dist/repositories.sh writes no rpm/esj-testing.repo");
         assertTrue(script.contains("cp \"$work/key.gpg\" \"$site/bsnsoft-esj.gpg\""),
                 "dist/repositories.sh writes the keyring at the root of the site");
-        assertTrue(script.contains("case $suite in stable|testing) ;;"),
-                "dist/repositories.sh knows the suites stable and testing");
+        assertTrue(script.contains("\nsuite=stable\n"),
+                "dist/repositories.sh writes the one suite stable");
+        assertTrue(script.contains("for top in dists/testing rpm/testing rpm/esj-testing.repo; do"),
+                "dist/repositories.sh migrates the suite testing of the earlier layout");
 
         Map<String, String> blocks = repositoryBlocks();
-        assertEquals(List.of("apt stable", "apt testing", "dnf stable", "dnf testing"),
+        assertEquals(List.of("apt stable", "dnf stable"),
                 List.copyOf(blocks.keySet()), "the blocks dist/repositories-test.sh runs");
         assertTrue(blocks.get("apt stable").contains("curl -fsSL " + site + "/bsnsoft-esj.gpg |"),
                 "the apt block fetches the keyring of the site");
@@ -702,14 +704,18 @@ class DistributionTest {
                 "the apt block adds the suite stable");
         assertTrue(blocks.get("apt stable").endsWith("sudo apt-get install esj\n"),
                 "the apt block ends with the installation");
-        assertTrue(blocks.get("apt testing").contains(site + " testing main'"),
-                "the testing block adds the suite testing");
         assertTrue(blocks.get("dnf stable").contains(site + "/rpm/esj.repo\n"),
                 "the dnf block fetches esj.repo");
         assertTrue(blocks.get("dnf stable").endsWith("sudo dnf install esj\n"),
                 "the dnf block ends with the installation");
-        assertTrue(blocks.get("dnf testing").contains(site + "/rpm/esj-testing.repo\n"),
-                "the testing block fetches esj-testing.repo");
+        for (String block : List.of("apt stable", "dnf stable")) {
+            assertEquals(1, blocks.get(block).lines()
+                            .filter(line -> line.contains(" tee /etc/apt/sources.list.d/")
+                                    || line.contains(" -o /etc/yum.repos.d/"))
+                            .count(),
+                    "the " + block + " block names the repository in one line, which"
+                            + " dist/repositories-test.sh gives the stand-ins' site with");
+        }
 
         // The page of the site prints the same two installations.
         String index = Fixtures.text("dist/repositories-index.html")
@@ -719,19 +725,26 @@ class DistributionTest {
                     "the page of the package site prints the " + kind + " block of docs/install.md");
         }
 
-        // No page sends a reader to another address of the same site.
+        // No page sends a reader to another address of the same site, or to the suite testing.
         for (String page : List.of("docs/install.md", "README.md", "SECURITY.md")) {
-            assertFalse(Fixtures.text(page).contains("github.io"),
+            String text = Fixtures.text(page);
+            assertFalse(text.contains("github.io"),
                     page + " names the github.io address of the site instead of " + site);
+            assertFalse(text.contains(" testing main") || text.contains("esj-testing.repo"),
+                    page + " names the suite testing, which the site no longer has");
         }
         assertFalse(index.contains("github.io"), "the page of the site names " + site);
+        assertFalse(index.contains("<code>testing</code>"), "the page of the site names no suite testing");
 
-        // The release writes the site for the suite of its tag and pushes the branch Pages serves.
+        // The release writes the site and pushes the branch Pages serves, with the packages of
+        // the version in it.
         String workflow = Fixtures.text(".github/workflows/release.yml");
-        assertTrue(workflow.contains("suite=$(sh source/dist/packages.sh --versions \"$version\""),
-                "release.yml takes the suite of the tag from dist/packages.sh");
-        assertTrue(workflow.contains("sh source/dist/repositories.sh packages site \"$suite\""),
+        assertTrue(workflow.contains("sh source/dist/repositories.sh packages site \"$ESJ_SIGNING_KEY\""),
                 "release.yml writes the site with dist/repositories.sh");
+        assertTrue(workflow.contains("\"rpm/stable/x86_64/esj-$rpm.x86_64.rpm\""),
+                "release.yml checks that the packages of the version are in the suite stable");
+        assertFalse(workflow.contains("sed -n 's/^suite //p'"),
+                "release.yml asks dist/packages.sh for no suite");
         assertTrue(workflow.contains("git push origin HEAD:gh-pages"),
                 "release.yml pushes the branch gh-pages");
 
@@ -742,6 +755,53 @@ class DistributionTest {
             assertTrue(Fixtures.text(page).contains(key.group(1)),
                     page + " names the key the repositories are signed with, " + key.group(1));
         }
+    }
+
+    /**
+     * Every tag publishes its version on every channel, a release candidate's as well, and a
+     * version a tag has released can be published again without a build.
+     *
+     * <p>The job that joins the two platforms tags the image as the version and as
+     * {@code latest}, whatever the tag; the pre-release only keeps GitHub's mark, set by
+     * publishing a draft once its assets are attached. Started with the input
+     * {@code publish_version}, the workflow skips the job every build hangs on, points
+     * {@code latest} at the image of that version and regenerates the repositories without a
+     * package to add; {@code docs/releasing.md} gives the command with the input the workflow
+     * declares, and {@code docs/install.md} says that {@code latest} names a release candidate
+     * as well.
+     */
+    @Test
+    void everyTagIsPublishedOnEveryChannelAndAReleasedVersionCanBeAgain() {
+        String workflow = Fixtures.text(".github/workflows/release.yml");
+        assertTrue(workflow.contains("docker buildx imagetools create --tag \"$ESJ_IMAGE:$version\""
+                        + " --tag \"$ESJ_IMAGE:latest\""),
+                "release.yml joins every tag's image under its version and latest");
+        assertFalse(workflow.contains("latest stays"),
+                "release.yml keeps latest for no tag");
+        assertTrue(workflow.contains("draft: ${{ contains(github.ref_name, '-') }}")
+                        && workflow.contains("--draft=false --prerelease"),
+                "release.yml publishes a pre-release from a draft once its assets are attached");
+
+        Matcher input = Pattern.compile("^  workflow_dispatch:\\R    inputs:\\R      ([a-z_]+):$",
+                Pattern.MULTILINE).matcher(workflow);
+        assertTrue(input.find(), "release.yml takes an input when it is started by hand");
+        String name = input.group(1);
+        assertEquals("publish_version", name, "the input of release.yml");
+        assertTrue(workflow.contains("  version:\n    name: Tag and version\n"
+                        + "    if: ${{ !inputs." + name + " }}\n"),
+                "the job every build needs does not run when a version is published again");
+        assertTrue(workflow.contains("docker buildx imagetools create --tag \"$ESJ_IMAGE:latest\""
+                        + " \"$ESJ_IMAGE:$VERSION\""),
+                "release.yml points latest at the image of the version published again");
+        assertTrue(workflow.contains("      - name: Collect the packages\n"
+                        + "        if: ${{ !inputs." + name + " }}\n"),
+                "the repositories job adds no package when a version is published again");
+        assertTrue(Fixtures.text("docs/releasing.md").contains(
+                        "gh workflow run release.yml --ref main -f " + name + "="),
+                "docs/releasing.md starts release.yml with " + name);
+        assertTrue(Fixtures.text("docs/install.md").contains(
+                        "`latest` names the version published last, a release candidate as well"),
+                "docs/install.md says what latest names");
     }
 
     /** Returns the console blocks of {@code docs/install.md} behind a repositories-test marker. */
