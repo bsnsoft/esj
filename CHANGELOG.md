@@ -6,6 +6,17 @@ named here under *Format*.
 
 ## [1.0.0] — unreleased
 
+### Fixed
+
+- The Linux packages of a pre-release are attached to the GitHub release with a dot in place of
+  the `~` of their version (`esj_1.2.3.rc.1_amd64.deb`), which is the name GitHub stores them
+  under anyway, and their checksum files name them so: those of 1.0.0-rc.2 name
+  `esj_1.0.0~rc.2_amd64.deb`, which a download does not have, so `sha256sum -c` fails on them
+  (compare the digest by hand). The packages in the apt and dnf repositories keep the `~`, and a
+  release, which has none, is attached as before. The release job also publishes a pre-release
+  only when GitHub lists every asset under the name it was delivered with
+  ([`docs/install.md`](docs/install.md#a-package-without-the-repository)).
+
 ## [1.0.0-rc.2] — 2026-10-16
 
 ### Fixed

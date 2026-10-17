@@ -227,7 +227,8 @@ jobs:
       id-token: write # a signing certificate for the attestation
       attestations: write # store the attestation
     steps:
-      # Only for dist/packages.sh, which names the versions the packages carry.
+      # Only for dist/packages.sh, which names the versions the packages carry and
+      # the names they are attached under.
       - name: Check out the packaging scripts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -303,6 +304,13 @@ jobs:
                 fi
               done ;;
           esac
+          # GitHub stores a ~ in the name of an asset as a dot: the packages of a
+          # pre-release, esj_1.0.0~rc.1_amd64.deb, are attached as
+          # esj_1.0.0.rc.1_amd64.deb, with checksum files that name them so, and are
+          # checked again under those names. The repositories job takes the packages
+          # with their ~ from the artifact. The names of a release have no ~.
+          sh dist/packages.sh --release-names assets
+          check assets
 
       - name: Say that nothing is attached
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
@@ -349,11 +357,15 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -eu
-          expected=$(ls assets | wc -l)
+          # Every asset under the name it was delivered with: GitHub would store a name
+          # it does not keep under another one, and its checksum file would name a file
+          # no download has.
+          expected=$(ls assets | LC_ALL=C sort)
           attached=$(gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
-            --json assets --jq '.assets | length')
-          if [ "$attached" -ne "$expected" ]; then
-            echo "::error::the draft of $GITHUB_REF_NAME carries $attached assets, not the $expected delivered; it stays a draft"
+            --json assets --jq '.assets[].name' | LC_ALL=C sort)
+          if [ "$attached" != "$expected" ]; then
+            echo "::error::the draft of $GITHUB_REF_NAME does not carry the $(echo "$expected" | wc -l) assets delivered under their names; it stays a draft"
+            printf 'delivered:\n%s\nattached:\n%s\n' "$expected" "$attached"
             exit 1
           fi
           gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease

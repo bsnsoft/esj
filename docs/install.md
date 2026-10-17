@@ -95,6 +95,13 @@ are attached to every release from 0.9.8 on, with their checksums and attestatio
 repository is the same package with a signature added when it is published:
 `rpm -qp --qf '%{SHA256HEADER}\n'` prints the same header digest for both.
 
+A release candidate is attached with a dot where its package version has the `~`, because GitHub
+stores a `~` in an asset name as a dot: the packages of `1.2.3~rc.1` are
+`esj_1.2.3.rc.1_<amd64|arm64>.deb` and `esj-1.2.3.rc.1-1.<x86_64|aarch64>.rpm`, and their checksum
+files name them so. Installed, the package is `1.2.3~rc.1`, as from the suite `testing`. The
+checksum files of 1.0.0-rc.2 still name the `~` names, which `sha256sum -c` does not find; compare
+the first field of such a file with `sha256sum <package>` instead.
+
 ## Native executable
 
 ```console
@@ -231,7 +238,7 @@ the subset, and `dist/package.sh smoke` runs it against every artefact that has 
 | `esj-<version>-native-<os>-<arch>.zip` | the executable, its shared libraries, `LICENSE`, `NOTICE`, the licences of the Java runtime parts in it (`legal/`) |
 | `esj-<version>-<os>-<arch>.zip` | the runtime image, `bin/esj`, the jar, the cache, `LICENSE`, `NOTICE` |
 | `esj-<version>.zip` | the jar, `bin/esj`, `LICENSE`, `NOTICE`, the documentation of the command line |
-| `esj_<version>_<arch>.deb`, `esj-<version>-1.<arch>.rpm` | the native Linux executable as a package for apt and dnf, for x64 and arm64 ([above](#a-package-without-the-repository)) |
+| `esj_<version>_<arch>.deb`, `esj-<version>-1.<arch>.rpm` | the native Linux executable as a package for apt and dnf, for x64 and arm64; a release candidate with a dot for the `~` of its version ([above](#a-package-without-the-repository)) |
 
 Beside each archive and package a `.sha256` file with its checksum, written by
 `dist/package.sh zip` and `dist/packages.sh`. A tag builds the archives on Linux (x64 and arm64)

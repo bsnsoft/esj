@@ -1,5 +1,6 @@
 package de.bsnsoft.esj.cli;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,12 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -506,6 +510,140 @@ class DistributionTest {
             assertEquals(0, process.exitValue(), output);
             assertEquals("deb " + deb + "\nrpm " + rpm + "\nsuite " + suite + "\n", output);
         }
+    }
+
+    /**
+     * Every archive and package is attached under the name GitHub stores it under, with a
+     * checksum file that names it so.
+     *
+     * <p>GitHub stores a {@code ~} in the name of a release asset as a dot: the package
+     * {@code esj_1.0.0~rc.2_amd64.deb} of a pre-release is downloaded as
+     * {@code esj_1.0.0.rc.2_amd64.deb}, and a checksum file that names the {@code ~} name
+     * fails {@code sha256sum -c}, as those of 1.0.0-rc.2 did. The release job therefore gives
+     * the assets those names before it checks them a last time and attaches them; the
+     * contents of a package stay as they are, and the names of a release, which have no
+     * {@code ~}, stay as they are byte for byte.
+     *
+     * @param version the version of the tool the assets are of
+     * @param directory a directory of this test
+     * @throws Exception if the shell cannot be started or does not finish
+     */
+    @DisabledOnOs(OS.WINDOWS)
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"1.0.0-rc.2", "0.9.8"})
+    void everyAssetIsAttachedUnderTheNameGitHubStoresItUnder(String version,
+            @TempDir Path directory) throws Exception {
+        String packageVersion = version.replaceFirst("-", "~");
+        List<String> files = List.of("esj-" + version + ".zip",
+                "esj_" + packageVersion + "_amd64.deb", "esj_" + packageVersion + "_arm64.deb",
+                "esj-" + packageVersion + "-1.x86_64.rpm",
+                "esj-" + packageVersion + "-1.aarch64.rpm");
+        Path assets = Files.createDirectories(directory.resolve("assets"));
+        Map<String, byte[]> contents = new TreeMap<>();
+        for (String file : files) {
+            byte[] bytes = ("the contents of " + file + "\n").getBytes(StandardCharsets.UTF_8);
+            contents.put(file, bytes);
+            Files.write(assets.resolve(file), bytes);
+            Files.writeString(assets.resolve(file + ".sha256"), sha256(bytes) + "  " + file + "\n");
+        }
+        Map<String, byte[]> before = new TreeMap<>();
+        for (Path file : listing(assets)) {
+            before.put(file.getFileName().toString(), Files.readAllBytes(file));
+        }
+
+        String output = releaseNames(directory, assets, 0);
+
+        Set<String> expected = new TreeSet<>();
+        for (String file : files) {
+            String attached = file.replace('~', '.');
+            expected.add(attached);
+            expected.add(attached + ".sha256");
+            assertArrayEquals(contents.get(file), Files.readAllBytes(assets.resolve(attached)),
+                    attached + " carries the bytes of " + file);
+            assertEquals(sha256(contents.get(file)) + "  " + attached + "\n",
+                    Files.readString(assets.resolve(attached + ".sha256")),
+                    attached + ".sha256 is the one line that names " + attached);
+        }
+        Set<String> names = new TreeSet<>();
+        for (Path file : listing(assets)) {
+            names.add(file.getFileName().toString());
+        }
+        assertEquals(expected, names, output);
+        if (version.contains("-")) {
+            assertTrue(names.contains("esj_1.0.0.rc.2_amd64.deb")
+                    && names.contains("esj-1.0.0.rc.2-1.x86_64.rpm"), "renamed: " + names);
+        } else {
+            assertEquals(before.keySet(), names, "a release keeps every name");
+            for (Map.Entry<String, byte[]> file : before.entrySet()) {
+                assertArrayEquals(file.getValue(), Files.readAllBytes(assets.resolve(file.getKey())),
+                        file.getKey() + " of a release stays as it is");
+            }
+        }
+
+        // The release job gives the assets those names, checks them again and only then
+        // attests and attaches them; a draft is published only under the delivered names.
+        String workflow = Fixtures.text(".github/workflows/release.yml");
+        int renamed = workflow.indexOf("sh dist/packages.sh --release-names assets\n"
+                + "          check assets\n");
+        assertTrue(renamed > 0, "release.yml renames the assets and checks them again");
+        assertTrue(renamed < workflow.indexOf("- name: Attest the provenance")
+                        && renamed < workflow.indexOf("- name: Attach them"),
+                "release.yml renames the assets before it attests and attaches them");
+        assertTrue(workflow.contains("--json assets --jq '.assets[].name'"),
+                "release.yml compares the names of the attached assets with the delivered ones");
+    }
+
+    /**
+     * A checksum file that does not name the file beside it is refused, and so is a renamed
+     * name that is already taken: the release job stops before anything is attached.
+     *
+     * @param directory a directory of this test
+     * @throws Exception if the shell cannot be started or does not finish
+     */
+    @DisabledOnOs(OS.WINDOWS)
+    @Test
+    void aChecksumThatNamesAnotherFileIsRefused(@TempDir Path directory) throws Exception {
+        Path assets = Files.createDirectories(directory.resolve("assets"));
+        byte[] bytes = "a package\n".getBytes(StandardCharsets.UTF_8);
+        Files.write(assets.resolve("esj_1.0.0~rc.2_amd64.deb"), bytes);
+        Files.writeString(assets.resolve("esj_1.0.0~rc.2_amd64.deb.sha256"),
+                sha256(bytes) + "  esj_1.0.0~rc.2_arm64.deb\n");
+        String output = releaseNames(directory, assets, 1);
+        assertTrue(output.contains("is not the one line that names esj_1.0.0~rc.2_amd64.deb"),
+                output);
+
+        Path taken = Files.createDirectories(directory.resolve("taken"));
+        Files.write(taken.resolve("esj_1.0.0~rc.2_amd64.deb"), bytes);
+        Files.write(taken.resolve("esj_1.0.0.rc.2_amd64.deb"), bytes);
+        output = releaseNames(directory, taken, 1);
+        assertTrue(output.contains("are both in"), output);
+    }
+
+    /** Runs {@code dist/packages.sh --release-names} on a directory and returns its output. */
+    private static String releaseNames(Path directory, Path assets, int exitCode)
+            throws Exception {
+        Path dist = Files.createDirectories(directory.resolve("dist"));
+        for (String script : List.of("packages.sh", "checks.sh")) {
+            Files.write(dist.resolve(script), Fixtures.bytes("dist/" + script));
+        }
+        Process process = new ProcessBuilder("sh", dist.resolve("packages.sh").toString(),
+                "--release-names", assets.toString()).redirectErrorStream(true).start();
+        String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        assertTrue(process.waitFor(2, TimeUnit.MINUTES), "dist/packages.sh finished");
+        assertEquals(exitCode, process.exitValue(), output);
+        return output;
+    }
+
+    /** Returns the files of a directory. */
+    private static List<Path> listing(Path directory) throws IOException {
+        try (var files = Files.list(directory)) {
+            return files.sorted().toList();
+        }
+    }
+
+    /** Returns the SHA-256 of some bytes, in lower-case hex. */
+    private static String sha256(byte[] bytes) throws Exception {
+        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
     }
 
     /**
