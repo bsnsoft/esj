@@ -9,16 +9,14 @@
 # indices after the next run. What the script does not write it leaves alone:
 # the CNAME file GitHub Pages keeps for the domain, for one.
 #
-#   dist/repositories.sh <packages-dir> <site-dir> <stable|testing> <gpg-key>
+#   dist/repositories.sh <packages-dir> <site-dir> <gpg-key>
 #   dist/repositories.sh --unlock <gpg-key>          (the passphrase on stdin)
 #
 #   <packages-dir>  the .deb and .rpm files of dist/packages.sh to add; it may
 #                   hold none, and the run then only regenerates the indices,
-#                   which is how a pruned repository is put right
+#                   which is how a pruned repository is put right and how a
+#                   version already on the branch is published again
 #   <site-dir>      the tree the site is served from
-#   <suite>         where the packages go: stable for a release, testing for a
-#                   pre-release (dist/packages.sh --versions names it); a
-#                   package whose version belongs to the other suite is refused
 #   <gpg-key>       the fingerprint of the key that signs the indices and the
 #                   rpm packages; its public part is written beside them
 #   --unlock        lets the signing commands of this script use a key that has
@@ -31,22 +29,31 @@
 #                   agent, before the first run.
 #
 # What the site holds afterwards, under the address $ESJ_REPOSITORY_URL
-# (https://apt.bsnsoft.de by default), which the .repo files and the index page
+# (https://apt.bsnsoft.de by default), which the .repo file and the index page
 # name:
 #
-#   pool/main/e/esj/*.deb              every version ever added, both suites
-#   dists/<suite>/Release, Release.gpg, InRelease
-#   dists/<suite>/main/binary-{amd64,arm64}/Packages, Packages.gz, by-hash/
+#   pool/main/e/esj/*.deb              every version ever added
+#   dists/stable/Release, Release.gpg, InRelease
+#   dists/stable/main/binary-{amd64,arm64}/Packages, Packages.gz, by-hash/
 #   bsnsoft-esj.gpg, bsnsoft-esj.asc   the public key, binary and armoured
-#   rpm/<suite>/{x86_64,aarch64}/*.rpm each signed, with repodata/ and
+#   rpm/stable/{x86_64,aarch64}/*.rpm  each signed, with repodata/ and
 #                                      repodata/repomd.xml.asc
-#   rpm/esj.repo, rpm/esj-testing.repo, rpm/bsnsoft-esj.asc
+#   rpm/esj.repo, rpm/bsnsoft-esj.asc
 #   index.html, .nojekyll
 #
-# stable carries the releases and testing the pre-releases; a reader who wants
-# the release candidates adds testing beside stable, and apt and dnf take the
-# newer of the two. Both suites are written on every run, the one without
-# packages with empty indices, so that either can be added at any time.
+# One suite, stable, carries every version, a release candidate as well as a
+# release: 1.2.3-rc.1 is packaged as 1.2.3~rc.1 (dist/packages.sh), which apt
+# and dnf sort after 1.2.2 and before 1.2.3, so a reader of the suite is given
+# the candidate and, once it is there, the release that replaces it.
+#
+# From 0.9.8 to 1.0.0-rc.2 the site had a second suite, testing, for the
+# release candidates. A run over a site that still has it moves its rpm
+# packages from rpm/testing/<arch>/ to rpm/stable/<arch>/, the same files with
+# their signatures, and removes dists/testing, rpm/testing and
+# rpm/esj-testing.repo; the .deb packages are in the shared pool already. It
+# removes them file by file and only files of that layout: anything else under
+# them stops the run before the site changes. A second run finds nothing to
+# move.
 #
 # A published package is never replaced: a .deb of the same name has to carry
 # the same bytes, an .rpm the same header digest (signing adds a signature and
@@ -59,7 +66,7 @@
 # Acquire-By-Hash: GitHub Pages lets a client cache for ten minutes, and an apt
 # that reads a fresh InRelease fetches its indices by their digest rather than
 # a Packages file a cache may still hold in its earlier version. A by-hash file
-# is never removed here; the old ones are a few kilobytes each.
+# of stable is never removed here; the old ones are a few kilobytes each.
 #
 # Needs, on Linux: apt-ftparchive (apt-utils), dpkg-deb, createrepo_c, rpm and
 # rpmsign (rpm), gpg and gzip.
@@ -121,14 +128,14 @@ case ${1-} in
     exit 0 ;;
 esac
 
-[ $# -eq 4 ] || { echo "usage: dist/repositories.sh <packages-dir> <site-dir> <stable|testing> <gpg-key>" >&2; exit 2; }
+[ $# -eq 3 ] || { echo "usage: dist/repositories.sh <packages-dir> <site-dir> <gpg-key>" >&2; exit 2; }
 packages=$1
 site=$2
-suite=$3
-key=$4
+key=$3
 url=${ESJ_REPOSITORY_URL:-https://apt.bsnsoft.de}
 url=${url%/}
-case $suite in stable|testing) ;; *) fail "the suite is stable or testing, not $suite" ;; esac
+# The one suite, of apt and of dnf.
+suite=stable
 [ -d "$packages" ] || fail "$packages is not a directory"
 [ -d "$site" ] || fail "$site is not a directory"
 site=$(CDPATH='' cd -- "$site" && pwd)
@@ -137,15 +144,57 @@ for tool in apt-ftparchive dpkg-deb createrepo_c rpm rpmsign rpmkeys gpg gzip; d
 done
 probe "$key" || { cat "$work/probe.log" >&2; fail "$key cannot sign without a prompt; run --unlock first"; }
 
-# The suite a package version belongs to: a pre-release carries ~.
-suite_of_version() {
-  case $1 in *~*) echo testing ;; *) echo stable ;; esac
-}
-
 sha256_of() { sha256sum "$1" | awk '{print $1}'; }
 
+# The suite testing of an earlier layout (see the header): every file under
+# dists/testing and rpm/testing, and rpm/esj-testing.repo, is listed and held
+# against the files that layout held, and its rpm packages are planned to move
+# to stable, before anything in the site changes.
+cat > "$work/testing-layout" <<'LAYOUT'
+^dists/testing/(Release|Release\.gpg|InRelease)$
+^dists/testing/main/binary-(amd64|arm64)/Packages(\.gz)?$
+^dists/testing/main/binary-(amd64|arm64)/by-hash/SHA256/[0-9a-f]{64}$
+^rpm/testing/(x86_64|aarch64)/esj-[^/]+\.(x86_64|aarch64)\.rpm$
+^rpm/testing/(x86_64|aarch64)/repodata/repomd\.xml(\.asc)?$
+^rpm/testing/(x86_64|aarch64)/repodata/[0-9a-f]{64}-[a-z_]+\.xml(\.(gz|bz2|xz|zst))?$
+^rpm/esj-testing\.repo$
+LAYOUT
+( cd "$site" &&
+  for top in dists/testing rpm/testing rpm/esj-testing.repo; do
+    if [ -e "$top" ] || [ -L "$top" ]; then find "$top" ! -type d; fi
+  done ) > "$work/testing-files"
+( cd "$site" &&
+  for top in dists/testing rpm/testing; do
+    if [ -d "$top" ] && [ ! -L "$top" ]; then find "$top" -type d; fi
+  done ) | LC_ALL=C sort -r > "$work/testing-directories"
+: > "$work/testing-moves"
+while IFS= read -r path; do
+  if [ ! -f "$site/$path" ] || [ -L "$site/$path" ] ||
+      ! printf '%s\n' "$path" | grep -Eq -f "$work/testing-layout"; then
+    fail "$path is no file the suite testing of an earlier layout held; nothing is migrated"
+  fi
+  case $path in
+    rpm/testing/*.rpm)
+      rpm -qp --nosignature --qf '%{NAME}\n%{ARCH}\n%{SHA256HEADER}\n' "$site/$path" \
+        > "$work/fields" 2>/dev/null || fail "$path is not an rpm package"
+      arch=${path#rpm/testing/}
+      arch=${arch%%/*}
+      [ "$(sed -n 1p "$work/fields")" = esj ] && [ "$(sed -n 2p "$work/fields")" = "$arch" ] ||
+        fail "$path is not the esj package for $arch"
+      target=rpm/$suite/$arch/${path##*/}
+      if [ -e "$site/$target" ]; then
+        [ "$(rpm -qp --nosignature --qf '%{SHA256HEADER}' "$site/$target")" = \
+          "$(sed -n 3p "$work/fields")" ] ||
+          fail "$path and $target are published with different headers"
+      else
+        printf '%s\n%s\n' "$path" "$target" >> "$work/testing-moves"
+      fi ;;
+  esac
+done < "$work/testing-files"
+
 # The packages to add, every one of them checked before anything in the site
-# changes: a list of source and target, then the copies.
+# changes: a list of source and target, then the copies. An rpm the migration
+# moves to stable counts as published there.
 pool=$site/pool/main/e/esj
 : > "$work/plan"
 for deb in "$packages"/*.deb; do
@@ -153,8 +202,7 @@ for deb in "$packages"/*.deb; do
   name=$(dpkg-deb --field "$deb" Package)
   version=$(dpkg-deb --field "$deb" Version)
   [ "$name" = esj ] || fail "$deb is the package $name, not esj"
-  [ "$(suite_of_version "$version")" = "$suite" ] ||
-    fail "$deb carries version $version, which does not go to $suite"
+  say "${deb##*/}: esj $version"
   target=$pool/${deb##*/}
   if [ -e "$target" ]; then
     cmp -s "$deb" "$target" ||
@@ -175,17 +223,40 @@ for package in "$packages"/*.rpm; do
   header=$(sed -n 4p "$work/fields")
   [ "$name" = esj ] || fail "$package is the package $name, not esj"
   case $arch in x86_64|aarch64) ;; *) fail "$package is for $arch" ;; esac
-  [ "$(suite_of_version "$version")" = "$suite" ] ||
-    fail "$package carries version $version, which does not go to $suite"
+  say "${package##*/}: esj $version"
   target=$site/rpm/$suite/$arch/${package##*/}
-  if [ -e "$target" ]; then
-    [ "$(rpm -qp --nosignature --qf '%{SHA256HEADER}' "$target")" = "$header" ] ||
+  published=$target
+  [ -e "$published" ] || published=$site/rpm/testing/$arch/${package##*/}
+  if [ -e "$published" ]; then
+    [ "$(rpm -qp --nosignature --qf '%{SHA256HEADER}' "$published")" = "$header" ] ||
       fail "${package##*/} is published with another header; a published package is never replaced"
     say "${package##*/} is there already"
   else
     printf '%s\n%s\n' "$package" "$target" >> "$work/plan"
   fi
 done
+# The migration, now that everything is checked: the rpm packages first, then
+# every other file of the suite testing, then its directories, deepest first.
+moved=0
+while IFS= read -r source && IFS= read -r target; do
+  mkdir -p "$site/${target%/*}"
+  mv -- "$site/$source" "$site/$target"
+  say "$source moved to $target"
+  moved=$((moved + 1))
+done < "$work/testing-moves"
+removed=0
+while IFS= read -r path; do
+  [ -e "$site/$path" ] || continue
+  rm -f -- "${site:?}/$path"
+  removed=$((removed + 1))
+done < "$work/testing-files"
+while IFS= read -r directory; do
+  rmdir -- "${site:?}/$directory"
+done < "$work/testing-directories"
+if [ -s "$work/testing-files" ] || [ -s "$work/testing-directories" ]; then
+  say "the suite testing of an earlier layout: $moved packages moved to $suite, $removed other files removed"
+fi
+
 added=0
 while IFS= read -r source && IFS= read -r target; do
   mkdir -p "$(dirname -- "$target")"
@@ -209,7 +280,7 @@ cp "$work/key.asc" "$site/rpm/bsnsoft-esj.asc"
 # alone, in an rpm database of its own.
 mkdir -p "$work/rpmdb"
 rpmkeys --dbpath "$work/rpmdb" --import "$work/key.asc"
-for package in "$site"/rpm/*/*/*.rpm; do
+for package in "$site"/rpm/$suite/*/*.rpm; do
   [ -f "$package" ] || continue
   # rpm keeps an RSA header signature in one tag and every other kind, the
   # EdDSA of this key among them, in the tag once named for DSA.
@@ -228,84 +299,67 @@ for package in "$site"/rpm/*/*/*.rpm; do
     { cat "$work/checksig.log" >&2; fail "${package##*/} is not signed by $key"; }
 done
 
-# apt: one Packages index per suite and processor, from the pool, with the
-# versions of that suite; the Release file over them, signed both ways.
-for each_suite in stable testing; do
-  staging=$work/dists/$each_suite
-  for arch in amd64 arm64; do
-    mkdir -p "$staging/main/binary-$arch"
-    if [ -d "$pool" ]; then
-      ( cd "$site" && apt-ftparchive --arch "$arch" packages pool/main ) > "$work/all"
-    else
-      : > "$work/all"
-    fi
-    # Stanzas are separated by blank lines; a stanza is kept when its version
-    # belongs to this suite.
-    awk -v suite="$each_suite" '
-      BEGIN { RS = ""; ORS = "\n\n" }
-      {
-        version = ""
-        n = split($0, line, "\n")
-        for (i = 1; i <= n; i++) if (line[i] ~ /^Version: /) version = substr(line[i], 10)
-        if ((index(version, "~") > 0) == (suite == "testing")) print
-      }' "$work/all" > "$staging/main/binary-$arch/Packages"
-    gzip -9n < "$staging/main/binary-$arch/Packages" > "$staging/main/binary-$arch/Packages.gz"
-  done
-  case $each_suite in
-    stable) description="esj, the command line tool of EN16931 Semantic JSON: releases" ;;
-    testing) description="esj, the command line tool of EN16931 Semantic JSON: pre-releases" ;;
-  esac
-  apt-ftparchive \
-    -o APT::FTPArchive::Release::Origin="BSNSoft Solutions GmbH" \
-    -o APT::FTPArchive::Release::Label="esj" \
-    -o APT::FTPArchive::Release::Suite="$each_suite" \
-    -o APT::FTPArchive::Release::Codename="$each_suite" \
-    -o APT::FTPArchive::Release::Architectures="amd64 arm64" \
-    -o APT::FTPArchive::Release::Components="main" \
-    -o APT::FTPArchive::Release::Description="$description" \
-    -o APT::FTPArchive::Release::Acquire-By-Hash="yes" \
-    release "$staging" > "$work/Release"
-  mv "$work/Release" "$staging/Release"
-  gpg --batch --yes --pinentry-mode error --local-user "$key" --digest-algo SHA512 \
-    --armor --detach-sign --output "$staging/Release.gpg" "$staging/Release"
-  gpg --batch --yes --pinentry-mode error --local-user "$key" --digest-algo SHA512 \
-    --clearsign --output "$staging/InRelease" "$staging/Release"
-  target=$site/dists/$each_suite
-  for arch in amd64 arm64; do
-    mkdir -p "$target/main/binary-$arch/by-hash/SHA256"
-    for index in Packages Packages.gz; do
-      cp "$staging/main/binary-$arch/$index" "$target/main/binary-$arch/$index"
-      cp "$staging/main/binary-$arch/$index" \
-        "$target/main/binary-$arch/by-hash/SHA256/$(sha256_of "$staging/main/binary-$arch/$index")"
-    done
-  done
-  # The signatures last, so that a reader of the site as it is being written
-  # finds no Release that names an index not yet there.
-  for file in Release Release.gpg InRelease; do
-    cp "$staging/$file" "$target/$file"
-  done
-  say "apt $each_suite: $(grep -c '^Package: ' "$staging"/main/binary-*/Packages |
-    awk -F: '{ n += $2 } END { print n + 0 }') packages"
+# apt: one Packages index per processor, from the pool, with every version in
+# it; the Release file over them, signed both ways.
+staging=$work/dists/$suite
+for arch in amd64 arm64; do
+  mkdir -p "$staging/main/binary-$arch"
+  if [ -d "$pool" ]; then
+    ( cd "$site" && apt-ftparchive --arch "$arch" packages pool/main ) \
+      > "$staging/main/binary-$arch/Packages"
+  else
+    : > "$staging/main/binary-$arch/Packages"
+  fi
+  gzip -9n < "$staging/main/binary-$arch/Packages" > "$staging/main/binary-$arch/Packages.gz"
 done
+apt-ftparchive \
+  -o APT::FTPArchive::Release::Origin="BSNSoft Solutions GmbH" \
+  -o APT::FTPArchive::Release::Label="esj" \
+  -o APT::FTPArchive::Release::Suite="$suite" \
+  -o APT::FTPArchive::Release::Codename="$suite" \
+  -o APT::FTPArchive::Release::Architectures="amd64 arm64" \
+  -o APT::FTPArchive::Release::Components="main" \
+  -o APT::FTPArchive::Release::Description="esj, the command line tool of EN16931 Semantic JSON: every release and release candidate" \
+  -o APT::FTPArchive::Release::Acquire-By-Hash="yes" \
+  release "$staging" > "$work/Release"
+mv "$work/Release" "$staging/Release"
+gpg --batch --yes --pinentry-mode error --local-user "$key" --digest-algo SHA512 \
+  --armor --detach-sign --output "$staging/Release.gpg" "$staging/Release"
+gpg --batch --yes --pinentry-mode error --local-user "$key" --digest-algo SHA512 \
+  --clearsign --output "$staging/InRelease" "$staging/Release"
+target=$site/dists/$suite
+for arch in amd64 arm64; do
+  mkdir -p "$target/main/binary-$arch/by-hash/SHA256"
+  for index in Packages Packages.gz; do
+    cp "$staging/main/binary-$arch/$index" "$target/main/binary-$arch/$index"
+    cp "$staging/main/binary-$arch/$index" \
+      "$target/main/binary-$arch/by-hash/SHA256/$(sha256_of "$staging/main/binary-$arch/$index")"
+  done
+done
+# The signatures last, so that a reader of the site as it is being written
+# finds no Release that names an index not yet there.
+for file in Release Release.gpg InRelease; do
+  cp "$staging/$file" "$target/$file"
+done
+say "apt $suite: $(grep -c '^Package: ' "$staging"/main/binary-*/Packages |
+  awk -F: '{ n += $2 } END { print n + 0 }') packages"
 
-# dnf: the metadata of every suite and processor, written by createrepo_c over
-# the packages present, and repomd.xml signed. Two older sets of metadata stay
+# dnf: the metadata of every processor, written by createrepo_c over the
+# packages present, and repomd.xml signed. Two older sets of metadata stay
 # beside the new one, for a client whose cached repomd.xml still names them.
-for each_suite in stable testing; do
-  for arch in x86_64 aarch64; do
-    directory=$site/rpm/$each_suite/$arch
-    mkdir -p "$directory"
-    createrepo_c --quiet --no-database --checksum sha256 --retain-old-md 2 "$directory" ||
-      fail "createrepo_c failed for rpm/$each_suite/$arch"
-    gpg --batch --yes --pinentry-mode error --local-user "$key" --digest-algo SHA512 \
-      --armor --detach-sign --output "$directory/repodata/repomd.xml.asc" \
-      "$directory/repodata/repomd.xml"
-  done
-  say "rpm $each_suite: $(find "$site/rpm/$each_suite" -name '*.rpm' | wc -l | tr -d ' ') packages"
+for arch in x86_64 aarch64; do
+  directory=$site/rpm/$suite/$arch
+  mkdir -p "$directory"
+  createrepo_c --quiet --no-database --checksum sha256 --retain-old-md 2 "$directory" ||
+    fail "createrepo_c failed for rpm/$suite/$arch"
+  gpg --batch --yes --pinentry-mode error --local-user "$key" --digest-algo SHA512 \
+    --armor --detach-sign --output "$directory/repodata/repomd.xml.asc" \
+    "$directory/repodata/repomd.xml"
 done
+say "rpm $suite: $(find "$site/rpm/$suite" -name '*.rpm' | wc -l | tr -d ' ') packages"
 
-# The .repo files a reader installs: one repository each, signed metadata and
-# signed packages required.
+# The .repo file a reader installs: one repository, signed metadata and signed
+# packages required.
 repo_file() {
   cat <<REPO
 [$1]
@@ -318,8 +372,7 @@ gpgkey=$url/rpm/bsnsoft-esj.asc
 metadata_expire=6h
 REPO
 }
-repo_file esj "esj (EN16931 Semantic JSON), releases" stable > "$site/rpm/esj.repo"
-repo_file esj-testing "esj (EN16931 Semantic JSON), pre-releases" testing > "$site/rpm/esj-testing.repo"
+repo_file esj "esj (EN16931 Semantic JSON)" "$suite" > "$site/rpm/esj.repo"
 
 # The page at the root of the site: the template with the address and the
 # fingerprint in place.

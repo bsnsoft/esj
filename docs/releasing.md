@@ -14,7 +14,7 @@ is published from a workstation.
 |---|---|
 | Maven Central, `de.bsnsoft.esj` | the ten modules a build can depend on, each with its source and Javadoc jar; the aggregator POM they inherit from; `esj-bom`, flattened (no parent, only these modules managed) |
 | GitHub release assets | the native executables, the runtime image, the release zip, the four Linux packages and their checksums ([`install.md`](install.md)) |
-| Package repositories, `https://apt.bsnsoft.de` | the `.deb` and `.rpm` packages in an apt repository at the root and a dnf repository under `rpm/`, in the suite `stable` for a release and `testing` for a pre-release, served by GitHub Pages from the branch `gh-pages` ([`install.md`](install.md#debian-and-ubuntu-apt)) |
+| Package repositories, `https://apt.bsnsoft.de` | the `.deb` and `.rpm` packages in an apt repository at the root and a dnf repository under `rpm/`, in one suite, `stable`, with every version, served by GitHub Pages from the branch `gh-pages` ([`install.md`](install.md#debian-and-ubuntu-apt)) |
 | GitHub container registry, `ghcr.io/bsnsoft/esj` | the container image of `dist/Dockerfile` for linux/amd64 and linux/arm64: the tags `<version>` and `latest` name both platforms, `<version>-linux-amd64` and `<version>-linux-arm64` one each ([`install.md`](install.md#container-image)) |
 
 `esj-cli` and `esj-generator` are not on Central: one is the tool, the other the build tool of
@@ -82,26 +82,48 @@ natively, compares it with the jar and pushes it as `<version>-linux-amd64` and
 `<version>-linux-arm64`; once both are there, it joins them under `<version>` and `latest` and
 checks that both tags list both platforms, and attests the provenance of the joined image. It
 pushes only from a `v*` tag that names the version of the jar — started by hand on a branch, it
-builds and compares the image and pushes nothing — and every run on a tag of a release moves
-`latest` to that tag, so re-running the workflow of an older release moves `latest` back.
+builds and compares the image and pushes nothing — and every run on a tag, a release candidate's
+as well, moves `latest` to that tag, so re-running the workflow of an older tag moves `latest`
+back; [publishing a version again](#publishing-a-version-again) moves it without a build.
 
 ## Pre-releases
 
 A release candidate is cut like a release, with the version `1.0.0-rc.1` and the tag
 `v1.0.0-rc.1`; its changelog heading is `[1.0.0-rc.1]`, and the tree is `1.0.0-SNAPSHOT` before
-and after it. What differs is where it lands: `release.yml` creates the GitHub release as a
-draft, attaches the assets and then publishes it as a pre-release, which GitHub does not show as
-the latest release (releases are immutable once published, so the assets have to be there
-first; `v1.0.0-rc.1` was published before its assets and is a tag without a release); the container image is joined
-under `1.0.0-rc.1` only and `latest` stays on the last release; the Linux packages go to the
-suite `testing` as `1.0.0~rc.1` ([`install.md`](install.md#debian-and-ubuntu-apt)) and are
-attached as `esj_1.0.0.rc.1_<arch>.deb` and `esj-1.0.0.rc.1-1.<arch>.rpm`, the names GitHub
-stores a `~` under, with checksum files that name them so (`dist/packages.sh --release-names`;
-the checksum files of `v1.0.0-rc.2` still name the `~`); `publish.yml`
-deploys the libraries to Maven Central under that version. The Homebrew formula and the
-coordinates the pages offer name the candidate, as they name a release: it is the version to
-try. The suite `stable` and the image tag `latest` keep the last release. After it,
-`esj.api-baseline` is the candidate, which the API check compares with.
+and after it. It is published like a release, on every channel: the container image under
+`1.0.0-rc.1` and `latest`, the Linux packages in the suite `stable` as `1.0.0~rc.1`, which apt and
+dnf sort before `1.0.0` ([`install.md`](install.md#debian-and-ubuntu-apt)), the libraries on
+Maven Central under that version (`publish.yml`); the Homebrew formula and the coordinates the
+pages offer name it, as they name a release. What differs is GitHub's mark alone: `release.yml`
+creates the GitHub release as a draft, attaches the assets and then publishes it as a
+pre-release, which GitHub does not show as the latest release (releases are immutable once
+published, so the assets have to be there first; `v1.0.0-rc.1` was published before its assets
+and is a tag without a release). The packages are attached as `esj_1.0.0.rc.1_<arch>.deb` and
+`esj-1.0.0.rc.1-1.<arch>.rpm`, the names GitHub stores a `~` under, with checksum files that name
+them so (`dist/packages.sh --release-names`; the checksum files of `v1.0.0-rc.2` still name the
+`~`). After it, `esj.api-baseline` is the candidate, which the API check compares with.
+
+Up to 1.0.0-rc.2 a candidate left `latest` on the last release and went to a second suite,
+`testing`. The first run of `dist/repositories.sh` over that site moves the rpm packages of
+`testing` into `stable`, the same files, and removes `dists/testing`, `rpm/testing` and
+`rpm/esj-testing.repo`.
+
+## Publishing a version again
+
+```sh
+gh workflow run release.yml --ref main -f publish_version=1.0.0-rc.2
+```
+
+Started with `publish_version`, `release.yml` builds, attaches and deploys nothing. The job
+*Version to publish* checks that the version has the form of a release tag's and that its GitHub
+release is published; *Image tag latest* then points `latest` at the multi-platform image of
+that version, copying its manifest list unchanged, so that `latest` has the digest, and with it
+the attestation, of the release; and *Package repositories* regenerates and signs every index
+from the packages on `gh-pages`, adds none, checks that the four packages of the version are
+there, and pushes the branch. The workflow and the scripts come from `--ref`, which is `main`:
+the `release.yml` of an older tag knows no `publish_version`. It is how 1.0.0-rc.2, tagged before
+candidates were published on every channel, reaches `latest` and `stable`; how `latest` is moved
+back to an earlier version; and how the indices are put right after old packages are pruned.
 
 ## The Linux packages and their repositories
 
@@ -119,34 +141,36 @@ attaches them with the archives, checked and attested the same way, and only aft
 those of a pre-release with a dot for the `~` ([Pre-releases](#pre-releases)); the repositories
 get the packages from the artifact, with the `~`.
 
-The job *Package repositories* runs on a `v*` tag, after the release job, one tag at a time. It
-checks out the branch `gh-pages` (or starts it as an orphan where there is none), imports the
-release key from the secrets `GPG_PRIVATE_KEY` and `GPG_PASSPHRASE` and makes one signature with
-it before anything else, adds the four packages to the suite of the tag (`stable` for a release,
-`testing` for a pre-release), regenerates every index from the packages on the branch
-(`dist/repositories.sh`: `apt-ftparchive`, `createrepo_c`), signs the indices and every rpm that
-has no signature yet, and pushes the branch as `github-actions[bot]`; GitHub Pages then publishes
-it. Only this job reads the release key. The rpm in the repository is the attached package with a
+The job *Package repositories* runs on a `v*` tag, after the release job, or when a version is
+[published again](#publishing-a-version-again), one run at a time. It checks out the branch
+`gh-pages` (or starts it as an orphan where there is none), imports the release key from the
+secrets `GPG_PRIVATE_KEY` and `GPG_PASSPHRASE` and makes one signature with it before anything
+else, adds the four packages of the tag to the suite `stable`, regenerates every index from the
+packages on the branch (`dist/repositories.sh`: `apt-ftparchive`, `createrepo_c`), signs the
+indices and every rpm that has no signature yet, checks that the four packages of the version
+are there, and pushes the branch as `github-actions[bot]`; GitHub Pages then publishes it. Only
+this job reads the release key. The rpm in the repository is the attached package with a
 signature added (the header digest is the same); the `.deb` is the same file. A published package
 is never replaced: a package of the same name with other contents stops the job.
 
 The branch is the whole state of the repositories: every version stays on it, and nothing else is
 kept. GitHub Pages publishes at most 1 GB, and every release adds about 120 MB, so the job warns
 above 750 MB and stops above 1 GB. Pruning is by hand: delete the old packages from
-`pool/main/e/esj/` and `rpm/<suite>/<arch>/` on `gh-pages`, push, and at once re-run the job
-*Package repositories* of the latest release, which regenerates every index from what is left and
-signs it — until it has, the indices name packages that are gone:
+`pool/main/e/esj/` and `rpm/stable/<arch>/` on `gh-pages`, push, and at once
+[publish the version `latest` names again](#publishing-a-version-again), which regenerates every
+index from what is left and signs it — until it has, the indices name packages that are gone. A
+publication that failed is repeated by re-running the job *Package repositories* of its run, for
+as long as the run keeps its artifacts (90 days); a package already on the branch is left as it
+is:
 
 ```sh
-gh run list --workflow release.yml --limit 5          # the run of the latest tag
+gh run list --workflow release.yml --limit 5          # the run of the tag
 gh run view <run-id> --json jobs --jq '.jobs[] | select(.name == "Package repositories") | .databaseId'
 gh run rerun <run-id> --job <that id>
 ```
 
-The same re-run repeats a publication that failed, for as long as the run keeps its artifacts
-(90 days); a package already on the branch is left as it is. The history of `gh-pages` keeps the
-pruned files; to shrink the branch itself, replace it by a single commit of its current tree. The
-site has the custom domain `apt.bsnsoft.de`, which GitHub keeps in the file `CNAME` at the root of
+The history of `gh-pages` keeps the pruned files; to shrink the branch itself, replace it by a
+single commit of its current tree. The site has the custom domain `apt.bsnsoft.de`, which GitHub keeps in the file `CNAME` at the root of
 the branch; the job leaves that file alone.
 
 ## Set up once

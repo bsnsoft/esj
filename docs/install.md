@@ -35,20 +35,14 @@ $ sudo apt-get update && sudo apt-get install esj
 ```
 
 The native executable as a package, from 0.9.8 on, for amd64 and arm64: `/usr/bin/esj`, a link to
-`/usr/lib/esj/esj`, which lies beside its shared libraries. `apt-get upgrade` follows every release
-from then on. The repository and its key are served by GitHub Pages from the branch `gh-pages` of
-this repository; the key is the one the libraries on Maven Central are signed with, BSNSoft
-Solutions GmbH, `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`, which
+`/usr/lib/esj/esj`, which lies beside its shared libraries. `apt-get upgrade` follows every version
+published from then on. The repository and its key are served by GitHub Pages from the branch
+`gh-pages` of this repository; the key is the one the libraries on Maven Central are signed with,
+BSNSoft Solutions GmbH, `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`, which
 `gpg --show-keys /etc/apt/keyrings/bsnsoft-esj.gpg` prints.
 
-A release goes to the suite `stable`, a release candidate to `testing` only, as the version
-`1.0.0~rc.1`, which sorts before `1.0.0`. One more line adds `testing` beside `stable`, and apt
-takes the newer of the two:
-
-<!-- repositories-test: apt testing -->
-```console
-$ echo 'deb [signed-by=/etc/apt/keyrings/bsnsoft-esj.gpg] https://apt.bsnsoft.de testing main' | sudo tee -a /etc/apt/sources.list.d/esj.list
-```
+A release candidate is published like a release, into the same suite, as the version `1.2.3~rc.1`,
+which apt and dnf sort before `1.2.3`: the release replaces it.
 
 ## Fedora and RHEL-family (dnf)
 
@@ -60,15 +54,10 @@ $ sudo dnf install esj
 
 The rpm repository is served from the same host, under `/rpm/`, with the same key: dnf prints
 its fingerprint before it imports it, and checks every package and the metadata against it
-(`gpgcheck=1`, `repo_gpgcheck=1`). `dnf upgrade` follows every release. Instead of the `curl`
+(`gpgcheck=1`, `repo_gpgcheck=1`). `dnf upgrade` follows every version. Instead of the `curl`
 line, `sudo dnf config-manager addrepo --from-repofile=https://apt.bsnsoft.de/rpm/esj.repo` (dnf5,
 Fedora 41 and later) or `sudo dnf config-manager --add-repo https://apt.bsnsoft.de/rpm/esj.repo`
-(dnf4 with `dnf-plugins-core`, RHEL 9) does the same. Release candidates:
-
-<!-- repositories-test: dnf testing -->
-```console
-$ sudo curl -fsSL -o /etc/yum.repos.d/esj-testing.repo https://apt.bsnsoft.de/rpm/esj-testing.repo
-```
+(dnf4 with `dnf-plugins-core`, RHEL 9) does the same.
 
 ### Which systems
 
@@ -98,7 +87,7 @@ repository is the same package with a signature added when it is published:
 A release candidate is attached with a dot where its package version has the `~`, because GitHub
 stores a `~` in an asset name as a dot: the packages of `1.2.3~rc.1` are
 `esj_1.2.3.rc.1_<amd64|arm64>.deb` and `esj-1.2.3.rc.1-1.<x86_64|aarch64>.rpm`, and their checksum
-files name them so. Installed, the package is `1.2.3~rc.1`, as from the suite `testing`. The
+files name them so. Installed, the package is `1.2.3~rc.1`, as from the repository. The
 checksum files of 1.0.0-rc.2 still name the `~` names, which `sha256sum -c` does not find; compare
 the first field of such a file with `sha256sum <package>` instead.
 
@@ -158,9 +147,10 @@ $ docker run --rm -p 8080:8080 ghcr.io/bsnsoft/esj:latest serve
 ```
 
 Every release from 0.9.2 on publishes the image at `ghcr.io/bsnsoft/esj`, for linux/amd64 and
-linux/arm64. `latest` follows the newest release; a deployment pins the version it was tested
-with, `ghcr.io/bsnsoft/esj:<version>`. Java 25, an unprivileged account, the ahead-of-time cache
-recorded on the architecture it runs on, and `ESJ_MAX_HEAP` for the ceiling (512 MiB by default).
+linux/arm64. `latest` names the version published last, a release candidate as well; a
+deployment pins the version it was tested with, `ghcr.io/bsnsoft/esj:<version>`. Java 25, an
+unprivileged account, the ahead-of-time cache recorded on the architecture it runs on, and
+`ESJ_MAX_HEAP` for the ceiling (512 MiB by default).
 `esj serve` listens on port 8080 of every interface of the container (`ESJ_SERVE_BIND`), and
 serves the tools over HTTP ([`serve.md`](serve.md)); its own process has `ESJ_SERVE_HEAP`
 (256 MiB), and every child it starts `ESJ_MAX_HEAP`.

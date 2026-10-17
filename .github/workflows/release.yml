@@ -1,22 +1,40 @@
 name: Release
 
 # A tag is built, packaged and attached to its release, its container image is
-# pushed to the GitHub container registry as ghcr.io/bsnsoft/esj, and its Linux
-# packages go to the apt and dnf repositories at https://apt.bsnsoft.de, which
-# GitHub Pages serves from the branch gh-pages. The libraries go to Maven
-# Central from publish.yml.
+# pushed to the GitHub container registry as ghcr.io/bsnsoft/esj under its
+# version and as latest, and its Linux packages go to the apt and dnf
+# repositories at https://apt.bsnsoft.de, which GitHub Pages serves from the
+# branch gh-pages, into their one suite. A release candidate is published the
+# same way; only its GitHub release is marked as a pre-release. The libraries
+# go to Maven Central from publish.yml.
+#
+# Started by hand with publish_version, the workflow builds nothing: for a
+# version a tag has released, it points latest at that version's image and
+# regenerates and signs the package repositories from the packages on
+# gh-pages (docs/releasing.md). Started by hand without it, it builds the ref
+# it runs on and publishes nothing.
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      publish_version:
+        description: >-
+          A version a tag has released, such as 1.0.0-rc.2: latest is set to
+          its image and the package repositories are regenerated; nothing is
+          built. Empty: the ref is built and nothing is published.
+        required: false
+        default: ''
+        type: string
 
 # Every action is pinned to a commit, with its release beside it for Dependabot.
 # Only the job that attaches the archives and the job that pushes the branch
-# gh-pages may write the repository, only the two jobs that push the container
-# image may write packages, and only the two jobs that attest may ask for a
-# signing identity: the job that attaches the archives and the one that joins
-# the image. Neither runs a build. The release key (GPG_PRIVATE_KEY) is read by
-# the job that writes the package repositories and by no other.
+# gh-pages may write the repository, only the jobs that push the container
+# image or set its tag latest may write packages, and only the two jobs that
+# attest may ask for a signing identity: the job that attaches the archives and
+# the one that joins the image. None of them runs a build. The release key
+# (GPG_PRIVATE_KEY) is read by the job that writes the package repositories and
+# by no other.
 permissions:
   contents: read
 
@@ -25,9 +43,11 @@ jobs:
   # and names the version the POM carries, which is no snapshot. A tag on the
   # wrong commit stops here rather than after a release has archives of another
   # version attached. Started by hand on a branch, the workflow builds the
-  # version of that branch and attaches and pushes nothing.
+  # version of that branch and attaches and pushes nothing. Started with
+  # publish_version, it does not run, and so no job that builds does.
   version:
     name: Tag and version
+    if: ${{ !inputs.publish_version }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
@@ -375,15 +395,19 @@ jobs:
 
   # The apt and dnf repositories at https://apt.bsnsoft.de: GitHub Pages serves
   # them from the branch gh-pages, which is their whole state. The packages of
-  # the tag go to the suite it maps to (stable for a release, testing for a
-  # pre-release; dist/packages.sh --versions), every index is regenerated from
-  # the packages on the branch and signed with the release key, the rpm packages
-  # are signed with it, and the branch is pushed. It runs once the release is
-  # attached, and one tag at a time: a second tag waits for the first push.
+  # the tag go to the one suite, stable, every index is regenerated from the
+  # packages on the branch and signed with the release key, the rpm packages are
+  # signed with it, and the branch is pushed (dist/repositories.sh). It runs once
+  # the release is attached, or, started with publish_version, with no package
+  # to add, once that version is known to be released; one run at a time: a
+  # second waits for the first push.
   repositories:
     name: Package repositories
-    needs: release
-    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [release, published]
+    if: >-
+      ${{ !cancelled() && (
+        (!inputs.publish_version && startsWith(github.ref, 'refs/tags/v') && needs.release.result == 'success') ||
+        (inputs.publish_version != '' && needs.published.result == 'success')) }}
     # The release of Ubuntu dist/repositories-test.sh writes its site in, so that
     # apt-ftparchive, createrepo_c and rpmsign are the versions the test ran.
     runs-on: ubuntu-24.04
@@ -396,8 +420,12 @@ jobs:
     env:
       # The release key; the secret has to hold this one (docs/install.md, SECURITY.md).
       ESJ_SIGNING_KEY: 39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8
+      # Empty on a tag; the version to publish again when started with publish_version.
+      PUBLISH_VERSION: ${{ needs.published.outputs.version }}
     steps:
-      - name: Check out the tag
+      # The tag; started with publish_version, the ref the run was started on,
+      # whose dist/repositories.sh writes the site.
+      - name: Check out the scripts
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: source
@@ -432,7 +460,9 @@ jobs:
         working-directory: site
         run: git switch --orphan gh-pages
 
+      # A tag adds its packages; a run that publishes a version again adds none.
       - name: Collect the packages
+        if: ${{ !inputs.publish_version }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: esj-linux-packages
@@ -467,15 +497,26 @@ jobs:
           fi
           printf '%s\n' "$GPG_PASSPHRASE" | sh source/dist/repositories.sh --unlock "$ESJ_SIGNING_KEY"
 
-      # GitHub Pages publishes at most 1 GB; every release adds about 120 MB of
-      # packages, and old versions are pruned by hand (docs/releasing.md).
+      # The four packages of the version have to be in the site afterwards: the
+      # ones the tag adds, or those of the version published again. GitHub Pages
+      # publishes at most 1 GB; every release adds about 120 MB of packages, and
+      # old versions are pruned by hand (docs/releasing.md).
       - name: Write the repositories
         run: |
           set -eu
-          version=${GITHUB_REF_NAME#v}
-          suite=$(sh source/dist/packages.sh --versions "$version" | sed -n 's/^suite //p')
-          echo "esj $version goes to $suite"
-          sh source/dist/repositories.sh packages site "$suite" "$ESJ_SIGNING_KEY"
+          version=${PUBLISH_VERSION:-${GITHUB_REF_NAME#v}}
+          mkdir -p packages
+          echo "esj $version: $(find packages -maxdepth 1 \( -name '*.deb' -o -name '*.rpm' \) | wc -l) packages to add"
+          sh source/dist/repositories.sh packages site "$ESJ_SIGNING_KEY"
+          deb=$(sh source/dist/packages.sh --versions "$version" | sed -n 's/^deb //p')
+          rpm=$(sh source/dist/packages.sh --versions "$version" | sed -n 's/^rpm //p')
+          for file in "pool/main/e/esj/esj_${deb}_amd64.deb" "pool/main/e/esj/esj_${deb}_arm64.deb" \
+              "rpm/stable/x86_64/esj-$rpm.x86_64.rpm" "rpm/stable/aarch64/esj-$rpm.aarch64.rpm"; do
+            if [ ! -f "site/$file" ]; then
+              echo "::error::the repositories hold no $file of esj $version"
+              exit 1
+            fi
+          done
           size=$(du -sm --exclude=.git site | cut -f1)
           if [ "$size" -gt 1000 ]; then
             echo "::error::the site holds $size MB, over the 1 GB GitHub Pages publishes; prune old versions (docs/releasing.md)"
@@ -493,9 +534,14 @@ jobs:
             echo "::notice::nothing to push: the site is as it was"
             exit 0
           fi
+          if [ -n "$PUBLISH_VERSION" ]; then
+            message="esj $PUBLISH_VERSION: repositories regenerated"
+          else
+            message="esj ${GITHUB_REF_NAME#v}: packages and repositories"
+          fi
           git -c user.name='github-actions[bot]' \
               -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
-              commit -q -m "esj ${GITHUB_REF_NAME#v}: packages and repositories"
+              commit -q -m "$message"
           git push origin HEAD:gh-pages
 
       - name: Stop the agent that holds the key
@@ -577,9 +623,9 @@ jobs:
           docker push "$tag"
 
   # The tags a reader pulls: one manifest list over the two images, as the
-  # version and, for a release, as latest; a pre-release (1.0.0-rc.1) is joined
-  # under its version only, so that latest stays the last release. It is made
-  # only when both platforms were pushed.
+  # version and as latest, for a release and a release candidate alike, so that
+  # latest is the version tagged last. It is made only when both platforms were
+  # pushed.
   manifest:
     name: Multi-platform image
     needs: image
@@ -599,32 +645,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Name the tags of this version
-        id: tags
-        shell: bash
+      - name: Join the two platforms under the version and latest
         run: |
           version=${GITHUB_REF_NAME#v}
-          case $version in
-            *-*) echo "pre-release $version: joined under $version only, latest stays"
-                 echo "tags=$version" >> "$GITHUB_OUTPUT" ;;
-            *)   echo "release $version: joined under $version and latest"
-                 echo "tags=$version latest" >> "$GITHUB_OUTPUT" ;;
-          esac
-
-      - name: Join the two platforms under the tags of this version
-        env:
-          TAGS: ${{ steps.tags.outputs.tags }}
-        run: |
-          version=${GITHUB_REF_NAME#v}
-          set -- ; for tag in $TAGS; do set -- "$@" --tag "$ESJ_IMAGE:$tag"; done
-          docker buildx imagetools create "$@" \
+          docker buildx imagetools create --tag "$ESJ_IMAGE:$version" --tag "$ESJ_IMAGE:latest" \
             "$ESJ_IMAGE:$version-linux-amd64" "$ESJ_IMAGE:$version-linux-arm64"
 
-      - name: Check that every tag lists both platforms
-        env:
-          TAGS: ${{ steps.tags.outputs.tags }}
+      - name: Check that both tags name one image of both platforms
         run: |
-          for tag in $TAGS; do
+          version=${GITHUB_REF_NAME#v}
+          digest=
+          for tag in "$version" latest; do
             docker buildx imagetools inspect "$ESJ_IMAGE:$tag"
             platforms=$(docker buildx imagetools inspect --raw "$ESJ_IMAGE:$tag" |
               jq -r '.manifests[].platform | "\(.os)/\(.architecture)"')
@@ -634,10 +665,16 @@ jobs:
                 exit 1
               fi
             done
+            named=$(docker buildx imagetools inspect "$ESJ_IMAGE:$tag" --format '{{json .Manifest}}' | jq -r .digest)
+            if [ -n "$digest" ] && [ "$named" != "$digest" ]; then
+              echo "::error::$ESJ_IMAGE:$tag is $named, not $digest"
+              exit 1
+            fi
+            digest=$named
           done
 
-      # The attestation is made for the manifest list the version (and, for a
-      # release, latest) names, which is the digest a pull by the tag resolves, and is pushed
+      # The attestation is made for the manifest list the version and latest
+      # name, which is the digest a pull by either tag resolves, and is pushed
       # beside the image: gh attestation verify
       # oci://ghcr.io/bsnsoft/esj:<version> --repo bsnsoft/esj checks it. No
       # storage record: that is metadata of the organisation, not part of what a
@@ -663,3 +700,84 @@ jobs:
           subject-digest: ${{ steps.digest.outputs.digest }}
           push-to-registry: true
           create-storage-record: false
+
+  # Started with publish_version: the version has the form of a release tag's,
+  # and a published GitHub release of its tag exists. The jobs that publish it
+  # again need this one; every job that builds is skipped.
+  published:
+    name: Version to publish
+    if: ${{ inputs.publish_version != '' }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: Check that a tag has released the version
+        id: check
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ inputs.publish_version }}
+        run: |
+          set -eu
+          if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]] || [[ $VERSION == *-SNAPSHOT ]]; then
+            echo "::error::publish_version is no version a tag releases, such as 1.0.0 or 1.0.0-rc.2"
+            exit 1
+          fi
+          if ! state=$(gh release view "v$VERSION" --repo "$GITHUB_REPOSITORY" \
+              --json tagName,isDraft,isPrerelease \
+              --jq '"\(.tagName) draft \(.isDraft), pre-release \(.isPrerelease)"'); then
+            echo "::error::no GitHub release v$VERSION"
+            exit 1
+          fi
+          echo "$state"
+          case $state in
+            *"draft false"*) ;;
+            *) echo "::error::v$VERSION is a draft, not a published release"; exit 1 ;;
+          esac
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  # Started with publish_version: latest names the multi-platform image of that
+  # version, the manifest list the release joined and attested, unchanged.
+  latest:
+    name: Image tag latest
+    needs: published
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write # point latest at the image of the version
+    env:
+      ESJ_IMAGE: ghcr.io/bsnsoft/esj
+      VERSION: ${{ needs.published.outputs.version }}
+    steps:
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # With one source and nothing to add, imagetools copies the manifest list
+      # as it is, so latest resolves to the digest the release attested.
+      - name: Point latest at the image of the version
+        run: docker buildx imagetools create --tag "$ESJ_IMAGE:latest" "$ESJ_IMAGE:$VERSION"
+
+      - name: Check that both tags name one image of both platforms
+        run: |
+          digest=
+          for tag in "$VERSION" latest; do
+            docker buildx imagetools inspect "$ESJ_IMAGE:$tag"
+            platforms=$(docker buildx imagetools inspect --raw "$ESJ_IMAGE:$tag" |
+              jq -r '.manifests[].platform | "\(.os)/\(.architecture)"')
+            for platform in linux/amd64 linux/arm64; do
+              if ! echo "$platforms" | grep -qx "$platform"; then
+                echo "::error::$ESJ_IMAGE:$tag does not list $platform"
+                exit 1
+              fi
+            done
+            named=$(docker buildx imagetools inspect "$ESJ_IMAGE:$tag" --format '{{json .Manifest}}' | jq -r .digest)
+            if [ -n "$digest" ] && [ "$named" != "$digest" ]; then
+              echo "::error::$ESJ_IMAGE:$tag is $named, not $digest"
+              exit 1
+            fi
+            digest=$named
+          done
+          echo "latest is $ESJ_IMAGE:$VERSION, $digest"

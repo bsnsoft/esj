@@ -265,7 +265,8 @@
           shows. The image docs/install.md and the README tell a reader to pull is held
           against the one .github/workflows/release.yml pushes, and the package repositories
           docs/install.md installs from, with the key it and SECURITY.md name, against the site
-          that workflow publishes. docs/serve.md runs its curl
+          that workflow publishes; docs/releasing.md starts that workflow with the input it
+          declares to publish a released version again. docs/serve.md runs its curl
           lines against esj serve and names the tools, statuses and endpoints the server has,
           and docs/compatibility.md names it as a preview.
         -->
@@ -281,6 +282,7 @@
           <include>docs/validation.md</include>
           <include>docs/b2c.md</include>
           <include>docs/install.md</include>
+          <include>docs/releasing.md</include>
           <include>SECURITY.md</include>
           <include>docs/faq.md</include>
           <include>docs/faq-de.md</include>

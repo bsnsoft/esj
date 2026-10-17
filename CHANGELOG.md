@@ -10,8 +10,14 @@ named here under *Format*.
 
 - The macOS executable and its archives are built on GitHub's `macos-15` runner; `macos-14`, which
   built them until 1.0.0-rc.2, is being retired by GitHub. The pages and the Homebrew formula name
-  the release candidate as the version to use; the apt suite `stable` and the image tag `latest`
-  keep the last release ([`docs/releasing.md`](docs/releasing.md#pre-releases)).
+  the release candidate as the version to use.
+- A release candidate is published like a release: the image tag `latest` follows every tag, and
+  the apt and dnf repositories have one suite, `stable`, with every version, a candidate as
+  `1.2.3~rc.1`, which sorts before `1.2.3`. The suite `testing` and `rpm/esj-testing.repo` are
+  gone (a source line or `.repo` file added for them is to be removed); the next run of
+  `dist/repositories.sh` moves the rpm packages of `testing` into `stable`. `release.yml` started
+  with `publish_version` sets `latest` and regenerates the repositories for a version already
+  released, and builds nothing ([`docs/releasing.md`](docs/releasing.md#publishing-a-version-again)).
 
 ### Fixed
 

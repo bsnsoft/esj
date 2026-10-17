@@ -21,9 +21,8 @@
 #                         esj-<rpm version>-1.<x86_64|aarch64>.rpm are written,
 #                         each with its .sha256 beside it in the form of the
 #                         release archives
-#   --versions            prints the versions the packages of <version> carry
-#                         and the suite of the repositories they go to, one per
-#                         line: "deb 1.2.3~rc.1", "rpm 1.2.3~rc.1-1", "suite testing"
+#   --versions            prints the versions the packages of <version> carry,
+#                         one per line: "deb 1.2.3~rc.1", "rpm 1.2.3~rc.1-1"
 #   --release-names       gives every file in <dir> whose name has a ~ the name
 #                         GitHub stores a release asset under, a dot in place
 #                         of the ~ (esj_1.2.3.rc.1_amd64.deb), and makes each
@@ -33,8 +32,9 @@
 #                         they are
 #
 # The version of a release is the version of both packages; a pre-release
-# 1.2.3-rc.1 becomes 1.2.3~rc.1, which apt and dnf both sort before 1.2.3, and
-# goes to the suite testing, a release to stable (dist/repositories.sh). The rpm
+# 1.2.3-rc.1 becomes 1.2.3~rc.1, which apt and dnf both sort before 1.2.3 and
+# after 1.2.2. Both go to the one suite of the repositories, stable
+# (dist/repositories.sh), whose newest version a reader is given. The rpm
 # carries the release number 1, the deb no revision.
 #
 # What is installed: the executable, its shared libraries and the licences of
@@ -79,14 +79,6 @@ package_version() {
   printf '%s\n' "$1" | sed 's/-/~/'
 }
 
-# The suite of the repositories a version goes to.
-suite_of() {
-  case $1 in
-    *-*) echo testing ;;
-    *) echo stable ;;
-  esac
-}
-
 # The name GitHub stores a release asset under: the ~ of a pre-release package
 # becomes a dot (esj_1.0.0~rc.2_amd64.deb was attached as esj_1.0.0.rc.2_amd64.deb),
 # and a checksum file that named the ~ name would name a file no download has.
@@ -122,7 +114,7 @@ case ${1-} in
   --versions)
     [ $# -eq 2 ] || fail "usage: dist/packages.sh --versions <version>"
     v=$(package_version "$2") || exit 2
-    printf 'deb %s\nrpm %s-1\nsuite %s\n' "$v" "$v" "$(suite_of "$2")"
+    printf 'deb %s\nrpm %s-1\n' "$v" "$v"
     exit 0 ;;
   --release-names)
     [ $# -eq 2 ] || fail "usage: dist/packages.sh --release-names <dir>"
