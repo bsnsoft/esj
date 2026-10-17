@@ -32,14 +32,27 @@ import java.util.Optional;
  * sooner: the request timeout is wall-clock time, and a shared machine that stalls the tests
  * for a few seconds makes the JDK's server close the requests in flight, as a request
  * timeout of three seconds did on a CI runner.
+ *
+ * <p>The time an answer may take once its request has arrived is set to a day. The server's
+ * own, {@code --queue-wait} + {@code --job-timeout} + 125 s, is wall-clock time as well, and
+ * the wall clock goes on while the machine sleeps; the timeouts of the tests and the
+ * deadlines of the children are measured on the monotonic clock, which macOS and Linux stop
+ * while the machine sleeps. A laptop that slept for fifteen minutes in the middle of a render
+ * woke to a server that closed the connection without an answer, and to a test that had
+ * waited 920 s for it. No test measures the response time. A sleep while a request is being
+ * read still ends that request: the tests of slow clients need the ten seconds.
  */
 final class ServeFixture {
 
     /** How long a request may take to arrive, in every server of these tests. */
     static final int REQUEST_SECONDS = 10;
 
+    /** How long an answer may take once its request has arrived, in every server of these tests. */
+    static final int RESPONSE_SECONDS = 24 * 60 * 60;
+
     static {
         System.setProperty("sun.net.httpserver.maxReqTime", Integer.toString(REQUEST_SECONDS));
+        System.setProperty("sun.net.httpserver.maxRspTime", Integer.toString(RESPONSE_SECONDS));
     }
 
     /** The class that starts the command line. */
