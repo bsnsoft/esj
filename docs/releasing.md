@@ -94,7 +94,10 @@ draft, attaches the assets and then publishes it as a pre-release, which GitHub 
 the latest release (releases are immutable once published, so the assets have to be there
 first; `v1.0.0-rc.1` was published before its assets and is a tag without a release); the container image is joined
 under `1.0.0-rc.1` only and `latest` stays on the last release; the Linux packages go to the
-suite `testing` as `1.0.0~rc.1` ([`install.md`](install.md#debian-and-ubuntu-apt)); `publish.yml`
+suite `testing` as `1.0.0~rc.1` ([`install.md`](install.md#debian-and-ubuntu-apt)) and are
+attached as `esj_1.0.0.rc.1_<arch>.deb` and `esj-1.0.0.rc.1-1.<arch>.rpm`, the names GitHub
+stores a `~` under, with checksum files that name them so (`dist/packages.sh --release-names`;
+the checksum files of `v1.0.0-rc.2` still name the `~`); `publish.yml`
 deploys the libraries to Maven Central under that version. The Homebrew formula and the
 coordinates the pages offer stay on the last release: a reader who wants the candidate names
 its version. After it, `esj.api-baseline` is the candidate, which the API check compares with.
@@ -111,7 +114,9 @@ job *Linux packages on …* then installs them in Debian, Ubuntu, Fedora and Roc
 the tool there (`dist/packages-smoke.sh`), and publishes them into apt and dnf repositories signed
 with a throwaway key and installs them from there with the commands of
 [`install.md`](install.md#debian-and-ubuntu-apt) (`dist/repositories-test.sh`). The release job
-attaches them with the archives, checked and attested the same way, and only after both tests.
+attaches them with the archives, checked and attested the same way, and only after both tests,
+those of a pre-release with a dot for the `~` ([Pre-releases](#pre-releases)); the repositories
+get the packages from the artifact, with the `~`.
 
 The job *Package repositories* runs on a `v*` tag, after the release job, one tag at a time. It
 checks out the branch `gh-pages` (or starts it as an orphan where there is none), imports the

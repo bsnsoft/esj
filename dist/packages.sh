@@ -7,6 +7,7 @@
 #
 #   dist/packages.sh <native-archive-dir> <version> <out-dir>
 #   dist/packages.sh --versions <version>
+#   dist/packages.sh --release-names <dir>
 #
 #   <native-archive-dir>  holds esj-<version>-native-linux-x64 and
 #                         esj-<version>-native-linux-arm64, each as the release
@@ -23,6 +24,13 @@
 #   --versions            prints the versions the packages of <version> carry
 #                         and the suite of the repositories they go to, one per
 #                         line: "deb 1.2.3~rc.1", "rpm 1.2.3~rc.1-1", "suite testing"
+#   --release-names       gives every file in <dir> whose name has a ~ the name
+#                         GitHub stores a release asset under, a dot in place
+#                         of the ~ (esj_1.2.3.rc.1_amd64.deb), and makes each
+#                         checksum file among them name the renamed file; the
+#                         release job runs it on the assets of every tag, and
+#                         the names of a release, which have no ~, stay as
+#                         they are
 #
 # The version of a release is the version of both packages; a pre-release
 # 1.2.3-rc.1 becomes 1.2.3~rc.1, which apt and dnf both sort before 1.2.3, and
@@ -79,12 +87,46 @@ suite_of() {
   esac
 }
 
+# The name GitHub stores a release asset under: the ~ of a pre-release package
+# becomes a dot (esj_1.0.0~rc.2_amd64.deb was attached as esj_1.0.0.rc.2_amd64.deb),
+# and a checksum file that named the ~ name would name a file no download has.
+release_name() { printf '%s\n' "$1" | tr '~' '.'; }
+
+release_names() {
+  [ -d "$1" ] || fail "$1 is not a directory"
+  for file in "$1"/*~*; do
+    [ -f "$file" ] || continue
+    name=$(basename -- "$file")
+    renamed=$(release_name "$name")
+    [ ! -e "$1/$renamed" ] || fail "$name and $renamed are both in $1"
+    case $name in
+      *.sha256)
+        line=$(cat -- "$file")
+        digest=${line%%  *}
+        case $digest in
+          *[!0-9a-f]*) digest= ;;
+        esac
+        [ "$(wc -l < "$file" | tr -d ' ')" = 1 ] && [ ${#digest} -eq 64 ] &&
+          [ "$line" = "$digest  ${name%.sha256}" ] ||
+          fail "$name is not the one line that names ${name%.sha256}"
+        mv -- "$file" "$1/$renamed"
+        printf '%s  %s\n' "$digest" "${renamed%.sha256}" > "$1/$renamed" ;;
+      *) mv -- "$file" "$1/$renamed" ;;
+    esac
+    echo "packages: $name renamed to $renamed"
+  done
+}
+
 case ${1-} in
   -h|--help) usage; exit 0 ;;
   --versions)
     [ $# -eq 2 ] || fail "usage: dist/packages.sh --versions <version>"
     v=$(package_version "$2") || exit 2
     printf 'deb %s\nrpm %s-1\nsuite %s\n' "$v" "$v" "$(suite_of "$2")"
+    exit 0 ;;
+  --release-names)
+    [ $# -eq 2 ] || fail "usage: dist/packages.sh --release-names <dir>"
+    release_names "$2"
     exit 0 ;;
 esac
 [ $# -eq 3 ] || { echo "usage: dist/packages.sh <native-archive-dir> <version> <out-dir>" >&2; exit 2; }
