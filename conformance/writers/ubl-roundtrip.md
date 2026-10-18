@@ -8,7 +8,7 @@ Two measurements, for the two ways a writer can be wrong, taken the way
 **Does the syntax accept what it wrote?** The official validation artefacts of the profile —
 the XML Schema modules of OASIS UBL 2.1, the EN 16931 Schematron of CEN/TC 434 and the
 XRechnung Schematron of KoSIT — run over every document the writer produces, through the same
-engine `esj validate` uses and the same pack, `xrechnung/3.0.2/2026-08-31`.
+engine `esj validate` uses and the same pack, `xrechnung/3.0.2/2026-10-12`.
 
 **Does it still say what it was given?** Every result is read back with the streaming reader of
 the same module and compared value by value.
@@ -26,7 +26,7 @@ either direction.
 | Credit note | `../creditnote/credit-note_ubl.xml`, the one credit note of the repository |
 | Read by | `StreamingReader`, the table-driven reader of this module |
 | Written by | `UblWriter`, from `model/bindings/ubl-invoice.json` and `ubl-creditnote.json` and the element order of the UBL 2.1 schema modules |
-| Validated by | `SyntaxValidator` of `esj-syntax` with the pack `xrechnung/3.0.2/2026-08-31` |
+| Validated by | `SyntaxValidator` of `esj-syntax` with the pack `xrechnung/3.0.2/2026-10-12` |
 
 ## The corpus
 

@@ -123,7 +123,7 @@ code — each of them a limitation of the stylesheets the tables do not have.
 The tables that say where a business term is read say where it is written, so the same module
 turns a semantic document into a cross industry invoice or a UBL document. Each writer is
 measured in the two ways a writer can be wrong: whether the official validation artefacts of
-the pack `xrechnung/3.0.2/2026-08-31` accept the result, and whether reading the result back
+the pack `xrechnung/3.0.2/2026-10-12` accept the result, and whether reading the result back
 gives the semantic document it was written from.
 
 | Over the 86 instances | CII writer | UBL writer |

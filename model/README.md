@@ -243,7 +243,7 @@ and loses codes on its own schedule while a structural verdict must not move, so
 registry says which list a value is drawn from — a fact of the semantic model — and a dated
 rule pack says which codes that list held. A membership check is therefore a business rule
 (`SPEC.md` section 9.4), and its answer is always relative to a named rule pack;
-`rules/en16931/1.3.16` is one.
+`rules/en16931/1.3.17` is one.
 
 ### `slug`
 
@@ -283,7 +283,7 @@ nineteen narrowings of the cross-check below; adding a profile is adding a file.
 
 `enums.json` names one enum per list the domain API offers a word for — nine of the eleven
 code lists the registry names (UNTDID 2005 of BT-8 and UNTDID 4451 of BT-21 are left out) and
-the scheme list EAS as the tenth — the snapshots of the rule pack `en16931` `1.3.16` it is generated from, and the naming rule in
+the scheme list EAS as the tenth — the snapshots of the rule pack `en16931` `1.3.17` it is generated from, and the naming rule in
 words beside the data it applies to. An enum names the list as the registry spells it, and
 the generator refuses a list no term names.
 

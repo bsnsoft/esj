@@ -13,7 +13,7 @@ import java.util.List;
  * place:
  *
  * <pre>{@code
- * RulePack pack = RulePacks.bundled("en16931", "1.3.16");
+ * RulePack pack = RulePacks.bundled("en16931", "1.3.17");
  * RuleEngine engine = RuleEngine.compile(pack, Registry.en16931());
  * InvoiceRules rules = document -> engine.evaluate(document).stream()
  *         .map(finding -> new RuleViolation(finding.code(), finding.message(),

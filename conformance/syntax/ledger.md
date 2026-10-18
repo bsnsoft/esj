@@ -3,8 +3,8 @@
 The syntax engine of this project runs the official validation artefacts of a document's
 profile. This ledger is the check on that sentence: the same documents were put through
 the validator the Koordinierungsstelle für IT-Standards publishes for XRechnung, with the
-validator configuration of the same release the pack carries, and the two answers were
-compared finding by finding.
+validator configuration the pack takes its XRechnung components from and the EN 16931
+stylesheets the pack carries, and the two answers were compared finding by finding.
 
 It is the only honest way to make the claim. Nothing in this repository could otherwise
 tell a working validator from one that runs a stylesheet and reports what happens to come
@@ -16,8 +16,8 @@ the question either.
 | | |
 |---|---|
 | Documents | 149 — 86 instances of the conformance corpus and 63 mutations |
-| Oracle | KoSIT Validator 1.6.3, with the XRechnung validator configuration of the release this pack is taken from |
-| Under test | the syntax engine of this repository with the pack `xrechnung/3.0.2/2026-08-31` |
+| Oracle | KoSIT Validator 1.6.3, with the XRechnung validator configuration of 2026-08-31 and, in place of its own EN 16931 stylesheets, those of CEN release 1.3.17 |
+| Under test | the syntax engine of this repository with the pack `xrechnung/3.0.2/2026-10-12` |
 
 The mutations are the second half of the question. A corpus of valid documents can only
 show that neither side complains; a document broken on purpose shows that both sides
@@ -50,29 +50,43 @@ over the mutation set and pins every rule identifier it is expected to report.
 | The rule identifiers reported | 149 of 149 |
 | Those identifiers with the flag of the artefact | 149 of 149 |
 | The node each finding names | 149 of 149 |
-| The location expression, character for character | 94 of 149 |
+| The location expression, character for character | 149 of 149 |
 | The verdict | 146 of 149 |
 
 A schema failure is compared as a yes or a no rather than by identifier: the two report
 one with different codes and different wording, and neither pretends to report the
 other's.
 
-Two things are worth saying plainly about the two rows that are not complete.
+Two things are worth saying plainly: how the oracle was put together, and the one row that is
+not complete.
 
-## The location expression: the same node, written two ways
+## The oracle: the configuration of 2026-08-31, the stylesheets of release 1.3.17
 
-At least one location expression differs in form on 55 documents. Reduced to
-the node the expression names, the two runs agree on every finding of every document, which
-is the row above that reads 149 of 149.
+CEN published release 1.3.17 of the EN 16931 validation artefacts on 2026-10-12, and no
+release of the XRechnung validator configuration carries it yet; the one of 2026-08-31 ships a
+compilation of its own of release 1.3.16. This pack carries the KoSIT components of that
+configuration and the stylesheets of release 1.3.17 as CEN published them, so the oracle was
+run the same way: the configuration of 2026-08-31, its two EN 16931 stylesheets replaced by
+the files of this pack, byte for byte. With one compilation on both sides, the location
+expressions agree character for character as well.
 
-The cause is that the two runs execute two compilations of the same EN 16931 rules of
-release 1.3.16. This pack carries the compilation CEN published; the validator
-configuration ships one of its own, produced by a different Schematron compiler. One
-writes a location as `/Q{namespace}name[1]`, the other as
-`/*:name[namespace-uri()='namespace'][1]`. The rules, the identifiers and the flags are
-the same, and only findings of the EN 16931 components are affected — the XRechnung
-artefact is the same file in both runs, and its locations are identical character for
-character.
+Run with the configuration as published, the two answers differ on 5 documents, and each
+difference is a change of the release rather than of either engine:
+
+- `CII-SR-475` and `CII-SR-476` fire under release 1.3.16 and no longer under 1.3.17, on
+  `business-cases/standard/03.03a-INVOICE_uncefact.xml`,
+  `business-cases/standard/03.07a-INVOICE_uncefact.xml`,
+  `technical-cases/cius/01.01_comprehensive_test_uncefact.xml` and the mutation
+  `en-br-co-10-cii-comprehensive`;
+- `UBL-SR-59`, a rule release 1.3.17 adds, fires on the mutation `xr-br-payment-account-ubl`,
+  which both runs reject already.
+
+The verdicts are the same either way. The location expressions then differ in form on 55
+documents, because the two runs execute two compilations of the EN 16931 rules: the one CEN
+publishes writes a location as `/Q{namespace}name[1]`, the one of the configuration as
+`/*:name[namespace-uri()='namespace'][1]`. Reduced to the node each expression names, the
+findings agree. [`ledger.json`](ledger.json) records both runs, the second under
+`agreementWithTheConfigurationAsPublished`.
 
 ## The verdict: a profile the official validator has no scenario for
 
@@ -118,7 +132,7 @@ made on. The levels are data of the pack, transcribed from the configuration rel
 recorded in [`packs/SOURCES.md`](../../packs/SOURCES.md); nothing in the code levels
 anything.
 
-Of the 149 documents, 19 carry a finding whose two levels differ, and on
+Of the 149 documents, 15 carry a finding whose two levels differ, and on
 7 of those the verdict would be the other one without the tables. That is not
 a detail. Without them this engine would refuse every CVD invoice, and four instances of the
 conformance corpus would be invalid here and acceptable to the validator their publisher
@@ -132,15 +146,11 @@ ships.
 | `business-cases/extension/04.04a-INVOICE_ubl.xml` | `UBL-CR-646` warning -> information | valid | valid |
 | `business-cases/extension/04.05a-INVOICE_uncefact.xml` | `BR-CL-10` fatal -> information, `BR-CL-21` fatal -> information | valid | invalid |
 | `business-cases/extension/05.01a-INVOICE_ubl.xml` | `BR-CO-16` fatal -> information, `UBL-CR-470` warning -> information | valid | invalid |
-| `business-cases/standard/03.03a-INVOICE_uncefact.xml` | `CII-SR-475` warning -> information | valid | valid |
-| `business-cases/standard/03.07a-INVOICE_uncefact.xml` | `CII-SR-475` warning -> information, `CII-SR-476` warning -> information | valid | valid |
-| `en-br-co-10-cii-comprehensive` | `CII-SR-475` warning -> information, `CII-SR-476` warning -> information | invalid | invalid |
 | `en-br-co-16-ubl-extension` | `BR-CO-16` fatal -> information, `UBL-CR-646` warning -> information | invalid | invalid |
 | `en-cl-endpoint-scheme-ubl-extension` | `BR-CL-25` fatal -> information, `UBL-CR-646` warning -> information | valid | invalid |
 | `en-cl-item-classification-ubl-cvd` | `BR-CL-13` fatal -> information | invalid | invalid |
 | `en-cl-unit-code-cii` | `BR-CL-23` fatal -> warning | valid | invalid |
 | `en-cl-unit-code-ubl` | `BR-CL-23` fatal -> warning | valid | invalid |
-| `technical-cases/cius/01.01_comprehensive_test_uncefact.xml` | `CII-SR-475` warning -> information, `CII-SR-476` warning -> information | valid | valid |
 | `technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml` | `BR-CL-13` fatal -> information | valid | invalid |
 | `technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml` | `BR-CL-13` fatal -> information | valid | invalid |
 | `ubl-binding-copy-indicator-extension` | `UBL-CR-646` warning -> information | valid | valid |
@@ -148,8 +158,9 @@ ships.
 
 ## How the ledger was taken down
 
-The official validator and its configuration were downloaded from their release pages and
-run over the corpus instances and over the mutated documents, producing one report per
+The official validator and its configuration were downloaded from their release pages, the
+two EN 16931 stylesheets of the configuration were replaced by those of the pack, and the
+validator was run over the corpus instances and over the mutated documents, producing one report per
 document in the validator's own report format. The engine of this repository was run over
 the same bytes. For every document the two answers were reduced to the rule identifiers,
 the flags and the locations, and to the verdict — accepted or rejected there, valid, invalid

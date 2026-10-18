@@ -6,6 +6,45 @@ named here under *Format*.
 
 ## [1.0.0] — unreleased
 
+### Added
+
+- The bundled validation pack `xrechnung/3.0.2/2026-10-12`: release 1.3.17 of the EN 16931
+  Schematron of CEN/TC 434, published on 2026-10-12 and in effect from the end of 2026-11-15,
+  with the XRechnung Schematron, the schema modules and the level tables of the KoSIT
+  configuration of 2026-08-31, which no configuration release has replaced yet. It is the pack a
+  document is judged by; `xrechnung/3.0.2/2026-08-31`, with release 1.3.16, stays bundled and is
+  chosen with `--pack xrechnung/3.0.2/2026-08-31`
+  ([`docs/validation.md`](docs/validation.md#the-packs), [`packs/SOURCES.md`](packs/SOURCES.md)).
+- The rule pack `en16931/1.3.17`, measured against release 1.3.17, with code list snapshots of
+  2026-10-18: the code list workbook version 18, the EAS list version 17 and the VATEX list
+  version 9 of the European Commission — among them the ISO/IEC 6523 schemes `0249` to `0251`, the
+  electronic address scheme `9960` and eighteen `VATEX-ES-*` codes — and ISO 4217, ISO 639 and the
+  media types from their publishers. The generated enums of `esj-invoice` and the display names
+  of `esj-render` follow it; the pack `en16931/1.3.16` stays in the tree
+  ([`rules/en16931/1.3.17/codelists/SOURCES.md`](rules/en16931/1.3.17/codelists/SOURCES.md)).
+
+### Changed
+
+- `esj validate` runs the rule pack `en16931/1.3.17`. The rules of the VAT categories `L` (IGIC)
+  and `M` (IPSI) carry the identifiers the standard gives them, `BR-IG-01` to `-10` and `BR-IP-01`
+  to `-10`, where release 1.3.16 and the pack `en16931/1.3.16` say `BR-AF-*` and `BR-AG-*`; a
+  finding of those rules is reported under the new identifier. The pack `en16931-2026/0.1` takes
+  its unchanged rules and its shared code lists from `en16931/1.3.17`.
+- The ledger of the rule pack is taken against release 1.3.17, over 455 mutations: 137 rules
+  agree on every shape measured, 53 on one shape and not another, 25 differ, 2 cannot be asked,
+  0 are open. Three causes are new and come from the release, and the pack follows the standard
+  in each: the CII artefact binds `BR-IG-*` to the category `M` and `BR-IP-*` to `L` and asks for
+  a rate above zero in `L`; both artefacts dropped `EL` from the prefixes `BR-CO-09` admits; the
+  UBL artefact reports `BR-CO-09` on a VAT tax scheme that states no identifier
+  ([`conformance/rules/ledger.md`](conformance/rules/ledger.md)).
+- With release 1.3.17 the official artefacts answer some documents differently: `CII-SR-475` and
+  `CII-SR-476` count the names and attachments of each supporting document rather than of all of
+  them and no longer fire on three instances of the corpus; `UBL-SR-57` to `-59`, `CII-SR-495` to
+  `-497`, `CII-DT-105` and `CII-DT-106` are new and `CII-SR-471` is withdrawn; the currency list
+  accepts `STN` where it accepted `STD`. The syntax ledger was taken again with the official
+  validator, its EN 16931 stylesheets replaced by those of 1.3.17
+  ([`conformance/syntax/ledger.md`](conformance/syntax/ledger.md)).
+
 ## [1.0.0-rc.4] — 2026-10-18
 
 ### Fixed

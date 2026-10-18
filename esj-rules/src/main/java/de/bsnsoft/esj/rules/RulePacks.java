@@ -118,7 +118,7 @@ public final class RulePacks {
      * Reads a rule pack that travels in this module's jar.
      *
      * @param packId  the identifier of the pack, for example {@code en16931}
-     * @param version the version of the pack, for example {@code 1.3.16}
+     * @param version the version of the pack, for example {@code 1.3.17}
      * @return the pack
      * @throws RulePackException    if this build carries no such pack, or carries one that
      *                              is not a rule file

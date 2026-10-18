@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * What the pack says inside the tolerance only one official artefact of release 1.3.16
+ * What the pack says inside the tolerance only one official artefact of release 1.3.17
  * grants.
  *
  * <p>Ten rules compare a stated amount with a figure the invoice implies, and for nine of

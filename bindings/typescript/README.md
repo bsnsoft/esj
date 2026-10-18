@@ -59,7 +59,7 @@ const engine = ruleEngine(new Structure(core, carried.filter((r) => r.isExtensio
 engine.evaluate(document);                         // rule, severity, context, message, pack
 ```
 
-217 rules: 189 read from `rules/en16931/1.3.16/`, and the 28 the rule language cannot express
+217 rules: 189 read from `rules/en16931/1.3.17/`, and the 28 the rule language cannot express
 written in `src/rules/native.ts` under the same identifiers. The pack names them and does not
 load them; `compile` refuses a pack whose declared set and the rules handed to it differ, and
 `evaluate` refuses a document of an edition other than the one the pack was compiled against,

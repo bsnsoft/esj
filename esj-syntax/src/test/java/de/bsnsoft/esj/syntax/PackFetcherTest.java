@@ -53,7 +53,7 @@ class PackFetcherTest {
         assertEquals("example/1.0/2026-09-30", selection.pack().directory());
         assertEquals(List.of("ubl-2.1-xsd", "example-ubl-schematron"),
                 selection.applied().stream().map(PackComponent::name).toList());
-        assertEquals("xrechnung/3.0.2/2026-08-31",
+        assertEquals("xrechnung/3.0.2/2026-10-12",
                 catalog.select(InvoiceSyntax.UBL_INVOICE, ExamplePacks.XRECHNUNG).pack().directory(),
                 "a document of another profile keeps the pack it had");
     }

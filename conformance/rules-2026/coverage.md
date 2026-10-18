@@ -6,7 +6,7 @@ for each rule, [`rules/README.md`](../../rules/README.md) the language they are 
 [`docs/validation.md`](../../docs/validation.md) what a finding of the semantic engine means.*
 
 **No official validation artefact is published for this edition.** The artefact releases of
-CEN/TC 434 end at 1.3.16 and validate EN 16931-1:2017+A1:2019/AC:2020, and no syntax binding
+CEN/TC 434 end at 1.3.17 and validate EN 16931-1:2017+A1:2019/AC:2020, and no syntax binding
 of the terms this edition adds is published either. A document of this edition therefore never
 reaches `VALID`: the business rules of this pack run and can make it `INVALID`, and the best
 it reaches otherwise is `INDETERMINATE` with the cause `no-artefacts-for-edition`. Every rule
@@ -52,12 +52,11 @@ That a scheme is stated at all is decided: `BR-69`, `BR-71`, `BR-73`, `BR-75`.
   `BR-01`, `BR-02`, `BR-03`, as the pack of the 2017 edition does, so that a report of the two
   compares line for line. The padding is this project's.
 - The Canary Islands family is `BR-IG-*` and the Ceuta and Melilla family `BR-IP-*`, the
-  standard's own numbering. Release 1.3.16 calls the same two families `BR-AF-*` and
-  `BR-AG-*`; no artefact covers this edition, so there is nothing to follow. A report of the
-  two packs differs in those eighteen identifiers and in no other.
+  standard's own numbering, which release 1.3.17 and the pack of the 2017 edition follow as
+  well; release 1.3.16 called the two families `BR-AF-*` and `BR-AG-*`.
 - The fraction digit limits of clause 6.5.13 and the code list restrictions of clause 6.3
   carry no rule identifier in the standard: it states them as tables of terms, and `BR-DEC-*`
-  and `BR-CL-*` are the numbering release 1.3.16 gave those tables. A term with a row in both
+  and `BR-CL-*` are the numbering release 1.3.17 gives those tables. A term with a row in both
   editions keeps its number there; a row this edition adds is numbered from `BR-DEC-30` up,
   which no release used. The `source` of each such rule names the business term.
 
@@ -76,61 +75,61 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
-| `BR-01` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-02` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-03` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-04` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-05` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-06` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-07` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-08` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-09` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-10` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-11` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-12` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-13` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-14` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-15` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-16` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-17` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-18` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-19` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-20` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-21` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-22` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-23` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-24` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-25` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-26` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-27` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-28` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-29` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-01` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-02` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-03` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-04` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-05` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-06` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-07` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-08` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-09` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-10` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-11` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-12` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-13` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-14` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-15` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-16` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-17` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-18` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-19` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-20` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-21` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-22` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-23` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-24` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-25` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-26` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-27` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-28` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-29` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-30` | native-json | `rules/br.json` | `cases` |
-| `BR-31` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-32` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-33` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-31` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-32` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-33` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-36` | native-json | `rules/br.json` | `cases` |
 | `BR-37` | native-json | `rules/br.json` | `cases` |
 | `BR-38` | native-json | `rules/br.json` | `cases` |
-| `BR-41` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-42` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-41` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-42` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-43` | native-json | `rules/br.json` | `cases` |
 | `BR-44` | native-json | `rules/br.json` | `cases` |
-| `BR-45` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-45` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-46` | native-json | `rules/br.json` | `cases` |
-| `BR-47` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-48` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-49` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-47` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-48` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-49` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-50` | native-json | `rules/br.json` | `cases` |
 | `BR-76` | native-json | `rules/br.json` | `cases` |
-| `BR-51` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-52` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-51` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-52` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-53` | native-json | `rules/br.json` | `cases` |
 | `BR-54` | native-json | `rules/br.json` | `cases` |
-| `BR-55` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-56` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-57` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-61` | shared | `rules/br.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-55` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-56` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-57` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-61` | shared | `rules/br.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-62` | native-java | `Br62.java` | `downgrade` |
 | `BR-63` | native-java | `Br63.java` | `downgrade` |
 | `BR-64` | native-java | `Br64.java` | `downgrade` |
@@ -150,12 +149,12 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
-| `BR-CO-03` | shared | `rules/br-co.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-CO-03` | shared | `rules/br-co.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-CO-40` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-46` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-45` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-47` | native-json | `rules/br-co.json` | `cases` |
-| `BR-CO-04` | shared | `rules/br-co.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-CO-04` | shared | `rules/br-co.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-CO-05` | not applicable | — | — |
 | `BR-CO-06` | not applicable | — | — |
 | `BR-CO-07` | not applicable | — | — |
@@ -172,14 +171,14 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | `BR-CO-48` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-16` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-18` | native-java | `BrCo18.java` | `cases` |
-| `BR-CO-19` | shared | `rules/br-co.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-CO-19` | shared | `rules/br-co.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-CO-20` | native-json | `rules/br-co.json` | `cases` |
-| `BR-CO-21` | shared | `rules/br-co.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-CO-21` | shared | `rules/br-co.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-CO-22` | native-json | `rules/br-co.json` | `cases` |
-| `BR-CO-23` | shared | `rules/br-co.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-CO-23` | shared | `rules/br-co.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-CO-24` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-25` | native-json | `rules/br-co.json` | `cases` |
-| `BR-CO-26` | shared | `rules/br-co.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-CO-26` | shared | `rules/br-co.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-CO-28` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-29` | native-json | `rules/br-co.json` | `cases` |
 | `BR-CO-30` | native-json | `rules/br-co.json` | `cases` |
@@ -198,11 +197,11 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-S-01` | native-json | `rules/vat-s.json` | `cases` |
-| `BR-S-02` | shared | `rules/vat-s.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-S-03` | shared | `rules/vat-s.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-S-02` | shared | `rules/vat-s.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-S-03` | shared | `rules/vat-s.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-S-04` | native-json | `rules/vat-s.json` | `cases` |
-| `BR-S-05` | shared | `rules/vat-s.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-S-06` | shared | `rules/vat-s.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-S-05` | shared | `rules/vat-s.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-S-06` | shared | `rules/vat-s.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-S-07` | native-json | `rules/vat-s.json` | `cases` |
 | `BR-S-08` | native-java | `BrS08.java` | `cases` |
 | `BR-S-09` | native-json | `rules/vat-s.json` | `cases` |
@@ -212,28 +211,28 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-Z-01` | native-json | `rules/vat-z.json` | `cases` |
-| `BR-Z-02` | shared | `rules/vat-z.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-Z-03` | shared | `rules/vat-z.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-Z-02` | shared | `rules/vat-z.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-Z-03` | shared | `rules/vat-z.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-Z-04` | native-json | `rules/vat-z.json` | `cases` |
-| `BR-Z-05` | shared | `rules/vat-z.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-Z-06` | shared | `rules/vat-z.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-Z-05` | shared | `rules/vat-z.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-Z-06` | shared | `rules/vat-z.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-Z-07` | native-json | `rules/vat-z.json` | `cases` |
 | `BR-Z-08` | native-java | `BrZ08.java` | `cases` |
-| `BR-Z-09` | shared | `rules/vat-z.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-Z-09` | shared | `rules/vat-z.json` of `en16931/1.3.17` | `downgrade` |
 
 ### Exempt from VAT (Table 8)
 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-E-01` | native-java | `BrE01.java` | `cases` |
-| `BR-E-02` | shared | `rules/vat-e.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-E-03` | shared | `rules/vat-e.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-E-02` | shared | `rules/vat-e.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-E-03` | shared | `rules/vat-e.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-E-04` | native-json | `rules/vat-e.json` | `cases` |
-| `BR-E-05` | shared | `rules/vat-e.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-E-06` | shared | `rules/vat-e.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-E-05` | shared | `rules/vat-e.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-E-06` | shared | `rules/vat-e.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-E-07` | native-json | `rules/vat-e.json` | `cases` |
 | `BR-E-08` | native-java | `BrE08.java` | `cases` |
-| `BR-E-09` | shared | `rules/vat-e.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-E-09` | shared | `rules/vat-e.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-E-10` | native-json | `rules/vat-e.json` | `cases` |
 
 ### Reverse charge (Table 9)
@@ -241,14 +240,14 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-AE-01` | native-java | `BrAe01.java` | `cases` |
-| `BR-AE-02` | shared | `rules/vat-ae.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-AE-03` | shared | `rules/vat-ae.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-AE-02` | shared | `rules/vat-ae.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-AE-03` | shared | `rules/vat-ae.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-AE-04` | native-json | `rules/vat-ae.json` | `cases` |
-| `BR-AE-05` | shared | `rules/vat-ae.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-AE-06` | shared | `rules/vat-ae.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-AE-05` | shared | `rules/vat-ae.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-AE-06` | shared | `rules/vat-ae.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-AE-07` | native-json | `rules/vat-ae.json` | `cases` |
 | `BR-AE-08` | native-java | `BrAe08.java` | `cases` |
-| `BR-AE-09` | shared | `rules/vat-ae.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-AE-09` | shared | `rules/vat-ae.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-AE-10` | native-json | `rules/vat-ae.json` | `cases` |
 
 ### Intra-community supply (Table 10)
@@ -256,14 +255,14 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-IC-01` | native-java | `BrIc01.java` | `cases` |
-| `BR-IC-02` | shared | `rules/vat-ic.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-IC-03` | shared | `rules/vat-ic.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-IC-02` | shared | `rules/vat-ic.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-IC-03` | shared | `rules/vat-ic.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-IC-04` | native-json | `rules/vat-ic.json` | `cases` |
-| `BR-IC-05` | shared | `rules/vat-ic.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-IC-06` | shared | `rules/vat-ic.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-IC-05` | shared | `rules/vat-ic.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-IC-06` | shared | `rules/vat-ic.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-IC-07` | native-json | `rules/vat-ic.json` | `cases` |
 | `BR-IC-08` | native-java | `BrIc08.java` | `cases` |
-| `BR-IC-09` | shared | `rules/vat-ic.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-IC-09` | shared | `rules/vat-ic.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-IC-10` | native-json | `rules/vat-ic.json` | `cases` |
 | `BR-IC-11` | native-json | `rules/vat-ic.json` | `cases` |
 | `BR-IC-12` | native-json | `rules/vat-ic.json` | `cases` |
@@ -273,14 +272,14 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-G-01` | native-java | `BrG01.java` | `cases` |
-| `BR-G-02` | shared | `rules/vat-g.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-G-03` | shared | `rules/vat-g.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-G-02` | shared | `rules/vat-g.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-G-03` | shared | `rules/vat-g.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-G-04` | native-json | `rules/vat-g.json` | `cases` |
-| `BR-G-05` | shared | `rules/vat-g.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-G-06` | shared | `rules/vat-g.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-G-05` | shared | `rules/vat-g.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-G-06` | shared | `rules/vat-g.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-G-07` | native-json | `rules/vat-g.json` | `cases` |
 | `BR-G-08` | native-java | `BrG08.java` | `cases` |
-| `BR-G-09` | shared | `rules/vat-g.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-G-09` | shared | `rules/vat-g.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-G-10` | native-json | `rules/vat-g.json` | `cases` |
 
 ### Not subject to VAT (Table 12)
@@ -288,11 +287,11 @@ does not ask it to. `BR-CO-33` reads as credit notes the twelve codes of UNTDID 
 | Rule | How | Where | Oracle |
 |---|---|---|---|
 | `BR-O-01` | native-java | `BrO01.java` | `cases` |
-| `BR-O-05` | shared | `rules/vat-o.json` of `en16931/1.3.16` | `downgrade` |
-| `BR-O-06` | shared | `rules/vat-o.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-O-05` | shared | `rules/vat-o.json` of `en16931/1.3.17` | `downgrade` |
+| `BR-O-06` | shared | `rules/vat-o.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-O-07` | native-json | `rules/vat-o.json` | `cases` |
 | `BR-O-08` | native-java | `BrO08.java` | `cases` |
-| `BR-O-09` | shared | `rules/vat-o.json` of `en16931/1.3.16` | `downgrade` |
+| `BR-O-09` | shared | `rules/vat-o.json` of `en16931/1.3.17` | `downgrade` |
 | `BR-O-10` | native-json | `rules/vat-o.json` | `cases` |
 
 ### National and margin schemes (Table 13)

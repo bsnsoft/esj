@@ -247,7 +247,7 @@ $ esj validate conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
 Input:            conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
 Detected syntax:  UBL Invoice
 Semantic model:   EN16931-1:2017+A1:2019/AC:2020
-Profile:          urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0 (pack xrechnung/3.0.2/2026-08-31)
+Profile:          urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0 (pack xrechnung/3.0.2/2026-10-12)
 
 Syntax
   XML:                       OK
@@ -258,7 +258,7 @@ Semantic
   ESJ format (L1):           not checked
   Model (L2):                OK
   Cardinality (L3):          OK
-  EN 16931 business rules (native, pack en16931/1.3.16): OK
+  EN 16931 business rules (native, pack en16931/1.3.17): OK
 
 VALID
 $ echo $?
@@ -331,7 +331,7 @@ Semantic
   Model (L2):                1 error
     ESJ-L2-UNKNOWN-TERM [error] /BT-999: the registry of EN 16931-1:2017+A1:2019/AC:2020 does not contain BT-999
   Cardinality (L3):          not checked
-  EN 16931 business rules (native, pack en16931/1.3.16): not run (a structural layer rejected the document)
+  EN 16931 business rules (native, pack en16931/1.3.17): not run (a structural layer rejected the document)
 
 INVALID
 $ echo $?
@@ -571,7 +571,7 @@ and `findings`, one entry per thing a rule of this project said:
   "message": "The sum of the invoice line net amounts (BT-131) is 314.86, and the sum of invoice line net amount (BT-106) at /BG-22/BT-106 carries 315.86.",
   "paths": ["/BG-22/BT-106", "/BG-25/*/BT-131"],
   "packId": "en16931",
-  "packVersion": "1.3.16"
+  "packVersion": "1.3.17"
 }
 ```
 
@@ -601,7 +601,7 @@ thing an artefact said:
   "column": null,
   "packId": "xrechnung",
   "packVersion": "3.0.2",
-  "packRelease": "2026-08-31",
+  "packRelease": "2026-10-12",
   "component": "en16931-ubl-schematron"
 }
 ```
@@ -725,7 +725,7 @@ Container
 
 Detected syntax:  CII
 Semantic model:   EN16931-1:2017+A1:2019/AC:2020
-Profile:          urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0 (pack xrechnung/3.0.2/2026-08-31)
+Profile:          urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0 (pack xrechnung/3.0.2/2026-10-12)
 
 Syntax
   XML:                       OK
@@ -737,7 +737,7 @@ Semantic
   ESJ format (L1):           not checked
   Model (L2):                OK
   Cardinality (L3):          OK
-  EN 16931 business rules (native, pack en16931/1.3.16): OK
+  EN 16931 business rules (native, pack en16931/1.3.17): OK
 
 VALID
 
@@ -1177,7 +1177,7 @@ Semantic
   ESJ format (L1):           OK
   Model (L2):                OK
   Cardinality (L3):          OK
-  EN 16931 business rules (native, pack en16931/1.3.16): not run (esj validate runs the business rules)
+  EN 16931 business rules (native, pack en16931/1.3.17): not run (esj validate runs the business rules)
 
 INDETERMINATE — nothing fatal found; missing from the check: written-syntax (not-run-by-this-command), business-rules (not-run-by-this-command)
 ```
@@ -1316,8 +1316,8 @@ The validation packs themselves, rather than a document. `esj packs list` prints
 
 ```console
 $ esj packs list
-xrechnung/3.0.2/2026-08-31
-  XRechnung 3.0.2 validation pack, release 2026-08-31
+xrechnung/3.0.2/2026-10-12
+  XRechnung 3.0.2 validation pack, release 2026-10-12: CEN 1.3.17 with the KoSIT configuration of 2026-08-31
   origin bundled
 ...
 Recipes, for artefacts that may be used but not redistributed (esj packs fetch <recipe> --into <directory>):

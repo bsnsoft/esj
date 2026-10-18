@@ -13,8 +13,6 @@ import de.bsnsoft.esj.rules.internal.en16931.Br64;
 import de.bsnsoft.esj.rules.internal.en16931.Br65;
 import de.bsnsoft.esj.rules.internal.en16931.BrAe01;
 import de.bsnsoft.esj.rules.internal.en16931.BrAe08;
-import de.bsnsoft.esj.rules.internal.en16931.BrAf08;
-import de.bsnsoft.esj.rules.internal.en16931.BrAg08;
 import de.bsnsoft.esj.rules.internal.en16931.BrCl07;
 import de.bsnsoft.esj.rules.internal.en16931.BrCl10;
 import de.bsnsoft.esj.rules.internal.en16931.BrCl11;
@@ -30,6 +28,8 @@ import de.bsnsoft.esj.rules.internal.en16931.BrG01;
 import de.bsnsoft.esj.rules.internal.en16931.BrG08;
 import de.bsnsoft.esj.rules.internal.en16931.BrIc01;
 import de.bsnsoft.esj.rules.internal.en16931.BrIc08;
+import de.bsnsoft.esj.rules.internal.en16931.BrIg08;
+import de.bsnsoft.esj.rules.internal.en16931.BrIp08;
 import de.bsnsoft.esj.rules.internal.en16931.BrO01;
 import de.bsnsoft.esj.rules.internal.en16931.BrO08;
 import de.bsnsoft.esj.rules.internal.en16931.BrS08;
@@ -60,7 +60,7 @@ public final class En16931Pack {
     public static final String PACK_ID = "en16931";
 
     /** The value {@link #version()} returns. */
-    private static final String VERSION = "1.3.16";
+    private static final String VERSION = "1.3.17";
 
     /** The value {@link #edition()} returns. */
     private static final String EDITION = "EN 16931-1:2017+A1:2019/AC:2020";
@@ -71,8 +71,10 @@ public final class En16931Pack {
 
     /**
      * Returns the version of the pack, which is the release of the artefacts it was
-     * verified against: {@code 1.3.16} in this release. A later release may carry a pack
-     * verified against a later release of the artefacts.
+     * verified against: {@code 1.3.17} in this release. A later release may carry a pack
+     * verified against a later release of the artefacts. The pack {@code en16931/1.3.16},
+     * verified against the release before, stays in the rule directory as it was written and
+     * is not the one this class compiles.
      *
      * @return the version
      */
@@ -120,7 +122,7 @@ public final class En16931Pack {
                 new BrIc01(), new BrIc08(),
                 new BrG01(), new BrG08(),
                 new BrO01(), new BrO08(),
-                new BrAf08(), new BrAg08()));
+                new BrIg08(), new BrIp08()));
     }
 
     /**

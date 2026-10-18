@@ -657,64 +657,64 @@ class En16931RuleCasesTest {
         add(cases, "BR-O-10",
                 Invoices.notSubject(),
                 Invoices.notSubject().drop("/BG-23/0/BT-120", "/BG-23/0/BT-121"));
-        add(cases, "BR-AF-01",
+        add(cases, "BR-IG-01",
                 Invoices.regional("L"),
                 Invoices.regional("L").put("/BG-23/0/BT-118", "E"));
-        add(cases, "BR-AF-02",
+        add(cases, "BR-IG-02",
                 Invoices.regional("L"),
                 Invoices.regional("L").drop("/BG-4/BT-31"));
-        add(cases, "BR-AF-03",
+        add(cases, "BR-IG-03",
                 Invoices.withAllowance(Invoices.regional("L"), "L", "7"),
                 Invoices.withAllowance(Invoices.regional("L"), "L", "7").drop("/BG-4/BT-31"));
-        add(cases, "BR-AF-04",
+        add(cases, "BR-IG-04",
                 Invoices.withCharge(Invoices.regional("L"), "L", "7"),
                 Invoices.withCharge(Invoices.regional("L"), "L", "7").drop("/BG-4/BT-31"));
-        add(cases, "BR-AF-05",
+        add(cases, "BR-IG-05",
                 Invoices.regional("L"),
                 Invoices.regional("L").put("/BG-25/0/BG-30/BT-152", "-1"));
-        add(cases, "BR-AF-06",
+        add(cases, "BR-IG-06",
                 Invoices.withAllowance(Invoices.regional("L"), "L", "7"),
                 Invoices.withAllowance(Invoices.regional("L"), "L", "-1"));
-        add(cases, "BR-AF-07",
+        add(cases, "BR-IG-07",
                 Invoices.withCharge(Invoices.regional("L"), "L", "7"),
                 Invoices.withCharge(Invoices.regional("L"), "L", "-1"));
-        add(cases, "BR-AF-08",
+        add(cases, "BR-IG-08",
                 Invoices.regional("L"),
                 Invoices.regional("L").put("/BG-23/0/BT-116", "50"));
-        add(cases, "BR-AF-09",
+        add(cases, "BR-IG-09",
                 Invoices.regional("L"),
                 Invoices.regional("L").put("/BG-23/0/BT-117", "50"));
-        add(cases, "BR-AF-10",
+        add(cases, "BR-IG-10",
                 Invoices.regional("L"),
                 Invoices.regional("L").put("/BG-23/0/BT-120", "No VAT is levied."));
-        add(cases, "BR-AG-01",
+        add(cases, "BR-IP-01",
                 Invoices.regional("M"),
                 Invoices.regional("M").put("/BG-23/0/BT-118", "E"));
-        add(cases, "BR-AG-02",
+        add(cases, "BR-IP-02",
                 Invoices.regional("M"),
                 Invoices.regional("M").drop("/BG-4/BT-31"));
-        add(cases, "BR-AG-03",
+        add(cases, "BR-IP-03",
                 Invoices.withAllowance(Invoices.regional("M"), "M", "7"),
                 Invoices.withAllowance(Invoices.regional("M"), "M", "7").drop("/BG-4/BT-31"));
-        add(cases, "BR-AG-04",
+        add(cases, "BR-IP-04",
                 Invoices.withCharge(Invoices.regional("M"), "M", "7"),
                 Invoices.withCharge(Invoices.regional("M"), "M", "7").drop("/BG-4/BT-31"));
-        add(cases, "BR-AG-05",
+        add(cases, "BR-IP-05",
                 Invoices.regional("M"),
                 Invoices.regional("M").put("/BG-25/0/BG-30/BT-152", "-1"));
-        add(cases, "BR-AG-06",
+        add(cases, "BR-IP-06",
                 Invoices.withAllowance(Invoices.regional("M"), "M", "7"),
                 Invoices.withAllowance(Invoices.regional("M"), "M", "-1"));
-        add(cases, "BR-AG-07",
+        add(cases, "BR-IP-07",
                 Invoices.withCharge(Invoices.regional("M"), "M", "7"),
                 Invoices.withCharge(Invoices.regional("M"), "M", "-1"));
-        add(cases, "BR-AG-08",
+        add(cases, "BR-IP-08",
                 Invoices.regional("M"),
                 Invoices.regional("M").put("/BG-23/0/BT-116", "50"));
-        add(cases, "BR-AG-09",
+        add(cases, "BR-IP-09",
                 Invoices.regional("M"),
                 Invoices.regional("M").put("/BG-23/0/BT-117", "50"));
-        add(cases, "BR-AG-10",
+        add(cases, "BR-IP-10",
                 Invoices.regional("M"),
                 Invoices.regional("M").put("/BG-23/0/BT-120", "No VAT is levied."));
         add(cases, "BR-IC-11",

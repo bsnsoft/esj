@@ -1,7 +1,7 @@
 {
-  "pack": "en16931/1.3.16",
+  "pack": "en16931/1.3.17",
   "engine": "native",
-  "takenDown": "2026-09-19",
+  "takenDown": "2026-10-18",
   "inputs": {
     "corpus": 86,
     "examples": 11,

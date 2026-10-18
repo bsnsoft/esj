@@ -92,7 +92,7 @@ const engine = ruleEngine(new Structure(core, carried.filter((r) => r.isExtensio
 engine.evaluate(document);                         // rule, severity, context, message, pack
 ```
 
-The pack is `rules/en16931/1.3.16` as data: 189 rules in the JSON rule language of
+The pack is `rules/en16931/1.3.17` as data: 189 rules in the JSON rule language of
 [`rules/README.md`](../rules/README.md) and 28 the language cannot express, written in
 `src/rules/native.ts` under the identifiers the manifest declares. Findings of the pack are a
 layer of their own and never ESJ conformance (`SPEC.md` section 9.4). `compile` refuses a pack

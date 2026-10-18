@@ -28,6 +28,6 @@ Semantic
   ESJ format (L1):           OK
   Model (L2):                OK
   Cardinality (L3):          OK
-  EN 16931 business rules (native, pack en16931/1.3.16): not run (esj validate runs the business rules)
+  EN 16931 business rules (native, pack en16931/1.3.17): not run (esj validate runs the business rules)
 
 INDETERMINATE — nothing fatal found; missing from the check: written-syntax (not-run-by-this-command), business-rules (not-run-by-this-command)

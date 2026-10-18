@@ -10,7 +10,7 @@ It can write a document the syntax does not accept. That is answered by the offi
 validation artefacts of the profile — the schema modules of UN/CEFACT CII D16B, the EN 16931
 Schematron of CEN/TC 434 and the XRechnung Schematron of KoSIT — run over every document the
 writer produces, through the same engine `esj validate` uses and the same pack,
-`xrechnung/3.0.2/2026-08-31`. Nothing here is this project's opinion of what a valid cross
+`xrechnung/3.0.2/2026-10-12`. Nothing here is this project's opinion of what a valid cross
 industry invoice is.
 
 It can also write a document the syntax accepts and that no longer says what it was given.
@@ -31,7 +31,7 @@ document that starts to validate fails this test as loudly as one that stops.
 | Examples | the ten documents of `examples/` |
 | Read by | `StreamingReader`, the table-driven reader of this module |
 | Written by | `CiiWriter`, from `model/bindings/cii.json` and the element order of `CiiSchema` |
-| Validated by | `SyntaxValidator` of `esj-syntax` with the pack `xrechnung/3.0.2/2026-08-31` |
+| Validated by | `SyntaxValidator` of `esj-syntax` with the pack `xrechnung/3.0.2/2026-10-12` |
 
 ## The corpus
 

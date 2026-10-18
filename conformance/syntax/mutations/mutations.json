@@ -1,5 +1,5 @@
 {
-  "pack": "xrechnung/3.0.2/2026-08-31",
+  "pack": "xrechnung/3.0.2/2026-10-12",
   "namespaces": {
     "ubl": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
     "cn": "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2",
@@ -1423,6 +1423,12 @@
             "category": "EN-BR"
           },
           {
+            "code": "UBL-SR-59",
+            "severity": "fatal",
+            "flag": "fatal",
+            "category": "UBL-BINDING"
+          },
+          {
             "code": "BR-DE-19",
             "severity": "warning",
             "flag": "warning",
@@ -1917,18 +1923,6 @@
             "severity": "fatal",
             "flag": "fatal",
             "category": "EN-BR"
-          },
-          {
-            "code": "CII-SR-475",
-            "severity": "information",
-            "flag": "warning",
-            "category": "CII-BINDING"
-          },
-          {
-            "code": "CII-SR-476",
-            "severity": "information",
-            "flag": "warning",
-            "category": "CII-BINDING"
           }
         ]
       }

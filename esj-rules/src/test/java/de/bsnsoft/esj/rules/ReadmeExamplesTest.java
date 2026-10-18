@@ -59,7 +59,7 @@ class ReadmeExamplesTest {
                 CodeLists.bundled(pack), En16931Pack.javaRules());
 
         assertEquals("en16931", other.pack().id());
-        assertEquals("1.3.16", other.pack().version());
+        assertEquals("1.3.17", other.pack().version());
         assertEquals(217, other.ruleIds().size());
         assertTrue(other.ruleIds().contains("BR-CO-10"));
     }

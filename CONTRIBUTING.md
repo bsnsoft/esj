@@ -203,7 +203,7 @@ published bytes is no longer the artefact the report claims ran.
 
 `rules/` is this project's own rules, written over business terms rather than executed as data.
 [`rules/README.md`](rules/README.md) is the language, `rules/rule.schema.json` constrains every
-rule file, and the pack this build carries is `rules/en16931/1.3.16/`.
+rule file, and the pack `esj validate` runs is `rules/en16931/1.3.17/`.
 
 **The statement comes from the norm text and the behaviour from the artefacts — never the other
 way round.** Read EN 16931-1, clause 6.4, for the identifier, the terms and the condition, and
@@ -244,7 +244,7 @@ identifiers, with none appearing twice.
 
 **A code list snapshot is taken from the body that publishes the list**, with its source URL,
 the day it was fetched and what the publisher says about reuse recorded in
-`rules/en16931/1.3.16/codelists/SOURCES.md` — never from the code list files of the CEN
+`rules/en16931/1.3.17/codelists/SOURCES.md` — never from the code list files of the CEN
 artefacts, which are under their own licence, and never from another project's copy; an unclear
 term is written down rather than resolved silently. A pack that names a list it has no snapshot
 for does not compile.

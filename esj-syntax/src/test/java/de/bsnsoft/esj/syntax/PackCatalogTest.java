@@ -20,7 +20,11 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class PackCatalogTest {
 
-    private static final String BUNDLED = "xrechnung/3.0.2/2026-08-31";
+    /** The newest bundled release, which a document of the profile gets. */
+    private static final String BUNDLED = "xrechnung/3.0.2/2026-10-12";
+
+    /** The release before it, which stays bundled and is chosen with {@code --pack}. */
+    private static final String PREVIOUS = "xrechnung/3.0.2/2026-08-31";
 
     @TempDir
     Path directory;
@@ -52,7 +56,7 @@ class PackCatalogTest {
         ExamplePacks.fetch(directory);
         PackCatalog catalog = PackCatalog.withDirectories(List.of(directory, directory));
 
-        assertEquals(List.of(BUNDLED, "example/1.0/2026-09-30"),
+        assertEquals(List.of(BUNDLED, PREVIOUS, "example/1.0/2026-09-30"),
                 catalog.packs().stream().map(Pack::directory).toList(),
                 "the bundled packs come first, and a directory named twice is read once");
         assertEquals("example/1.0/2026-09-30",
@@ -66,6 +70,8 @@ class PackCatalogTest {
         assertEquals("example/1.0/2026-09-30",
                 catalog.find("example/1.0/2026-09-30").directory());
         assertEquals(BUNDLED, catalog.find(BUNDLED).directory());
+        assertEquals(PREVIOUS, catalog.find(PREVIOUS).directory(),
+                "the release before stays there for --pack");
     }
 
     @Test
@@ -73,7 +79,8 @@ class PackCatalogTest {
         Files.createDirectories(directory.resolve(".esj-fetch-example-1/example/1.0/x"));
         ExamplePacks.fetch(directory);
 
-        assertEquals(2, PackCatalog.withDirectories(List.of(directory)).packs().size());
+        assertEquals(Packs.bundled().size() + 1,
+                PackCatalog.withDirectories(List.of(directory)).packs().size());
     }
 
     @Test

@@ -48,6 +48,10 @@ class PackDirectoriesTest {
         Cli.Run run = Cli.run("--list-packs");
 
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
+        assertTrue(run.text().contains("xrechnung/3.0.2/2026-10-12" + System.lineSeparator()
+                + "  XRechnung 3.0.2 validation pack, release 2026-10-12: CEN 1.3.17 with the"
+                + " KoSIT configuration of 2026-08-31"
+                + System.lineSeparator() + "  origin bundled"), run.text());
         assertTrue(run.text().contains("xrechnung/3.0.2/2026-08-31" + System.lineSeparator()
                 + "  XRechnung 3.0.2 validation pack, release 2026-08-31"
                 + System.lineSeparator() + "  origin bundled"), run.text());
@@ -124,7 +128,7 @@ class PackDirectoriesTest {
 
         Cli.Run other = Cli.run("validate", "--packs", directory.resolve("packs").toString(),
                 Fixtures.file(directory, UBL));
-        assertTrue(other.text().contains("(pack xrechnung/3.0.2/2026-08-31)"),
+        assertTrue(other.text().contains("(pack xrechnung/3.0.2/2026-10-12)"),
                 "a document of another profile keeps the bundled pack: " + other.text());
     }
 

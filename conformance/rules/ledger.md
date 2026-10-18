@@ -14,9 +14,9 @@ identifier against rule identifier, with every difference named.
 
 | | |
 |---|---|
-| Under test | the EN 16931 rule pack `en16931/1.3.16` of this repository, over the document after import |
-| Oracle | the EN 16931 Schematron of release 1.3.16, run in process by the syntax engine on the same bytes |
-| Input | 448 mutations of the conformance corpus |
+| Under test | the EN 16931 rule pack `en16931/1.3.17` of this repository, over the document after import |
+| Oracle | the EN 16931 Schematron of release 1.3.17, run in process by the syntax engine on the same bytes |
+| Input | 455 mutations of the conformance corpus |
 | Compared | the identifiers of category `EN-BR`, `EN-DEC` and `EN-CL` that each engine reports, and which of the pack's decide no verdict |
 
 Both engines are on the class path of `esj-cli`, so `OracleTest` makes the comparison in the
@@ -44,31 +44,31 @@ one both engines accept, or the mutation would measure the rewrite rather than t
 | Rules of the pack | |
 |---|---|
 | Implemented | 217 |
-| Where both engines report the same identifiers on every shape measured | **166** |
-| Where they agree on one shape of the defect and not on another, named below | **33** |
-| Where they differ, with the difference explained below | **16** |
+| Where both engines report the same identifiers on every shape measured | **137** |
+| Where they agree on one shape of the defect and not on another, named below | **53** |
+| Where they differ, with the difference explained below | **25** |
 | Where the oracle cannot be asked at all | **2** |
 | Open — a difference nobody has accounted for | **0** |
 
 | Mutations | |
 |---|---|
-| Aimed at a rule, both engines reporting the same set | 359 |
-| Aimed at a rule, the two sets differing | 76 |
-| Near misses, both engines silent | 13 |
+| Aimed at a rule, both engines reporting the same set | 326 |
+| Aimed at a rule, the two sets differing | 112 |
+| Near misses, both engines silent | 17 |
 
 The third row is the one to read slowly. Agreement measured on one shape of a defect is not
 agreement on the rule, so a rule with an agreeing mutation and a differing one is counted as
 neither and the shape that differs is named. A rule's status is taken from the mutations aimed
-at it; an identifier a mutation reports beside the one it is aimed at — `BR-AF-09`, where the
-CII template of `BR-AF-08` takes the element away from it — is named in the prose of that
-difference and does not move the status of `BR-AF-09`. Of the 214 rules that were exercised,
+at it; an identifier a mutation reports beside the one it is aimed at — `BR-IG-09`, where the
+CII template of the rule before it takes the element away from it — is named in the prose of
+that difference and does not move the status of `BR-IG-09`. Of the 215 rules that were exercised,
 most were exercised in both syntaxes and the rest in the one syntax whose schema admits the
 broken document: the Schematron of a document the schema rejects is never run, by the artefacts
 or by anybody.
 
 ### The near misses
 
-Thirteen mutations are there to fail: a value at the edge of what a rule allows, where both
+Seventeen mutations are there to fail: a value at the edge of what a rule allows, where both
 engines must say nothing. It is the half of the question a set of broken documents cannot ask.
 
 | Mutation | What is at the edge |
@@ -83,12 +83,14 @@ engines must say nothing. It is the half of the question a set of broken documen
 | `near-corrected-invoice-type-ubl` | the invoice type code `384`, a corrected invoice |
 | `near-seller-identified-by-a-global-identifier-cii` | a seller identified by a global identifier that states no identification scheme, which is the whole of what `BR-CO-26` asks for |
 | `near-tax-registration-without-scheme-cii`, `near-tax-registration-without-scheme-ubl` | a seller tax registration the binding of its syntax places nowhere, on an invoice that identifies its seller otherwise |
+| `near-igic-zero-rate-ubl` | an invoice of the IGIC of the Canary Islands (category `L`) at the rate zero, which the standard admits for that category |
+| `near-icd-0249-ubl`, `near-eas-9960-cii`, `near-vatex-es-ubl` | a code the lists of 2026-10-18 add: the ISO/IEC 6523 scheme `0249`, the electronic address scheme `9960` and the exemption reason `VATEX-ES-IVA20` |
 
 ## The differences, and why each one is there
 
-A difference is not automatically a defect, and it is never left as a shrug. Each of the 16
-rules that differ outright, and each of the 33 that differ on one shape of their defect, is one
-of nine causes; every cause is a property of the two engines rather than of one invoice, and
+A difference is not automatically a defect, and it is never left as a shrug. Each of the 25
+rules that differ outright, and each of the 53 that differ on one shape of their defect, is one
+of twelve causes; every cause is a property of the two engines rather than of one invoice, and
 the mutation that shows it is kept in the set with the cause written on it so that the day it
 changes, the build says so.
 
@@ -131,11 +133,11 @@ it reads a document that names its model and reports the missing term.
 ### The release does not carry the rule (`BR-CO-25`)
 
 `BR-CO-25` — an invoice with an amount due for payment states a payment due date or payment
-terms — is stated in clause 6.4.2 of the standard and carries no identifier in release 1.3.16.
+terms — is stated in clause 6.4.2 of the standard and carries no identifier in release 1.3.17.
 The pack implements it, `coverage.md` says so, and the artefacts have nothing to say. That is
 the one difference where the two engines are not looking at the same list of rules at all.
 
-### The artefact's expression cannot fire (`BR-DEC-13`, `BR-AF-08`, `BR-AG-08`)
+### The artefact's expression cannot fire (`BR-DEC-13`, `BR-IG-08`, `BR-IP-08`)
 
 `BR-DEC-13` restricts the invoice total VAT amount (BT-110) to two fraction digits. Give that
 amount three, and this engine reports it; neither artefact does.
@@ -156,14 +158,76 @@ digit that is not a zero; written `1.230` the amount is not over-scale by the ti
 it, for the reason the next section gives, which is why the set carries no trailing-zero
 variant.
 
-`BR-AF-08` and `BR-AG-08` are the same shape in the CII artefact. Their assertion reads the rate
-and the taxable amount from the parent of the element the rule is written over, where neither is
-written, so `every … satisfies` quantifies over an empty sequence and holds on every document.
-The template also takes that element away from the lower-priority rules of the same pattern, so
-`BR-AF-09`, `BR-AG-09` and `BR-CO-17` go silent on it as well — an identifier each of those
-rules keeps its own status through, by the convention above. `br-af-08-cii`, `br-ag-08-cii`,
-`af08-tol-cii`, `ag08-tol-cii` and `af08-one-unit-cii` measure it: this pack reports what the
-invoice breaks and the CII artefact reports nothing.
+`BR-IG-08` and `BR-IP-08` are the same shape in the CII artefact, which in release 1.3.17
+writes each of the two under the identifier of the other (the next section). Their assertion
+reads the rate and the taxable amount from the parent of the element the rule is written over,
+where neither is written, so `every … satisfies` quantifies over an empty sequence and holds on
+every document. The template also takes that element away from the lower-priority rules of the
+same pattern, so `BR-IG-09`, `BR-IP-09` and `BR-CO-17` go silent on it as well — an identifier
+each of those rules keeps its own status through, by the convention above. `br-ig-08-cii`,
+`br-ip-08-cii`, `ig08-tol-cii`, `ip08-tol-cii` and `ig08-one-unit-cii` measure it: this pack
+reports what the invoice breaks and the CII artefact reports nothing.
+
+### The CII artefact swaps two families (`BR-IG-*`, `BR-IP-*`)
+
+Release 1.3.17 gives the rules of the IGIC of the Canary Islands (category `L`) and of the IPSI
+of Ceuta and Melilla (category `M`) the identifiers the standard gives them, `BR-IG-*` and
+`BR-IP-*`; release 1.3.16 numbered them `BR-AF-*` and `BR-AG-*`. The UBL artefact binds
+`BR-IG-*` to the category `L` and `BR-IP-*` to `M`, as the standard does. The CII artefact of
+the same release binds them the other way round: its `BR-IP-*` rules are written over the
+category `L` and its `BR-IG-*` rules over `M`. Break a rule of either family in a CII invoice
+and the artefact reports the identifier of the other family: an IGIC invoice whose seller
+states no tax registration is `BR-IG-02` and `BR-IG-04` here and `BR-IP-02` and `BR-IP-04`
+there.
+
+The CII rules over the category `L` also ask for a rate greater than zero, where the standard
+asks for a rate of zero or more and the UBL artefact follows it. `ig05-zero-rate-cii` states
+the category `L` at the rate zero: this pack is silent and the CII artefact reports `BR-IP-05`
+and `BR-IP-07`. `near-igic-zero-rate-ubl` is the same invoice in UBL, where both engines are
+silent.
+
+The pack follows the standard: `BR-IG-*` is the category `L`, `BR-IP-*` the category `M`, and
+zero is a rate both admit. The nine CII mutations of the two families — `br-ig-01-cii` to
+`br-ig-04-cii`, `br-ip-01-cii` to `br-ip-04-cii` and `ig05-zero-rate-cii` — carry the cause
+`artefact-swaps-two-families`, so that the day the artefact changes, the build says so. A
+report compared line for line with the CII artefact of this release differs on these
+identifiers alone. On `BR-IG-02` to `-04` and `BR-IP-02` to `-04` the UBL mutations differ as
+well, for the reason two sections below gives, which is why those six rules count as differing
+outright.
+
+### The release drops a prefix the standard admits (`BR-CO-09`)
+
+`BR-CO-09` asks that a VAT identifier begin with the ISO 3166-1 alpha-2 code of the country
+that issued it, and admits the prefix `EL` for Greece. Release 1.3.16 carried `EL` in the list
+of prefixes both artefacts compare with; release 1.3.17 took it out of both. A seller VAT
+identifier `EL123456789` is therefore reported by both artefacts and passes here.
+`br-co-09-el-ubl` and `br-co-09-el-cii` measure it with the cause `artefact-drops-a-prefix`;
+the pack follows the standard.
+
+### The UBL artefact reports the prefix of an identifier that is not there (`BR-CO-09`)
+
+The other change to `BR-CO-09` in release 1.3.17 is in the UBL expression. The rule is written
+over every party tax scheme of the scheme VAT and looks the first two characters of its
+identifier up in the list of prefixes. Release 1.3.16 looked them up as they are, and the first
+two characters of an identifier that is not stated are the empty string, which every list
+contains. Release 1.3.17 looks them up with a space on either side, and for an identifier that
+is not stated that is two spaces, which the list does not contain. A party tax scheme that
+states the scheme VAT and no identifier is valid against the UBL schema, and the UBL artefact
+now reports `BR-CO-09` on it. The standard asks for the prefix of an identifier that is stated,
+and this pack reports nothing where none is.
+
+25 UBL mutations show it, all of one shape: they remove the seller VAT identifier (BT-31), with
+the seller tax registration identifier (BT-32) beside it where the rule asks for either, or the
+seller tax representative VAT identifier (BT-63), and leave the tax scheme element the
+identifier stood in. The rule each is aimed at is reported by both engines; what differs is the
+`BR-CO-09` the UBL artefact reports beside it. They are the mutations of `BR-56`, of `-02` to
+`-04` of the categories `S`, `Z`, `E`, `AE`, `IC`, `G`, `L` and `M`, and they carry the cause
+`artefact-reports-an-absent-identifier`. A rule among them that agrees in CII counts as agreeing
+on one shape and differing on the other; `BR-S-03`, measured in UBL alone, counts as differing.
+The mutations keep the shape they had under release 1.3.16 rather than one chosen to suit
+1.3.17. A UBL document that drops the tax scheme element together with its identifier agrees —
+four of the 25 were measured that way while this ledger was taken down — and it is not the
+document these mutations write.
 
 ### A notation the import does not carry (19 rules of the decimal family)
 
@@ -208,7 +272,7 @@ which of the two artefacts it agrees with is decided by the term rather than by 
 document happened to arrive in.
 
 `BR-S-01` is a third case of the same kind and the measurement is worth recording, because it
-is not a gap in release 1.3.16: both vendored artefacts carry the rule. Take the whole header
+is not a gap in release 1.3.17: both vendored artefacts carry the rule. Take the whole header
 tax breakdown out of a CII invoice and the artefacts report `BR-CO-14`, `BR-CO-18` and `BR-E-01`
 while this pack reports those three and `BR-S-01`; make the same removal in a UBL invoice and
 both engines report the rule. The CII expression has no context left to run in once the
@@ -273,15 +337,15 @@ This pack follows the standard, so `BR-51` is recorded as agreeing on one shape 
 The `*-08` rule of each VAT category asks that the taxable amount of a breakdown equal the
 invoice line net amounts, plus the document level charges, minus the document level allowances
 of that category — and, for the categories that carry a rate, of that rate. `BR-CO-17` asks that
-the VAT category tax amount be the taxable amount at the category rate. Release 1.3.16 does not
+the VAT category tax amount be the taxable amount at the category rate. Release 1.3.17 does not
 ask either question the same way in its two artefacts, and which of the two is the lenient one
-changes with the rule. Read out of the artefacts by `ToleranceMatrixTest` and recorded in
+changes with the rule; the matrix is the one release 1.3.16 had. Read out of the artefacts by `ToleranceMatrixTest` and recorded in
 [`ledger.json`](ledger.json) under `tolerances`:
 
 | Rule | UBL artefact | CII artefact | This pack faults | and warns, naming |
 |---|---|---|---|---|
 | `BR-S-08` | within one unit | equality | a unit or more | below a unit, CII |
-| `BR-AF-08`, `BR-AG-08` | within one unit | equality, and cannot fire | a unit or more | below a unit, the standard |
+| `BR-IG-08`, `BR-IP-08` | within one unit | equality, and cannot fire | a unit or more | below a unit, the standard |
 | `BR-Z-08`, `BR-E-08`, `BR-AE-08`, `BR-IC-08`, `BR-G-08` | equality | within one unit | a unit or more | below a unit, UBL |
 | `BR-O-08` | equality | equality | any difference | — |
 | `BR-CO-17` | within one unit, boundary excluded | within one unit, boundary included | more than a unit | exactly a unit, UBL |
@@ -289,17 +353,17 @@ changes with the rule. Read out of the artefacts by `ToleranceMatrixTest` and re
 A difference both artefacts fault is a fatal finding; a difference inside the zone only one of
 them grants is a warning, which decides no verdict and names the syntax whose artefact faults
 the figure there, so on the eight rows whose strict artefact can fire a document keeps the
-verdict that artefact gives it. On `BR-AF-08` and `BR-AG-08` nothing faults a figure there,
+verdict that artefact gives it. On `BR-IG-08` and `BR-IP-08` nothing faults a figure there,
 because the CII assertion cannot report, and the warning names the standard.
 Nine of the ten rows disagree; each of those rules is recorded as agreeing on one shape and
-differing on another, with the cause `artefacts-disagree-on-a-tolerance` — and for `BR-AF-08`
-and `BR-AG-08` `artefact-cannot-fire`.
+differing on another, with the cause `artefacts-disagree-on-a-tolerance` — and for `BR-IG-08`
+and `BR-IP-08` `artefact-cannot-fire`.
 
 The set carries 49 mutations aimed at these ten rules, measuring the family at four points.
 Inside the zone, half a unit off the sum, in both syntaxes: `s08-tol-{cii,ubl}` and the same
-pair for `z08`, `e08`, `ae08`, `ic08`, `g08`, `af08` and `ag08`. At the edge, exactly one unit
+pair for `z08`, `e08`, `ae08`, `ic08`, `g08`, `ig08` and `ip08`. At the edge, exactly one unit
 off, which both artefacts fault: `s08-one-unit-{cii,ubl}`, `z08-one-unit-{cii,ubl}`,
-`af08-one-unit-{cii,ubl}`. Beyond it, 999 off: the `br-*-08-{cii,ubl}` and `br-co-17-{cii,ubl}`
+`ig08-one-unit-{cii,ubl}`. Beyond it, 999 off: the `br-*-08-{cii,ubl}` and `br-co-17-{cii,ubl}`
 mutations of the coverage set. `o08-tol-{cii,ubl}` is the row where the artefacts agree, half a
 unit off and both engines faulting. For `BR-CO-17` the edge is the unit itself:
 `co17-one-unit-{above,below}-{ubl,cii}` state a VAT category tax amount exactly a unit either
@@ -332,13 +396,15 @@ agreement about membership of the list and not about the root element.
 **The currency list this pack decides against is not the one the artefacts carry.** `BR-CL-04`
 asks whether the invoice currency code (BT-5) is an ISO 4217 code, and the snapshot here is
 ISO's own list through its maintenance agency, while the artefacts carry a listing written into
-their own code list Schematron. Where that listing comes from is not recorded here, and it is
-not the European Commission's workbook for this standard either — that sheet carries `STN`
-where the artefacts carry `STD`. What is measured is the two lists themselves: on 2026-09-20 both carry 178 codes and the 178 are
-not the same — the artefacts accept `CNH` and `STD`, the snapshot `STN` and `XAD`. An invoice in
-one of those four codes is judged differently by the two engines; no mutation of the set uses
+their own code list Schematron. In release 1.3.17 that listing is, code for code, the currency
+sheet of the European Commission's code list workbook for this standard (version 18), which is
+not the list of the maintenance agency. What is measured is the two lists themselves: on
+2026-10-18 both carry 178 codes and the 178 are not the same — the artefacts accept `CNH`, the
+snapshot `XAD`. Release 1.3.16 differed in two more, accepting `STD` where the snapshot carries
+`STN`; release 1.3.17 carries `STN`. An invoice in one of those two codes is judged differently
+by the two engines; no mutation of the set uses
 one, because a mutation whose outcome depends on the day a list was taken measures the list.
-[`SOURCES.md`](../../rules/en16931/1.3.16/codelists/SOURCES.md) records where each list came
+[`SOURCES.md`](../../rules/en16931/1.3.17/codelists/SOURCES.md) records where each list came
 from and why.
 
 ## The two rules the oracle cannot be asked about
@@ -396,11 +462,11 @@ that cannot run the released artefacts over it at all.
 ## What may now be said, and what may not
 
 The claim this ledger earns is this one, with the figures beside it: *the EN 16931 rule pack of
-this repository was measured against the official validation artefacts of release 1.3.16 over
-the conformance corpus and 448 mutations of it; of the 217 rules it implements, the two engines
-report the same identifiers on every shape measured for 166, agree on one shape of the defect
-and differ on another for 33, differ outright for 16, and cannot be compared at all for 2 —
-each of the 51 named above with the reason for it.*
+this repository was measured against the official validation artefacts of release 1.3.17 over
+the conformance corpus and 455 mutations of it; of the 217 rules it implements, the two engines
+report the same identifiers on every shape measured for 137, agree on one shape of the defect
+and differ on another for 53, differ outright for 25, and cannot be compared at all for 2 —
+each of the 80 named above with the reason for it.*
 
 The figure that may not be quoted alone is the first one. A rule counted as agreeing has been
 measured on the shapes the mutation set carries and on no others; the day a new shape is

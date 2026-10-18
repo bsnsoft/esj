@@ -6,31 +6,31 @@ in, and this page is the evidence for each of them. The figures beside it in
 [`ledger.json`](ledger.json) are recomputed on every build and the page is held to them.*
 
 **No official validation artefact is published for this edition.** The artefact releases of
-CEN/TC 434 end at 1.3.16 and validate EN 16931-1:2017+A1:2019/AC:2020. Nothing here is
+CEN/TC 434 end at 1.3.17 and validate EN 16931-1:2017+A1:2019/AC:2020. Nothing here is
 corroborated by an official artefact, and no figure on this page is a conformance claim.
 
 Each of the 252 rules says what stands behind it, and the two answers are measured differently:
 
 | Oracle | Rules | Measured by |
 |---|---:|---|
-| `downgrade` | 108 | the official Schematron of release 1.3.16, over the document written back to the 2017 edition |
+| `downgrade` | 108 | the official Schematron of release 1.3.17, over the document written back to the 2017 edition |
 | `cases` | 144 | hand-computed cases of this project, and nothing else |
 
 ## The unchanged rules, measured by the downgrade
 
-A rule the edition leaves unchanged is the rule of `en16931/1.3.16`, taken over by identifier —
+A rule the edition leaves unchanged is the rule of `en16931/1.3.17`, taken over by identifier —
 except `BR-CO-10`, `-11`, `-12` and `-15`, written out only to round to the minor unit of the
 currency. What has to be shown is that it decides a document of this edition the way the
 official artefacts decide the same document of the earlier one.
 
 | | |
 |---|---|
-| Input | the 448 mutations of the default pack, [`conformance/rules/mutations`](../rules/mutations/mutations.json) |
+| Input | the 455 mutations of the default pack, [`conformance/rules/mutations`](../rules/mutations/mutations.json) |
 | Route | each mutated instance read into ESJ, written up with `esj upgrade --to 2026`, and written back |
 | Under test | the 108 rules of this pack whose oracle is `downgrade`, over the upgraded document |
 | Oracle | the identifiers of category `EN-BR`, `EN-DEC` and `EN-CL` the official Schematron reports on the same bytes |
 
-The round trip is what lets the artefact's verdict carry over: 447 of the 448 mutations write
+The round trip is what lets the artefact's verdict carry over: 454 of the 455 mutations write
 up to this edition and back to canonical bytes identical to the ones they started from. The
 one that does not is `br-46-cii`, which removes the VAT category tax amount: this edition
 admits a VAT breakdown without it and the 2017 edition does not, so the document cannot be
@@ -43,10 +43,10 @@ written back and is left out of the comparison.
 | Named on neither side by any mutation | **1** |
 | Open — a difference nobody has accounted for | **0** |
 
-436 of the 447 mutations are ones where every one of the 108 rules is named on both sides or
+443 of the 454 mutations are ones where every one of the 108 rules is named on both sides or
 on neither.
 
-**Nothing drifted.** Over all 447 mutations and all 108 rules, this pack over the upgraded
+**Nothing drifted.** Over all 454 mutations and all 108 rules, this pack over the upgraded
 document names exactly what the pack of the default edition names over the document it was made
 from — `findingsThatDifferFromTheDefaultPack` is 0. The seven differences against the official
 artefacts are therefore differences that pack already has: `BR-01`, `BR-27`, `BR-51`,

@@ -32,8 +32,6 @@ class CategoriesTest {
     /** The namespace of XSLT, whose {@code xsl:attribute} sets an identifier at run time. */
     private static final String XSLT = "http://www.w3.org/1999/XSL/Transform";
 
-    private final Pack pack = Packs.bundled("xrechnung/3.0.2/2026-08-31");
-
     @Test
     void everyIdentifierOfTheArtefactsHasACategory() {
         Map<FindingCategory, Set<String>> byCategory = new TreeMap<>();
@@ -110,15 +108,17 @@ class CategoriesTest {
                 Categories.ofSchema(de.bsnsoft.esj.xml.InvoiceSyntax.CII));
     }
 
-    /** Every rule identifier an assertion of the four vendored stylesheets reports. */
+    /** Every rule identifier an assertion of the vendored stylesheets of every bundled pack reports. */
     private Set<String> identifiers() {
         Set<String> identifiers = new TreeSet<>();
-        for (PackComponent component : pack.components()) {
-            if (component.role() != ComponentRole.SCHEMATRON_XSLT) {
-                continue;
-            }
-            for (String file : component.files()) {
-                collect(XmlFrontDoor.parse(pack.read(file)), identifiers);
+        for (Pack pack : Packs.bundled()) {
+            for (PackComponent component : pack.components()) {
+                if (component.role() != ComponentRole.SCHEMATRON_XSLT) {
+                    continue;
+                }
+                for (String file : component.files()) {
+                    collect(XmlFrontDoor.parse(pack.read(file)), identifiers);
+                }
             }
         }
         assertFalse(identifiers.isEmpty(), "the stylesheets report rule identifiers");

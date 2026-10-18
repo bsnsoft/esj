@@ -16,8 +16,8 @@
                       Condition="Exists('$(RepositoryRoot)model/en16931/2026.json')" />
     <EmbeddedResource Include="$(RepositoryRoot)model/xrechnung/3.0.2.json" LogicalName="model/xrechnung/3.0.2.json" />
     <EmbeddedResource Include="$(RepositoryRoot)model/b2c/0.1.json" LogicalName="model/b2c/0.1.json" />
-    <EmbeddedResource Include="$(RepositoryRoot)rules/en16931/1.3.16/**/*.json"
-                      LogicalName="rules/en16931/1.3.16/%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="$(RepositoryRoot)rules/en16931/1.3.17/**/*.json"
+                      LogicalName="rules/en16931/1.3.17/%(RecursiveDir)%(Filename)%(Extension)" />
     <!-- The rule pack of the later edition goes the way of its registry. -->
     <EmbeddedResource Include="$(RepositoryRoot)rules/en16931-2026/0.1/**/*.json"
                       LogicalName="rules/en16931-2026/0.1/%(RecursiveDir)%(Filename)%(Extension)"

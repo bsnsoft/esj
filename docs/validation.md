@@ -41,18 +41,28 @@ machine can execute, unmodified, each file under the licence it came with.
 [`../packs/README.md`](../packs/README.md) describes it; [`../packs/SOURCES.md`](../packs/SOURCES.md)
 records for every file where it was published, under which licence, with which SHA-256 and when.
 
-This build carries one pack, `xrechnung/3.0.2/2026-08-31`, of four components:
+This build carries two releases of one pack, `xrechnung/3.0.2/2026-10-12` and
+`xrechnung/3.0.2/2026-08-31`, each of four components:
 
 | Component | What it is | Licence |
 |---|---|---|
 | `ubl-2.1-xsd` | the OASIS UBL 2.1 schema modules the Invoice and CreditNote documents import | OASIS UBL 2.1 notice |
 | `cii-d16b-xsd` | the UN/CEFACT CII D16B schema modules CrossIndustryInvoice imports | UN/CEFACT notice |
-| `en16931-ubl-schematron`, `en16931-cii-schematron` | the EN 16931 Schematron of CEN/TC 434, release 1.3.16, compiled to XSLT | EUPL-1.2 |
+| `en16931-ubl-schematron`, `en16931-cii-schematron` | the EN 16931 Schematron of CEN/TC 434, compiled to XSLT: release 1.3.17 in the pack of 2026-10-12, release 1.3.16 in the pack of 2026-08-31 | EUPL-1.2 |
 | `xrechnung-ubl-schematron`, `xrechnung-cii-schematron` | the XRechnung Schematron 2.6.0, compiled to XSLT | Apache-2.0 |
 
 and eight level tables, 56 rules in all, which are what the XRechnung profiles say a rule of
 those artefacts means for a document of their own profile (**Two publishers, two levels**
-below). `esj --list-packs` prints all of it for a build. Three properties a report depends on:
+below). `esj --list-packs` prints all of it for a build.
+
+The newer release is the one a document is judged by. CEN/TC 434 published release 1.3.17 of
+its validation artefacts on 2026-10-12, in effect from the end of 2026-11-15; no release of the
+XRechnung validator configuration carries it yet, so the pack `xrechnung/3.0.2/2026-10-12` is
+release 1.3.17 together with the XRechnung Schematron, the schema modules and the level tables
+of the configuration of 2026-08-31. `--pack xrechnung/3.0.2/2026-08-31` keeps the previous
+release, with CEN 1.3.16, for an invoice that is to be judged by it.
+
+Three properties a report depends on:
 
 **A release is identity.** A pack is named by profile, profile version and the release date of
 the artefact bundle, and all three appear in every report, because a bugfix release adds,
@@ -174,14 +184,16 @@ this project's own. A **rule pack** is a directory of rules written over busines
 code list snapshots its membership tests are decided against and a manifest naming both, one
 per edition (`esj --list-packs`). The pack of the default edition:
 
-| `en16931/1.3.16` | |
+| `en16931/1.3.17` | |
 |---|---|
 | What it states | the business rules of EN 16931-1, clause 6.4, together with the decimal restrictions of clause 6.5.12, Table 26, and the code list restrictions of clause 6.3, which the official artefacts number `BR-DEC-*` and `BR-CL-*` |
 | Rules | 217 — 189 written in the rule language, 28 in Java, indistinguishable in a report |
-| Code lists | 17 dated snapshots, each with its publisher, its retrieval date and what that publisher says about reuse in [`../rules/en16931/1.3.16/codelists/SOURCES.md`](../rules/en16931/1.3.16/codelists/SOURCES.md) |
-| Verified against | the CEN/TC 434 validation artefacts, release 1.3.16 |
+| Code lists | 17 dated snapshots of 2026-10-18 — the code list workbook version 18, the EAS list version 17 and the VATEX list version 9 among their sources — each with its publisher, its retrieval date and what that publisher says about reuse in [`../rules/en16931/1.3.17/codelists/SOURCES.md`](../rules/en16931/1.3.17/codelists/SOURCES.md) |
+| Verified against | the CEN/TC 434 validation artefacts, release 1.3.17 |
 
-`1.3.16` is the release of the artefacts the pack was *measured against*. The pack
+`1.3.17` is the release of the artefacts the pack was *measured against*. The pack
+`en16931/1.3.16` stays in the tree beside it, with the identifiers `BR-AF-*` and `BR-AG-*` that
+release used for the categories `L` and `M`; `esj validate` runs the newer one. The pack
 `en16931-2026/0.1`, a preview like its edition, has no release behind it ([`editions.md`](editions.md#what-works-for-a-2026-document-today)).
 
 ### The rule language, in short
@@ -201,7 +213,7 @@ same identifier, in the same pack, producing the same finding.
 
 ### What it covers, and what it does not
 
-Every identifier of the official validation artefacts of release 1.3.16 is either implemented
+Every identifier of the official validation artefacts of release 1.3.17 is either implemented
 here or named with a reason, and a test of `esj-rules` reads the table that says which:
 
 | | Rules of the release | Implemented | Not applicable | Deferred |
@@ -212,7 +224,7 @@ here or named with a reason, and a test of `esj-rules` reads the table that says
 
 The 217 of the pack are those 216 and `BR-CO-25`, which the standard states in clause 6.4.2 —
 an invoice with an amount due for payment states a payment due date or payment terms — and which
-release 1.3.16 carries no identifier for.
+release 1.3.17 carries no identifier for.
 
 The seven that are not implemented are in
 [`../conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md), each with
@@ -492,25 +504,25 @@ Each engine was put beside the published thing it could be wrong about, over the
 | | |
 |---|---|
 | Documents | 149 — the 86 instances of the conformance corpus and 63 mutations |
-| Oracle | KoSIT Validator 1.6.3 with the XRechnung validator configuration of the release this pack is taken from |
-| Under test | the syntax engine of this repository with `xrechnung/3.0.2/2026-08-31` |
+| Oracle | KoSIT Validator 1.6.3 with the XRechnung validator configuration of 2026-08-31, its EN 16931 stylesheets replaced by those of release 1.3.17 |
+| Under test | the syntax engine of this repository with `xrechnung/3.0.2/2026-10-12` |
 
 | The two runs agree on | |
 |---|---|
 | the rule identifiers reported | 149 of 149 |
 | those identifiers with the flag of the artefact | 149 of 149 |
 | the node each finding names | 149 of 149 |
-| the location expression, character for character | 94 of 149 |
+| the location expression, character for character | 149 of 149 |
 | the verdict | 146 of 149 — and on the 3 that differ, neither run accepted the document |
 
 The mutations are the second half of the question: a corpus of valid documents can only show that
 neither side complains. Each lives as data — an instance, a location in it and one change to make
 there — so no broken invoice is checked in.
 
-Neither incomplete row is a disagreement about an invoice. The **location expressions** differ in
-form on 55 documents because the two runs execute two compilations of the same rules by different
-Schematron compilers; reduced to the node the expression names, the two agree on every finding of
-every document, which is the row above. The **verdicts** differ on 3 documents, all naming a core
+No configuration release of KoSIT carries release 1.3.17 yet, so the oracle ran the configuration
+of 2026-08-31 with the stylesheets of this pack in place of its own; run as published, it differs
+on 5 documents, each by a change of the release, and the verdicts are the same either way. The
+incomplete row is not a disagreement about an invoice. The **verdicts** differ on 3 documents, all naming a core
 invoice usage specification no scenario of the official configuration matches: that validator
 rejects such a document without running anything, this one checks what does apply and then reaches
 no verdict either — `INDETERMINATE`, cause `no-rules-for-profile`, exit code 9.
@@ -578,9 +590,9 @@ engines, identifier against identifier, every difference named in
 
 | | |
 |---|---|
-| Under test | the pack `en16931/1.3.16` of this repository, over the document after import |
-| Oracle | the EN 16931 Schematron of release 1.3.16, run in process by the syntax engine on the same bytes |
-| Input | the 86 instances of the conformance corpus and 448 mutations of them |
+| Under test | the pack `en16931/1.3.17` of this repository, over the document after import |
+| Oracle | the EN 16931 Schematron of release 1.3.17, run in process by the syntax engine on the same bytes |
+| Input | the 86 instances of the conformance corpus and 455 mutations of them |
 | Compared | the identifiers of category `EN-BR`, `EN-DEC` and `EN-CL` that each engine reports |
 
 Both engines are on the class path, so the comparison runs in the ordinary build: nothing is
@@ -588,17 +600,17 @@ downloaded and nothing installed, and these mutations too live as data.
 
 | Of the 217 rules of the pack | |
 |---|---|
-| Both engines report the same identifiers on every shape measured | 166 |
-| They agree on one shape of the defect and not on another, each named | 33 |
-| They differ, each difference explained | 16 |
+| Both engines report the same identifiers on every shape measured | 137 |
+| They agree on one shape of the defect and not on another, each named | 53 |
+| They differ, each difference explained | 25 |
 | The oracle cannot be asked at all | 2 |
 | **Open — a difference nobody has accounted for** | **0** |
 
-| Of the 448 mutations | |
+| Of the 455 mutations | |
 |---|---|
-| Aimed at a rule, both engines reporting the same set | 359 |
-| Aimed at a rule, the two sets differing | 76 |
-| Near misses, both engines silent as they should be | 13 |
+| Aimed at a rule, both engines reporting the same set | 326 |
+| Aimed at a rule, the two sets differing | 112 |
+| Near misses, both engines silent as they should be | 17 |
 
 | Of the 86 corpus instances | |
 |---|---|
@@ -608,16 +620,20 @@ downloaded and nothing installed, and these mutations too live as data.
 
 Agreement measured on one shape of a defect is not agreement on the rule, so a rule with an
 agreeing mutation and a differing one is counted as neither and the differing shape is named. The
-51 differences come down to nine causes, every one a property of the two engines rather than of an
-invoice: an operand the rule needs was removed and the artefacts decide an arithmetic rule against
+80 differences come down to twelve causes, every one a property of the two engines rather than of
+an invoice: an operand the rule needs was removed and the artefacts decide an arithmetic rule against
 a node that is not there; a trailing zero the canonical decimal form does not carry, which the
 decimal rules count in the XML and cannot count in the document; a business term the syntax binding
 did not carry into the model; two artefacts numbering one defect differently; a rule the release
-does not carry; an artefact expression that cannot fire; and nine rules where the two artefacts ask
+does not carry; an artefact expression that cannot fire; nine rules where the two artefacts ask
 for a different closeness of the same two figures, where the pack faults from the wider reading on
-and warns inside the zone only one artefact grants. Each is in the ledger with its mutation.
+and warns inside the zone only one artefact grants; and three that release 1.3.17 brought — the CII
+artefact numbers the categories `L` and `M` the other way round and asks for a rate above zero in
+`L`, both artefacts dropped the prefix `EL` from `BR-CO-09`, and the UBL artefact reports
+`BR-CO-09` on a tax scheme that states no identifier, which 25 mutations show. The pack follows
+the standard in all three. Each is in the ledger with its mutation.
 
-**What the ledger licenses this project to say** is exactly the figures above, each of the 51
+**What the ledger licenses this project to say** is exactly the figures above, each of the 80
 differences named with its reason. The first figure may not be quoted alone: a rule counted as
 agreeing has been measured on the shapes the mutation set carries and on no others.
 

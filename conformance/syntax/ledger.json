@@ -1,5 +1,5 @@
 {
-  "pack": "xrechnung/3.0.2/2026-08-31",
+  "pack": "xrechnung/3.0.2/2026-10-12",
   "instances": [
     {
       "instance": "business-cases/extension/04.01a-INVOICE_ubl.xml",
@@ -854,15 +854,6 @@
       "findings": [
         {
           "engine": "schematron",
-          "component": "en16931-cii-schematron",
-          "category": "CII-BINDING",
-          "severity": "information",
-          "flag": "warning",
-          "code": "CII-SR-475",
-          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
-        },
-        {
-          "engine": "schematron",
           "component": "xrechnung-cii-schematron",
           "category": "XR-BR",
           "severity": "information",
@@ -926,26 +917,7 @@
       "syntax": "CII",
       "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
       "verdict": "VALID",
-      "findings": [
-        {
-          "engine": "schematron",
-          "component": "en16931-cii-schematron",
-          "category": "CII-BINDING",
-          "severity": "information",
-          "flag": "warning",
-          "code": "CII-SR-475",
-          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
-        },
-        {
-          "engine": "schematron",
-          "component": "en16931-cii-schematron",
-          "category": "CII-BINDING",
-          "severity": "information",
-          "flag": "warning",
-          "code": "CII-SR-476",
-          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
-        }
-      ]
+      "findings": []
     },
     {
       "instance": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
@@ -959,26 +931,7 @@
       "syntax": "CII",
       "profile": "urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0",
       "verdict": "VALID",
-      "findings": [
-        {
-          "engine": "schematron",
-          "component": "en16931-cii-schematron",
-          "category": "CII-BINDING",
-          "severity": "information",
-          "flag": "warning",
-          "code": "CII-SR-475",
-          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
-        },
-        {
-          "engine": "schematron",
-          "component": "en16931-cii-schematron",
-          "category": "CII-BINDING",
-          "severity": "information",
-          "flag": "warning",
-          "code": "CII-SR-476",
-          "location": "/*:CrossIndustryInvoice[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:SupplyChainTradeTransaction[namespace-uri()='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100'][1]/*:ApplicableHeaderTradeAgreement[namespace-uri()='urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100'][1]"
-        }
-      ]
+      "findings": []
     },
     {
       "instance": "technical-cases/cius/01.02_comprehensive_test_ubl.xml",
@@ -1126,14 +1079,15 @@
     }
   ],
   "oracle": {
-    "takenDown": "2026-09-19",
+    "takenDown": "2026-10-18",
     "validator": {
       "name": "KoSIT Validator",
       "version": "1.6.3",
       "download": "https://github.com/itplr-kosit/validator/releases/download/v1.6.3/validator-1.6.3-standalone.jar",
       "sha256": "799e64befca97d4080e03608c80b85dd5a5ecc5f4ae4f35d1116ec2855b9a7c9",
       "configuration": "https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip",
-      "configurationSha256": "2530cd107c414511c5d0462ec10f886910395abfca820db82e83d70bf01221a8"
+      "configurationSha256": "2530cd107c414511c5d0462ec10f886910395abfca820db82e83d70bf01221a8",
+      "en16931Stylesheets": "replaced by those of release 1.3.17 of the EN 16931 validation artefacts, byte for byte the files of this pack"
     },
     "inputs": {
       "corpus": 86,
@@ -1145,11 +1099,19 @@
       "ruleIds": 149,
       "flags": 149,
       "verdict": 146,
-      "locations": 94,
+      "locations": 149,
       "nodes": 149
     },
+    "agreementWithTheConfigurationAsPublished": {
+      "documents": 149,
+      "ruleIds": 144,
+      "flags": 144,
+      "verdict": 146,
+      "locations": 94,
+      "nodes": 144
+    },
     "acceptanceLevels": {
-      "documentsAffected": 19,
+      "documentsAffected": 15,
       "verdictsThatWouldDifferWithoutThem": 7,
       "documents": [
         {
@@ -1203,32 +1165,6 @@
           "verdictOnTheFlagsAlone": "INVALID"
         },
         {
-          "document": "business-cases/standard/03.03a-INVOICE_uncefact.xml",
-          "rules": {
-            "CII-SR-475": "warning -> information"
-          },
-          "verdict": "VALID",
-          "verdictOnTheFlagsAlone": "VALID"
-        },
-        {
-          "document": "business-cases/standard/03.07a-INVOICE_uncefact.xml",
-          "rules": {
-            "CII-SR-475": "warning -> information",
-            "CII-SR-476": "warning -> information"
-          },
-          "verdict": "VALID",
-          "verdictOnTheFlagsAlone": "VALID"
-        },
-        {
-          "document": "en-br-co-10-cii-comprehensive",
-          "rules": {
-            "CII-SR-475": "warning -> information",
-            "CII-SR-476": "warning -> information"
-          },
-          "verdict": "INVALID",
-          "verdictOnTheFlagsAlone": "INVALID"
-        },
-        {
           "document": "en-br-co-16-ubl-extension",
           "rules": {
             "BR-CO-16": "fatal -> information",
@@ -1269,15 +1205,6 @@
           },
           "verdict": "VALID",
           "verdictOnTheFlagsAlone": "INVALID"
-        },
-        {
-          "document": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
-          "rules": {
-            "CII-SR-475": "warning -> information",
-            "CII-SR-476": "warning -> information"
-          },
-          "verdict": "VALID",
-          "verdictOnTheFlagsAlone": "VALID"
         },
         {
           "document": "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
@@ -1328,110 +1255,16 @@
         "cause": "The official validator chooses its artefacts with a table of scenarios, each of which matches one exact customization identifier, and rejects a document that matches none of them before running anything. The syntax engine chooses per artefact instead: a document whose profile no rule set of the pack recognizes is still checked against the schema of its syntax, and against the EN 16931 rules where it says it follows EN 16931. This engine therefore reaches no verdict on such a document: it reports INDETERMINATE with the cause no-rules-for-profile, names the rule sets that were left out and why, and leaves with exit code 9. Both runs decline to call the document valid; they decline differently, one before looking and one after checking what applies."
       },
       {
-        "kind": "location expression",
-        "agreementAffected": [
-          "locations"
-        ],
+        "kind": "configuration release",
+        "agreementAffected": [],
         "documents": [
-          "business-cases/extension/04.01a-INVOICE_ubl.xml",
-          "business-cases/extension/04.02a-INVOICE_ubl.xml",
-          "business-cases/extension/04.03a-INVOICE_ubl.xml",
-          "business-cases/extension/04.04a-INVOICE_ubl.xml",
-          "business-cases/extension/04.05a-INVOICE_uncefact.xml",
-          "business-cases/extension/05.01a-INVOICE_ubl.xml",
           "business-cases/standard/03.03a-INVOICE_uncefact.xml",
           "business-cases/standard/03.07a-INVOICE_uncefact.xml",
           "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
-          "technical-cases/cvd/02.01a-cvd_INVOICE_ubl.xml",
-          "technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml",
-          "cii-binding-document-name",
-          "cii-binding-language",
-          "en-br-05-ubl",
-          "en-br-06-cii",
-          "en-br-06-ubl",
-          "en-br-07-ubl",
-          "en-br-16-cii",
-          "en-br-25-ubl",
-          "en-br-26-ubl",
-          "en-br-co-10-cii",
-          "en-br-co-10-cii-comprehensive",
-          "en-br-co-10-ubl",
-          "en-br-co-10-ubl-comprehensive",
-          "en-br-co-13-ubl",
-          "en-br-co-14-ubl",
-          "en-br-co-15-ubl",
-          "en-br-co-16-cii",
-          "en-br-co-16-ubl",
-          "en-br-co-16-ubl-extension",
-          "en-br-s-08-ubl",
-          "en-br-s-09-ubl",
-          "en-cl-country-cii",
-          "en-cl-country-ubl",
-          "en-cl-currency-ubl",
-          "en-cl-endpoint-scheme-ubl",
-          "en-cl-endpoint-scheme-ubl-extension",
-          "en-cl-invoice-type-ubl",
-          "en-cl-item-classification-ubl",
-          "en-cl-item-classification-ubl-cvd",
-          "en-cl-payment-means-ubl",
-          "en-cl-unit-code-cii",
-          "en-cl-unit-code-ubl",
-          "en-cl-vat-category-ubl",
-          "en-dec-invoice-total-ubl",
-          "en-dec-line-net-amount-cii",
-          "en-dec-line-net-amount-ubl",
-          "en-dec-taxable-amount-ubl",
-          "ubl-binding-copy-indicator",
-          "ubl-binding-copy-indicator-extension",
-          "ubl-binding-issue-time",
-          "ubl-binding-uuid",
-          "ubl-binding-vat-total-decimals",
           "xr-br-payment-account-ubl",
-          "xr-br-seller-contact-cii-extension"
+          "en-br-co-10-cii-comprehensive"
         ],
-        "codes": {
-          "BR-05": 1,
-          "BR-06": 2,
-          "BR-07": 1,
-          "BR-16": 1,
-          "BR-25": 1,
-          "BR-26": 1,
-          "BR-27": 1,
-          "BR-50": 1,
-          "BR-61": 1,
-          "BR-CL-01": 1,
-          "BR-CL-04": 1,
-          "BR-CL-10": 2,
-          "BR-CL-13": 4,
-          "BR-CL-14": 2,
-          "BR-CL-16": 1,
-          "BR-CL-18": 1,
-          "BR-CL-21": 2,
-          "BR-CL-23": 2,
-          "BR-CL-25": 2,
-          "BR-CO-10": 5,
-          "BR-CO-13": 5,
-          "BR-CO-14": 2,
-          "BR-CO-15": 4,
-          "BR-CO-16": 5,
-          "BR-CO-17": 2,
-          "BR-DEC-14": 1,
-          "BR-DEC-19": 1,
-          "BR-DEC-23": 2,
-          "BR-S-08": 3,
-          "BR-S-09": 2,
-          "CII-SR-013": 1,
-          "CII-SR-019": 1,
-          "CII-SR-475": 4,
-          "CII-SR-476": 3,
-          "UBL-CR-004": 2,
-          "UBL-CR-005": 1,
-          "UBL-CR-006": 1,
-          "UBL-CR-470": 1,
-          "UBL-CR-646": 7,
-          "UBL-DT-01": 4
-        },
-        "cause": "The two runs execute two compilations of the same EN 16931 rules of release 1.3.16: this pack carries the one CEN published, the validator configuration ships one of its own. The rules, the identifiers and the flags are the same; the two Schematron compilers write the location of a finding differently, one as /Q{namespace}name[1] and the other as /*:name[namespace-uri()='namespace'][1]. Reduced to the node each expression names, the two runs agree on every finding of every document. Only findings of the EN 16931 components are affected; the XRechnung artefact is the same file in both runs and its locations are identical in form as well."
+        "cause": "No release of the XRechnung validator configuration carries release 1.3.17 of the EN 16931 validation artefacts yet; the one of 2026-08-31 ships a compilation of its own of release 1.3.16. The oracle was therefore run with that configuration and its two EN 16931 stylesheets replaced by those of release 1.3.17, the files this pack carries. Run with the configuration as published, the two answers differ on these documents, each by a change of the release: CII-SR-475 and CII-SR-476 no longer fire, and UBL-SR-59, a rule release 1.3.17 adds, fires on a document both runs reject already. The verdicts are the same either way."
       }
     ],
     "documents": [
@@ -1443,7 +1276,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -1455,7 +1288,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -1467,7 +1300,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -1479,7 +1312,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -1491,7 +1324,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -1503,7 +1336,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2199,7 +2032,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2295,7 +2128,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2319,7 +2152,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2451,7 +2284,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2463,7 +2296,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2475,7 +2308,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2487,7 +2320,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2499,7 +2332,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2511,7 +2344,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2523,7 +2356,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2535,7 +2368,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2547,7 +2380,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2559,7 +2392,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2571,7 +2404,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2583,7 +2416,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2595,7 +2428,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2607,7 +2440,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2619,7 +2452,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2631,7 +2464,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2643,7 +2476,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2655,7 +2488,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2667,7 +2500,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2679,7 +2512,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2691,7 +2524,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2703,7 +2536,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2715,7 +2548,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2727,7 +2560,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2739,7 +2572,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2751,7 +2584,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2763,7 +2596,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2775,7 +2608,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2787,7 +2620,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2799,7 +2632,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2811,7 +2644,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2823,7 +2656,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2835,7 +2668,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2847,7 +2680,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2859,7 +2692,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2871,7 +2704,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2883,7 +2716,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2895,7 +2728,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2907,7 +2740,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2967,7 +2800,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2979,7 +2812,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -2991,7 +2824,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -3003,7 +2836,7 @@
         "esjVerdict": "VALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -3015,7 +2848,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -3051,7 +2884,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },
@@ -3087,7 +2920,7 @@
         "esjVerdict": "INVALID",
         "ruleIds": true,
         "flags": true,
-        "locations": false,
+        "locations": true,
         "nodes": true,
         "verdict": true
       },

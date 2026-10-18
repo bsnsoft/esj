@@ -89,9 +89,9 @@ public class TypedViewTests
     [Theory]
     [InlineData("model/en16931/2017.json")]
     [InlineData("model/xrechnung/3.0.2.json")]
-    [InlineData("rules/en16931/1.3.16/pack.json")]
-    [InlineData("rules/en16931/1.3.16/rules/br-co.json")]
-    [InlineData("rules/en16931/1.3.16/codelists/untdid-5305/2026-09-19.json")]
+    [InlineData("rules/en16931/1.3.17/pack.json")]
+    [InlineData("rules/en16931/1.3.17/rules/br-co.json")]
+    [InlineData("rules/en16931/1.3.17/codelists/untdid-5305/2026-10-18.json")]
     public void EmbeddedFileIsTheFileOfTheRepository(string name)
     {
         using Stream? embedded = typeof(Registry).Assembly.GetManifestResourceStream(name);

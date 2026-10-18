@@ -158,7 +158,7 @@ class En16931CorpusTest {
                 "BR-CO-16 on 05.01a-INVOICE_ubl, the two scheme identifier rules on"
                         + " 04.05a-INVOICE_uncefact and BR-CL-13 on the two cvd instances are what"
                         + " this pack reports about the corpus, and the EN 16931 Schematron of"
-                        + " release 1.3.16 reports every one of them on the same instance");
+                        + " release 1.3.17 reports every one of them on the same instance");
     }
 
     @Test

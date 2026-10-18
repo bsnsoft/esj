@@ -17,6 +17,101 @@ on a file the inventory of `pack.json` does not list.
 
 ---
 
+## Pack `xrechnung/3.0.2/2026-10-12`
+
+Retrieved **2026-10-18**. 28 files, 2,821,651 bytes (2.69 MiB).
+
+This pack combines two bundles of different dates. Its EN 16931 Schematron is release 1.3.17
+of the CEN validation artefacts, published 2026-10-12 and effective from 2026-11-15, end of
+day; the release date of the pack is the date of that bundle, because it is the newer of the
+two. Everything else — the XRechnung Schematron, both schema sets and the level tables — is
+the KoSIT validator configuration of 2026-08-31, byte for byte the files of the pack
+`xrechnung/3.0.2/2026-08-31` below, taken from the same archive. On the day this pack was
+made, KoSIT had published no configuration that carries release 1.3.17. The pack
+`xrechnung/3.0.2/2026-08-31` stays bundled and is chosen with
+`--pack xrechnung/3.0.2/2026-08-31`.
+
+### Upstream archives
+
+| Archive | URL | sha256 |
+|---|---|---|
+| `en16931-ubl-1.3.17.zip` | <https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/download/validation-1.3.17/en16931-ubl-1.3.17.zip> | `bf02a0e3f6cbe692a4a28e70be7bdcaded5612b4169b543e13d6cb4f33c29e92` |
+| `en16931-cii-1.3.17.zip` | <https://github.com/ConnectingEurope/eInvoicing-EN16931/releases/download/validation-1.3.17/en16931-cii-1.3.17.zip> | `e5f3235824b6b38454b1d54cf3f14e01efb5b33971fbefc4e64997d0ef619e89` |
+| `LICENSE.txt` of the same tag | <https://raw.githubusercontent.com/ConnectingEurope/eInvoicing-EN16931/validation-1.3.17/LICENSE.txt> | `fc22ec1dcd8bee4636a395fb332e2308cde870fb3fdc71a2e260b919877cdef5` |
+| `xrechnung-3.0.2-validator-configuration-2026-08-31.zip` | <https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip> | `2530cd107c414511c5d0462ec10f886910395abfca820db82e83d70bf01221a8` |
+| `LICENSE` of the same tag | <https://raw.githubusercontent.com/itplr-kosit/validator-configuration-xrechnung/v2026-08-31/LICENSE> | `73f2898ad26e1fcb9ec4649cdf8466ea0bda47644b7c12efc10a703bdfb94a9f` |
+
+The digests of the two CEN archives are the ones GitHub records for the release assets of the
+tag `validation-1.3.17`. The licence file of that tag has the same bytes as the one of
+`validation-1.3.16`.
+
+### Component: EN 16931 Schematron, compiled (`cen/1.3.17/`)
+
+| Item | Value |
+|---|---|
+| Publisher | CEN/TC 434 via the Connecting Europe eInvoicing project |
+| Project | <https://github.com/ConnectingEurope/eInvoicing-EN16931> |
+| Release | `validation-1.3.17`, "EN16931 Validation artefacts v1.3.17", published 2026-10-12 |
+| Taken from | `xslt/` of the two release archives above |
+| Licence | European Union Public Licence (EUPL) v1.2, SPDX `EUPL-1.2` |
+| Licence file | `cen/1.3.17/LICENSE` |
+| Modified | no |
+
+The release notes of 1.3.17 state the same licence as those of 1.3.16. The stylesheets are
+executed as data, as in the pack below.
+
+| File | sha256 |
+|---|---|
+| `cen/1.3.17/EN16931-UBL-validation.xslt` | `fc4e6cfa8596bba0c2abd19038a98960c6ee9fc1f44566787c115efd4f4aca7c` |
+| `cen/1.3.17/EN16931-CII-validation.xslt` | `0757f07909938b1b297b8356ab7b66406c89f1b342325385d6a2def998c817f0` |
+| `cen/1.3.17/LICENSE` | `fc22ec1dcd8bee4636a395fb332e2308cde870fb3fdc71a2e260b919877cdef5` |
+
+### Components of the KoSIT configuration of 2026-08-31
+
+The XRechnung Schematron 2.6.0, the UBL 2.1 and the UN/CEFACT CII D16B schema modules, their
+licence and notice files and the level tables are those of the pack `xrechnung/3.0.2/2026-08-31`:
+the same archive, the same files, the same digests, the same 56 levels in the same eight
+tables. Their publishers, licences and the reasons for the two `NOTICE` files are recorded in
+that section and hold here unchanged. None of the 56 levels names a rule that release 1.3.17
+renamed or removed; all eighteen rule identifiers they name are in the compiled CEN
+stylesheets of 1.3.17. The `NOTICE` of the UBL schema modules carries the Notices section of
+the UBL 2.1 OS specification as copied on 2026-09-19.
+
+| File | sha256 |
+|---|---|
+| `xrechnung-schematron/2.6.0/XRechnung-UBL-validation.xsl` | `e32d831668facbbd5136cc0119bf1dd6f92ac20738aa3b3f021586f5a305c738` |
+| `xrechnung-schematron/2.6.0/XRechnung-CII-validation.xsl` | `ec54f662803a87f527ec606d1320bc404f1657a848af6a76f37f32905e4aac40` |
+| `xrechnung-schematron/2.6.0/LICENSE` | `73f2898ad26e1fcb9ec4649cdf8466ea0bda47644b7c12efc10a703bdfb94a9f` |
+| `xsd/ubl-2.1/maindoc/UBL-Invoice-2.1.xsd` | `3a5aacd823f0e5b8f25ae7b5191c2002d5333ba351d87de9371ed62dca2b2b0c` |
+| `xsd/ubl-2.1/maindoc/UBL-CreditNote-2.1.xsd` | `1e117b6c1ab713604b29b0d685442a81a0c78a82575445ee8c43e6050cda7454` |
+| `xsd/ubl-2.1/common/CCTS_CCT_SchemaModule-2.1.xsd` | `dd546e4809df86b6445589f69f0d6c9df162840ae386574ddfc1da7638103e15` |
+| `xsd/ubl-2.1/common/UBL-CommonAggregateComponents-2.1.xsd` | `580b5af6f68f7f556bd15945ba0e819cbf561442c81694f9b9468036ebedec4d` |
+| `xsd/ubl-2.1/common/UBL-CommonBasicComponents-2.1.xsd` | `a3b349bf92e5cff26e303d2f05b7e00c884dcafcfd9e12755fb80289abf5e22e` |
+| `xsd/ubl-2.1/common/UBL-CommonExtensionComponents-2.1.xsd` | `ad7a4e490978adfbcfc5ec0bb20941cf11ac960ccf0c4de8791a7c731a8dbe87` |
+| `xsd/ubl-2.1/common/UBL-CommonSignatureComponents-2.1.xsd` | `4fa9e2370100040fe14c43e135ef77e2eb66b21cb8dbfc2ffb8d82ae991fe92e` |
+| `xsd/ubl-2.1/common/UBL-ExtensionContentDataType-2.1.xsd` | `fcee77a11870208e6377ea6311b9f2a050bca24bdad8606ea02d71e9f9e72f8d` |
+| `xsd/ubl-2.1/common/UBL-QualifiedDataTypes-2.1.xsd` | `7dcb156e610239c97ae70940cf4653b88e48c3595bf5f56a2204a32e2893e6cf` |
+| `xsd/ubl-2.1/common/UBL-SignatureAggregateComponents-2.1.xsd` | `9234c2ca48dbfa9a22a786112bb075c5922a305170920eaab1e3c04fa0b7344b` |
+| `xsd/ubl-2.1/common/UBL-SignatureBasicComponents-2.1.xsd` | `0fbe2d7afff0c1e11164b8ec83e13f18801021c3c87e390a9d76f9cf862f6a64` |
+| `xsd/ubl-2.1/common/UBL-UnqualifiedDataTypes-2.1.xsd` | `09052d406b4293e2a5f9c2bfee6df10ad4d8d5f0b36e24a6349d7f7936d89eb6` |
+| `xsd/ubl-2.1/common/UBL-XAdESv132-2.1.xsd` | `a4f726bcf8cc3f7d9ffa4dab99e005535a8e8b60dced1e5d94578d2e05afa96e` |
+| `xsd/ubl-2.1/common/UBL-XAdESv141-2.1.xsd` | `1fa4625e9cefcb7a9abb5ac1b64315547450031eece8a55bd584e4ba4b79dbc1` |
+| `xsd/ubl-2.1/common/UBL-xmldsig-core-schema-2.1.xsd` | `101909c9f06456d61ddcc4fb982f1d40dc357b439f393b1a2eb46e42acd60809` |
+| `xsd/ubl-2.1/NOTICE` | `8e844cbf09aea02acc352b5403129d066c6a4f165e88fbf1ba6abd79e3587e39` |
+| `xsd/cii-d16b/CrossIndustryInvoice_100pD16B.xsd` | `3baf143b90f289d62c5dfb086aa51fa183490a2d0b38a40c6b31dcae0760f2ba` |
+| `xsd/cii-d16b/CrossIndustryInvoice_QualifiedDataType_100pD16B.xsd` | `6649215914728652e883662bec1d3eab008c215e86a59f3bb417db9723ee8c5c` |
+| `xsd/cii-d16b/CrossIndustryInvoice_ReusableAggregateBusinessInformationEntity_100pD16B.xsd` | `1c42244298a863bcc0b5196983ff0a5d084fcabe58aea77ef82b242e7cd0ddfd` |
+| `xsd/cii-d16b/CrossIndustryInvoice_UnqualifiedDataType_100pD16B.xsd` | `04fce6f6f28521886731294be18a4e6bb5cb3003456457d99ad5c4d3e652f497` |
+| `xsd/cii-d16b/NOTICE` | `78e16375c69f86b807b3db5bfbac8a1be61c22951d61224d9faa3a9b2c62f2c2` |
+
+### What was left out
+
+The same as for the pack below. From the CEN release archives of 1.3.17: the Schematron
+sources under `schematron/`, including the preprocessed and abstract rule files, and the
+example instances under `examples/`.
+
+---
+
 ## Pack `xrechnung/3.0.2/2026-08-31`
 
 Retrieved **2026-09-19**. 28 files, 2,814,010 bytes (2.68 MiB).

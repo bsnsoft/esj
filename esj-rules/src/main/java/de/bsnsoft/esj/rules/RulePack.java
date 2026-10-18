@@ -53,7 +53,7 @@ import java.util.Optional;
  * the named ones arrived.
  *
  * @param id              the identifier of the pack, for example {@code en16931}
- * @param version         the version of the pack, for example {@code 1.3.16}
+ * @param version         the version of the pack, for example {@code 1.3.17}
  * @param edition         the edition of the semantic model the rules are written for, in the
  *                        spelling of the registry that describes it
  * @param verifiedAgainst the release of the official artefacts the pack is checked against,
@@ -138,7 +138,7 @@ public record RulePack(String id,
         /**
          * Returns the pack the rules are read from, as a report names a pack.
          *
-         * @return the pack name, for example {@code en16931/1.3.16}
+         * @return the pack name, for example {@code en16931/1.3.17}
          */
         public String name() {
             return pack + "/" + version;
@@ -149,7 +149,7 @@ public record RulePack(String id,
      * Copies the collections and checks that every part is present.
      *
      * @param id              the identifier of the pack, for example {@code en16931}
-     * @param version         the version of the pack, for example {@code 1.3.16}
+     * @param version         the version of the pack, for example {@code 1.3.17}
      * @param edition         the edition of the semantic model the rules are written for
      * @param verifiedAgainst the release of the official artefacts the pack is checked
      *                        against, empty where none covers this edition
@@ -180,7 +180,7 @@ public record RulePack(String id,
     /**
      * Returns the identifier and the version, which is how a report names a pack.
      *
-     * @return the pack name, for example {@code en16931/1.3.16}
+     * @return the pack name, for example {@code en16931/1.3.17}
      */
     public String name() {
         return id + "/" + version;

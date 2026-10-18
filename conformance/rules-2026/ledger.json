@@ -2,7 +2,7 @@
   "pack": "en16931-2026/0.1",
   "edition": "EN 16931-1:2026",
   "artefacts": "none published for this edition",
-  "takenDown": "2026-09-21",
+  "takenDown": "2026-10-18",
   "oracles": {
     "downgrade": 108,
     "cases": 144
@@ -222,11 +222,11 @@
     ]
   },
   "downgrade": {
-    "oracle": "the EN 16931 Schematron of release 1.3.16, over the document this one is written down to",
-    "mutations": 448,
-    "roundTripHeld": 447,
+    "oracle": "the EN 16931 Schematron of release 1.3.17, over the document this one is written down to",
+    "mutations": 455,
+    "roundTripHeld": 454,
     "roundTripRefused": 1,
-    "mutationsWhereEveryRuleAgrees": 436,
+    "mutationsWhereEveryRuleAgrees": 443,
     "findingsThatDifferFromTheDefaultPack": 0,
     "totals": {
       "rules": 108,

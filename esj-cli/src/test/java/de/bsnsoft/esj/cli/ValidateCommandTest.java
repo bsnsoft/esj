@@ -225,7 +225,7 @@ class ValidateCommandTest {
         assertFalse(run.text().contains("\"" + Validation.NOT_CHECKED_BUSINESS_RULES + "\""),
                 "the rules were checked, so nothing says they were not: " + run.text());
         assertTrue(run.text().contains("\"id\": \"en16931\""), run.text());
-        assertTrue(run.text().contains("\"version\": \"1.3.16\""), run.text());
+        assertTrue(run.text().contains("\"version\": \"1.3.17\""), run.text());
     }
 
     /** A rule pack this version does not carry is refused in the words of the option. */

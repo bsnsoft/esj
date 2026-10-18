@@ -5823,10 +5823,10 @@
     }
   ],
   "rules": {
-    "pack": "en16931/1.3.16",
-    "directory": "rules/en16931/1.3.16",
-    "casesFile": "cases-en16931-1.3.16.json",
-    "cases": 448
+    "pack": "en16931/1.3.17",
+    "directory": "rules/en16931/1.3.17",
+    "casesFile": "cases-en16931-1.3.17.json",
+    "cases": 455
   },
   "arithmetic": {
     "pack": "conformance/fixtures/arithmetic/pack.json",

@@ -176,7 +176,7 @@ class PeppolPackTest {
                 unknownFile.toString());
         ledger.append("a specification identifier no pack knows (BT-24): exit ")
                 .append(automatic.exitCode()).append(" (")
-                .append(automatic.text().contains("(pack xrechnung/3.0.2/2026-08-31)")
+                .append(automatic.text().contains("(pack xrechnung/3.0.2/2026-10-12)")
                         ? "bundled pack" : "?")
                 .append("), with --pack ").append(identity).append(": exit ")
                 .append(named.exitCode()).append('\n');

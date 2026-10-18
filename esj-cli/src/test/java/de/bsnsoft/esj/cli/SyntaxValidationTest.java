@@ -56,7 +56,14 @@ class SyntaxValidationTest {
             + "urn:xeinkauf.de:kosit:xrechnung:cvd_0.9";
 
     /** The pack this build carries, which is the one every example below is run with. */
-    private static final String PACK = "xrechnung/3.0.2/2026-08-31";
+    private static final String PACK = "xrechnung/3.0.2/2026-10-12";
+
+    /** The release of the same pack before it, with release 1.3.16 of the CEN artefacts. */
+    private static final String PREVIOUS_PACK = "xrechnung/3.0.2/2026-08-31";
+
+    /** A CII instance with several supporting documents, each of which carries a name. */
+    private static final String SUPPORTING_DOCUMENTS = "conformance/kosit/business-cases/"
+            + "standard/03.07a-INVOICE_uncefact.xml";
 
     /** How many copies of one invoice line make an import that takes seconds. */
     private static final int LINES = 1500;
@@ -136,7 +143,7 @@ class SyntaxValidationTest {
         assertTrue(run.text().contains("\"component\": \"en16931-ubl-schematron\""), run.text());
         assertTrue(run.text().contains("\"packId\": \"xrechnung\""), run.text());
         assertTrue(run.text().contains("\"packVersion\": \"3.0.2\""), run.text());
-        assertTrue(run.text().contains("\"packRelease\": \"2026-08-31\""), run.text());
+        assertTrue(run.text().contains("\"packRelease\": \"2026-10-12\""), run.text());
         assertTrue(run.text().contains("\"verdict\": \"INVALID\""), run.text());
     }
 
@@ -249,6 +256,28 @@ class SyntaxValidationTest {
         Cli.Run run = Cli.run("validate", "--pack", PACK, Fixtures.file(directory, UBL));
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         assertTrue(run.text().contains("(pack " + PACK + ")"), run.text());
+    }
+
+    /**
+     * The release before the newest stays selectable by its identity, and it runs its own
+     * stylesheets: release 1.3.16 of the EN 16931 artefacts counts the names of the supporting
+     * documents of an invoice across all of them, release 1.3.17 within each one, so the two
+     * answer this instance differently.
+     */
+    @Test
+    void runsThePreviousReleaseOfTheBundledArtefactsWhenTheCallerNamesIt() {
+        Cli.Run newest = Cli.run("validate", Fixtures.file(directory, SUPPORTING_DOCUMENTS));
+        assertEquals(ExitCode.SUCCESS, newest.exitCode(), newest.err());
+        assertTrue(newest.text().contains("(pack " + PACK + ")"), newest.text());
+        assertTrue(newest.text().contains("EN 16931 CII Schematron:   OK"), newest.text());
+
+        Cli.Run previous = Cli.run("validate", "--pack", PREVIOUS_PACK,
+                Fixtures.file(directory, SUPPORTING_DOCUMENTS));
+        assertEquals(ExitCode.SUCCESS, previous.exitCode(), previous.err());
+        assertTrue(previous.text().contains("(pack " + PREVIOUS_PACK + ")"), previous.text());
+        assertTrue(previous.text().contains("EN 16931 CII Schematron:   2 notes"), previous.text());
+        assertTrue(previous.text().contains("CII-SR-475 [information, flagged warning by the"
+                + " artefact]"), previous.text());
     }
 
     @Test

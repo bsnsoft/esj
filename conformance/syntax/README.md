@@ -23,7 +23,7 @@ answer down.
 | Instances | 86 |
 | Valid | 86 |
 | Invalid | 0 |
-| Findings in total | 53 |
+| Findings in total | 48 |
 | Of those, fatal | 0 |
 
 No instance fails the XML Schema of its syntax, none fails to parse, and none carries a
@@ -45,9 +45,7 @@ one was published.
 |---|---|---|---|---|
 | `BR-DE-TMP-32` | information | information | 36 | XRechnung Schematron, both syntaxes |
 | `UBL-CR-646` | warning | information | 4 | EN 16931 UBL Schematron |
-| `CII-SR-475` | warning | information | 3 | EN 16931 CII Schematron |
 | `BR-CL-10` | fatal | information | 3 | EN 16931 CII Schematron |
-| `CII-SR-476` | warning | information | 2 | EN 16931 CII Schematron |
 | `BR-CL-13` | fatal | information | 2 | EN 16931 CII and UBL Schematron |
 | `BR-CL-21` | fatal | information | 1 | EN 16931 CII Schematron |
 | `BR-CO-16` | fatal | information | 1 | EN 16931 UBL Schematron |
@@ -55,8 +53,12 @@ one was published.
 
 `BR-DE-TMP-32` is the largest group by far and says nothing about an error: it is the
 temporary rule that asks for a delivery date or an invoicing period, levelled as
-information by the artefact that carries it. The four binding rules observe where a
-document uses a part of its syntax that the EN 16931 binding does not map.
+information by the artefact that carries it. The two binding rules observe where a
+document uses a part of its syntax that the EN 16931 binding does not map. Under release
+1.3.16 of the EN 16931 artefacts two more, `CII-SR-475` and `CII-SR-476`, stood here on three
+CII instances whose supporting documents each carry a name or an attachment: that release
+counted those across all supporting documents of an invoice, release 1.3.17 counts them within
+each one, and neither rule fires.
 
 The seven findings whose flag is fatal are the interesting ones, and they are why the
 tables exist. Six of the seven are the same kind of thing: a profile introduces an
@@ -73,9 +75,8 @@ corpus would be invalid here and acceptable to the validator their publisher shi
 [`ledger.md`](ledger.md) has the figures.
 
 None of this is an effect of which compilation of the CEN rules the pack carries. The
-comparison in [`ledger.md`](ledger.md) ran the compilation the XRechnung validator
-configuration of 2026-08-31 ships over the same documents, and it reported the same
-identifiers with the same flags on every one of them.
+comparison in [`ledger.md`](ledger.md) ran the official validator over the same documents,
+and it reported the same identifiers with the same flags on every one of them.
 
 ## What it costs
 

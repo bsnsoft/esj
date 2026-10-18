@@ -6,10 +6,10 @@ machine, so nothing here is read from the locale data of the runtime.
 
 | File | Codes | English names | German names |
 |---|---|---|---|
-| `invoice-type.json` | UNTDID 1001 (BT-3) | the dated snapshot `rules/en16931/1.3.16/codelists/untdid-1001/2026-09-19.json`, except 380, which reads *Invoice* because it is the title of a page | written for this project |
-| `unit.json` | UN/ECE Rec 20 with the Rec 21 extension (BT-130, BT-150) | the snapshots `unece-rec20/2026-09-19.json` and `unece-rec21/2026-09-19.json`, with a name for more than one under `enPlural`, except XPP, which reads *Packaging piece* because Rec 21 calls it *Piece* and that is what Rec 20 calls H87 | written for this project, with `dePlural` beside it |
-| `payment-means.json` | UNTDID 4461 (BT-81) | the snapshot `untdid-4461/2026-09-19.json` | written for this project |
-| `vat-category.json` | UNTDID 5305 (BT-95, BT-102, BT-118, BT-151) | the snapshot `untdid-5305/2026-09-19.json` | written for this project |
+| `invoice-type.json` | UNTDID 1001 (BT-3) | the dated snapshot `rules/en16931/1.3.17/codelists/untdid-1001/2026-10-18.json`, except 380, which reads *Invoice* because it is the title of a page | written for this project |
+| `unit.json` | UN/ECE Rec 20 with the Rec 21 extension (BT-130, BT-150) | the snapshots `unece-rec20/2026-10-18.json` and `unece-rec21/2026-10-18.json`, with a name for more than one under `enPlural`, except XPP, which reads *Packaging piece* because Rec 21 calls it *Piece* and that is what Rec 20 calls H87 | written for this project, with `dePlural` beside it |
+| `payment-means.json` | UNTDID 4461 (BT-81) | the snapshot `untdid-4461/2026-10-18.json` | written for this project |
+| `vat-category.json` | UNTDID 5305 (BT-95, BT-102, BT-118, BT-151) | the snapshot `untdid-5305/2026-10-18.json` | written for this project |
 | `country.json` | ISO 3166-1 alpha-2 (BT-40, BT-55, BT-69, BT-80, BT-159) | the Unicode CLDR | the Unicode CLDR |
 
 A code no file names is printed as the code.

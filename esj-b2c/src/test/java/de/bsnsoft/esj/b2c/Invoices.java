@@ -143,7 +143,7 @@ final class Invoices {
                 StructuralValidator.validate(document, B2c.registry(), STRUCTURE).findings(),
                 "layers L2 and L3 against the core registry with the extension loaded");
         assertEquals(List.of(), fatal(document),
-                "the business rules of EN 16931-1, pack en16931/1.3.16");
+                "the business rules of EN 16931-1, pack en16931/1.3.17");
     }
 
     /**

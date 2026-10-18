@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  *
  * <p>Every derived invoice is checked as a whole: layer L1 by writing and reading it back,
  * layers L2 and L3 against the core registry with the extension loaded, and the business rules
- * of EN 16931-1 against the pack {@code en16931/1.3.16}, whose conditions BR-CO-10 to BR-CO-17
+ * of EN 16931-1 against the pack {@code en16931/1.3.17}, whose conditions BR-CO-10 to BR-CO-17
  * are the arithmetic of the totals.
  */
 class GrossAuthoringTest {

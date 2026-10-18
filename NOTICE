@@ -253,7 +253,20 @@ Validation packs (packs/)
   packs/SOURCES.md records for every file the upstream release, the licence, the
   SHA-256 of the archive it came from and of the file itself, and the date of
   retrieval; a test of esj-syntax recomputes every digest on every build. The
-  pack xrechnung/3.0.2/2026-08-31 contains four components and eight level tables.
+  packs xrechnung/3.0.2/2026-10-12 and xrechnung/3.0.2/2026-08-31 contain four
+  components and eight level tables each. The pack of 2026-10-12 takes its EN 16931
+  Schematron from release 1.3.17, below, and carries the XRechnung Schematron, the
+  schema modules and the level tables byte for byte as the pack of 2026-08-31 does;
+  the entries after the first two name the directories of the latter.
+
+  EN 16931 Schematron, compiled (packs/xrechnung/3.0.2/2026-10-12/cen/1.3.17/)
+    The files EN16931-UBL-validation.xslt and EN16931-CII-validation.xslt are
+    unmodified copies from the release assets en16931-ubl-1.3.17.zip and
+    en16931-cii-1.3.17.zip of the tag validation-1.3.17 of the repository
+    https://github.com/ConnectingEurope/eInvoicing-EN16931, published for
+    CEN/TC 434 by the Connecting Europe eInvoicing project under the European
+    Union Public Licence, version 1.2. The licence text of that release is
+    shipped beside them as LICENSE.
 
   EN 16931 Schematron, compiled (packs/xrechnung/3.0.2/2026-08-31/cen/1.3.16/)
     The files EN16931-UBL-validation.xslt and EN16931-CII-validation.xslt are
@@ -433,15 +446,16 @@ picocli (dependency of esj-cli)
   the Apache License, Version 2.0. Its source is available from
   https://github.com/remkop/picocli. No other module of this project depends on it.
 
-Code list snapshots (rules/en16931/1.3.16/codelists/)
+Code list snapshots (rules/en16931/1.3.17/codelists/, rules/en16931/1.3.16/codelists/)
   The membership tests of the EN 16931 rule pack are decided against dated
   snapshots of published code lists. Each snapshot file carries a list of codes and
   the short names their publisher gives them, and no prose of any publisher is
-  reproduced. They were extracted mechanically on 2026-09-19 from four
-  publications, none of which states a licence for the data on the page it is
-  offered from; rules/en16931/1.3.16/codelists/SOURCES.md records the URL, the
-  SHA-256 of the bytes downloaded and what was found on the page, and records the
-  uncertainty about the terms as an open question rather than an answer.
+  reproduced. They were extracted mechanically, on 2026-10-18 for the pack 1.3.17
+  and on 2026-09-19 for the pack 1.3.16, from four publications, none of which
+  states a licence for the data on the page it is offered from; the SOURCES.md
+  beside each set records the URL, the SHA-256 of the bytes downloaded and what was
+  found on the page, and records the uncertainty about the terms as an open
+  question rather than an answer.
 
     - The listing of the code lists used in EN 16931, the Electronic Address Scheme
       code list and the VAT Exemption Reason code list, published by the European
@@ -457,8 +471,8 @@ Code list snapshots (rules/en16931/1.3.16/codelists/)
       EN 16931-1 admits for an attachment are carried, each looked up in that
       registry.
 
-  The pack rules/en16931-2026/0.1/ reads those snapshots and carries two of its
-  own, taken on 2026-09-21 from the same publications: the ISO 4217 table with the
+  The pack rules/en16931-2026/0.1/ reads the snapshots of the pack 1.3.17 and carries
+  two of its own, taken on 2026-09-21 from the same publications: the ISO 4217 table with the
   minor unit the publisher gives each currency, and the Commission's listing of the
   VAT category codes with the one code the 2026 edition adds, under the short name
   that edition's code table gives it. Its codelists/SOURCES.md records them in the
@@ -492,7 +506,7 @@ names/country.json)
 
   The four other tables beside that file — invoice type, unit of measure, means of
   payment and VAT category — carry the English names of the dated code list
-  snapshots of rules/en16931/1.3.16/codelists/ named above, under the entry for
+  snapshots of rules/en16931/1.3.17/codelists/ named above, under the entry for
   those snapshots, and German names written for this project.
 
 The self-contained jar of the command line tool (esj-cli/target/esj.jar)
