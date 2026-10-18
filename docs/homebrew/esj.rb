@@ -8,7 +8,7 @@
 class Esj < Formula
   desc "Read, check, convert and render EN 16931 invoices through the semantic model"
   homepage "https://github.com/bsnsoft/esj"
-  version "1.0.0-rc.2"
+  version "1.0.0-rc.3"
   license "Apache-2.0"
 
   on_macos do
