@@ -146,8 +146,12 @@ build_runtime_image() {
       --print-module-deps "$jar")
   # The locale data the jar does not carry: a packaged tool whose messages from
   # the virtual machine differ from the same jar on a full JDK is a different
-  # tool, and the smoke test would be right to say so.
-  modules="$modules,jdk.localedata"
+  # tool, and the smoke test would be right to say so. The same goes for the
+  # charsets beyond those of java.base: the XML reader reads every encoding its
+  # runtime decodes, and without jdk.charsets an invoice in Shift_JIS, which the
+  # jar reads, was refused; the module adds about 1 MB. Neither is a dependency
+  # jdeps can see.
+  modules="$modules,jdk.localedata,jdk.charsets"
   echo "modules: $modules"
   "$jdk"/bin/jlink --add-modules "$modules" --strip-debug --no-header-files \
       --no-man-pages --compress zip-6 --output "$image"

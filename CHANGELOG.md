@@ -38,6 +38,30 @@ named here under *Format*.
 
 ### Fixed
 
+- The native executables — the release archives, the Homebrew formula, the `.deb` and `.rpm`
+  packages — ended with exit code 5 and `internal error: java.util.MissingResourceException:
+  Could not load any resource bundle by com.sun.org.apache.xerces.internal.impl.msg.XMLMessages`
+  on every XML document that is not well-formed — cut short, with a wrong end tag, an undeclared
+  entity, a control character or markup after the root element — in every command that reads
+  one, and on a hybrid PDF whose attachment or XMP packet is not well-formed; and in
+  `esj validate` on every document its schema refuses (`…XMLSchemaMessages`). The jar answers
+  exit code 2, `the document is not well-formed XML that this reader accepts`, or reports the
+  finding with exit code 1, and so do they now. The parser of the Java runtime formats each error
+  from a resource bundle even where the tool prints a sentence of its own, and no case of
+  `dist/cases.sh` had fed it such a document, so the GraalVM agent never recorded the two
+  bundles: every native executable released up to 1.0.0-rc.2 lacks them. The jar, the runtime
+  image and the container image were not affected. The cases `input-*` now take every kind of
+  input a reader refuses or reads the hard way, from [`dist/inputs/`](dist/inputs/README.md),
+  through `validate`, `inspect`, `convert` and `render --html`, so the agent records what they
+  reach and the smoke test compares every packaged artefact's answers with the jar's.
+- The native executables refused an invoice in Windows-1252, ISO-8859-15, Shift_JIS or any other
+  encoding beyond UTF-8, UTF-16, ISO-8859-1 and US-ASCII with exit code 2 (`the document is
+  written in, or declares, the encoding …, which this reader does not read`), and the repair of
+  a document declared UTF-8 whose bytes are Windows-1252, both of which the jar reads: an image
+  carries only those charsets unless it is built with `-H:+AddAllCharsets`, which it now is. The
+  runtime image refused the encodings of the module `jdk.charsets`, Shift_JIS among them, and
+  now carries it. Cases of `dist/inputs/` in each of these encodings keep both answering as the
+  jar does.
 - The Linux packages of a pre-release are attached to the GitHub release with a dot in place of
   the `~` of their version (`esj_1.2.3.rc.1_amd64.deb`), which is the name GitHub stores them
   under anyway, and their checksum files name them so: those of 1.0.0-rc.2 name

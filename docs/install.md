@@ -223,9 +223,11 @@ $ dist/package.sh native smoke        # one of them, and the comparison with the
 | `zip` | the archives of a release | `zip` |
 | `smoke` | nothing; compares every artefact with the jar, its servers included | — |
 
-Nothing is listed by hand: the modules of the runtime image come from `jdeps` over the jar,
-what the native executable must reach is recorded by running the cases of
-[`dist/cases.sh`](../dist/cases.sh) under the GraalVM agent, and its resources — the validation
+Almost nothing is listed by hand: the modules of the runtime image come from `jdeps` over the jar,
+plus `jdk.localedata` and `jdk.charsets`, which no class refers to by name; what the native
+executable must reach is recorded by running the cases of
+[`dist/cases.sh`](../dist/cases.sh) under the GraalVM agent, with every character set added
+(`-H:+AddAllCharsets`, since the agent does not record them), and its resources — the validation
 packs, the registry, the rule packs, the fonts and the stylesheets — are read out of the jar. A
 command added to the tool needs a case there and nothing else, and `dist/smoke.sh` fails when
 a command of `--help` has none.

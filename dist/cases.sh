@@ -31,6 +31,22 @@
 # dist/artwork bring one of each, as letterhead and as logo; without them a
 # native executable ended on the first JPEG logo with an internal error.
 #
+# Nor is a sound document all an input can be. The XML parser of the Java
+# runtime formats the message of every error it finds from a resource bundle,
+# even where the tool then prints a sentence of its own, and a native image
+# carries a bundle only where a traced run loaded it: one for a document that is
+# not well-formed, one for a document its schema refuses. The files under
+# dist/inputs bring every kind of input a reader refuses or reads the hard way —
+# XML cut short, with a wrong tag or character, with a document type
+# declaration, in another encoding than the one it declares or than UTF-8, or
+# against its schema; ESJ that is no JSON text; a PDF cut short, or damaged in
+# its attachment or its XMP packet; an empty file — through the commands that
+# read them. Without them a native executable ended on the first document that
+# was not well-formed with an internal error. An encoding is the one thing a
+# traced run does not record: the charsets an artefact carries are set in
+# dist/native-image.sh and dist/package.sh, and the cases in Windows-1252,
+# ISO-8859-15 and Shift_JIS are what holds both to the jar.
+#
 # Copyright 2026 BSNSoft Solutions GmbH. Author: Christian Bürckert. Licensed under the Apache License, Version 2.0.
 
 set -eu
@@ -41,6 +57,7 @@ EXAMPLES=examples
 PDF=conformance/pdf/factur-x.pdf
 ARTWORK=dist/artwork
 VIEW=dist/view
+INPUTS=dist/inputs
 
 esj_cases() {
   cat <<CASES
@@ -146,6 +163,82 @@ upgrade-2026 upgrade $EXAMPLES/standard-invoice.esj.json --to 2026 --out @OUT
 upgrade-2017 upgrade @FROM:upgrade-2026 --to 2017 --out @OUT
 upgrade-json upgrade $EXAMPLES/minimal.esj.json --to 2026 --output json --out @OUT
 upgrade-refused upgrade $CORPUS/01.01a-INVOICE_ubl.xml --to 2026
+input-truncated-validate validate $INPUTS/truncated.xml
+input-truncated-inspect inspect $INPUTS/truncated.xml
+input-truncated-convert convert $INPUTS/truncated.xml
+input-truncated-html render --html --out @OUT $INPUTS/truncated.xml
+input-truncated-xslt convert --importer xslt $INPUTS/truncated.xml
+input-truncated-from validate --from ubl $INPUTS/truncated.xml
+input-mismatched-tag-validate validate $INPUTS/mismatched-tag.xml
+input-mismatched-tag-inspect inspect $INPUTS/mismatched-tag.xml
+input-mismatched-tag-convert convert $INPUTS/mismatched-tag.xml
+input-mismatched-tag-html render --html --out @OUT $INPUTS/mismatched-tag.xml
+input-undeclared-entity-validate validate $INPUTS/undeclared-entity.xml
+input-control-character-validate validate $INPUTS/control-character.xml
+input-after-root-validate validate $INPUTS/after-root.xml
+input-after-root-inspect inspect $INPUTS/after-root.xml
+input-after-root-convert convert $INPUTS/after-root.xml
+input-after-root-html render --html --out @OUT $INPUTS/after-root.xml
+input-after-root-xslt convert --importer xslt $INPUTS/after-root.xml
+input-after-root-json validate --output json $INPUTS/after-root.xml
+input-doctype-validate validate $INPUTS/doctype.xml
+input-doctype-inspect inspect $INPUTS/doctype.xml
+input-doctype-convert convert $INPUTS/doctype.xml
+input-doctype-html render --html --out @OUT $INPUTS/doctype.xml
+input-doctype-xslt convert --importer xslt $INPUTS/doctype.xml
+input-unknown-encoding-validate validate $INPUTS/unknown-encoding.xml
+input-unknown-encoding-convert convert $INPUTS/unknown-encoding.xml
+input-latin1-validate validate $INPUTS/latin1-declared-utf8.xml
+input-latin1-inspect inspect $INPUTS/latin1-declared-utf8.xml
+input-latin1-convert convert $INPUTS/latin1-declared-utf8.xml
+input-latin1-html render --html --out @OUT $INPUTS/latin1-declared-utf8.xml
+input-cp1252-validate validate $INPUTS/cp1252-declared-utf8.xml
+input-cp1252-inspect inspect $INPUTS/cp1252-declared-utf8.xml
+input-cp1252-convert convert $INPUTS/cp1252-declared-utf8.xml
+input-cp1252-html render --html --out @OUT $INPUTS/cp1252-declared-utf8.xml
+input-cp1252-strict convert --strict $INPUTS/cp1252-declared-utf8.xml
+input-windows-1252-validate validate $INPUTS/windows-1252.xml
+input-windows-1252-inspect inspect $INPUTS/windows-1252.xml
+input-windows-1252-convert convert $INPUTS/windows-1252.xml
+input-windows-1252-html render --html --out @OUT $INPUTS/windows-1252.xml
+input-windows-1252-xslt convert --importer xslt $INPUTS/windows-1252.xml
+input-iso-8859-15-validate validate $INPUTS/iso-8859-15.xml
+input-iso-8859-15-convert convert $INPUTS/iso-8859-15.xml
+input-shift-jis-validate validate $INPUTS/shift-jis.xml
+input-shift-jis-convert convert $INPUTS/shift-jis.xml
+input-utf-16-validate validate $INPUTS/utf-16.xml
+input-utf-16-convert convert $INPUTS/utf-16.xml
+input-schema-invalid-validate validate $INPUTS/schema-invalid.xml
+input-schema-invalid-inspect inspect $INPUTS/schema-invalid.xml
+input-schema-invalid-report validate --report @OUT --report-format html $INPUTS/schema-invalid.xml
+input-datatype-invalid-validate validate $INPUTS/datatype-invalid.xml
+input-esj-truncated-validate validate $INPUTS/truncated.esj.json
+input-esj-truncated-inspect inspect $INPUTS/truncated.esj.json
+input-esj-truncated-convert convert $INPUTS/truncated.esj.json
+input-esj-truncated-html render --html --out @OUT $INPUTS/truncated.esj.json
+input-esj-syntax-error-validate validate $INPUTS/syntax-error.esj.json
+input-esj-not-utf8-validate validate $INPUTS/not-utf8.esj.json
+input-pdf-truncated-validate validate $INPUTS/truncated.pdf
+input-pdf-truncated-inspect inspect $INPUTS/truncated.pdf
+input-pdf-truncated-convert convert $INPUTS/truncated.pdf
+input-pdf-truncated-html render --html --out @OUT $INPUTS/truncated.pdf
+input-pdf-garbage-validate validate $INPUTS/garbage.pdf
+input-pdf-garbage-extract extract --list $INPUTS/garbage.pdf
+input-pdf-attachment-validate validate $INPUTS/attachment-truncated.pdf
+input-pdf-attachment-inspect inspect $INPUTS/attachment-truncated.pdf
+input-pdf-attachment-convert convert $INPUTS/attachment-truncated.pdf
+input-pdf-attachment-html render --html --out @OUT $INPUTS/attachment-truncated.pdf
+input-pdf-attachment-extract extract $INPUTS/attachment-truncated.pdf
+input-pdf-attachment-doctype-validate validate $INPUTS/attachment-doctype.pdf
+input-pdf-attachment-doctype-inspect inspect $INPUTS/attachment-doctype.pdf
+input-pdf-xmp-validate validate $INPUTS/xmp-malformed.pdf
+input-pdf-xmp-inspect inspect $INPUTS/xmp-malformed.pdf
+input-pdf-xmp-extract extract --list $INPUTS/xmp-malformed.pdf
+input-pdf-no-invoice-validate validate @FROM:render-pdf
+input-empty-validate validate $INPUTS/empty.xml
+input-empty-inspect inspect $INPUTS/empty.xml
+input-empty-convert convert $INPUTS/empty.xml
+input-empty-html render --html --out @OUT $INPUTS/empty.xml
 serve-help serve --help
 serve-refused serve --job-heap 1x
 mcp-closed mcp --max-jobs 1 --max-queue 1
