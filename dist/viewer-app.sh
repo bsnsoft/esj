@@ -51,16 +51,23 @@ osacompile -o "$app" "$here/desktop/viewer.applescript"
 # viewer of the two types, with the identifier, the version and the icon of
 # this project.
 plist=$app/Contents/Info.plist
-set_key() { /usr/libexec/PlistBuddy -c "$1" "$plist"; }
-set_key "Add :CFBundleIdentifier string $ESJ_VIEWER_IDENTIFIER"
-set_key "Set :CFBundleName 'ESJ Viewer'"
-set_key "Add :CFBundleDisplayName string 'ESJ Viewer'"
+pb() { /usr/libexec/PlistBuddy -c "$1" "$plist"; }
+# Which keys the applet template carries differs between macOS releases (macOS 15 writes no
+# CFBundleIconName, macOS 26 does), so a key is removed only where it is, and set by removing
+# it first: PlistBuddy's Set fails on a key that is missing, its Add on one that is there.
+has_key() { pb "Print :$1" > /dev/null 2>&1; }
+drop_key() { if has_key "$1"; then pb "Delete :$1"; fi; }
+put_key() { drop_key "$1"; pb "Add :$1 $2"; }
+put_key CFBundleIdentifier "string $ESJ_VIEWER_IDENTIFIER"
+put_key CFBundleName "string 'ESJ Viewer'"
+put_key CFBundleDisplayName "string 'ESJ Viewer'"
 # The bundle version is three numbers; a pre-release suffix is the tool's, not its.
-set_key "Add :CFBundleShortVersionString string ${version%%-*}"
-set_key "Add :CFBundleVersion string ${version%%-*}"
-set_key "Delete :CFBundleIconName"
-set_key "Set :CFBundleIconFile esj"
-set_key "Delete :CFBundleDocumentTypes"
+put_key CFBundleShortVersionString "string ${version%%-*}"
+put_key CFBundleVersion "string ${version%%-*}"
+drop_key CFBundleIconName
+put_key CFBundleIconFile "string esj"
+drop_key CFBundleDocumentTypes
+set_key() { pb "$1"; }
 set_key "Add :CFBundleDocumentTypes array"
 set_key "Add :CFBundleDocumentTypes:0 dict"
 set_key "Add :CFBundleDocumentTypes:0:CFBundleTypeName string 'Electronic invoice'"

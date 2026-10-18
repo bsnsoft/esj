@@ -4,6 +4,15 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). A change to the format itself is
 named here under *Format*.
 
+## [1.0.0-rc.4] — unreleased
+
+### Fixed
+
+- `ESJ Viewer.app` is built on the `macos-15` runner again: the script that turns the compiled
+  AppleScript into the viewer removed a property-list key the applet template of that macOS does not
+  write, and stopped. Every key it sets or removes is now handled whichever keys the template
+  carries. 1.0.0-rc.3 has no release for that reason; its tag exists, nothing of it was published.
+
 ## [1.0.0-rc.3] — 2026-10-18
 
 ### Added
