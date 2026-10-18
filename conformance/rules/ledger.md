@@ -191,7 +191,8 @@ zero is a rate both admit. The nine CII mutations of the two families — `br-ig
 `br-ig-04-cii`, `br-ip-01-cii` to `br-ip-04-cii` and `ig05-zero-rate-cii` — carry the cause
 `artefact-swaps-two-families`, so that the day the artefact changes, the build says so. A
 report compared line for line with the CII artefact of this release differs on these
-identifiers alone. On `BR-IG-02` to `-04` and `BR-IP-02` to `-04` the UBL mutations differ as
+identifiers alone. Reported upstream as
+[ConnectingEurope/eInvoicing-EN16931#533](https://github.com/ConnectingEurope/eInvoicing-EN16931/issues/533). On `BR-IG-02` to `-04` and `BR-IP-02` to `-04` the UBL mutations differ as
 well, for the reason two sections below gives, which is why those six rules count as differing
 outright.
 
@@ -202,7 +203,10 @@ that issued it, and admits the prefix `EL` for Greece. Release 1.3.16 carried `E
 of prefixes both artefacts compare with; release 1.3.17 took it out of both. A seller VAT
 identifier `EL123456789` is therefore reported by both artefacts and passes here.
 `br-co-09-el-ubl` and `br-co-09-el-cii` measure it with the cause `artefact-drops-a-prefix`;
-the pack follows the standard.
+the pack follows the standard. It is the one of the three causes of this release that changes a
+verdict: a valid invoice with a Greek VAT identifier is invalid against the artefacts of 1.3.17.
+Reported upstream as
+[ConnectingEurope/eInvoicing-EN16931#532](https://github.com/ConnectingEurope/eInvoicing-EN16931/issues/532).
 
 ### The UBL artefact reports the prefix of an identifier that is not there (`BR-CO-09`)
 
@@ -215,6 +219,13 @@ is not stated that is two spaces, which the list does not contain. A party tax s
 states the scheme VAT and no identifier is valid against the UBL schema, and the UBL artefact
 now reports `BR-CO-09` on it. The standard asks for the prefix of an identifier that is stated,
 and this pack reports nothing where none is.
+
+No verdict changes with it. `UBL-SR-53` of the same artefact asks for the identifier wherever
+a tax scheme is stated, and reports such a document as fatal in release 1.3.16 and in 1.3.17
+alike; what 1.3.17 adds is a second fatal finding beside it, about the prefix of an identifier
+that is not there. `UBL-SR-53` is a rule of the syntax and outside the categories this ledger
+compares, which is why only the second finding shows here. Reported upstream as
+[ConnectingEurope/eInvoicing-EN16931#540](https://github.com/ConnectingEurope/eInvoicing-EN16931/issues/540).
 
 25 UBL mutations show it, all of one shape: they remove the seller VAT identifier (BT-31), with
 the seller tax registration identifier (BT-32) beside it where the rule asks for either, or the

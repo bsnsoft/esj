@@ -631,7 +631,9 @@ and warns inside the zone only one artefact grants; and three that release 1.3.1
 artefact numbers the categories `L` and `M` the other way round and asks for a rate above zero in
 `L`, both artefacts dropped the prefix `EL` from `BR-CO-09`, and the UBL artefact reports
 `BR-CO-09` on a tax scheme that states no identifier, which 25 mutations show. The pack follows
-the standard in all three. Each is in the ledger with its mutation.
+the standard in all three. Each is in the ledger with its mutation. Only the second changes a
+verdict: a valid invoice with a Greek VAT identifier is invalid against release 1.3.17; the
+third adds a finding to a document that `UBL-SR-53` already reports in both releases.
 
 **What the ledger licenses this project to say** is exactly the figures above, each of the 80
 differences named with its reason. The first figure may not be quoted alone: a rule counted as

@@ -34,8 +34,9 @@ named here under *Format*.
   agree on every shape measured, 53 on one shape and not another, 25 differ, 2 cannot be asked,
   0 are open. Three causes are new and come from the release, and the pack follows the standard
   in each: the CII artefact binds `BR-IG-*` to the category `M` and `BR-IP-*` to `L` and asks for
-  a rate above zero in `L`; both artefacts dropped `EL` from the prefixes `BR-CO-09` admits; the
-  UBL artefact reports `BR-CO-09` on a VAT tax scheme that states no identifier
+  a rate above zero in `L`; both artefacts dropped `EL` from the prefixes `BR-CO-09` admits, so a
+  valid invoice with a Greek VAT identifier is invalid against release 1.3.17; the UBL artefact
+  reports `BR-CO-09` beside `UBL-SR-53` on a VAT tax scheme that states no identifier
   ([`conformance/rules/ledger.md`](conformance/rules/ledger.md)).
 - With release 1.3.17 the official artefacts answer some documents differently: `CII-SR-475` and
   `CII-SR-476` count the names and attachments of each supporting document rather than of all of
