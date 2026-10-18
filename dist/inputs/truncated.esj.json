@@ -1,0 +1,20 @@
+{
+  "format": "EN16931-Semantic-JSON",
+  "version": "1.0",
+  "semanticModel": "EN16931-1:2017+A1:2019/AC:2020",
+  "values": {
+    "/BT-1": "RE-2026-0042",
+    "/BT-2": "2026-02-03",
+    "/BT-3": "380",
+    "/BT-5": "EUR",
+    "/BT-9": "2026-03-05",
+    "/BT-10": "KOST-4711",
+    "/BT-12": "RV-2025-118",
+    "/BT-13": "BE-2026-0091",
+    "/BT-19": "Cost centre 4711",
+    "/BT-20": "Payable within 30 days without deduction.",
+    "/BG-1/0/BT-22": "Delivery and performance according to contract RV-2025-118.\nPlease quote the invoice number with the payment.",
+    "/BG-2/BT-24": "urn:cen.eu:en16931:2017",
+    "/BG-4/BT-27": "Example GmbH",
+    "/BG-4/BT-28": "Example Systems",
+    "/BG-4/BT-29/0

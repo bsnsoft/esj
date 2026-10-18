@@ -95,8 +95,18 @@ prefix=$("$graal"/bin/native-image --expert-options-all 2>/dev/null |
       head -1)" >&2; exit 1; }
 echo "native-image.sh: the defaults of the process boundary as ${prefix}MaxHeapSize"
 
+# The one thing the agent does not record is which charsets a run looked up: an
+# image carries the handful every Java runtime must have (UTF-8, UTF-16,
+# ISO-8859-1, US-ASCII) and nothing else unless it is told to. The XML reader
+# reads every encoding the runtime it runs on decodes and repairs a document
+# declared UTF-8 by reading it as Windows-1252, so an image without the others
+# refused an invoice in Windows-1252, ISO-8859-15 or Shift_JIS that the jar
+# reads, and the repair the jar makes. -H:+AddAllCharsets carries all of them,
+# as a Java runtime does, for about 6 MiB of the image (GraalVM 25.3: 80.9 MiB
+# without, 86.8 MiB with).
 "$graal"/bin/native-image -jar "$jar" -o "$target/esj" --no-fallback \
   "${prefix}MaxHeapSize=536870912" "${prefix}+ExitOnOutOfMemoryError" \
+  -H:+AddAllCharsets \
   -H:ConfigurationFileDirectories="$target/metadata/traced,$target/metadata/resources" \
   -J-Xmx8g
 
