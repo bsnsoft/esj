@@ -4,7 +4,7 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). A change to the format itself is
 named here under *Format*.
 
-## [1.0.0] — unreleased
+## [1.0.0-rc.3] — unreleased
 
 ### Added
 
