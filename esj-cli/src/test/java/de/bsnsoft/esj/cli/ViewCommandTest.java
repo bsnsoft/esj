@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import de.bsnsoft.esj.model.Registry;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -227,7 +229,7 @@ class ViewCommandTest {
     /** No page of any state carries a script, and every one states the policy. */
     @Test
     void noPageRunsAScriptAndEveryPageSaysSo() throws IOException {
-        List<String[]> runs = List.of(
+        List<String[]> runs = new ArrayList<>(List.of(
                 new String[] {copy(EXAMPLE)},
                 new String[] {"--report", copy(HYBRID)},
                 new String[] {write("scan.pdf", TestPdfs.builder().build())},
@@ -235,8 +237,10 @@ class ViewCommandTest {
                 new String[] {write("old.pdf", TestPdfs.facturX(TestPdfs.ZUGFERD_1,
                         TestPdfs.ZUGFERD_1_INVOICE, "BASIC"))},
                 new String[] {write("broken.xml", "<Invoice".getBytes(StandardCharsets.UTF_8))},
-                new String[] {"--report", "--max-values", "3", copy(EXAMPLE)},
-                new String[] {copy("examples/edition-2026.esj.json")});
+                new String[] {"--report", "--max-values", "3", copy(EXAMPLE)}));
+        if (carries2026()) {
+            runs.add(new String[] {copy("examples/edition-2026.esj.json")});
+        }
         int number = 0;
         for (String[] arguments : runs) {
             Path directory = out.resolve("page-" + number++);
@@ -358,7 +362,13 @@ class ViewCommandTest {
                 withReport.err());
     }
 
+    /** A build without the edition 2026 (profile {@code without-edition-2026}) has no such example. */
+    static boolean carries2026() {
+        return Registry.editionKeys().contains("2026");
+    }
+
     @Test
+    @EnabledIf("carries2026")
     void anEditionTheHtmlRenderingDoesNotRenderIsSaidBesideItsLink() throws IOException {
         Path directory = out.resolve("2026");
         Cli.Run run = view("view", "--out", directory.toString(), "--lang", "en",
