@@ -31,7 +31,7 @@ number here has moved in either direction.
 | Pairs | the 40 business cases the corpus carries in both syntaxes, the ones [`pairs.md`](../ledger/pairs.md) lists |
 | Read by | `StreamingReader`, so that the way in is the same on both sides of every comparison |
 | Written by | `CiiWriter` and `UblWriter`, from the tables of `model/bindings/` |
-| Validated by | `SyntaxValidator` of `esj-syntax` with the pack `xrechnung/3.0.2/2026-08-31` |
+| Validated by | `SyntaxValidator` of `esj-syntax` with the pack `xrechnung/3.0.2/2026-10-12` |
 | Compared by | semantic path and value, against the other file of the pair as it is read |
 
 ## The four verdicts

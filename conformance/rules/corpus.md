@@ -30,7 +30,7 @@ things about four of them, and not one of the five is a defect of a rule:
 | `technical-cases/cvd/02.01a-cvd_INVOICE_uncefact.xml` | `BR-CL-13` | The same, in the other syntax. |
 
 **The official artefacts say the same thing about the same documents.** The EN 16931 Schematron
-of release 1.3.16 raises exactly these rules on exactly these instances, each with the flag
+of release 1.3.17 raises exactly these rules on exactly these instances, each with the flag
 `fatal`; the core invoice usage specification each document names levels those findings down to
 information for documents of its profile, which is why the validator accepts them.
 [`../syntax/ledger.json`](../syntax/ledger.json) records that, instance by instance — down to the
@@ -78,7 +78,7 @@ these rules ask for and the invoice total VAT amount, which the UBL syntax requi
 pack is silent about it.
 
 One of the fifteen is a finding no other tool of this release reports. `BR-CO-25` is a rule the
-standard states in clause 6.4.2 and the validation artefacts of release 1.3.16 do not carry, so a
+standard states in clause 6.4.2 and the validation artefacts of release 1.3.17 do not carry, so a
 document that states an amount due for payment without a payment due date or payment terms passes
 them and is faulted here.
 

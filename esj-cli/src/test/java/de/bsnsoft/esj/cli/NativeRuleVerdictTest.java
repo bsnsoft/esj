@@ -19,7 +19,7 @@ import org.junit.jupiter.api.io.TempDir;
  * report weighs the same ones: a document whose only fatal finding is a business rule of
  * EN 16931 is an invalid invoice inside a container that may be immaculate. The case the
  * two could be told apart on is the one no official artefact reports — the CII assertion of
- * {@code BR-AF-08} reads its operands from a node where they are not written and cannot
+ * {@code BR-IG-08} reads its operands from a node where they are not written and cannot
  * fire ({@code conformance/rules/ledger.md}) — so the native pack is the only engine that
  * faults the document, and the line, the {@code invoice} member and the exit code have to
  * be one answer.
@@ -35,10 +35,10 @@ class NativeRuleVerdictTest {
      * the invoice currency away from the sum it must equal, in the one category whose CII
      * assertion cannot report.
      */
-    private static final String MUTATION = "af08-one-unit-cii";
+    private static final String MUTATION = "ig08-one-unit-cii";
 
     /** The rule that faults it, at the level EN 16931 gives it. */
-    private static final String RULE = "BR-AF-08";
+    private static final String RULE = "BR-IG-08";
 
     /** A corpus instance whose profile levels two native findings down to information. */
     private static final String LEVELLED =

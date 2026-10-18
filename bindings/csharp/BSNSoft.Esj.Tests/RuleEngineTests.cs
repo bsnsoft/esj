@@ -114,8 +114,8 @@ public class RuleEngineTests
     {
         RuleEngine pack = Pack.Value;
 
-        Assert.Equal("en16931/1.3.16", pack.Pack.Name);
-        Assert.Contains("1.3.16", pack.Pack.VerifiedAgainst, StringComparison.Ordinal);
+        Assert.Equal("en16931/1.3.17", pack.Pack.Name);
+        Assert.Contains("1.3.17", pack.Pack.VerifiedAgainst, StringComparison.Ordinal);
         Assert.Equal(pack.Pack.CodeLists.Keys.OrderBy(id => id, StringComparer.Ordinal),
             pack.CodeLists.ListIds.OrderBy(id => id, StringComparer.Ordinal));
         Assert.NotNull(pack.TermsOf("BR-CO-10"));

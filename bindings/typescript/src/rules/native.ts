@@ -143,17 +143,17 @@ function used(context: RuleContext, code: string): boolean {
 }
 
 /**
- * Which official artefact of release 1.3.16 admits a difference below one unit of the invoice
+ * Which official artefact of release 1.3.17 admits a difference below one unit of the invoice
  * currency between the stated taxable amount and the sum, where the two do not ask the same.
  */
 type Tolerance = 'neither' | 'ubl' | 'cii' | 'ubl-cii-silent';
 
 const TOLERANCE_NOTE: Record<Tolerance, string> = {
   neither: '',
-  ubl: ', and the official CII artefact of release 1.3.16 faults a difference this small.',
-  cii: ', and the official UBL artefact of release 1.3.16 faults a difference this small.',
+  ubl: ', and the official CII artefact of release 1.3.17 faults a difference this small.',
+  cii: ', and the official UBL artefact of release 1.3.17 faults a difference this small.',
   'ubl-cii-silent': ', and the standard asks the two to be equal: the official UBL artefact of'
-    + ' release 1.3.16 admits a difference this small, and the CII assertion of that release'
+    + ' release 1.3.17 admits a difference this small, and the CII assertion of that release'
     + ' cannot report it.',
 };
 
@@ -167,7 +167,7 @@ const TOLERANCE_NOTE: Record<Tolerance, string> = {
  * category at one rate.
  *
  * How closely the two figures have to agree is decided rule by rule, because the two official
- * artefacts of release 1.3.16 decide it rule by rule and do not agree with each other. A
+ * artefacts of release 1.3.17 decide it rule by rule and do not agree with each other. A
  * difference of one unit of the invoice currency or more is faulted by both and is fatal
  * here; a difference inside a zone only one of them grants is a warning that says what is
  * true of that difference in the release.
@@ -402,10 +402,10 @@ export function en16931NativeRules(): NativeRule[] {
       'EN 16931-1, 6.4.3.4.7, Table 12, BR-O-1'),
     categoryTaxableAmount('BR-O-08', 'O', 'not subject to VAT', false, 'neither',
       'EN 16931-1, 6.4.3.4.7, Table 12, BR-O-8'),
-    categoryTaxableAmount('BR-AF-08', 'L',
+    categoryTaxableAmount('BR-IG-08', 'L',
       'IGIC, the general indirect tax of the Canary Islands', true, 'ubl-cii-silent',
       'EN 16931-1, 6.4.3.4.8, Table 13, BR-IG-8'),
-    categoryTaxableAmount('BR-AG-08', 'M',
+    categoryTaxableAmount('BR-IP-08', 'M',
       'IPSI, the tax on production, services and importation in Ceuta and Melilla', true,
       'ubl-cii-silent', 'EN 16931-1, 6.4.3.4.8, Table 14, BR-IP-8'),
   ];

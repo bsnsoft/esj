@@ -69,7 +69,8 @@ class OracleTest {
             "operand-removed", "artefacts-not-chosen", "not-in-the-release",
             "artefact-cannot-fire", "category-bound-differently", "term-lost-on-import",
             "notation-lost-on-import", "artefact-reads-the-norm-narrowly",
-            "artefacts-disagree-on-a-tolerance");
+            "artefacts-disagree-on-a-tolerance", "artefact-swaps-two-families",
+            "artefact-drops-a-prefix", "artefact-reports-an-absent-identifier");
 
     static List<Oracle.Mutation> mutations() {
         return Oracle.mutations();
@@ -115,7 +116,7 @@ class OracleTest {
         assertEquals(mutation.expectedWarnings(), nativeFindings(xml, true),
                 mutation.id() + ": which of the pack's findings decide no verdict");
         assertEquals(mutation.expectedOfficial(), officialFindings(xml),
-                mutation.id() + ": the official Schematron of release 1.3.16 over the same bytes");
+                mutation.id() + ": the official Schematron of release 1.3.17 over the same bytes");
     }
 
     /**

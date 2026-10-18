@@ -3,7 +3,7 @@
   "version": "0.1",
   "syntax": "CII",
   "writer": "esj-bindings, CiiWriter",
-  "pack": "xrechnung/3.0.2/2026-08-31",
+  "pack": "xrechnung/3.0.2/2026-10-12",
   "corpus": {
     "instances": 86,
     "fromCii": 41,

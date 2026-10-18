@@ -4,7 +4,7 @@
   "package": "de.bsnsoft.esj.invoice.code",
   "pack": {
     "id": "en16931",
-    "version": "1.3.16"
+    "version": "1.3.17"
   },
   "constantNames": [
     "A constant name is derived from the code or from the name the publisher gives the code, as source says, and never invented.",

@@ -45,10 +45,10 @@ class DisplayNamesTest {
     private static final String NAMES = "/de/bsnsoft/esj/render/names/";
 
     /** Where the dated code list snapshots sit. */
-    private static final String SNAPSHOT = "/rules/en16931/1.3.16/codelists/";
+    private static final String SNAPSHOT = "/rules/en16931/1.3.17/codelists/";
 
     /** The date the snapshots this module read were taken. */
-    private static final String TAKEN = "2026-09-19";
+    private static final String TAKEN = "2026-10-18";
 
     /** Which snapshot each table takes its English names from. */
     private static final Map<String, List<String>> SOURCES = new LinkedHashMap<>(Map.of(

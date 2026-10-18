@@ -7,7 +7,7 @@ finding of the semantic engine means, and
 
 A rule pack that says "the business rules of EN 16931" and does not say which ones is a claim
 nobody can check. This table is the answer, rule by rule, and a test of `esj-rules` reads it: every
-identifier of the official validation artefacts, release 1.3.16, is either implemented here or
+identifier of the official validation artefacts, release 1.3.17, is either implemented here or
 named in `not-applicable.md`, and no identifier appears twice.
 
 ## The figures
@@ -35,18 +35,21 @@ rule case table of `esj-rules` names them as the two rules for which it holds no
 ## Where the identifiers come from
 
 The identifiers are the artefacts' and the statements are the norm's, and the two do not always
-agree. Three differences are worth naming before the table:
+agree. Two differences are worth naming before the table:
 
 - The standard numbers its integrity constraints `BR-1`, `BR-2`, `BR-3`; the artefacts write
   `BR-01`, `BR-02`, `BR-03`. The artefacts' spelling is used, so that a report of this engine can
   be compared line for line with a report of theirs.
-- The standard numbers the Canary Islands family `BR-IG-*` and the Ceuta and Melilla family
-  `BR-IP-*`; the artefacts number them `BR-AF-*` and `BR-AG-*`. The artefacts' identifiers are
-  used and the `source` of every such rule names the clause and the standard's own number.
 - The decimal restrictions of clause 6.5.12 and the code list restrictions of clause 6.3 carry no
   rule identifier in the standard at all: it states them as a table of terms. `BR-DEC-*` and
   `BR-CL-*` are the artefacts' numbering of those tables, and the `source` of each rule names the
   business term instead.
+
+Release 1.3.17 numbers the Canary Islands family `BR-IG-*` and the Ceuta and Melilla family
+`BR-IP-*`, as the standard does; release 1.3.16 numbered them `BR-AF-*` and `BR-AG-*`. The CII
+artefact of 1.3.17 gives the two families each other's identifiers, which
+[`ledger.md`](ledger.md) records as a difference; the identifiers here are the standard's and
+those of the UBL artefact.
 
 ## Model rules
 
@@ -120,26 +123,6 @@ agree. Three differences are worth naming before the table:
 | `BR-AE-08` | fatal | native-java | `BrAe08.java` |
 | `BR-AE-09` | fatal | native-json | `rules/vat-ae.json` |
 | `BR-AE-10` | fatal | native-json | `rules/vat-ae.json` |
-| `BR-AF-01` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-02` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-03` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-04` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-05` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-06` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-07` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-08` | fatal | native-java | `BrAf08.java` |
-| `BR-AF-09` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AF-10` | fatal | native-json | `rules/vat-ig.json` |
-| `BR-AG-01` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-02` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-03` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-04` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-05` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-06` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-07` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-08` | fatal | native-java | `BrAg08.java` |
-| `BR-AG-09` | fatal | native-json | `rules/vat-ip.json` |
-| `BR-AG-10` | fatal | native-json | `rules/vat-ip.json` |
 | `BR-B-01` | fatal | deferred | — |
 | `BR-B-02` | fatal | deferred | — |
 | `BR-CL-08` | fatal | native-json | `rules/br-cl.json` |
@@ -219,6 +202,26 @@ agree. Three differences are worth naming before the table:
 | `BR-IC-10` | fatal | native-json | `rules/vat-ic.json` |
 | `BR-IC-11` | fatal | native-json | `rules/vat-ic.json` |
 | `BR-IC-12` | fatal | native-json | `rules/vat-ic.json` |
+| `BR-IG-01` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-02` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-03` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-04` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-05` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-06` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-07` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-08` | fatal | native-java | `BrIg08.java` |
+| `BR-IG-09` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IG-10` | fatal | native-json | `rules/vat-ig.json` |
+| `BR-IP-01` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-02` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-03` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-04` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-05` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-06` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-07` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-08` | fatal | native-java | `BrIp08.java` |
+| `BR-IP-09` | fatal | native-json | `rules/vat-ip.json` |
+| `BR-IP-10` | fatal | native-json | `rules/vat-ip.json` |
 | `BR-O-01` | fatal | native-java | `BrO01.java` |
 | `BR-O-02` | fatal | native-json | `rules/vat-o.json` |
 | `BR-O-03` | fatal | native-json | `rules/vat-o.json` |
@@ -259,7 +262,7 @@ agree. Three differences are worth naming before the table:
 The code list rules live in a second Schematron of the release rather than in the model one,
 because the artefacts check them against the XML. Here they are statements about business terms
 like any other, and the list a term is decided against is the snapshot named in
-[`rules/en16931/1.3.16/codelists/SOURCES.md`](../../rules/en16931/1.3.16/codelists/SOURCES.md).
+[`rules/en16931/1.3.17/codelists/SOURCES.md`](../../rules/en16931/1.3.17/codelists/SOURCES.md).
 
 | Rule | How | Where |
 |---|---|---|

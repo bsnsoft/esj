@@ -58,7 +58,7 @@ snapshot of the list it asks about: `BR-CL-07` (UNTDID 1153), `BR-CL-13` (UNTDID
 list, `BR-CL-10`, `BR-CL-11`, `BR-CL-21` and `BR-CL-26`. The lists have since been taken from
 their publishers — the first three from the European Commission's listing of the code lists
 this standard uses, the media types from the IANA registry, each recorded in
-[`SOURCES.md`](../../rules/en16931/1.3.16/codelists/SOURCES.md) — and the seven rules are in
+[`SOURCES.md`](../../rules/en16931/1.3.17/codelists/SOURCES.md) — and the seven rules are in
 the pack.
 
 One thing that was said of them then is still true and now costs something. Three instances of

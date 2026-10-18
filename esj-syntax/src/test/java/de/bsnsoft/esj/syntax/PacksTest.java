@@ -30,14 +30,14 @@ class PacksTest {
     private static final String XRECHNUNG_CVD = XRECHNUNG
             + "#compliant#urn:xeinkauf.de:kosit:xrechnung:cvd_0.9";
 
-    private final Pack pack = Packs.bundled("xrechnung/3.0.2/2026-08-31");
+    private final Pack pack = Packs.bundled("xrechnung/3.0.2/2026-10-12");
 
     @Test
     void namesItselfByProfileVersionAndRelease() {
         assertEquals("xrechnung", pack.id());
         assertEquals("3.0.2", pack.version());
-        assertEquals("2026-08-31", pack.release());
-        assertEquals("xrechnung/3.0.2/2026-08-31", pack.directory());
+        assertEquals("2026-10-12", pack.release());
+        assertEquals("xrechnung/3.0.2/2026-10-12", pack.directory());
         assertEquals(27, pack.files().size(), "the inventory lists every file of the pack"
                 + " but the manifest itself");
     }
@@ -111,13 +111,35 @@ class PacksTest {
                 Packs.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).pack().directory());
     }
 
+    /**
+     * A release of a pack is never replaced: the newer bundle is a pack beside the older one,
+     * the profile gets the newer, and the older is there for a caller who names it.
+     */
+    @Test
+    void keepsTheReleaseBeforeBesideTheNewestOne() {
+        Pack previous = Packs.bundled("xrechnung/3.0.2/2026-08-31");
+
+        assertEquals(List.of("xrechnung/3.0.2/2026-10-12", "xrechnung/3.0.2/2026-08-31"),
+                Packs.bundled().stream().map(Pack::directory).toList(),
+                "the bundled packs, newest release first");
+        assertEquals("cen/1.3.16/EN16931-UBL-validation.xslt",
+                previous.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).applied().stream()
+                        .filter(component -> component.name().equals("en16931-ubl-schematron"))
+                        .findFirst().orElseThrow().entry("ubl-invoice").orElseThrow());
+        assertEquals("cen/1.3.17/EN16931-UBL-validation.xslt",
+                pack.select(InvoiceSyntax.UBL_INVOICE, XRECHNUNG).applied().stream()
+                        .filter(component -> component.name().equals("en16931-ubl-schematron"))
+                        .findFirst().orElseThrow().entry("ubl-invoice").orElseThrow());
+        assertEquals(previous.components().size(), pack.components().size());
+    }
+
     @Test
     void readsOnlyTheFilesItsManifestLists() {
-        assertTrue(pack.read("cen/1.3.16/LICENSE").length > 0,
+        assertTrue(pack.read("cen/1.3.17/LICENSE").length > 0,
                 "a file the inventory lists is read");
 
         assertThrows(PackException.class, () -> pack.read("pack.json"));
-        assertThrows(PackException.class, () -> pack.read("cen/1.3.16/LICENSE.txt"));
+        assertThrows(PackException.class, () -> pack.read("cen/1.3.17/LICENSE.txt"));
         assertThrows(PackException.class, () -> pack.read("../SOURCES.md"));
         assertThrows(PackException.class, () -> Packs.open("/etc/hosts"));
         assertThrows(PackException.class, () -> Packs.open("xrechnung/../../secret"));
@@ -172,13 +194,13 @@ class PacksTest {
             Files.createDirectories(target.getParent());
             Files.write(target, pack.read(file));
         }
-        Path altered = directory.resolve("cen/1.3.16/LICENSE");
+        Path altered = directory.resolve("cen/1.3.17/LICENSE");
         Files.write(altered, "a line that was not in the released file\n".getBytes(
                 StandardCharsets.UTF_8), java.nio.file.StandardOpenOption.APPEND);
 
         Pack supplied = Packs.fromDirectory(directory);
         PackException refused = assertThrows(PackException.class,
-                () -> supplied.read("cen/1.3.16/LICENSE"));
+                () -> supplied.read("cen/1.3.17/LICENSE"));
 
         assertTrue(refused.getMessage().contains("is not the file its manifest records"),
                 refused.getMessage());
@@ -207,7 +229,7 @@ class PacksTest {
 
         assertEquals(pack.directory(), supplied.directory(),
                 "the directory calls itself what the packaged pack is called");
-        String entry = "cen/1.3.16/EN16931-UBL-validation.xslt";
+        String entry = "cen/1.3.17/EN16931-UBL-validation.xslt";
         assertNotEquals(pack.cacheKey(entry), supplied.cacheKey(entry),
                 "and the two are nonetheless cached apart");
     }
@@ -230,7 +252,7 @@ class PacksTest {
             Files.createDirectories(inside.getParent());
             Files.write(inside, pack.read(file));
         }
-        Path linked = directory.resolve("cen/1.3.16/EN16931-UBL-validation.xslt");
+        Path linked = directory.resolve("cen/1.3.17/EN16931-UBL-validation.xslt");
         Files.delete(linked);
         try {
             Files.createSymbolicLink(linked, target);
@@ -241,7 +263,7 @@ class PacksTest {
         try {
             Pack supplied = Packs.fromDirectory(directory);
             PackException refused = assertThrows(PackException.class,
-                    () -> supplied.read("cen/1.3.16/EN16931-UBL-validation.xslt"));
+                    () -> supplied.read("cen/1.3.17/EN16931-UBL-validation.xslt"));
 
             assertTrue(refused.getMessage().contains("stays inside the pack directory"),
                     refused.getMessage());

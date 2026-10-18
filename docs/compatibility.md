@@ -82,7 +82,7 @@ It reports before 1.0.0, compares with 1.0.0-rc.1 from that release on, and fail
 ## Data the libraries ship
 
 Registries, rule packs, validation packs and code list snapshots are data with versions of their
-own (`en16931/1.3.16`, `xrechnung/3.0.2/2026-08-31`, dated snapshots). A minor release may add
+own (`en16931/1.3.17`, `xrechnung/3.0.2/2026-10-12`, dated snapshots). A minor release may add
 packs, add a newer pack and make it the default. A verdict can therefore change between minor
 releases because the published rules changed — that is the purpose of a pack, not a break.
 A release may tighten a resource limit or refuse a new kind of hostile input in a patch release.

@@ -402,7 +402,7 @@ final class ReportContent {
      *
      * @param finding  the finding
      * @param language the language of the report
-     * @return {@code "BR-CO-10 [error] — native, pack en16931/1.3.16"}
+     * @return {@code "BR-CO-10 [error] — native, pack en16931/1.3.17"}
      */
     static String head(ValidationOutcome.Finding finding, RenderLanguage language) {
         StringBuilder head = new StringBuilder(plain(finding.code()))

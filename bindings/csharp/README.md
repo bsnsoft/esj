@@ -75,7 +75,7 @@ RuleEngine pack = En16931Pack.Engine(Registry.En16931().WithExtension(Registry.X
 IReadOnlyList<RuleFinding> findings = pack.Evaluate(invoice);
 ```
 
-The pack is `rules/en16931/1.3.16` as data: 189 rules in the JSON rule language and 28 the language
+The pack is `rules/en16931/1.3.17` as data: 189 rules in the JSON rule language and 28 the language
 cannot express, written in C# under the names the manifest declares and matched to it by the last
 segment of each name. Findings of the pack are their own layer and are never ESJ conformance
 (`SPEC.md` section 9.4). `Evaluate` refuses a document of an edition other than the one the pack

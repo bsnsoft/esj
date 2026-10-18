@@ -144,9 +144,10 @@ the PostgreSQL side — `jsonb` column, views, expression indexes, materialized 
 
 Three checks over one input. The official validation artefacts of the document's profile — the UBL
 2.1 or CII D16B XML Schema, the EN 16931 Schematron of CEN/TC 434 and the XRechnung Schematron —
-carried under [`packs/`](packs/README.md) as data and run in the pack `xrechnung/3.0.2/2026-08-31`.
+carried under [`packs/`](packs/README.md) as data and run in the pack `xrechnung/3.0.2/2026-10-12`
+(CEN release 1.3.17; the release before it stays selectable with `--pack`).
 The structural layers L1 to L3 against the registry. And the business rules of EN 16931-1, clause
-6.4 as the pack [`rules/en16931/1.3.16`](rules/README.md) — 217 rules and seventeen dated code list
+6.4 as the pack [`rules/en16931/1.3.17`](rules/README.md) — 217 rules and seventeen dated code list
 snapshots, over the business terms. An ESJ document is written out through a binding table in
 memory so that the artefacts read it too, so every input gets all three, and a native finding is a
 layer of its own, never ESJ conformance. The Peppol BIS Billing 3.0 artefacts may not be
@@ -174,8 +175,8 @@ are accepted as a UBL invoice and all 86 read back ([`docs/conformance.md`](docs
 
 Both engines are measured against the official ones on the same bytes. Against the KoSIT validator
 the syntax engine agrees on every rule identifier of all 149 documents compared and on 146 of their
-149 verdicts. Against the EN 16931 Schematron 1.3.16 over 448 mutations, the rule pack agrees on
-every shape measured for 166 of its 217 rules, on one shape and not another for 33, differs for 16,
+149 verdicts. Against the EN 16931 Schematron 1.3.17 over 455 mutations, the rule pack agrees on
+every shape measured for 137 of its 217 rules, on one shape and not another for 53, differs for 25,
 cannot be asked at all about 2, and leaves 0 unaccounted for; each difference is named in
 [`docs/validation.md`](docs/validation.md#the-oracle-measured-not-asserted).
 

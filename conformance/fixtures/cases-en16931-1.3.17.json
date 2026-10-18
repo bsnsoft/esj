@@ -1,8 +1,8 @@
 {
   "format": "EN16931-Semantic-JSON-Fixtures-Rules",
   "version": "2",
-  "pack": "en16931/1.3.16",
-  "directory": "rules/en16931/1.3.16",
+  "pack": "en16931/1.3.17",
+  "directory": "rules/en16931/1.3.17",
   "cases": [
     {
       "id": "ae08-tol-cii",
@@ -43,8 +43,8 @@
       }
     },
     {
-      "id": "af08-one-unit-cii",
-      "rule": "BR-AF-08",
+      "id": "ig08-one-unit-cii",
+      "rule": "BR-IG-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -98,14 +98,14 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "af08-one-unit-ubl",
-      "rule": "BR-AF-08",
+      "id": "ig08-one-unit-ubl",
+      "rule": "BR-IG-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -159,14 +159,14 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "af08-tol-cii",
-      "rule": "BR-AF-08",
+      "id": "ig08-tol-cii",
+      "rule": "BR-IG-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -220,16 +220,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "warnings": [
-          "BR-AF-08"
+          "BR-IG-08"
         ]
       }
     },
     {
-      "id": "af08-tol-ubl",
-      "rule": "BR-AF-08",
+      "id": "ig08-tol-ubl",
+      "rule": "BR-IG-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -283,16 +283,43 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "warnings": [
-          "BR-AF-08"
+          "BR-IG-08"
         ]
       }
     },
     {
-      "id": "ag08-tol-cii",
-      "rule": "BR-AG-08",
+      "id": "ig05-zero-rate-cii",
+      "rule": "BR-IG-05",
+      "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "L"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "L"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "ip08-tol-cii",
+      "rule": "BR-IP-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -346,16 +373,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-08"
+          "BR-IP-08"
         ],
         "warnings": [
-          "BR-AG-08"
+          "BR-IP-08"
         ]
       }
     },
     {
-      "id": "ag08-tol-ubl",
-      "rule": "BR-AG-08",
+      "id": "ip08-tol-ubl",
+      "rule": "BR-IP-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -409,10 +436,10 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-08"
+          "BR-IP-08"
         ],
         "warnings": [
-          "BR-AG-08"
+          "BR-IP-08"
         ]
       }
     },
@@ -2858,8 +2885,8 @@
       }
     },
     {
-      "id": "br-af-01-cii",
-      "rule": "BR-AF-01",
+      "id": "br-ig-01-cii",
+      "rule": "BR-IG-01",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -2909,15 +2936,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-01",
+          "BR-IG-01",
           "BR-S-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-02-cii",
-      "rule": "BR-AF-02",
+      "id": "br-ig-02-cii",
+      "rule": "BR-IG-02",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -2975,15 +3002,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-02-ubl",
-      "rule": "BR-AF-02",
+      "id": "br-ig-02-ubl",
+      "rule": "BR-IG-02",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3041,15 +3068,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-03-cii",
-      "rule": "BR-AF-03",
+      "id": "br-ig-03-cii",
+      "rule": "BR-IG-03",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_uncefact.xml.esj.json",
       "changes": [
         {
@@ -3116,16 +3143,16 @@
       "expect": {
         "rules": [
           "BR-56",
-          "BR-AF-03",
-          "BR-AF-04",
+          "BR-IG-03",
+          "BR-IG-04",
           "BR-S-02"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-03-ubl",
-      "rule": "BR-AF-03",
+      "id": "br-ig-03-ubl",
+      "rule": "BR-IG-03",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
       "changes": [
         {
@@ -3192,16 +3219,16 @@
       "expect": {
         "rules": [
           "BR-56",
-          "BR-AF-03",
-          "BR-AF-04",
+          "BR-IG-03",
+          "BR-IG-04",
           "BR-S-02"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-04-cii",
-      "rule": "BR-AF-04",
+      "id": "br-ig-04-cii",
+      "rule": "BR-IG-04",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -3259,15 +3286,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-04-ubl",
-      "rule": "BR-AF-04",
+      "id": "br-ig-04-ubl",
+      "rule": "BR-IG-04",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3325,15 +3352,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-05-ubl",
-      "rule": "BR-AF-05",
+      "id": "br-ig-05-ubl",
+      "rule": "BR-IG-05",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3383,15 +3410,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-05",
-          "BR-AF-08"
+          "BR-IG-05",
+          "BR-IG-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-06-ubl",
-      "rule": "BR-AF-06",
+      "id": "br-ig-06-ubl",
+      "rule": "BR-IG-06",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
       "changes": [
         {
@@ -3445,15 +3472,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-06",
-          "BR-AF-08"
+          "BR-IG-06",
+          "BR-IG-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-07-ubl",
-      "rule": "BR-AF-07",
+      "id": "br-ig-07-ubl",
+      "rule": "BR-IG-07",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3503,15 +3530,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-07",
-          "BR-AF-08"
+          "BR-IG-07",
+          "BR-IG-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-08-cii",
-      "rule": "BR-AF-08",
+      "id": "br-ig-08-cii",
+      "rule": "BR-IG-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -3565,16 +3592,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-08",
-          "BR-AF-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-08",
+          "BR-IG-09"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-08-ubl",
-      "rule": "BR-AF-08",
+      "id": "br-ig-08-ubl",
+      "rule": "BR-IG-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3628,16 +3655,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-08",
-          "BR-AF-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-08",
+          "BR-IG-09"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-09-ubl",
-      "rule": "BR-AF-09",
+      "id": "br-ig-09-ubl",
+      "rule": "BR-IG-09",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3687,16 +3714,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-09",
           "BR-CO-14",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-09"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-af-10-ubl",
-      "rule": "BR-AF-10",
+      "id": "br-ig-10-ubl",
+      "rule": "BR-IG-10",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3746,14 +3773,14 @@
       ],
       "expect": {
         "rules": [
-          "BR-AF-10"
+          "BR-IG-10"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-01-cii",
-      "rule": "BR-AG-01",
+      "id": "br-ip-01-cii",
+      "rule": "BR-IP-01",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -3803,15 +3830,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-01",
+          "BR-IP-01",
           "BR-S-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-02-cii",
-      "rule": "BR-AG-02",
+      "id": "br-ip-02-cii",
+      "rule": "BR-IP-02",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -3869,15 +3896,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-02-ubl",
-      "rule": "BR-AG-02",
+      "id": "br-ip-02-ubl",
+      "rule": "BR-IP-02",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -3935,15 +3962,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-03-cii",
-      "rule": "BR-AG-03",
+      "id": "br-ip-03-cii",
+      "rule": "BR-IP-03",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_uncefact.xml.esj.json",
       "changes": [
         {
@@ -4010,16 +4037,16 @@
       "expect": {
         "rules": [
           "BR-56",
-          "BR-AG-03",
-          "BR-AG-04",
+          "BR-IP-03",
+          "BR-IP-04",
           "BR-S-02"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-03-ubl",
-      "rule": "BR-AG-03",
+      "id": "br-ip-03-ubl",
+      "rule": "BR-IP-03",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
       "changes": [
         {
@@ -4086,16 +4113,16 @@
       "expect": {
         "rules": [
           "BR-56",
-          "BR-AG-03",
-          "BR-AG-04",
+          "BR-IP-03",
+          "BR-IP-04",
           "BR-S-02"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-04-cii",
-      "rule": "BR-AG-04",
+      "id": "br-ip-04-cii",
+      "rule": "BR-IP-04",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -4153,15 +4180,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-04-ubl",
-      "rule": "BR-AG-04",
+      "id": "br-ip-04-ubl",
+      "rule": "BR-IP-04",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -4219,15 +4246,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-05-ubl",
-      "rule": "BR-AG-05",
+      "id": "br-ip-05-ubl",
+      "rule": "BR-IP-05",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -4277,15 +4304,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-05",
-          "BR-AG-08"
+          "BR-IP-05",
+          "BR-IP-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-06-ubl",
-      "rule": "BR-AG-06",
+      "id": "br-ip-06-ubl",
+      "rule": "BR-IP-06",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
       "changes": [
         {
@@ -4339,15 +4366,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-06",
-          "BR-AG-08"
+          "BR-IP-06",
+          "BR-IP-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-07-ubl",
-      "rule": "BR-AG-07",
+      "id": "br-ip-07-ubl",
+      "rule": "BR-IP-07",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -4397,15 +4424,15 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-07",
-          "BR-AG-08"
+          "BR-IP-07",
+          "BR-IP-08"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-08-cii",
-      "rule": "BR-AG-08",
+      "id": "br-ip-08-cii",
+      "rule": "BR-IP-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_uncefact.xml.esj.json",
       "changes": [
         {
@@ -4459,16 +4486,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-08",
-          "BR-AG-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-08",
+          "BR-IP-09"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-08-ubl",
-      "rule": "BR-AG-08",
+      "id": "br-ip-08-ubl",
+      "rule": "BR-IP-08",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -4522,16 +4549,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-08",
-          "BR-AG-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-08",
+          "BR-IP-09"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-09-ubl",
-      "rule": "BR-AG-09",
+      "id": "br-ip-09-ubl",
+      "rule": "BR-IP-09",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -4581,16 +4608,16 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-09",
           "BR-CO-14",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-09"
         ],
         "warnings": []
       }
     },
     {
-      "id": "br-ag-10-ubl",
-      "rule": "BR-AG-10",
+      "id": "br-ip-10-ubl",
+      "rule": "BR-IP-10",
       "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
       "changes": [
         {
@@ -4640,7 +4667,7 @@
       ],
       "expect": {
         "rules": [
-          "BR-AG-10"
+          "BR-IP-10"
         ],
         "warnings": []
       }
@@ -5472,6 +5499,21 @@
       }
     },
     {
+      "id": "br-co-09-el-cii",
+      "rule": "BR-CO-09",
+      "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_uncefact.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "value": "EL123456789"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
       "id": "br-co-09-ubl",
       "rule": "BR-CO-09",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
@@ -5485,6 +5527,21 @@
         "rules": [
           "BR-CO-09"
         ],
+        "warnings": []
+      }
+    },
+    {
+      "id": "br-co-09-el-ubl",
+      "rule": "BR-CO-09",
+      "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-4/BT-31",
+          "value": "EL123456789"
+        }
+      ],
+      "expect": {
+        "rules": [],
         "warnings": []
       }
     },
@@ -11886,6 +11943,84 @@
       "rule": "",
       "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
       "changes": [],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "near-igic-zero-rate-ubl",
+      "rule": "",
+      "base": "conformance/esj/business-cases/standard/01.21a-INVOICE_ubl.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-21/0/BT-102",
+          "value": "L"
+        },
+        {
+          "path": "/BG-23/0/BT-118",
+          "value": "L"
+        },
+        {
+          "path": "/BG-23/0/BT-120",
+          "remove": true
+        },
+        {
+          "path": "/BG-25/0/BG-30/BT-151",
+          "value": "L"
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "near-icd-0249-ubl",
+      "rule": "",
+      "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-4/BT-29/0",
+          "value": {
+            "value": "987654321",
+            "scheme": "0249"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "near-eas-9960-cii",
+      "rule": "",
+      "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_uncefact.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-4/BT-34",
+          "value": {
+            "value": "rechnungsausgang@test.com",
+            "scheme": "9960"
+          }
+        }
+      ],
+      "expect": {
+        "rules": [],
+        "warnings": []
+      }
+    },
+    {
+      "id": "near-vatex-es-ubl",
+      "rule": "",
+      "base": "conformance/esj/technical-cases/cius/01.01_comprehensive_test_ubl.xml.esj.json",
+      "changes": [
+        {
+          "path": "/BG-23/1/BT-121",
+          "value": "VATEX-ES-IVA20"
+        }
+      ],
       "expect": {
         "rules": [],
         "warnings": []

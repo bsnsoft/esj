@@ -116,6 +116,13 @@ old digests stay valid for every report that ever named them. Adding one is:
 5. run `mvn -B -q verify`, which checks the digests, the inventory and that the index and
    the packaged packs are the same list.
 
+A release may take its parts from upstream releases of different days, and then its title says
+so. `xrechnung/3.0.2/2026-10-12` is release 1.3.17 of the EN 16931 Schematron, published on
+that day, with the XRechnung Schematron, the schema modules and the level tables of the KoSIT
+configuration of 2026-08-31, which no configuration release has replaced yet; `SOURCES.md` lists
+both archives. Where several releases of one pack are bundled, a document is judged by the newest
+and `--pack <id/version/release>` names another.
+
 ## Recipes
 
 Some artefacts may be used and not redistributed: the Peppol BIS Billing 3.0 validation
@@ -172,8 +179,8 @@ writes the same files and leaves the pack alone.
 
 ## Size
 
-A pack is a few megabytes: this one is 2.7 MiB over 28 files, and most of it is the two
-compiled CEN stylesheets. Only supported releases stay in the tree. When a release stops being
+A pack is a few megabytes: each of the two here is 2.7 MiB over 28 files, and most of it is the
+two compiled CEN stylesheets. Only supported releases stay in the tree. When a release stops being
 supported it is removed in a release of this project rather than kept forever — the history
 still has it, and a report that names it still names something that can be reconstructed from
 the digests in `SOURCES.md`.

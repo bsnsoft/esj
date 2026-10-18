@@ -15,7 +15,7 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 | `manifest.json` | the manifest: registries, documents, negative fixtures, documents under bounds, registry checks, canonical order, grammars |
 | `manifest.schema.json` | the schema of the manifest, of its parts and of the rule case file |
 | `manifest-en16931-2026.json` | the part of the later edition, absent from a distribution that does not ship it |
-| `cases-en16931-1.3.16.json` | the rule cases: 448 mutations of the corpus as base document plus changes |
+| `cases-en16931-1.3.17.json` | the rule cases: 455 mutations of the corpus as base document plus changes |
 | `cases-en16931-2026-0.1.json` | the rule cases of the later edition's pack: its documents, carried in the file, plus changes |
 | `arithmetic/pack.json` | a pack of the rule language whose rules pin division, each quotient worked out by hand |
 | [`reader/`](reader/README.md) | documents layer L1 refuses, one variant of a defect each |

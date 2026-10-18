@@ -5,7 +5,7 @@ package de.bsnsoft.esj.rules.internal.en16931;
  * invoice lines, document level charges and document level allowances of that category
  * come to.
  *
- * <p>Release 1.3.16 asks for equality in both artefacts, and this is the one rule of the nine
+ * <p>Releases 1.3.16 and 1.3.17 ask for equality in both artefacts, and this is the one rule of the nine
  * where they agree, so the comparison here is exact.
  *
  * <p>Written in Java because the sum is over a filtered set, which the rule language has

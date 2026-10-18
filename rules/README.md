@@ -30,9 +30,9 @@ finding lands on the business term the caller wrote the value at.
 This directory is the project's own material, under the licence of the repository, with one
 carve-out: `<pack>/<version>/codelists/` holds dated snapshots of code lists published by other
 bodies. Those files are not this project's work, no publisher states terms for the data, and
-the `SOURCES.md` beside them ([1.3.16](en16931/1.3.16/codelists/SOURCES.md),
-[2026](en16931-2026/0.1/codelists/SOURCES.md)) records source, digest and that open question
-for each. Everything else here — the rule statements, the manifests, the language — is the
+the `SOURCES.md` beside them ([1.3.17](en16931/1.3.17/codelists/SOURCES.md),
+[1.3.16](en16931/1.3.16/codelists/SOURCES.md), [2026](en16931-2026/0.1/codelists/SOURCES.md))
+records source, digest and that open question for each. Everything else here — the rule statements, the manifests, the language — is the
 project's own. It is not [`../packs/`](../packs/README.md), which holds the third-party
 validation artefacts the syntax engine executes, each under the licence it came with.
 
@@ -47,14 +47,14 @@ about agreement is made anywhere in this repository without the ledger that meas
 ```json
 {
   "id": "en16931",
-  "version": "1.3.16",
+  "version": "1.3.17",
   "edition": "EN 16931-1:2017+A1:2019/AC:2020",
-  "verifiedAgainst": "CEN/TC 434 eInvoicing EN 16931 validation artefacts, release 1.3.16",
+  "verifiedAgainst": "CEN/TC 434 eInvoicing EN 16931 validation artefacts, release 1.3.17",
   "description": "…",
-  "codeLists": { "untdid-5305": "2026-09-19" },
+  "codeLists": { "untdid-5305": "2026-10-18" },
   "javaRules": [{ "class": "…rules.internal.en16931.SomeRule", "oracle": "artefact" }],
   "files": ["rules/br.json", "rules/br-co.json"],
-  "shares": [{ "pack": "en16931", "version": "1.3.16", "file": "rules/br.json",
+  "shares": [{ "pack": "en16931", "version": "1.3.17", "file": "rules/br.json",
                "oracle": "downgrade", "rules": ["BR-01", "BR-02"] }],
   "rules": [ … ]
 }
@@ -65,7 +65,7 @@ about agreement is made anywhere in this repository without the ledger that meas
 | `id`, `version` | the pack, which appears in every finding it produces; a released version is never edited, a newer list or a corrected rule is a new version |
 | `edition` | the edition of the semantic model the rules are addresses in. It is the one member by which the engine decides whether a pack may be compiled against a registry and run over a document, and a pack of another edition is refused rather than run |
 | `verifiedAgainst` | optional: the release of the official artefacts this pack's behaviour is compared against — a statement of what was measured, not a claim of equivalence. A pack of an edition no artefact release covers leaves it out and says per rule what stands behind it |
-| `codeLists` | which day's snapshot of each code list this pack decides membership against ([`en16931/1.3.16/codelists/SOURCES.md`](en16931/1.3.16/codelists/SOURCES.md)). A value may be `{"day": …, "from": "en16931/1.3.16"}` instead, which reads the file of that pack: two editions naming one published list decide against the same bytes |
+| `codeLists` | which day's snapshot of each code list this pack decides membership against ([`en16931/1.3.17/codelists/SOURCES.md`](en16931/1.3.17/codelists/SOURCES.md)). A value may be `{"day": …, "from": "en16931/1.3.17"}` instead, which reads the file of that pack: two editions naming one published list decide against the same bytes |
 | `javaRules` | the rules the language cannot express, each by the name of its class and by its oracle; naming a class is not loading it, see below |
 | `shares` | optional: rules of another pack this pack takes over unchanged, by pack, file and identifier, with the oracle under which it takes them. A rule the next edition leaves alone is the same statement about the same terms, and a copy of it is a second file to keep equal by hand. A rule of the named file that is not named here is not taken over, and a shared rule that addresses a path this edition moved does not compile — which is what keeps sharing from being a guess |
 | `files` | the rule files the pack is made of, each an array of rules, each a path relative to the manifest. Two hundred rules in one file are unreadable and unreviewable, so they are split by family; the rules of the files and the rules the manifest writes itself are one set, and an identifier that appears twice in it is refused |
@@ -355,7 +355,7 @@ A rule asks `inList` about a list identifier; the pack manifest says which day's
 that list this pack decides against. Two runs of the same pack version over the same document
 therefore give the same verdict however far apart they are, which is the only way a validation
 report keeps its meaning in an archive.
-[`en16931/1.3.16/codelists/SOURCES.md`](en16931/1.3.16/codelists/SOURCES.md) is where the
+[`en16931/1.3.17/codelists/SOURCES.md`](en16931/1.3.17/codelists/SOURCES.md) is where the
 snapshots come from, what the publisher says about reuse, and which lists this build does not
 yet carry. A pack that names a list it has no snapshot for does not compile: a membership test
 against a list nobody loaded would pass every code, and a rule that silently passes everything
@@ -401,23 +401,24 @@ of the line, not of the invoice.
 
 | Pack | Edition | Rules | Artefacts | Coverage |
 |---|---|---|---|---|
-| [`en16931/1.3.16/`](en16931/1.3.16/pack.json) | EN 16931-1:2017+A1:2019/AC:2020 | 217, of which 189 in this language and 28 in Java | release 1.3.16 | [`conformance/rules/coverage.md`](../conformance/rules/coverage.md) |
+| [`en16931/1.3.17/`](en16931/1.3.17/pack.json) | EN 16931-1:2017+A1:2019/AC:2020 | 217, of which 189 in this language and 28 in Java | release 1.3.17 | [`conformance/rules/coverage.md`](../conformance/rules/coverage.md) |
+| [`en16931/1.3.16/`](en16931/1.3.16/pack.json) | EN 16931-1:2017+A1:2019/AC:2020 | the same 217, with the identifiers `BR-AF-*` and `BR-AG-*` of that release for the categories `L` and `M`, and the code lists of 2026-09-19 | release 1.3.16 | kept for a caller that names it; `esj validate` runs the pack above |
 | [`en16931-2026/0.1/`](en16931-2026/0.1/pack.json) | EN 16931-1:2026 | 252, of which 104 taken over from the pack above and 35 in Java | none is published | [`conformance/rules-2026/coverage.md`](../conformance/rules-2026/coverage.md) |
 
 Every rule of the first pack has a case in `esj-rules`: a document the rule is silent on and the
 same document with one thing changed, which it speaks on. Over the 86 instances of the
 conformance corpus the pack and the official EN 16931 Schematron of the same release report on
-the same four ([`corpus.md`](../conformance/rules/corpus.md)). Over 448 mutations broken on
-purpose, of the 217 rules the two report the same identifiers on every shape measured for 166,
-agree on one shape and differ on another for 33, differ outright for 16 and cannot be compared
-for 2 — each of the 51 named in [`ledger.md`](../conformance/rules/ledger.md), none open;
+the same four ([`corpus.md`](../conformance/rules/corpus.md)). Over 455 mutations broken on
+purpose, of the 217 rules the two report the same identifiers on every shape measured for 137,
+agree on one shape and differ on another for 53, differ outright for 25 and cannot be compared
+for 2 — each of the 80 named in [`ledger.md`](../conformance/rules/ledger.md), none open;
 [`not-applicable.md`](../conformance/rules/not-applicable.md) lists the rules it does not carry.
 
 **No official validation artefact is published for EN 16931-1:2026**, so nothing in the second
 pack is corroborated by one and a document of that edition never reaches `VALID`. Every rule
 names in `oracle` what stands behind it, and
 [`conformance/rules-2026/ledger.md`](../conformance/rules-2026/ledger.md) measures both: the 108
-rules the edition leaves unchanged go through the artefacts of release 1.3.16 over the document
+rules the edition leaves unchanged go through the artefacts of release 1.3.17 over the document
 written back, the 144 it changed or adds through cases of this project.
 
 ## Adding a rule

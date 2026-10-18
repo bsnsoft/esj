@@ -126,7 +126,7 @@ class FixtureManifestTest {
     private static final String LATER_EDITION = "2026";
 
     /** The file that carries the rule cases, which are too many to read beside the rest. */
-    private static final String CASES = "cases-en16931-1.3.16.json";
+    private static final String CASES = "cases-en16931-1.3.17.json";
 
     /** The schema of the manifest, of its parts and of the rule case file. */
     private static final String SCHEMA = "manifest.schema.json";

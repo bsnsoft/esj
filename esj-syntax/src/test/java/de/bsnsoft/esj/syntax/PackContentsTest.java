@@ -65,9 +65,12 @@ class PackContentsTest {
         List<Manifest> packs = packs();
 
         assertFalse(packs.isEmpty(), "the packs of the repository reach the class path");
+        assertTrue(packs.stream().anyMatch(pack -> "xrechnung/3.0.2/2026-10-12".equals(
+                        pack.directory())),
+                "the XRechnung 3.0.2 pack of release 2026-10-12 is packaged");
         assertTrue(packs.stream().anyMatch(pack -> "xrechnung/3.0.2/2026-08-31".equals(
                         pack.directory())),
-                "the XRechnung 3.0.2 pack of release 2026-08-31 is packaged");
+                "and the release before it stays packaged");
     }
 
     @Test

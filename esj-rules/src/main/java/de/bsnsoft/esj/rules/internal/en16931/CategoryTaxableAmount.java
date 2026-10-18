@@ -19,7 +19,8 @@ import java.util.Optional;
  * the nine rules that use it differ in three constants.
  *
  * <p>How closely the two have to agree is decided rule by rule, because the two official
- * artefacts of release 1.3.16 decide it rule by rule and do not agree with each other. For
+ * artefacts of release 1.3.17 decide it rule by rule and do not agree with each other — as
+ * those of release 1.3.16 did, which ask the same of every one of the nine rules. For
  * eight of the nine rules one of the two admits a stated amount within one unit of the
  * invoice currency of the sum and the other asks for equality, and which of the two is the
  * lenient one changes with the category; only {@code BR-O-08} asks for equality in both.
@@ -28,8 +29,9 @@ import java.util.Optional;
  * and a difference inside the tolerance only one of them grants is a warning that says what
  * is true of that difference in the release. Usually that is the artefact of the other
  * syntax, which faults it, and a document meant for the lenient syntax therefore keeps its
- * verdict while a document meant for the strict one is not a surprise. For {@code BR-AF-08}
- * and {@code BR-AG-08} the strict assertion cannot report at all, so nothing faults a
+ * verdict while a document meant for the strict one is not a surprise. For {@code BR-IG-08}
+ * and {@code BR-IP-08} (in release 1.3.16 {@code BR-AF-08} and {@code BR-AG-08}) the strict
+ * assertion cannot report at all, so nothing faults a
  * difference inside their zone and the warning names the standard instead.
  * {@code conformance/rules/ledger.md} carries the matrix, read out of the artefacts by a
  * test, and names the mutations that measure the zone, its two edges and what lies beyond.
@@ -47,7 +49,7 @@ import java.util.Optional;
 abstract class CategoryTaxableAmount implements JavaRule {
 
     /**
-     * Which official artefact of release 1.3.16 admits a difference below one unit of the
+     * Which official artefact of release 1.3.17 admits a difference below one unit of the
      * invoice currency between the stated taxable amount and the sum, where they differ.
      */
     enum Tolerance {
@@ -56,23 +58,23 @@ abstract class CategoryTaxableAmount implements JavaRule {
         NEITHER(""),
 
         /** The UBL artefact; the CII artefact asks for equality and reports it. */
-        UBL(", and the official CII artefact of release 1.3.16 faults a difference this"
+        UBL(", and the official CII artefact of release 1.3.17 faults a difference this"
                 + " small."),
 
         /** The CII artefact; the UBL artefact asks for equality and reports it. */
-        CII(", and the official UBL artefact of release 1.3.16 faults a difference this"
+        CII(", and the official UBL artefact of release 1.3.17 faults a difference this"
                 + " small."),
 
         /**
          * The UBL artefact, and nothing faults a difference inside the zone: the CII
-         * assertion of release 1.3.16 asks for equality and cannot report at all, because
+         * assertion of release 1.3.17 asks for equality and cannot report at all, because
          * it reads the two figures from a node where neither is written
          * ({@code conformance/rules/ledger.md}, the cause {@code artefact-cannot-fire}).
          * The warning is then not about the other artefact but about the standard, which
          * asks the two to be equal.
          */
         UBL_CII_CANNOT_REPORT(", and the standard asks the two to be equal: the official"
-                + " UBL artefact of release 1.3.16 admits a difference this small, and the"
+                + " UBL artefact of release 1.3.17 admits a difference this small, and the"
                 + " CII assertion of that release cannot report it.");
 
         private final String warning;
@@ -83,7 +85,7 @@ abstract class CategoryTaxableAmount implements JavaRule {
 
         /**
          * Returns what a warning about a difference inside the tolerance ends with, which
-         * is what is true of that difference in release 1.3.16.
+         * is what is true of that difference in release 1.3.17.
          *
          * @return the sentence, empty where both artefacts ask for equality and there is
          *         no zone to warn in

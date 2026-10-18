@@ -50,13 +50,13 @@ test('the rule snippet compiles the pack and runs it', async () => {
 
 test('the README says what the pack carries, and the pack carries it', () => {
   const pack = JSON.parse(readFileSync(
-    path.join(ROOT, 'rules', 'en16931', '1.3.16', 'pack.json'), 'utf8')) as {
+    path.join(ROOT, 'rules', 'en16931', '1.3.17', 'pack.json'), 'utf8')) as {
       javaRules: string[]; files: string[];
     };
   let declarative = 0;
   for (const file of pack.files) {
     declarative += (JSON.parse(readFileSync(
-      path.join(ROOT, 'rules', 'en16931', '1.3.16', file), 'utf8')) as unknown[]).length;
+      path.join(ROOT, 'rules', 'en16931', '1.3.17', file), 'utf8')) as unknown[]).length;
   }
   assert.ok(README.includes(String(declarative + pack.javaRules.length) + ' rules: '
     + declarative + ' read from'), 'the README counts ' + declarative + ' + '

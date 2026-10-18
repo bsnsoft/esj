@@ -140,8 +140,8 @@ class GenerateTest {
         for (String name : names) {
             List<String> lines = Files.readAllLines(emitted.resolve(name), StandardCharsets.UTF_8);
             assertEquals(JavaText.CODE_LIST_HEADER_MARKER, lines.get(0), name);
-            assertTrue(lines.get(1).startsWith("// of the rule pack en16931 1.3.16: "), name);
-            assertTrue(lines.get(1).contains(" of 2026-09-19"), name + " names the snapshot day");
+            assertTrue(lines.get(1).startsWith("// of the rule pack en16931 1.3.17: "), name);
+            assertTrue(lines.get(1).contains(" of 2026-10-18"), name + " names the snapshot day");
             assertEquals("// Do not edit.", lines.get(2), name);
         }
         String unit = read(emitted.resolve("Unit.java"));

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * How closely release 1.3.16 asks the two figures of a rule to agree, read out of the
+ * How closely release 1.3.17 asks the two figures of a rule to agree, read out of the
  * vendored artefacts.
  *
  * <p>Nine rules of the pack compare a stated amount with a sum and one compares it with a
@@ -53,10 +53,10 @@ class ToleranceMatrixTest {
 
     /** The vendored artefact of each syntax, as a test class path resource. */
     private static final Map<String, String> ARTEFACTS = Map.of(
-            "ubl", "/de/bsnsoft/esj/syntax/packs/xrechnung/3.0.2/2026-08-31"
-                    + "/cen/1.3.16/EN16931-UBL-validation.xslt",
-            "cii", "/de/bsnsoft/esj/syntax/packs/xrechnung/3.0.2/2026-08-31"
-                    + "/cen/1.3.16/EN16931-CII-validation.xslt");
+            "ubl", "/de/bsnsoft/esj/syntax/packs/xrechnung/3.0.2/2026-10-12"
+                    + "/cen/1.3.17/EN16931-UBL-validation.xslt",
+            "cii", "/de/bsnsoft/esj/syntax/packs/xrechnung/3.0.2/2026-10-12"
+                    + "/cen/1.3.17/EN16931-CII-validation.xslt");
 
     private static final String EQUALITY = "equality";
     private static final String ONE_UNIT = "within one unit";
@@ -87,7 +87,7 @@ class ToleranceMatrixTest {
             for (String syntax : List.of("ubl", "cii")) {
                 assertEquals(row.get(syntax), reading(syntax, id),
                         "conformance/rules/ledger.json records what the " + syntax
-                                + " artefact of release 1.3.16 asks of " + id);
+                                + " artefact of release 1.3.17 asks of " + id);
             }
         }
     }
@@ -165,13 +165,13 @@ class ToleranceMatrixTest {
      */
     @Test
     void theWarningOfARowNoArtefactFaultsNamesTheStandard() {
-        RuleFinding finding = warning("af08-tol-ubl", "BR-AF-08");
+        RuleFinding finding = warning("ig08-tol-ubl", "BR-IG-08");
 
         assertTrue(finding.message().endsWith("and the standard asks the two to be equal:"
-                        + " the official UBL artefact of release 1.3.16 admits a difference"
+                        + " the official UBL artefact of release 1.3.17 admits a difference"
                         + " this small, and the CII assertion of that release cannot report"
                         + " it."),
-                "BR-AF-08 warns with what release 1.3.16 does: " + finding.message());
+                "BR-IG-08 warns with what release 1.3.17 does: " + finding.message());
     }
 
     /** The other rows say what they have always said: the other artefact faults it. */
@@ -180,7 +180,7 @@ class ToleranceMatrixTest {
         RuleFinding finding = warning("s08-tol-ubl", "BR-S-08");
 
         assertTrue(finding.message().endsWith("and the official CII artefact of release"
-                        + " 1.3.16 faults a difference this small."),
+                        + " 1.3.17 faults a difference this small."),
                 "BR-S-08 warns with the artefact that faults the figure: "
                         + finding.message());
     }
@@ -209,8 +209,8 @@ class ToleranceMatrixTest {
     /** Every rule of the family is in the matrix, and the matrix holds nothing else. */
     @Test
     void theMatrixCoversTheWholeFamily() {
-        assertEquals(List.of("BR-AE-08", "BR-AF-08", "BR-AG-08", "BR-CO-17", "BR-E-08",
-                        "BR-G-08", "BR-IC-08", "BR-O-08", "BR-S-08", "BR-Z-08"),
+        assertEquals(List.of("BR-AE-08", "BR-CO-17", "BR-E-08", "BR-G-08", "BR-IC-08",
+                        "BR-IG-08", "BR-IP-08", "BR-O-08", "BR-S-08", "BR-Z-08"),
                 List.copyOf(readings().keySet().stream().map(String.class::cast).sorted()
                         .toList()));
     }

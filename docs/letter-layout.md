@@ -65,7 +65,7 @@ the code list except where the table below says otherwise.
 
 | Table | Codes | English names | German names |
 |---|---|---|---|
-| `invoice-type` | UNTDID 1001, BT-3 | the dated code list snapshots under `rules/en16931/1.3.16/codelists/`, except the document type 380, which reads *Invoice* as the title of a page | written for this project |
+| `invoice-type` | UNTDID 1001, BT-3 | the dated code list snapshots under `rules/en16931/1.3.17/codelists/`, except the document type 380, which reads *Invoice* as the title of a page | written for this project |
 | `unit` | UN/ECE Rec 20 with the Rec 21 extension, BT-130, BT-150 | the same, plus a name for more than one in the case of the name for one; XPP reads *Packaging piece*, because Rec 21 calls it *Piece* and that is what Rec 20 calls H87 | the same |
 | `payment-means` | UNTDID 4461, BT-81 | the same | the same |
 | `vat-category` | UNTDID 5305 | the same | the same |

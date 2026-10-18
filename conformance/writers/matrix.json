@@ -2,7 +2,7 @@
   "format": "EN16931-Semantic-JSON-writer-matrix",
   "version": "0.1",
   "corpus": "itplr-kosit/xrechnung-testsuite v2026-08-31",
-  "pack": "xrechnung/3.0.2/2026-08-31",
+  "pack": "xrechnung/3.0.2/2026-10-12",
   "readBy": "esj-bindings, StreamingReader",
   "writtenBy": "esj-bindings, CiiWriter and UblWriter",
   "totals": {

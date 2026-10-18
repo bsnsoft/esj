@@ -1,7 +1,7 @@
 {
-  "pack": "en16931/1.3.16",
-  "syntaxPack": "xrechnung/3.0.2/2026-08-31",
-  "takenDown": "2026-09-21",
+  "pack": "en16931/1.3.17",
+  "syntaxPack": "xrechnung/3.0.2/2026-10-12",
+  "takenDown": "2026-10-18",
   "corpus": "conformance/kosit",
   "namespaces": {
     "ubl": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
@@ -127,8 +127,8 @@
       "outcome": "agrees"
     },
     {
-      "id": "af08-one-unit-cii",
-      "rule": "BR-AF-08",
+      "id": "ig08-one-unit-cii",
+      "rule": "BR-IG-08",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L and then moves the VAT category taxable amount (BT-116) exactly one unit of the invoice currency away from the sum it must equal.",
@@ -195,7 +195,7 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "official": []
       },
@@ -203,8 +203,8 @@
       "cause": "artefact-cannot-fire"
     },
     {
-      "id": "af08-one-unit-ubl",
-      "rule": "BR-AF-08",
+      "id": "ig08-one-unit-ubl",
+      "rule": "BR-IG-08",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L and then moves the VAT category taxable amount (BT-116) exactly one unit of the invoice currency away from the sum it must equal.",
@@ -271,17 +271,17 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "official": [
-          "BR-AF-08"
+          "BR-IG-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "af08-tol-cii",
-      "rule": "BR-AF-08",
+      "id": "ig08-tol-cii",
+      "rule": "BR-IG-08",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L and then moves the VAT category taxable amount (BT-116) half a unit of the invoice currency away from the sum it must equal.",
@@ -348,10 +348,10 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "warns": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "official": []
       },
@@ -359,11 +359,11 @@
       "cause": "artefact-cannot-fire"
     },
     {
-      "id": "af08-tol-ubl",
-      "rule": "BR-AF-08",
+      "id": "ig08-tol-ubl",
+      "rule": "BR-IG-08",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
-      "note": "Rewrites the invoice to the VAT category AF and then moves the VAT category taxable amount (BT-116) half a unit of the invoice currency away from the sum it must equal.",
+      "note": "Rewrites the invoice to the VAT category L and then moves the VAT category taxable amount (BT-116) half a unit of the invoice currency away from the sum it must equal.",
       "changes": [
         {
           "op": "set",
@@ -427,10 +427,10 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "warns": [
-          "BR-AF-08"
+          "BR-IG-08"
         ],
         "official": []
       },
@@ -438,8 +438,80 @@
       "cause": "artefacts-disagree-on-a-tolerance"
     },
     {
-      "id": "ag08-tol-cii",
-      "rule": "BR-AG-08",
+      "id": "ig05-zero-rate-cii",
+      "rule": "BR-IG-05",
+      "syntax": "CII",
+      "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
+      "note": "Rewrites the invoice to the VAT category L at the rate zero, which the standard admits for this category.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:IncludedSupplyChainTradeLineItem[1]/ram:SpecifiedLineTradeSettlement[1]/ram:ApplicableTradeTax[1]/ram:CategoryCode[1]",
+          "value": "L"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:SpecifiedTradeAllowanceCharge[1]/ram:CategoryTradeTax[1]/ram:CategoryCode[1]",
+          "value": "L"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:ApplicableTradeTax[1]/ram:CategoryCode[1]",
+          "value": "L"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:IncludedSupplyChainTradeLineItem[1]/ram:SpecifiedLineTradeSettlement[1]/ram:ApplicableTradeTax[1]/ram:RateApplicablePercent[1]",
+          "value": "0"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:SpecifiedTradeAllowanceCharge[1]/ram:CategoryTradeTax[1]/ram:RateApplicablePercent[1]",
+          "value": "0"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:ApplicableTradeTax[1]/ram:RateApplicablePercent[1]",
+          "value": "0"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:ApplicableTradeTax[1]/ram:CalculatedAmount[1]",
+          "value": "0.00"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:SpecifiedTradeSettlementHeaderMonetarySummation[1]/ram:TaxTotalAmount[1]",
+          "value": "0.00"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:SpecifiedTradeSettlementHeaderMonetarySummation[1]/ram:GrandTotalAmount[1]",
+          "value": "233.00"
+        },
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:SpecifiedTradeSettlementHeaderMonetarySummation[1]/ram:DuePayableAmount[1]",
+          "value": "233.00"
+        },
+        {
+          "op": "delete",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeSettlement[1]/ram:ApplicableTradeTax[1]/ram:ExemptionReason[1]"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": [
+          "BR-IP-05",
+          "BR-IP-07"
+        ]
+      },
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
+    },
+    {
+      "id": "ip08-tol-cii",
+      "rule": "BR-IP-08",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category M and then moves the VAT category taxable amount (BT-116) half a unit of the invoice currency away from the sum it must equal.",
@@ -506,10 +578,10 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-08"
+          "BR-IP-08"
         ],
         "warns": [
-          "BR-AG-08"
+          "BR-IP-08"
         ],
         "official": []
       },
@@ -517,11 +589,11 @@
       "cause": "artefact-cannot-fire"
     },
     {
-      "id": "ag08-tol-ubl",
-      "rule": "BR-AG-08",
+      "id": "ip08-tol-ubl",
+      "rule": "BR-IP-08",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
-      "note": "Rewrites the invoice to the VAT category AG and then moves the VAT category taxable amount (BT-116) half a unit of the invoice currency away from the sum it must equal.",
+      "note": "Rewrites the invoice to the VAT category M and then moves the VAT category taxable amount (BT-116) half a unit of the invoice currency away from the sum it must equal.",
       "changes": [
         {
           "op": "set",
@@ -585,10 +657,10 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-08"
+          "BR-IP-08"
         ],
         "warns": [
-          "BR-AG-08"
+          "BR-IP-08"
         ],
         "official": []
       },
@@ -2551,10 +2623,12 @@
           "BR-56"
         ],
         "official": [
-          "BR-56"
+          "BR-56",
+          "BR-CO-09"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-57-cii",
@@ -2966,10 +3040,12 @@
         ],
         "official": [
           "BR-AE-02",
-          "BR-AE-04"
+          "BR-AE-04",
+          "BR-CO-09"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-ae-03-cii",
@@ -3138,10 +3214,12 @@
           "BR-56",
           "BR-AE-03",
           "BR-AE-04",
+          "BR-CO-09",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-ae-04-cii",
@@ -3254,10 +3332,12 @@
         ],
         "official": [
           "BR-AE-02",
-          "BR-AE-04"
+          "BR-AE-04",
+          "BR-CO-09"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-ae-05-cii",
@@ -3942,8 +4022,8 @@
       "outcome": "agrees"
     },
     {
-      "id": "br-af-01-cii",
-      "rule": "BR-AF-01",
+      "id": "br-ig-01-cii",
+      "rule": "BR-IG-01",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then sets the VAT category code (BT-118) to \"S\".",
@@ -4010,19 +4090,20 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-01",
+          "BR-IG-01",
           "BR-S-08"
         ],
         "official": [
-          "BR-AF-01",
+          "BR-IP-01",
           "BR-S-08"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-af-02-cii",
-      "rule": "BR-AF-02",
+      "id": "br-ig-02-cii",
+      "rule": "BR-IG-02",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -4092,19 +4173,20 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "official": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-af-02-ubl",
-      "rule": "BR-AF-02",
+      "id": "br-ig-02-ubl",
+      "rule": "BR-IG-02",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -4174,19 +4256,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "official": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-CO-09",
+          "BR-IG-02",
+          "BR-IG-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
-      "id": "br-af-03-cii",
-      "rule": "BR-AF-03",
+      "id": "br-ig-03-cii",
+      "rule": "BR-IG-03",
       "syntax": "CII",
       "source": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the seller tax representative VAT identifier (BT-63).",
@@ -4265,22 +4349,23 @@
       "expect": {
         "native": [
           "BR-56",
-          "BR-AF-03",
-          "BR-AF-04",
+          "BR-IG-03",
+          "BR-IG-04",
           "BR-S-02"
         ],
         "official": [
           "BR-56",
-          "BR-AF-03",
-          "BR-AF-04",
+          "BR-IP-03",
+          "BR-IP-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-af-03-ubl",
-      "rule": "BR-AF-03",
+      "id": "br-ig-03-ubl",
+      "rule": "BR-IG-03",
       "syntax": "UBL",
       "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the seller tax representative VAT identifier (BT-63).",
@@ -4359,22 +4444,24 @@
       "expect": {
         "native": [
           "BR-56",
-          "BR-AF-03",
-          "BR-AF-04",
+          "BR-IG-03",
+          "BR-IG-04",
           "BR-S-02"
         ],
         "official": [
           "BR-56",
-          "BR-AF-03",
-          "BR-AF-04",
+          "BR-CO-09",
+          "BR-IG-03",
+          "BR-IG-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
-      "id": "br-af-04-cii",
-      "rule": "BR-AF-04",
+      "id": "br-ig-04-cii",
+      "rule": "BR-IG-04",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -4444,19 +4531,20 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "official": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-af-04-ubl",
-      "rule": "BR-AF-04",
+      "id": "br-ig-04-ubl",
+      "rule": "BR-IG-04",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -4526,19 +4614,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ],
         "official": [
-          "BR-AF-02",
-          "BR-AF-04"
+          "BR-CO-09",
+          "BR-IG-02",
+          "BR-IG-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
-      "id": "br-af-05-ubl",
-      "rule": "BR-AF-05",
+      "id": "br-ig-05-ubl",
+      "rule": "BR-IG-05",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the invoiced item VAT rate (BT-152).",
@@ -4604,19 +4694,19 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-05",
-          "BR-AF-08"
+          "BR-IG-05",
+          "BR-IG-08"
         ],
         "official": [
-          "BR-AF-05",
-          "BR-AF-08"
+          "BR-IG-05",
+          "BR-IG-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-af-06-ubl",
-      "rule": "BR-AF-06",
+      "id": "br-ig-06-ubl",
+      "rule": "BR-IG-06",
       "syntax": "UBL",
       "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the document level allowance VAT rate (BT-96).",
@@ -4686,19 +4776,19 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-06",
-          "BR-AF-08"
+          "BR-IG-06",
+          "BR-IG-08"
         ],
         "official": [
-          "BR-AF-06",
-          "BR-AF-08"
+          "BR-IG-06",
+          "BR-IG-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-af-07-ubl",
-      "rule": "BR-AF-07",
+      "id": "br-ig-07-ubl",
+      "rule": "BR-IG-07",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then removes the document level charge VAT rate (BT-103).",
@@ -4764,19 +4854,19 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-07",
-          "BR-AF-08"
+          "BR-IG-07",
+          "BR-IG-08"
         ],
         "official": [
-          "BR-AF-07",
-          "BR-AF-08"
+          "BR-IG-07",
+          "BR-IG-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-af-08-cii",
-      "rule": "BR-AF-08",
+      "id": "br-ig-08-cii",
+      "rule": "BR-IG-08",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category L and then sets the VAT category taxable amount (BT-116) to \"999\".",
@@ -4843,9 +4933,9 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-08",
-          "BR-AF-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-08",
+          "BR-IG-09"
         ],
         "official": []
       },
@@ -4853,8 +4943,8 @@
       "cause": "artefact-cannot-fire"
     },
     {
-      "id": "br-af-08-ubl",
-      "rule": "BR-AF-08",
+      "id": "br-ig-08-ubl",
+      "rule": "BR-IG-08",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then sets the VAT category taxable amount (BT-116) to \"999\".",
@@ -4921,21 +5011,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-08",
-          "BR-AF-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-08",
+          "BR-IG-09"
         ],
         "official": [
-          "BR-AF-08",
-          "BR-AF-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-08",
+          "BR-IG-09"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-af-09-ubl",
-      "rule": "BR-AF-09",
+      "id": "br-ig-09-ubl",
+      "rule": "BR-IG-09",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then sets the VAT category tax amount (BT-117) to \"99\".",
@@ -5002,21 +5092,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-09",
           "BR-CO-14",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-09"
         ],
         "official": [
-          "BR-AF-09",
           "BR-CO-14",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IG-09"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-af-10-ubl",
-      "rule": "BR-AF-10",
+      "id": "br-ig-10-ubl",
+      "rule": "BR-IG-10",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category L, which the corpus does not carry, and then adds an element beside the VAT category rate (BT-119).",
@@ -5083,17 +5173,17 @@
       ],
       "expect": {
         "native": [
-          "BR-AF-10"
+          "BR-IG-10"
         ],
         "official": [
-          "BR-AF-10"
+          "BR-IG-10"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-ag-01-cii",
-      "rule": "BR-AG-01",
+      "id": "br-ip-01-cii",
+      "rule": "BR-IP-01",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then sets the VAT category code (BT-118) to \"S\".",
@@ -5160,19 +5250,20 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-01",
+          "BR-IP-01",
           "BR-S-08"
         ],
         "official": [
-          "BR-AG-01",
+          "BR-IG-01",
           "BR-S-08"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-ag-02-cii",
-      "rule": "BR-AG-02",
+      "id": "br-ip-02-cii",
+      "rule": "BR-IP-02",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -5242,19 +5333,20 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "official": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-ag-02-ubl",
-      "rule": "BR-AG-02",
+      "id": "br-ip-02-ubl",
+      "rule": "BR-IP-02",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -5324,19 +5416,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "official": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-CO-09",
+          "BR-IP-02",
+          "BR-IP-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
-      "id": "br-ag-03-cii",
-      "rule": "BR-AG-03",
+      "id": "br-ip-03-cii",
+      "rule": "BR-IP-03",
       "syntax": "CII",
       "source": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the seller tax representative VAT identifier (BT-63).",
@@ -5415,22 +5509,23 @@
       "expect": {
         "native": [
           "BR-56",
-          "BR-AG-03",
-          "BR-AG-04",
+          "BR-IP-03",
+          "BR-IP-04",
           "BR-S-02"
         ],
         "official": [
           "BR-56",
-          "BR-AG-03",
-          "BR-AG-04",
+          "BR-IG-03",
+          "BR-IG-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-ag-03-ubl",
-      "rule": "BR-AG-03",
+      "id": "br-ip-03-ubl",
+      "rule": "BR-IP-03",
       "syntax": "UBL",
       "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the seller tax representative VAT identifier (BT-63).",
@@ -5509,22 +5604,24 @@
       "expect": {
         "native": [
           "BR-56",
-          "BR-AG-03",
-          "BR-AG-04",
+          "BR-IP-03",
+          "BR-IP-04",
           "BR-S-02"
         ],
         "official": [
           "BR-56",
-          "BR-AG-03",
-          "BR-AG-04",
+          "BR-CO-09",
+          "BR-IP-03",
+          "BR-IP-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
-      "id": "br-ag-04-cii",
-      "rule": "BR-AG-04",
+      "id": "br-ip-04-cii",
+      "rule": "BR-IP-04",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -5594,19 +5691,20 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "official": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IG-02",
+          "BR-IG-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-swaps-two-families"
     },
     {
-      "id": "br-ag-04-ubl",
-      "rule": "BR-AG-04",
+      "id": "br-ip-04-ubl",
+      "rule": "BR-IP-04",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the seller tax registration identifier (BT-32).",
@@ -5676,19 +5774,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-IP-02",
+          "BR-IP-04"
         ],
         "official": [
-          "BR-AG-02",
-          "BR-AG-04"
+          "BR-CO-09",
+          "BR-IP-02",
+          "BR-IP-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
-      "id": "br-ag-05-ubl",
-      "rule": "BR-AG-05",
+      "id": "br-ip-05-ubl",
+      "rule": "BR-IP-05",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the invoiced item VAT rate (BT-152).",
@@ -5754,19 +5854,19 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-05",
-          "BR-AG-08"
+          "BR-IP-05",
+          "BR-IP-08"
         ],
         "official": [
-          "BR-AG-05",
-          "BR-AG-08"
+          "BR-IP-05",
+          "BR-IP-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-ag-06-ubl",
-      "rule": "BR-AG-06",
+      "id": "br-ip-06-ubl",
+      "rule": "BR-IP-06",
       "syntax": "UBL",
       "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the document level allowance VAT rate (BT-96).",
@@ -5836,19 +5936,19 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-06",
-          "BR-AG-08"
+          "BR-IP-06",
+          "BR-IP-08"
         ],
         "official": [
-          "BR-AG-06",
-          "BR-AG-08"
+          "BR-IP-06",
+          "BR-IP-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-ag-07-ubl",
-      "rule": "BR-AG-07",
+      "id": "br-ip-07-ubl",
+      "rule": "BR-IP-07",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then removes the document level charge VAT rate (BT-103).",
@@ -5914,19 +6014,19 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-07",
-          "BR-AG-08"
+          "BR-IP-07",
+          "BR-IP-08"
         ],
         "official": [
-          "BR-AG-07",
-          "BR-AG-08"
+          "BR-IP-07",
+          "BR-IP-08"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-ag-08-cii",
-      "rule": "BR-AG-08",
+      "id": "br-ip-08-cii",
+      "rule": "BR-IP-08",
       "syntax": "CII",
       "source": "business-cases/standard/01.21a-INVOICE_uncefact.xml",
       "note": "Rewrites the invoice to the VAT category M and then sets the VAT category taxable amount (BT-116) to \"999\".",
@@ -5993,9 +6093,9 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-08",
-          "BR-AG-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-08",
+          "BR-IP-09"
         ],
         "official": []
       },
@@ -6003,8 +6103,8 @@
       "cause": "artefact-cannot-fire"
     },
     {
-      "id": "br-ag-08-ubl",
-      "rule": "BR-AG-08",
+      "id": "br-ip-08-ubl",
+      "rule": "BR-IP-08",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then sets the VAT category taxable amount (BT-116) to \"999\".",
@@ -6071,21 +6171,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-08",
-          "BR-AG-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-08",
+          "BR-IP-09"
         ],
         "official": [
-          "BR-AG-08",
-          "BR-AG-09",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-08",
+          "BR-IP-09"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-ag-09-ubl",
-      "rule": "BR-AG-09",
+      "id": "br-ip-09-ubl",
+      "rule": "BR-IP-09",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then sets the VAT category tax amount (BT-117) to \"99\".",
@@ -6152,21 +6252,21 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-09",
           "BR-CO-14",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-09"
         ],
         "official": [
-          "BR-AG-09",
           "BR-CO-14",
-          "BR-CO-17"
+          "BR-CO-17",
+          "BR-IP-09"
         ]
       },
       "outcome": "agrees"
     },
     {
-      "id": "br-ag-10-ubl",
-      "rule": "BR-AG-10",
+      "id": "br-ip-10-ubl",
+      "rule": "BR-IP-10",
       "syntax": "UBL",
       "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
       "note": "Rewrites the invoice to the VAT category M, which the corpus does not carry, and then adds an element beside the VAT category rate (BT-119).",
@@ -6233,10 +6333,10 @@
       ],
       "expect": {
         "native": [
-          "BR-AG-10"
+          "BR-IP-10"
         ],
         "official": [
-          "BR-AG-10"
+          "BR-IP-10"
         ]
       },
       "outcome": "agrees"
@@ -7301,6 +7401,28 @@
       "outcome": "agrees"
     },
     {
+      "id": "br-co-09-el-cii",
+      "rule": "BR-CO-09",
+      "syntax": "CII",
+      "source": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+      "note": "Sets the seller VAT identifier (BT-31) to \"EL123456789\", with the prefix the standard admits for Greece.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeAgreement[1]/ram:SellerTradeParty[1]/ram:SpecifiedTaxRegistration[1]/ram:ID[1]",
+          "value": "EL123456789"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": [
+          "BR-CO-09"
+        ]
+      },
+      "outcome": "differs",
+      "cause": "artefact-drops-a-prefix"
+    },
+    {
       "id": "br-co-09-ubl",
       "rule": "BR-CO-09",
       "syntax": "UBL",
@@ -7322,6 +7444,28 @@
         ]
       },
       "outcome": "agrees"
+    },
+    {
+      "id": "br-co-09-el-ubl",
+      "rule": "BR-CO-09",
+      "syntax": "UBL",
+      "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
+      "note": "Sets the seller VAT identifier (BT-31) to \"EL123456789\", with the prefix the standard admits for Greece.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty[1]/cac:Party[1]/cac:PartyTaxScheme[1]/cbc:CompanyID[1]",
+          "value": "EL123456789"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": [
+          "BR-CO-09"
+        ]
+      },
+      "outcome": "differs",
+      "cause": "artefact-drops-a-prefix"
     },
     {
       "id": "br-co-10-cii",
@@ -10133,11 +10277,13 @@
           "BR-E-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-E-02",
           "BR-E-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-e-03-cii",
@@ -10204,12 +10350,14 @@
         ],
         "official": [
           "BR-56",
+          "BR-CO-09",
           "BR-E-03",
           "BR-E-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-e-04-cii",
@@ -10321,11 +10469,13 @@
           "BR-E-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-E-02",
           "BR-E-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-e-05-cii",
@@ -11012,11 +11162,13 @@
           "BR-G-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-G-02",
           "BR-G-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-g-03-cii",
@@ -11183,12 +11335,14 @@
         ],
         "official": [
           "BR-56",
+          "BR-CO-09",
           "BR-G-03",
           "BR-G-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-g-04-cii",
@@ -11300,11 +11454,13 @@
           "BR-G-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-G-02",
           "BR-G-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-g-05-cii",
@@ -12170,11 +12326,13 @@
           "BR-IC-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-IC-02",
           "BR-IC-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-ic-03-cii",
@@ -12341,12 +12499,14 @@
         ],
         "official": [
           "BR-56",
+          "BR-CO-09",
           "BR-IC-03",
           "BR-IC-04",
           "BR-S-02"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-ic-04-cii",
@@ -12468,11 +12628,13 @@
           "BR-IC-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-IC-02",
           "BR-IC-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-ic-05-cii",
@@ -14107,11 +14269,13 @@
           "BR-S-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-S-02",
           "BR-S-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-s-03-ubl",
@@ -14132,12 +14296,14 @@
           "BR-S-03"
         ],
         "official": [
+          "BR-CO-09",
           "BR-E-03",
           "BR-S-02",
           "BR-S-03"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-s-04-cii",
@@ -14297,11 +14463,13 @@
           "BR-S-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-S-02",
           "BR-S-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-s-05-cii",
@@ -15137,11 +15305,13 @@
           "BR-Z-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-Z-02",
           "BR-Z-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-z-03-cii",
@@ -15324,12 +15494,14 @@
         ],
         "official": [
           "BR-56",
+          "BR-CO-09",
           "BR-S-02",
           "BR-Z-03",
           "BR-Z-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-z-04-cii",
@@ -15449,11 +15621,13 @@
           "BR-Z-04"
         ],
         "official": [
+          "BR-CO-09",
           "BR-Z-02",
           "BR-Z-04"
         ]
       },
-      "outcome": "agrees"
+      "outcome": "differs",
+      "cause": "artefact-reports-an-absent-identifier"
     },
     {
       "id": "br-z-05-cii",
@@ -16998,6 +17172,127 @@
           "op": "set",
           "xpath": "/ubl:Invoice/cac:AllowanceCharge[1]/cac:TaxCategory[1]/cbc:Percent[1]",
           "value": "0.0"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": []
+      },
+      "outcome": "silent"
+    },
+    {
+      "id": "near-igic-zero-rate-ubl",
+      "syntax": "UBL",
+      "source": "business-cases/standard/01.21a-INVOICE_ubl.xml",
+      "note": "Rewrites the invoice to the VAT category L at the rate zero, which the standard admits for this category.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Item[1]/cac:ClassifiedTaxCategory[1]/cbc:ID[1]",
+          "value": "L"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AllowanceCharge[1]/cac:TaxCategory[1]/cbc:ID[1]",
+          "value": "L"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal[1]/cac:TaxSubtotal[1]/cac:TaxCategory[1]/cbc:ID[1]",
+          "value": "L"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:InvoiceLine[1]/cac:Item[1]/cac:ClassifiedTaxCategory[1]/cbc:Percent[1]",
+          "value": "0"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AllowanceCharge[1]/cac:TaxCategory[1]/cbc:Percent[1]",
+          "value": "0"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal[1]/cac:TaxSubtotal[1]/cac:TaxCategory[1]/cbc:Percent[1]",
+          "value": "0"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal[1]/cac:TaxSubtotal[1]/cbc:TaxAmount[1]",
+          "value": "0.00"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal[1]/cbc:TaxAmount[1]",
+          "value": "0.00"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal[1]/cbc:TaxInclusiveAmount[1]",
+          "value": "233.00"
+        },
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:LegalMonetaryTotal[1]/cbc:PayableAmount[1]",
+          "value": "233.00"
+        },
+        {
+          "op": "delete",
+          "xpath": "/ubl:Invoice/cac:TaxTotal[1]/cac:TaxSubtotal[1]/cac:TaxCategory[1]/cbc:TaxExemptionReason[1]"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": []
+      },
+      "outcome": "silent"
+    },
+    {
+      "id": "near-icd-0249-ubl",
+      "syntax": "UBL",
+      "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
+      "note": "Sets the attribute schemeID of the seller identifier (BT-29) to \"0249\", a code the ISO/IEC 6523 list of 2026-10-18 adds.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:AccountingSupplierParty[1]/cac:Party[1]/cac:PartyIdentification[1]/cbc:ID[1]/@schemeID",
+          "value": "0249"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": []
+      },
+      "outcome": "silent"
+    },
+    {
+      "id": "near-eas-9960-cii",
+      "syntax": "CII",
+      "source": "technical-cases/cius/01.01_comprehensive_test_uncefact.xml",
+      "note": "Sets the attribute schemeID of the seller electronic address (BT-34) to \"9960\", a code the EAS list of 2026-10-18 adds.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/rsm:CrossIndustryInvoice/rsm:SupplyChainTradeTransaction[1]/ram:ApplicableHeaderTradeAgreement[1]/ram:SellerTradeParty[1]/ram:URIUniversalCommunication[1]/ram:URIID[1]/@schemeID",
+          "value": "9960"
+        }
+      ],
+      "expect": {
+        "native": [],
+        "official": []
+      },
+      "outcome": "silent"
+    },
+    {
+      "id": "near-vatex-es-ubl",
+      "syntax": "UBL",
+      "source": "technical-cases/cius/01.01_comprehensive_test_ubl.xml",
+      "note": "Sets the VAT exemption reason code (BT-121) to \"VATEX-ES-IVA20\", a code the VATEX list of 2026-10-18 adds.",
+      "changes": [
+        {
+          "op": "set",
+          "xpath": "/ubl:Invoice/cac:TaxTotal[1]/cac:TaxSubtotal[2]/cac:TaxCategory[1]/cbc:TaxExemptionReasonCode[1]",
+          "value": "VATEX-ES-IVA20"
         }
       ],
       "expect": {

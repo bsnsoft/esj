@@ -49,9 +49,17 @@ a cross-check of code lists, the oracle of the native rule pack, and what `esj v
 over an XML input.
 
 - Repository: <https://github.com/ConnectingEurope/eInvoicing-EN16931>
-- Version used for the cross-check: tag `validation-1.3.16` (released 2026-04-13), retrieved
-  2026-09-19; licence European Union Public Licence (EUPL) v1.2. The 1.3.16 artefacts still
-  target EN 16931-1:2017+A1:2019/AC:2020.
+- Version used for the cross-check: tag `validation-1.3.17` (released 2026-10-12, in effect from
+  the end of 2026-11-15), retrieved 2026-10-18; licence European Union Public Licence (EUPL)
+  v1.2. The 1.3.17 artefacts still target EN 16931-1:2017+A1:2019/AC:2020. The release before
+  it, tag `validation-1.3.16` (released 2026-04-13, retrieved 2026-09-19), stays in the bundled
+  pack `xrechnung/3.0.2/2026-08-31` and is what the rule pack `en16931/1.3.16` was measured
+  against.
+- Releases: the European Commission's
+  [registry of supporting artefacts to implement EN 16931](https://ec.europa.eu/digital-building-blocks/sites/spaces/DIGITAL/pages/467108974/Registry+of+supporting+artefacts+to+implement+EN16931)
+  lists every release of the validation artefacts and of the code lists, read 2026-10-18. Both
+  follow a fixed half-yearly schedule, with a code freeze, a publication date and an effective
+  date for each round; the next validation release is due for publication on 2027-04-09.
 - The compiled stylesheets of this release are redistributed here as part of a validation pack
   that `esj validate` executes: files, digests and licence in
   [`packs/SOURCES.md`](../packs/SOURCES.md), what a pack is in
@@ -114,14 +122,15 @@ and by UN/CEFACT. Files, digests and the full licence statements are in
 ## Code lists behind the rule pack
 
 The membership tests of the EN 16931 rule pack (`BR-CL-*` and the Java rules beside them) are
-decided against dated snapshots under `rules/en16931/1.3.16/codelists/`, each a mechanical
+decided against dated snapshots under `rules/en16931/1.3.17/codelists/`, each a mechanical
 extraction of codes and their publisher's short names. No prose is reproduced, and no snapshot
 comes from the code list files of the CEN validation artefacts.
 
 - URLs, SHA-256 digests, row counts, per-list notes:
-  [`rules/en16931/1.3.16/codelists/SOURCES.md`](../rules/en16931/1.3.16/codelists/SOURCES.md).
-- Publishers, retrieved 2026-09-19: the European Commission (the workbook *EN 16931 code lists
-  values*, the Electronic Address Scheme list, the VAT Exemption Reason list), SIX Group for
+  [`rules/en16931/1.3.17/codelists/SOURCES.md`](../rules/en16931/1.3.17/codelists/SOURCES.md).
+- Publishers, retrieved 2026-10-18: the European Commission (the workbook *EN 16931 code lists
+  values* version 18, the Electronic Address Scheme list version 17, the VAT Exemption Reason
+  list version 9), SIX Group for
   ISO 4217, the Library of Congress for ISO 639, IANA for the media types.
 - **Licence: unknown.** No publisher states terms on the page the data is offered from;
   `SOURCES.md` and `NOTICE` record that as an open question. Apache-2.0 covers neither the
@@ -256,7 +265,7 @@ read from the locale data of the machine.
 
 | Table | English names | German names |
 |---|---|---|
-| `invoice-type`, `unit`, `payment-means`, `vat-category` | the dated snapshots under `rules/en16931/1.3.16/codelists/`, above, except the document type 380, which reads *Invoice* as the title of a page, and the unit XPP, which reads *Packaging piece* because Rec 21 calls it what Rec 20 calls H87; `unit` adds a name for more than one | written for this project |
+| `invoice-type`, `unit`, `payment-means`, `vat-category` | the dated snapshots under `rules/en16931/1.3.17/codelists/`, above, except the document type 380, which reads *Invoice* as the title of a page, and the unit XPP, which reads *Packaging piece* because Rec 21 calls it what Rec 20 calls H87; `unit` adds a name for more than one | written for this project |
 | `country` | the Unicode CLDR, <https://cldr.unicode.org/>, read once out of the locale data of a Java runtime by the generator `CountryNames` of `esj-render` and checked in; the header records the runtime. Unicode License v3, <https://www.unicode.org/license.txt>, copyright 1991–present Unicode, Inc., quoted in `NOTICE` | the same |
 
 `DisplayNamesTest` compares the English half against the snapshots, code for code;

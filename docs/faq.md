@@ -64,7 +64,7 @@ esj validate invoice.xml                    # XML Schema, Schematron and busines
 
 **How do I check an XRechnung against the KoSIT rules?**
 ```sh
-esj validate invoice.xml                    # the pack follows BT-24: xrechnung/3.0.2/2026-08-31
+esj validate invoice.xml                    # the pack follows BT-24: xrechnung/3.0.2/2026-10-12
 esj validate --extension xrechnung invoice.xml   # with the extension terms of XRechnung checked too
 ```
 

@@ -15,7 +15,7 @@ public static class En16931Pack
     public const string PackId = "en16931";
 
     /// <summary>The version of the pack.</summary>
-    public const string Version = "1.3.16";
+    public const string Version = "1.3.17";
 
     /// <summary>Returns the pack as this build carries it.</summary>
     /// <returns>the pack</returns>
@@ -36,7 +36,7 @@ public static class En16931Pack
         new BrIc01(), new BrIc08(),
         new BrG01(), new BrG08(),
         new BrO01(), new BrO08(),
-        new BrAf08(), new BrAg08(),
+        new BrIg08(), new BrIp08(),
     });
 
     /// <summary>Returns the pack compiled against a registry.</summary>
@@ -448,20 +448,20 @@ internal sealed class BrO08 : CategoryTaxableAmount
     }
 }
 
-/// <summary>BR-AF-08: the taxable amount of an IGIC breakdown.</summary>
-internal sealed class BrAf08 : CategoryTaxableAmount
+/// <summary>BR-IG-08: the taxable amount of an IGIC breakdown.</summary>
+internal sealed class BrIg08 : CategoryTaxableAmount
 {
-    internal BrAf08() : base("BR-AF-08", "BrAf08", "L",
+    internal BrIg08() : base("BR-IG-08", "BrIg08", "L",
         "IGIC, the general indirect tax of the Canary Islands",
         true, Tolerance.UblCiiCannotReport, "EN 16931-1, 6.4.3.4.8, Table 13, BR-IG-8")
     {
     }
 }
 
-/// <summary>BR-AG-08: the taxable amount of an IPSI breakdown.</summary>
-internal sealed class BrAg08 : CategoryTaxableAmount
+/// <summary>BR-IP-08: the taxable amount of an IPSI breakdown.</summary>
+internal sealed class BrIp08 : CategoryTaxableAmount
 {
-    internal BrAg08() : base("BR-AG-08", "BrAg08", "M",
+    internal BrIp08() : base("BR-IP-08", "BrIp08", "M",
         "IPSI, the tax on production, services and importation in Ceuta and Melilla",
         true, Tolerance.UblCiiCannotReport, "EN 16931-1, 6.4.3.4.8, Table 14, BR-IP-8")
     {

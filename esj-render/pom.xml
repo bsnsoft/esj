@@ -162,8 +162,8 @@
           from. DisplayNamesTest compares the two, code for code, so that a name this module
           prints as a fact is the fact the snapshot carries.
         -->
-        <directory>${project.basedir}/../rules/en16931/1.3.16/codelists</directory>
-        <targetPath>rules/en16931/1.3.16/codelists</targetPath>
+        <directory>${project.basedir}/../rules/en16931/1.3.17/codelists</directory>
+        <targetPath>rules/en16931/1.3.17/codelists</targetPath>
         <includes>
           <include>untdid-1001/**</include>
           <include>untdid-4461/**</include>

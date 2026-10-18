@@ -46,7 +46,7 @@ export function registries(): Registry[] {
 export const PACK_ID = 'en16931';
 
 /** The version of that pack, which is the release of the artefacts it was verified against. */
-export const PACK_VERSION = '1.3.16';
+export const PACK_VERSION = '1.3.17';
 
 /**
  * The edition that pack states rules about, as a document spells it in `semanticModel`.
@@ -82,8 +82,12 @@ interface PackLocation {
 }
 
 /**
- * The rule packs this build carries, one per edition, read from the directories of `rules/`
+ * The rule packs this build compiles, one per edition, read from the directories of `rules/`
  * that hold a manifest.
+ *
+ * Of the versions of one pack, the newest is the one compiled: the repository keeps a pack
+ * beside the one that replaced it (`en16931/1.3.16` beside `en16931/1.3.17`), and the rules of
+ * a pack the language cannot express are written here for the newest version alone.
  */
 function packs(): PackLocation[] {
   const found: PackLocation[] = [];
@@ -93,15 +97,34 @@ function packs(): PackLocation[] {
     if (!statSync(directory).isDirectory()) {
       continue;
     }
-    for (const version of readdirSync(directory).sort()) {
-      if (!existsSync(path.join(directory, version, 'pack.json'))) {
-        continue;
-      }
-      const manifest = read<RulePackFile>('rules', id, version, 'pack.json');
-      found.push({ id, version, edition: manifest.edition });
+    const versions = readdirSync(directory)
+      .filter((version) => existsSync(path.join(directory, version, 'pack.json')))
+      .sort(compareVersions);
+    const newest = versions[versions.length - 1];
+    if (newest === undefined) {
+      continue;
     }
+    const manifest = read<RulePackFile>('rules', id, newest, 'pack.json');
+    found.push({ id, version: newest, edition: manifest.edition });
   }
   return found;
+}
+
+/** Orders two pack versions part by part, numerically where both parts are numbers. */
+function compareVersions(left: string, right: string): number {
+  const a = left.split('.');
+  const b = right.split('.');
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const x = a[i] ?? '';
+    const y = b[i] ?? '';
+    const difference = /^[0-9]+$/.test(x) && /^[0-9]+$/.test(y)
+      ? Number(x) - Number(y)
+      : x.localeCompare(y);
+    if (difference !== 0) {
+      return difference;
+    }
+  }
+  return 0;
 }
 
 /**
@@ -147,7 +170,7 @@ export function rulePackAt(id: string, version: string): RulePackFile {
 }
 
 /**
- * Reads the rule pack of `rules/en16931/1.3.16`, the pack of the default edition.
+ * Reads the rule pack of `rules/en16931/1.3.17`, the pack of the default edition.
  */
 export function rulePack(): RulePackFile {
   return rulePackAt(PACK_ID, PACK_VERSION);

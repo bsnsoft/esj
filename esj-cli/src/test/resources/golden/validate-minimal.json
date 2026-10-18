@@ -33,10 +33,10 @@
       "reason": null,
       "customizationId": "urn:cen.eu:en16931:2017",
       "pack": {
-        "directory": "xrechnung/3.0.2/2026-08-31",
+        "directory": "xrechnung/3.0.2/2026-10-12",
         "id": "xrechnung",
         "version": "3.0.2",
-        "release": "2026-08-31",
+        "release": "2026-10-12",
         "source": "bundled",
         "location": null
       },
@@ -85,7 +85,7 @@
           "column": null,
           "packId": "xrechnung",
           "packVersion": "3.0.2",
-          "packRelease": "2026-08-31",
+          "packRelease": "2026-10-12",
           "component": "en16931-cii-schematron"
         },
         {
@@ -100,7 +100,7 @@
           "column": null,
           "packId": "xrechnung",
           "packVersion": "3.0.2",
-          "packRelease": "2026-08-31",
+          "packRelease": "2026-10-12",
           "component": "en16931-cii-schematron"
         },
         {
@@ -115,7 +115,7 @@
           "column": null,
           "packId": "xrechnung",
           "packVersion": "3.0.2",
-          "packRelease": "2026-08-31",
+          "packRelease": "2026-10-12",
           "component": "en16931-cii-schematron"
         },
         {
@@ -130,7 +130,7 @@
           "column": null,
           "packId": "xrechnung",
           "packVersion": "3.0.2",
-          "packRelease": "2026-08-31",
+          "packRelease": "2026-10-12",
           "component": "en16931-cii-schematron"
         }
       ]
@@ -159,7 +159,7 @@
     "reason": null,
     "pack": {
       "id": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "edition": "EN 16931-1:2017+A1:2019/AC:2020",
       "corroborated": true
     },
@@ -176,7 +176,7 @@
           "/BG-23/0/BT-119"
         ],
         "packId": "en16931",
-        "packVersion": "1.3.16"
+        "packVersion": "1.3.17"
       },
       {
         "engine": "native",
@@ -191,7 +191,7 @@
           "/BT-20"
         ],
         "packId": "en16931",
-        "packVersion": "1.3.16"
+        "packVersion": "1.3.17"
       },
       {
         "engine": "native",
@@ -206,7 +206,7 @@
           "/BG-4/BT-31"
         ],
         "packId": "en16931",
-        "packVersion": "1.3.16"
+        "packVersion": "1.3.17"
       },
       {
         "engine": "native",
@@ -223,7 +223,7 @@
           "/BG-11/BT-63"
         ],
         "packId": "en16931",
-        "packVersion": "1.3.16"
+        "packVersion": "1.3.17"
       },
       {
         "engine": "native",
@@ -237,7 +237,7 @@
           "/BG-25/0/BG-30/BT-152"
         ],
         "packId": "en16931",
-        "packVersion": "1.3.16"
+        "packVersion": "1.3.17"
       }
     ]
   },

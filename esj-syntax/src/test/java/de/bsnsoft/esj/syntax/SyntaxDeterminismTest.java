@@ -55,7 +55,7 @@ class SyntaxDeterminismTest {
     void answersTheSameWhicheverWayThePackIsChosen() {
         byte[] document = Corpus.instance(MANY);
         SyntaxOptions named = SyntaxOptions.defaults()
-                .withPack(Packs.bundled("xrechnung/3.0.2/2026-08-31"));
+                .withPack(Packs.bundled("xrechnung/3.0.2/2026-10-12"));
 
         assertEquals(describe(SyntaxValidator.validate(document)),
                 describe(SyntaxValidator.validate(document, named)));

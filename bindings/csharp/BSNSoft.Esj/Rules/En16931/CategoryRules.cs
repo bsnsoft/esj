@@ -6,7 +6,7 @@ using System.Linq;
 namespace BSNSoft.Esj.Rules.En16931;
 
 /// <summary>
-/// How close the two official artefacts of release 1.3.16 ask a VAT category taxable amount
+/// How close the two official artefacts of release 1.3.17 ask a VAT category taxable amount
 /// to be to the parts of the invoice in that category.
 /// </summary>
 /// <remarks>
@@ -129,10 +129,10 @@ internal abstract class CategoryTaxableAmount : INativeRule
 
     private static string Warning(Tolerance tolerance) => tolerance switch
     {
-        Tolerance.Ubl => ", and the official CII artefact of release 1.3.16 faults a difference this small.",
-        Tolerance.Cii => ", and the official UBL artefact of release 1.3.16 faults a difference this small.",
+        Tolerance.Ubl => ", and the official CII artefact of release 1.3.17 faults a difference this small.",
+        Tolerance.Cii => ", and the official UBL artefact of release 1.3.17 faults a difference this small.",
         Tolerance.UblCiiCannotReport => ", and the standard asks the two to be equal: the official"
-            + " UBL artefact of release 1.3.16 admits a difference this small, and the CII assertion"
+            + " UBL artefact of release 1.3.17 admits a difference this small, and the CII assertion"
             + " of that release cannot report it.",
         _ => string.Empty,
     };

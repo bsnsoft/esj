@@ -2,7 +2,7 @@
 
 *Part of [EN16931 Semantic JSON](../../../../README.md). See
 [`../../../README.md`](../../../README.md) for the rule language,
-[`en16931/1.3.16/codelists/SOURCES.md`](../../../en16931/1.3.16/codelists/SOURCES.md) for the
+[`en16931/1.3.17/codelists/SOURCES.md`](../../../en16931/1.3.17/codelists/SOURCES.md) for the
 two rules that decide where a snapshot may come from, and
 [`conformance/rules-2026/coverage.md`](../../../../conformance/rules-2026/coverage.md) for
 what this pack covers.*
@@ -10,7 +10,7 @@ what this pack covers.*
 This pack carries two snapshots of its own and reads the other fifteen from the pack of the
 2017 edition. Where the edition names the same published list for the same term, a second
 copy of the file would be a second thing to keep equal by hand, so the manifest writes
-`{"day": …, "from": "en16931/1.3.16"}` and both packs decide membership against the same
+`{"day": …, "from": "en16931/1.3.17"}` and both packs decide membership against the same
 bytes. The two files here are the two lists this edition asks a different question of.
 
 | List | Day | Where it comes from | What the publisher says about reuse |

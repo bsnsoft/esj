@@ -46,7 +46,7 @@ Three components are written for one edition and say so rather than being extend
 |---|---|---|
 | The binding tables and the CII and UBL writers | 2017 | no public authoritative mapping of the terms a later edition adds; [`bindings.md`](bindings.md) |
 | The vendored XRechnung visualization (`--html`) | 2017 | the stylesheets have nowhere to put a term of a later edition |
-| The rule pack `en16931/1.3.16` | 2017 | the rules of the standard are renumbered, added to and withdrawn between editions; the pack `en16931-2026/0.1` is the one of the later edition |
+| The rule pack `en16931/1.3.17` | 2017 | the rules of the standard are renumbered, added to and withdrawn between editions; the pack `en16931-2026/0.1` is the one of the later edition |
 
 The PDF rendering is this project's own layout and is driven by whatever registry the document's
 edition brings: designed sections for the groups it knows, and a final heading under which every
@@ -135,7 +135,7 @@ Per layer, for a build that carries the registry of that edition:
 | Domain API (`esj-invoice`) | built on that builder, with enums and profile defaults that are facts of the default edition | not in this version |
 | `upgrade`, both directions | the mapping as data, with the open points reported | complete |
 | Rendering to PDF | driven by the registry: designed sections for the groups it knows, a generic one for the rest | partial by design |
-| Business rules | the pack `en16931-2026/0.1`: 252 rules, of which 199 are those of clause 6.4, 194 of them implemented, with the fraction digit rules of Table 28 and the code list rules beside them. 108 rules the edition leaves unchanged have the oracle `downgrade`: over 447 mutations written back to 2017, 100 are named alike by the official Schematron 1.3.16, 7 differ exactly as in the default pack, 1 is exercised by none, 0 are open. 144 changed or new rules have `cases`: hand-computed cases only | implemented; not corroborated by an official artefact |
+| Business rules | the pack `en16931-2026/0.1`: 252 rules, of which 199 are those of clause 6.4, 194 of them implemented, with the fraction digit rules of Table 28 and the code list rules beside them. 108 rules the edition leaves unchanged have the oracle `downgrade`: over 454 mutations written back to 2017, 100 are named alike by the official Schematron 1.3.17, 7 differ exactly as in the default pack, 1 is exercised by none, 0 are open. 144 changed or new rules have `cases`: hand-computed cases only | implemented; not corroborated by an official artefact |
 | The official artefacts over a written syntax | no artefact release is written against the edition and no syntax binding of the terms it adds is published, so `validate` reports `no-artefacts-for-edition` and reaches no verdict | not available |
 | UBL, CII, the HTML page | refused, exit 4: no public authoritative mapping of the terms the edition adds | not available |
 

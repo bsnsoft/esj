@@ -34,8 +34,8 @@ class UblWriterTest {
 
     /** Where the validation artefact of the pack lists the codes each document admits. */
     private static final String ARTEFACT =
-            "/de/bsnsoft/esj/syntax/packs/xrechnung/3.0.2/2026-08-31"
-                    + "/cen/1.3.16/EN16931-UBL-validation.xslt";
+            "/de/bsnsoft/esj/syntax/packs/xrechnung/3.0.2/2026-10-12"
+                    + "/cen/1.3.17/EN16931-UBL-validation.xslt";
 
     /** The one shape the artefact writes an admitted code list in. */
     private static final Pattern ADMITTED = Pattern.compile(

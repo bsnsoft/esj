@@ -507,8 +507,8 @@ BigDecimal due = invoice.totals().orElseThrow().amountDue();
 Coded unit = invoice.lines().get(0).unit().orElseThrow();
 ```
 
-Ten enums are generated from the code list snapshots the rule pack `en16931/1.3.16` carries
-([`../rules/en16931/1.3.16/codelists/SOURCES.md`](../rules/en16931/1.3.16/codelists/SOURCES.md)):
+Ten enums are generated from the code list snapshots the rule pack `en16931/1.3.17` carries
+([`../rules/en16931/1.3.17/codelists/SOURCES.md`](../rules/en16931/1.3.17/codelists/SOURCES.md)):
 `Unit`, `InvoiceType`, `PaymentMeansCode`, `VatCategory`, `AllowanceReason`, `ChargeReason`,
 `CurrencyCode`, `Country`, `ElectronicAddressScheme`, `VatExemptionReason`, each constant carrying
 its code and its publisher's name. A slot that takes a code takes the enum of its list or the

@@ -5,7 +5,7 @@ package de.bsnsoft.esj.rules.internal.en16931;
  * invoice lines, document level charges and document level allowances of that category
  * come to.
  *
- * <p>Release 1.3.16 reads the comparison two ways: the CII artefact admits a stated amount
+ * <p>Releases 1.3.16 and 1.3.17 read the comparison two ways: the CII artefact admits a stated amount
  * within one unit of the invoice currency of the sum, the UBL artefact asks for equality.
  * A difference of a unit or more is fatal here; a difference below a unit is a warning
  * that names the UBL artefact.

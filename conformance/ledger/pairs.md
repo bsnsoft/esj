@@ -84,7 +84,7 @@ its justification.
 **What the syntaxes do.** EN 16931-1 binds the note subject code BT-21 and the note BT-22
 to one `cbc:Note` element in the UBL syntax, with the code as a prefix between two number
 signs: `<cbc:Note>#AAC#Invoice Note Description</cbc:Note>`. That this is the binding is not
-a habit of this test suite. The CEN validation artefacts for UBL (version 1.3.16) read the
+a habit of this test suite. The CEN validation artefacts for UBL (1.3.16 and 1.3.17) read the
 code out of exactly that prefix: in `ubl/schematron/UBL/EN16931-UBL-model.sch` the parameter
 `BR-CL-08` takes `substring-before(substring-after(., '#'), '#')`, requires it to be three
 characters long and tests it against the UNTDID 4451 entries the standard admits, and the

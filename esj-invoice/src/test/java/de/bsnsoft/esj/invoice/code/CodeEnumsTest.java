@@ -32,7 +32,7 @@ class CodeEnumsTest {
 
     private static final String PACK = "en16931";
 
-    private static final String VERSION = "1.3.16";
+    private static final String VERSION = "1.3.17";
 
     private final CodeLists lists = CodeLists.bundled(RulePacks.bundled(PACK, VERSION));
 

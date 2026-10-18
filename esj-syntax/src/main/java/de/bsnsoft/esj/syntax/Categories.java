@@ -65,7 +65,8 @@ final class Categories {
         Map<String, FindingCategory> table = new LinkedHashMap<>();
         // EN 16931, as the CEN artefacts identify its rules. BR- alone carries the
         // business rules numbered BR-01 and the ones of the VAT categories, BR-S-, BR-Z-,
-        // BR-E-, BR-AE-, BR-G-, BR-O-, BR-IC-, BR-AF-, BR-AG- and BR-B-.
+        // BR-E-, BR-AE-, BR-G-, BR-O-, BR-IC-, BR-IG-, BR-IP- (BR-AF- and BR-AG- up to
+        // release 1.3.16) and BR-B-.
         table.put("BR-", FindingCategory.EN_BR);
         table.put("BR-CO-", FindingCategory.EN_BR);
         table.put("BR-DEC-", FindingCategory.EN_DEC);

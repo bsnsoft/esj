@@ -25,7 +25,7 @@ class ProfileLevelsTest {
     private static final String EXTENSION = XRECHNUNG
             + "#conformant#urn:xeinkauf.de:kosit:extension:xrechnung_3.0";
 
-    private final Pack pack = Packs.bundled("xrechnung/3.0.2/2026-08-31");
+    private final Pack pack = Packs.bundled("xrechnung/3.0.2/2026-10-12");
 
     @Test
     void answersWithTheTableOfTheSyntaxAndTheProfile() {

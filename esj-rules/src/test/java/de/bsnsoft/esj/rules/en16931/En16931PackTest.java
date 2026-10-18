@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * <p>A rule pack that says "the business rules of EN 16931" and does not say which ones is a claim
  * nobody can check, so {@code conformance/rules/coverage.md} says which ones, rule by rule, and
  * this test holds the table to the pack. Every identifier of the official validation artefacts of
- * release 1.3.16 appears in the table exactly once; every one the table calls implemented is a
+ * release 1.3.17 appears in the table exactly once; every one the table calls implemented is a
  * rule of this engine; every one it does not is named in {@code not-applicable.md} with a reason.
  * A rule added to the pack without a row, or a row without a rule, fails here.
  */
@@ -81,7 +81,7 @@ class En16931PackTest {
             assertTrue(seen.add(row[0]), row[0] + " has two rows in the coverage table");
         }
 
-        assertEquals(223, seen.size(), "release 1.3.16 carries 201 model rules and 22 code list rules");
+        assertEquals(223, seen.size(), "release 1.3.17 carries 201 model rules and 22 code list rules");
     }
 
     @Test
@@ -94,7 +94,7 @@ class En16931PackTest {
         missing.removeAll(inTable);
 
         assertEquals(Set.of("BR-CO-25"), missing, "BR-CO-25 is a rule of EN 16931-1, clause 6.4.2,"
-                + " that release 1.3.16 does not carry; every other rule of the pack answers to an"
+                + " that release 1.3.17 does not carry; every other rule of the pack answers to an"
                 + " identifier of the release and has a row");
     }
 

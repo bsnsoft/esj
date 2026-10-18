@@ -3,69 +3,69 @@
   "id": "en16931-2026",
   "version": "0.1",
   "edition": "EN 16931-1:2026",
-  "description": "The business rules of EN 16931-1:2026, clause 6.4, together with the fraction digit limits of clause 6.5.13 and the code list restrictions of clause 6.3, written over semantic paths so that one rule serves every form of one invoice. No validation artefact is published for this edition: the artefact releases of CEN/TC 434 end at 1.3.16 and validate the 2017 edition. Every rule therefore says what stands behind it. A rule the edition leaves unchanged is taken over from the pack of the 2017 edition and is measured against the official artefacts over the document written down to that edition with esj upgrade, which its oracle calls downgrade; a rule the edition changed or adds is weighed by hand-computed cases alone, which its oracle calls cases. Neither is a conformance claim, and no finding of this pack is corroborated by an official artefact. Where the edition states a tolerance or a rounding, the rule carries it as a fact of its own with the clause it comes from. conformance/rules-2026/coverage.md says which of the 199 rules of the edition is implemented here and which is not, with the reason and the oracle of each.",
+  "description": "The business rules of EN 16931-1:2026, clause 6.4, together with the fraction digit limits of clause 6.5.13 and the code list restrictions of clause 6.3, written over semantic paths so that one rule serves every form of one invoice. No validation artefact is published for this edition: the artefact releases of CEN/TC 434 end at 1.3.17 and validate the 2017 edition. Every rule therefore says what stands behind it. A rule the edition leaves unchanged is taken over from the pack of the 2017 edition and is measured against the official artefacts over the document written down to that edition with esj upgrade, which its oracle calls downgrade; a rule the edition changed or adds is weighed by hand-computed cases alone, which its oracle calls cases. Neither is a conformance claim, and no finding of this pack is corroborated by an official artefact. Where the edition states a tolerance or a rounding, the rule carries it as a fact of its own with the clause it comes from. conformance/rules-2026/coverage.md says which of the 199 rules of the edition is implemented here and which is not, with the reason and the oracle of each.",
   "codeLists": {
     "eas": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "iso-3166-1": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "iso-4217": "2026-09-21",
     "iso-6523-icd": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "mime-code": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "unece-rec20": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "unece-rec21": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-1001": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-1153": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-2005": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-4451": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-4461": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-5189": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-5305": "2026-09-21",
     "untdid-7143": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "untdid-7161": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     },
     "vatex": {
-      "day": "2026-09-19",
-      "from": "en16931/1.3.16"
+      "day": "2026-10-18",
+      "from": "en16931/1.3.17"
     }
   },
   "javaRules": [
@@ -228,7 +228,7 @@
   "shares": [
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/br-cl.json",
       "oracle": "downgrade",
       "rules": [
@@ -250,7 +250,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/br-co.json",
       "oracle": "downgrade",
       "rules": [
@@ -264,7 +264,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/br.json",
       "oracle": "downgrade",
       "rules": [
@@ -316,7 +316,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-ae.json",
       "oracle": "downgrade",
       "rules": [
@@ -329,7 +329,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-e.json",
       "oracle": "downgrade",
       "rules": [
@@ -342,7 +342,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-g.json",
       "oracle": "downgrade",
       "rules": [
@@ -355,7 +355,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-ic.json",
       "oracle": "downgrade",
       "rules": [
@@ -368,7 +368,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-o.json",
       "oracle": "downgrade",
       "rules": [
@@ -379,7 +379,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-s.json",
       "oracle": "downgrade",
       "rules": [
@@ -391,7 +391,7 @@
     },
     {
       "pack": "en16931",
-      "version": "1.3.16",
+      "version": "1.3.17",
       "file": "rules/vat-z.json",
       "oracle": "downgrade",
       "rules": [

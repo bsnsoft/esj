@@ -186,7 +186,7 @@ class RuleSchemaTest {
     @ParameterizedTest
     @MethodSource("bundledRuleFiles")
     void aRuleFileOfTheRepositoryValidatesAgainstItsOwnSchema(String name) {
-        String resource = "packs/en16931/1.3.16/" + name;
+        String resource = "packs/en16931/" + BundledPackTest.VERSION + "/" + name;
         try (InputStream in = RulePacks.class.getResourceAsStream(resource)) {
             assertTrue(in != null, "this build carries no " + resource);
             assertEquals(List.of(),

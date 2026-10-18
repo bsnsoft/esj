@@ -317,7 +317,7 @@ record RuleCheck(Optional<Found> found, Optional<String> reason, PackName pack) 
      */
     record PackName(String name, String edition, boolean corroborated) {
 
-        /** The pack of the default edition, which the artefacts of release 1.3.16 cover. */
+        /** The pack of the default edition, which the artefacts of release 1.3.17 cover. */
         static final PackName STANDING = new PackName(PACK, En16931Pack.edition(), true);
 
         /**
