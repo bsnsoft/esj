@@ -207,8 +207,31 @@ class ViewCommandTest {
         assertSameBytes(letter, directory.resolve("standard-invoice.esj.letter.pdf"));
     }
 
+    /**
+     * {@code --no-payment-code} leaves the code out of the letter the page shows, as
+     * {@code esj render --no-payment-code} does: the letter is the bytes of that command, and
+     * not the bytes of the letter with the code.
+     */
     @Test
-    void withoutReportNoReportIsWrittenAndThePageSaysHowToGetOne() throws IOException {
+    void theLetterWithoutAPaymentCodeIsTheOneEsjRenderDrawsWithoutIt() throws IOException {
+        String input = copy(EXAMPLE);
+        Path with = out.resolve("with-code");
+        Path without = out.resolve("without-code");
+        assertEquals(ExitCode.SUCCESS, view("view", "--out", with.toString(), "--lang", "de",
+                input).exitCode());
+        assertEquals(ExitCode.SUCCESS, view("view", "--out", without.toString(), "--lang", "de",
+                "--no-payment-code", input).exitCode());
+        Path rendered = out.resolve("no-code.pdf");
+        assertEquals(ExitCode.SUCCESS, Cli.run("render", input, "--lang", "de",
+                "--no-payment-code", "--out", rendered.toString()).exitCode());
+        assertSameBytes(rendered, without.resolve("standard-invoice.esj.letter.pdf"));
+        assertFalse(java.util.Arrays.equals(Files.readAllBytes(rendered),
+                        Files.readAllBytes(with.resolve("standard-invoice.esj.letter.pdf"))),
+                "the letter of the example draws a code, and the option takes it out");
+    }
+
+    @Test
+    void withoutReportNoReportIsWrittenAndTheInvoiceIsNotChecked() throws IOException {
         Path directory = out.resolve("plain");
         Cli.Run run = view("view", "--out", directory.toString(), "--lang", "en",
                 copy(UBL));
@@ -219,9 +242,12 @@ class ViewCommandTest {
                     files.map(path -> path.getFileName().toString()).sorted().toList());
         }
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("<b>not checked</b>"), page);
-        assertTrue(page.contains("<code>esj view --report</code> checks the invoice."), page);
-        assertFalse(page.contains("id=\"report\""), page);
+        assertTrue(page.contains("<b>NOT CHECKED</b>"), page);
+        assertFalse(page.contains("id=\"tab-report\""), page);
+        assertTrue(page.contains("<input type=\"radio\" name=\"tab\" id=\"tab-invoice\" checked>"),
+                "without a PDF the invoice is the first tab: " + page);
+        assertTrue(page.contains("<iframe sandbox=\"allow-scripts\""
+                + " src=\"01.01a-INVOICE_ubl.kosit.html\""), page);
     }
 
     // ------------------------------------------------------------------- the page
@@ -254,6 +280,9 @@ class ViewCommandTest {
             assertFalse(page.contains("<object") || page.contains("<embed"), page);
             assertFalse(page.contains("http://") || page.contains("https://"),
                     "nothing outside the directory is named: " + page);
+            assertFalse(page.contains(".kosit.html\"") && !page.contains(
+                    "<iframe sandbox=\"allow-scripts\" src=\""), "the KoSIT view is framed"
+                    + " in a sandbox of its own: " + page);
         }
     }
 
@@ -265,24 +294,29 @@ class ViewCommandTest {
                         TestPdfs.ZUGFERD_1_INVOICE, "BASIC")));
         assertEquals(ExitCode.UNSUPPORTED, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("<b>ZUGFeRD 1.0 is not read.</b>"), page);
+        assertTrue(page.contains("<p class=\"state-head\">The e-invoice is in ZUGFeRD 1.0,"
+                + " which does not conform to EN 16931.</p>"), page);
+        assertTrue(page.contains("<p>Ask the sender for an EN 16931 e-invoice.</p>"), page);
         assertTrue(Files.isRegularFile(directory.resolve("received/old.pdf")),
                 "the received file is shown");
         assertTrue(run.err().startsWith("error: "), run.err());
     }
 
     @Test
-    void aFileThatIsNoInvoiceIsADeadEndWithTheMessageOfTheRun() throws IOException {
+    void aFileThatIsNoInvoiceIsADeadEndThatSaysWhatToAskFor() throws IOException {
         Path directory = out.resolve("broken");
         Cli.Run run = view("view", "--out", directory.toString(), "--lang", "de",
                 write("broken.xml", "<Invoice".getBytes(StandardCharsets.UTF_8)));
         assertEquals(ExitCode.INPUT, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("<b>Datei nicht gelesen.</b>"), page);
-        assertTrue(page.contains("<pre class=\"message\">"), page);
-        assertTrue(page.contains("<title>broken.xml · Datei nicht gelesen · esj</title>"), page);
+        assertTrue(page.contains("<p class=\"state-head\">Diese Datei ist keine lesbare"
+                + " E-Rechnung.</p>\n<p>Bitten Sie den Absender, die E-Rechnung erneut zu"
+                + " senden.</p>"), page);
+        assertFalse(page.contains("<pre"), "the message of the run is for the terminal: " + page);
+        assertTrue(page.contains("<title>broken.xml · Diese Datei ist keine lesbare E-Rechnung"
+                + " · esj</title>"), page);
         assertFalse(Files.exists(directory.resolve("received")), "no PDF, nothing received");
-        assertFalse(page.contains("<nav"), "a page without a view has no list of views");
+        assertFalse(page.contains("<main"), "a page without a view has no tabs");
     }
 
     @Test
@@ -295,14 +329,16 @@ class ViewCommandTest {
     }
 
     @Test
-    void moreThanThreeCandidatesAreFoldedUnderTheirCount() throws IOException {
+    void everyCandidateIsARowWithTheCommandThatOpensIt() throws IOException {
         Path directory = out.resolve("five");
         Cli.Run run = view("view", "--out", directory.toString(), "--lang", "en",
                 write("five.pdf", several(5)));
         assertEquals(ExitCode.INPUT, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("<details>\n<summary>The file carries 5 attachments that could"
-                + " be the electronic invoice"), page);
+        assertTrue(page.contains("<p class=\"state-head\">This PDF contains more than one"
+                + " possible e-invoice.</p>\n<table class=\"candidates\">"), page);
+        assertTrue(page.contains("</table>\n<p>Ask the sender which one applies.</p>"), page);
+        assertFalse(page.contains("<details"), "the table is the guidance and stands open");
         for (int position = 1; position <= 5; position++) {
             assertTrue(page.contains("esj view --report --attachment-index " + position + " "),
                     "row " + position + " carries its command: " + page);
@@ -316,8 +352,8 @@ class ViewCommandTest {
                 "--attachment-index", "2", write("two.pdf", several(2)));
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("The invoice was taken out of attachment 2 of the file,"
-                + " invoice-2.xml."), page);
+        assertTrue(page.contains("<label for=\"tab-invoice\">Invoice</label>"), page);
+        assertTrue(page.contains("<p class=\"parties\">"), page);
     }
 
     @Test
@@ -337,10 +373,11 @@ class ViewCommandTest {
                 "--max-values", "3", copy(EXAMPLE));
         assertEquals(ExitCode.LIMIT, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("<b>A limit of this run was reached.</b>"), page);
-        assertTrue(page.contains("id=\"report\""), "the report is on the page: " + page);
+        assertTrue(page.contains("<p class=\"state-head\">The file is larger than this check"
+                + " allows.</p>\n<p><code>--max-values</code></p>"), page);
+        assertTrue(page.contains("id=\"tab-report\" checked>"),
+                "the report is the one tab: " + page);
         assertTrue(page.contains("<p class=\"finding-head\">ESJ-L1-LIMIT [error]"), page);
-        assertFalse(page.contains("No validation report"), page);
         assertTrue(Files.isRegularFile(directory.resolve("standard-invoice.esj.report.pdf")));
     }
 
@@ -352,8 +389,8 @@ class ViewCommandTest {
                 "1", input);
         assertEquals(ExitCode.LIMIT, run.exitCode(), run.err());
         String page = Files.readString(plain.resolve("index.html"));
-        assertTrue(page.contains("<b>A limit of this run was reached.</b>"), page);
-        assertTrue(page.contains("--max-pages"), page);
+        assertTrue(page.contains("<p>The invoice runs to more pages than this view allows.</p>"
+                + "\n<p><code>--max-pages</code></p>"), page);
 
         Path checked = out.resolve("pages-report");
         Cli.Run withReport = view("view", "--out", checked.toString(), "--lang", "en",
@@ -369,16 +406,15 @@ class ViewCommandTest {
 
     @Test
     @EnabledIf("carries2026")
-    void anEditionTheHtmlRenderingDoesNotRenderIsSaidBesideItsLink() throws IOException {
+    void anEditionTheKositViewDoesNotRenderHasNoTabForIt() throws IOException {
         Path directory = out.resolve("2026");
         Cli.Run run = view("view", "--out", directory.toString(), "--lang", "en",
                 copy("examples/edition-2026.esj.json"));
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("The HTML rendering was not written: the document names the"
-                + " edition EN16931-1:2026"), page);
-        assertTrue(page.contains("edition-2026.esj.letter.pdf"), "the letter renders it: " + page);
-        assertFalse(page.contains("KoSIT visualization"), "no link to a file not written");
+        assertFalse(page.contains("id=\"tab-kosit\""), "no tab for a file not written: " + page);
+        assertTrue(page.contains("<iframe src=\"edition-2026.esj.letter.pdf\""),
+                "the letter renders it: " + page);
     }
 
     @Test
@@ -390,8 +426,9 @@ class ViewCommandTest {
                 write("future.esj.json", document.getBytes(StandardCharsets.UTF_8)));
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
-        assertTrue(page.contains("The invoice could not be rendered: this build carries no"
-                + " registry of the edition EN16931-1:2099"), page);
+        assertTrue(page.contains("<p>This invoice cannot be shown here.</p>"), page);
+        assertTrue(run.err().contains("this build carries no registry of the edition"
+                + " EN16931-1:2099"), run.err());
     }
 
     @Test
@@ -403,16 +440,13 @@ class ViewCommandTest {
         assertEquals(ExitCode.VALIDATION, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
         assertTrue(page.contains("<b>INVALID</b>"), page);
-        assertTrue(page.contains("The invoice could not be rendered: no document was built"),
-                page);
+        assertFalse(page.contains("id=\"tab-invoice\""), "no document, no invoice: " + page);
 
         Path repaired = out.resolve("latin1-repaired");
         Cli.Run read = view("view", "--out", repaired.toString(), "--lang", "en", input);
         assertEquals(ExitCode.SUCCESS, read.exitCode(), read.err());
         assertEquals(1, read.err().lines().filter(line -> line.startsWith("warning:")).count(),
                 read.err());
-        assertTrue(Files.readString(repaired.resolve("index.html"))
-                .contains("the bytes were recoded: declared UTF-8, read as ISO-8859-1"));
     }
 
     @Test
@@ -438,6 +472,7 @@ class ViewCommandTest {
                 copy("examples/credit-note.esj.json"));
         String page = Files.readString(directory.resolve("index.html"));
         assertTrue(page.contains("<dt>Gutschriftsbetrag</dt><dd>355,81 EUR</dd>"), page);
+        assertTrue(page.contains("<p class=\"kind\">Gutschrift</p>"), page);
     }
 
     @Test
@@ -448,13 +483,15 @@ class ViewCommandTest {
                 "UTF-8")).newEncoder().canEncode("ü"), "file names can carry an umlaut here");
         Path directory = out.resolve("names");
         String input = write("Rechnung #4711 100% ü.pdf", Fixtures.bytes(HYBRID));
-        Cli.Run run = view("view", "--out", directory.toString(), input);
+        Cli.Run run = view("view", "--out", directory.toString(), "--report", input);
         assertEquals(ExitCode.SUCCESS, run.exitCode(), run.err());
         String page = Files.readString(directory.resolve("index.html"));
         assertTrue(page.contains("<iframe src=\"received/Rechnung%20%234711%20100%25%20%C3%BC.pdf\""),
                 page);
         assertTrue(Files.isRegularFile(directory.resolve("received/Rechnung #4711 100% ü.pdf")));
-        assertTrue(page.contains("href=\"Rechnung%20_4711%20100_%20%C3%BC.letter.pdf\""), page);
+        assertTrue(page.contains("src=\"Rechnung%20_4711%20100_%20%C3%BC.letter.pdf\""), page);
+        assertTrue(page.contains("href=\"Rechnung%20_4711%20100_%20%C3%BC.report.pdf\""
+                + " download>"), "the one link of the page: " + page);
     }
 
     // ------------------------------------------------------------------- refusals without a page

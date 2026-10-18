@@ -1,0 +1,74 @@
+Verkäufer
+---------
+Beispiel Handels GmbH
+Werkstrasse 8
+10117 Beispielstadt
+Deutschland
+shop@beispiel.invalid (EM)
+
+Käufer
+------
+Jana Muster
+Lindenweg 4
+20095 Musterstadt
+Deutschland
+
+Rechnung RE-2026-0731
+=====================
+
+Rechnungsnummer   RE-2026-0731
+Rechnungsdatum    14.04.2026
+Fälligkeitsdatum  28.04.2026
+USt-IdNr.         DE123456789
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung             Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  --------------------  -------  ------------------------  ----  -----------------
+1    Shower fitting SF-20  1 Stück                  84,02521  19 %              84,03
+     Displayed gross unit price (B2C): 99,99
+     Displayed gross line total (B2C): 99,99
+     Displayed line VAT amount (B2C): 15,96
+
+2    Shower hose 1.5 m     2 Stück                 16,798319  19 %              33,60
+     Displayed gross unit price (B2C): 19,99
+     Displayed gross line total (B2C): 39,98
+     Displayed line VAT amount (B2C): 6,38
+
+3    Sealing tape 12 m     3 Stück                  3,781513  19 %              11,34
+     Displayed gross unit price (B2C): 4,50
+     Displayed gross line total (B2C): 13,50
+     Displayed line VAT amount (B2C): 2,16
+---  --------------------  -------  ------------------------  ----  -----------------
+                                            Summe aller Positionen             128,97
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                         128,97 EUR
+                                                Steuerbasisbetrag 19 %                    128,97 EUR
+                                                Umsatzsteuerbetrag 19 %                    24,50 EUR
+                                                Summe Umsatzsteuer                         24,50 EUR
+                                                Gesamtsumme brutto                        153,47 EUR
+                                                ====================================================
+                                                Fälliger Betrag                           153,47 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsbedingungen  Payable within 14 days without deduction.
+Zahlungsart          SEPA-Überweisung
+IBAN                 DE89 3704 0044 0532 0130 00
+Kontoinhaber         Beispiel Handels GmbH
+Verwendungszweck     RE-2026-0731
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                H87 = Stück
+Zahlungsart            58 = SEPA-Überweisung
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                           EUR
+Displayed invoice gross total (B2C) (/BT-B2C-010)
+                                          153,47
+Spezifikationskennung (/BG-2/BT-24)       urn:cen.eu:en16931:2017

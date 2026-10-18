@@ -1,0 +1,86 @@
+Seller
+------
+Beispiel Handels GmbH
+Mustergasse 5
+1010 Beispielstadt
+Austria
+
+Buyer
+-----
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Germany
+
+Invoice RE-2026-0316
+====================
+
+Invoice number      RE-2026-0316
+Invoice issue date  2026-06-08
+Payment due date    2026-07-08
+VAT ID              ATU12345678
+
+Invoice lines
+-------------
+No.  Item                   Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  --------------------  ---------  ---------------------  ----  ----------------
+1    Sensor module SM-100  20 pieces                  45.00  19 %            945.00
+     Charge 45.00 EUR · Percentage 5 % · Base amount 900.00 EUR · Packing · Invoice line charge
+       reason code PC
+
+2    Calibration service       2 one                 310.00  19 %            620.00
+---  --------------------  ---------  ---------------------  ----  ----------------
+                                   Sum of Invoice line net amount          1,565.00
+
+Document level charges
+----------------------
+Reason   Base amount (EUR)  Percentage  VAT   Amount (EUR)
+-------  -----------------  ----------  ----  ------------
+Freight                                 19 %         85.00
+  Document level charge reason code: FC
+-------  -----------------  ----------  ----  ------------
+
+Document totals
+---------------
+                                                Sum of charges on document level           85.00 EUR
+                                                Invoice total amount without VAT        1,650.00 EUR
+                                                Taxable amount 19 %                     1,650.00 EUR
+                                                VAT amount 19 %                           313.50 EUR
+                                                Invoice total VAT amount                  313.50 EUR
+                                                Invoice total amount with VAT           1,963.50 EUR
+                                                ====================================================
+                                                Amount due for payment                  1,963.50 EUR
+
+Payment instructions
+--------------------
+Payment terms                        Payable within 30 days without deduction.
+Payment means                        Bank card
+Payment means text                   Payment by company card at delivery
+Payment card primary account number  ******1234
+Payment card holder name             Muster AG
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           C62 = one
+Unit           H87 = piece
+Payment means  48 = Bank card
+VAT category   S = Standard rate
+Country        AT = Austria
+Country        DE = Germany
+
+Invoice currency code (/BT-5)             EUR
+Specification identifier (/BG-2/BT-24)    urn:cen.eu:en16931:2017
+Buyer VAT identifier (/BG-7/BT-48)        DE987654321
+Seller tax representative name (/BG-11/BT-62)
+                                          Steuervertretung Beispiel GmbH
+Seller tax representative VAT identifier (/BG-11/BT-63)
+                                          DE111222333
+Tax representative address line 1 (/BG-11/BG-12/BT-64)
+                                          Vertretungsweg 2
+Tax representative city (/BG-11/BG-12/BT-66)
+                                          Beispielstadt
+Tax representative post code (/BG-11/BG-12/BT-67)
+                                          10117
+Tax representative country code (/BG-11/BG-12/BT-69)
+                                          DE

@@ -1,0 +1,67 @@
+Seller
+------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Germany
+
+Buyer
+-----
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Germany
+
+Credit note GU-2026-0004
+========================
+to invoice RE-2026-0042 of 2026-02-03
+
+Credit note number        GU-2026-0004
+Credit note date          2026-02-20
+Payment due date          2026-03-20
+Buyer reference           KOST-4711
+Purchase order reference  BE-2026-0091
+VAT ID                    DE123456789
+
+Invoice lines
+-------------
+No.  Item                  Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  --------------------  --------  ---------------------  ----  ----------------
+1    Sensor module SM-100  2 pieces                 149.50  19 %            299.00
+     Invoice line note: Returned goods, credited in full.
+     Referenced purchase order line reference: 10
+     Item Seller's identifier: SM-100
+---  --------------------  --------  ---------------------  ----  ----------------
+                                  Sum of Invoice line net amount            299.00
+
+Document totals
+---------------
+                                                Invoice total amount without VAT          299.00 EUR
+                                                Taxable amount 19 %                       299.00 EUR
+                                                VAT amount 19 %                            56.81 EUR
+                                                Invoice total VAT amount                   56.81 EUR
+                                                Invoice total amount with VAT             355.81 EUR
+                                                ====================================================
+                                                Amount credited                           355.81 EUR
+
+Payment instructions
+--------------------
+Payment means   SEPA credit transfer
+IBAN            DE12 5001 0517 0648 4898 90
+Account holder  Muster AG
+
+Invoice notes
+-------------
+Credit note for two sensor modules returned on 18 February 2026.
+
+Further details
+---------------
+Document type  381 = Credit note
+Unit           H87 = piece
+Payment means  58 = SEPA credit transfer
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)           EUR
+Specification identifier (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Buyer VAT identifier (/BG-7/BT-48)      DE987654321

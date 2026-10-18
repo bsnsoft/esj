@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="script-src 'none'; base-uri 'none'; form-action 'none'">
-<title>standard-invoice.esj.json · not checked · esj</title>
+<title>standard-invoice.esj.json · NOT CHECKED · esj</title>
 <style>
 :root {
   --ink: #16191d; --soft: #5b6470; --rule: #d7dce2; --panel: #f6f8fa;
@@ -60,64 +60,55 @@ iframe { width: 100%; height: 1400px; border: 1px solid var(--rule);
 body { padding: 0; }
 main { max-width: none; margin: 0; }
 a { color: var(--ink); }
-a:focus-visible, summary:focus-visible { outline: 2px solid var(--ink);
-                                         outline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .view { max-width: 110rem; margin: 0 auto; padding: 1.5rem; }
-.head { display: flex; flex-wrap: wrap; align-items: baseline;
-        justify-content: space-between; gap: .3rem 1.5rem; }
-.head h1 { margin: 0; overflow-wrap: anywhere; }
-.path { margin: .3rem 0 1.2rem; color: var(--soft); font-size: .85rem;
-        overflow-wrap: anywhere; }
-.path span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-.summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(20rem, 28rem);
+h1 { margin: 0 0 1rem; overflow-wrap: anywhere; }
+.summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
            gap: 1.5rem; align-items: start; }
-.facts p { margin: 0 0 .3rem; overflow-wrap: anywhere; }
+.facts p { margin: 0 0 .4rem; overflow-wrap: anywhere; }
+.facts .kind { font-weight: 600; }
+.facts .parties { font-size: 1.05rem; }
 .facts .meta { color: var(--soft); }
-.facts .title { font-size: 1.1rem; font-weight: 600; margin: .8rem 0 .4rem; }
 .facts dl { grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-            gap: .6rem 1.2rem; margin: .4rem 0 0; }
+            gap: .6rem 1.2rem; margin: .6rem 0 0; }
 .facts dl div { min-width: 0; }
 .facts dt { font-size: .8rem; }
 .facts .due dd { font-weight: 700; font-size: 1.25rem;
                  font-variant-numeric: tabular-nums; }
-.summary .card p { margin: .4rem 0 0; }
-.summary .card .note { font-size: .85rem; margin-bottom: 0; }
+.result p { margin: 0; }
+.result .counts { margin-top: .3rem; color: var(--soft); }
 .card.state { max-width: 60rem; border-left: 3px solid var(--warn); }
 .card.state.limit { border-left-color: var(--none); }
-.card.state p { margin: .4rem 0 0; }
-.state-head { font-size: 1.05rem; }
-.label { color: var(--soft); font-size: .8rem; margin: .8rem 0 0; }
-pre.message { margin: .2rem 0 0; padding: .6rem .8rem; background: var(--panel);
-              border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere;
-              font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-              font-size: .85rem; }
-table.candidates { margin: .6rem 0; }
-table.candidates td { overflow-wrap: anywhere; }
-table.candidates .size { text-align: right; font-variant-numeric: tabular-nums; }
+.card.state p { margin: .5rem 0 0; }
+.card.state .state-head { margin: 0; font-size: 1.15rem; font-weight: 600; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
        font-size: .85em; }
 code.command { user-select: all; }
-details summary { cursor: pointer; }
-.band { display: grid; margin-top: 1.5rem; column-gap: 1.5rem;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 34rem), 1fr)); }
-.band.one { max-width: 60rem; }
-.pane { display: grid; grid-template-rows: subgrid; grid-row: span 3;
-        scroll-margin-top: 1rem; min-width: 0; }
-.pane-head { display: flex; flex-wrap: wrap; align-items: baseline;
-             justify-content: space-between; gap: .3rem 1rem; }
-.pane-head h2 { margin: 1rem 0 .3rem; }
-.links { margin: 0; }
-.links a + a { margin-left: 1rem; }
-.caption p { margin: 0 0 .6rem; color: var(--soft); }
-.caption ul { color: var(--soft); margin: 0 0 .6rem; }
-.pane iframe { height: calc(100vh - 6rem); min-height: 28rem; }
-.report { max-width: 60rem; margin-top: 1rem; }
-.report > .pane-head h2 { margin-top: 2rem; }
-h4 { font-size: .9rem; margin: 1rem 0 .3rem; color: var(--soft); }
-.print-note { display: none; }
-footer { margin-top: 2.5rem; padding-top: .8rem; border-top: 1px solid var(--rule);
-         color: var(--soft); font-size: .85rem; }
-footer p { margin: .2rem 0; max-width: 60rem; overflow-wrap: anywhere; }
+table.candidates { margin: .8rem 0 .2rem; }
+table.candidates td { overflow-wrap: anywhere; }
+table.candidates .size { text-align: right; font-variant-numeric: tabular-nums; }
+.tabs { display: flex; flex-wrap: wrap; margin-top: 1.5rem; }
+.tabs > input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0;
+                pointer-events: none; }
+.tabs > label { padding: .45rem 1.1rem; cursor: pointer; color: var(--soft);
+                border-bottom: 2px solid transparent; }
+.tabs > input:checked + label { color: var(--ink); font-weight: 600;
+                                border-bottom-color: var(--ink); }
+.tabs > input:focus-visible + label { outline: 2px solid var(--ink);
+                                      outline-offset: -2px; }
+.pane { display: none; order: 1; flex: 0 0 100%; min-width: 0; padding-top: 1rem;
+        border-top: 1px solid var(--rule); }
+#tab-pdf:checked ~ #pane-pdf, #tab-invoice:checked ~ #pane-invoice,
+#tab-kosit:checked ~ #pane-kosit, #tab-report:checked ~ #pane-report {
+  display: block; }
+.pane iframe { height: calc(100vh - 4rem); min-height: 30rem; }
+.pane > p { margin: 0 0 .6rem; }
+.pane .caption { color: var(--soft); font-size: .85rem; }
+.report { max-width: 60rem; max-height: calc(100vh - 4rem); overflow: auto; }
+.report .save { margin: 0 0 1rem; }
+footer { margin-top: 2rem; padding-top: .8rem; border-top: 1px solid var(--rule);
+         color: var(--soft); font-size: .85rem; overflow-wrap: anywhere; }
+footer p { margin: 0; }
 footer span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 @media (max-width: 64rem) {
   .summary { grid-template-columns: minmax(0, 1fr); }
@@ -129,8 +120,10 @@ footer span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monosp
   @page { margin: 15mm; }
   body { font-size: 10.5pt; }
   .view { padding: 0; max-width: none; }
-  nav, .links, .band { display: none; }
-  .print-note { display: block; }
+  .tabs > label { display: none; }
+  .pane { border-top: 0; padding-top: 0; }
+  .report { max-height: none; overflow: visible; }
+  .pane iframe { height: 24cm; }
   .card, .finding, tr, .facts { break-inside: avoid; }
 }
 </style>
@@ -138,42 +131,34 @@ footer span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monosp
 <body>
 <div class="view">
 <header>
-<div class="head">
 <h1>standard-invoice.esj.json</h1>
-<nav aria-label="Views"><a href="#read">As read</a></nav>
-</div>
-<p class="path">Input <span>${input}/standard-invoice.esj.json</span></p>
 <div class="summary">
 <div class="facts">
-<p class="meta">Detected syntax ESJ · Profile urn:cen.eu:en16931:2017</p>
-<p class="title">Invoice RE-2026-0042 of 2026-02-03</p>
+<p class="parties">Example GmbH → Muster AG</p>
 <dl>
-<div><dt>Seller</dt><dd>Example GmbH</dd></div>
-<div><dt>Buyer</dt><dd>Muster AG</dd></div>
+<div><dt>Invoice number</dt><dd>RE-2026-0042</dd></div>
+<div><dt>Invoice date</dt><dd>2026-02-03</dd></div>
 <div class="due"><dt>Amount due</dt><dd>2,915.50 EUR</dd></div>
 </dl>
 </div>
-<section class="card">
-<p class="verdict verdict-NONE"><span>Verdict</span> <b>not checked</b></p>
-<p class="note"><code>esj view --report</code> checks the invoice.</p>
+<section class="card result" aria-label="Verdict">
+<p class="verdict verdict-NONE"><b>NOT CHECKED</b></p>
 </section>
 </div>
 </header>
-<main>
-<div class="band one">
-<section class="pane" id="read" aria-labelledby="read-heading">
-<div class="pane-head"><h2 id="read-heading">As read</h2><p class="links"><a href="standard-invoice.esj.kosit.html">Open as HTML on its own (KoSIT visualization)</a> <a href="standard-invoice.esj.letter.pdf">Open the rendering on its own</a></p></div>
-<div class="caption"><p>Rendered from the data of the electronic invoice.</p>
-</div>
-<iframe src="standard-invoice.esj.letter.pdf" title="As read: rendering from the data"></iframe>
+<main class="tabs">
+<input type="radio" name="tab" id="tab-invoice" checked><label for="tab-invoice">Invoice</label>
+<input type="radio" name="tab" id="tab-kosit"><label for="tab-kosit">KoSIT</label>
+<section class="pane" id="pane-invoice" aria-label="Invoice">
+<p class="caption">Rendered from the invoice data</p>
+<iframe src="standard-invoice.esj.letter.pdf" title="Invoice"></iframe>
 </section>
-</div>
-<p class="print-note">This printout is the overview. Print the invoice from its own files: standard-invoice.esj.letter.pdf.</p>
+<section class="pane" id="pane-kosit" aria-label="KoSIT">
+<iframe sandbox="allow-scripts" src="standard-invoice.esj.kosit.html" title="KoSIT"></iframe>
+</section>
 </main>
 <footer>
-<p>This page and its files are in <span>${directory}</span>; esj does not delete them.</p>
-<p>Nothing was sent or fetched: the page reads only files of this directory and runs no script.</p>
-<p>Tool esj ${version}</p>
+<p>Folder: <span>${directory}</span> · esj ${version}</p>
 </footer>
 </div>
 </body>

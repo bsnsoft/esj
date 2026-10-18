@@ -1,0 +1,95 @@
+Verkäufer
+---------
+Example GmbH
+Example Systems
+Musterweg 12
+10117 Beispielstadt
+Deutschland
+Accounts receivable
++49 30 1234567
+billing@example.invalid
+invoices@example.invalid (EM)
+HRB 12345 (Registernummer)
+4399901000018 (0088)
+Managing director: Alex Beispiel, register court Beispielstadt HRB 12345
+
+Käufer
+------
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Deutschland
+
+Rechnung RE-2026-0042
+=====================
+
+Rechnungsnummer   RE-2026-0042
+Rechnungsdatum    03.02.2026
+Lieferdatum       30.01.2026
+Fälligkeitsdatum  05.03.2026
+Käuferreferenz    KOST-4711
+Bestellnummer     BE-2026-0091
+Vertragsnummer    RV-2025-118
+Kundennummer      4399902000024
+USt-IdNr.         DE123456789
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung               Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  --------------------  ---------  ------------------------  ----  -----------------
+1    Sensor module SM-100   10 Stück                     25,00  19 %             250,00
+     Sensor module, housing grey
+     Nummer der Auftragsposition: 10
+     Artikelnummer: SM-100
+
+2    On-site installation     3 Tage                    480,00  19 %           1.440,00
+     Nummer der Auftragsposition: 20
+
+3    Training              8 Stunden                     95,00  19 %             760,00
+     Freitext: Two sessions of four hours.
+---  --------------------  ---------  ------------------------  ----  -----------------
+                                              Summe aller Positionen           2.450,00
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                       2.450,00 EUR
+                                                Steuerbasisbetrag 19 %                  2.450,00 EUR
+                                                Umsatzsteuerbetrag 19 %                   465,50 EUR
+                                                Summe Umsatzsteuer                        465,50 EUR
+                                                Gesamtsumme brutto                      2.915,50 EUR
+                                                ====================================================
+                                                Fälliger Betrag                         2.915,50 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsbedingungen  Payable within 30 days without deduction.
+Zahlungsart          SEPA-Überweisung
+IBAN                 DE89 3704 0044 0532 0130 00
+BIC                  COBADEFFXXX
+Kontoinhaber         Example GmbH
+Verwendungszweck     RE-2026-0042
+
+Bemerkungen zur Rechnung
+------------------------
+Delivery and performance according to contract RV-2025-118.
+Please quote the invoice number with the payment.
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                DAY = Tag
+Einheit                H87 = Stück
+Einheit                HUR = Stunde
+Zahlungsart            58 = SEPA-Überweisung
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                      EUR
+Kontierungsinformation (/BT-19)      Cost centre 4711
+Spezifikationskennung (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Kennung (/BG-7/BT-46)                4399902000024 (Schema der Kennung: 0088)
+Umsatzsteuer-ID (/BG-7/BT-48)        DE987654321
+Elektronische Adresse (/BG-7/BT-49)  rechnung@muster.invalid (Schema der elektronischen Adresse: EM)
+Kontaktstelle (/BG-7/BG-9/BT-56)     Purchasing
+Telefon (/BG-7/BG-9/BT-57)           +49 40 7654321
+E-Mail-Adresse (/BG-7/BG-9/BT-58)    purchasing@muster.invalid

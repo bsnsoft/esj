@@ -93,7 +93,9 @@ abstract class InvoiceLayout {
      * @param document the document
      * @param registry the registry the types and the English labels come from
      * @param language the language of the rendering
-     * @param sheet    the sheet to draw on
+     * @param sheet    the sheet to draw on, or {@code null} for a layout whose content is
+     *                 collected and written elsewhere — the text rendering of
+     *                 {@link InvoiceText} — and that never draws
      * @param template the branded template, or {@code null} for a rendering without one
      */
     InvoiceLayout(SemanticDocument document, Registry registry, RenderLanguage language,
@@ -103,7 +105,7 @@ abstract class InvoiceLayout {
         this.language = language;
         this.labels = Labels.of(registry, language);
         this.sheet = sheet;
-        this.palette = sheet.palette();
+        this.palette = sheet == null ? null : sheet.palette();
         this.placements = template == null ? List.of() : template.placements();
         this.currency = document.value(SemanticPath.of("/BT-5"))
                 .map(SemanticValue::content).orElse("");
@@ -660,9 +662,46 @@ abstract class InvoiceLayout {
     }
 
     void lines() {
+        LineTable lines = lineTable();
+        if (lines == null) {
+            return;
+        }
+        Table table = new Table(sheet, lines.headers().toArray(new String[0]),
+                lines.weights(), lines.rightAligned(), Word.CONTINUED.in(language), 1,
+                lines.rows(), lines.whole());
+        if (ruleUnderEveryLine()) {
+            table.ruleUnderEveryRow();
+        }
+        tableUnder(Word.LINES, table);
+        Table.Closing closing = lines.closing();
+        List<String[]> rows = lines.rows();
+        for (int i = 0; i < rows.size(); i++) {
+            if (i == rows.size() - 1 && closing != null) {
+                table.closingFollows(closing);
+            }
+            table.row(rows.get(i), false, lines.hanging().get(i));
+        }
+        table.end();
+        if (closing != null) {
+            table.closing(closing);
+        }
+        if (lines.displayed()) {
+            displayedNote();
+        }
+    }
+
+    /**
+     * Returns the table of invoice lines as this layout writes it — its columns, its rows,
+     * what hangs under each row and the row that closes it — and marks every value it shows
+     * placed, without drawing anything. {@link #lines()} draws it on the sheet and
+     * {@link InvoiceText} writes it as text, so the two show the same cells.
+     *
+     * @return the table, or {@code null} where the document carries no invoice line
+     */
+    LineTable lineTable() {
         List<SemanticPath> lines = instances(SemanticPath.root(), "BG-25");
         if (lines.isEmpty()) {
-            return;
+            return null;
         }
         List<Placement> afterUnitPrice = carried(Placement.Position.LINE_UNIT_PRICE, lines);
         List<Placement> afterVat = carried(Placement.Position.LINE_VAT, lines);
@@ -702,25 +741,10 @@ abstract class InvoiceLayout {
             rows.add(cells.toArray(new String[0]));
             hanging.add(details);
         }
-        Table table = columns.table(rows);
-        if (ruleUnderEveryLine()) {
-            table.ruleUnderEveryRow();
-        }
-        tableUnder(Word.LINES, table);
         Table.Closing closing = closingRow(netAmount);
-        for (int i = 0; i < rows.size(); i++) {
-            if (i == rows.size() - 1 && closing != null) {
-                table.closingFollows(closing);
-            }
-            table.row(rows.get(i), false, hanging.get(i));
-        }
-        table.end();
-        if (closing != null) {
-            table.closing(closing);
-        }
-        if (!afterUnitPrice.isEmpty() || !afterVat.isEmpty() || !afterAmount.isEmpty()) {
-            displayedNote();
-        }
+        boolean displayed = !afterUnitPrice.isEmpty() || !afterVat.isEmpty()
+                || !afterAmount.isEmpty();
+        return columns.lineTable(rows, hanging, closing, displayed);
     }
 
     private String quantity(SemanticPath line) {
@@ -813,9 +837,33 @@ abstract class InvoiceLayout {
     }
 
     void documentAllowancesAndCharges(String groupId, Word heading) {
+        AdjustmentTable adjustments = adjustmentTable(groupId);
+        if (adjustments == null) {
+            return;
+        }
+        Table table = new Table(sheet, adjustments.headers(),
+                new float[] {3.4f, 1.3f, 1.1f, 1.2f, 1.3f},
+                adjustments.rightAligned(),
+                Word.CONTINUED.in(language), 0, adjustments.rows());
+        tableUnder(heading, table);
+        List<String[]> rows = adjustments.rows();
+        for (int i = 0; i < rows.size(); i++) {
+            table.row(rows.get(i), false, adjustments.hanging().get(i));
+        }
+        table.end();
+    }
+
+    /**
+     * Returns the table of the allowances or of the charges on the document level, and
+     * marks every value it shows placed, without drawing anything.
+     *
+     * @param groupId {@code BG-20} for the allowances, {@code BG-21} for the charges
+     * @return the table, or {@code null} where the document carries none
+     */
+    AdjustmentTable adjustmentTable(String groupId) {
         List<SemanticPath> groups = instances(SemanticPath.root(), groupId);
         if (groups.isEmpty()) {
-            return;
+            return null;
         }
         boolean allowance = "BG-20".equals(groupId);
         String amount = allowance ? "BT-92" : "BT-99";
@@ -835,20 +883,46 @@ abstract class InvoiceLayout {
                     cell(group, amount)});
             hanging.add(detailsOf(collect(group)));
         }
-        Table table = new Table(sheet,
+        return new AdjustmentTable(
                 new String[] {Word.COLUMN_REASON.in(language),
                               money(Word.COLUMN_BASE),
                               Word.COLUMN_PERCENTAGE.in(language),
                               Word.COLUMN_VAT.in(language),
                               money(Word.COLUMN_AMOUNT)},
-                new float[] {3.4f, 1.3f, 1.1f, 1.2f, 1.3f},
                 new boolean[] {false, true, true, false, true},
-                Word.CONTINUED.in(language), 0, rows);
-        tableUnder(heading, table);
-        for (int i = 0; i < rows.size(); i++) {
-            table.row(rows.get(i), false, hanging.get(i));
-        }
-        table.end();
+                List.copyOf(rows), List.copyOf(hanging));
+    }
+
+    /**
+     * The table of invoice lines as a layout collected it: what {@link Table} is given on
+     * a sheet and what {@link InvoiceText} writes as text.
+     *
+     * @param headers      the column headers
+     * @param weights      the relative widths of the columns on a sheet
+     * @param rightAligned which columns are set flush right
+     * @param whole        the column whose cells are one statement, or
+     *                     {@link Table#NO_COLUMN}
+     * @param rows         the cells, row by row
+     * @param hanging      the lines hanging under each row, in the order of the rows
+     * @param closing      the row that closes the table, or {@code null}
+     * @param displayed    whether a template placed a displayed figure in the table
+     */
+    record LineTable(List<String> headers, float[] weights, boolean[] rightAligned, int whole,
+                     List<String[]> rows, List<List<String>> hanging, Table.Closing closing,
+                     boolean displayed) {
+    }
+
+    /**
+     * The table of the allowances or the charges on the document level as a layout
+     * collected it.
+     *
+     * @param headers      the column headers
+     * @param rightAligned which columns are set flush right
+     * @param rows         the cells, row by row
+     * @param hanging      the lines hanging under each row, in the order of the rows
+     */
+    record AdjustmentTable(String[] headers, boolean[] rightAligned, List<String[]> rows,
+                           List<List<String>> hanging) {
     }
 
     /**
@@ -901,21 +975,25 @@ abstract class InvoiceLayout {
         }
 
         /**
-         * Returns the table these columns describe.
+         * Returns the table these columns describe, with the rows it is given.
          *
-         * @param rows the rows the table will be given, which decide how much width a
-         *             column can spare
+         * @param rows      the cells, row by row, which decide on a sheet how much width a
+         *                  column can spare
+         * @param hanging   the lines hanging under each row
+         * @param closing   the row that closes the table, or {@code null}
+         * @param displayed whether a template placed a column of its own
          * @return the table
          */
-        Table table(List<String[]> rows) {
+        LineTable lineTable(List<String[]> rows, List<List<String>> hanging,
+                            Table.Closing closing, boolean displayed) {
             float[] widths = new float[weights.size()];
             boolean[] aligned = new boolean[right.size()];
             for (int i = 0; i < widths.length; i++) {
                 widths[i] = weights.get(i);
                 aligned[i] = right.get(i);
             }
-            return new Table(sheet, headers.toArray(new String[0]), widths, aligned,
-                    Word.CONTINUED.in(language), 1, rows, whole);
+            return new LineTable(List.copyOf(headers), widths, aligned, whole,
+                    List.copyOf(rows), List.copyOf(hanging), closing, displayed);
         }
     }
 

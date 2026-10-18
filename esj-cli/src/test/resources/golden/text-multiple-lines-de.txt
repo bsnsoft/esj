@@ -1,0 +1,133 @@
+Verkäufer
+---------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Deutschland
+Accounts receivable
+billing@example.invalid
+
+Käufer
+------
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Deutschland
+
+Rechnung RE-2026-0107
+=====================
+
+Rechnungsnummer   RE-2026-0107
+Rechnungsdatum    01.04.2026
+Lieferdatum       31.03.2026
+Von               01.03.2026
+Bis               31.03.2026
+Fälligkeitsdatum  30.04.2026
+Käuferreferenz    RAHMEN-2026
+Vertragsnummer    RV-2024-007
+Projektnummer     PRJ-2026-03
+USt-IdNr.         DE123456789
+
+Rechnungspositionen
+-------------------
+                                                                                         Nettobetrag
+Nr.  Bezeichnung                                Menge  Einzelpreis, netto (EUR)  USt.          (EUR)
+---  ----------------------------------  ------------  ------------------------  ----  -------------
+1    Sensor module SM-100                    20 Stück                     25,00  19 %         500,00
+     Sensor module, housing grey, IP65
+     Merkmal Protection class: IP65
+     Merkmal Colour: grey
+     Von: 01.03.2026 · Bis: 31.03.2026
+     Artikelnummer: SM-100
+     Artikelkennung: 04012345678901 (Schema der Artikelkennung: 0160)
+     Code der Artikelklassifizierung: 43201404 (Kennung zur Bildung des Schemas: SRV) (Version zur
+       Bildung des Schemas: 26.0301)
+     Code der Artikelklassifizierung: EX-SENS-01 (Kennung zur Bildung des Schemas: ZZZ)
+     Code des Herkunftslandes: DE
+
+2    Actuator AC-200                         12 Stück                     42,50  19 %         510,00
+     Merkmal Stroke: 50 mm
+     Von: 01.03.2026 · Bis: 31.03.2026
+     Code des Herkunftslandes: DE
+
+3    Control unit CU-300                      5 Stück                    118,00  19 %         590,00
+     Von: 01.03.2026 · Bis: 31.03.2026
+
+4    Cable assembly 5x1.5                    40 Meter                      3,25  19 %         130,00
+     Von: 01.03.2026 · Bis: 31.03.2026
+
+5    Mounting kit MK-10                     6 Einheit                     89,90  19 %         539,40
+     Von: 01.03.2026 · Bis: 31.03.2026
+
+6    Engineering service                   24 Stunden                     95,00  19 %       2.280,00
+     Von: 01.03.2026 · Bis: 31.03.2026
+
+7    On-site commissioning                     3 Tage                    480,00  19 %       1.440,00
+     Von: 01.03.2026 · Bis: 31.03.2026
+
+8    Annual software subscription           1 Einheit                  1.250,00  19 %       1.250,00
+     Von: 01.04.2026 · Bis: 31.03.2027
+
+9    Printed operating manual             150 Einheit                      2,40  7 %          360,00
+
+10   Packaging material, recycled paper  30 Kilogramm                      1,80  7 %           54,00
+---  ----------------------------------  ------------  ------------------------  ----  -------------
+                                                               Summe aller Positionen       7.653,40
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                       7.653,40 EUR
+                                                Steuerbasisbetrag 19 %                  7.239,40 EUR
+                                                Umsatzsteuerbetrag 19 %                 1.375,49 EUR
+                                                Steuerbasisbetrag 7 %                     414,00 EUR
+                                                Umsatzsteuerbetrag 7 %                     28,98 EUR
+                                                Summe Umsatzsteuer                      1.404,47 EUR
+                                                Gesamtsumme brutto                      9.057,87 EUR
+                                                ====================================================
+                                                Fälliger Betrag                         9.057,87 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsbedingungen  Payable within 30 days without deduction.
+Zahlungsart          SEPA-Überweisung
+IBAN                 DE89 3704 0044 0532 0130 00
+Kontoinhaber         Example GmbH
+Verwendungszweck     RE-2026-0107
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                C62 = Einheit
+Einheit                DAY = Tag
+Einheit                H87 = Stück
+Einheit                HUR = Stunde
+Einheit                KGM = Kilogramm
+Einheit                MTR = Meter
+Zahlungsart            58 = SEPA-Überweisung
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                           EUR
+Abrechnungsdatum der Umsatzsteuer (/BT-7)
+                                          31.03.2026
+Spezifikationskennung (/BG-2/BT-24)       urn:cen.eu:en16931:2017
+Umsatzsteuer-ID (/BG-7/BT-48)             DE987654321
+Name des Empfängers (/BG-13/BT-70)        Muster AG, Werk Nord
+Kennung des Lieferorts (/BG-13/BT-71)     4399901234567 (Schema der Kennung: 0088)
+Adresszeile 1 (/BG-13/BG-15/BT-75)        Nordstrasse 88
+Ort (/BG-13/BG-15/BT-77)                  Musterstadt
+PLZ (/BG-13/BG-15/BT-78)                  20097
+Ländercode (/BG-13/BG-15/BT-80)           DE
+Additional supporting documents 1 · Kennung (/BG-24/0/BT-122)
+                                          LS-2026-0310
+Additional supporting documents 1 · Beschreibung (/BG-24/0/BT-123)
+                                          Delivery note of 31 March 2026
+Additional supporting documents 1 · Verweis (z.B. Internetadresse) (/BG-24/0/BT-124)
+                                          https://example.invalid/documents/LS-2026-0310
+Additional supporting documents 2 · Kennung (/BG-24/1/BT-122)
+                                          POS-2026-03
+Additional supporting documents 2 · Beschreibung (/BG-24/1/BT-123)
+                                          Itemised position list
+Additional supporting documents 2 · Anhangsdokument (/BG-24/1/BT-125)
+                                          positions.csv, text/csv, Größe 54 Bytes, Inhalt nicht
+                                          abgedruckt

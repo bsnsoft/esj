@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 /**
  * What a validation report says, once and for both forms it is written in.
@@ -147,6 +148,21 @@ final class ReportContent {
      * @return the lines, in report order, empty for a run with one subject
      */
     static List<Line> subjects(ValidationOutcome outcome, RenderLanguage language) {
+        return subjects(outcome, language, UnaryOperator.identity());
+    }
+
+    /**
+     * Returns the verdicts of the subjects with each verdict word written as a page writes
+     * it, which is how the page of {@code esj view} gives a reader the words of their own
+     * language.
+     *
+     * @param outcome  what the run came to
+     * @param language the language of the report
+     * @param words    what a verdict word is written as
+     * @return the lines, in report order, empty for a run with one subject
+     */
+    static List<Line> subjects(ValidationOutcome outcome, RenderLanguage language,
+                               UnaryOperator<String> words) {
         List<Line> lines = new ArrayList<>();
         for (ValidationOutcome.Subject subject : outcome.subjects()) {
             ReportWord label = switch (subject.judged()) {
@@ -155,7 +171,8 @@ final class ReportContent {
             };
             String detail = subject.detail()
                     .map(text -> " (" + resolve(text, language) + ")").orElse("");
-            lines.add(new Line(label.in(language), plain(subject.verdict()) + detail));
+            lines.add(new Line(label.in(language), plain(words.apply(subject.verdict()))
+                    + detail));
         }
         return List.copyOf(lines);
     }

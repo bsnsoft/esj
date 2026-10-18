@@ -1,0 +1,74 @@
+Verkäufer
+---------
+Example GmbH
+Hauptstrasse 1
+66111 Saarbruecken
+Deutschland
+
+Käufer
+------
+Beispiel AG
+Werkstrasse 18
+54290 Trier
+Deutschland
+
+Rechnung RE-2026-0501
+=====================
+
+Rechnungsnummer  RE-2026-0501
+Rechnungsdatum   01.09.2026
+USt-IdNr.        DE123456789
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung           Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  ------------------  -------  ------------------------  ----  -----------------
+1    Control unit XC-40  4 Stück                    250,00  19 %           1.000,00
+     Invoice line deliver to party name: Beispiel AG, works Trier
+     Invoice line actual delivery date: 28.08.2026
+     Von: 24.08.2026
+     Bis: 28.08.2026
+     Invoice line deliver to city: Trier
+     Invoice line deliver to country code: DE
+     Line-level preceding invoice reference: RE-2026-0488
+     Line-level preceding invoice issue date: 03.08.2026
+---  ------------------  -------  ------------------------  ----  -----------------
+                                          Summe aller Positionen           1.000,00
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                       1.000,00 EUR
+                                                Steuerbasisbetrag 19 %                  1.000,00 EUR
+                                                Umsatzsteuerbetrag 19 %                   190,00 EUR
+                                                Summe Umsatzsteuer                        190,00 EUR
+                                                Gesamtsumme brutto                      1.190,00 EUR
+                                                ====================================================
+                                                Fälliger Betrag                         1.215,00 EUR
+                                                Charge amount collected on behalf of a third   25,00
+                                                party
+                                                Charges specification
+                                                  Packaging levy collected for the national
+                                                  recycling scheme, ordinance 2025/14.
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                H87 = Stück
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                           EUR
+Käuferreferenz (/BT-10/0)                 KOST-2026-11
+Invoice issue time (/BT-166)              09:15:00+02:00
+Spezifikationskennung (/BG-2/BT-24)       urn:cen.eu:en16931:2026
+Skonto; weitere Zahlungsbedingungen (/BG-33/0/BT-20)
+                                          Payable within 30 days without deduction. Two per cent
+                                          discount within ten days.
+Discount end date (/BG-33/0/BG-35/0/BT-170)
+                                          11.09.2026
+Discount percentage (/BG-33/0/BG-35/0/BT-171)
+                                          2 %
+Penalty start date (/BG-33/0/BG-36/0/BT-181)
+                                          02.10.2026
+Penalty yearly interest percentage (/BG-33/0/BG-36/0/BT-182)
+                                          9,2 %

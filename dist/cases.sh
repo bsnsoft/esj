@@ -253,6 +253,17 @@ view-no-invoice view --out @OUT --lang en --report $EXAMPLES/templates/letterhea
 view-not-well-formed view --out @OUT --lang de $VIEW/not-well-formed.xml
 view-limit view --out @OUT --lang de --max-input-bytes 1000 $CORPUS/01.01a-INVOICE_ubl.xml
 view-json view --out @OUT --lang en --output json --report $EXAMPLES/standard-invoice.esj.json
+view-no-payment-code view --out @OUT --lang de --no-payment-code $EXAMPLES/standard-invoice.esj.json
+render-text-esj render --text --lang de --out - $EXAMPLES/standard-invoice.esj.json
+render-text-credit-note render --text --lang en --width 80 --out - $EXAMPLES/credit-note.esj.json
+render-text-allowances render --text --lang de --width 60 --out - $EXAMPLES/allowances.esj.json
+render-text-edition-2026 render --text --lang en --out - $EXAMPLES/edition-2026.esj.json
+render-text-pdf render --text --lang de --out - $PDF
+render-text-file render --text --lang en --out @OUT $CORPUS/01.01a-INVOICE_ubl.xml
+view-text-esj view --text --lang en $EXAMPLES/standard-invoice.esj.json
+view-text-pdf-report view --text --lang de --report --width 120 $PDF
+view-text-no-invoice view --text --lang de $EXAMPLES/templates/letterhead.pdf
+view-text-json view --text --output json $EXAMPLES/standard-invoice.esj.json
 CASES
   if [ "${1-}" = "--full" ]; then
     for instance in "$CORPUS"/*.xml; do

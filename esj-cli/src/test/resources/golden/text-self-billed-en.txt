@@ -1,0 +1,77 @@
+Seller
+------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Germany
+
+Buyer
+-----
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Germany
+
+Self-billed invoice GS-2026-0009
+================================
+
+Invoice number      GS-2026-0009
+Invoice issue date  2026-07-01
+Payment due date    2026-07-15
+Buyer reference     GS-RAHMEN-2026
+VAT ID              DE123456789
+
+Invoice lines
+-------------
+No.  Item                            Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  ------------------------------  --------  ---------------------  ----  ----------------
+1    Development service, sprint 12  40 hours                  85.00  19 %          3,400.00
+
+2    Architecture review             12 hours                 120.00  0 %           1,440.00
+     Invoice line note: Reverse charge applies to this line.
+---  ------------------------------  --------  ---------------------  ----  ----------------
+                                            Sum of Invoice line net amount          4,840.00
+
+Document totals
+---------------
+                                                Invoice total amount without VAT        4,840.00 EUR
+                                                Taxable amount 19 %                     3,400.00 EUR
+                                                VAT amount 19 %                           646.00 EUR
+                                                Taxable amount 0 % VAT Reverse charge   1,440.00 EUR
+                                                VAT amount 0 % VAT Reverse charge           0.00 EUR
+                                                VAT exemption reason text             Reverse charge
+                                                VAT exemption reason code                VATEX-EU-AE
+                                                Invoice total VAT amount                  646.00 EUR
+                                                Invoice total amount with VAT           5,486.00 EUR
+                                                ====================================================
+                                                Amount due for payment                  5,486.00 EUR
+
+Payment instructions
+--------------------
+Payment terms                      Settled by direct debit on the due date.
+Payment means                      SEPA direct debit
+Remittance information             GS-2026-0009
+Mandate reference identifier       MND-2026-0042
+Bank assigned creditor identifier  DE98ZZZ09999999999
+Debited account identifier         DE89370400440532013000
+
+Invoice notes
+-------------
+Invoice note subject code: AAB
+Self-billed invoice issued by the buyer on behalf of the seller.
+
+Further details
+---------------
+Document type  389 = Self-billed invoice
+Unit           HUR = hour
+Payment means  59 = SEPA direct debit
+VAT category   AE = VAT Reverse charge
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)           EUR
+Specification identifier (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Buyer VAT identifier (/BG-7/BT-48)      DE987654321
+Payee name (/BG-10/BT-59)               Beispiel Factoring GmbH
+Payee identifier (/BG-10/BT-60)         4399903000030 (Payee identifier identification scheme
+                                        identifier: 0088)

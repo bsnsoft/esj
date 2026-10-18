@@ -1,0 +1,139 @@
+Seller
+------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Germany
+Accounts receivable
+billing@example.invalid
+
+Buyer
+-----
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Germany
+
+Invoice RE-2026-0107
+====================
+
+Invoice number               RE-2026-0107
+Invoice issue date           2026-04-01
+Actual delivery date         2026-03-31
+Invoicing period start date  2026-03-01
+Invoicing period end date    2026-03-31
+Payment due date             2026-04-30
+Buyer reference              RAHMEN-2026
+Contract reference           RV-2024-007
+Project reference            PRJ-2026-03
+VAT ID                       DE123456789
+
+Invoice lines
+-------------
+No.  Item                                    Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  ----------------------------------  ------------  ---------------------  ----  ----------------
+1    Sensor module SM-100                   20 pieces                  25.00  19 %            500.00
+     Sensor module, housing grey, IP65
+     Attribute Protection class: IP65
+     Attribute Colour: grey
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+     Item Seller's identifier: SM-100
+     Item standard identifier: 04012345678901 (Item standard identifier identification scheme
+       identifier: 0160)
+     Item classification identifier: 43201404 (Item classification identifier identification
+       scheme identifier: SRV) (Item classification identifier identification scheme version
+       identifier: 26.0301)
+     Item classification identifier: EX-SENS-01 (Item classification identifier identification
+       scheme identifier: ZZZ)
+     Item country of origin: DE
+
+2    Actuator AC-200                        12 pieces                  42.50  19 %            510.00
+     Attribute Stroke: 50 mm
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+     Item country of origin: DE
+
+3    Control unit CU-300                     5 pieces                 118.00  19 %            590.00
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+
+4    Cable assembly 5x1.5                   40 metres                   3.25  19 %            130.00
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+
+5    Mounting kit MK-10                         6 one                  89.90  19 %            539.40
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+
+6    Engineering service                     24 hours                  95.00  19 %          2,280.00
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+
+7    On-site commissioning                     3 days                 480.00  19 %          1,440.00
+     Invoice line period start date: 2026-03-01 · Invoice line period end date: 2026-03-31
+
+8    Annual software subscription               1 one               1,250.00  19 %          1,250.00
+     Invoice line period start date: 2026-04-01 · Invoice line period end date: 2027-03-31
+
+9    Printed operating manual                 150 one                   2.40  7 %             360.00
+
+10   Packaging material, recycled paper  30 kilograms                   1.80  7 %              54.00
+---  ----------------------------------  ------------  ---------------------  ----  ----------------
+                                                    Sum of Invoice line net amount          7,653.40
+
+Document totals
+---------------
+                                                Invoice total amount without VAT        7,653.40 EUR
+                                                Taxable amount 19 %                     7,239.40 EUR
+                                                VAT amount 19 %                         1,375.49 EUR
+                                                Taxable amount 7 %                        414.00 EUR
+                                                VAT amount 7 %                             28.98 EUR
+                                                Invoice total VAT amount                1,404.47 EUR
+                                                Invoice total amount with VAT           9,057.87 EUR
+                                                ====================================================
+                                                Amount due for payment                  9,057.87 EUR
+
+Payment instructions
+--------------------
+Payment terms           Payable within 30 days without deduction.
+Payment means           SEPA credit transfer
+IBAN                    DE89 3704 0044 0532 0130 00
+Account holder          Example GmbH
+Remittance information  RE-2026-0107
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           C62 = one
+Unit           DAY = day
+Unit           H87 = piece
+Unit           HUR = hour
+Unit           KGM = kilogram
+Unit           MTR = metre
+Payment means  58 = SEPA credit transfer
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)             EUR
+Value added tax point date (/BT-7)        2026-03-31
+Specification identifier (/BG-2/BT-24)    urn:cen.eu:en16931:2017
+Buyer VAT identifier (/BG-7/BT-48)        DE987654321
+Deliver to party name (/BG-13/BT-70)      Muster AG, Werk Nord
+Deliver to location identifier (/BG-13/BT-71)
+                                          4399901234567 (Deliver to location identifier
+                                          identification scheme identifier: 0088)
+Deliver to address line 1 (/BG-13/BG-15/BT-75)
+                                          Nordstrasse 88
+Deliver to city (/BG-13/BG-15/BT-77)      Musterstadt
+Deliver to post code (/BG-13/BG-15/BT-78)
+                                          20097
+Deliver to country code (/BG-13/BG-15/BT-80)
+                                          DE
+Additional supporting documents 1 · Supporting document reference (/BG-24/0/BT-122)
+                                          LS-2026-0310
+Additional supporting documents 1 · Supporting document description (/BG-24/0/BT-123)
+                                          Delivery note of 31 March 2026
+Additional supporting documents 1 · External document location (/BG-24/0/BT-124)
+                                          https://example.invalid/documents/LS-2026-0310
+Additional supporting documents 2 · Supporting document reference (/BG-24/1/BT-122)
+                                          POS-2026-03
+Additional supporting documents 2 · Supporting document description (/BG-24/1/BT-123)
+                                          Itemised position list
+Additional supporting documents 2 · Attached document (/BG-24/1/BT-125)
+                                          positions.csv, text/csv, size 54 bytes, content not
+                                          printed

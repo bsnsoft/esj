@@ -115,8 +115,8 @@ in half the memory ([`deployment-measurements.md`](deployment-measurements.md#st
 ## `esj view` from the file manager
 
 [`esj view`](view.md) is what a file manager can open an XML or a PDF file with: one page with
-the file as it came, the invoice as read from its data and the validation report. Each system
-offers it under *Open with* and never as the default program of a type.
+a tab each for the PDF as it came, the invoice rendered from its data and the validation report.
+Each system offers it under *Open with* and never as the default program of a type.
 
 - **Linux**: the deb and the rpm install `/usr/share/applications/esj.desktop`, *ESJ Viewer*,
   for `application/xml`, `text/xml` and `application/pdf`, and its icon

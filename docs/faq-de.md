@@ -49,6 +49,12 @@ esj render invoice.xml --html --out invoice.html   # eine Seite, ohne Abhängigk
 esj render invoice.xml --out invoice.pdf           # eine PDF/A-3b-Datei
 ```
 
+**Kann ich eine Rechnung im Terminal lesen?**
+```sh
+esj render invoice.xml --text --out -              # reiner Text, so breit wie das Terminal
+esj view invoice.pdf --text --report               # dasselbe, darunter das Ergebnis der Prüfung
+```
+
 ## Prüfen
 
 **Wie validiere ich eine E-Rechnung?**

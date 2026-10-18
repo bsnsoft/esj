@@ -241,15 +241,7 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
         if (json) {
             Reports.json(console, validation);
         } else {
-            printer.line("Input:            " + validation.input());
-            Reports.container(printer, validation);
-            printer.line("Detected syntax:  " + validation.syntax().label());
-            Reports.semanticModel(validation)
-                    .ifPresent(model -> printer.line("Semantic model:   " + model));
-            profile(printer, syntax);
-            printer.line();
-            Reports.text(printer, validation);
-            Reports.verdicts(printer, validation);
+            lines(printer, validation, syntax);
             afterRepair(printer, input, request, layer, extensions, validation);
         }
         boolean delivered = form == null
@@ -266,6 +258,28 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
         // delivered. A verdict of invalid outranks it: it is the answer the caller came
         // for and it was printed, so it keeps its own code.
         return delivered || verdict == ExitCode.VALIDATION ? verdict : ExitCode.OUTPUT;
+    }
+
+    /**
+     * Prints what a validation found, as this command prints it without {@code --output
+     * json}: the input, the container, the syntax, the semantic model and the profile, then
+     * the findings and the verdicts. {@code esj view --text --report} prints the same lines
+     * under the invoice.
+     *
+     * @param printer    where the lines go
+     * @param validation what every engine found
+     * @param syntax     what the syntax engine did with the XML
+     */
+    static void lines(Console printer, Validation.Report validation, SyntaxCheck syntax) {
+        printer.line("Input:            " + validation.input());
+        Reports.container(printer, validation);
+        printer.line("Detected syntax:  " + validation.syntax().label());
+        Reports.semanticModel(validation)
+                .ifPresent(model -> printer.line("Semantic model:   " + model));
+        profile(printer, syntax);
+        printer.line();
+        Reports.text(printer, validation);
+        Reports.verdicts(printer, validation);
     }
 
     /**

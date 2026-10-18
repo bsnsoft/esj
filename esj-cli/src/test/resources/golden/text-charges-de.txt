@@ -1,0 +1,80 @@
+Verkäufer
+---------
+Beispiel Handels GmbH
+Mustergasse 5
+1010 Beispielstadt
+Österreich
+
+Käufer
+------
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Deutschland
+
+Rechnung RE-2026-0316
+=====================
+
+Rechnungsnummer   RE-2026-0316
+Rechnungsdatum    08.06.2026
+Fälligkeitsdatum  08.07.2026
+USt-IdNr.         ATU12345678
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung               Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  --------------------  ---------  ------------------------  ----  -----------------
+1    Sensor module SM-100   20 Stück                     45,00  19 %             945,00
+     Zuschlag 45,00 EUR · Prozentsatz 5 % · Grundbetrag 900,00 EUR · Packing · Code für den
+       Zuschlagsgrund PC
+
+2    Calibration service   2 Einheit                    310,00  19 %             620,00
+---  --------------------  ---------  ------------------------  ----  -----------------
+                                              Summe aller Positionen           1.565,00
+
+Zuschläge auf Dokumentenebene
+-----------------------------
+Grund    Grundbetrag (EUR)  Prozentsatz  USt.  Betrag (EUR)
+-------  -----------------  -----------  ----  ------------
+Freight                                  19 %         85,00
+  Kennung für den Zuschlagsgrund: FC
+-------  -----------------  -----------  ----  ------------
+
+Gesamtbeträge
+-------------
+                                                Summe Zuschläge                            85,00 EUR
+                                                Gesamtsumme netto                       1.650,00 EUR
+                                                Steuerbasisbetrag 19 %                  1.650,00 EUR
+                                                Umsatzsteuerbetrag 19 %                   313,50 EUR
+                                                Summe Umsatzsteuer                        313,50 EUR
+                                                Gesamtsumme brutto                      1.963,50 EUR
+                                                ====================================================
+                                                Fälliger Betrag                         1.963,50 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsbedingungen  Payable within 30 days without deduction.
+Zahlungsart          Kartenzahlung
+Zahlungsmittel       Payment by company card at delivery
+Kartennummer         ******1234
+Karteninhaber        Muster AG
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                C62 = Einheit
+Einheit                H87 = Stück
+Zahlungsart            48 = Kartenzahlung
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   AT = Österreich
+Land                   DE = Deutschland
+
+Währung (/BT-5)                      EUR
+Spezifikationskennung (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Umsatzsteuer-ID (/BG-7/BT-48)        DE987654321
+Name (/BG-11/BT-62)                  Steuervertretung Beispiel GmbH
+Umsatzsteuer-ID (/BG-11/BT-63)       DE111222333
+Adresszeile 1 (/BG-11/BG-12/BT-64)   Vertretungsweg 2
+Ort (/BG-11/BG-12/BT-66)             Beispielstadt
+PLZ (/BG-11/BG-12/BT-67)             10117
+Ländercode (/BG-11/BG-12/BT-69)      DE

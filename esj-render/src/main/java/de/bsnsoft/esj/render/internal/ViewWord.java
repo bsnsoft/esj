@@ -5,126 +5,126 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * The words of the page {@code esj view} writes that are its own.
+ * The words of the page {@code esj view} writes that are its own, written for the person
+ * who opens an invoice.
  *
- * <p>The page reuses the words of the validation report and of the invoice layout wherever
- * it says what they say — the verdict, the input, the seller, the scope of a verdict — and
- * takes them from {@link ReportWord} and {@link Word}, so that the same thing is called the
- * same in the report, in the letter and on the page. What is here is what only the page has:
- * the names of its views, the sentences at its dead ends, the lines of its footer. A message
- * of the run is not among them: it is printed as the run wrote it, in English, as it is in a
- * German report.
+ * <p>A label names a thing; a sentence is there only where the reader has something to do,
+ * and then it says what. Nothing here explains what the tool did. The page takes the words
+ * of the report and of the letter wherever it says what they say — the heading of the
+ * report, the name of a credit note's amount — from {@link ReportWord} and {@link Word}.
+ *
+ * <p>The verdict words are the page's own. The report writes the verdict in the spelling
+ * every form of a run uses for it, in both languages, because a pipeline branches on it; a
+ * page is read by a person, who reads the verdict in their own language.
  */
 enum ViewWord {
 
-    /** The view of the file as it came. */
-    RECEIVED("As received", "Wie empfangen"),
+    /** The tab of the received PDF. */
+    TAB_PDF("PDF", "PDF"),
 
-    /** The view of the invoice as this tool read it, rendered from the data. */
-    READ("As read", "Wie gelesen"),
+    /** The tab of the letter rendered from the data. */
+    TAB_INVOICE("Invoice", "Rechnung"),
 
-    /** The label of the list of views. */
-    NAV("Views", "Ansichten"),
+    /** The tab of the KoSIT visualization. */
+    TAB_KOSIT("KoSIT", "KoSIT"),
 
-    /** The line under the heading of the received file. */
-    CAPTION_RECEIVED("The file as it came, unchanged.", "Die Datei, wie sie vorliegt, unverändert."),
+    /** The one quiet line over the letter. */
+    CAPTION_INVOICE("Rendered from the invoice data", "Aus den Rechnungsdaten erzeugt"),
 
-    /** The line under the heading of the rendering. */
-    CAPTION_READ("Rendered from the data of the electronic invoice.",
-            "Aus den Daten der E-Rechnung erzeugt."),
+    /** The one quiet line over a KoSIT visualization that does not show every value. */
+    KOSIT_INCOMPLETE("This view does not show every detail of the invoice.",
+            "Diese Ansicht zeigt nicht alle Angaben der Rechnung."),
 
-    /** What a verdict beside a picture is about, and what it is not. */
-    PICTURE_VERDICT("The verdict is about the data of the electronic invoice; esj reads nothing"
-            + " off the page image. Whether picture and data agree is yours to see.",
-            "Das Urteil gilt den Daten der E-Rechnung; das Seitenbild liest esj nicht. Ob Bild"
-                    + " und Daten übereinstimmen, sehen nur Sie."),
+    /** The one link of the report tab. */
+    SAVE_PDF("Save as PDF", "Als PDF speichern"),
 
-    /** The same, where there is no verdict. */
-    PICTURE_ALONE("esj reads nothing off the page image. Whether picture and data agree is yours"
-            + " to see.",
-            "Das Seitenbild liest esj nicht. Ob Bild und Daten übereinstimmen, sehen nur Sie."),
+    /** The folder the page and its files are in, before its path. */
+    FOLDER("Folder:", "Ablage:"),
 
-    /** The link to the received file. */
-    OPEN_RECEIVED("Open the received file on its own", "Empfangene Datei für sich öffnen"),
+    /** The number of an invoice. */
+    NUMBER("Invoice number", "Rechnungsnummer"),
 
-    /** The link to the rendering. */
-    OPEN_READ("Open the rendering on its own", "Darstellung für sich öffnen"),
+    /** The date of an invoice. */
+    DATE("Invoice date", "Rechnungsdatum"),
 
-    /** The link to the HTML rendering, the accessible and searchable form. */
-    OPEN_HTML("Open as HTML on its own (KoSIT visualization)",
-            "Als HTML für sich öffnen (KoSIT-Visualisierung)"),
-
-    /** The link to the PDF form of the report. */
-    OPEN_REPORT_PDF("The validation report as a PDF, to keep and to print",
-            "Prüfbericht als PDF, zum Aufbewahren und Drucken"),
-
-    /** The link to the HTML form of the report. */
-    OPEN_REPORT_HTML("The validation report as an HTML file", "Prüfbericht als HTML-Datei"),
-
-    /** The head of the facts of a PDF that carries an invoice. */
-    HEAD_EMBEDDED("Electronic invoice embedded", "E-Rechnung eingebettet"),
-
-    /**
-     * The amount an invoice closes with. It is the label the vendored localization of the
-     * visualization gives BT-115 in either language; the letter writes the German one too.
-     */
+    /** The amount an invoice closes with. */
     DUE("Amount due", "Fälliger Betrag"),
 
-    /** A fact the document does not state. */
-    ABSENT("(absent)", "(fehlt)"),
+    /** The verdict of an invoice that passed every check. */
+    VALID("VALID", "GÜLTIG"),
 
-    /** The verdict word where no validation ran. */
-    NOT_CHECKED("not checked", "nicht geprüft"),
+    /** The verdict of an invoice that failed one. */
+    INVALID("INVALID", "UNGÜLTIG"),
 
-    /** What the command that checks the invoice does, after the command itself. */
-    HINT(" checks the invoice.", " prüft die Rechnung."),
+    /** The verdict where a check that belongs to the verdict did not run. */
+    UNDECIDED("UNDECIDED", "NICHT ENTSCHIEDEN"),
 
-    /** The dead end of a PDF without an electronic invoice: its head. */
-    NO_INVOICE_HEAD("No electronic invoice embedded.", "Keine E-Rechnung eingebettet."),
+    /** The verdict where nothing was checked. */
+    NOT_CHECKED("NOT CHECKED", "NICHT GEPRÜFT"),
 
-    /** Its sentence. */
-    NO_INVOICE_TEXT("This PDF carries no structured invoice data, and esj reads nothing off its"
-            + " pages.",
-            "Dieses PDF trägt keine strukturierten Rechnungsdaten; was auf seinen Seiten steht,"
-                    + " liest esj nicht."),
+    /** The verdict of a subject a limit stopped before it was judged. */
+    NO_VERDICT("NO VERDICT", "KEIN ERGEBNIS"),
 
-    /** Its next step. */
-    NO_INVOICE_NEXT("Ask the sender for the electronic invoice.",
+    /** No finding at all. */
+    NO_FINDINGS("No findings", "Keine Befunde"),
+
+    /** One error. */
+    ERROR("%1$s error", "%1$s Fehler"),
+
+    /** Several errors. */
+    ERRORS("%1$s errors", "%1$s Fehler"),
+
+    /** One warning. */
+    WARNING("%1$s warning", "%1$s Warnung"),
+
+    /** Several warnings. */
+    WARNINGS("%1$s warnings", "%1$s Warnungen"),
+
+    /** One note. */
+    NOTE("%1$s note", "%1$s Hinweis"),
+
+    /** Several notes. */
+    NOTES("%1$s notes", "%1$s Hinweise"),
+
+    /** A PDF without an electronic invoice. */
+    NO_INVOICE("This PDF contains no e-invoice.", "Dieses PDF enthält keine E-Rechnung."),
+
+    /** What to do about it. */
+    NO_INVOICE_ASK("Ask the sender for the e-invoice.",
             "Bitten Sie den Absender um die E-Rechnung."),
 
-    /** The dead end of a PDF whose attachments were not classified. */
-    UNESTABLISHED_HEAD("Not established whether an electronic invoice is embedded.",
-            "Nicht festgestellt, ob eine E-Rechnung eingebettet ist."),
+    /** A PDF whose attachments could not be told apart. */
+    NOT_ESTABLISHED("Whether this PDF contains an e-invoice cannot be determined.",
+            "Ob dieses PDF eine E-Rechnung enthält, lässt sich nicht feststellen."),
 
-    /** The dead end of a PDF with several candidates: its head. */
-    SEVERAL_HEAD("Several possible electronic invoices", "Mehrere mögliche E-Rechnungen"),
+    /** What to do about it. */
+    NOT_ESTABLISHED_ASK("Ask the sender for the e-invoice as an XML file.",
+            "Bitten Sie den Absender um die E-Rechnung als XML-Datei."),
 
-    /** Its sentence, with the count. */
-    SEVERAL_COUNT("The file carries %1$s attachments that could be the electronic invoice and"
-            + " does not say which one it is; esj does not choose.",
-            "Die Datei trägt %1$s Anhänge, die die E-Rechnung sein könnten, und sagt nicht,"
-                    + " welcher es ist; esj wählt nicht."),
+    /** A PDF with several attachments that could each be the invoice. */
+    SEVERAL("This PDF contains more than one possible e-invoice.",
+            "Dieses PDF enthält mehrere mögliche E-Rechnungen."),
 
-    /** Its next step. */
-    SEVERAL_ASK("Ask the sender which one counts.", "Fragen Sie den Absender, welcher gilt."),
-
-    /** A column of the table of candidates. */
-    COLUMN_POSITION("Position", "Position"),
+    /** What to do about it. */
+    SEVERAL_ASK("Ask the sender which one applies.", "Fragen Sie den Absender, welche gilt."),
 
     /** A column of the table of candidates. */
-    COLUMN_NAME("Name", "Name"),
+    COLUMN_POSITION("No.", "Nr."),
+
+    /** A column of the table of candidates. */
+    COLUMN_NAME("File name", "Dateiname"),
 
     /** A column of the table of candidates. */
     COLUMN_CONTENT("Content", "Inhalt"),
 
     /** A column of the table of candidates. */
-    COLUMN_SIZE("Size (declared)", "Größe (deklariert)"),
+    COLUMN_SIZE("Size", "Größe"),
 
     /** A column of the table of candidates. */
     COLUMN_RELATIONSHIP("Relationship", "Beziehung"),
 
     /** A column of the table of candidates. */
-    COLUMN_READ_WITH("Read with", "Lesen mit"),
+    COLUMN_OPEN_WITH("Open with", "Öffnen mit"),
 
     /** What a candidate holds. */
     KIND_CII("CII invoice", "CII-Rechnung"),
@@ -136,88 +136,60 @@ enum ViewWord {
     KIND_UBL_CREDIT_NOTE("UBL credit note", "UBL-Gutschrift"),
 
     /** What a candidate holds. */
-    KIND_UNDETERMINED("undetermined", "nicht bestimmt"),
+    KIND_UNDETERMINED("unknown", "unbekannt"),
 
     /** What a candidate holds. */
     KIND_UNREADABLE("unreadable", "nicht lesbar"),
 
-    /** The dead end of a ZUGFeRD 1.0 invoice: its head. */
-    UNSUPPORTED_HEAD("ZUGFeRD 1.0 is not read.", "ZUGFeRD 1.0 wird nicht gelesen."),
+    /** A cell of the table of candidates with nothing in it. */
+    ABSENT("–", "–"),
 
-    /** Its sentence. */
-    UNSUPPORTED_TEXT("The embedded invoice is ZUGFeRD 1.0, which is no syntax binding of"
-            + " EN 16931.",
-            "Die eingebettete Rechnung ist ZUGFeRD 1.0; das ist keine Syntaxbindung der"
-                    + " EN 16931."),
+    /** An invoice in ZUGFeRD 1.0. */
+    UNSUPPORTED("The e-invoice is in ZUGFeRD 1.0, which does not conform to EN 16931.",
+            "Die E-Rechnung hat das Format ZUGFeRD 1.0, das nicht der EN 16931 entspricht."),
 
-    /** The dead end of an encrypted PDF: its head. */
-    ENCRYPTED_HEAD("Encrypted PDF.", "Verschlüsseltes PDF."),
+    /** What to do about it. */
+    UNSUPPORTED_ASK("Ask the sender for an EN 16931 e-invoice.",
+            "Bitten Sie den Absender um eine E-Rechnung nach EN 16931."),
 
-    /** Its sentence. */
-    ENCRYPTED_TEXT("esj opens no encrypted file and decrypts nothing; a hybrid electronic"
-            + " invoice is never encrypted, as PDF/A forbids it.",
-            "esj öffnet keine verschlüsselte Datei und entschlüsselt nichts; eine hybride"
-                    + " E-Rechnung ist nie verschlüsselt, PDF/A verbietet es."),
+    /** An encrypted PDF. */
+    ENCRYPTED("This PDF is encrypted.", "Dieses PDF ist verschlüsselt."),
 
-    /** The dead end of a file that was not read: its head. */
-    NOT_READ_HEAD("File not read.", "Datei nicht gelesen."),
+    /** What to do about it. */
+    ENCRYPTED_ASK("Ask the sender for an unencrypted copy.",
+            "Bitten Sie den Absender um eine unverschlüsselte Fassung."),
 
-    /** Its sentence. */
-    NOT_READ_TEXT("esj reads UBL, CII and ESJ, and PDF files with an embedded electronic"
-            + " invoice.",
-            "esj liest UBL, CII und ESJ, und PDF-Dateien mit eingebetteter E-Rechnung."),
+    /** A file that could not be read as an invoice. */
+    NOT_READ("This file is not a readable e-invoice.",
+            "Diese Datei ist keine lesbare E-Rechnung."),
 
-    /** The sentence of a limit, after its head, which is the report's. */
-    LIMIT_TEXT("The invoice was not judged; the message names the switch that raises the"
-            + " bound.",
-            "Die Rechnung ist nicht beurteilt; die Meldung nennt die Option, die die Grenze"
-                    + " hebt."),
+    /** What to do about it. */
+    NOT_READ_ASK("Ask the sender to send the e-invoice again.",
+            "Bitten Sie den Absender, die E-Rechnung erneut zu senden."),
 
-    /** The label over the error text of the run. */
-    MESSAGE("Message from esj", "Meldung von esj"),
+    /** A file larger than a check allows. */
+    LIMIT_SIZE_CHECK("The file is larger than this check allows.",
+            "Die Datei ist größer, als diese Prüfung zulässt."),
 
-    /** The HTML rendering that was not written, before why. */
-    HTML_REFUSED("The HTML rendering was not written:",
-            "Die HTML-Darstellung wurde nicht geschrieben:"),
+    /** A file larger than a view allows. */
+    LIMIT_SIZE_VIEW("The file is larger than this view allows.",
+            "Die Datei ist größer, als diese Ansicht zulässt."),
 
-    /** One value that did not reach the HTML rendering. */
-    EXPORT_NOTE("%1$s value of the document did not reach this rendering:",
-            "%1$s Wert des Dokuments hat diese Darstellung nicht erreicht:"),
+    /** A check that took longer than allowed. */
+    LIMIT_TIME_CHECK("The check took longer than allowed.",
+            "Die Prüfung hat länger gedauert, als zulässig ist."),
 
-    /** Several of them. */
-    EXPORT_NOTES("%1$s values of the document did not reach this rendering:",
-            "%1$s Werte des Dokuments haben diese Darstellung nicht erreicht:"),
+    /** A view that took longer than allowed. */
+    LIMIT_TIME_VIEW("Preparing the view took longer than allowed.",
+            "Die Ansicht hat länger gedauert, als zulässig ist."),
 
-    /** A run with {@code --report} that had no invoice to check. */
-    NO_REPORT("No validation report: there was no invoice to check.",
-            "Kein Prüfbericht: es gab keine Rechnung zu prüfen."),
+    /** A letter of more pages than allowed. */
+    LIMIT_PAGES("The invoice runs to more pages than this view allows.",
+            "Die Rechnung hat mehr Seiten, als diese Ansicht zulässt."),
 
-    /** Where the page lies, and that nothing removes it. */
-    FOOTER_DIRECTORY("This page and its files are in %1$s; esj does not delete them.",
-            "Diese Seite und ihre Dateien liegen in %1$s; esj löscht sie nicht."),
-
-    /** What the page does not do. */
-    FOOTER_OFFLINE("Nothing was sent or fetched: the page reads only files of this directory"
-            + " and runs no script.",
-            "Nichts wurde gesendet oder geladen: die Seite liest nur Dateien dieses"
-                    + " Verzeichnisses und führt kein Skript aus."),
-
-    /** What a printout of a page with a report is. */
-    PRINT_WITH_REPORT("This printout is the overview with the validation report.",
-            "Gedruckt wird diese Übersicht mit dem Prüfbericht."),
-
-    /** What a printout of a page without one is. */
-    PRINT_WITHOUT_REPORT("This printout is the overview.", "Gedruckt wird diese Übersicht."),
-
-    /** Where the invoice is printed from instead. */
-    PRINT_FILES("Print the invoice from its own files: %1$s.",
-            "Die Rechnung drucken Sie aus ihren eigenen Dateien: %1$s."),
-
-    /** The title of the frame of the received file. */
-    FRAME_RECEIVED("As received: %1$s", "Wie empfangen: %1$s"),
-
-    /** The title of the frame of the rendering. */
-    FRAME_READ("As read: rendering from the data", "Wie gelesen: Darstellung aus den Daten");
+    /** An invoice that cannot be shown as a letter. */
+    NOT_RENDERED("This invoice cannot be shown here.",
+            "Diese Rechnung lässt sich hier nicht darstellen.");
 
     private final String english;
     private final String german;

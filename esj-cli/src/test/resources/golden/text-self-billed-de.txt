@@ -1,0 +1,80 @@
+Verkäufer
+---------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Deutschland
+
+Käufer
+------
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Deutschland
+
+Gutschrift im Gutschriftverfahren GS-2026-0009
+==============================================
+
+Rechnungsnummer   GS-2026-0009
+Rechnungsdatum    01.07.2026
+Fälligkeitsdatum  15.07.2026
+Käuferreferenz    GS-RAHMEN-2026
+USt-IdNr.         DE123456789
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung                          Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  ------------------------------  ----------  ------------------------  ----  -----------------
+1    Development service, sprint 12  40 Stunden                     85,00  19 %           3.400,00
+
+2    Architecture review             12 Stunden                    120,00  0 %            1.440,00
+     Freitext: Reverse charge applies to this line.
+---  ------------------------------  ----------  ------------------------  ----  -----------------
+                                                         Summe aller Positionen           4.840,00
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                       4.840,00 EUR
+                                                Steuerbasisbetrag 19 %                  3.400,00 EUR
+                                                Umsatzsteuerbetrag 19 %                   646,00 EUR
+                                                Steuerbasisbetrag 0 %                   1.440,00 EUR
+                                                Steuerschuldnerschaft des
+                                                Leistungsempfängers
+                                                Umsatzsteuerbetrag 0 %                      0,00 EUR
+                                                Steuerschuldnerschaft des
+                                                Leistungsempfängers
+                                                Befreiungsgrund                       Reverse charge
+                                                Kennung für den Befreiungsgrund          VATEX-EU-AE
+                                                Summe Umsatzsteuer                        646,00 EUR
+                                                Gesamtsumme brutto                      5.486,00 EUR
+                                                ====================================================
+                                                Fälliger Betrag                         5.486,00 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsbedingungen  Settled by direct debit on the due date.
+Zahlungsart          SEPA-Lastschrift
+Verwendungszweck     GS-2026-0009
+Mandatsreferenznr.   MND-2026-0042
+Gläubiger-ID         DE98ZZZ09999999999
+IBAN                 DE89370400440532013000
+
+Bemerkungen zur Rechnung
+------------------------
+Betreff: AAB
+Self-billed invoice issued by the buyer on behalf of the seller.
+
+Weitere Angaben
+---------------
+Dokumentenart          389 = Gutschrift im Gutschriftverfahren
+Einheit                HUR = Stunde
+Zahlungsart            59 = SEPA-Lastschrift
+Umsatzsteuerkategorie  AE = Steuerschuldnerschaft des Leistungsempfängers
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                      EUR
+Spezifikationskennung (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Umsatzsteuer-ID (/BG-7/BT-48)        DE987654321
+Name (/BG-10/BT-59)                  Beispiel Factoring GmbH
+Kennung (/BG-10/BT-60)               4399903000030 (Schema der Kennung: 0088)

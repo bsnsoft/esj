@@ -13,6 +13,7 @@ import de.bsnsoft.esj.render.RenderOptions;
 import de.bsnsoft.esj.render.RenderResult;
 import de.bsnsoft.esj.render.RenderTemplate;
 import de.bsnsoft.esj.render.TemplateException;
+import de.bsnsoft.esj.render.internal.InvoiceText;
 import de.bsnsoft.esj.xml.InvoiceSyntax;
 import de.bsnsoft.esj.xr.ExportNote;
 import java.nio.charset.StandardCharsets;
@@ -86,6 +87,17 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
             description = "Write one self-contained HTML page instead of a PDF.")
     private boolean html;
 
+    @Option(order = 25, names = "--text",
+            description = "Write the invoice as plain text, for a terminal: the facts of the"
+                    + " letter top to bottom, the lines as a table, in UTF-8 and without"
+                    + " colour. --out - prints it.")
+    private boolean text;
+
+    @Option(order = 26, names = "--width", paramLabel = "<columns>",
+            description = "With --text, how many characters a line takes, 40 to 1000."
+                    + " Default: COLUMNS where it is 60 or more, otherwise 100.")
+    private Integer width;
+
     @Option(order = 30, names = "--lang", paramLabel = "<de|en>", defaultValue = "de",
             description = "The language of the labels, the dates and the decimal separator."
                     + " It says nothing about the content of the invoice. Default: de.")
@@ -158,6 +170,23 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
         RenderLanguage language = language(lang);
         PageSize size = Options.pageSize("--page", page);
         Extensions extensions = Options.extension(extension);
+        if (html && text) {
+            throw CliException.input("--html and --text are two renderings; ask for one of"
+                    + " them");
+        }
+        int columns = textWidth(width, console);
+        if (width != null && !text) {
+            console.warning("--width is the width of the text --text writes; the rendering is"
+                    + " the same with and without it");
+        }
+        if (text) {
+            for (String option : List.of("--page", "--layout", "--template")) {
+                if (given(option)) {
+                    console.warning(option + " is a property of the PDF; the text has none,"
+                            + " so the rendering is the same with and without it");
+                }
+            }
+        }
         if (html && given("--page")) {
             console.warning("--page is the paper of the PDF; the HTML page has none, so the"
                     + " rendering is the same with and without it");
@@ -176,7 +205,7 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
                     + " of the vendored visualization, so the rendering is the same with and"
                     + " without it");
         }
-        boolean embedding = embedding(embed, html);
+        boolean embedding = embedding(embed, html, text);
         if (verapdf != null && !embedding) {
             console.warning("--verapdf checks the file the invoice is written into, and"
                     + " this run embeds nothing; nothing was validated");
@@ -188,6 +217,14 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
         loaded.reportNotes(console);
         SemanticDocument document = loaded.require(console);
         Registry registry = Editions.require(document, extensions);
+        if (text) {
+            byte[] rendering = text(document, registry, language, columns, console);
+            Output.write(out, rendering, console);
+            console.verbose("rendered " + input.name() + " (" + loaded.syntax().label() + ", "
+                    + document.values().size() + " values) as text in " + language.code()
+                    + ", " + columns + " characters wide, " + rendering.length + " bytes");
+            return ExitCode.SUCCESS;
+        }
         RenderOptions options = options(console, language, size);
         if (template != null && !html) {
             options = options.withTemplate(branded(template));
@@ -239,12 +276,17 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      * wrote {@code --embed} and received a page with nothing in it would have to open the
      * file to find that out.
      */
-    private static boolean embedding(String token, boolean html) {
+    private static boolean embedding(String token, boolean html, boolean text) {
         if (token == null) {
             return false;
         }
         if (!"cii".equals(token)) {
             throw CliException.input("--embed takes cii, not '" + token + "'");
+        }
+        if (text) {
+            throw CliException.input("--embed writes the invoice into a PDF container, and"
+                    + " a text is not one; render the PDF to embed into, or leave --embed"
+                    + " out");
         }
         if (html) {
             throw CliException.input("--embed writes the invoice into a PDF container, and"
@@ -317,6 +359,61 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
         }
         return render(() -> new HtmlRenderer(registry).renderWithReport(document, options),
                 Bound.OUTPUT_BYTES, console);
+    }
+
+    /**
+     * Writes a document as text, as {@code --text} writes it, held to the bound of this run
+     * on the bytes it writes.
+     *
+     * @param document the document
+     * @param registry the registry of its edition
+     * @param language the language of the labels, the dates and the numbers
+     * @param columns  how many characters a line takes
+     * @param console  the streams and the options of this run
+     * @return the text, in UTF-8
+     * @throws CliException where the text is longer than the bound of this run
+     */
+    static byte[] text(SemanticDocument document, Registry registry, RenderLanguage language,
+                       int columns, Console console) {
+        byte[] rendering = InvoiceText.render(document, registry, language, columns)
+                .getBytes(StandardCharsets.UTF_8);
+        long bound = console.options().bounds().maxOutputBytes();
+        if (rendering.length > bound) {
+            throw CliException.limit("the text is " + rendering.length + " bytes, more than the "
+                    + bound + " bytes this run was given, so it was not written"
+                    + console.options().bounds().hint(Bound.OUTPUT_BYTES));
+        }
+        return rendering;
+    }
+
+    /**
+     * Returns how many characters a line of the text takes: {@code --width} where it was
+     * given, the {@code COLUMNS} of the environment where that is a number of 60 or more
+     * — a terminal narrower than that is better served by the default than by a text squeezed
+     * into it — and {@link InvoiceText#DEFAULT_WIDTH} otherwise.
+     *
+     * @param width   the {@code --width} of the command line, or {@code null}
+     * @param console the streams and the options of this run, with its environment
+     * @return the width
+     * @throws CliException where {@code --width} is out of bounds
+     */
+    static int textWidth(Integer width, Console console) {
+        if (width != null) {
+            if (width < InvoiceText.MIN_WIDTH || width > InvoiceText.MAX_WIDTH) {
+                throw CliException.input("--width takes a number of characters from "
+                        + InvoiceText.MIN_WIDTH + " to " + InvoiceText.MAX_WIDTH + ", not "
+                        + width);
+            }
+            return width;
+        }
+        return console.options().environment("COLUMNS").map(String::strip).map(value -> {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }).filter(value -> value >= 60 && value <= InvoiceText.MAX_WIDTH)
+                .orElse(InvoiceText.DEFAULT_WIDTH);
     }
 
     /**

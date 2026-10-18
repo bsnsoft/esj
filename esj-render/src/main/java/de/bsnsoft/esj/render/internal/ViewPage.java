@@ -4,54 +4,52 @@ import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.SemanticPath;
 import de.bsnsoft.esj.SemanticType;
 import de.bsnsoft.esj.SemanticValue;
-import de.bsnsoft.esj.internal.report.Text;
 import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
 import de.bsnsoft.esj.render.RenderLanguage;
+import de.bsnsoft.esj.validate.Severity;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 
 /**
- * The page {@code esj view} writes: one HTML file that shows an invoice as it came, as this
- * tool read it, and, where a run validated it, the report about it.
+ * The page {@code esj view} writes: one HTML file that shows an invoice to the person who
+ * received it.
  *
- * <p>The page is the overview of a directory of files and carries none of them. The received
- * PDF and the letter rendered from the data stand beside it and are shown in frames, by the
- * viewer of the browser; the report is written by the code of the report, as sections of the
- * page; the HTML rendering is linked and never framed. What a reader looks for first is text
- * in the header — what the file is, what the invoice says, what the verdict is — so that it
- * is read without scrolling and without entering a frame, and can be selected and pasted.
+ * <p>At the top the header says what the invoice is — seller and buyer, number, date, the
+ * amount due — and, at the right, the short verdict: one word and the findings counted by
+ * severity. Under it, one row of tabs, each a view of its own: the PDF as it came, the
+ * invoice rendered from its data, the KoSIT visualization, and the validation report. A tab
+ * is there only where its content is. A file that leads nowhere — a PDF without an invoice,
+ * one with several candidates, a file that is not one — replaces the verdict with what it is
+ * and one sentence that says what to ask the sender for.
  *
  * <h2>Inert</h2>
  *
- * <p>The page fetches nothing and runs nothing. Every reference is relative and names a
- * file of its own directory; the head carries a content security policy that allows no
- * script, no base and no form, so the page says what it does not do and the browser holds
- * it to it. Every text of the run and of the document goes through
- * {@link ReportContent#plain(String)}, which takes out the characters that direct the
- * reading order, and through {@link ReportHtml#escape(String)}; every file name in a
- * reference is percent-encoded. The same content gives the same string.
+ * <p>The page fetches nothing and runs nothing. The tabs are radio buttons and labels, shown
+ * and hidden by the style sheet; the head carries a content security policy that allows no
+ * script, no base and no form. Every reference is relative and names a file of the page's
+ * own directory, percent-encoded. The KoSIT visualization runs its own script for its own
+ * tabs, in a frame of its own, sandboxed without the origin of the page: the policy of the
+ * page does not reach into a document a frame loads, and the frame cannot reach the page.
+ * Every text of the run and of the document goes through {@link ReportContent#plain(String)},
+ * which takes out the characters that direct the reading order, and through
+ * {@link ReportHtml#escape(String)}. The same content gives the same string.
  *
  * <h2>One style sheet</h2>
  *
  * <p>{@link ReportHtml#STYLE} comes first and unchanged — the colours, the type, the card,
  * the table and the finding of the report — and the rules of the page after it, which add
- * what only the page has: its header, the band of views, the frames, the card of a dead end,
- * the footer and the printout. The page adds no colour of its own.
+ * the header, the tabs, the frames and the printout. The page adds no colour of its own.
  */
 public final class ViewPage {
 
-    /** The heading level of the sections of the report on the page, under its h2. */
-    private static final int REPORT_LEVEL = 3;
-
-    /** The most candidates or notes shown open; more are folded under their count. */
-    private static final int OPEN_ITEMS = 3;
+    /** The heading level of the sections of the report in its tab. */
+    private static final int REPORT_LEVEL = 2;
 
     /** The rules of the page, after the report's. */
     private static final String STYLE = """
@@ -59,64 +57,55 @@ public final class ViewPage {
             body { padding: 0; }
             main { max-width: none; margin: 0; }
             a { color: var(--ink); }
-            a:focus-visible, summary:focus-visible { outline: 2px solid var(--ink);
-                                                     outline-offset: 2px; }
+            a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
             .view { max-width: 110rem; margin: 0 auto; padding: 1.5rem; }
-            .head { display: flex; flex-wrap: wrap; align-items: baseline;
-                    justify-content: space-between; gap: .3rem 1.5rem; }
-            .head h1 { margin: 0; overflow-wrap: anywhere; }
-            .path { margin: .3rem 0 1.2rem; color: var(--soft); font-size: .85rem;
-                    overflow-wrap: anywhere; }
-            .path span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-            .summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(20rem, 28rem);
+            h1 { margin: 0 0 1rem; overflow-wrap: anywhere; }
+            .summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
                        gap: 1.5rem; align-items: start; }
-            .facts p { margin: 0 0 .3rem; overflow-wrap: anywhere; }
+            .facts p { margin: 0 0 .4rem; overflow-wrap: anywhere; }
+            .facts .kind { font-weight: 600; }
+            .facts .parties { font-size: 1.05rem; }
             .facts .meta { color: var(--soft); }
-            .facts .title { font-size: 1.1rem; font-weight: 600; margin: .8rem 0 .4rem; }
             .facts dl { grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
-                        gap: .6rem 1.2rem; margin: .4rem 0 0; }
+                        gap: .6rem 1.2rem; margin: .6rem 0 0; }
             .facts dl div { min-width: 0; }
             .facts dt { font-size: .8rem; }
             .facts .due dd { font-weight: 700; font-size: 1.25rem;
                              font-variant-numeric: tabular-nums; }
-            .summary .card p { margin: .4rem 0 0; }
-            .summary .card .note { font-size: .85rem; margin-bottom: 0; }
+            .result p { margin: 0; }
+            .result .counts { margin-top: .3rem; color: var(--soft); }
             .card.state { max-width: 60rem; border-left: 3px solid var(--warn); }
             .card.state.limit { border-left-color: var(--none); }
-            .card.state p { margin: .4rem 0 0; }
-            .state-head { font-size: 1.05rem; }
-            .label { color: var(--soft); font-size: .8rem; margin: .8rem 0 0; }
-            pre.message { margin: .2rem 0 0; padding: .6rem .8rem; background: var(--panel);
-                          border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere;
-                          font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-                          font-size: .85rem; }
-            table.candidates { margin: .6rem 0; }
-            table.candidates td { overflow-wrap: anywhere; }
-            table.candidates .size { text-align: right; font-variant-numeric: tabular-nums; }
+            .card.state p { margin: .5rem 0 0; }
+            .card.state .state-head { margin: 0; font-size: 1.15rem; font-weight: 600; }
             code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
                    font-size: .85em; }
             code.command { user-select: all; }
-            details summary { cursor: pointer; }
-            .band { display: grid; margin-top: 1.5rem; column-gap: 1.5rem;
-                    grid-template-columns: repeat(auto-fit, minmax(min(100%, 34rem), 1fr)); }
-            .band.one { max-width: 60rem; }
-            .pane { display: grid; grid-template-rows: subgrid; grid-row: span 3;
-                    scroll-margin-top: 1rem; min-width: 0; }
-            .pane-head { display: flex; flex-wrap: wrap; align-items: baseline;
-                         justify-content: space-between; gap: .3rem 1rem; }
-            .pane-head h2 { margin: 1rem 0 .3rem; }
-            .links { margin: 0; }
-            .links a + a { margin-left: 1rem; }
-            .caption p { margin: 0 0 .6rem; color: var(--soft); }
-            .caption ul { color: var(--soft); margin: 0 0 .6rem; }
-            .pane iframe { height: calc(100vh - 6rem); min-height: 28rem; }
-            .report { max-width: 60rem; margin-top: 1rem; }
-            .report > .pane-head h2 { margin-top: 2rem; }
-            h4 { font-size: .9rem; margin: 1rem 0 .3rem; color: var(--soft); }
-            .print-note { display: none; }
-            footer { margin-top: 2.5rem; padding-top: .8rem; border-top: 1px solid var(--rule);
-                     color: var(--soft); font-size: .85rem; }
-            footer p { margin: .2rem 0; max-width: 60rem; overflow-wrap: anywhere; }
+            table.candidates { margin: .8rem 0 .2rem; }
+            table.candidates td { overflow-wrap: anywhere; }
+            table.candidates .size { text-align: right; font-variant-numeric: tabular-nums; }
+            .tabs { display: flex; flex-wrap: wrap; margin-top: 1.5rem; }
+            .tabs > input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0;
+                            pointer-events: none; }
+            .tabs > label { padding: .45rem 1.1rem; cursor: pointer; color: var(--soft);
+                            border-bottom: 2px solid transparent; }
+            .tabs > input:checked + label { color: var(--ink); font-weight: 600;
+                                            border-bottom-color: var(--ink); }
+            .tabs > input:focus-visible + label { outline: 2px solid var(--ink);
+                                                  outline-offset: -2px; }
+            .pane { display: none; order: 1; flex: 0 0 100%; min-width: 0; padding-top: 1rem;
+                    border-top: 1px solid var(--rule); }
+            #tab-pdf:checked ~ #pane-pdf, #tab-invoice:checked ~ #pane-invoice,
+            #tab-kosit:checked ~ #pane-kosit, #tab-report:checked ~ #pane-report {
+              display: block; }
+            .pane iframe { height: calc(100vh - 4rem); min-height: 30rem; }
+            .pane > p { margin: 0 0 .6rem; }
+            .pane .caption { color: var(--soft); font-size: .85rem; }
+            .report { max-width: 60rem; max-height: calc(100vh - 4rem); overflow: auto; }
+            .report .save { margin: 0 0 1rem; }
+            footer { margin-top: 2rem; padding-top: .8rem; border-top: 1px solid var(--rule);
+                     color: var(--soft); font-size: .85rem; overflow-wrap: anywhere; }
+            footer p { margin: 0; }
             footer span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
             @media (max-width: 64rem) {
               .summary { grid-template-columns: minmax(0, 1fr); }
@@ -128,8 +117,10 @@ public final class ViewPage {
               @page { margin: 15mm; }
               body { font-size: 10.5pt; }
               .view { padding: 0; max-width: none; }
-              nav, .links, .band { display: none; }
-              .print-note { display: block; }
+              .tabs > label { display: none; }
+              .pane { border-top: 0; padding-top: 0; }
+              .report { max-height: none; overflow: visible; }
+              .pane iframe { height: 24cm; }
               .card, .finding, tr, .facts { break-inside: avoid; }
             }
             """;
@@ -157,6 +148,54 @@ public final class ViewPage {
         return page.out.toString();
     }
 
+    /**
+     * Returns what a dead end says in one line: what the file is, and what to ask the
+     * sender for — or, for a limit, the bound that was met in the words of a reader. It is
+     * the line the page writes at its head, for a terminal that has no page.
+     *
+     * @param end      the dead end
+     * @param language the language
+     * @param check    whether the run was asked to check the invoice
+     * @return the line
+     */
+    public static String state(DeadEnd end, RenderLanguage language, boolean check) {
+        Objects.requireNonNull(end, "end");
+        String head = head(end, language, check);
+        Optional<ViewWord> ask = ask(end.kind());
+        return ask.isEmpty() ? head : head + " " + ask.get().in(language);
+    }
+
+    /**
+     * Returns the sentence that says an invoice cannot be shown, for a terminal that has no
+     * page to say it on.
+     *
+     * @param language the language
+     * @return the sentence
+     */
+    public static String notRendered(RenderLanguage language) {
+        return ViewWord.NOT_RENDERED.in(language);
+    }
+
+    /**
+     * Returns a verdict word as the page writes it: the words of the reader's language for
+     * the three states of a verdict, for a subject that was not checked and for one a limit
+     * stopped, and any other word — {@code OK} — as it stands.
+     *
+     * @param token    the word, in the spelling every form of a run uses for it
+     * @param language the language of the page
+     * @return the word on the page
+     */
+    static String word(String token, RenderLanguage language) {
+        return switch (token) {
+            case "VALID" -> ViewWord.VALID.in(language);
+            case "INVALID" -> ViewWord.INVALID.in(language);
+            case "INDETERMINATE" -> ViewWord.UNDECIDED.in(language);
+            case ValidationOutcome.NOT_CHECKED -> ViewWord.NOT_CHECKED.in(language);
+            case ValidationOutcome.NO_VERDICT -> ViewWord.NO_VERDICT.in(language);
+            default -> token;
+        };
+    }
+
     // ------------------------------------------------------------------- the page
 
     private void write() {
@@ -170,217 +209,186 @@ public final class ViewPage {
                 .append(ReportHtml.STYLE).append(STYLE).append("</style>\n</head>\n")
                 .append("<body>\n<div class=\"view\">\n");
         header();
-        out.append("<main>\n");
-        band();
-        printNote();
-        report();
-        out.append("</main>\n");
+        tabs();
         footer();
         out.append("</div>\n</body>\n</html>\n");
     }
 
     /** Returns the title: the file, then what became of it, then the tool. */
     private String title() {
-        return text(content.fileName) + " · " + stateWord() + " · esj";
+        String state;
+        if (content.deadEnd != null) {
+            String head = head(content.deadEnd, language, content.reportAsked);
+            state = head.endsWith(".") ? head.substring(0, head.length() - 1) : head;
+        } else {
+            state = verdictWord();
+        }
+        return text(content.fileName) + " · " + state + " · esj";
     }
 
-    /** Returns the verdict word, {@link ViewWord#NOT_CHECKED}, or the head of a dead end. */
-    private String stateWord() {
-        if (content.deadEnd != null) {
-            String head = deadEndHead();
-            return head.endsWith(".") ? head.substring(0, head.length() - 1) : head;
-        }
+    /** Returns the verdict as the page writes it, or "not checked" without a report. */
+    private String verdictWord() {
         return content.outcome == null ? ViewWord.NOT_CHECKED.in(language)
-                : ReportContent.verdict(content.outcome);
+                : word(ReportContent.verdict(content.outcome), language);
     }
 
     // ------------------------------------------------------------------- the header
 
     private void header() {
-        out.append("<header>\n<div class=\"head\">\n<h1>").append(escape(text(content.fileName)))
-                .append("</h1>\n");
-        nav();
-        out.append("</div>\n<p class=\"path\">").append(escape(ReportWord.INPUT.in(language)))
-                .append(" <span>").append(escape(text(content.input))).append("</span></p>\n");
+        out.append("<header>\n<h1>").append(escape(text(content.fileName))).append("</h1>\n");
         if (content.deadEnd != null) {
             deadEnd();
         } else {
             out.append("<div class=\"summary\">\n");
             facts();
-            verdict();
+            result();
             out.append("</div>\n");
         }
         out.append("</header>\n");
     }
 
-    /** Writes the list of the views the page has, as anchors; none where it has none. */
-    private void nav() {
-        List<String> links = new ArrayList<>();
-        if (content.received != null) {
-            links.add(anchor("#received", ViewWord.RECEIVED.in(language)));
-        }
-        if (hasRead()) {
-            links.add(anchor("#read", ViewWord.READ.in(language)));
-        }
-        if (content.outcome != null) {
-            links.add(anchor("#report", ReportWord.TITLE.in(language)));
-        }
-        if (links.isEmpty()) {
-            return;
-        }
-        out.append("<nav aria-label=\"").append(escape(ViewWord.NAV.in(language))).append("\">")
-                .append(String.join("<span aria-hidden=\"true\"> · </span>", links))
-                .append("</nav>\n");
-    }
-
-    /** Writes what the file is and what the invoice says: T1 and T2. */
+    /** Writes what the invoice says: who to whom, its type, number, date and amount due. */
     private void facts() {
         out.append("<div class=\"facts\">\n");
-        if (content.provenance != null) {
-            out.append("<p><b>").append(escape(ViewWord.HEAD_EMBEDDED.in(language)))
-                    .append("</b></p>\n<p>").append(escape(provenance())).append("</p>\n");
-        }
-        List<String> meta = new ArrayList<>();
-        if (content.syntax != null) {
-            meta.add(escape(ReportWord.SYNTAX.in(language)) + " "
-                    + escape(ReportContent.resolve(content.syntax, language)));
-        }
-        if (content.profile != null) {
-            meta.add(escape(ReportWord.PROFILE.in(language)) + " " + escape(text(content.profile)));
-        }
-        if (!meta.isEmpty()) {
-            out.append("<p class=\"meta\">").append(String.join(" · ", meta)).append("</p>\n");
-        }
-        if (content.recoded != null) {
-            out.append("<p class=\"meta\">").append(escape(ReportWord.PROVENANCE_RECODED.in(
-                    language, List.of(text(content.recoded))))).append("</p>\n");
-        }
-        if (content.notEn16931 != null) {
-            out.append("<p>").append(escape(ReportWord.DETAIL_NOT_EN16931.in(language,
-                    List.of(text(content.notEn16931))))).append("</p>\n");
-        }
         if (content.document != null) {
             Facts facts = new Facts(content.document, content.registry, language);
-            out.append("<p class=\"title\">").append(escape(facts.title())).append("</p>\n")
-                    .append("<dl>\n");
-            fact(Word.SELLER.in(language), facts.seller(), false);
-            fact(Word.BUYER.in(language), facts.buyer(), false);
-            fact(facts.creditNote() ? Word.AMOUNT_CREDITED.in(language)
-                    : ViewWord.DUE.in(language), facts.due(), true);
+            facts.kind().ifPresent(kind -> out.append("<p class=\"kind\">")
+                    .append(escape(kind)).append("</p>\n"));
+            out.append("<p class=\"parties\">").append(escape(facts.parties()))
+                    .append("</p>\n<dl>\n");
+            boolean credit = facts.creditNote();
+            fact(credit ? Word.CREDIT_NOTE_NUMBER.in(language) : ViewWord.NUMBER.in(language),
+                    facts.number(), false);
+            fact(credit ? Word.CREDIT_NOTE_DATE.in(language) : ViewWord.DATE.in(language),
+                    facts.date(), false);
+            fact(credit ? Word.AMOUNT_CREDITED.in(language) : ViewWord.DUE.in(language),
+                    facts.due(), true);
             out.append("</dl>\n");
+        }
+        if (content.notEn16931 != null) {
+            out.append("<p class=\"meta\">").append(escape(ReportWord.DETAIL_NOT_EN16931.in(
+                    language, List.of(text(content.notEn16931))))).append("</p>\n");
         }
         out.append("</div>\n");
     }
 
     private void fact(String label, String value, boolean due) {
+        if (value.isEmpty()) {
+            return;
+        }
         out.append(due ? "<div class=\"due\">" : "<div>").append("<dt>").append(escape(label))
                 .append("</dt><dd>").append(escape(value)).append("</dd></div>\n");
     }
 
-    /** Returns the sentence that says which attachment the invoice was taken out of. */
-    private String provenance() {
-        String sentence = ReportWord.PROVENANCE_ATTACHMENT.in(language, List.of(
-                Integer.toString(content.provenance.position()),
-                text(content.provenance.attachment())));
-        return sentence.substring(0, 1).toUpperCase(Locale.ROOT) + sentence.substring(1) + ".";
-    }
-
-    /** Writes the verdict card: the report's where a run validated, else "not checked". */
-    private void verdict() {
+    /** Writes the short verdict: one word, and the findings counted by severity. */
+    private void result() {
+        String kind = content.outcome == null ? "NONE"
+                : content.outcome.verdict().map(Enum::name).orElse("NONE");
+        out.append("<section class=\"card result\" aria-label=\"")
+                .append(escape(ReportWord.VERDICT.in(language))).append("\">\n")
+                .append("<p class=\"verdict verdict-").append(kind).append("\"><b>")
+                .append(escape(verdictWord())).append("</b></p>\n");
         if (content.outcome != null) {
-            ReportHtml.card(out, content.outcome, reportOptions(),
-                    content.received != null ? ViewWord.PICTURE_VERDICT.in(language) : null);
-            return;
-        }
-        out.append("<section class=\"card\">\n<p class=\"verdict verdict-NONE\"><span>")
-                .append(escape(ReportWord.VERDICT.in(language))).append("</span> <b>")
-                .append(escape(ViewWord.NOT_CHECKED.in(language))).append("</b></p>\n")
-                .append("<p class=\"note\"><code>esj view --report</code>")
-                .append(escape(ViewWord.HINT.in(language))).append("</p>\n");
-        if (content.received != null) {
-            out.append("<p>").append(escape(ViewWord.PICTURE_ALONE.in(language)))
+            out.append("<p class=\"counts\">").append(escape(counts(content.outcome)))
                     .append("</p>\n");
         }
         out.append("</section>\n");
     }
 
+    /** Returns the findings counted by severity, the severities with none left out. */
+    private String counts(ValidationOutcome outcome) {
+        int errors = 0;
+        int warnings = 0;
+        int notes = 0;
+        for (ValidationOutcome.Finding finding : outcome.findings()) {
+            if (finding.severity() == Severity.ERROR) {
+                errors++;
+            } else if (finding.severity() == Severity.WARNING) {
+                warnings++;
+            } else {
+                notes++;
+            }
+        }
+        List<String> parts = new ArrayList<>();
+        count(parts, errors, ViewWord.ERROR, ViewWord.ERRORS);
+        count(parts, warnings, ViewWord.WARNING, ViewWord.WARNINGS);
+        count(parts, notes, ViewWord.NOTE, ViewWord.NOTES);
+        return parts.isEmpty() ? ViewWord.NO_FINDINGS.in(language) : String.join(" · ", parts);
+    }
+
+    private void count(List<String> parts, int count, ViewWord one, ViewWord several) {
+        if (count > 0) {
+            parts.add((count == 1 ? one : several).in(language,
+                    List.of(Integer.toString(count))));
+        }
+    }
+
     // ------------------------------------------------------------------- dead ends
 
-    /** Returns the head of the dead end, the words a reader sees first. */
-    private String deadEndHead() {
-        return switch (content.deadEnd.kind()) {
-            case NO_INVOICE -> ViewWord.NO_INVOICE_HEAD.in(language);
-            case NOT_ESTABLISHED -> ViewWord.UNESTABLISHED_HEAD.in(language);
-            case SEVERAL -> ViewWord.SEVERAL_HEAD.in(language);
-            case UNSUPPORTED -> ViewWord.UNSUPPORTED_HEAD.in(language);
-            case ENCRYPTED -> ViewWord.ENCRYPTED_HEAD.in(language);
-            case NOT_READ -> ViewWord.NOT_READ_HEAD.in(language);
-            case LIMIT -> limitHead();
+    /** Returns the line a dead end opens with: what the file is, or the bound that was met. */
+    private static String head(DeadEnd end, RenderLanguage language, boolean check) {
+        return switch (end.kind()) {
+            case NO_INVOICE -> ViewWord.NO_INVOICE.in(language);
+            case NOT_ESTABLISHED -> ViewWord.NOT_ESTABLISHED.in(language);
+            case SEVERAL -> ViewWord.SEVERAL.in(language);
+            case UNSUPPORTED -> ViewWord.UNSUPPORTED.in(language);
+            case ENCRYPTED -> ViewWord.ENCRYPTED.in(language);
+            case NOT_READ -> ViewWord.NOT_READ.in(language);
+            case LIMIT -> limit(end.limit(), language, check);
         };
     }
 
-    /** Returns the head of a limit: the report's line about a subject, as a sentence. */
-    private String limitHead() {
-        String line = ReportWord.SUBJECT_LIMIT.in(language);
-        return line.substring(0, 1).toUpperCase(Locale.ROOT) + line.substring(1) + ".";
+    /** Returns the one sentence that says what to do about a dead end, where there is one. */
+    private static Optional<ViewWord> ask(DeadEnd.Kind kind) {
+        return Optional.ofNullable(switch (kind) {
+            case NO_INVOICE -> ViewWord.NO_INVOICE_ASK;
+            case NOT_ESTABLISHED -> ViewWord.NOT_ESTABLISHED_ASK;
+            case SEVERAL -> ViewWord.SEVERAL_ASK;
+            case UNSUPPORTED -> ViewWord.UNSUPPORTED_ASK;
+            case ENCRYPTED -> ViewWord.ENCRYPTED_ASK;
+            case NOT_READ -> ViewWord.NOT_READ_ASK;
+            case LIMIT -> null;
+        });
+    }
+
+    /** Returns a bound that was met, as the fact a reader understands. */
+    private static String limit(Limit limit, RenderLanguage language, boolean check) {
+        return switch (limit.kind()) {
+            case SIZE -> (check ? ViewWord.LIMIT_SIZE_CHECK : ViewWord.LIMIT_SIZE_VIEW)
+                    .in(language);
+            case TIME -> (check ? ViewWord.LIMIT_TIME_CHECK : ViewWord.LIMIT_TIME_VIEW)
+                    .in(language);
+            case PAGES -> ViewWord.LIMIT_PAGES.in(language);
+        };
     }
 
     private void deadEnd() {
         DeadEnd end = content.deadEnd;
         out.append("<section class=\"card state")
                 .append(end.kind() == DeadEnd.Kind.LIMIT ? " limit" : "").append("\">\n")
-                .append("<p class=\"state-head\"><b>").append(escape(deadEndHead()))
-                .append("</b></p>\n");
-        switch (end.kind()) {
-            case NO_INVOICE -> {
-                sentence(ViewWord.NO_INVOICE_TEXT.in(language));
-                sentence(ViewWord.NO_INVOICE_NEXT.in(language));
-            }
-            case SEVERAL -> {
-                candidates(end.candidates());
-                sentence(ViewWord.SEVERAL_ASK.in(language));
-            }
-            case UNSUPPORTED -> sentence(ViewWord.UNSUPPORTED_TEXT.in(language));
-            case ENCRYPTED -> sentence(ViewWord.ENCRYPTED_TEXT.in(language));
-            case NOT_READ -> sentence(ViewWord.NOT_READ_TEXT.in(language));
-            case LIMIT -> sentence(ViewWord.LIMIT_TEXT.in(language));
-            case NOT_ESTABLISHED -> {
-                // The message says why: an attachment that was never classified.
-            }
+                .append("<p class=\"state-head\">")
+                .append(escape(head(end, language, content.reportAsked))).append("</p>\n");
+        if (end.kind() == DeadEnd.Kind.SEVERAL) {
+            candidates(end.candidates());
         }
-        message(end.message());
-        if (content.reportAsked && content.outcome == null) {
-            out.append("<p class=\"note\">").append(escape(ViewWord.NO_REPORT.in(language)))
-                    .append("</p>\n");
+        ask(end.kind()).ifPresent(sentence -> out.append("<p>")
+                .append(escape(sentence.in(language))).append("</p>\n"));
+        if (end.kind() == DeadEnd.Kind.LIMIT) {
+            option(end.limit());
         }
         out.append("</section>\n");
     }
 
-    private void sentence(String text) {
-        out.append("<p>").append(escape(text)).append("</p>\n");
-    }
-
-    /** Writes the error text of the run, as it stands. */
-    private void message(String message) {
-        out.append("<p class=\"label\">").append(escape(ViewWord.MESSAGE.in(language)))
-                .append("</p>\n<pre class=\"message\">")
-                .append(escape(ReportContent.cut(ReportContent.plain(message), language)))
-                .append("</pre>\n");
-    }
-
-    /**
-     * Writes the attachments that could each be the invoice, with the command that reads
-     * each of them: the count first, and the table folded under it where it is long.
-     */
-    private void candidates(List<Candidate> candidates) {
-        String count = ViewWord.SEVERAL_COUNT.in(language,
-                List.of(Integer.toString(candidates.size())));
-        boolean folded = candidates.size() > OPEN_ITEMS;
-        if (folded) {
-            out.append("<details>\n<summary>").append(escape(count)).append("</summary>\n");
-        } else {
-            sentence(count);
+    /** Writes the option that raises a bound, as code on a line of its own. */
+    private void option(Limit limit) {
+        if (limit.option() != null) {
+            out.append("<p><code>").append(escape(text(limit.option())))
+                    .append("</code></p>\n");
         }
+    }
+
+    /** Writes the attachments that could each be the invoice, with the command that opens each. */
+    private void candidates(List<Candidate> candidates) {
         out.append("<table class=\"candidates\">\n<tr><th>")
                 .append(escape(ViewWord.COLUMN_POSITION.in(language))).append("</th><th>")
                 .append(escape(ViewWord.COLUMN_NAME.in(language))).append("</th><th>")
@@ -388,7 +396,7 @@ public final class ViewPage {
                 .append("</th><th class=\"size\">")
                 .append(escape(ViewWord.COLUMN_SIZE.in(language))).append("</th><th>")
                 .append(escape(ViewWord.COLUMN_RELATIONSHIP.in(language))).append("</th><th>")
-                .append(escape(ViewWord.COLUMN_READ_WITH.in(language))).append("</th></tr>\n");
+                .append(escape(ViewWord.COLUMN_OPEN_WITH.in(language))).append("</th></tr>\n");
         for (Candidate candidate : candidates) {
             out.append("<tr><td>").append(candidate.position()).append("</td><td>")
                     .append(escape(text(candidate.name()))).append("</td><td>")
@@ -403,9 +411,6 @@ public final class ViewPage {
                     .append(escape(text(candidate.command()))).append("</code></td></tr>\n");
         }
         out.append("</table>\n");
-        if (folded) {
-            out.append("</details>\n");
-        }
     }
 
     private String kind(Candidate candidate) {
@@ -419,166 +424,135 @@ public final class ViewPage {
         };
     }
 
-    // ------------------------------------------------------------------- the views
+    // ------------------------------------------------------------------- the tabs
 
-    /** Tells whether the page has the view of the invoice as read. */
-    private boolean hasRead() {
-        return content.deadEnd == null && content.letter != null;
+    /** The tabs of the page, in the order they stand in. */
+    private enum Tab {
+
+        PDF("pdf"), INVOICE("invoice"), KOSIT("kosit"), REPORT("report");
+
+        private final String id;
+
+        Tab(String id) {
+            this.id = id;
+        }
     }
 
-    private void band() {
-        boolean received = content.received != null;
-        boolean read = hasRead();
-        if (!received && !read) {
+    /** Returns the tabs that have content, in their order. */
+    private List<Tab> present() {
+        List<Tab> tabs = new ArrayList<>();
+        if (content.received != null) {
+            tabs.add(Tab.PDF);
+        }
+        if (content.deadEnd == null && content.document != null && content.letter != null) {
+            tabs.add(Tab.INVOICE);
+        }
+        if (content.deadEnd == null && content.kosit != null) {
+            tabs.add(Tab.KOSIT);
+        }
+        if (content.outcome != null) {
+            tabs.add(Tab.REPORT);
+        }
+        return tabs;
+    }
+
+    private String label(Tab tab) {
+        return switch (tab) {
+            case PDF -> ViewWord.TAB_PDF.in(language);
+            case INVOICE -> ViewWord.TAB_INVOICE.in(language);
+            case KOSIT -> ViewWord.TAB_KOSIT.in(language);
+            case REPORT -> ReportWord.TITLE.in(language);
+        };
+    }
+
+    /**
+     * Writes the tabs: one radio button and its label per tab, the first checked, and a
+     * pane per tab that the style sheet shows while its button is checked.
+     */
+    private void tabs() {
+        List<Tab> tabs = present();
+        if (tabs.isEmpty()) {
             return;
         }
-        out.append(received && read ? "<div class=\"band\">\n" : "<div class=\"band one\">\n");
-        if (received) {
-            receivedPane();
+        out.append("<main class=\"tabs\">\n");
+        boolean first = true;
+        for (Tab tab : tabs) {
+            out.append("<input type=\"radio\" name=\"tab\" id=\"tab-").append(tab.id)
+                    .append('"').append(first ? " checked" : "").append("><label for=\"tab-")
+                    .append(tab.id).append("\">").append(escape(label(tab)))
+                    .append("</label>\n");
+            first = false;
         }
-        if (read) {
-            readPane();
+        for (Tab tab : tabs) {
+            out.append("<section class=\"pane\" id=\"pane-").append(tab.id)
+                    .append("\" aria-label=\"").append(escape(label(tab))).append("\">\n");
+            switch (tab) {
+                case PDF -> frame("received/" + content.received, label(tab), false);
+                case INVOICE -> invoice();
+                case KOSIT -> kosit();
+                case REPORT -> report();
+            }
+            out.append("</section>\n");
         }
-        out.append("</div>\n");
+        out.append("</main>\n");
     }
 
-    private void receivedPane() {
-        String file = "received/" + content.received;
-        paneHead("received", ViewWord.RECEIVED.in(language),
-                List.of(anchor(href(file), ViewWord.OPEN_RECEIVED.in(language))));
-        out.append("<div class=\"caption\"><p>")
-                .append(escape(ViewWord.CAPTION_RECEIVED.in(language))).append("</p></div>\n")
-                .append("<iframe src=\"").append(href(file)).append("\" title=\"")
-                .append(escape(ViewWord.FRAME_RECEIVED.in(language,
-                        List.of(text(content.received)))))
-                .append("\"></iframe>\n</section>\n");
+    private void frame(String file, String title, boolean sandboxed) {
+        out.append("<iframe").append(sandboxed ? " sandbox=\"allow-scripts\"" : "")
+                .append(" src=\"").append(href(file)).append("\" title=\"")
+                .append(escape(title)).append("\"></iframe>\n");
     }
 
-    private void readPane() {
-        List<String> links = new ArrayList<>();
-        if (content.kosit != null) {
-            links.add(anchor(href(content.kosit), ViewWord.OPEN_HTML.in(language)));
-        }
+    /** Writes the letter, or why there is none. */
+    private void invoice() {
         Letter letter = content.letter;
         if (letter.file().isPresent()) {
-            links.add(anchor(href(letter.file().get()), ViewWord.OPEN_READ.in(language)));
-        }
-        paneHead("read", ViewWord.READ.in(language), links);
-        out.append("<div class=\"caption\"><p>").append(escape(ViewWord.CAPTION_READ.in(language)))
-                .append("</p>\n");
-        if (content.kositRefusal != null) {
-            out.append("<p>").append(escape(ViewWord.HTML_REFUSED.in(language) + " "
-                    + ReportContent.cut(ReportContent.plain(content.kositRefusal), language)))
-                    .append("</p>\n");
-        } else {
-            exportNotes(content.exportNotes);
-        }
-        out.append("</div>\n");
-        if (letter.file().isPresent()) {
-            out.append("<iframe src=\"").append(href(letter.file().get())).append("\" title=\"")
-                    .append(escape(ViewWord.FRAME_READ.in(language))).append("\"></iframe>\n");
+            out.append("<p class=\"caption\">").append(escape(ViewWord.CAPTION_INVOICE
+                    .in(language))).append("</p>\n");
+            frame(letter.file().get(), label(Tab.INVOICE), false);
         } else if (letter.limit().isPresent()) {
-            out.append("<div>\n<p class=\"state-head\"><b>").append(escape(limitHead()))
-                    .append("</b></p>\n");
-            message(letter.limit().get());
-            out.append("</div>\n");
+            out.append("<p>").append(escape(limit(letter.limit().get(), language,
+                    content.reportAsked))).append("</p>\n");
+            option(letter.limit().get());
         } else {
-            out.append("<div>\n<p>").append(escape(ReportWord.INVOICE_REFUSED.in(language) + " "
-                    + ReportContent.resolve(letter.refusal().orElseThrow(), language)))
-                    .append("</p>\n</div>\n");
+            out.append("<p>").append(escape(ViewWord.NOT_RENDERED.in(language)))
+                    .append("</p>\n");
         }
-        out.append("</section>\n");
     }
 
-    /** Writes the values that did not reach the HTML rendering, folded where they are many. */
-    private void exportNotes(List<String> notes) {
-        if (notes.isEmpty()) {
-            return;
+    /**
+     * Writes the KoSIT visualization in a sandboxed frame: its script runs for its own tabs,
+     * in an origin of its own, and reaches nothing of the page.
+     */
+    private void kosit() {
+        if (!content.exportNotes.isEmpty()) {
+            out.append("<p class=\"caption\">").append(escape(ViewWord.KOSIT_INCOMPLETE
+                    .in(language))).append("</p>\n");
         }
-        String count = (notes.size() == 1 ? ViewWord.EXPORT_NOTE : ViewWord.EXPORT_NOTES)
-                .in(language, List.of(Integer.toString(notes.size())));
-        boolean folded = notes.size() > OPEN_ITEMS;
-        out.append(folded ? "<details>\n<summary>" : "<p>").append(escape(count))
-                .append(folded ? "</summary>\n" : "</p>\n").append("<ul>\n");
-        for (String line : ReportContent.exportNotes(notes, language)) {
-            out.append("<li>").append(escape(line)).append("</li>\n");
-        }
-        out.append("</ul>\n").append(folded ? "</details>\n" : "");
+        frame(content.kosit, label(Tab.KOSIT), true);
     }
 
-    /** Opens a view and writes its heading row: the heading, and its links at the right. */
-    private void paneHead(String id, String heading, List<String> links) {
-        out.append("<section class=\"pane\" id=\"").append(id).append("\" aria-labelledby=\"")
-                .append(id).append("-heading\">\n<div class=\"pane-head\"><h2 id=\"").append(id)
-                .append("-heading\">").append(escape(heading)).append("</h2>");
-        if (!links.isEmpty()) {
-            out.append("<p class=\"links\">").append(String.join(" ", links)).append("</p>");
-        }
-        out.append("</div>\n");
-    }
-
-    /** Writes, for the printout, what it is and where the invoice is printed from. */
-    private void printNote() {
-        List<String> files = new ArrayList<>();
-        if (content.received != null) {
-            files.add(text(content.received));
-        }
-        if (hasRead()) {
-            content.letter.file().ifPresent(file -> files.add(text(file)));
-        }
-        if (files.isEmpty()) {
-            return;
-        }
-        String first = (content.outcome != null ? ViewWord.PRINT_WITH_REPORT
-                : ViewWord.PRINT_WITHOUT_REPORT).in(language);
-        out.append("<p class=\"print-note\">").append(escape(first + " "
-                + ViewWord.PRINT_FILES.in(language, List.of(String.join(", ", files)))))
-                .append("</p>\n");
-    }
-
-    /** Writes the report, as sections of the page, under the links to its two files. */
+    /** Writes the report: its one link, the verdict in the page's words, and its sections. */
     private void report() {
-        if (content.outcome == null) {
-            return;
-        }
-        List<String> links = new ArrayList<>();
+        out.append("<div class=\"report\">\n");
         if (content.reportPdf != null) {
-            links.add(anchor(href(content.reportPdf), ViewWord.OPEN_REPORT_PDF.in(language)));
+            out.append("<p class=\"save\"><a href=\"").append(href(content.reportPdf))
+                    .append("\" download>").append(escape(ViewWord.SAVE_PDF.in(language)))
+                    .append("</a></p>\n");
         }
-        if (content.reportHtml != null) {
-            links.add(anchor(href(content.reportHtml), ViewWord.OPEN_REPORT_HTML.in(language)));
-        }
-        out.append("<section class=\"report\" id=\"report\" aria-labelledby=\"report-heading\">\n")
-                .append("<div class=\"pane-head\"><h2 id=\"report-heading\">")
-                .append(escape(ReportWord.TITLE.in(language))).append("</h2>");
-        if (!links.isEmpty()) {
-            out.append("<p class=\"links\">").append(String.join(" ", links)).append("</p>");
-        }
+        ReportOptions options = ReportOptions.defaults().withLanguage(language);
+        ReportHtml.card(out, content.outcome, options, token -> word(token, language));
+        ReportHtml.sections(out, content.outcome, options, REPORT_LEVEL);
         out.append("</div>\n");
-        ReportHtml.sections(out, content.outcome, reportOptions(), REPORT_LEVEL);
-        out.append("</section>\n");
     }
 
     private void footer() {
-        String sentence = ViewWord.FOOTER_DIRECTORY.in(language);
-        int at = sentence.indexOf("%1$s");
-        out.append("<footer>\n<p>").append(escape(sentence.substring(0, at))).append("<span>")
-                .append(escape(text(content.directory))).append("</span>")
-                .append(escape(sentence.substring(at + "%1$s".length()))).append("</p>\n<p>")
-                .append(escape(ViewWord.FOOTER_OFFLINE.in(language))).append("</p>\n<p>")
-                .append(escape(ReportWord.TOOL.in(language))).append(' ')
+        out.append("<footer>\n<p>").append(escape(ViewWord.FOLDER.in(language)))
+                .append(" <span>").append(escape(text(content.directory))).append("</span> · ")
                 .append(escape(text(content.tool))).append("</p>\n</footer>\n");
     }
 
     // ------------------------------------------------------------------- helpers
-
-    private ReportOptions reportOptions() {
-        return ReportOptions.defaults().withLanguage(language);
-    }
-
-    private static String anchor(String href, String text) {
-        return "<a href=\"" + href + "\">" + escape(text) + "</a>";
-    }
 
     /** Returns a text of the run or of the document as the page may show it. */
     private static String text(String value) {
@@ -617,7 +591,7 @@ public final class ViewPage {
 
     // ------------------------------------------------------------------- the facts
 
-    /** The facts of the header, read from the document and formatted as the letter writes them. */
+    /** The facts of the header, read from the document and written as the letter writes them. */
     private static final class Facts {
 
         private final SemanticDocument document;
@@ -630,31 +604,35 @@ public final class ViewPage {
             this.language = language;
         }
 
-        /** Returns the title: the type by name, the number, and the date. */
-        String title() {
+        /** Returns the type of the document by name, where it is not a plain invoice. */
+        Optional<String> kind() {
             String code = content("/BT-3");
-            String type = code.isEmpty() ? ViewWord.ABSENT.in(language)
-                    : codeList("BT-3").flatMap(DisplayNames.CodeList::of)
-                            .flatMap(list -> DisplayNames.of(list, code, language))
-                            .orElse(code);
-            return type + " " + orAbsent(content("/BT-1")) + " "
-                    + Word.PRECEDING_OF.in(language) + " "
-                    + orAbsent(formatted("/BT-2", SemanticType.DATE));
+            if (code.isEmpty() || "380".equals(code)) {
+                return Optional.empty();
+            }
+            return Optional.of(codeList("BT-3").flatMap(DisplayNames.CodeList::of)
+                    .flatMap(list -> DisplayNames.of(list, code, language))
+                    .orElse(code));
         }
 
-        String seller() {
-            return orAbsent(content("/BG-4/BT-27"));
+        /** Returns who the invoice is from and to whom it goes. */
+        String parties() {
+            return orAbsent(content("/BG-4/BT-27")) + " → " + orAbsent(content("/BG-7/BT-44"));
         }
 
-        String buyer() {
-            return orAbsent(content("/BG-7/BT-44"));
+        String number() {
+            return content("/BT-1");
+        }
+
+        String date() {
+            return formatted("/BT-2", SemanticType.DATE);
         }
 
         /** Returns the amount the invoice closes with, the currency of the document behind it. */
         String due() {
             String amount = formatted("/BG-22/BT-115", SemanticType.AMOUNT);
             if (amount.isEmpty()) {
-                return ViewWord.ABSENT.in(language);
+                return "";
             }
             String currency = content("/BT-5");
             return currency.isEmpty() ? amount : amount + " " + currency;
@@ -688,27 +666,59 @@ public final class ViewPage {
     // ------------------------------------------------------------------- the content
 
     /**
-     * Why a page shows no invoice as read: the run reached a dead end before a document was
-     * built, and the page says which, with the message of the run.
+     * Why a page shows no invoice: the run reached a dead end before a document was built.
      *
      * @param kind       which dead end
-     * @param message    the error text of the run, as it stands
      * @param candidates the attachments that could each be the invoice, for
      *                   {@link Kind#SEVERAL}; empty for every other kind
+     * @param limit      the bound that was met, for {@link Kind#LIMIT}; {@code null} for
+     *                   every other kind
      */
-    public record DeadEnd(Kind kind, String message, List<Candidate> candidates) {
+    public record DeadEnd(Kind kind, List<Candidate> candidates, Limit limit) {
 
         /**
          * Checks the parts and copies the list.
          *
          * @param kind       which dead end
-         * @param message    the error text of the run
          * @param candidates the attachments, for {@link Kind#SEVERAL}
+         * @param limit      the bound, for {@link Kind#LIMIT}
          */
         public DeadEnd {
             Objects.requireNonNull(kind, "kind");
-            Objects.requireNonNull(message, "message");
             candidates = List.copyOf(candidates);
+            if ((kind == Kind.LIMIT) != (limit != null)) {
+                throw new IllegalArgumentException("a limit, and only a limit, names its bound");
+            }
+        }
+
+        /**
+         * Returns a dead end that says no more than which it is.
+         *
+         * @param kind which dead end, neither {@link Kind#SEVERAL} nor {@link Kind#LIMIT}
+         * @return the dead end
+         */
+        public static DeadEnd of(Kind kind) {
+            return new DeadEnd(kind, List.of(), null);
+        }
+
+        /**
+         * Returns the dead end of several candidates.
+         *
+         * @param candidates the attachments that could each be the invoice
+         * @return the dead end
+         */
+        public static DeadEnd several(List<Candidate> candidates) {
+            return new DeadEnd(Kind.SEVERAL, candidates, null);
+        }
+
+        /**
+         * Returns the dead end of a bound that was met.
+         *
+         * @param limit the bound
+         * @return the dead end
+         */
+        public static DeadEnd limit(Limit limit) {
+            return new DeadEnd(Kind.LIMIT, List.of(), limit);
         }
 
         /** The dead ends of a run. */
@@ -738,6 +748,39 @@ public final class ViewPage {
     }
 
     /**
+     * A bound of the run that was met: what kind of bound, in the terms a reader has for it,
+     * and the option that raises it.
+     *
+     * @param kind   what the bound is about
+     * @param option the option that raises it, or {@code null} where none does
+     */
+    public record Limit(Kind kind, String option) {
+
+        /**
+         * Checks the kind.
+         *
+         * @param kind   what the bound is about
+         * @param option the option that raises it, or {@code null}
+         */
+        public Limit {
+            Objects.requireNonNull(kind, "kind");
+        }
+
+        /** What a bound is about. */
+        public enum Kind {
+
+            /** The size of the file or of what was read out of it. */
+            SIZE,
+
+            /** The time the run was given. */
+            TIME,
+
+            /** The pages of the letter. */
+            PAGES
+        }
+    }
+
+    /**
      * One attachment of a PDF that could be the invoice.
      *
      * @param position     its position among the attachments, counted from one
@@ -746,7 +789,7 @@ public final class ViewPage {
      * @param described    what the reader calls it, for {@link Kind#OTHER}
      * @param declaredSize the size the container declares for it, where it declares one
      * @param relationship its {@code AFRelationship}, where it has one
-     * @param command      the command line that reads it
+     * @param command      the command line that opens it
      */
     public record Candidate(int position, String name, Kind kind, String described,
                             OptionalLong declaredSize, Optional<String> relationship,
@@ -761,7 +804,7 @@ public final class ViewPage {
          * @param described    what the reader calls it
          * @param declaredSize the size the container declares
          * @param relationship its {@code AFRelationship}
-         * @param command      the command line that reads it
+         * @param command      the command line that opens it
          */
         public Candidate {
             Objects.requireNonNull(name, "name");
@@ -796,32 +839,25 @@ public final class ViewPage {
     }
 
     /**
-     * The view of the invoice as read: the file of the letter, why there is none, or the
-     * limit the rendering met. Exactly one of the three is present.
+     * The letter of the invoice tab: the file that was written, the bound the rendering met,
+     * or neither, where the invoice could not be rendered.
      *
-     * @param file    the file name of the letter, relative to the page
-     * @param refusal why the invoice could not be rendered: the message of the run, or a
-     *                sentence of this project's own
-     * @param limit   the message of a bound the rendering outgrew
+     * @param file  the file name of the letter, relative to the page
+     * @param limit the bound the rendering met
      */
-    public record Letter(Optional<String> file, Optional<Text> refusal,
-                         Optional<String> limit) {
+    public record Letter(Optional<String> file, Optional<Limit> limit) {
 
         /**
-         * Checks that exactly one of the three is present.
+         * Checks that at most one of the two is present.
          *
-         * @param file    the file name of the letter
-         * @param refusal why the invoice could not be rendered
-         * @param limit   the message of a bound
+         * @param file  the file name of the letter
+         * @param limit the bound
          */
         public Letter {
             Objects.requireNonNull(file, "file");
-            Objects.requireNonNull(refusal, "refusal");
             Objects.requireNonNull(limit, "limit");
-            int present = (file.isPresent() ? 1 : 0) + (refusal.isPresent() ? 1 : 0)
-                    + (limit.isPresent() ? 1 : 0);
-            if (present != 1) {
-                throw new IllegalArgumentException("a letter is a file, a refusal or a limit");
+            if (file.isPresent() && limit.isPresent()) {
+                throw new IllegalArgumentException("a letter is a file or a limit, not both");
             }
         }
 
@@ -829,49 +865,29 @@ public final class ViewPage {
          * Returns the letter that was written.
          *
          * @param file its file name, relative to the page
-         * @return the view
+         * @return the letter
          */
         public static Letter written(String file) {
-            return new Letter(Optional.of(file), Optional.empty(), Optional.empty());
+            return new Letter(Optional.of(file), Optional.empty());
         }
 
         /**
-         * Returns the letter that was refused.
+         * Returns the letter that could not be rendered.
          *
-         * @param reason why
-         * @return the view
+         * @return the letter
          */
-        public static Letter refused(Text reason) {
-            return new Letter(Optional.empty(), Optional.of(reason), Optional.empty());
+        public static Letter refused() {
+            return new Letter(Optional.empty(), Optional.empty());
         }
 
         /**
          * Returns the letter that met a bound.
          *
-         * @param message the message of the bound
-         * @return the view
+         * @param limit the bound
+         * @return the letter
          */
-        public static Letter limited(String message) {
-            return new Letter(Optional.empty(), Optional.empty(), Optional.of(message));
-        }
-    }
-
-    /**
-     * The attachment an invoice was taken out of.
-     *
-     * @param position   its position among the attachments, counted from one
-     * @param attachment its name
-     */
-    public record Provenance(int position, String attachment) {
-
-        /**
-         * Checks the name.
-         *
-         * @param position   its position
-         * @param attachment its name
-         */
-        public Provenance {
-            Objects.requireNonNull(attachment, "attachment");
+        public static Letter limited(Limit limit) {
+            return new Letter(Optional.empty(), Optional.of(limit));
         }
     }
 
@@ -884,24 +900,17 @@ public final class ViewPage {
 
         private final RenderLanguage language;
         private final String fileName;
-        private final String input;
         private final String directory;
         private final String tool;
         private String received;
-        private Provenance provenance;
-        private Text syntax;
-        private String profile;
-        private String recoded;
         private String notEn16931;
         private SemanticDocument document;
         private Registry registry;
         private ValidationOutcome outcome;
         private boolean reportAsked;
-        private String reportHtml;
         private String reportPdf;
         private Letter letter;
         private String kosit;
-        private String kositRefusal;
         private List<String> exportNotes = List.of();
         private DeadEnd deadEnd;
 
@@ -910,15 +919,13 @@ public final class ViewPage {
          *
          * @param language  the language of the page, of its words and of the values
          * @param fileName  the name of the input file, the heading of the page
-         * @param input     the input as the command line named it
          * @param directory the absolute directory the page and its files lie in
          * @param tool      the tool that wrote it, {@code esj} and its version
          */
-        public Content(RenderLanguage language, String fileName, String input, String directory,
+        public Content(RenderLanguage language, String fileName, String directory,
                        String tool) {
             this.language = Objects.requireNonNull(language, "language");
             this.fileName = Objects.requireNonNull(fileName, "fileName");
-            this.input = Objects.requireNonNull(input, "input");
             this.directory = Objects.requireNonNull(directory, "directory");
             this.tool = Objects.requireNonNull(tool, "tool");
         }
@@ -931,51 +938,6 @@ public final class ViewPage {
          */
         public Content received(String name) {
             this.received = Objects.requireNonNull(name, "name");
-            return this;
-        }
-
-        /**
-         * Names the attachment the invoice was taken out of.
-         *
-         * @param position its position, counted from one
-         * @param name     its name
-         * @return this content
-         */
-        public Content provenance(int position, String name) {
-            this.provenance = new Provenance(position, name);
-            return this;
-        }
-
-        /**
-         * Names the syntax the invoice was read as, in the words of the report.
-         *
-         * @param text the syntax
-         * @return this content
-         */
-        public Content syntax(Text text) {
-            this.syntax = Objects.requireNonNull(text, "text");
-            return this;
-        }
-
-        /**
-         * Names the profile the document claims.
-         *
-         * @param identifier its identifier, or its conformance level
-         * @return this content
-         */
-        public Content profile(String identifier) {
-            this.profile = Objects.requireNonNull(identifier, "identifier");
-            return this;
-        }
-
-        /**
-         * Says how the bytes of the invoice were recoded before they were read.
-         *
-         * @param description what the repair did
-         * @return this content
-         */
-        public Content recoded(String description) {
-            this.recoded = Objects.requireNonNull(description, "description");
             return this;
         }
 
@@ -993,9 +955,9 @@ public final class ViewPage {
         /**
          * Gives the document the facts of the header are read from.
          *
-         * @param value    the document
-         * @param terms    the registry of its edition, which names its codes; {@code null}
-         *                 where this build carries none
+         * @param value the document
+         * @param terms the registry of its edition, which names its codes; {@code null}
+         *              where this build carries none
          * @return this content
          */
         public Content document(SemanticDocument value, Registry terms) {
@@ -1005,23 +967,22 @@ public final class ViewPage {
         }
 
         /**
-         * Gives the report of the run that validated the invoice, and the files it was
+         * Gives the report of the run that validated the invoice, and the PDF it was
          * written to.
          *
          * @param value the outcome
-         * @param html  the file name of its HTML form, or {@code null} where none was written
          * @param pdf   the file name of its PDF form, or {@code null} where none was written
          * @return this content
          */
-        public Content report(ValidationOutcome value, String html, String pdf) {
+        public Content report(ValidationOutcome value, String pdf) {
             this.outcome = Objects.requireNonNull(value, "value");
-            this.reportHtml = html;
             this.reportPdf = pdf;
             return this;
         }
 
         /**
-         * Records that the run was asked for a report, so that a dead end says there is none.
+         * Records that the run was asked to check the invoice, which is what a bound that was
+         * met is a bound of.
          *
          * @return this content
          */
@@ -1031,9 +992,9 @@ public final class ViewPage {
         }
 
         /**
-         * Gives the view of the invoice as read.
+         * Gives the letter of the invoice tab.
          *
-         * @param value the letter, its refusal or its limit
+         * @param value the letter, its limit, or that there is none
          * @return this content
          */
         public Content letter(Letter value) {
@@ -1042,7 +1003,7 @@ public final class ViewPage {
         }
 
         /**
-         * Names the HTML rendering, with what did not reach it.
+         * Names the KoSIT visualization, with what did not reach it.
          *
          * @param file  its file name
          * @param notes the values of the document it has no place for, as the export wrote them
@@ -1055,20 +1016,9 @@ public final class ViewPage {
         }
 
         /**
-         * Says why the HTML rendering was not written.
-         *
-         * @param reason the reason, or the message of the bound
-         * @return this content
-         */
-        public Content kositRefused(String reason) {
-            this.kositRefusal = Objects.requireNonNull(reason, "reason");
-            return this;
-        }
-
-        /**
          * Makes the page a dead end.
          *
-         * @param value which, and the message of the run
+         * @param value which
          * @return this content
          */
         public Content deadEnd(DeadEnd value) {
@@ -1076,11 +1026,11 @@ public final class ViewPage {
             return this;
         }
 
-        /** Refuses a content that names no view where it has to name one. */
+        /** Refuses a content that has a document and no letter for it. */
         private void check() {
-            if (deadEnd == null && letter == null) {
-                throw new IllegalStateException("a page that is no dead end shows the invoice"
-                        + " as read, or why it could not");
+            if (deadEnd == null && document != null && letter == null) {
+                throw new IllegalStateException("a page with an invoice shows its letter, or"
+                        + " says why there is none");
             }
         }
     }

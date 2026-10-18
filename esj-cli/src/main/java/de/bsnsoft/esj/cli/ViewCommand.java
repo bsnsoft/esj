@@ -2,18 +2,14 @@ package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.EsjLimitException;
 import de.bsnsoft.esj.SemanticDocument;
-import de.bsnsoft.esj.SemanticPath;
-import de.bsnsoft.esj.SemanticValue;
-import de.bsnsoft.esj.internal.report.Phrase;
-import de.bsnsoft.esj.internal.report.Text;
 import de.bsnsoft.esj.internal.report.ValidationOutcome;
-import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.pdf.AttachmentKind;
 import de.bsnsoft.esj.pdf.EmbeddedFile;
 import de.bsnsoft.esj.pdf.FacturXProfile;
 import de.bsnsoft.esj.pdf.NoInvoiceAttachmentException;
 import de.bsnsoft.esj.pdf.PdfAccessException;
 import de.bsnsoft.esj.render.PageSize;
+import de.bsnsoft.esj.render.PaymentCode;
 import de.bsnsoft.esj.render.RenderLanguage;
 import de.bsnsoft.esj.render.RenderOptions;
 import de.bsnsoft.esj.render.RenderResult;
@@ -22,7 +18,6 @@ import de.bsnsoft.esj.render.internal.ReportOptions;
 import de.bsnsoft.esj.render.internal.ViewPage;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.FindingCode;
-import de.bsnsoft.esj.xml.XmlEncodingReport;
 import de.bsnsoft.esj.xr.ExportNote;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,48 +31,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 /**
- * {@code esj view}: write one page about a file — the file as it came, the invoice as this
- * tool read it, and with {@code --report} the validation report — and open it in the
- * browser.
+ * {@code esj view}: show an invoice to the person who received it — in the browser, as one
+ * page with a tab per view, or with {@code --text} in the terminal.
  *
  * <p>An electronic invoice has no file type of its own. A double-click on one shows raw XML,
  * or a PDF without the data inside it; this command is what a file manager can open
  * instead. It reads what every other command reads, writes a directory — the page, a copy of
- * the received PDF, the letter rendered from the data, the HTML rendering, and with
+ * the received PDF, the letter rendered from the data, the KoSIT visualization, and with
  * {@code --report} the report as an HTML file and as a PDF — and hands the page to the
- * browser of the desktop. Nothing is fetched and nothing is sent; the page runs no script.
- * {@code docs/view.md} says what is on it.
+ * browser of the desktop. The page says at the top what the invoice is and, with
+ * {@code --report}, whether it is valid; under it the views are tabs. Nothing is fetched and
+ * nothing is sent; the page runs no script. {@code docs/view.md} says what is on it.
  *
  * <p><strong>Every outcome is a page.</strong> From a file manager nobody sees the error
  * stream, so a PDF without an invoice, a PDF with several candidates, a file that is not an
- * invoice and a limit of this run each open a page that says what it is and what to do
- * next, with the message of the run in it. The exit code is the one {@code esj render}
- * leaves with for the same file, and with {@code --report} the one {@code esj validate}
- * leaves with. What only a terminal can cause — a name that is no readable file, a command
- * line that does not parse, a template that is not one — is answered on the error stream
- * alone, as every other command answers it.
+ * invoice and a limit of this run each open a page that says what the file is and what to
+ * ask the sender for. The exit code is the one {@code esj render} leaves with for the same
+ * file, and with {@code --report} the one {@code esj validate} leaves with. What only a
+ * terminal can cause — a name that is no readable file, a command line that does not parse,
+ * a template that is not one — is answered on the error stream alone, as every other
+ * command answers it.
  *
  * <p><strong>One read.</strong> Without {@code --report} the file is read as
  * {@code esj render} reads it, repairing an encoding with one warning line; with it the run is
- * {@code esj validate}'s, strict, and the facts, the letter, the HTML rendering and the
+ * {@code esj validate}'s, strict, and the facts, the letter, the KoSIT visualization and the
  * report are drawn from the document that validation read. Every file beside the page is
  * the bytes the command it stands for writes for the same file and the same language, so a
  * report kept from the page is the report {@code esj validate --report} writes.
+ *
+ * <p><strong>The terminal.</strong> {@code --text} writes no page and opens nothing: it
+ * prints the invoice as {@code esj render --text} does, and with {@code --report} the lines
+ * {@code esj validate} prints under it — for a terminal over SSH, where no browser opens. A
+ * dead end prints the line the page would open with.
  *
  * <p>The directory is never removed by this command: the browser reads the page after the
  * command has ended, and the page says where it lies.
  */
 @Command(name = "view",
-        description = "Write one page about a file — the file as it came, the invoice as"
-                + " read from its data, and with --report the validation report — into a"
-                + " directory of its own, and open it in the browser. Every outcome is a"
-                + " page, a file that carries no invoice included. See docs/view.md.",
+        description = "Show an invoice: in the browser, as one page with a tab each for the"
+                + " PDF as received, the invoice rendered from its data, the KoSIT view and,"
+                + " with --report, the validation report; with --text in the terminal."
+                + " See docs/view.md.",
         sortOptions = false)
 final class ViewCommand implements Callable<Integer>, ReadsADocument {
 
@@ -93,31 +95,54 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     /** The characters a stem does not carry, besides separators and controls. */
     private static final String UNSAFE = "<>:\"|?*#%/\\";
 
+    /** The option a bound of this run names in the sentence that says how to raise it. */
+    private static final Pattern RAISES = Pattern.compile("(--max-[a-z-]+) raises that bound");
+
     @Mixin
     private final GlobalFlags flags;
 
     private final Console console;
 
     @Parameters(index = "0", paramLabel = "<file>",
-            description = "The file to show: UBL, CII, ESJ, or a PDF.")
+            description = "The invoice to show: UBL, CII, ESJ, or a PDF.")
     private String file;
 
     @Option(order = 10, names = "--report",
-            description = "Validate the invoice as esj validate does, put the report on the"
-                    + " page, and write it beside the page as an HTML file and as a PDF."
-                    + " The exit code is then the verdict's.")
+            description = "Check the invoice as esj validate does and show the report in a"
+                    + " tab of its own, also kept beside the page as an HTML file and as a"
+                    + " PDF. The exit code is then the verdict's.")
     private boolean report;
 
+    @Option(order = 15, names = "--text",
+            description = "Print the invoice in the terminal instead, as esj render --text"
+                    + " does, and with --report the lines of esj validate under it. No page"
+                    + " is written and nothing is opened.")
+    private boolean text;
+
+    @Option(order = 16, names = "--width", paramLabel = "<columns>",
+            description = "With --text, how many characters a line takes, 40 to 1000."
+                    + " Default: COLUMNS where it is 60 or more, otherwise 100.")
+    private Integer width;
+
     @Option(order = 20, names = "--lang", paramLabel = "<de|en>",
-            description = "The language of the page, of the letter, of the HTML rendering and"
-                    + " of the report. Default: German where LC_ALL, LC_MESSAGES or LANG"
-                    + " (on Windows the locale of the user) says German, English otherwise.")
+            description = "The language of the page, the letter, the KoSIT view and the"
+                    + " report. Default: German where LC_ALL, LC_MESSAGES or LANG (on"
+                    + " Windows the locale of the user) says German, English otherwise.")
     private String lang;
 
     @Option(order = 30, names = "--template", paramLabel = "<file>",
             description = "Render the letter on a branded template, as esj render"
                     + " --template does. See docs/templates.md.")
     private String template;
+
+    @Option(order = 35, names = "--no-payment-code",
+            description = "Leave out the EPC QR code, known in Germany as the GiroCode, that"
+                    + " the letter layout draws in the payment block where the invoice"
+                    + " states a credit transfer in euro. It carries what the block prints"
+                    + " beside it and nothing else. Letter layout only; a template may leave"
+                    + " it out as well, and this wins over the template. See"
+                    + " docs/letter-layout.md.")
+    private boolean noPaymentCode;
 
     @Option(order = 40, names = "--out", paramLabel = "<directory>",
             description = "Write the page and its files into this directory, created where"
@@ -167,13 +192,31 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     @Override
     public Integer call() {
         boolean json = json(output);
+        if (text && json) {
+            throw CliException.input("--text prints the invoice and --output json describes a"
+                    + " page; leave out one of them");
+        }
+        int columns = RenderCommand.textWidth(width, console);
+        if (width != null && !text) {
+            console.warning("--width is the width of the text --text prints; without --text"
+                    + " the page is the same with and without it");
+        }
         RenderLanguage language = lang == null ? Desktop.language(console.options())
                 : RenderCommand.language(lang);
         Extensions extensions = Options.extension(extension);
         Options.from(from);
+        if (text && out != null) {
+            console.warning("--out is the directory of the page, and --text writes no page;"
+                    + " nothing is written there");
+        }
+        if (text && template != null) {
+            console.warning("--template is the template of the letter, and --text prints the"
+                    + " invoice as text; the text is the same with and without it");
+        }
         // A template is configuration of this run and not something a sender wrote: one that
         // is not a template is the caller's mistake, answered where the caller typed it.
-        RenderTemplate branded = template == null ? null : RenderCommand.branded(template);
+        RenderTemplate branded = template == null || text ? null
+                : RenderCommand.branded(template);
         Path source = readable(file);
         if (!report && (pack != null || !packs.isEmpty())) {
             console.warning("--pack and --packs choose the pack of the validation --report"
@@ -184,12 +227,15 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
                 ? deadline.within("reading the validation packs",
                         () -> PackChoice.of(pack, packs, console))
                 : null;
+        if (text) {
+            return text(language, extensions, chosen, deadline, columns);
+        }
 
         String name = source.getFileName().toString();
         String stem = stem(name);
         Path directory = directory(stem);
-        ViewPage.Content content = new ViewPage.Content(language, name, file,
-                directory.toString(), VersionProvider.tool());
+        ViewPage.Content content = new ViewPage.Content(language, name, directory.toString(),
+                VersionProvider.tool());
         if (report) {
             content.reportAsked();
         }
@@ -204,7 +250,7 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
         boolean opened = out == null && Desktop.display(console.options())
                 && Desktop.open(console.options(), page);
         if (json) {
-            json(page, directory, opened, content);
+            json(page, directory, opened);
         } else {
             console.line(page.toString());
         }
@@ -223,6 +269,44 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     /** What the validation found, with {@code --report}. */
     private Validation.Report validation;
 
+    /** What the syntax engine did, with {@code --report}. */
+    private SyntaxCheck syntax;
+
+    /** The input, once it was read. */
+    private Input input;
+
+    /** The document, read as {@code render} or {@code validate} reads it. */
+    private Loaded loaded;
+
+    /**
+     * Reads the file: as {@code esj render} reads it, or with {@code --report} as
+     * {@code esj validate} does, validating it.
+     *
+     * @return the document, or {@code null} where a strict read built none
+     * @throws CliException where the file leads nowhere
+     */
+    private SemanticDocument read(Extensions extensions, PackChoice chosen,
+                                  Deadline deadline) {
+        input = deadline.within(Input.label(file) + ": reading the input",
+                () -> Input.read(file, console));
+        if (report) {
+            ValidationRun run = new ValidationRun(console, from, extensions,
+                    null, false, true, Options.level(null));
+            loaded = run.load(input, deadline);
+            loaded.reportNotes(console);
+            ValidationRun.Result checked =
+                    run.check(input, loaded, chosen, Optional::empty, deadline);
+            syntax = checked.syntax();
+            validation = checked.report();
+            return loaded.document().orElse(null);
+        }
+        loaded = deadline.within(input.name() + ": reading the document into the"
+                        + " semantic model",
+                () -> Loaded.read(input, Options.from(from), extensions, console));
+        loaded.reportNotes(console);
+        return loaded.require(console);
+    }
+
     /**
      * Reads the file, draws what the page shows and writes the files beside it.
      *
@@ -231,38 +315,16 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     private int view(ViewPage.Content content, Path directory, String stem,
                      RenderLanguage language, Extensions extensions, RenderTemplate branded,
                      PackChoice chosen, Deadline deadline) {
-        Input input;
-        try {
-            input = deadline.within(Input.label(file) + ": reading the input",
-                    () -> Input.read(file, console));
-        } catch (CliException e) {
-            return deadEnd(content, directory, null, e);
-        }
-        Loaded loaded;
         SemanticDocument document;
         try {
-            if (report) {
-                ValidationRun run = new ValidationRun(console, from, extensions,
-                        null, false, true, Options.level(null));
-                loaded = run.load(input, deadline);
-                loaded.reportNotes(console);
-                validation = run.check(input, loaded, chosen, Optional::empty, deadline)
-                        .report();
-                document = loaded.document().orElse(null);
-            } else {
-                loaded = deadline.within(input.name() + ": reading the document into the"
-                                + " semantic model",
-                        () -> Loaded.read(input, Options.from(from), extensions, console));
-                loaded.reportNotes(console);
-                document = loaded.require(console);
-            }
+            document = read(extensions, chosen, deadline);
         } catch (CliException e) {
-            return deadEnd(content, directory, input, e);
+            return deadEnd(content, directory, e);
         }
         if (input.isPdf()) {
-            received(content, directory, input);
+            received(content, directory);
         }
-        header(content, loaded, document, extensions);
+        header(content, document, extensions);
 
         Optional<Finding> limit = validation == null ? Optional.empty() : validation.limit();
         if (limit.isPresent()) {
@@ -273,38 +335,100 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
             message = console.options().bounds()
                     .refusal(validation.input(), limit.orElseThrow().message());
             console.error(message);
-            content.deadEnd(new ViewPage.DeadEnd(ViewPage.DeadEnd.Kind.LIMIT, message,
-                    List.of()));
-            reports(content, directory, stem, input, loaded, extensions, deadline, language);
+            content.deadEnd(ViewPage.DeadEnd.limit(limit(message)));
+            reports(content, directory, stem, extensions, deadline, language);
             return ExitCode.LIMIT;
         }
 
-        boolean letterLimited = letter(content, directory, stem, loaded, document, language,
+        boolean letterLimited = letter(content, directory, stem, document, language,
                 extensions, branded, deadline);
-        kosit(content, directory, stem, loaded, document, language, extensions, deadline);
+        kosit(content, directory, stem, document, language, extensions, deadline);
         if (!report) {
             return letterLimited ? ExitCode.LIMIT : ExitCode.SUCCESS;
         }
-        boolean delivered = reports(content, directory, stem, input, loaded, extensions,
-                deadline, language);
+        boolean delivered = reports(content, directory, stem, extensions, deadline, language);
         int verdict = Validation.exitCode(validation);
         // As esj validate: a report asked for and not delivered is an output missing,
         // unless the verdict is invalid, which is the answer the caller came for.
         return delivered || verdict == ExitCode.VALIDATION ? verdict : ExitCode.OUTPUT;
     }
 
+    // ------------------------------------------------------------------- the terminal
+
+    /**
+     * Prints the invoice as text, and with {@code --report} the lines of the validation under
+     * it; or, where the file leads nowhere, the line the page would open with.
+     *
+     * @return the exit code: the one {@code esj render} leaves with, or with {@code --report}
+     *         the verdict's
+     */
+    private int text(RenderLanguage language, Extensions extensions, PackChoice chosen,
+                     Deadline deadline, int columns) {
+        SemanticDocument document;
+        try {
+            document = read(extensions, chosen, deadline);
+        } catch (CliException e) {
+            console.error(e.getMessage());
+            console.line(ViewPage.state(deadEndOf(e), language, report));
+            return e.exitCode();
+        }
+        Optional<Finding> limit = validation == null ? Optional.empty() : validation.limit();
+        if (limit.isPresent()) {
+            String refusal = console.options().bounds()
+                    .refusal(validation.input(), limit.orElseThrow().message());
+            console.error(refusal);
+            console.line(ViewPage.state(ViewPage.DeadEnd.limit(limit(refusal)), language,
+                    true));
+            validationLines(columns);
+            return ExitCode.LIMIT;
+        }
+        Optional<String> refused = document == null ? Optional.of("no document was built")
+                : unreadable(loaded);
+        if (refused.isPresent()) {
+            console.warning("the invoice was not rendered: " + refused.orElseThrow());
+            console.line(ViewPage.notRendered(language));
+        } else {
+            try {
+                byte[] rendered = deadline.within(loaded.name() + ": rendering the text",
+                        () -> RenderCommand.text(document,
+                                Editions.require(document, extensions), language, columns,
+                                console));
+                console.bytes(rendered);
+            } catch (CliException e) {
+                if (e.exitCode() == ExitCode.LIMIT && !report) {
+                    console.error(e.getMessage());
+                    return ExitCode.LIMIT;
+                }
+                console.warning("the invoice was not rendered: " + e.getMessage());
+                console.line(ViewPage.notRendered(language));
+            }
+        }
+        if (!report) {
+            return ExitCode.SUCCESS;
+        }
+        validationLines(columns);
+        return Validation.exitCode(validation);
+    }
+
+    /** Prints the lines {@code esj validate} prints, under a rule. */
+    private void validationLines(int columns) {
+        console.line();
+        console.line("-".repeat(columns));
+        console.line();
+        ValidateCommand.lines(console, validation, syntax);
+    }
+
     // ------------------------------------------------------------------- dead ends
 
     /**
-     * Makes the page the dead end a refusal of the read stands for: which one, the message
-     * of the run, the table of candidates where there are several, and the received PDF
+     * Makes the page the dead end a refusal of the read stands for, with the received PDF
      * where there is one to show.
      *
      * @return the exit code of the refusal, which is the one every other command leaves with
      */
-    private int deadEnd(ViewPage.Content content, Path directory, Input input, CliException e) {
-        ViewPage.DeadEnd.Kind kind = kind(e);
-        state = switch (kind) {
+    private int deadEnd(ViewPage.Content content, Path directory, CliException e) {
+        ViewPage.DeadEnd end = deadEndOf(e);
+        state = switch (end.kind()) {
             case NO_INVOICE -> "no-invoice";
             case NOT_ESTABLISHED -> "not-established";
             case SEVERAL -> "several";
@@ -315,14 +439,40 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
         };
         message = e.getMessage();
         console.error(message);
-        content.deadEnd(new ViewPage.DeadEnd(kind, message,
-                kind == ViewPage.DeadEnd.Kind.SEVERAL ? candidates(e) : List.of()));
+        content.deadEnd(end);
         // An encrypted file is not copied: nothing of it was read, and a page that framed it
         // would hand the reader a file this tool refused to open.
-        if (input != null && input.isPdf() && kind != ViewPage.DeadEnd.Kind.ENCRYPTED) {
-            received(content, directory, input);
+        if (input != null && input.isPdf() && end.kind() != ViewPage.DeadEnd.Kind.ENCRYPTED) {
+            received(content, directory);
         }
         return e.exitCode();
+    }
+
+    /** Returns the dead end a refusal of the read is: which, its candidates, its bound. */
+    private ViewPage.DeadEnd deadEndOf(CliException e) {
+        ViewPage.DeadEnd.Kind kind = kind(e);
+        return switch (kind) {
+            case SEVERAL -> ViewPage.DeadEnd.several(candidates(e));
+            case LIMIT -> ViewPage.DeadEnd.limit(limit(e.getMessage()));
+            default -> ViewPage.DeadEnd.of(kind);
+        };
+    }
+
+    /**
+     * Returns a bound of this run as a reader is told about it: the time the run was given,
+     * the pages of the letter, or a size, with the option the message names to raise it.
+     *
+     * @param refusal the message of the bound, as every command of this tool writes it
+     * @return the bound
+     */
+    static ViewPage.Limit limit(String refusal) {
+        if (refusal.contains("--max-runtime")) {
+            return new ViewPage.Limit(ViewPage.Limit.Kind.TIME, "--max-runtime");
+        }
+        Matcher raises = RAISES.matcher(refusal);
+        String option = raises.find() ? raises.group(1) : null;
+        return new ViewPage.Limit("--max-pages".equals(option) ? ViewPage.Limit.Kind.PAGES
+                : ViewPage.Limit.Kind.SIZE, option);
     }
 
     /** Returns which dead end a refusal of the read is, by its exit code and its cause. */
@@ -394,7 +544,7 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     // ------------------------------------------------------------------- the header
 
     /** Copies the received PDF, unchanged, under its own name into {@code received/}. */
-    private void received(ViewPage.Content content, Path directory, Input input) {
+    private void received(ViewPage.Content content, Path directory) {
         String name = Path.of(file).getFileName().toString();
         Path copy = directory.resolve(RECEIVED).resolve(name);
         if (write(copy, input.bytes())) {
@@ -404,19 +554,12 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     }
 
     /**
-     * Gives the header what the file is and what the invoice says: where it was taken out
-     * of, its syntax and profile, what was done to its bytes, and the document.
+     * Gives the header what the invoice says: the document, and where the container declares
+     * a profile that carries no EN 16931 invoice, that profile.
      */
-    private void header(ViewPage.Content content, Loaded loaded, SemanticDocument document,
+    private void header(ViewPage.Content content, SemanticDocument document,
                         Extensions extensions) {
         Optional<Container> container = loaded.container();
-        container.flatMap(Container::invoice).ifPresent(invoice ->
-                content.provenance(invoice.position(), invoice.name()));
-        content.syntax(container.isPresent()
-                ? Text.of(Phrase.SYNTAX_FROM_ATTACHMENT, loaded.syntax().label())
-                : Text.words(loaded.syntax().label()));
-        profile(loaded, document).ifPresent(content::profile);
-        loaded.encoding().map(XmlEncodingReport::describe).ifPresent(content::recoded);
         Optional<FacturXProfile> profile = validation != null ? validation.profile()
                 : document == null ? Optional.empty()
                         : container.flatMap(found -> found.profile(document));
@@ -427,28 +570,6 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
         }
     }
 
-    /**
-     * Returns the profile the document claims, as the report names it: the specification
-     * identifier the syntax engine read, or BT-24 of the document, or the conformance level
-     * the container declares.
-     */
-    private Optional<String> profile(Loaded loaded, SemanticDocument document) {
-        if (validation != null) {
-            Optional<String> named = validation.syntaxCheck().report()
-                    .map(found -> found.customizationId()).filter(id -> !id.isEmpty());
-            if (named.isPresent()) {
-                return named;
-            }
-            return validation.profile().map(FacturXProfile::conformanceLevel);
-        }
-        Optional<String> stated = Optional.ofNullable(document)
-                .flatMap(found -> found.value(SemanticPath.of("/BG-2/BT-24")))
-                .map(SemanticValue::content).filter(id -> !id.isEmpty());
-        return stated.isPresent() ? stated
-                : loaded.container().flatMap(Container::declaredProfile)
-                        .map(FacturXProfile::conformanceLevel);
-    }
-
     // ------------------------------------------------------------------- the views
 
     /**
@@ -457,25 +578,24 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
      *
      * @return whether the rendering reached a bound of this run
      */
-    private boolean letter(ViewPage.Content content, Path directory, String stem, Loaded loaded,
+    private boolean letter(ViewPage.Content content, Path directory, String stem,
                            SemanticDocument document, RenderLanguage language,
                            Extensions extensions, RenderTemplate branded, Deadline deadline) {
-        if (document == null) {
-            content.letter(ViewPage.Letter.refused(Text.of(Phrase.REASON_NO_DOCUMENT)));
-            return false;
-        }
-        Optional<String> unreadable = unreadable(loaded);
-        if (unreadable.isPresent()) {
-            content.letter(ViewPage.Letter.refused(Text.words(unreadable.orElseThrow())));
+        if (document == null || unreadable(loaded).isPresent()) {
+            content.letter(ViewPage.Letter.refused());
             return false;
         }
         RenderOptions options = RenderCommand.options(console, language, PageSize.A4);
         RenderOptions letter = branded == null ? options : options.withTemplate(branded);
+        if (noPaymentCode) {
+            letter = letter.withPaymentCode(PaymentCode.OMIT);
+        }
+        RenderOptions chosen = letter;
         byte[] pdf;
         try {
             pdf = deadline.within(loaded.name() + ": rendering the letter",
                     () -> RenderCommand.pdf(document, Editions.require(document, extensions),
-                            letter, console));
+                            chosen, console));
         } catch (CliException e) {
             if (e.exitCode() == ExitCode.LIMIT) {
                 if (report) {
@@ -483,11 +603,11 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
                 } else {
                     console.error(e.getMessage());
                 }
-                content.letter(ViewPage.Letter.limited(e.getMessage()));
+                content.letter(ViewPage.Letter.limited(limit(e.getMessage())));
                 return true;
             }
             console.warning("the letter was not written: " + e.getMessage());
-            content.letter(ViewPage.Letter.refused(Text.words(e.getMessage())));
+            content.letter(ViewPage.Letter.refused());
             return false;
         }
         String name = stem + ".letter.pdf";
@@ -495,17 +615,17 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
             written.put("letter", directory.resolve(name));
             content.letter(ViewPage.Letter.written(name));
         } else {
-            content.letter(ViewPage.Letter.refused(Text.words("cannot write " + name)));
+            content.letter(ViewPage.Letter.refused());
         }
         return false;
     }
 
     /**
-     * Renders the HTML page, as {@code esj render --html} renders it for this file and this
-     * language, and writes it beside the page with what did not reach it; or says why there
-     * is none.
+     * Renders the KoSIT visualization, as {@code esj render --html} renders it for this file
+     * and this language, and writes it beside the page with what did not reach it; where it
+     * cannot be rendered, the page has no tab for it.
      */
-    private void kosit(ViewPage.Content content, Path directory, String stem, Loaded loaded,
+    private void kosit(ViewPage.Content content, Path directory, String stem,
                        SemanticDocument document, RenderLanguage language,
                        Extensions extensions, Deadline deadline) {
         if (document == null || unreadable(loaded).isPresent()) {
@@ -519,7 +639,6 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
                             options, console));
         } catch (CliException e) {
             console.warning("the HTML rendering was not written: " + e.getMessage());
-            content.kositRefused(e.getMessage());
             return;
         }
         String name = stem + ".kosit.html";
@@ -548,9 +667,8 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
      *
      * @return whether both forms were delivered
      */
-    private boolean reports(ViewPage.Content content, Path directory, String stem, Input input,
-                            Loaded loaded, Extensions extensions, Deadline deadline,
-                            RenderLanguage language) {
+    private boolean reports(ViewPage.Content content, Path directory, String stem,
+                            Extensions extensions, Deadline deadline, RenderLanguage language) {
         ReportOptions options = ReportOptions.defaults().withLanguage(language);
         ValidationOutcome outcome = Outcome.of(input, loaded, validation);
         String html = stem + ".report.html";
@@ -559,7 +677,7 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
                 extensions, deadline, options);
         boolean pdfWritten = report(true, directory.resolve(pdf), "reportPdf", input, loaded,
                 extensions, deadline, options);
-        content.report(outcome, htmlWritten ? html : null, pdfWritten ? pdf : null);
+        content.report(outcome, pdfWritten ? pdf : null);
         return htmlWritten && pdfWritten;
     }
 
@@ -687,7 +805,7 @@ final class ViewCommand implements Callable<Integer>, ReadsADocument {
     // ------------------------------------------------------------------- output
 
     /** Writes the object {@code --output json} prints in place of the path. */
-    private void json(Path page, Path directory, boolean opened, ViewPage.Content content) {
+    private void json(Path page, Path directory, boolean opened) {
         Json.write(console, generator -> {
             generator.writeStartObject();
             generator.writeStringField("page", page.toString());

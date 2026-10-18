@@ -1,0 +1,76 @@
+Verkäufer
+---------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Deutschland
+
+Käufer
+------
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Deutschland
+
+Rechnung RE-2026-0211
+=====================
+
+Rechnungsnummer   RE-2026-0211
+Rechnungsdatum    12.05.2026
+Fälligkeitsdatum  11.06.2026
+USt-IdNr.         DE123456789
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung                    Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  -------------------------  ---------  ------------------------  ----  -----------------
+1    Sensor module SM-100       100 Stück                     12,00  19 %           1.080,00
+     Nachlass 120,00 EUR · Prozentsatz 10 % · Grundbetrag 1.200,00 EUR · Quantity discount · Code
+       für den Nachlassgrund 95
+
+2    Printed documentation set    5 Stück                    200,00  7 %              975,00
+     Nachlass 25,00 EUR · Damaged packaging · Code für den Nachlassgrund 64
+---  -------------------------  ---------  ------------------------  ----  -----------------
+                                                   Summe aller Positionen           2.055,00
+
+Nachlässe auf Dokumentenebene
+-----------------------------
+Grund                 Grundbetrag (EUR)  Prozentsatz  USt.  Betrag (EUR)
+--------------------  -----------------  -----------  ----  ------------
+Annual volume rebate                                  19 %        100,00
+  Kennung für den Nachlassgrund: 100
+
+Annual volume rebate                                  7 %          50,00
+  Kennung für den Nachlassgrund: 100
+--------------------  -----------------  -----------  ----  ------------
+
+Gesamtbeträge
+-------------
+                                                Summe Nachlässe                           150,00 EUR
+                                                Gesamtsumme netto                       1.905,00 EUR
+                                                Steuerbasisbetrag 19 %                    980,00 EUR
+                                                Umsatzsteuerbetrag 19 %                   186,20 EUR
+                                                Steuerbasisbetrag 7 %                     925,00 EUR
+                                                Umsatzsteuerbetrag 7 %                     64,75 EUR
+                                                Summe Umsatzsteuer                        250,95 EUR
+                                                Gesamtsumme brutto                      2.155,95 EUR
+                                                ====================================================
+                                                Fälliger Betrag                         2.155,95 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsbedingungen  Payable within 30 days without deduction.
+Zahlungsart          SEPA-Überweisung
+IBAN                 DE89 3704 0044 0532 0130 00
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                H87 = Stück
+Zahlungsart            58 = SEPA-Überweisung
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                      EUR
+Spezifikationskennung (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Umsatzsteuer-ID (/BG-7/BT-48)        DE987654321

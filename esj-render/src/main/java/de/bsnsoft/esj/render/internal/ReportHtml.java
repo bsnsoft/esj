@@ -5,6 +5,7 @@ import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.render.RenderLanguage;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.UnaryOperator;
 
 /**
  * The validation report as one HTML page.
@@ -146,18 +147,18 @@ final class ReportHtml {
 
     /**
      * Writes the verdict card of a report into another page: the word and its detail, the
-     * verdicts of the subjects, a sentence of that page's own, and the scope of the verdict
-     * — the card of {@link #of} without the identity, which that page writes in a section
-     * of its own ({@link #sections}).
+     * verdicts of the subjects and the scope of the verdict — the card of {@link #of}
+     * without the identity, which that page writes in a section of its own
+     * ({@link #sections}), and with every verdict word written as that page writes it.
      *
-     * @param out      where the card is written
-     * @param outcome  what the run came to
-     * @param options  the language of the report
-     * @param sentence the sentence that page puts in front of the scope, or {@code null}
+     * @param out     where the card is written
+     * @param outcome what the run came to
+     * @param options the language of the report
+     * @param words   what a verdict word is written as on that page
      */
     static void card(StringBuilder out, ValidationOutcome outcome, ReportOptions options,
-                     String sentence) {
-        new ReportHtml(outcome, options, out, REPORT_LEVEL).verdict(false, sentence);
+                     UnaryOperator<String> words) {
+        new ReportHtml(outcome, options, out, REPORT_LEVEL).verdict(false, words);
     }
 
     /**
@@ -193,7 +194,7 @@ final class ReportHtml {
                 .append("</title>\n<style>\n").append(STYLE).append("</style>\n</head>\n")
                 .append("<body>\n<main>\n<h1>").append(escape(ReportWord.TITLE.in(language)))
                 .append("</h1>\n");
-        verdict(true, null);
+        verdict(true, UnaryOperator.identity());
         checks();
         findings();
         provenance();
@@ -206,10 +207,10 @@ final class ReportHtml {
      *
      * @param identity whether the identity of what was judged is part of the card, as it is
      *                 on the report page
-     * @param sentence a sentence to stand in front of the scope, or {@code null}
+     * @param words    what a verdict word is written as: itself on the report page
      */
-    private void verdict(boolean identity, String sentence) {
-        String word = ReportContent.verdict(outcome);
+    private void verdict(boolean identity, UnaryOperator<String> words) {
+        String word = words.apply(ReportContent.verdict(outcome));
         String kind = outcome.verdict().map(Enum::name).orElse("NONE");
         out.append("<section class=\"card\">\n<p class=\"verdict verdict-").append(kind)
                 .append("\"><span>").append(escape(ReportWord.VERDICT.in(language)))
@@ -217,10 +218,7 @@ final class ReportHtml {
         outcome.detail().ifPresent(detail -> out.append(" <span>")
                 .append(escape(ReportContent.resolve(detail, language))).append("</span>"));
         out.append("</p>\n");
-        subjects();
-        if (sentence != null) {
-            out.append("<p>").append(escape(sentence)).append("</p>\n");
-        }
+        subjects(words);
         out.append("<p class=\"note\">").append(escape(ReportWord.SCOPE.in(language)))
                 .append("</p>\n");
         if (identity) {
@@ -259,8 +257,8 @@ final class ReportHtml {
      * keep a reader from booking a conformant container as a bad invoice, or a sound
      * invoice as the reason a file was rejected.
      */
-    private void subjects() {
-        List<ReportContent.Line> lines = ReportContent.subjects(outcome, language);
+    private void subjects(UnaryOperator<String> words) {
+        List<ReportContent.Line> lines = ReportContent.subjects(outcome, language, words);
         if (lines.isEmpty()) {
             return;
         }

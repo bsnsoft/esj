@@ -1,0 +1,74 @@
+Seller
+------
+Beispiel Handels GmbH
+Werkstrasse 8
+10117 Beispielstadt
+Germany
+shop@beispiel.invalid (EM)
+
+Buyer
+-----
+Jana Muster
+Lindenweg 4
+20095 Musterstadt
+Germany
+
+Invoice RE-2026-0731
+====================
+
+Invoice number      RE-2026-0731
+Invoice issue date  2026-04-14
+Payment due date    2026-04-28
+VAT ID              DE123456789
+
+Invoice lines
+-------------
+No.  Item                  Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  --------------------  --------  ---------------------  ----  ----------------
+1    Shower fitting SF-20   1 piece               84.02521  19 %             84.03
+     Displayed gross unit price (B2C): 99.99
+     Displayed gross line total (B2C): 99.99
+     Displayed line VAT amount (B2C): 15.96
+
+2    Shower hose 1.5 m     2 pieces              16.798319  19 %             33.60
+     Displayed gross unit price (B2C): 19.99
+     Displayed gross line total (B2C): 39.98
+     Displayed line VAT amount (B2C): 6.38
+
+3    Sealing tape 12 m     3 pieces               3.781513  19 %             11.34
+     Displayed gross unit price (B2C): 4.50
+     Displayed gross line total (B2C): 13.50
+     Displayed line VAT amount (B2C): 2.16
+---  --------------------  --------  ---------------------  ----  ----------------
+                                  Sum of Invoice line net amount            128.97
+
+Document totals
+---------------
+                                                Invoice total amount without VAT          128.97 EUR
+                                                Taxable amount 19 %                       128.97 EUR
+                                                VAT amount 19 %                            24.50 EUR
+                                                Invoice total VAT amount                   24.50 EUR
+                                                Invoice total amount with VAT             153.47 EUR
+                                                ====================================================
+                                                Amount due for payment                    153.47 EUR
+
+Payment instructions
+--------------------
+Payment terms           Payable within 14 days without deduction.
+Payment means           SEPA credit transfer
+IBAN                    DE89 3704 0044 0532 0130 00
+Account holder          Beispiel Handels GmbH
+Remittance information  RE-2026-0731
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           H87 = piece
+Payment means  58 = SEPA credit transfer
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)             EUR
+Displayed invoice gross total (B2C) (/BT-B2C-010)
+                                          153.47
+Specification identifier (/BG-2/BT-24)    urn:cen.eu:en16931:2017

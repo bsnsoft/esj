@@ -129,10 +129,10 @@ Files.write(out.resolve("invoice.esj.json"), EsjWriter.pretty().toBytes(invoice)
 with the domain API, read back from the file, the business rules checked in the three places a
 sender can check them. [`docs/getting-started.md`](docs/getting-started.md) is the first hour.
 
-`esj view invoice.pdf` writes one page about a file and opens it in the browser: the PDF as it
-came beside the letter drawn from its data, and with `--report` the validation report. The Linux
-packages and the macOS archive offer it under *Open with* for XML and PDF files
-([`docs/view.md`](docs/view.md)).
+`esj view invoice.pdf` shows an invoice in the browser, a tab each for the PDF as it came, the
+letter drawn from its data, the KoSIT view and with `--report` the validation report, or with
+`--text` in the terminal. The Linux packages and the macOS archive offer it under *Open with* for
+XML and PDF files ([`docs/view.md`](docs/view.md)).
 
 ## Persistence
 

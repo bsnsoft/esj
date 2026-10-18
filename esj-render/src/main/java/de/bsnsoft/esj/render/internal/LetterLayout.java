@@ -334,6 +334,33 @@ final class LetterLayout extends InvoiceLayout {
         sheet.finish(identity(), Word.PAGE_OF.in(language), title);
     }
 
+    /**
+     * Collects everything the letter shows without drawing it, in the order {@link #draw()}
+     * collects it, so that a value goes to the same block in both. The recipient is taken
+     * whole, because there is no envelope to fit; the seller's details are the columns of
+     * the foot, because there is no foot to run out of room in; and no payment code is
+     * collected, so the closing section says nothing about one.
+     *
+     * @return the letter, as data
+     */
+    Model model() {
+        reserve();
+        List<Field> reference = referenceFields();
+        List<String> recipient = recipient(Float.MAX_VALUE, Float.MAX_VALUE);
+        List<List<String>> seller = foot();
+        String preceding = titleLines();
+        List<Note> notes = noteList();
+        LineTable lines = lineTable();
+        AdjustmentTable allowances = adjustmentTable("BG-20");
+        AdjustmentTable charges = adjustmentTable("BG-21");
+        List<Row> totals = totalRows(List.of());
+        List<List<Field>> payment = paymentParts();
+        List<Field> rest = disambiguate(remainingFields());
+        return new Model(seller, List.copyOf(recipient), title, preceding, reference, notes,
+                lines, allowances, charges, totals, payment, List.copyOf(codes.values()),
+                rest);
+    }
+
     // ---------------------------------------------------------------- what a layout decides
 
     @Override
@@ -745,13 +772,17 @@ final class LetterLayout extends InvoiceLayout {
             if (line.isEmpty() || full) {
                 return false;
             }
-            float height =
-                    Sheet.measure(line, sheet.fonts().regular(), RECIPIENT_SIZE, width);
-            if (used + height > budget) {
-                full = true;
-                return false;
+            // A block without a bound holds every line, and is what the text rendering
+            // asks for: it has no sheet to measure on and no envelope to fit.
+            if (budget != Float.MAX_VALUE) {
+                float height =
+                        Sheet.measure(line, sheet.fonts().regular(), RECIPIENT_SIZE, width);
+                if (used + height > budget) {
+                    full = true;
+                    return false;
+                }
+                used += height;
             }
-            used += height;
             written.add(line);
             for (SemanticPath path : shown) {
                 place(path, read(path));
@@ -1016,17 +1047,13 @@ final class LetterLayout extends InvoiceLayout {
      * which ones.
      */
     private void title() {
-        SemanticPath type = SemanticPath.of("/BT-3");
-        String kind = codeName("BT-3", read(type));
-        place(type, read(type));
-        title = join(kind, read(SemanticPath.of("/BT-1")));
+        String preceding = titleLines();
         if (title.isEmpty()) {
             return;
         }
         sheet.down(2f);
         sheet.block(title, sheet.left(), sheet.width(), sheet.fonts().bold(), TITLE_SIZE,
                 palette.heading());
-        String preceding = precedingInvoices();
         if (!preceding.isEmpty()) {
             sheet.down(1f);
             sheet.block(preceding, sheet.left(), sheet.width(), sheet.fonts().regular(),
@@ -1034,6 +1061,21 @@ final class LetterLayout extends InvoiceLayout {
         }
         sheet.down(3f);
         sheet.rule();
+    }
+
+    /**
+     * Sets the title of the letter and returns the line under it, marking what both show
+     * placed: the type by name and the number, and where the title is not empty the
+     * invoices the document refers to.
+     *
+     * @return the line under the title, or the empty string where there is none
+     */
+    private String titleLines() {
+        SemanticPath type = SemanticPath.of("/BT-3");
+        String kind = codeName("BT-3", read(type));
+        place(type, read(type));
+        title = join(kind, read(SemanticPath.of("/BT-1")));
+        return title.isEmpty() ? "" : precedingInvoices();
     }
 
     /**
@@ -1080,29 +1122,45 @@ final class LetterLayout extends InvoiceLayout {
 
     /** Writes the notes of the invoice as paragraphs above the table. */
     private void notes() {
-        List<SemanticPath> notes = instances(SemanticPath.root(), "BG-1");
+        List<Note> notes = noteList();
         if (notes.isEmpty()) {
             return;
         }
         sheet.down(SECTION_GAP);
         Fonts.Face face = sheet.fonts().regular();
-        for (SemanticPath note : notes) {
-            SemanticPath subject = path(note, "BT-21");
-            String code = cell(note, "BT-21");
-            if (!code.isEmpty()) {
-                sheet.block(label(subject) + ": " + code, sheet.left(), sheet.width(), face,
+        for (Note note : notes) {
+            if (!note.subject().isEmpty()) {
+                sheet.block(note.subject(), sheet.left(), sheet.width(), face,
                         SMALL_SIZE, palette.muted());
             }
-            String text = cell(note, "BT-22");
-            if (!text.isEmpty()) {
-                sheet.block(text, sheet.left(), sheet.width(), face, NOTE_SIZE, palette.text());
+            if (!note.text().isEmpty()) {
+                sheet.block(note.text(), sheet.left(), sheet.width(), face, NOTE_SIZE,
+                        palette.text());
             }
-            for (Field field : collect(note)) {
+            for (Field field : note.rest()) {
                 sheet.block(field.label() + ": " + field.value(), sheet.left(), sheet.width(),
                         face, SMALL_SIZE, palette.muted());
             }
             sheet.down(4f);
         }
+    }
+
+    /**
+     * Returns the notes of the invoice — the subject of each, its text and whatever else
+     * it carries — and marks them placed.
+     *
+     * @return the notes, in the order of the document
+     */
+    private List<Note> noteList() {
+        List<Note> notes = new ArrayList<>();
+        for (SemanticPath note : instances(SemanticPath.root(), "BG-1")) {
+            SemanticPath subject = path(note, "BT-21");
+            String code = cell(note, "BT-21");
+            String text = cell(note, "BT-22");
+            notes.add(new Note(code.isEmpty() ? "" : label(subject) + ": " + code, text,
+                    List.copyOf(collect(note))));
+        }
+        return notes;
     }
 
     // ---------------------------------------------------------------- the money
@@ -1112,12 +1170,31 @@ final class LetterLayout extends InvoiceLayout {
      * breakdown, and the amount due last and in bold.
      */
     private void totals() {
-        List<SemanticPath> documents = instances(SemanticPath.root(), "BG-22");
-        List<SemanticPath> breakdown = instances(SemanticPath.root(), "BG-23");
         List<Placement> displayed =
                 carried(Placement.Position.TOTALS, List.of(SemanticPath.root()));
-        if (documents.isEmpty() && breakdown.isEmpty() && displayed.isEmpty()) {
+        List<Row> rows = totalRows(displayed);
+        if (rows == null) {
             return;
+        }
+        drawTotals(rows);
+        if (!displayed.isEmpty()) {
+            displayedNote();
+        }
+    }
+
+    /**
+     * Returns the rows of the totals — the sums of the document, the VAT per category out
+     * of the breakdown, the amount due, and the figures a template placed among them — and
+     * marks them placed.
+     *
+     * @param displayed the placements of the template among the totals
+     * @return the rows, or {@code null} where the document states none of them
+     */
+    private List<Row> totalRows(List<Placement> displayed) {
+        List<SemanticPath> documents = instances(SemanticPath.root(), "BG-22");
+        List<SemanticPath> breakdown = instances(SemanticPath.root(), "BG-23");
+        if (documents.isEmpty() && breakdown.isEmpty() && displayed.isEmpty()) {
+            return null;
         }
         List<Row> rows = new ArrayList<>();
         for (SemanticPath totals : documents) {
@@ -1144,10 +1221,7 @@ final class LetterLayout extends InvoiceLayout {
             rows.add(new Row(header(placement, false),
                     placedCell(SemanticPath.root(), placement), false, false));
         }
-        drawTotals(rows);
-        if (!displayed.isEmpty()) {
-            displayedNote();
-        }
+        return rows;
     }
 
     /**
@@ -1340,6 +1414,21 @@ final class LetterLayout extends InvoiceLayout {
      * nothing about what the number is for.
      */
     private void payment() {
+        List<List<Field>> parts = paymentParts();
+        if (parts.isEmpty()) {
+            return;
+        }
+        drawPayment(parts);
+    }
+
+    /**
+     * Returns the parts of the payment block — the terms, and per payment instruction the
+     * means of payment and every account — with every label made unambiguous against the
+     * whole block, and marks them placed.
+     *
+     * @return the parts, empty where the document states no payment details
+     */
+    private List<List<Field>> paymentParts() {
         List<List<Field>> parts = new ArrayList<>();
         List<Field> terms = new ArrayList<>();
         // BT-20 is the payment terms of the standard, and the localization of the
@@ -1370,10 +1459,7 @@ final class LetterLayout extends InvoiceLayout {
             }
             part(parts, qualified(collect(instructions), qualifier));
         }
-        if (parts.isEmpty()) {
-            return;
-        }
-        drawPayment(told(parts));
+        return parts.isEmpty() ? parts : told(parts);
     }
 
     /**
@@ -2017,6 +2103,11 @@ final class LetterLayout extends InvoiceLayout {
             return;
         }
         List<Field> shown = disambiguate(rest);
+        drawFurtherDetails(written, said, shown);
+    }
+
+    /** Draws the closing section: the codes, the remarks, and the values without a place. */
+    private void drawFurtherDetails(List<Field> written, List<Field> said, List<Field> shown) {
         float whole = definitionsHeight(written, sheet.width())
                 + definitionsHeight(said, sheet.width())
                 + definitionsHeight(shown, sheet.width());
@@ -2108,6 +2199,43 @@ final class LetterLayout extends InvoiceLayout {
      * @param due   whether this is the amount due, which closes the block
      * @param muted whether the row is a remark under the row above it
      */
-    private record Row(String label, String value, boolean due, boolean muted) {
+    record Row(String label, String value, boolean due, boolean muted) {
+    }
+
+    /**
+     * One note of the invoice.
+     *
+     * @param subject the subject code under its label, or the empty string for none
+     * @param text    the text of the note, or the empty string for none
+     * @param rest    whatever else the note carries
+     */
+    record Note(String subject, String text, List<Field> rest) {
+    }
+
+    /**
+     * Everything the letter shows, collected in the order the letter collects it and drawn
+     * nowhere: what {@link InvoiceText} writes. It is the letter without its paper — no
+     * address field to fit, no foot to measure, no payment code — so every value the
+     * letter would place somewhere has a place here, and what is left over is under
+     * {@link #rest()} exactly as under the closing heading of the letter.
+     *
+     * @param seller     the sender's own details, in the columns of the letter foot
+     * @param recipient  the lines of the recipient, as the address field writes them
+     * @param title      the type of the document by name and its number
+     * @param preceding  the line under the title naming the invoices referred to, or empty
+     * @param reference  the number, the dates and the references of the reference line
+     * @param notes      the notes of the invoice
+     * @param lines      the table of invoice lines, or {@code null}
+     * @param allowances the table of allowances on the document level, or {@code null}
+     * @param charges    the table of charges on the document level, or {@code null}
+     * @param totals     the rows of the totals, or {@code null}
+     * @param payment    the parts of the payment block
+     * @param codes      the codes whose names the letter wrote, each once
+     * @param rest       every value without a place of its own, under its label and path
+     */
+    record Model(List<List<String>> seller, List<String> recipient, String title,
+                 String preceding, List<Field> reference, List<Note> notes, LineTable lines,
+                 AdjustmentTable allowances, AdjustmentTable charges, List<Row> totals,
+                 List<List<Field>> payment, List<Field> codes, List<Field> rest) {
     }
 }

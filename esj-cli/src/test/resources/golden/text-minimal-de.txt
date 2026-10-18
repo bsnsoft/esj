@@ -1,0 +1,42 @@
+Verkäufer
+---------
+Example GmbH
+Deutschland
+
+Käufer
+------
+Muster AG
+Deutschland
+
+Rechnung RE-2026-0001
+=====================
+
+Rechnungsnummer  RE-2026-0001
+Rechnungsdatum   15.01.2026
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung             Menge  Einzelpreis, netto (EUR)  USt.      Nettobetrag (EUR)
+---  ------------------  ---------  ------------------------  --------  -----------------
+1    Consulting service  1 Einheit                    100,00  Nullsatz             100,00
+---  ------------------  ---------  ------------------------  --------  -----------------
+                                                Summe aller Positionen             100,00
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                         100,00 EUR
+                                                Steuerbasisbetrag Nullsatz                100,00 EUR
+                                                Umsatzsteuerbetrag Nullsatz                 0,00 EUR
+                                                Gesamtsumme brutto                        100,00 EUR
+                                                ====================================================
+                                                Fälliger Betrag                           100,00 EUR
+
+Weitere Angaben
+---------------
+Dokumentenart          380 = Rechnung
+Einheit                C62 = Einheit
+Umsatzsteuerkategorie  Z = Nullsatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                      EUR
+Spezifikationskennung (/BG-2/BT-24)  urn:cen.eu:en16931:2017
