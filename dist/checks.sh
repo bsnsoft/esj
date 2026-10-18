@@ -194,3 +194,56 @@ esj_glibc_floor() {
        return 1 ;;
   esac
 }
+
+# The application of the macOS archive that Finder offers under "Open With" for
+# an XML or a PDF file (dist/viewer-app.sh, docs/view.md): its name, beside the
+# executable, and its identifier.
+ESJ_VIEWER_APP='ESJ Viewer.app'
+ESJ_VIEWER_IDENTIFIER=de.bsnsoft.esj.viewer
+
+# One value of the property list of an application, empty where it has none.
+esj_plist_value() {
+  /usr/libexec/PlistBuddy -c "Print :$2" "$1/Contents/Info.plist" 2>/dev/null || true
+}
+
+# Fails when ESJ Viewer.app is not the viewer it is meant to be: the identifier
+# of this project, one document type that names public.xml and com.adobe.pdf
+# with the role Viewer and the rank Alternate — listed under "Open With", never
+# the default of either type — the icon written from dist/desktop/esj.svg and no
+# other, the compiled script, and a valid signature. macOS only.
+#
+#   esj_viewer_app <application>
+esj_viewer_app() {
+  esj_viewer=${1:?usage: esj_viewer_app <application>}
+  esj_viewer_wrong=
+  [ "$(esj_plist_value "$esj_viewer" CFBundleIdentifier)" = "$ESJ_VIEWER_IDENTIFIER" ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; CFBundleIdentifier is not $ESJ_VIEWER_IDENTIFIER"
+  [ "$(esj_plist_value "$esj_viewer" CFBundleDocumentTypes:0:CFBundleTypeRole)" = Viewer ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; the document type is not opened as a viewer"
+  [ "$(esj_plist_value "$esj_viewer" CFBundleDocumentTypes:0:LSHandlerRank)" = Alternate ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; the rank of the document type is not Alternate"
+  esj_viewer_types=$(esj_plist_value "$esj_viewer" CFBundleDocumentTypes:0:LSItemContentTypes)
+  for esj_viewer_type in public.xml com.adobe.pdf; do
+    echo "$esj_viewer_types" | grep -q -x " *$esj_viewer_type" ||
+      esj_viewer_wrong="$esj_viewer_wrong; $esj_viewer_type is not a type it opens"
+  done
+  [ "$(echo "$esj_viewer_types" | grep -c '\.')" = 2 ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; it opens other types than the two"
+  [ -z "$(esj_plist_value "$esj_viewer" CFBundleDocumentTypes:1)" ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; it declares a second document type"
+  [ "$(esj_plist_value "$esj_viewer" CFBundleIconFile)" = esj ] &&
+    [ -f "$esj_viewer/Contents/Resources/esj.icns" ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; the icon is not esj.icns"
+  [ -z "$(esj_plist_value "$esj_viewer" CFBundleIconName)" ] &&
+    [ ! -e "$esj_viewer/Contents/Resources/Assets.car" ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; an asset catalog would replace the icon"
+  [ -f "$esj_viewer/Contents/Resources/Scripts/main.scpt" ] ||
+    esj_viewer_wrong="$esj_viewer_wrong; there is no compiled script"
+  codesign --verify --deep --strict "$esj_viewer" 2>/dev/null ||
+    esj_viewer_wrong="$esj_viewer_wrong; the signature does not verify"
+  if [ -n "$esj_viewer_wrong" ]; then
+    echo "checks.sh: $esj_viewer${esj_viewer_wrong}" >&2
+    return 1
+  fi
+  echo "checks.sh: $ESJ_VIEWER_APP opens public.xml and com.adobe.pdf as an alternate viewer, signed"
+}

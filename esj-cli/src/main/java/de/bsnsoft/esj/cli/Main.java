@@ -164,9 +164,32 @@ public final class Main {
     static int run(String[] args, InputStream in, OutputStream out, OutputStream err,
                    IntConsumer halt, Map<String, String> environment,
                    Duration defaultMaxRuntime) {
+        return run(args, in, out, err, halt, environment, defaultMaxRuntime,
+                Desktop.Machine.running());
+    }
+
+    /**
+     * Runs the tool on a machine of the caller's choosing, for a test of {@code esj view}
+     * that writes its pages into a directory of its own and starts no browser.
+     *
+     * @param args              the command line
+     * @param in                the stream a file name of {@code -} reads from
+     * @param out               the stream a document is written to
+     * @param err               the stream diagnostics, warnings and errors are written to
+     * @param halt              what ends the process when the deadline passes
+     * @param environment       the environment variables the run reads its settings from
+     * @param defaultMaxRuntime the deadline of a command that reads a document where
+     *                          {@code --max-runtime} names none
+     * @param machine           the machine a page is written on and opened from
+     * @return one of the codes of {@link ExitCode}
+     */
+    static int run(String[] args, InputStream in, OutputStream out, OutputStream err,
+                   IntConsumer halt, Map<String, String> environment,
+                   Duration defaultMaxRuntime, Desktop.Machine machine) {
         GlobalOptions options = new GlobalOptions();
         options.environment(environment);
         options.defaultMaxRuntime(defaultMaxRuntime);
+        options.machine(machine);
         Console console = new Console(in, out, err, options);
         // Before anything opens a PDF: the diagnostics of the PDF library belong to this
         // tool's output and not to whatever the virtual machine was configured with.
@@ -176,6 +199,7 @@ public final class Main {
                 .addSubcommand(new UpgradeCommand(console))
                 .addSubcommand(new ValidateCommand(console))
                 .addSubcommand(new RenderCommand(console))
+                .addSubcommand(new ViewCommand(console))
                 .addSubcommand(new EmbedCommand(console))
                 .addSubcommand(new InspectCommand(console))
                 .addSubcommand(new ExtractCommand(console))

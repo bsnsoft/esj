@@ -4,6 +4,7 @@ import de.bsnsoft.esj.syntax.SyntaxOptions;
 import java.time.Duration;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -45,6 +46,7 @@ final class GlobalOptions {
     private Duration defaultMaxRuntime = DEFAULT_MAX_RUNTIME;
     private Consumer<Duration> runtimeLimit = duration -> { };
     private Map<String, String> environment = Map.of();
+    private Desktop.Machine machine = Desktop.Machine.running();
 
     /** Tells whether the tool was asked to explain what it does on the error stream. */
     boolean verbose() {
@@ -241,6 +243,28 @@ final class GlobalOptions {
      */
     Optional<String> environment(String name) {
         return Optional.ofNullable(environment.get(name));
+    }
+
+    /**
+     * Records the machine {@code esj view} writes its page on and opens it from.
+     *
+     * <p>It is handed in for the reason the environment is: a test runs the tool on a
+     * machine of its own, whose temporary directory is the test's and whose launcher starts
+     * no browser.
+     *
+     * @param value the machine
+     */
+    void machine(Desktop.Machine value) {
+        this.machine = Objects.requireNonNull(value, "value");
+    }
+
+    /**
+     * Returns the machine this run writes a page on and opens it from.
+     *
+     * @return the machine
+     */
+    Desktop.Machine machine() {
+        return machine;
     }
 
     /**

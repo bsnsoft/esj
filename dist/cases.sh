@@ -7,7 +7,8 @@
 # the ahead-of-time cache is trained on.
 #
 # A run that writes a file names it @OUT; the runner substitutes a path of its
-# own and compares the bytes that arrive there. A run that reads what an earlier
+# own and compares the bytes that arrive there. esj view writes a directory
+# there, and every file in it is compared. A run that reads what an earlier
 # case wrote names it @FROM:<case>, so that the two steps of a hybrid file — the
 # rendering and the invoice written into it — are exercised as they are used.
 #
@@ -39,6 +40,7 @@ TECHNICAL=conformance/kosit/technical-cases
 EXAMPLES=examples
 PDF=conformance/pdf/factur-x.pdf
 ARTWORK=dist/artwork
+VIEW=dist/view
 
 esj_cases() {
   cat <<CASES
@@ -148,6 +150,16 @@ serve-help serve --help
 serve-refused serve --job-heap 1x
 mcp-closed mcp --max-jobs 1 --max-queue 1
 mcp-help mcp --help
+view-esj view --out @OUT --lang de $EXAMPLES/standard-invoice.esj.json
+view-ubl view --out @OUT --lang en $CORPUS/01.01a-INVOICE_ubl.xml
+view-cii-report view --out @OUT --lang en --report $CORPUS/01.01a-INVOICE_uncefact.xml
+view-pdf-report view --out @OUT --lang de --report $PDF
+view-template view --out @OUT --lang de --template $EXAMPLES/templates/letter.json $EXAMPLES/standard-invoice.esj.json
+view-edition-2026 view --out @OUT --lang en $EXAMPLES/edition-2026.esj.json
+view-no-invoice view --out @OUT --lang en --report $EXAMPLES/templates/letterhead.pdf
+view-not-well-formed view --out @OUT --lang de $VIEW/not-well-formed.xml
+view-limit view --out @OUT --lang de --max-input-bytes 1000 $CORPUS/01.01a-INVOICE_ubl.xml
+view-json view --out @OUT --lang en --output json --report $EXAMPLES/standard-invoice.esj.json
 CASES
   if [ "${1-}" = "--full" ]; then
     for instance in "$CORPUS"/*.xml; do

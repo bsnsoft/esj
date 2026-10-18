@@ -188,9 +188,7 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
         loaded.reportNotes(console);
         SemanticDocument document = loaded.require(console);
         Registry registry = Editions.require(document, extensions);
-        RenderOptions options = RenderOptions.defaults().withLanguage(language).withPageSize(size)
-                .withMaxPages(console.options().bounds().maxRenderPages())
-                .withMaxHtmlBytes(console.options().bounds().maxOutputBytes());
+        RenderOptions options = options(console, language, size);
         if (template != null && !html) {
             options = options.withTemplate(branded(template));
         }
@@ -268,14 +266,7 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      * such refusal.
      */
     private byte[] htmlOf(SemanticDocument document, Registry registry, RenderOptions options) {
-        Registry stylesheets = Registry.en16931WithXrechnung();
-        if (!stylesheets.describes(document.semanticModel())) {
-            throw Editions.refuse(document, "the vendored visualization stylesheets render "
-                    + stylesheets.semanticModel());
-        }
-        RenderResult result = render(() ->
-                new HtmlRenderer(registry).renderWithReport(document, options),
-                Bound.OUTPUT_BYTES);
+        RenderResult result = html(document, registry, options, console);
         reportExportNotes(result);
         console.warning("this page carries the content of a document somebody else wrote;"
                 + " open it as you would any file from a stranger. See docs/rendering.md");
@@ -283,8 +274,66 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
     }
 
     private byte[] pdfOf(SemanticDocument document, Registry registry, RenderOptions options) {
+        return pdf(document, registry, options, console);
+    }
+
+    /**
+     * Returns the options a rendering of this run starts from: the language, the paper, and
+     * the bounds of this run on the pages of the PDF and on the bytes of the HTML page.
+     *
+     * <p>{@code esj view} renders with the same options, so that the files it writes beside
+     * its page are the files this command writes for the same document.
+     *
+     * @param console  the streams and the options of this run
+     * @param language the language of the rendering
+     * @param size     the paper of the PDF
+     * @return the options
+     */
+    static RenderOptions options(Console console, RenderLanguage language, PageSize size) {
+        return RenderOptions.defaults().withLanguage(language).withPageSize(size)
+                .withMaxPages(console.options().bounds().maxRenderPages())
+                .withMaxHtmlBytes(console.options().bounds().maxOutputBytes());
+    }
+
+    /**
+     * Renders the HTML page of a document, refusing a document of an edition the vendored
+     * stylesheets do not render, and says nothing about what did not reach it: the caller
+     * does, in the place it reports to.
+     *
+     * @param document the document
+     * @param registry the registry of its edition
+     * @param options  the options of the rendering
+     * @param console  the streams and the options of this run
+     * @return the page, with the report of the export it went through
+     * @throws CliException where the edition is not rendered, a bound of this run was
+     *                      reached, or the document cannot be rendered
+     */
+    static RenderResult html(SemanticDocument document, Registry registry,
+                             RenderOptions options, Console console) {
+        Registry stylesheets = Registry.en16931WithXrechnung();
+        if (!stylesheets.describes(document.semanticModel())) {
+            throw Editions.refuse(document, "the vendored visualization stylesheets render "
+                    + stylesheets.semanticModel());
+        }
+        return render(() -> new HtmlRenderer(registry).renderWithReport(document, options),
+                Bound.OUTPUT_BYTES, console);
+    }
+
+    /**
+     * Renders the PDF of a document.
+     *
+     * @param document the document
+     * @param registry the registry of its edition
+     * @param options  the options of the rendering
+     * @param console  the streams and the options of this run
+     * @return the bytes of the PDF
+     * @throws CliException where a bound of this run was reached, the template does not
+     *                      fit the document, or the document cannot be rendered
+     */
+    static byte[] pdf(SemanticDocument document, Registry registry, RenderOptions options,
+                      Console console) {
         return render(() -> new PdfRenderer(registry).render(document, options),
-                Bound.RENDER_PAGES);
+                Bound.RENDER_PAGES, console);
     }
 
     /**
@@ -296,7 +345,7 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      * {@link ExitCode#INPUT} and the sentence of the renderer, which names the member of
      * the file it is about.
      */
-    private static RenderTemplate branded(String file) {
+    static RenderTemplate branded(String file) {
         try {
             return RenderTemplate.read(Path.of(file));
         } catch (TemplateException e) {
@@ -329,9 +378,10 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
      * @param <T>       what the rendering produces
      * @param rendering the rendering to run
      * @param bound     the bound of this run the rendering is held to
+     * @param console   the streams and the options of this run
      * @return what it produced
      */
-    private <T> T render(Supplier<T> rendering, Bound bound) {
+    private static <T> T render(Supplier<T> rendering, Bound bound, Console console) {
         try {
             // A bound of this run, and no statement about the invoice: the same document
             // renders where more is allowed. The sentence that says how to raise it is the
@@ -381,7 +431,7 @@ final class RenderCommand implements Callable<Integer>, ReadsADocument {
     }
 
     /** Returns the language of a {@code --lang} token. */
-    private static RenderLanguage language(String token) {
+    static RenderLanguage language(String token) {
         if ("de".equals(token)) {
             return RenderLanguage.GERMAN;
         }

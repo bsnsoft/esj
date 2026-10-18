@@ -126,7 +126,11 @@ run() {
     esac
     args="$args $argument"
   done
-  [ -z "$file" ] || rm -f "$root/$file"
+  # What an earlier smoke run left there is moved into this run's own directory,
+  # which is removed with it: a file, or the directory esj view writes.
+  if [ -n "$file" ] && { [ -e "$root/$file" ] || [ -L "$root/$file" ]; }; then
+    mv "$root/$file" "$work/$name.$side.earlier"
+  fi
   # A command and a case are word lists, split here on purpose.
   # shellcheck disable=SC2086
   set -- $runner $args
@@ -141,7 +145,38 @@ run() {
   echo $? > "$work/$name.$side.exit"
   if [ -n "$file" ] && [ -f "$root/$file" ]; then
     cp "$root/$file" "$work/$name.$side.file"
+  elif [ -n "$file" ] && [ -d "$root/$file" ]; then
+    cp -R "$root/$file" "$work/$name.$side.dir"
   fi
+}
+
+# The text a comparison reads, from a stream or from an HTML file: how long a run
+# took is not compared, and neither is which side wrote a file or where the
+# repository lies. --verbose reports milliseconds, which no two processes spend
+# alike; a command that echoes a path names the side it was given, and esj view
+# names the absolute directory of its page, which an artefact in a container
+# sees under its own mount. Nothing else is rewritten.
+compared() {
+  sed -E -e 's/[0-9]+ (ms|s)$/<duration>/' \
+         -e "s|[^ \"'<>]*/($written/)|\1|g" \
+         -e "s|$written/([a-z0-9-]+)\.[ab]|$written/\1|g" "$1"
+}
+
+# Compares the two directories esj view wrote for a case: the same files, each
+# HTML page as compared() reads it, every other file byte for byte.
+same_directory() {
+  ( cd "$1" && find . -type f | LC_ALL=C sort ) > "$work/files.a"
+  ( cd "$2" && find . -type f | LC_ALL=C sort ) > "$work/files.b"
+  cmp -s "$work/files.a" "$work/files.b" || return 1
+  while IFS= read -r entry; do
+    case $entry in
+      *.html)
+        compared "$1/$entry" > "$work/page.a"
+        compared "$2/$entry" > "$work/page.b"
+        cmp -s "$work/page.a" "$work/page.b" || return 1 ;;
+      *) cmp -s "$1/$entry" "$2/$entry" || return 1 ;;
+    esac
+  done < "$work/files.a"
 }
 
 echo "$cases" | while IFS= read -r line; do
@@ -161,9 +196,7 @@ echo "$cases" | while IFS= read -r line; do
     # otherwise report a difference that is only the name of the side. Nothing
     # else in either stream is rewritten.
     for side in a b; do
-      sed -E -e 's/[0-9]+ (ms|s)$/<duration>/' \
-             -e "s|$written/([a-z0-9-]+)\.[ab]|$written/\1|g" \
-          "$work/$name.$side.$part" > "$work/$name.$side.$part.compared"
+      compared "$work/$name.$side.$part" > "$work/$name.$side.$part.compared"
     done
     if ! cmp -s "$work/$name.a.$part.compared" "$work/$name.b.$part.compared"; then
       difference="$difference $part"
@@ -174,10 +207,16 @@ echo "$cases" | while IFS= read -r line; do
       difference="$difference written-file"
     fi
   fi
+  if [ -d "$work/$name.a.dir" ] || [ -d "$work/$name.b.dir" ]; then
+    if ! [ -d "$work/$name.a.dir" ] || ! [ -d "$work/$name.b.dir" ] ||
+        ! same_directory "$work/$name.a.dir" "$work/$name.b.dir"; then
+      difference="$difference written-directory"
+    fi
+  fi
   if [ -n "$difference" ]; then
     echo "FAIL $name:$difference"
     for part in $difference; do
-      [ "$part" = written-file ] && continue
+      case $part in written-*) continue ;; esac
       diff -u "$work/$name.b.$part.compared" "$work/$name.a.$part.compared" |
         sed -n '1,12p' | sed 's/^/     /'
     done

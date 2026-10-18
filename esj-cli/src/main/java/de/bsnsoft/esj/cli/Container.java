@@ -240,7 +240,55 @@ final class Container {
             }
             return located.single();
         } catch (AmbiguousInvoiceAttachmentException e) {
-            throw CliException.input(ambiguity(input.name(), located, e.candidates(), named));
+            throw CliException.input(ambiguity(input.name(), located, e.candidates(), named),
+                    Several.of(located, e));
+        }
+    }
+
+    /**
+     * The attachments a refusal of several candidates names, each with its position among
+     * the attachments of the container.
+     *
+     * <p>It travels as the cause of that refusal, under the exception of the reader, so that
+     * {@code esj view} can put the candidates in a table — the position, the name, what the
+     * bytes are, the size and the relationship the container declares — without parsing the
+     * sentence the other commands print. Nothing else reads it, and the sentence stays the
+     * one answer of every command.
+     */
+    static final class Several extends RuntimeException {
+
+        private static final long serialVersionUID = 1L;
+
+        /** The attachments, in the order the refusal names them. */
+        private final transient List<Candidate> candidates;
+
+        private Several(List<Candidate> candidates, AmbiguousInvoiceAttachmentException cause) {
+            super(cause.getMessage(), cause);
+            this.candidates = List.copyOf(candidates);
+        }
+
+        /** Returns the carrier of a refusal of the candidates a reader found. */
+        private static Several of(InvoiceAttachments located,
+                                  AmbiguousInvoiceAttachmentException cause) {
+            List<Candidate> candidates = new ArrayList<>();
+            for (LocatedAttachment candidate : cause.candidates()) {
+                candidates.add(new Candidate(located.all().indexOf(candidate) + 1, candidate));
+            }
+            return new Several(candidates, cause);
+        }
+
+        /** Returns the attachments, each with its position. */
+        List<Candidate> candidates() {
+            return candidates;
+        }
+
+        /**
+         * One attachment that could be the invoice.
+         *
+         * @param position   its position among the attachments, counted from one
+         * @param attachment the attachment
+         */
+        record Candidate(int position, LocatedAttachment attachment) {
         }
     }
 
@@ -591,7 +639,7 @@ final class Container {
                     + " EN 16931 and is not read by this project");
         }
         if (e instanceof NoInvoiceAttachmentException none) {
-            return CliException.input(noInvoice(name, none));
+            return CliException.input(noInvoice(name, none), none);
         }
         if (e instanceof PdfAccessException) {
             return CliException.input("cannot open " + name + ": " + e.getMessage(), e);

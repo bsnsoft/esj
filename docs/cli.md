@@ -35,6 +35,7 @@ below are written as `esj` and name files of this repository, so they can be pas
 | `validate` | run the official artefacts of the profile, the structural layers L1 to L3 and the business rules |
 | `render` | write the invoice as a PDF, or with `--html` as one self-contained page |
 | `embed` | write the invoice into a PDF/A-3 file, so that pages and invoice are one file |
+| `view` | one page about a file — as received, as read, with `--report` the report — opened in the browser ([`view.md`](view.md)) |
 | `inspect` | one page: what the document is, who it is between, what it comes to |
 | `extract` | write the electronic invoice of a PDF out, or list what the PDF carries |
 | `get` | the value at one semantic path |
@@ -1069,6 +1070,39 @@ rather than lifted to part 3, and a file that already carries something that cou
 invoice is refused rather than given a second one. Every refusal leaves with exit code 2;
 [`pdf-output.md`](pdf-output.md) is the complete list, what is written into the file, and where
 the facts about the format were taken from.
+
+## view
+
+`esj view` writes one page about a file into a directory of its own and opens it in the browser:
+the PDF as it came, the letter `render` draws from its data with a link to the HTML rendering,
+and with `--report` the report of `validate` as sections of the page and as its two files.
+[`view.md`](view.md) is the reference: the page, the outcomes, the files, the directory and the
+entries that offer it under *Open with*.
+
+| Option | |
+|---|---|
+| `--report` | validate as `esj validate` does; the report goes on the page and beside it as `.report.html` and `.report.pdf`, and the exit code is the verdict's |
+| `--lang de\|en` | language of the page, the letter, the HTML and the report. Default: German where `LC_ALL`, `LC_MESSAGES` or `LANG` (on Windows the user's locale) says so, English otherwise |
+| `--template <file>` | the letter on a branded template, as under `render` |
+| `--out <dir>` | write into this directory and open nothing. Default: a new directory below `esj-view` in the downloads on Linux, in the temporary directory elsewhere |
+| `--output text\|json` | the path of the page, or an object with the page, the directory, whether it was opened, the state, the files, the message and the validation |
+| `--pack`, `--packs` | with `--report`, as for `validate` |
+| `--from`, `--extension`, `--attachment`, `--attachment-index` | as for every other command |
+
+```console
+$ esj view examples/standard-invoice.esj.json --lang en --out page
+page/index.html
+$ echo $?
+0
+```
+
+Every outcome is a page, a PDF without an invoice and a file that is not read included, because
+a file manager shows no error stream; a refusal of the read leaves with the code `render` leaves
+with for the same file, a page that shows the invoice with 0, and with `--report` the code is the
+one of `validate`. Only a name that is no readable file, the
+standard input, a command line that does not parse and a template that is not one are answered
+on the error stream alone. Limits and `--max-runtime` are those of `render`, and the directory is
+never deleted: the browser reads it after the command has ended.
 
 ## inspect
 

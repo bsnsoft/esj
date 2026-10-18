@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=ESJ Viewer
+GenericName=E-invoice viewer
+GenericName[de]=E-Rechnungs-Ansicht
+Comment=Show an electronic invoice: picture, data and validation
+Comment[de]=E-Rechnung zeigen: Bild, Daten und Prüfung
+Exec=esj view --report %f
+Icon=esj
+Terminal=false
+NoDisplay=true
+MimeType=application/xml;text/xml;application/pdf;
+Categories=Office;Viewer;

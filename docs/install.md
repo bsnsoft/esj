@@ -112,6 +112,31 @@ options of a virtual machine are not there to be set; and a compiler that never 
 slower one on a large document — 50 MB of UBL costs it 6.1 s against the runtime image's 2.4 s,
 in half the memory ([`deployment-measurements.md`](deployment-measurements.md#start-up)).
 
+## `esj view` from the file manager
+
+[`esj view`](view.md) is what a file manager can open an XML or a PDF file with: one page with
+the file as it came, the invoice as read from its data and the validation report. Each system
+offers it under *Open with* and never as the default program of a type.
+
+- **Linux**: the deb and the rpm install `/usr/share/applications/esj.desktop`, *ESJ Viewer*,
+  for `application/xml`, `text/xml` and `application/pdf`, and its icon
+  `/usr/share/icons/hicolor/scalable/apps/esj.svg`; the entry runs `esj view --report %f`.
+- **macOS**: the native archive carries `ESJ Viewer.app` beside `esj`. Move both together, for
+  instance into `~/Applications/esj/`; the bundle runs the `esj` beside it, else the one Homebrew
+  installed in `/opt/homebrew/bin` or `/usr/local/bin`. It is signed ad hoc and not notarised:
+  after a download with a browser, `xattr -dr com.apple.quarantine` on its directory, as for the
+  executable ([below](#checking-a-download)). Finder lists it under *Open With* once it has been
+  opened one time.
+- **Windows**: no artefact is built for Windows ([below](#what-a-release-carries)). With `esj` on
+  the `PATH` — the jar's `bin\esj.cmd`, for one — a file `esj-view.cmd` of one line,
+
+  ```bat
+  @esj view --report "%~1"
+  ```
+
+  chosen once under *Open with → Choose another app* opens a file with it; nothing is written to
+  the registry.
+
 ## Runtime image
 
 ```console
@@ -192,7 +217,7 @@ $ dist/package.sh native smoke        # one of them, and the comparison with the
 |---|---|---|
 | `jar` | `esj-cli/target/esj.jar` | JDK 17 or newer |
 | `runtime-image` | a runtime image with the cache | JDK 25 (`ESJ_JDK25_HOME`) |
-| `native` | the executable of this machine | GraalVM 25 (`ESJ_GRAALVM_HOME`; `dist/graalvm.sh <dir>` fetches the pinned build the releases use) |
+| `native` | the executable of this machine; on macOS with `ESJ Viewer.app` beside it | GraalVM 25 (`ESJ_GRAALVM_HOME`; `dist/graalvm.sh <dir>` fetches the pinned build the releases use) |
 | `linux-native` | the Linux executable | Docker |
 | `docker` | the container image, for the platform of the Docker host | Docker |
 | `zip` | the archives of a release | `zip` |
@@ -225,10 +250,10 @@ the subset, and `dist/package.sh smoke` runs it against every artefact that has 
 
 | Archive | Contents |
 |---|---|
-| `esj-<version>-native-<os>-<arch>.zip` | the executable, its shared libraries, `LICENSE`, `NOTICE`, the licences of the Java runtime parts in it (`legal/`) |
+| `esj-<version>-native-<os>-<arch>.zip` | the executable, its shared libraries, `LICENSE`, `NOTICE`, the licences of the Java runtime parts in it (`legal/`); on macOS `ESJ Viewer.app` ([above](#esj-view-from-the-file-manager)) |
 | `esj-<version>-<os>-<arch>.zip` | the runtime image, `bin/esj`, the jar, the cache, `LICENSE`, `NOTICE` |
 | `esj-<version>.zip` | the jar, `bin/esj`, `LICENSE`, `NOTICE`, the documentation of the command line |
-| `esj_<version>_<arch>.deb`, `esj-<version>-1.<arch>.rpm` | the native Linux executable as a package for apt and dnf, for x64 and arm64; a release candidate with a dot for the `~` of its version ([above](#a-package-without-the-repository)) |
+| `esj_<version>_<arch>.deb`, `esj-<version>-1.<arch>.rpm` | the native Linux executable as a package for apt and dnf, for x64 and arm64, with the desktop entry of `esj view`; a release candidate with a dot for the `~` of its version ([above](#a-package-without-the-repository)) |
 
 Beside each archive and package a `.sha256` file with its checksum, written by
 `dist/package.sh zip` and `dist/packages.sh`. A tag builds the archives on Linux (x64 and arm64)

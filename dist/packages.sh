@@ -42,7 +42,11 @@
 # symbolic link to it — the executable finds its libraries beside its own
 # resolved path, which a run through the link and a PDF rendered through it
 # prove (dist/packages-smoke.sh) — and the copyright file, LICENSE and NOTICE
-# under /usr/share/doc/esj (dist/copyright). The packages require the C library of
+# under /usr/share/doc/esj (dist/copyright). Two files make it an "Open with"
+# entry of the desktop for XML and PDF files, never their default:
+# /usr/share/applications/esj.desktop, which runs `esj view --report` on the file
+# (docs/view.md), and its icon, /usr/share/icons/hicolor/scalable/apps/esj.svg,
+# both from dist/desktop. The packages require the C library of
 # $ESJ_GLIBC_FLOOR (dist/checks.sh), which the executable is checked against
 # here, and zlib, which it links; nothing else, measured by
 # dist/packages-smoke.sh on minimal images: libawt_xawt and libfontmanager name
@@ -297,6 +301,9 @@ for arch in x64 arm64; do
     cp "$native/$file" "$stage/usr/share/doc/esj/$file"
   done
   cp "$here/copyright" "$stage/usr/share/doc/esj/copyright"
+  mkdir -p "$stage/usr/share/applications" "$stage/usr/share/icons/hicolor/scalable/apps"
+  cp "$here/desktop/esj.desktop" "$stage/usr/share/applications/esj.desktop"
+  cp "$here/desktop/esj.svg" "$stage/usr/share/icons/hicolor/scalable/apps/esj.svg"
   find "$stage" -type d -exec chmod 0755 {} +
   find "$stage" -type f -exec chmod 0644 {} +
   chmod 0755 "$stage/usr/lib/esj/esj"
