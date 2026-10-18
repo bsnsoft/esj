@@ -1,0 +1,67 @@
+Verkäufer
+---------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Deutschland
+
+Käufer
+------
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Deutschland
+
+Gutschrift GU-2026-0004
+=======================
+zur Rechnung RE-2026-0042 vom 03.02.2026
+
+Gutschriftsnummer  GU-2026-0004
+Gutschriftsdatum   20.02.2026
+Fälligkeitsdatum   20.03.2026
+Käuferreferenz     KOST-4711
+Bestellnummer      BE-2026-0091
+USt-IdNr.          DE123456789
+
+Rechnungspositionen
+-------------------
+Nr.  Bezeichnung             Menge  Einzelpreis, netto (EUR)  USt.  Nettobetrag (EUR)
+---  --------------------  -------  ------------------------  ----  -----------------
+1    Sensor module SM-100  2 Stück                    149,50  19 %             299,00
+     Freitext: Returned goods, credited in full.
+     Nummer der Auftragsposition: 10
+     Artikelnummer: SM-100
+---  --------------------  -------  ------------------------  ----  -----------------
+                                            Summe aller Positionen             299,00
+
+Gesamtbeträge
+-------------
+                                                Gesamtsumme netto                         299,00 EUR
+                                                Steuerbasisbetrag 19 %                    299,00 EUR
+                                                Umsatzsteuerbetrag 19 %                    56,81 EUR
+                                                Summe Umsatzsteuer                         56,81 EUR
+                                                Gesamtsumme brutto                        355,81 EUR
+                                                ====================================================
+                                                Gutschriftsbetrag                         355,81 EUR
+
+Zahlungsanweisungen
+-------------------
+Zahlungsart   SEPA-Überweisung
+IBAN          DE12 5001 0517 0648 4898 90
+Kontoinhaber  Muster AG
+
+Bemerkungen zur Rechnung
+------------------------
+Credit note for two sensor modules returned on 18 February 2026.
+
+Weitere Angaben
+---------------
+Dokumentenart          381 = Gutschrift
+Einheit                H87 = Stück
+Zahlungsart            58 = SEPA-Überweisung
+Umsatzsteuerkategorie  S = Regelsteuersatz
+Land                   DE = Deutschland
+
+Währung (/BT-5)                      EUR
+Spezifikationskennung (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Umsatzsteuer-ID (/BG-7/BT-48)        DE987654321

@@ -816,40 +816,51 @@ final class Reports {
      * @param report  what both engines found
      */
     static void json(Console console, Validation.Report report) {
-        Json.write(console, generator -> {
-            generator.writeStartObject();
-            generator.writeStringField("input", report.input());
-            generator.writeStringField("detected", report.syntax().token());
-            writeOrNull(generator, "semanticModel", report.semanticModel());
-            containerJson(generator, report);
-            invoiceJson(generator, report);
-            xmlJson(generator, report);
-            syntaxJson(generator, "syntax", report.syntaxCheck());
-            writtenJson(generator, report);
-            generator.writeObjectFieldStart("layers");
-            layerJson(generator, "l1", report.l1(), covered(report, Coverage.FORMAT_L1));
-            layerJson(generator, "l2", report.l2(), covered(report, Coverage.MODEL_L2));
-            layerJson(generator, "l3", report.l3(), covered(report, Coverage.CARDINALITY_L3));
-            generator.writeEndObject();
-            rulesJson(generator, report.ruleCheck());
-            generator.writeArrayFieldStart("notChecked");
-            for (String token : report.notChecked()) {
-                generator.writeString(token);
-            }
-            generator.writeEndArray();
-            reasonsJson(generator, report);
-            notesJson(generator, "warnings", report.conversion());
-            notesJson(generator, "information", report.information());
-            // A run a limit stopped reached none of the three states, so the member is
-            // null rather than a word a program could branch on; the exit code is 7 and
-            // the reasons name the limit under every component it cut short.
-            if (report.limit().isPresent()) {
-                generator.writeNullField("verdict");
-            } else {
-                generator.writeStringField("verdict", report.status().name());
-            }
-            generator.writeEndObject();
-        });
+        Json.write(console, generator -> json(generator, report));
+    }
+
+    /**
+     * Writes the validation report as a JSON object into a generator, as the value of a
+     * member of another object or on its own: the object {@code esj validate --output json}
+     * prints, which {@code esj view --output json} carries under {@code validation}.
+     *
+     * @param generator where the object is written
+     * @param report    what both engines found
+     * @throws IOException if the generator cannot write
+     */
+    static void json(JsonGenerator generator, Validation.Report report) throws IOException {
+        generator.writeStartObject();
+        generator.writeStringField("input", report.input());
+        generator.writeStringField("detected", report.syntax().token());
+        writeOrNull(generator, "semanticModel", report.semanticModel());
+        containerJson(generator, report);
+        invoiceJson(generator, report);
+        xmlJson(generator, report);
+        syntaxJson(generator, "syntax", report.syntaxCheck());
+        writtenJson(generator, report);
+        generator.writeObjectFieldStart("layers");
+        layerJson(generator, "l1", report.l1(), covered(report, Coverage.FORMAT_L1));
+        layerJson(generator, "l2", report.l2(), covered(report, Coverage.MODEL_L2));
+        layerJson(generator, "l3", report.l3(), covered(report, Coverage.CARDINALITY_L3));
+        generator.writeEndObject();
+        rulesJson(generator, report.ruleCheck());
+        generator.writeArrayFieldStart("notChecked");
+        for (String token : report.notChecked()) {
+            generator.writeString(token);
+        }
+        generator.writeEndArray();
+        reasonsJson(generator, report);
+        notesJson(generator, "warnings", report.conversion());
+        notesJson(generator, "information", report.information());
+        // A run a limit stopped reached none of the three states, so the member is
+        // null rather than a word a program could branch on; the exit code is 7 and
+        // the reasons name the limit under every component it cut short.
+        if (report.limit().isPresent()) {
+            generator.writeNullField("verdict");
+        } else {
+            generator.writeStringField("verdict", report.status().name());
+        }
+        generator.writeEndObject();
     }
 
     /**

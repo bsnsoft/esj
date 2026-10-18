@@ -17,7 +17,8 @@
 #   runtime-image   a Java 25 runtime image with the jar and an ahead-of-time
 #                   cache in it, for this operating system and processor
 #   native          a native executable built with GraalVM, for this operating
-#                   system and processor
+#                   system and processor; on macOS with ESJ Viewer.app beside it
+#                   (dist/viewer-app.sh)
 #   linux-native    the same executable for linux/arm64, built in Docker
 #   docker          the container image of dist/Dockerfile, for the platform of
 #                   the Docker host, tagged <name>:<version> and <name>:latest
@@ -236,6 +237,12 @@ build_native() {
   mkdir -p "$native"
   ESJ_GRAALVM_HOME=$graal sh "$here/native-image.sh" "$jar" "$native"
   cp "$root/LICENSE" "$root/NOTICE" "$native/"
+  # On macOS the archive carries ESJ Viewer.app beside the executable: what Finder
+  # offers under "Open With" for an XML or a PDF file (docs/view.md).
+  if [ "$os" = macos ]; then
+    JAVA_HOME=$jdk sh "$here/viewer-app.sh" "$native" "$version" ||
+      { fail "ESJ Viewer.app was not built"; return 0; }
+  fi
   # The size printed is the whole artefact, as it is for the runtime image: the
   # executable is kept together with the libraries and the licences beside it.
   echo "$native ($(du -sh "$native" | awk '{print $1}'))"
@@ -325,7 +332,7 @@ build_zip() {
   cp "$jar" "$staging/esj-$version/lib/esj.jar"
   install_launcher "$staging/esj-$version/bin/esj" jar
   cp "$root/LICENSE" "$root/NOTICE" "$root/README.md" "$staging/esj-$version/"
-  for page in install.md cli.md deployment.md validation.md pdf-input.md rendering.md; do
+  for page in install.md cli.md deployment.md validation.md pdf-input.md rendering.md view.md; do
     cp "$root/docs/$page" "$staging/esj-$version/docs/$page"
   done
   # Nothing of the build but its files: fixed modes, the time of

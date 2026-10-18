@@ -1,0 +1,76 @@
+Seller
+------
+Example GmbH
+Musterweg 12
+10117 Beispielstadt
+Germany
+
+Buyer
+-----
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Germany
+
+Invoice RE-2026-0211
+====================
+
+Invoice number      RE-2026-0211
+Invoice issue date  2026-05-12
+Payment due date    2026-06-11
+VAT ID              DE123456789
+
+Invoice lines
+-------------
+No.  Item                         Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  -------------------------  ----------  ---------------------  ----  ----------------
+1    Sensor module SM-100       100 pieces                  12.00  19 %          1,080.00
+     Allowance 120.00 EUR · Percentage 10 % · Base amount 1,200.00 EUR · Quantity discount ·
+       Invoice line allowance reason code 95
+
+2    Printed documentation set    5 pieces                 200.00  7 %             975.00
+     Allowance 25.00 EUR · Damaged packaging · Invoice line allowance reason code 64
+---  -------------------------  ----------  ---------------------  ----  ----------------
+                                         Sum of Invoice line net amount          2,055.00
+
+Document level allowances
+-------------------------
+Reason                Base amount (EUR)  Percentage  VAT   Amount (EUR)
+--------------------  -----------------  ----------  ----  ------------
+Annual volume rebate                                 19 %        100.00
+  Document level allowance reason code: 100
+
+Annual volume rebate                                 7 %          50.00
+  Document level allowance reason code: 100
+--------------------  -----------------  ----------  ----  ------------
+
+Document totals
+---------------
+                                                Sum of allowances on document level       150.00 EUR
+                                                Invoice total amount without VAT        1,905.00 EUR
+                                                Taxable amount 19 %                       980.00 EUR
+                                                VAT amount 19 %                           186.20 EUR
+                                                Taxable amount 7 %                        925.00 EUR
+                                                VAT amount 7 %                             64.75 EUR
+                                                Invoice total VAT amount                  250.95 EUR
+                                                Invoice total amount with VAT           2,155.95 EUR
+                                                ====================================================
+                                                Amount due for payment                  2,155.95 EUR
+
+Payment instructions
+--------------------
+Payment terms  Payable within 30 days without deduction.
+Payment means  SEPA credit transfer
+IBAN           DE89 3704 0044 0532 0130 00
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           H87 = piece
+Payment means  58 = SEPA credit transfer
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)           EUR
+Specification identifier (/BG-2/BT-24)  urn:cen.eu:en16931:2017
+Buyer VAT identifier (/BG-7/BT-48)      DE987654321

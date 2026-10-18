@@ -1,25 +1,11 @@
 package de.bsnsoft.esj.cli;
 
 import de.bsnsoft.esj.EsjLimitException;
-import de.bsnsoft.esj.SemanticDocument;
-import de.bsnsoft.esj.bindings.BindingEditionException;
-import de.bsnsoft.esj.bindings.BindingFormatException;
-import de.bsnsoft.esj.bindings.BindingSyntaxException;
-import de.bsnsoft.esj.bindings.CiiWriter;
-import de.bsnsoft.esj.bindings.UblWriter;
-import de.bsnsoft.esj.bindings.WriteNote;
-import de.bsnsoft.esj.bindings.WriteReport;
-import de.bsnsoft.esj.bindings.WriteResult;
-import de.bsnsoft.esj.bindings.WriterOptions;
-import de.bsnsoft.esj.internal.report.ValidationOutcome;
-import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.render.RenderLanguage;
-import de.bsnsoft.esj.render.internal.ReportRenderer;
 import de.bsnsoft.esj.render.internal.ReportOptions;
 import de.bsnsoft.esj.syntax.SyntaxReport;
 import de.bsnsoft.esj.validate.Finding;
 import de.bsnsoft.esj.validate.ValidationLayer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -237,42 +223,25 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
         Deadline deadline = Deadline.of(console.options().maxRuntime());
         PackChoice chosen = deadline.within("reading the validation packs",
                 () -> PackChoice.of(pack, packs, console));
+        ValidationRun run = new ValidationRun(console, from, extensions, via, noSyntax,
+                businessRules, layer);
 
         Input input = deadline.within(Input.label(file) + ": reading the input",
                 () -> Input.read(file, console));
-        // The verdict is about the bytes that were handed over, so the front door does
-        // not repair them: a document that is not written in the encoding it declares is
-        // reported as such and not quietly recoded into a passing one.
-        Loaded loaded = deadline.within(input.name() + ": reading the document into the"
-                        + " semantic model",
-                () -> Loaded.validate(input, Options.from(from), extensions, console));
+        Loaded loaded = run.load(input, deadline);
         loaded.reportNotes(console);
-        SyntaxCheck syntax = noSyntax
-                ? SyntaxCheck.notRun(SyntaxCheck.BY_OPTION)
-                : SyntaxCheck.run(loaded.xml(input), loaded.syntax(), chosen, deadline,
-                        console);
-        Optional<Verapdf.Result> pdfa = pdfa(input, loaded, deadline);
-        Validation.WrittenRequest written = written(loaded, chosen, extensions, deadline);
+        ValidationRun.Result checked = run.check(input, loaded, chosen,
+                () -> pdfa(input, loaded, deadline), deadline);
+        SyntaxCheck syntax = checked.syntax();
+        Validation.Report validation = checked.report();
         Validation.RuleRequest request = businessRules
                 ? Validation.RuleRequest.pack(chosen)
                 : Validation.RuleRequest.notRun(RuleCheck.BY_OPTION);
-        Validation.Report validation = deadline.within(
-                input.name() + ": the structural layers and the business rules",
-                () -> Validation.run(loaded, syntax, written, request, layer, extensions,
-                        pdfa));
 
         if (json) {
             Reports.json(console, validation);
         } else {
-            printer.line("Input:            " + validation.input());
-            Reports.container(printer, validation);
-            printer.line("Detected syntax:  " + validation.syntax().label());
-            Reports.semanticModel(validation)
-                    .ifPresent(model -> printer.line("Semantic model:   " + model));
-            profile(printer, syntax);
-            printer.line();
-            Reports.text(printer, validation);
-            Reports.verdicts(printer, validation);
+            lines(printer, validation, syntax);
             afterRepair(printer, input, request, layer, extensions, validation);
         }
         boolean delivered = form == null
@@ -289,6 +258,28 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
         // delivered. A verdict of invalid outranks it: it is the answer the caller came
         // for and it was printed, so it keeps its own code.
         return delivered || verdict == ExitCode.VALIDATION ? verdict : ExitCode.OUTPUT;
+    }
+
+    /**
+     * Prints what a validation found, as this command prints it without {@code --output
+     * json}: the input, the container, the syntax, the semantic model and the profile, then
+     * the findings and the verdicts. {@code esj view --text --report} prints the same lines
+     * under the invoice.
+     *
+     * @param printer    where the lines go
+     * @param validation what every engine found
+     * @param syntax     what the syntax engine did with the XML
+     */
+    static void lines(Console printer, Validation.Report validation, SyntaxCheck syntax) {
+        printer.line("Input:            " + validation.input());
+        Reports.container(printer, validation);
+        printer.line("Detected syntax:  " + validation.syntax().label());
+        Reports.semanticModel(validation)
+                .ifPresent(model -> printer.line("Semantic model:   " + model));
+        profile(printer, syntax);
+        printer.line();
+        Reports.text(printer, validation);
+        Reports.verdicts(printer, validation);
     }
 
     /**
@@ -455,28 +446,10 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
         ReportOptions options = new ReportOptions(language(reportLang), !noInvoice,
                 Optional.ofNullable(reportTime),
                 Options.pageSize("--report-page", reportPage));
-        // A path is an address relative to an edition, so the pages of the invoice are
-        // drawn with the registry of the edition the document itself names. Where this
-        // build carries none, the report is the check table and the findings alone: the
-        // identity row and the reason of the verdict already name the edition.
-        Optional<SemanticDocument> built = loaded.document();
-        Registry registry = built.flatMap(judged -> Editions.forDocument(judged, extensions))
-                .orElseGet(() -> Validation.registry(extensions));
-        ReportRenderer renderer = new ReportRenderer(registry);
-        SemanticDocument document = built
-                .filter(judged -> registry.describes(judged.semanticModel()))
-                .orElse(null);
         byte[] bytes;
         try {
-            bytes = deadline.within(input.name() + ": writing the report", () -> {
-                ValidationOutcome outcome = Outcome.of(input, loaded, validation);
-                return form == ReportForm.PDF
-                        ? renderer.pdf(outcome, document, options)
-                        : renderer.html(outcome, document, options)
-                                .getBytes(StandardCharsets.UTF_8);
-            });
-        } catch (EsjLimitException e) {
-            throw reportPagesReached(e, options.rendering().maxPages());
+            bytes = ValidationRun.report(form == ReportForm.PDF, input, loaded, validation,
+                    extensions, deadline, options);
         } catch (CliException e) {
             if (e.exitCode() != ExitCode.LIMIT) {
                 throw e;
@@ -597,141 +570,6 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
     }
 
     /**
-     * Returns whether the official artefacts run over the XML an ESJ document is written
-     * to, which is the only way they can read a document that never was XML.
-     *
-     * <p>Two things the caller decides are settled here: an input that arrived as XML was
-     * judged as it arrived and needs no rendering of itself, and {@code --no-syntax} takes
-     * the artefacts out wherever they would have run. Everything else waits for the
-     * structural layers, because a document they could not measure is a document nothing
-     * says how to write.
-     *
-     * @param loaded     the document, read
-     * @param pack       the pack the run was given, or the packs the document chooses among
-     * @param extensions the extension registries this run loaded, which say whether a term
-     *                   the writer leaves behind was meant to travel at all
-     * @param deadline   what is left of the time the command was given
-     * @return the request the structural layers answer
-     */
-    private Validation.WrittenRequest written(Loaded loaded,
-                                              PackChoice pack,
-                                              Extensions extensions,
-                                              Deadline deadline) {
-        String target = Options.via(via);
-        if (loaded.syntax() != InputSyntax.ESJ) {
-            return Validation.WrittenRequest.notRun(target,
-                    Coverage.Cause.NOT_RUN_BY_THIS_COMMAND, WrittenCheck.NOT_ESJ);
-        }
-        if (noSyntax) {
-            return Validation.WrittenRequest.notRun(target,
-                    Coverage.Cause.SKIPPED_BY_CALLER, WrittenCheck.BY_OPTION);
-        }
-        return (document, gap, blocked) -> {
-            if (document.isEmpty()) {
-                return WrittenCheck.notRun(target, Coverage.Cause.NOT_RUN_BY_THIS_COMMAND,
-                        WrittenCheck.NO_DOCUMENT);
-            }
-            if (gap.isPresent()) {
-                return WrittenCheck.notRun(target, gap.orElseThrow(),
-                        WrittenCheck.NOT_MEASURED);
-            }
-            if (blocked.isPresent()) {
-                return WrittenCheck.notRun(target, Coverage.Cause.NOT_RUN_BY_THIS_COMMAND,
-                        WrittenCheck.AFTER_MODEL);
-            }
-            return artefacts(loaded, document.orElseThrow(), pack, extensions, deadline);
-        };
-    }
-
-    /**
-     * Writes the document and runs the official artefacts of its profile over the result.
-     *
-     * <p>Four things stop it short of a verdict, and none of them is a defect of the
-     * invoice. The writer may have found no place in the syntax for something the document
-     * states, in which case the XML is a different document and an artefact's verdict over
-     * it would be about something else; the syntax may require an element or an attribute
-     * the document does not fill and the binding table states no value for, in which case
-     * the writer had to leave it out or write it empty and what an artefact then says is
-     * about the rendition and not about the invoice; the pack may carry no artefact for the
-     * profile the
-     * document names, which is a property of this build; and the written XML may be larger
-     * than a bound of this run allows — the bytes the writer may produce, or the bytes the
-     * syntax engine accepts — which is a property of the bound and of the syntax rather
-     * than of the document, because a written document is several times the size of the
-     * ESJ it comes from. All four leave the row not applicable and the command
-     * {@code INDETERMINATE}, with the reason in the report — the last of them rather than
-     * ending the whole command at {@link ExitCode#LIMIT} and throwing away the verdict the
-     * reader, the structural layers and the native rules had already reached.
-     *
-     * <p>A limit of the clock is not among them. A run that ran out of time reached no
-     * verdict at all, so it keeps {@link ExitCode#LIMIT}, which is the one exit code of
-     * this tool that means a limit and nothing about the invoice.
-     *
-     * <p>The first of the four has one exception, which the writer names in its report,
-     * handed the extension registries of this run, and {@link Transport} reads: a term
-     * whose registry declares {@code "transport": "none"} was never meant to reach a
-     * syntax, so the XML written without it is the whole invoice and the artefacts answer
-     * for the invoice. The row then runs and names those terms beside its result.
-     */
-    private WrittenCheck artefacts(Loaded loaded,
-                                   SemanticDocument document,
-                                   PackChoice pack,
-                                   Extensions extensions,
-                                   Deadline deadline) {
-        WriteResult result;
-        try {
-            result = write(document, extensions);
-        } catch (BindingEditionException e) {
-            // A binding table is written against one edition, so a document of another has
-            // no XML form this build can produce and the artefacts have nothing to read.
-            // For the 2026 edition that is not a gap of this build: no syntax binding of
-            // the terms it adds is published, and no artefact release is written against
-            // it either. The document keeps every answer the layers before this row gave
-            // it, and the run ends in the third state with the cause that says so.
-            return WrittenCheck.notRun(Options.via(via), Coverage.Cause.NO_ARTEFACTS_FOR_EDITION,
-                    "not run (no syntax binding is published for this edition)");
-        } catch (EsjLimitException e) {
-            // Not a refusal of the command: the document written by this run was longer
-            // than the run allows, so the row of the official artefacts did not run.
-            return WrittenCheck.notRun(Options.via(via), Coverage.Cause.WRITTEN_OVER_BOUND,
-                    "not run (" + console.options().bounds()
-                            .refusal("the document written as " + Options.via(via),
-                                    e.getMessage()) + ")");
-        }
-        WriteReport wrote = result.report();
-        String written = WrittenCheck.target(wrote.syntax());
-        Optional<List<WrittenCheck.ByDesign>> byDesign = Transport.byDesign(wrote);
-        if (byDesign.isEmpty()) {
-            return WrittenCheck.notRun(written, Coverage.Cause.TERM_NOT_IN_SYNTAX,
-                    WrittenCheck.incomplete(wrote));
-        }
-        if (!wrote.notes(WriteNote.Kind.TERM_NOT_STATED).isEmpty()) {
-            return WrittenCheck.notRun(written, Coverage.Cause.TERM_NOT_STATED,
-                    WrittenCheck.notStated(wrote));
-        }
-        if (!wrote.notes(WriteNote.Kind.ELEMENT_NOT_STATED).isEmpty()) {
-            return WrittenCheck.notRun(written, Coverage.Cause.ELEMENT_NOT_IN_MODEL,
-                    WrittenCheck.unstated(wrote));
-        }
-        String name = loaded.name() + " written as " + written;
-        try {
-            return WrittenCheck.ran(written,
-                    SyntaxCheck.run(result.xml(), name, pack, deadline, console),
-                    byDesign.orElseThrow());
-        } catch (CliException e) {
-            if (overBound(e)) {
-                return WrittenCheck.notRun(written, Coverage.Cause.WRITTEN_OVER_BOUND,
-                        "not run (" + e.getMessage() + ")");
-            }
-            if (e.exitCode() != ExitCode.UNSUPPORTED) {
-                throw e;
-            }
-            return WrittenCheck.notRun(written, Coverage.Cause.NO_RULES_FOR_PROFILE,
-                    "not applicable (" + e.getMessage() + ")");
-        }
-    }
-
-    /**
      * Tells whether the syntax engine stood down because the written XML was larger than
      * this run accepts, rather than for any other reason it reaches a limit for.
      *
@@ -749,29 +587,6 @@ final class ValidateCommand implements Callable<Integer>, ReadsADocument {
         return e.exitCode() == ExitCode.LIMIT
                 && e.getCause() instanceof EsjLimitException limit
                 && !LimitRefusal.outOfTime(limit);
-    }
-
-    /**
-     * Writes the document in the syntax {@code --via} names, within the bounds of this run.
-     *
-     * @throws EsjLimitException     if the written document is longer than
-     *                               {@code --max-output-bytes} allows this run, which the
-     *                               caller reports as a row that did not run rather than as
-     *                               the end of the command
-     */
-    private WriteResult write(SemanticDocument document, Extensions extensions) {
-        String target = Options.via(via);
-        WriterOptions options = WriterOptions.defaults()
-                .withMaxOutputBytes(console.options().bounds().maxOutputBytes())
-                .withExtensions(extensions.registries());
-        try {
-            return Options.VIA_UBL.equals(target)
-                    ? UblWriter.writeWithReport(document, options)
-                    : CiiWriter.writeWithReport(document, options);
-        } catch (BindingFormatException | BindingSyntaxException e) {
-            throw CliException.input("cannot write the document as " + target + ": "
-                    + e.getMessage(), e);
-        }
     }
 
     private static boolean json(String token) {

@@ -129,6 +129,11 @@ Files.write(out.resolve("invoice.esj.json"), EsjWriter.pretty().toBytes(invoice)
 with the domain API, read back from the file, the business rules checked in the three places a
 sender can check them. [`docs/getting-started.md`](docs/getting-started.md) is the first hour.
 
+`esj view invoice.pdf` shows an invoice in the browser, a tab each for the PDF as it came, the
+letter drawn from its data, the KoSIT view and with `--report` the validation report, or with
+`--text` in the terminal. The Linux packages and the macOS archive offer it under *Open with* for
+XML and PDF files ([`docs/view.md`](docs/view.md)).
+
 ## Persistence
 
 Semantic paths are stable keys for indexes and projections. [`docs/storage.md`](docs/storage.md) is
@@ -218,6 +223,7 @@ manifest. Changes: [`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.m
 - [`docs/pdf-input.md`](docs/pdf-input.md) — hybrid PDFs: what is read, what is refused
 - [`docs/pdf-output.md`](docs/pdf-output.md) — the PDF/A-3b file and the invoice inside it
 - [`docs/rendering.md`](docs/rendering.md) — the HTML page and the PDF, and what neither does
+- [`docs/view.md`](docs/view.md) — `esj view`: one page about an invoice file, and *Open with*
 - [`docs/letter-layout.md`](docs/letter-layout.md) — the invoice as the letter a business sends
 - [`docs/templates.md`](docs/templates.md) — the render template: letterhead, logo, colours
 - [`docs/bindings.md`](docs/bindings.md) — the binding tables, the readers and the two writers

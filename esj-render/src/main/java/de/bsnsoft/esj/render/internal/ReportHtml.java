@@ -5,6 +5,7 @@ import de.bsnsoft.esj.internal.report.ValidationOutcome;
 import de.bsnsoft.esj.render.RenderLanguage;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.UnaryOperator;
 
 /**
  * The validation report as one HTML page.
@@ -50,8 +51,14 @@ import java.util.Locale;
  */
 final class ReportHtml {
 
-    /** The style sheet of the report, inline because the page carries no second file. */
-    private static final String STYLE = """
+    /**
+     * The style sheet of the report, inline because the page carries no second file.
+     *
+     * <p>{@link ViewPage} writes it into its own page unchanged, before the rules of its own,
+     * so that the sections of a report look the same in both and a change here is a change
+     * to both.
+     */
+    static final String STYLE = """
             :root {
               --ink: #16191d; --soft: #5b6470; --rule: #d7dce2; --panel: #f6f8fa;
               --ok: #1f7a4d; --bad: #b3261e; --warn: #8a5a00; --none: #5b6470;
@@ -104,15 +111,22 @@ final class ReportHtml {
             }
             """;
 
+    /** The heading level of the sections of the report page, under its one h1. */
+    private static final int REPORT_LEVEL = 2;
+
     private final ValidationOutcome outcome;
     private final ReportOptions options;
     private final RenderLanguage language;
-    private final StringBuilder out = new StringBuilder();
+    private final StringBuilder out;
+    private final int level;
 
-    private ReportHtml(ValidationOutcome outcome, ReportOptions options) {
+    private ReportHtml(ValidationOutcome outcome, ReportOptions options, StringBuilder out,
+                       int level) {
         this.outcome = outcome;
         this.options = options;
         this.language = options.language();
+        this.out = out;
+        this.level = level;
     }
 
     /**
@@ -126,9 +140,48 @@ final class ReportHtml {
      */
     static String of(ValidationOutcome outcome, ReportOptions options,
                      ReportInvoice invoice) {
-        ReportHtml page = new ReportHtml(outcome, options);
+        ReportHtml page = new ReportHtml(outcome, options, new StringBuilder(), REPORT_LEVEL);
         page.write(invoice);
         return page.out.toString();
+    }
+
+    /**
+     * Writes the verdict card of a report into another page: the word and its detail, the
+     * verdicts of the subjects and the scope of the verdict — the card of {@link #of}
+     * without the identity, which that page writes in a section of its own
+     * ({@link #sections}), and with every verdict word written as that page writes it.
+     *
+     * @param out     where the card is written
+     * @param outcome what the run came to
+     * @param options the language of the report
+     * @param words   what a verdict word is written as on that page
+     */
+    static void card(StringBuilder out, ValidationOutcome outcome, ReportOptions options,
+                     UnaryOperator<String> words) {
+        new ReportHtml(outcome, options, out, REPORT_LEVEL).verdict(false, words);
+    }
+
+    /**
+     * Writes the sections of a report into another page, one heading level below that
+     * page's own: the identity of what was judged, the check table, the findings and what
+     * was done to the bytes before they were read, with the bounds and the cuts of the
+     * report page. The rendered invoice is not among them; the page that takes the sections
+     * shows the invoice in a view of its own.
+     *
+     * @param out     where the sections are written
+     * @param outcome what the run came to
+     * @param options the language of the report, and the moment the caller passed
+     * @param level   the heading level of the sections; their blocks are one below it
+     */
+    static void sections(StringBuilder out, ValidationOutcome outcome, ReportOptions options,
+                         int level) {
+        ReportHtml sections = new ReportHtml(outcome, options, out, level);
+        sections.heading(ReportWord.IDENTITY.in(options.language()));
+        sections.identity();
+        sections.out.append("</section>\n");
+        sections.checks();
+        sections.findings();
+        sections.provenance();
     }
 
     private void write(ReportInvoice invoice) {
@@ -141,7 +194,7 @@ final class ReportHtml {
                 .append("</title>\n<style>\n").append(STYLE).append("</style>\n</head>\n")
                 .append("<body>\n<main>\n<h1>").append(escape(ReportWord.TITLE.in(language)))
                 .append("</h1>\n");
-        verdict();
+        verdict(true, UnaryOperator.identity());
         checks();
         findings();
         provenance();
@@ -149,9 +202,15 @@ final class ReportHtml {
         out.append("</main>\n</body>\n</html>\n");
     }
 
-    /** Writes the card a reader looks at first: the verdict, and what was judged. */
-    private void verdict() {
-        String word = ReportContent.verdict(outcome);
+    /**
+     * Writes the card a reader looks at first: the verdict, and what was judged.
+     *
+     * @param identity whether the identity of what was judged is part of the card, as it is
+     *                 on the report page
+     * @param words    what a verdict word is written as: itself on the report page
+     */
+    private void verdict(boolean identity, UnaryOperator<String> words) {
+        String word = words.apply(ReportContent.verdict(outcome));
         String kind = outcome.verdict().map(Enum::name).orElse("NONE");
         out.append("<section class=\"card\">\n<p class=\"verdict verdict-").append(kind)
                 .append("\"><span>").append(escape(ReportWord.VERDICT.in(language)))
@@ -159,15 +218,35 @@ final class ReportHtml {
         outcome.detail().ifPresent(detail -> out.append(" <span>")
                 .append(escape(ReportContent.resolve(detail, language))).append("</span>"));
         out.append("</p>\n");
-        subjects();
+        subjects(words);
         out.append("<p class=\"note\">").append(escape(ReportWord.SCOPE.in(language)))
                 .append("</p>\n");
+        if (identity) {
+            identity();
+        }
+        out.append("</section>\n");
+    }
+
+    /** Writes the identity of what was judged: the input, the digests, the packs, the tool. */
+    private void identity() {
         out.append("<dl>\n");
         for (ReportContent.Line line : ReportContent.identity(outcome, options)) {
             out.append("<dt>").append(escape(line.label())).append("</dt><dd class=\"mono\">")
                     .append(escape(line.value())).append("</dd>\n");
         }
-        out.append("</dl>\n</section>\n");
+        out.append("</dl>\n");
+    }
+
+    /** Opens a section with its heading, at the level of this page's sections. */
+    private void heading(String title) {
+        out.append("<section>\n<h").append(level).append('>').append(escape(title))
+                .append("</h").append(level).append(">\n");
+    }
+
+    /** Writes the heading of a block inside a section, one level below the section's. */
+    private void block(String title) {
+        out.append("<h").append(level + 1).append('>').append(escape(title))
+                .append("</h").append(level + 1).append(">\n");
     }
 
     /**
@@ -178,8 +257,8 @@ final class ReportHtml {
      * keep a reader from booking a conformant container as a bad invoice, or a sound
      * invoice as the reason a file was rejected.
      */
-    private void subjects() {
-        List<ReportContent.Line> lines = ReportContent.subjects(outcome, language);
+    private void subjects(UnaryOperator<String> words) {
+        List<ReportContent.Line> lines = ReportContent.subjects(outcome, language, words);
         if (lines.isEmpty()) {
             return;
         }
@@ -198,8 +277,8 @@ final class ReportHtml {
 
     /** Writes the check table: one group of rows per engine that had something to say. */
     private void checks() {
-        out.append("<section>\n<h2>").append(escape(ReportWord.CHECKS.in(language)))
-                .append("</h2>\n<table>\n");
+        heading(ReportWord.CHECKS.in(language));
+        out.append("<table>\n");
         for (ValidationOutcome.Block block : outcome.blocks()) {
             out.append("<tr class=\"block\"><th colspan=\"2\">")
                     .append(escape(ReportContent.heading(block.kind(), language)))
@@ -217,8 +296,7 @@ final class ReportHtml {
 
     /** Writes the findings, under the heading of the engine that produced each. */
     private void findings() {
-        out.append("<section>\n<h2>").append(escape(ReportWord.FINDINGS.in(language)))
-                .append("</h2>\n");
+        heading(ReportWord.FINDINGS.in(language));
         if (outcome.findings().isEmpty()) {
             out.append("<p class=\"note\">")
                     .append(escape(ReportWord.NOTHING_FOUND.in(language)))
@@ -229,8 +307,7 @@ final class ReportHtml {
             if (block.findings().isEmpty()) {
                 continue;
             }
-            out.append("<h3>").append(escape(ReportContent.heading(block.kind(), language)))
-                    .append("</h3>\n");
+            block(ReportContent.heading(block.kind(), language));
             for (ValidationOutcome.Finding finding : ReportContent.findings(block)) {
                 finding(finding);
             }
@@ -261,8 +338,8 @@ final class ReportHtml {
         if (notes.isEmpty()) {
             return;
         }
-        out.append("<section>\n<h2>").append(escape(ReportWord.PROVENANCE.in(language)))
-                .append("</h2>\n<ul>\n");
+        heading(ReportWord.PROVENANCE.in(language));
+        out.append("<ul>\n");
         for (Text note : notes) {
             out.append("<li>").append(escape(ReportContent.resolve(note, language)))
                     .append("</li>\n");

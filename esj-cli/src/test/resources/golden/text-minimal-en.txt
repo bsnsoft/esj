@@ -1,0 +1,42 @@
+Seller
+------
+Example GmbH
+Germany
+
+Buyer
+-----
+Muster AG
+Germany
+
+Invoice RE-2026-0001
+====================
+
+Invoice number      RE-2026-0001
+Invoice issue date  2026-01-15
+
+Invoice lines
+-------------
+No.  Item                Quantity  Unit price, net (EUR)  VAT               Net amount (EUR)
+---  ------------------  --------  ---------------------  ----------------  ----------------
+1    Consulting service     1 one                 100.00  Zero rated goods            100.00
+---  ------------------  --------  ---------------------  ----------------  ----------------
+                                            Sum of Invoice line net amount            100.00
+
+Document totals
+---------------
+                                                Invoice total amount without VAT          100.00 EUR
+                                                Taxable amount Zero rated goods           100.00 EUR
+                                                VAT amount Zero rated goods                 0.00 EUR
+                                                Invoice total amount with VAT             100.00 EUR
+                                                ====================================================
+                                                Amount due for payment                    100.00 EUR
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           C62 = one
+VAT category   Z = Zero rated goods
+Country        DE = Germany
+
+Invoice currency code (/BT-5)           EUR
+Specification identifier (/BG-2/BT-24)  urn:cen.eu:en16931:2017

@@ -35,6 +35,7 @@ below are written as `esj` and name files of this repository, so they can be pas
 | `validate` | run the official artefacts of the profile, the structural layers L1 to L3 and the business rules |
 | `render` | write the invoice as a PDF, or with `--html` as one self-contained page |
 | `embed` | write the invoice into a PDF/A-3 file, so that pages and invoice are one file |
+| `view` | one page about a file — as received, as read, with `--report` the report — opened in the browser ([`view.md`](view.md)) |
 | `inspect` | one page: what the document is, who it is between, what it comes to |
 | `extract` | write the electronic invoice of a PDF out, or list what the PDF carries |
 | `get` | the value at one semantic path |
@@ -959,13 +960,16 @@ in one of the four are read by no command in either mode: exit code 2 naming the
 
 ## render
 
-`esj render` writes an invoice as a PDF, or with `--html` as one self-contained HTML page; the
-input is any of the three syntaxes or a PDF carrying one of them.
+`esj render` writes an invoice as a PDF, with `--html` as one self-contained HTML page, or with
+`--text` as plain text for a terminal; the input is any of the three syntaxes or a PDF carrying
+one of them.
 
 | Option | |
 |---|---|
 | `--out <file\|->` | where the rendering goes; required |
 | `--html` | one self-contained HTML page instead of a PDF |
+| `--text` | plain text instead of a PDF ([below](#the-invoice-as-text)) |
+| `--width <columns>` | with `--text`, how many characters a line takes, 40 to 1000. Default: `COLUMNS` where it is 60 or more, otherwise 100 |
 | `--lang de\|en` | language of the labels, the date picture and the decimal separator, not of the invoice. Default `de` |
 | `--page A4\|LETTER` | the paper the PDF is laid out for; the HTML page has none. Default `A4` |
 | `--layout generic\|letter` | the page layout of the PDF ([`rendering.md`](rendering.md#two-layouts)); without it the template decides, and where it says nothing, or there is none, the PDF is the letter. PDF only |
@@ -1025,6 +1029,36 @@ Every rendering is net and derives nothing, the same document twice gives the sa
 the PDF is PDF/A-3b ([`pdf-output.md`](pdf-output.md)). **An HTML rendering is a page built
 from a document somebody else wrote.** [`rendering.md`](rendering.md) is what each one shows.
 
+### The invoice as text
+
+`--text` writes the letter without its paper, top to bottom: the seller, the buyer, the title with
+the number, the dates and the references, the lines as a table (number, item with its wrapped
+description, quantity and unit, unit price, VAT rate, net amount), the allowances and charges, the
+totals, the payment details, the notes, and the further details with every value no block has a
+place for. The facts, names and number formats are the letter's, in the language of `--lang`.
+
+```console
+$ esj render examples/standard-invoice.esj.json --text --lang en --width 80 --out -
+Seller
+------
+Example GmbH
+...
+Invoice lines
+-------------
+                                                                      Net amount
+No.  Item                   Quantity  Unit price, net (EUR)  VAT           (EUR)
+---  --------------------  ---------  ---------------------  ----  -------------
+1    Sensor module SM-100  10 pieces                  25.00  19 %         250.00
+...
+```
+
+It is plain text: rules of `-` and `=`, UTF-8 values as the document wrote them, no colour, no
+box-drawing character, and no control character of the document. No line is longer than the
+width and nothing is cut; a table whose columns do not fit is written row by row. A PDF input
+prints the invoice embedded in it. `--html`, `--embed` and `--text` exclude each other; `--page`,
+`--layout` and `--template` are told they took no effect. The text is held to
+`--max-output-bytes`.
+
 Exit codes are those of every other command: 2 for a document that could not be read, recognized
 or rendered and for a template that is not one, 7 for a bound of this run the rendering outgrew
 — with nothing written — and 6 for a destination that could not be written.
@@ -1069,6 +1103,42 @@ rather than lifted to part 3, and a file that already carries something that cou
 invoice is refused rather than given a second one. Every refusal leaves with exit code 2;
 [`pdf-output.md`](pdf-output.md) is the complete list, what is written into the file, and where
 the facts about the format were taken from.
+
+## view
+
+`esj view` shows an invoice: in the browser, as one page with the invoice facts and the verdict
+at the top and a tab each for the PDF as it came, the letter `render` draws from its data, the
+KoSIT rendering and, with `--report`, the report of `validate`; with `--text`, in the terminal.
+[`view.md`](view.md) is the reference: the page, the outcomes, the files, the directory and the
+entries that offer it under *Open with*.
+
+| Option | |
+|---|---|
+| `--report` | validate as `esj validate` does; the report is a tab of the page and lies beside it as `.report.html` and `.report.pdf`, and the exit code is the verdict's |
+| `--text` | print the invoice as `render --text` does, and with `--report` the lines of `validate` under a rule; no page is written and nothing is opened. Not with `--output json` |
+| `--width <columns>` | with `--text`, as under `render` |
+| `--lang de\|en` | language of the page, the letter, the KoSIT rendering and the report. Default: German where `LC_ALL`, `LC_MESSAGES` or `LANG` (on Windows the user's locale) says so, English otherwise |
+| `--template <file>` | the letter on a branded template, as under `render` |
+| `--no-payment-code` | the letter without the EPC QR code, as under `render` |
+| `--out <dir>` | write into this directory and open nothing. Default: a new directory below `esj-view` in the downloads on Linux, in the temporary directory elsewhere |
+| `--output text\|json` | the path of the page, or an object with the page, the directory, whether it was opened, the state, the files, the message and the validation |
+| `--pack`, `--packs` | with `--report`, as for `validate` |
+| `--from`, `--extension`, `--attachment`, `--attachment-index` | as for every other command |
+
+```console
+$ esj view examples/standard-invoice.esj.json --lang en --out page
+page/index.html
+$ echo $?
+0
+```
+
+Every outcome is a page, a PDF without an invoice and a file that is not read included, because
+a file manager shows no error stream; a refusal of the read leaves with the code `render` leaves
+with for the same file, a page that shows the invoice with 0, and with `--report` the code is the
+one of `validate`. With `--text` a refusal prints the line the page would show. Only a name that
+is no readable file, the standard input, a command line that does not parse and a template that
+is not one are answered on the error stream alone. Limits and `--max-runtime` are those of
+`render`, and the directory is never deleted: the browser reads it after the command has ended.
 
 ## inspect
 

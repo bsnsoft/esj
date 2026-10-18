@@ -4,8 +4,9 @@
 # distributions they are for, each from a minimal image with nothing else
 # installed, and runs the tool there as a user would: the version, the
 # validation of a UBL invoice and of a hybrid PDF, a letter rendered to PDF with
-# the invoice embedded, the validation of that PDF with a PDF report, and one
-# request to esj serve. Then the package is removed and nothing of it may stay.
+# the invoice embedded, the validation of that PDF with a PDF report, the page of
+# esj view over the hybrid PDF, and one request to esj serve; and finds the
+# desktop entry and its icon where a desktop looks for them. Then the package is removed and nothing of it may stay.
 # A dependency the packages do not declare shows here as a library that does not
 # load, and a declared one the image lacks as a package the installer adds,
 # which is counted and printed.
@@ -91,6 +92,18 @@ inside() {
   head -c 5 "$w/report.pdf" | grep -q '%PDF-' || { echo "FAILED: no PDF report" >&2; exit 1; }
   step "validate the letter, PDF report: $(grep '^Container:' "$w/out" | tr -s ' '),"\
     "$(wc -c < "$w/report.pdf") bytes"
+  # The page of esj view, written where it is told and opened nowhere, and the
+  # two files that offer it under "Open with" on a desktop.
+  check 0 esj view --out "$w/view" --lang en --report "$hybrid"
+  [ "$(cat "$w/out")" = "$w/view/index.html" ] && [ -f "$w/view/index.html" ] &&
+    [ -f "$w/view/received/factur-x.pdf" ] && [ -f "$w/view/factur-x.letter.pdf" ] &&
+    [ -f "$w/view/factur-x.report.pdf" ] ||
+    { echo "FAILED: esj view wrote no page" >&2; cat "$w/out" "$w/err" >&2; exit 1; }
+  grep -q '^Exec=esj view --report %f$' /usr/share/applications/esj.desktop &&
+    grep -q '^Icon=esj$' /usr/share/applications/esj.desktop &&
+    [ -f /usr/share/icons/hicolor/scalable/apps/esj.svg ] ||
+    { echo "FAILED: no desktop entry or icon" >&2; exit 1; }
+  step "view: $(ls "$w/view" | wc -l | tr -d ' ') files beside the page; desktop entry and icon"
   # One request to esj serve, over the shell's own TCP client so that no HTTP
   # client is installed into the image under test.
   timeout 90 esj serve --port 18080 > "$w/serve.out" 2> "$w/serve.log" &
@@ -118,12 +131,14 @@ inside() {
     *.deb) timeout 300 apt-get purge -y -qq esj > /dev/null 2>&1 ;;
     *.rpm) timeout 300 dnf remove -y -q esj > /dev/null 2>&1 ;;
   esac
-  for path in /usr/bin/esj /usr/lib/esj /usr/share/doc/esj; do
+  for path in /usr/bin/esj /usr/lib/esj /usr/share/doc/esj \
+      /usr/share/applications/esj.desktop /usr/share/icons/hicolor/scalable/apps/esj.svg; do
     if [ -e "$path" ] || [ -L "$path" ]; then
       echo "FAILED: $path is left after the package was removed" >&2; exit 1
     fi
   done
-  step "removed; nothing left under /usr/bin/esj, /usr/lib/esj, /usr/share/doc/esj"
+  step "removed; nothing left under /usr/bin/esj, /usr/lib/esj, /usr/share/doc/esj, nor the" \
+    "desktop entry and its icon"
 }
 
 case ${1-} in

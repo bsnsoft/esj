@@ -49,6 +49,12 @@ esj render invoice.xml --html --out invoice.html   # one self-contained page
 esj render invoice.xml --out invoice.pdf           # a PDF/A-3b file
 ```
 
+**Can I read an invoice in the terminal?**
+```sh
+esj render invoice.xml --text --out -              # plain text, as wide as the terminal
+esj view invoice.pdf --text --report               # the same, and the result of the check under it
+```
+
 ## Checking
 
 **How do I validate an e-invoice?**

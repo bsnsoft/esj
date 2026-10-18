@@ -1,0 +1,73 @@
+Seller
+------
+Example GmbH
+Hauptstrasse 1
+66111 Saarbruecken
+Germany
+
+Buyer
+-----
+Beispiel AG
+Werkstrasse 18
+54290 Trier
+Germany
+
+Invoice RE-2026-0501
+====================
+
+Invoice number      RE-2026-0501
+Invoice issue date  2026-09-01
+VAT ID              DE123456789
+
+Invoice lines
+-------------
+No.  Item                Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  ------------------  --------  ---------------------  ----  ----------------
+1    Control unit XC-40  4 pieces                 250.00  19 %          1,000.00
+     Invoice line deliver to party name: Beispiel AG, works Trier
+     Invoice line actual delivery date: 2026-08-28
+     Invoice line period start date: 2026-08-24
+     Invoice line period end date: 2026-08-28
+     Invoice line deliver to city: Trier
+     Invoice line deliver to country code: DE
+     Line-level preceding invoice reference: RE-2026-0488
+     Line-level preceding invoice issue date: 2026-08-03
+---  ------------------  --------  ---------------------  ----  ----------------
+                                Sum of invoice line net amount          1,000.00
+
+Document totals
+---------------
+                                                Invoice total amount without VAT        1,000.00 EUR
+                                                Taxable amount 19 %                     1,000.00 EUR
+                                                VAT amount 19 %                           190.00 EUR
+                                                Invoice total VAT amount                  190.00 EUR
+                                                Invoice total amount with VAT           1,190.00 EUR
+                                                ====================================================
+                                                Amount due for payment                  1,215.00 EUR
+                                                Charge amount collected on behalf of a third   25.00
+                                                party
+                                                Charges specification
+                                                  Packaging levy collected for the national
+                                                  recycling scheme, ordinance 2025/14.
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           H87 = piece
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)             EUR
+Buyer reference (/BT-10/0)                KOST-2026-11
+Invoice issue time (/BT-166)              09:15:00+02:00
+Specification identifier (/BG-2/BT-24)    urn:cen.eu:en16931:2026
+Payment term text (/BG-33/0/BT-20)        Payable within 30 days without deduction. Two per cent
+                                          discount within ten days.
+Discount end date (/BG-33/0/BG-35/0/BT-170)
+                                          2026-09-11
+Discount percentage (/BG-33/0/BG-35/0/BT-171)
+                                          2 %
+Penalty start date (/BG-33/0/BG-36/0/BT-181)
+                                          2026-10-02
+Penalty yearly interest percentage (/BG-33/0/BG-36/0/BT-182)
+                                          9.2 %

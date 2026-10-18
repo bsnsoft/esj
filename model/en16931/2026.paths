@@ -60,3 +60,5 @@ conformance/fixtures/annex-b/edition-2026-example.esj.json
 conformance/fixtures/annex-b/edition-2026-example.canonical.esj.json
 conformance/fixtures/version-0.1/edition-2026.esj.json
 conformance/fixtures/version-0.1/edition-2026.canonical.esj.json
+esj-cli/src/test/resources/golden/text-edition-2026-de.txt
+esj-cli/src/test/resources/golden/text-edition-2026-en.txt

@@ -1,0 +1,99 @@
+Seller
+------
+Example GmbH
+Example Systems
+Musterweg 12
+10117 Beispielstadt
+Germany
+Accounts receivable
++49 30 1234567
+billing@example.invalid
+invoices@example.invalid (EM)
+HRB 12345 (Registration number)
+4399901000018 (0088)
+Managing director: Alex Beispiel, register court Beispielstadt HRB 12345
+
+Buyer
+-----
+Muster AG
+Beispielallee 3
+20095 Musterstadt
+Germany
+
+Invoice RE-2026-0042
+====================
+
+Invoice number            RE-2026-0042
+Invoice issue date        2026-02-03
+Actual delivery date      2026-01-30
+Payment due date          2026-03-05
+Buyer reference           KOST-4711
+Purchase order reference  BE-2026-0091
+Contract reference        RV-2025-118
+Customer number           4399902000024
+VAT ID                    DE123456789
+
+Invoice lines
+-------------
+No.  Item                   Quantity  Unit price, net (EUR)  VAT   Net amount (EUR)
+---  --------------------  ---------  ---------------------  ----  ----------------
+1    Sensor module SM-100  10 pieces                  25.00  19 %            250.00
+     Sensor module, housing grey
+     Referenced purchase order line reference: 10
+     Item Seller's identifier: SM-100
+
+2    On-site installation     3 days                 480.00  19 %          1,440.00
+     Referenced purchase order line reference: 20
+
+3    Training                8 hours                  95.00  19 %            760.00
+     Invoice line note: Two sessions of four hours.
+---  --------------------  ---------  ---------------------  ----  ----------------
+                                   Sum of Invoice line net amount          2,450.00
+
+Document totals
+---------------
+                                                Invoice total amount without VAT        2,450.00 EUR
+                                                Taxable amount 19 %                     2,450.00 EUR
+                                                VAT amount 19 %                           465.50 EUR
+                                                Invoice total VAT amount                  465.50 EUR
+                                                Invoice total amount with VAT           2,915.50 EUR
+                                                ====================================================
+                                                Amount due for payment                  2,915.50 EUR
+
+Payment instructions
+--------------------
+Payment terms           Payable within 30 days without deduction.
+Payment means           SEPA credit transfer
+IBAN                    DE89 3704 0044 0532 0130 00
+BIC                     COBADEFFXXX
+Account holder          Example GmbH
+Remittance information  RE-2026-0042
+
+Invoice notes
+-------------
+Delivery and performance according to contract RV-2025-118.
+Please quote the invoice number with the payment.
+
+Further details
+---------------
+Document type  380 = Invoice
+Unit           DAY = day
+Unit           H87 = piece
+Unit           HUR = hour
+Payment means  58 = SEPA credit transfer
+VAT category   S = Standard rate
+Country        DE = Germany
+
+Invoice currency code (/BT-5)             EUR
+Buyer accounting reference (/BT-19)       Cost centre 4711
+Specification identifier (/BG-2/BT-24)    urn:cen.eu:en16931:2017
+Buyer identifier (/BG-7/BT-46)            4399902000024 (Buyer identifier identification scheme
+                                          identifier: 0088)
+Buyer VAT identifier (/BG-7/BT-48)        DE987654321
+Buyer electronic address (/BG-7/BT-49)    rechnung@muster.invalid (Buyer electronic address
+                                          identification scheme identifier: EM)
+Buyer contact point (/BG-7/BG-9/BT-56)    Purchasing
+Buyer contact telephone number (/BG-7/BG-9/BT-57)
+                                          +49 40 7654321
+Buyer contact email address (/BG-7/BG-9/BT-58)
+                                          purchasing@muster.invalid

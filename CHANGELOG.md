@@ -6,6 +6,30 @@ named here under *Format*.
 
 ## [1.0.0] — unreleased
 
+### Added
+
+- `esj view <file>` shows an invoice in the browser: one page in a directory of its own, with
+  the facts of the invoice and the verdict at the top and a tab each for the PDF as it came, the
+  letter `esj render` draws from its data, the KoSIT rendering and, with `--report`, the
+  validation report, kept beside the page as an HTML file and a PDF; every file is the bytes its
+  own command writes. Every outcome is a page — a PDF without an invoice, several candidates (a
+  table with the command that opens each), ZUGFeRD 1.0, an encrypted PDF, a file that is not
+  read, a limit — saying what the file is and what to ask the sender for, with the exit code
+  `render` leaves with, or with `--report` `validate`. The page runs no script of its own (the
+  tabs are CSS), fetches nothing and says so in a content security policy. `--out <dir>`,
+  `--lang` (the default from the locale), `--template`, `--no-payment-code`, `--output json`;
+  `--text` prints the invoice in the terminal instead, and with `--report` the lines of
+  `esj validate` under it ([`docs/view.md`](docs/view.md)).
+- `esj render --text` writes the invoice as plain text for a terminal: the facts and names of the
+  letter layout top to bottom, the lines as a table, UTF-8 without colour or box drawing, in
+  `--width` columns (default `COLUMNS` where it is 60 or more, otherwise 100), no line longer and
+  nothing cut ([`docs/cli.md`](docs/cli.md#the-invoice-as-text)).
+- The deb and the rpm install a desktop entry, *ESJ Viewer*, that offers `esj view --report` under
+  *Open with* for XML and PDF files, with its icon; the macOS archive carries `ESJ Viewer.app`
+  beside the executable, an alternate viewer of the same two types, signed ad hoc;
+  [`docs/install.md`](docs/install.md#esj-view-from-the-file-manager) gives the line that does it
+  on Windows. None of them makes itself the default program of a type.
+
 ### Changed
 
 - The macOS executable and its archives are built on GitHub's `macos-15` runner; `macos-14`, which

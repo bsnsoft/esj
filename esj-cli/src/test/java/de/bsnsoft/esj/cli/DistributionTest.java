@@ -385,7 +385,7 @@ class DistributionTest {
     @ValueSource(strings = {"package.sh", "smoke.sh", "cases.sh", "checks.sh",
                             "native-image.sh", "docker-entrypoint.sh", "serve-smoke.sh",
                             "graalvm.sh", "nfpm.sh", "packages.sh", "packages-smoke.sh",
-                            "repositories.sh", "repositories-test.sh"})
+                            "repositories.sh", "repositories-test.sh", "viewer-app.sh"})
     void theScriptsOfTheDistributionParse(String script) throws Exception {
         Path file = Files.createTempFile("esj-dist-", ".sh");
         Files.write(file, Fixtures.bytes("dist/" + script));
@@ -841,7 +841,7 @@ class DistributionTest {
                 }
             }
         }
-        assertEquals(14, commands.size(), "the commands of the help text: " + commands);
+        assertEquals(15, commands.size(), "the commands of the help text: " + commands);
         return commands;
     }
 }

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="script-src 'none'; base-uri 'none'; form-action 'none'">
+<title>factur-x.pdf · GÜLTIG · esj</title>
+<style>
+:root {
+  --ink: #16191d; --soft: #5b6470; --rule: #d7dce2; --panel: #f6f8fa;
+  --ok: #1f7a4d; --bad: #b3261e; --warn: #8a5a00; --none: #5b6470;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 2rem 1rem; background: #fff; color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 60rem; margin: 0 auto; }
+h1 { font-size: 1.4rem; margin: 0 0 1.2rem; }
+h2 { font-size: 1.05rem; margin: 2rem 0 .6rem; }
+h3 { font-size: .95rem; margin: 1.2rem 0 .4rem; color: var(--soft); }
+.card { border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1.2rem; }
+.verdict { display: flex; align-items: baseline; gap: .8rem; flex-wrap: wrap; }
+.verdict b { font-size: 1.5rem; letter-spacing: .04em; }
+.verdict-VALID b { color: var(--ok); }
+.verdict-INVALID b { color: var(--bad); }
+.verdict-INDETERMINATE b { color: var(--warn); }
+.verdict-NONE b { color: var(--none); }
+.verdict span { color: var(--soft); }
+.subjects { margin: .4rem 0 0; }
+.subjects span { color: var(--soft); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem .9rem;
+     margin: 1rem 0 0; }
+dt { color: var(--soft); }
+dd { margin: 0; overflow-wrap: anywhere; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: .3rem .6rem .3rem 0;
+         border-bottom: 1px solid var(--rule); vertical-align: top; }
+tr.block th { background: var(--panel); padding-left: .6rem; }
+td.status { width: 40%; }
+.finding { border-left: 3px solid var(--rule); padding: .1rem 0 .1rem .8rem;
+           margin: .8rem 0; break-inside: avoid; }
+.finding-error { border-left-color: var(--bad); }
+.finding-warning { border-left-color: var(--warn); }
+.finding-head { font-weight: 600; margin: 0; }
+.finding-where, .mono { font-family: ui-monospace, SFMono-Regular, Menlo,
+                        Consolas, monospace; font-size: .85em; }
+.finding-where { color: var(--soft); margin: .15rem 0; overflow-wrap: anywhere; }
+.finding-message { margin: .15rem 0; overflow-wrap: anywhere; }
+.note { color: var(--soft); margin: .2rem 0 .8rem; }
+ul { margin: .2rem 0; padding-left: 1.2rem; }
+iframe { width: 100%; height: 1400px; border: 1px solid var(--rule);
+         border-radius: 6px; background: #fff; }
+@media print {
+  body { padding: 0; font-size: 11pt; }
+  .card, .finding, section { break-inside: avoid; }
+  iframe { height: 24cm; page-break-before: always; }
+}
+:root { color-scheme: light; }
+body { padding: 0; }
+main { max-width: none; margin: 0; }
+a { color: var(--ink); }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.view { max-width: 110rem; margin: 0 auto; padding: 1.5rem; }
+h1 { margin: 0 0 1rem; overflow-wrap: anywhere; }
+.summary { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+           gap: 1.5rem; align-items: start; }
+.facts p { margin: 0 0 .4rem; overflow-wrap: anywhere; }
+.facts .kind { font-weight: 600; }
+.facts .parties { font-size: 1.05rem; }
+.facts .meta { color: var(--soft); }
+.facts dl { grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+            gap: .6rem 1.2rem; margin: .6rem 0 0; }
+.facts dl div { min-width: 0; }
+.facts dt { font-size: .8rem; }
+.facts .due dd { font-weight: 700; font-size: 1.25rem;
+                 font-variant-numeric: tabular-nums; }
+.result p { margin: 0; }
+.result .counts { margin-top: .3rem; color: var(--soft); }
+.card.state { max-width: 60rem; border-left: 3px solid var(--warn); }
+.card.state.limit { border-left-color: var(--none); }
+.card.state p { margin: .5rem 0 0; }
+.card.state .state-head { margin: 0; font-size: 1.15rem; font-weight: 600; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+       font-size: .85em; }
+code.command { user-select: all; }
+table.candidates { margin: .8rem 0 .2rem; }
+table.candidates td { overflow-wrap: anywhere; }
+table.candidates .size { text-align: right; font-variant-numeric: tabular-nums; }
+.tabs { display: flex; flex-wrap: wrap; margin-top: 1.5rem; }
+.tabs > input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0;
+                pointer-events: none; }
+.tabs > label { padding: .45rem 1.1rem; cursor: pointer; color: var(--soft);
+                border-bottom: 2px solid transparent; }
+.tabs > input:checked + label { color: var(--ink); font-weight: 600;
+                                border-bottom-color: var(--ink); }
+.tabs > input:focus-visible + label { outline: 2px solid var(--ink);
+                                      outline-offset: -2px; }
+.pane { display: none; order: 1; flex: 0 0 100%; min-width: 0; padding-top: 1rem;
+        border-top: 1px solid var(--rule); }
+#tab-pdf:checked ~ #pane-pdf, #tab-invoice:checked ~ #pane-invoice,
+#tab-kosit:checked ~ #pane-kosit, #tab-report:checked ~ #pane-report {
+  display: block; }
+.pane iframe { height: calc(100vh - 4rem); min-height: 30rem; }
+.pane > p { margin: 0 0 .6rem; }
+.pane .caption { color: var(--soft); font-size: .85rem; }
+.report { max-width: 60rem; max-height: calc(100vh - 4rem); overflow: auto; }
+.report .save { margin: 0 0 1rem; }
+footer { margin-top: 2rem; padding-top: .8rem; border-top: 1px solid var(--rule);
+         color: var(--soft); font-size: .85rem; overflow-wrap: anywhere; }
+footer p { margin: 0; }
+footer span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+@media (max-width: 64rem) {
+  .summary { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 40rem) {
+  .view { padding: 1rem; }
+}
+@media print {
+  @page { margin: 15mm; }
+  body { font-size: 10.5pt; }
+  .view { padding: 0; max-width: none; }
+  .tabs > label { display: none; }
+  .pane { border-top: 0; padding-top: 0; }
+  .report { max-height: none; overflow: visible; }
+  .pane iframe { height: 24cm; }
+  .card, .finding, tr, .facts { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="view">
+<header>
+<h1>factur-x.pdf</h1>
+<div class="summary">
+<div class="facts">
+<p class="parties">[Seller name] → [Buyer name]</p>
+<dl>
+<div><dt>Rechnungsnummer</dt><dd>123456XX</dd></div>
+<div><dt>Rechnungsdatum</dt><dd>04.04.2016</dd></div>
+<div class="due"><dt>Fälliger Betrag</dt><dd>336,90 EUR</dd></div>
+</dl>
+</div>
+<section class="card result" aria-label="Urteil">
+<p class="verdict verdict-VALID"><b>GÜLTIG</b></p>
+<p class="counts">1 Hinweis</p>
+</section>
+</div>
+</header>
+<main class="tabs">
+<input type="radio" name="tab" id="tab-pdf" checked><label for="tab-pdf">PDF</label>
+<input type="radio" name="tab" id="tab-invoice"><label for="tab-invoice">Rechnung</label>
+<input type="radio" name="tab" id="tab-kosit"><label for="tab-kosit">KoSIT</label>
+<input type="radio" name="tab" id="tab-report"><label for="tab-report">Prüfbericht</label>
+<section class="pane" id="pane-pdf" aria-label="PDF">
+<iframe src="received/factur-x.pdf" title="PDF"></iframe>
+</section>
+<section class="pane" id="pane-invoice" aria-label="Rechnung">
+<p class="caption">Aus den Rechnungsdaten erzeugt</p>
+<iframe src="factur-x.letter.pdf" title="Rechnung"></iframe>
+</section>
+<section class="pane" id="pane-kosit" aria-label="KoSIT">
+<iframe sandbox="allow-scripts" src="factur-x.kosit.html" title="KoSIT"></iframe>
+</section>
+<section class="pane" id="pane-report" aria-label="Prüfbericht">
+<div class="report">
+<p class="save"><a href="factur-x.report.pdf" download>Als PDF speichern</a></p>
+<section class="card">
+<p class="verdict verdict-VALID"><span>Urteil</span> <b>GÜLTIG</b></p>
+<p class="subjects"><span>Container:</span> OK<br><span>Rechnung:</span> GÜLTIG</p>
+<p class="note">Technische Prüfung nach EN 16931; die umsatzsteuerliche Einordnung (BMF-Schreiben vom 15.10.2026, Rn. 22 f.) ist davon getrennt.</p>
+</section>
+<section>
+<h2>Identität</h2>
+<dl>
+<dt>Eingabe</dt><dd class="mono">${input}/factur-x.pdf</dd>
+<dt>Erkannte Syntax</dt><dd class="mono">CII (aus einem PDF-Anhang)</dd>
+<dt>Leser</dt><dd class="mono">streaming — der Streaming-Leser der Bindungstabellen</dd>
+<dt>Semantisches Modell</dt><dd class="mono">EN16931-1:2017+A1:2019/AC:2020</dd>
+<dt>Profil</dt><dd class="mono">urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</dd>
+<dt>SHA-256 der Eingabe</dt><dd class="mono">6ed24773a78dfd68151f34fbb42311ec379983ef4f0f511875e71c9fb2fac5d5</dd>
+<dt>Semantischer Digest</dt><dd class="mono">93c410bd2be4e613ca102876cfcbb5c9e1cdc9c905667d99bc74b1b4cdca577c</dd>
+<dt>Dokument-Digest</dt><dd class="mono">bf276ac356a85d37be96e92e8f80c47e0f7c2be958cd0de8fdbb7c57dc3f71e5</dd>
+<dt>SHA-256 der Quelle</dt><dd class="mono">727b51982a84c9b406599a7384783570910440ed405c9bb6d918b22442636886</dd>
+<dt>Pakete</dt><dd class="mono">syntax: xrechnung/3.0.2, release 2026-08-31 (bundled)</dd>
+<dt></dt><dd class="mono">rules: en16931/1.3.16 (bundled)</dd>
+<dt>Werkzeug</dt><dd class="mono">esj ${version}</dd>
+</dl>
+</section>
+<section>
+<h2>Prüfungen</h2>
+<table>
+<tr class="block"><th colspan="2">Container</th></tr>
+<tr><td>PDF-Struktur</td><td class="status">OK</td></tr>
+<tr><td>PDF/A-3 deklariert</td><td class="status">PDF/A-3B — deklariert, nicht validiert</td></tr>
+<tr><td>Zugeordnete Datei (/AF)</td><td class="status">OK: AFRelationship &quot;Alternative&quot;</td></tr>
+<tr><td>Factur-X-XMP-Metadaten</td><td class="status">OK</td></tr>
+<tr><td>Parameter der eingebetteten Datei</td><td class="status">OK</td></tr>
+<tr class="block"><th colspan="2">Syntax</th></tr>
+<tr><td>XML</td><td class="status">OK</td></tr>
+<tr><td>CII D16B XSD</td><td class="status">OK</td></tr>
+<tr><td>EN 16931 CII Schematron</td><td class="status">OK</td></tr>
+<tr><td>XRechnung CII Schematron</td><td class="status">OK: 1 Hinweis</td></tr>
+<tr class="block"><th colspan="2">Semantik</th></tr>
+<tr><td>Import</td><td class="status">OK</td></tr>
+<tr><td>ESJ-Format (L1)</td><td class="status">nicht anwendbar: die Eingabe kam als XML</td></tr>
+<tr><td>Modell (L2)</td><td class="status">OK</td></tr>
+<tr><td>Kardinalität (L3)</td><td class="status">OK</td></tr>
+<tr><td>EN-16931-Geschäftsregeln (nativ, Paket en16931/1.3.16)</td><td class="status">OK</td></tr>
+</table>
+</section>
+<section>
+<h2>Befunde</h2>
+<h3>Syntax</h3>
+<article class="finding finding-info">
+<p class="finding-head">BR-DE-TMP-32 [info] — XR-BR, schematron, pack xrechnung/3.0.2</p>
+<p class="finding-where">/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}CrossIndustryInvoice[1]/Q{urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100}SupplyChainTradeTransaction[1]</p>
+<p class="finding-message">[BR-DE-TMP-32] Eine Rechnung sollte zur Angabe des Liefer-/Leistungsdatums entweder BT-72 &quot;Actual delivery date&quot;, BG-14 &quot;Invoicing period&quot; oder in jeder Rechnungsposition BG-26 &quot;Invoice line period&quot; enthalten.</p>
+</article>
+</section>
+<section>
+<h2>Vor der Prüfung</h2>
+<ul>
+<li>die Rechnung stammt aus Anhang 1 der Datei, factur-x.xml</li>
+</ul>
+</section>
+</div>
+</section>
+</main>
+<footer>
+<p>Ablage: <span>${directory}</span> · esj ${version}</p>
+</footer>
+</div>
+</body>
+</html>
