@@ -78,10 +78,6 @@ final class Cli {
     }
 
     /**
-     * Runs the tool with the deadline a command that reads a document holds where the
-     * caller names none shortened, so that a test can watch it fire.
-     */
-    /**
      * Runs the tool on a machine of the test's own: its temporary directory, its language
      * and a launcher that records the programs {@code esj view} would start instead of
      * starting them.
