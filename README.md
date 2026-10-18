@@ -89,7 +89,7 @@ dist/out/esj-<version>-native-<os>-<arch>/esj validate invoice.xml
 
 `bin/esj` runs the jar unpackaged; the transcripts here and under `docs/` write `esj` for that
 script with `bin/` on the `PATH`. From 0.9.0 the libraries come from Maven Central:
-`de.bsnsoft.esj:esj-bom:1.0.0-rc.3` imported once, then a module by name ([`docs/java-api.md`](docs/java-api.md));
+`de.bsnsoft.esj:esj-bom:1.0.0-rc.4` imported once, then a module by name ([`docs/java-api.md`](docs/java-api.md));
 `mvn -B install` builds `de.bsnsoft.esj:esj-core` and its siblings from source.
 
 ```console

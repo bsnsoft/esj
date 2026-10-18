@@ -40,7 +40,7 @@ version of its own; the two tools are on no repository ([`releasing.md`](releasi
     <dependency>
       <groupId>de.bsnsoft.esj</groupId>
       <artifactId>esj-bom</artifactId>
-      <version>1.0.0-rc.3</version>
+      <version>1.0.0-rc.4</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -911,7 +911,7 @@ which must leave the tree unchanged; `.github/workflows/ci.yml` fails where it d
 |---|---|---|
 | format version | the `version` member of every document, `SPEC.md` | `1.0` written; `1.0` and `0.1` read |
 | semantic model edition | the `semanticModel` member of every document, the `edition` member of the registry | `EN16931-1:2017+A1:2019/AC:2020`, `EN16931-1:2026` |
-| artifact version | `pom.xml` | `1.0.0-rc.3` |
+| artifact version | `pom.xml` | `1.0.0-rc.4` |
 
 The format version follows `MAJOR.MINOR`; a reader rejects a version it does not implement.
 `SemanticDocument.formatVersion()` is the version a document carries: the one it was read in, kept
