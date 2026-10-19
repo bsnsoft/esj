@@ -25,6 +25,10 @@ named here under *Format*.
 
 ### Changed
 
+- The Linux x64 executable and the amd64 container image are built, and the x64 packages tested,
+  on GitHub's `ubuntu-24.04` runner, as the arm64 ones already were; `ubuntu-latest` moves to
+  Ubuntu 26 on 2026-10-19, and an executable built there could need a glibc above the 2.34 the
+  packages declare.
 - `esj validate` runs the rule pack `en16931/1.3.17`. The rules of the VAT categories `L` (IGIC)
   and `M` (IPSI) carry the identifiers the standard gives them, `BR-IG-01` to `-10` and `BR-IP-01`
   to `-10`, where release 1.3.16 and the pack `en16931/1.3.16` say `BR-AF-*` and `BR-AG-*`; a
