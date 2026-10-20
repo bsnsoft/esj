@@ -93,7 +93,7 @@
 
     <jackson.version>2.22.3</jackson.version>
     <picocli.version>4.7.7</picocli.version>
-    <saxon.version>13.0</saxon.version>
+    <saxon.version>13.1</saxon.version>
     <pdfbox.version>3.0.8</pdfbox.version>
     <zxing.version>3.5.4</zxing.version>
     <junit.version>6.1.3</junit.version>
@@ -111,8 +111,8 @@
     <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
     <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-    <versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
-    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+    <versions-maven-plugin.version>2.23.0</versions-maven-plugin.version>
+    <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
 
     <!--
       The files of EN 16931-1:2026 are separable: model/en16931/2026.paths lists the
@@ -135,7 +135,7 @@
     <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
     <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
     <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
-    <japicmp-maven-plugin.version>0.26.3</japicmp-maven-plugin.version>
+    <japicmp-maven-plugin.version>0.26.5</japicmp-maven-plugin.version>
 
     <!--
       The API check of the profile api-check: the release on Maven Central every library
