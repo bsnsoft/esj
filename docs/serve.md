@@ -165,8 +165,9 @@ file's bytes to `POST /api/validate`; esj ships none.
 - **Links.** A link to an artefact or an endpoint is absolute where the server knows its own
   address: `--public-url`, or a `Host` it answers to — a loopback name or the bind address with
   its port, the host of an `--allow-origin`, an `--allow-host` such as `esj-api:8080`. Any other
-  `Host` gives the path, `/api/artifacts/<id>`, which a client resolves against the URL it
-  used; an MCP result then names the path in its text. Behind a proxy or in Compose, name the
+  `Host`, an empty one or none gives the path, `/api/artifacts/<id>`, which a client resolves
+  against the URL it used; an MCP result then names the path in its text. From Java 25.0.5 on,
+  the JDK answers an HTTP/1.1 request without `Host` with 400 before esj sees it. Behind a proxy or in Compose, name the
   address with `--public-url` or `--allow-host`.
 - **Requests.** `--request-timeout` (60s) for headers and body, at most 64 header fields and
   32 KiB of them, idle connections closed after 30 s, `--max-upload` (32M). An answer a client
