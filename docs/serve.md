@@ -166,9 +166,10 @@ file's bytes to `POST /api/validate`; esj ships none.
   address: `--public-url`, or a `Host` it answers to — a loopback name or the bind address with
   its port, the host of an `--allow-origin`, an `--allow-host` such as `esj-api:8080`. Any other
   `Host`, an empty one or none gives the path, `/api/artifacts/<id>`, which a client resolves
-  against the URL it used; an MCP result then names the path in its text. From Java 25.0.5 on,
-  the JDK answers an HTTP/1.1 request without `Host` with 400 before esj sees it. Behind a proxy or in Compose, name the
-  address with `--public-url` or `--allow-host`.
+  against the URL it used; an MCP result then names the path in its text. Since the Java
+  updates of October 2026 (17.0.21, 21.0.13, 25.0.5) the JDK answers an HTTP/1.1 request without
+  `Host` with 400 before esj sees it. Behind a proxy or in Compose, name the address with
+  `--public-url` or `--allow-host`.
 - **Requests.** `--request-timeout` (60s) for headers and body, at most 64 header fields and
   32 KiB of them, idle connections closed after 30 s, `--max-upload` (32M). An answer a client
   does not read holds a thread, `--max-jobs` + `--max-queue` + 16 of them, until

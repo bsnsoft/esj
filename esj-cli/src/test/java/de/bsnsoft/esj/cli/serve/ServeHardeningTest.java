@@ -459,8 +459,9 @@ class ServeHardeningTest {
     private static Raw raw(int port, String method, String target, String host, byte[] body,
                            String... headers) throws IOException {
         ByteArrayOutputStream request = new ByteArrayOutputStream();
-        // HTTP/1.1 requires a Host field, and Java 25.0.5 refuses a request without one before
-        // the server sees it: a request without any Host is one of HTTP/1.0.
+        // HTTP/1.1 requires a Host field, and since the Java updates of October 2026 the JDK
+        // refuses a request without one before the server sees it: a request without any Host
+        // is one of HTTP/1.0.
         String version = host == null ? "HTTP/1.0" : "HTTP/1.1";
         StringBuilder head = new StringBuilder(method + " " + target + " " + version + "\r\n");
         if (host != null) {
