@@ -64,8 +64,8 @@ class ServeHardeningTest {
                         List.of(), Optional.empty());
         try (Http http = Http.start(config)) {
             int port = http.port();
-            for (String host : List.of("evil.example", "attacker.test:9999",
-                    "localhost:" + (port == 1 ? 2 : port - 1), "esj-api:8081", "")) {
+            for (String host : java.util.Arrays.asList("evil.example", "attacker.test:9999",
+                    "localhost:" + (port == 1 ? 2 : port - 1), "esj-api:8081", "", null)) {
                 Raw rendered = raw(port, "POST", "/api/render?format=html", host, document);
                 assertEquals(200, rendered.status(), rendered.body());
                 String url = firstUrl(rendered);
@@ -452,12 +452,19 @@ class ServeHardeningTest {
         }
     }
 
-    /** Sends one request with a Host of the test's choosing; an empty one sends none. */
+    /**
+     * Sends one request with a Host of the test's choosing; an empty one sends the field
+     * without a value, {@code null} sends none.
+     */
     private static Raw raw(int port, String method, String target, String host, byte[] body,
                            String... headers) throws IOException {
         ByteArrayOutputStream request = new ByteArrayOutputStream();
-        StringBuilder head = new StringBuilder(method + " " + target + " HTTP/1.1\r\n");
-        if (!host.isEmpty()) {
+        // HTTP/1.1 requires a Host field, and since the Java updates of October 2026 the JDK
+        // refuses a request without one before the server sees it: a request without any Host
+        // is one of HTTP/1.0.
+        String version = host == null ? "HTTP/1.0" : "HTTP/1.1";
+        StringBuilder head = new StringBuilder(method + " " + target + " " + version + "\r\n");
+        if (host != null) {
             head.append("Host: ").append(host).append("\r\n");
         }
         for (String header : headers) {
