@@ -49,6 +49,8 @@ named here under *Format*.
   accepts `STN` where it accepted `STD`. The syntax ledger was taken again with the official
   validator, its EN 16931 stylesheets replaced by those of 1.3.17
   ([`conformance/syntax/ledger.md`](conformance/syntax/ledger.md)).
+- Saxon-HE 13.1 runs the validation artefacts and the stylesheets, where 13.0 did, and Jackson
+  2.22.4 reads the JSON files esj reads with it; the goldens of the tests did not move.
 
 ## [1.0.0-rc.4] — 2026-10-18
 

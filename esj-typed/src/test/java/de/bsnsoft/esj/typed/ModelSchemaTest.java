@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import tools.jackson.core.exc.StreamReadException;
 
 /**
  * Checks {@code schema/esj-en16931-2017.schema.json}, the generated schema that narrows
@@ -143,6 +144,19 @@ class ModelSchemaTest {
         return schema.validate(new String(document, StandardCharsets.UTF_8), InputFormat.JSON);
     }
 
+    /**
+     * Whether the model schema rejects a document. A text the validator cannot read is
+     * rejected too: since jackson-core 3.2.4 its parser refuses a lone surrogate in a member
+     * name before the schema sees the document, and six fixtures carry one.
+     */
+    private static boolean rejected(byte[] document) {
+        try {
+            return !validate(document).isEmpty();
+        } catch (StreamReadException e) {
+            return true;
+        }
+    }
+
     @ParameterizedTest
     @MethodSource("examples")
     void everyExampleValidatesAgainstTheModelSchema(String name) {
@@ -175,7 +189,7 @@ class ModelSchemaTest {
         if (Examples.NOT_A_JSON_TEXT.contains(name)) {
             return;
         }
-        boolean rejected = !validate(Examples.invalid(name)).isEmpty();
+        boolean rejected = rejected(Examples.invalid(name));
         if (REJECTED.contains(name)) {
             assertTrue(rejected, name + " is expected to fail the model schema");
         } else {
