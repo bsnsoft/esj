@@ -2,28 +2,28 @@ Acquire-By-Hash: yes
 Architectures: amd64 arm64
 Codename: stable
 Components: main
-Date: Sun, 18 Oct 2026 15:22:59 +0000
+Date: Thu, 05 Nov 2026 10:03:41 +0000
 Description: esj, the command line tool of EN16931 Semantic JSON: every release and release candidate
 Label: esj
 Origin: BSNSoft Solutions GmbH
 Suite: stable
 MD5Sum:
- 7cf30ec372224870bf7676fd6f1f4395             3587 main/binary-amd64/Packages
- 7c16afa86772426095533a5bb669664b             1209 main/binary-amd64/Packages.gz
- 795a1fe8177ebb1f288b2fc7b541333e             3587 main/binary-arm64/Packages
- 9388967bd3fe9b80f751d7b73735db49             1207 main/binary-arm64/Packages.gz
+ ed909639b08c69d0b06f90f64d4dfdcf             4787 main/binary-amd64/Packages
+ 353b1cf3a1dd43decc24f4ee7045b697             1412 main/binary-amd64/Packages.gz
+ 9ff6981280d12dc9471e15e2ab032798             4786 main/binary-arm64/Packages
+ de7075d40e8c028c1298ab13fda21ec6             1414 main/binary-arm64/Packages.gz
 SHA1:
- 3c40c373a33c18b5f2751e185a09a6ebdf1afe59             3587 main/binary-amd64/Packages
- fd81f81ba56ae5fba5c94dab748494adec6037af             1209 main/binary-amd64/Packages.gz
- d1425be1ebb7d82ccac255e58724f5c94ebcd333             3587 main/binary-arm64/Packages
- d50da1e7fbcaf8fcde7742c9235278ce8782b78b             1207 main/binary-arm64/Packages.gz
+ 577d05ad43c6d20c23da7a79e8ced3f06918ef1f             4787 main/binary-amd64/Packages
+ 5772f150fad3d3e27c5ef1a4674189873dc82869             1412 main/binary-amd64/Packages.gz
+ 94926599cb2093d8e86cfdd1568780a37470d85e             4786 main/binary-arm64/Packages
+ d46bf4b5ec084620bd41b967366b7d21ac7ce52c             1414 main/binary-arm64/Packages.gz
 SHA256:
- 37e9279f3e0e1ce8f446ecd05d5202ade265a3a282438ae36505930bb3b4687d             3587 main/binary-amd64/Packages
- 1754b091097e173958a9da42fb69be1d31e13372c11150fa8637d4b09ce7007a             1209 main/binary-amd64/Packages.gz
- 14533a149988630005acfcc8acbff85109221f4427a7eed64cb7771ad1235dfc             3587 main/binary-arm64/Packages
- 70a21347499e7fbc272fe9f1e79e51cee83c0f888417b5854d40f5b33c017559             1207 main/binary-arm64/Packages.gz
+ 70fe7335304d49f11af124e0e84eb5da4f206877e5b496d570d1e644a6732f43             4787 main/binary-amd64/Packages
+ e2463f8c186232e06dd5801170abe19c0981a8bf29bbf351ab6bdde2e863eaf2             1412 main/binary-amd64/Packages.gz
+ 251f572ff4b3b4032f6027f4edad42699d1ce4464f51a80f5e959b3c39c56cae             4786 main/binary-arm64/Packages
+ 9b3655e6e4abbc0c2944778b9f15cf2b5d5c8bac6df74b3d03c29f49c5b9936d             1414 main/binary-arm64/Packages.gz
 SHA512:
- 7367091dce167f488c6991e5ae4413d927b5263039ea1261f686f5416593b1775aa24ac7b6178d398e83d4e426289c48dddab4bb415ab8d582cb5542973c389a             3587 main/binary-amd64/Packages
- 45f7470e8c3a38b49b06390d42f4dc6ad9669063ae45262ced787f842fa076419c2a410e5a1266364c26ba5e9f4e46e8460b37e77e22b140ac48e4f34c0ddc56             1209 main/binary-amd64/Packages.gz
- b61a13b6b1c56ed8d6d0af50a9558c0b81deea76c4192b3d91b97f45721669ec1448a975c55b39976d0b1ede58985ae98f1e275932ecc7a2c3b2d6d2e000c712             3587 main/binary-arm64/Packages
- 669b42c16910815bc2a3e0a5a0832981fd8f5c8a302f52cdd0475ba136192ca72353de85859bcca35d3ad84e5b48551a123e6e96d2b2adf71b2c93763cbfc0fd             1207 main/binary-arm64/Packages.gz
+ 81db30628e60c66b003c441cef43c764007472fe1a1cedb5bd0fef7d09ddb4705cd633321e39b02913715f3662c2237dcc3842b2b0c6b74dff019f9f8f3a8276             4787 main/binary-amd64/Packages
+ 9b5a422ac27105c78d8ff78ab1dd9a76cda52ab596babb83b5181bacebe03bbc834c73927f928b9476f9e0d99b5bba1e6abcb80a166ba8f2ea20cb228cff03e5             1412 main/binary-amd64/Packages.gz
+ 3f080c12adad08160d05a6e4c23d5d5f357f4a08e5afe1a34e090c21ce49332a93ab0cf067e72ce3687f25eaf98081e2972d4c20be4f28ee6238631cc9a75a88             4786 main/binary-arm64/Packages
+ bdc4f94397ec191d5d958e0cb895f73ddebb9777f56acee3cca9b7bed1e48d27022e0ec23a159a075086ebdccbc3fc290447bbd085beac9ca410233e412989dc             1414 main/binary-arm64/Packages.gz
