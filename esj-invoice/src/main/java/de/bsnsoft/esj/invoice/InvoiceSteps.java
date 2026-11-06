@@ -3,6 +3,7 @@ package de.bsnsoft.esj.invoice;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.invoice.code.Coded;
 import de.bsnsoft.esj.invoice.code.CurrencyCode;
+import de.bsnsoft.esj.invoice.code.NoteSubject;
 import de.bsnsoft.esj.typed.InvoiceEditor;
 import de.bsnsoft.esj.typed.build.BuildReport;
 import de.bsnsoft.esj.typed.build.InvoiceRules;
@@ -195,6 +196,31 @@ public final class InvoiceSteps {
         WithBuyer note(String text);
 
         /**
+         * Writes one invoice note (BG-1) with the code of its subject (BT-21, BT-22), a
+         * code of UNTDID 4451 that the rule pack checks when the invoice is built.
+         *
+         * @param subject the invoice note subject code
+         * @param text    the note
+         * @return this step
+         * @throws IllegalArgumentException if the note is blank
+         * @throws NullPointerException     if a part is {@code null}
+         */
+        WithBuyer note(Coded subject, String text);
+
+        /**
+         * Writes one invoice note (BG-1) with the code of its subject (BT-21, BT-22), a
+         * code of the generated list.
+         *
+         * @param subject the invoice note subject code, for example
+         *                {@code NoteSubject.GENERAL_INFORMATION}
+         * @param text    the note
+         * @return this step
+         * @throws IllegalArgumentException if the note is blank
+         * @throws NullPointerException     if a part is {@code null}
+         */
+        WithBuyer note(NoteSubject subject, String text);
+
+        /**
          * Writes the buyer reference (BT-10).
          *
          * @param value the reference
@@ -351,6 +377,12 @@ public final class InvoiceSteps {
 
         @Override
         Buildable note(String text);
+
+        @Override
+        Buildable note(Coded subject, String text);
+
+        @Override
+        Buildable note(NoteSubject subject, String text);
 
         @Override
         Buildable buyerReference(String value);

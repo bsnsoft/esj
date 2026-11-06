@@ -30,6 +30,13 @@
       "source": "name"
     },
     {
+      "type": "NoteSubject",
+      "summary": "Subject of an invoice note.",
+      "lists": ["untdid-4451"],
+      "registryList": "UNTDID 4451",
+      "source": "name"
+    },
+    {
       "type": "PaymentMeansCode",
       "summary": "Means by which the invoice is to be paid.",
       "lists": ["untdid-4461"],

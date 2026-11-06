@@ -62,6 +62,8 @@ public final class Line {
 
     private final String buyerIdentifier;
 
+    private final List<ItemAttribute> attributes;
+
     private final String purchaseOrderLineReference;
 
     private final BigDecimal netAmount;
@@ -83,6 +85,7 @@ public final class Line {
         this.objectIdentifier = copy.objectIdentifier;
         this.sellerIdentifier = copy.sellerIdentifier;
         this.buyerIdentifier = copy.buyerIdentifier;
+        this.attributes = copy.attributes;
         this.purchaseOrderLineReference = copy.purchaseOrderLineReference;
         this.netAmount = copy.netAmount;
     }
@@ -438,6 +441,27 @@ public final class Line {
     }
 
     /**
+     * Returns this line with one more attribute of the item (BG-32): a property stated as
+     * a name (BT-160) and a value (BT-161), for example the labour cost a line contains.
+     *
+     * <p>A line may carry any number of attributes, two under the same name among them;
+     * they are written in the order of the calls and read back in that order.
+     *
+     * @param name  the item attribute name, for example {@code "Colour"}
+     * @param value the item attribute value, for example {@code "blue"}
+     * @return a new line
+     * @throws IllegalArgumentException if the name or the value is blank
+     * @throws NullPointerException     if a part is {@code null}
+     */
+    public Line attribute(String name, String value) {
+        ItemAttribute attribute = new ItemAttribute(Amounts.text(name, "name"),
+                Amounts.text(value, "value"));
+        Copy copy = copy();
+        copy.attributes = append(attributes, attribute);
+        return new Line(copy);
+    }
+
+    /**
      * Returns this line with the line of the purchase order it answers (BT-132).
      *
      * @param value the referenced purchase order line reference
@@ -596,6 +620,15 @@ public final class Line {
     }
 
     /**
+     * Returns the attributes of the item (BG-32).
+     *
+     * @return the attributes, in the order they were written or the document carries them
+     */
+    public List<ItemAttribute> attributes() {
+        return attributes;
+    }
+
+    /**
      * Returns the referenced purchase order line reference (BT-132).
      *
      * @return the reference, or an empty optional
@@ -685,6 +718,7 @@ public final class Line {
         copy.objectIdentifier = objectIdentifier;
         copy.sellerIdentifier = sellerIdentifier;
         copy.buyerIdentifier = buyerIdentifier;
+        copy.attributes = attributes;
         copy.purchaseOrderLineReference = purchaseOrderLineReference;
         copy.netAmount = netAmount;
         return copy;
@@ -709,6 +743,7 @@ public final class Line {
         Identifier objectIdentifier;
         String sellerIdentifier;
         String buyerIdentifier;
+        List<ItemAttribute> attributes = List.of();
         String purchaseOrderLineReference;
         BigDecimal netAmount;
 

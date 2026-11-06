@@ -4,7 +4,22 @@ The format is [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 [semantic versioning](https://semver.org/spec/v2.0.0.html). A change to the format itself is
 named here under *Format*.
 
-## [1.0.0] — unreleased
+## [1.0.0-rc.6] — unreleased
+
+### Added
+
+- `Line.attribute(name, value)` writes an item attribute (BG-32: BT-160 and BT-161), as often
+  as a line needs and in the order of the calls; `Line.attributes()` returns them as
+  `ItemAttribute`, on a line written and on a line `Invoice.read(...)` returns. The cross
+  industry invoice carries them as `ram:ApplicableProductCharacteristic`, UBL as
+  `cac:AdditionalItemProperty`.
+- `note(subject, text)` on `Draft` and on the steps of `Invoice.create(...)` writes an invoice
+  note with its subject code (BT-21 with BT-22); `note(text)` is unchanged. The code is a
+  `Coded` or a constant of the new enum `NoteSubject`, generated from the UNTDID 4451 snapshot
+  of the rule pack `en16931/1.3.17` (401 codes, `GENERAL_INFORMATION` is `AAI`), and the rule
+  pack checks it when the invoice is built (BR-CL-08). The cross industry invoice carries it as
+  `ram:IncludedNote/ram:SubjectCode`, UBL as the `#AAI#` prefix of `cbc:Note` the CEN binding
+  defines ([`docs/java-api.md`](docs/java-api.md#the-domain-api)).
 
 ## [1.0.0-rc.5] — 2026-11-05
 

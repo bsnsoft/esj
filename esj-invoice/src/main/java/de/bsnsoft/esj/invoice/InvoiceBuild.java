@@ -3,6 +3,7 @@ package de.bsnsoft.esj.invoice;
 import de.bsnsoft.esj.SemanticDocument;
 import de.bsnsoft.esj.invoice.code.Coded;
 import de.bsnsoft.esj.invoice.code.CurrencyCode;
+import de.bsnsoft.esj.invoice.code.NoteSubject;
 import de.bsnsoft.esj.typed.InvoiceEditor;
 import de.bsnsoft.esj.typed.build.BuildReport;
 import de.bsnsoft.esj.typed.build.InvoiceRules;
@@ -103,6 +104,18 @@ final class InvoiceBuild implements InvoiceSteps.Start, InvoiceSteps.WithNumber,
     @Override
     public InvoiceSteps.Buildable note(String text) {
         draft.note(text);
+        return this;
+    }
+
+    @Override
+    public InvoiceSteps.Buildable note(Coded subject, String text) {
+        draft.note(subject, text);
+        return this;
+    }
+
+    @Override
+    public InvoiceSteps.Buildable note(NoteSubject subject, String text) {
+        draft.note(subject, text);
         return this;
     }
 

@@ -42,6 +42,7 @@ class CodeEnumsTest {
         Map<String, Coded[]> enums = new LinkedHashMap<>();
         enums.put("Unit", Unit.values());
         enums.put("InvoiceType", InvoiceType.values());
+        enums.put("NoteSubject", NoteSubject.values());
         enums.put("PaymentMeansCode", PaymentMeansCode.values());
         enums.put("VatCategory", VatCategory.values());
         enums.put("AllowanceReason", AllowanceReason.values());
@@ -124,6 +125,8 @@ class CodeEnumsTest {
         assertEquals("58", PaymentMeansCode.SEPA_CREDIT_TRANSFER.code());
         assertEquals("380", InvoiceType.COMMERCIAL_INVOICE.code());
         assertEquals("381", InvoiceType.CREDIT_NOTE.code());
+        assertEquals("AAI", NoteSubject.GENERAL_INFORMATION.code());
+        assertSame(NoteSubject.REGULATORY_INFORMATION, NoteSubject.resolve("REG"));
         assertEquals("EUR", CurrencyCode.EUR.code());
         assertEquals("DE", Country.DE.code());
         assertEquals("VATEX_EU_132", VatExemptionReason.of("VATEX-EU-132").toString());
