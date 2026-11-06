@@ -579,6 +579,9 @@ public final class Invoice {
         copy.objectIdentifier = source.objectIdentifier().orElse(null);
         copy.sellerIdentifier = item.sellerIdentifier().map(Identifier::value).orElse(null);
         copy.buyerIdentifier = item.buyerIdentifier().map(Identifier::value).orElse(null);
+        copy.attributes = item.itemAttributes().stream()
+                .map(attribute -> new ItemAttribute(attribute.name(), attribute.value()))
+                .toList();
         copy.purchaseOrderLineReference = source.purchaseOrderLineReference().orElse(null);
         copy.period = source.period()
                 .filter(period -> period.startDate().isPresent() || period.endDate().isPresent())

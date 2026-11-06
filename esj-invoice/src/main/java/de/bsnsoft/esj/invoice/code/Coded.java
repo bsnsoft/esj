@@ -20,8 +20,8 @@ package de.bsnsoft.esj.invoice.code;
  * of the generator is added to {@code permits} with it.
  */
 public sealed interface Coded permits AllowanceReason, ChargeReason, Country, CurrencyCode,
-        CustomCode, ElectronicAddressScheme, InvoiceType, PaymentMeansCode, Unit, VatCategory,
-        VatExemptionReason {
+        CustomCode, ElectronicAddressScheme, InvoiceType, NoteSubject, PaymentMeansCode, Unit,
+        VatCategory, VatExemptionReason {
 
     /**
      * Returns the code as it is written into the document.

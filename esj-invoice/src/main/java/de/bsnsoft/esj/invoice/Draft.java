@@ -6,6 +6,7 @@ import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.invoice.code.Coded;
 import de.bsnsoft.esj.invoice.code.CurrencyCode;
 import de.bsnsoft.esj.invoice.code.InvoiceType;
+import de.bsnsoft.esj.invoice.code.NoteSubject;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.typed.AllowanceEditor;
 import de.bsnsoft.esj.typed.BuyerEditor;
@@ -447,6 +448,43 @@ public final class Draft {
     }
 
     /**
+     * Writes one invoice note (BG-1) with the code of its subject (BT-21, BT-22).
+     *
+     * <p>The code is one of UNTDID 4451, for example {@code NoteSubject.GENERAL_INFORMATION}
+     * ({@code AAI}) or {@code NoteSubject.REGULATORY_INFORMATION} ({@code REG}); a code
+     * given as text is {@code NoteSubject.resolve(code)}. Whether a code is admissible is
+     * decided by the rule pack when the invoice is checked (BR-CL-08), as for every other
+     * code.
+     *
+     * @param subject the invoice note subject code
+     * @param text    the note
+     * @return this draft
+     * @throws IllegalArgumentException if the note is blank
+     * @throws NullPointerException     if a part is {@code null}
+     */
+    public Draft note(Coded subject, String text) {
+        String code = Objects.requireNonNull(subject, "subject").code();
+        String note = Amounts.text(text, "text");
+        invoice.note(n -> n.subjectCode(code).note(note));
+        return this;
+    }
+
+    /**
+     * Writes one invoice note (BG-1) with the code of its subject (BT-21, BT-22), a code
+     * of the generated list.
+     *
+     * @param subject the invoice note subject code, for example
+     *                {@code NoteSubject.GENERAL_INFORMATION}
+     * @param text    the note
+     * @return this draft
+     * @throws IllegalArgumentException if the note is blank
+     * @throws NullPointerException     if a part is {@code null}
+     */
+    public Draft note(NoteSubject subject, String text) {
+        return note((Coded) subject, text);
+    }
+
+    /**
      * Writes the buyer reference (BT-10), the value the buyer asks to find on the
      * invoice; XRechnung requires it.
      *
@@ -876,6 +914,9 @@ public final class Draft {
             line.description().ifPresent(i::description);
             line.sellerIdentifier().ifPresent(i::sellerIdentifier);
             line.buyerIdentifier().ifPresent(i::buyerIdentifier);
+            for (ItemAttribute attribute : line.attributes()) {
+                i.itemAttribute(a -> a.name(attribute.name()).value(attribute.value()));
+            }
         });
         line.period().ifPresent(period -> editor.period(p -> {
             period.start().ifPresent(p::startDate);

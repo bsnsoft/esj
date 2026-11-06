@@ -499,6 +499,23 @@ typed editor for a term this layer has no word for. A part a group has no term f
 name, and a group the model allows at most once — BG-4, BG-7, BG-10, BG-13, BG-14, BG-16 — is
 refused the second time rather than merged into the first.
 
+A line states attributes of its item (BG-32) as names and values, any number of them, and a
+note may name its subject with a code of UNTDID 4451 (BT-21):
+
+```java
+Line line = Line.of("Hedge trimming").quantity(5, Unit.HOUR).unitPrice("82.50")
+        .vat(Vat.standard(19))
+        .attribute("Labour cost, net", "412.50");
+draft.line(line)
+        .note(NoteSubject.GENERAL_INFORMATION, "Contains labour cost of 412.50 EUR.");
+List<ItemAttribute> attributes = line.attributes();
+```
+
+The cross industry invoice writes them as `ram:ApplicableProductCharacteristic` and
+`ram:IncludedNote/ram:SubjectCode`, UBL as `cac:AdditionalItemProperty` and as the `#AAI#`
+prefix of `cbc:Note` that the CEN syntax binding defines; `note(text)` writes a note without a
+code.
+
 The read side gives the same view of a document that arrived from anywhere:
 
 ```java
@@ -507,11 +524,11 @@ BigDecimal due = invoice.totals().orElseThrow().amountDue();
 Coded unit = invoice.lines().get(0).unit().orElseThrow();
 ```
 
-Ten enums are generated from the code list snapshots the rule pack `en16931/1.3.17` carries
+Eleven enums are generated from the code list snapshots the rule pack `en16931/1.3.17` carries
 ([`../rules/en16931/1.3.17/codelists/SOURCES.md`](../rules/en16931/1.3.17/codelists/SOURCES.md)):
-`Unit`, `InvoiceType`, `PaymentMeansCode`, `VatCategory`, `AllowanceReason`, `ChargeReason`,
-`CurrencyCode`, `Country`, `ElectronicAddressScheme`, `VatExemptionReason`, each constant carrying
-its code and its publisher's name. A slot that takes a code takes the enum of its list or the
+`Unit`, `InvoiceType`, `NoteSubject`, `PaymentMeansCode`, `VatCategory`, `AllowanceReason`,
+`ChargeReason`, `CurrencyCode`, `Country`, `ElectronicAddressScheme`, `VatExemptionReason`, each
+constant carrying its code and its publisher's name. A slot that takes a code takes the enum of its list or the
 interface `Coded`, so `Unit.custom("QQQ")` stays reachable and `Unit.resolve(code)` reads an
 unknown code back as a `CustomCode`; whether a code is admissible is the rule pack's answer.
 Unit prices, quantities and percentages keep the scale the caller gave; the one amount this
