@@ -6,13 +6,18 @@
 [![Homebrew](https://img.shields.io/badge/homebrew-bsnsoft%2Ftap%2Fesj-blue)](https://github.com/bsnsoft/homebrew-tap)
 [![License](https://img.shields.io/github/license/bsnsoft/esj)](LICENSE)
 
-**ESJ is the missing application format for EN 16931.** EN 16931 defines the invoice; ESJ makes it
-directly usable by software: a flat JSON map keyed by the standard's business terms —
-`"/BT-1": "RE-2026-4711"`, `"/BG-25/0/BT-131": "84.03"`. UBL and CII stay transport bindings; the
-same invoice gives the same map whichever it arrived in, so an application stores, indexes, queries,
-compares and hashes invoices without XML. A Java library reads, builds, validates, renders and
-writes such documents back out as CII or UBL; the command line tool `esj` does the same for every
-other runtime. Release candidate of format 1.0, not a CEN or KoSIT deliverable; documents of 0.1 keep their digests.
+For software that receives, stores, checks or sends e-invoices under EN 16931:
+XRechnung, ZUGFeRD, Factur-X, Peppol BIS.
+
+**Your invoices arrive as UBL, as CII or inside a PDF. ESJ gives your software one invoice.**
+
+ESJ is a flat JSON document keyed by the business terms of the standard: `/BT-1` is the invoice
+number, `/BG-25/0/BT-131` the net amount of the first line. A UBL invoice, its CII twin and the
+hybrid PDF that carries it read to the same document. You store it in PostgreSQL, index the
+invoice number and compare two files without parsing XML in your own code. When an invoice has
+to leave, ESJ writes CII or UBL again and checks it with the official XSD and Schematron.
+
+Try it on one of your own invoices: `brew install bsnsoft/tap/esj`, then `esj validate invoice.xml`.
 
 ```json
 {
@@ -28,9 +33,9 @@ other runtime. Release candidate of format 1.0, not a CEN or KoSIT deliverable; 
 }
 ```
 
-[Demo video](https://www.youtube.com/watch?v=Hys6tKensF4) ([German version](https://www.youtube.com/watch?v=OBbLrAIi03w)) — two minutes; everything on screen is the output of `esj` 0.9.1, a PostgreSQL included.
-
-[One-minute short](https://www.youtube.com/shorts/3yCHqg5ENno) (German, animated) — what ESJ is for, without a terminal.
+EN 16931 defines the invoice once. Most applications still build a model of their own behind two
+parsers and a mapping. ESJ is that model, specified in [`SPEC.md`](SPEC.md) and implemented in
+Java, TypeScript and C#. UBL and CII stay what goes over the wire.
 
 ```text
                 ┌── UBL
@@ -42,44 +47,81 @@ EN 16931 ─> ESJ ┤
                 └── analytics
 ```
 
-A value is the string the business term carries, and an object only where the semantic model gives
-the term supplementary components; [`SPEC.md`](SPEC.md) defines the format. Which terms exist, how
-often and of what type are facts of one registry per edition ([`model/README.md`](model/README.md)).
+A value is the string its business term carries. It is an object only where the term has
+components, such as the scheme of an identifier. One registry per edition records which terms
+exist, how often and of which type ([`model/README.md`](model/README.md)).
 
-## Features
+[Demo video, two minutes](https://www.youtube.com/watch?v=Hys6tKensF4)
+([German](https://www.youtube.com/watch?v=OBbLrAIi03w)): everything on screen is the output of
+`esj` 0.9.1, a PostgreSQL included. [One-minute short](https://www.youtube.com/shorts/3yCHqg5ENno)
+(German, animated): what ESJ is for, without a terminal.
 
-- Semantic addresses: the keys are the business terms of EN 16931, not UBL or CII element paths.
-- Canonical bytes and two digests: comparison, deduplication and change detection, no parser.
-- Validation by the official XSD and Schematron of the profile, run as data, and by the EN 16931
-  business rules over business terms; findings by code, not XPath ([`docs/why.md`](docs/why.md)).
-- Hybrid PDFs by their embedded invoice; nothing is read off the page, nothing is guessed at.
-- A cross industry invoice, or a UBL invoice or credit note, written back out of the document
-  from the binding tables the reader matches against ([`docs/bindings.md`](docs/bindings.md)).
-- A rendering to read: one self-contained HTML page or a PDF/A-3b file, plain or branded from a
-  template, with the invoice as Factur-X / ZUGFeRD 2.x ([`docs/pdf-output.md`](docs/pdf-output.md)).
-- That PDF as a letter, the default, on the sender's letterhead where a template brings one: the
-  address field where DIN 5008 puts it, the reference line across the text area, and the EPC QR
-  code in the payment block ([`docs/letter-layout.md`](docs/letter-layout.md)).
-- A command line tool for every runtime that is not Java, packaged for machines without one, and
-  a process boundary for untrusted input ([`docs/deployment.md`](docs/deployment.md)); `esj serve`
-  offers its tools over HTTP — REST, OpenAPI, MCP — and `esj mcp` to an AI agent on the same
-  machine, every call a process of its own ([`docs/serve.md`](docs/serve.md), a preview).
-- An invoice written in the words of the domain: enums, profile defaults and derived totals,
-  with the gross figures a consumer was shown kept beside the net ones of the standard
+## What you can do with it
+
+- **Read** UBL 2.1, CII D16B and hybrid PDFs (Factur-X, ZUGFeRD 2.x) into one document. ESJ takes
+  the embedded invoice and reads nothing off the page; a PDF without one is refused
+  ([`docs/pdf-input.md`](docs/pdf-input.md)).
+- **Store and query** invoices in PostgreSQL, with an index on `/BT-1` ([Persistence](#persistence)).
+- **Check** an invoice with the official XSD and Schematron of its profile and the 217 business
+  rules of EN 16931; `VALID` comes only when all of them ran ([Validation](#validation)).
+- **Compare** two files without a parser: canonical bytes and two digests say whether they carry
+  the same invoice.
+- **Build** an invoice in Java with enums, profile defaults and derived totals, and write it as
+  CII or UBL from the binding tables the reader uses ([`docs/bindings.md`](docs/bindings.md)).
+- **Print** it as an HTML page or as a PDF/A-3b file with the XML embedded as Factur-X / ZUGFeRD
+  2.x. By default the PDF is a letter, on your letterhead if a template brings one: the address
+  field where DIN 5008 puts it, a reference line across the text area and an EPC QR code in the
+  payment block ([`docs/pdf-output.md`](docs/pdf-output.md),
+  [`docs/letter-layout.md`](docs/letter-layout.md)).
+- **Look at** an invoice: `esj view invoice.pdf` opens one page with the PDF as it came, the
+  letter drawn from its data, the KoSIT view and, with `--report`, the validation report;
+  `--text` prints it in the terminal. The Linux packages and the macOS archive offer it under
+  *Open with* for XML and PDF files ([`docs/view.md`](docs/view.md)).
+- **Keep the gross figures** a consumer was shown beside the net ones of the standard
   ([`docs/b2c.md`](docs/b2c.md)).
-- The format in other languages: a TypeScript and a C# implementation of [`SPEC.md`](SPEC.md),
-  each measured by the fixture manifest of
-  [`conformance/fixtures/`](conformance/fixtures/README.md) — every case an implementation has
-  to pass, written in no programming language ([`docs/bindings-ts.md`](docs/bindings-ts.md),
-  [`docs/bindings-csharp.md`](docs/bindings-csharp.md)).
+- **Run it without Java**: the native command line tool validates a 7 kB invoice in 0.12 s
+  ([`docs/install.md`](docs/install.md)) and is a process boundary for untrusted input
+  ([`docs/deployment.md`](docs/deployment.md)). `esj serve` offers its tools over REST, OpenAPI
+  and MCP, `esj mcp` to an AI agent on the same machine, every call a process of its own
+  ([`docs/serve.md`](docs/serve.md), a preview).
+- **Use the format in TypeScript or C#**: both implement [`SPEC.md`](SPEC.md) and pass the
+  fixture manifest of [`conformance/fixtures/`](conformance/fixtures/README.md), the cases every
+  implementation has to pass, written in no programming language
+  ([`docs/bindings-ts.md`](docs/bindings-ts.md), [`docs/bindings-csharp.md`](docs/bindings-csharp.md)).
+
+## Measured against the official validators
+
+The test corpus is the XRechnung test suite of KoSIT: 86 files, unmodified, 40 of them one
+business case written as UBL and as CII. Of those 40 pairs, 18 read to the same semantic digest.
+The other 22 differ only where the two KoSIT files differ, none through the import path and none
+through a mapper defect. Written through ESJ into the other syntax, the pairs reach the same 18
+and 22. The two readers agree to the byte on 74 of the 86 files. Of the 86 written back out, 85
+are accepted as a cross industry invoice and 80 read back as the document they were written
+from; 85 are accepted as a UBL invoice and all 86 read back
+([`docs/conformance.md`](docs/conformance.md)).
+
+Both engines run against the official ones on the same bytes. On 149 documents the syntax engine
+reports the same rule identifiers as the KoSIT validator, and the same verdict on 146. Over 455
+mutations the rule pack answers like the EN 16931 Schematron 1.3.17 on every case for 137 of its
+217 rules. It agrees on some cases and not on others for 53, differs for 25 and cannot be
+compared for 2. That leaves 0 unaccounted for, and
+[`docs/validation.md`](docs/validation.md#the-oracle-measured-not-asserted) names each
+difference.
+
+ESJ was checked against the BMF letter of 15 October 2026 on mandatory e-invoicing in Germany,
+and nothing had to change ([`docs/legal-de.md`](docs/legal-de.md)). ESJ does not replace a
+transport syntax and is not a CEN or KoSIT deliverable: your customer's portal still receives
+UBL or CII, and ESJ writes it. Format 1.0, release candidate of version 1.0.0; documents of
+format 0.1 keep their digests.
 
 ## Quick start
 
-`brew install bsnsoft/tap/esj` on macOS and Linux, `apt-get install esj` or `dnf install esj` from
-the [package repositories](docs/install.md#debian-and-ubuntu-apt) from 0.9.8, `docker pull
-ghcr.io/bsnsoft/esj` from 0.9.2, or an archive of the [release](https://github.com/bsnsoft/esj/releases):
-a native executable needing no Java, a Java 25 runtime image, or the jar ([`docs/install.md`](docs/install.md)).
-From source, three lines build the same executable:
+Install with `brew install bsnsoft/tap/esj` on macOS and Linux, with `apt-get install esj` or
+`dnf install esj` from the [package repositories](docs/install.md#debian-and-ubuntu-apt) (from
+0.9.8), with `docker pull ghcr.io/bsnsoft/esj` (from 0.9.2), or from an archive of the
+[release](https://github.com/bsnsoft/esj/releases): a native executable that needs no Java, a
+Java 25 runtime image, or the jar ([`docs/install.md`](docs/install.md)). Three lines build the
+same executable from source:
 
 ```sh
 mvn -B verify                                 # the self-contained jar, on JDK 17, 21 or 25
@@ -87,10 +129,11 @@ dist/package.sh native                        # or runtime-image, docker, zip
 dist/out/esj-<version>-native-<os>-<arch>/esj validate invoice.xml
 ```
 
-`bin/esj` runs the jar unpackaged; the transcripts here and under `docs/` write `esj` for that
-script with `bin/` on the `PATH`. From 0.9.0 the libraries come from Maven Central:
-`de.bsnsoft.esj:esj-bom:1.0.0-rc.6` imported once, then a module by name ([`docs/java-api.md`](docs/java-api.md));
-`mvn -B install` builds `de.bsnsoft.esj:esj-core` and its siblings from source.
+`bin/esj` runs the jar without packaging it; the transcripts here and under `docs/` write `esj`
+for that script with `bin/` on the `PATH`. The libraries are on Maven Central from 0.9.0: import
+`de.bsnsoft.esj:esj-bom:1.0.0-rc.6` once, then add a module by name
+([`docs/java-api.md`](docs/java-api.md)). `mvn -B install` builds `de.bsnsoft.esj:esj-core` and
+its siblings from source.
 
 ```console
 $ esj validate conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -107,8 +150,9 @@ Container:        OK
 Invoice:          VALID
 ```
 
-The last two commands are the lead use case: invoice data to a branded PDF/A-3b carrying the invoice
-as Factur-X, then the check over it with `proof.pdf` as the record. Java does both directions:
+The last two commands are the lead use case. They turn invoice data into a branded PDF/A-3b that
+carries the invoice as Factur-X, then check it and keep `proof.pdf` as the record. Java does both
+directions:
 
 ```java
 SemanticDocument invoice = new StreamingReader().read(Files.readAllBytes(xmlFile)).document();
@@ -125,60 +169,47 @@ Files.write(out.resolve("invoice.pdf"), hybrid.pdf());
 Files.write(out.resolve("invoice.esj.json"), EsjWriter.pretty().toBytes(invoice));
 ```
 
-[`examples/java/HybridInvoice.java`](examples/java/HybridInvoice.java) is the whole program: built
-with the domain API, read back from the file, the business rules checked in the three places a
-sender can check them. [`docs/getting-started.md`](docs/getting-started.md) is the first hour.
-
-`esj view invoice.pdf` shows an invoice in the browser, a tab each for the PDF as it came, the
-letter drawn from its data, the KoSIT view and with `--report` the validation report, or with
-`--text` in the terminal. The Linux packages and the macOS archive offer it under *Open with* for
-XML and PDF files ([`docs/view.md`](docs/view.md)).
+[`examples/java/HybridInvoice.java`](examples/java/HybridInvoice.java) is the whole program: it
+builds the invoice with the domain API, reads it back from the file and checks the business rules
+in the three places a sender can check them. [`docs/getting-started.md`](docs/getting-started.md)
+takes you through the first hour.
 
 ## Persistence
 
-Semantic paths are stable keys for indexes and projections. [`docs/storage.md`](docs/storage.md) is
-the PostgreSQL side — `jsonb` column, views, expression indexes, materialized views, key/value table
-— each statement run by a test that puts the UBL and the CII rendering of one invoice at one row.
+Use the semantic paths as stable keys for indexes and projections.
+[`docs/storage.md`](docs/storage.md) shows the PostgreSQL side: a `jsonb` column, views,
+expression indexes, materialized views and a key/value table. A test runs each statement and puts
+the UBL and the CII file of one invoice into one row.
 
 ## Validation
 
-Three checks over one input. The official validation artefacts of the document's profile — the UBL
-2.1 or CII D16B XML Schema, the EN 16931 Schematron of CEN/TC 434 and the XRechnung Schematron —
-carried under [`packs/`](packs/README.md) as data and run in the pack `xrechnung/3.0.2/2026-10-12`
-(CEN release 1.3.17; the release before it stays selectable with `--pack`).
-The structural layers L1 to L3 against the registry. And the business rules of EN 16931-1, clause
-6.4 as the pack [`rules/en16931/1.3.17`](rules/README.md) — 217 rules and seventeen dated code list
-snapshots, over the business terms. An ESJ document is written out through a binding table in
-memory so that the artefacts read it too, so every input gets all three, and a native finding is a
-layer of its own, never ESJ conformance. The Peppol BIS Billing 3.0 artefacts may not be
-redistributed, so `esj packs fetch` makes their pack on your machine from a pinned recipe
+`esj validate` runs three checks over one input:
+
+1. The official validation artefacts of the document's profile: the UBL 2.1 or CII D16B XML
+   Schema, the EN 16931 Schematron of CEN/TC 434 and the XRechnung Schematron. They are carried
+   under [`packs/`](packs/README.md) as data and run in the pack `xrechnung/3.0.2/2026-10-12`
+   (CEN release 1.3.17; `--pack` selects the release before it).
+2. The structural layers L1 to L3 against the registry.
+3. The business rules of EN 16931-1, clause 6.4, as the pack
+   [`rules/en16931/1.3.17`](rules/README.md): 217 rules and 17 dated code list snapshots, over
+   the business terms.
+
+An ESJ document is written out through a binding table in memory, so the artefacts read it too
+and every input gets all three checks. Every finding carries a code, not an XPath; a native
+finding is a layer of its own, never ESJ conformance. The Peppol BIS Billing 3.0 artefacts may not be redistributed, so `esj packs fetch`
+builds their pack on your machine from a pinned recipe
 ([`docs/validation.md`](docs/validation.md#packs-made-on-this-machine)).
 
-`VALID` and exit code 0 are given only where the complete check for that kind of input ran and found
-nothing fatal; `INVALID` and 1 follow a fatal finding in anything that ran; `INDETERMINATE` and 9
-name the components that did not run and why; a limit leaves with 7 and no verdict at all. A
-container is judged beside the invoice, and its PDF/A conformance is what the file declares unless
-`--verapdf` names a veraPDF of your own. `--report <file.html|file.pdf>` writes the run as one file
-([`docs/validation.md`](docs/validation.md) has the table per input kind). ESJ is checked against the
-BMF letter of 15 October 2026 on mandatory e-invoicing in Germany, and nothing had to change
-([`docs/legal-de.md`](docs/legal-de.md)).
+| Verdict | Exit code | When |
+|---|---|---|
+| `VALID` | 0 | the complete check for this kind of input ran and found nothing fatal |
+| `INVALID` | 1 | anything that ran found something fatal |
+| `INDETERMINATE` | 9 | a component did not run; the output names it and the reason |
+| none | 7 | a limit was reached |
 
-## Conformance
-
-The corpus is the XRechnung test suite of KoSIT, 86 instances unmodified, 40 of them one business
-case written twice. Of those 40 pairs, 18 arrive at the same semantic digest and 22 differ only
-where the two KoSIT files differ — none through the import path, none through a mapper defect —
-and each pair written through the semantic core into the other syntax reaches that same 18 and 22.
-The two readers agree to the byte on 74 of the 86 instances. Of the 86 written back out, 85 are
-accepted as a cross industry invoice and 80 read back as the document they were written from; 85
-are accepted as a UBL invoice and all 86 read back ([`docs/conformance.md`](docs/conformance.md)).
-
-Both engines are measured against the official ones on the same bytes. Against the KoSIT validator
-the syntax engine agrees on every rule identifier of all 149 documents compared and on 146 of their
-149 verdicts. Against the EN 16931 Schematron 1.3.17 over 455 mutations, the rule pack agrees on
-every shape measured for 137 of its 217 rules, on one shape and not another for 53, differs for 25,
-cannot be asked at all about 2, and leaves 0 unaccounted for; each difference is named in
-[`docs/validation.md`](docs/validation.md#the-oracle-measured-not-asserted).
+A container is judged beside the invoice. Its PDF/A conformance is what the file declares, unless
+`--verapdf` names a veraPDF installation of your own. `--report <file.html|file.pdf>` writes the
+run as one file; [`docs/validation.md`](docs/validation.md) has the table per input kind.
 
 ## Java
 
@@ -193,20 +224,22 @@ cannot be asked at all about 2, and leaves 0 unaccounted for; each difference is
 
 ## Status
 
-Works today: the format, the schema and the registry of 196 terms; reading, writing,
+Works today: the format, its schema and the registry of 196 terms; reading, writing,
 canonicalizing, hashing and the structural layers L1 to L3; import from UBL 2.1, CII D16B and
 hybrid PDFs; both validation engines; the CII and UBL writers, as far as the round trips above
-prove them; the HTML and PDF/A-3b renderings, the latter as a business letter or in the generic
-layout; the constrained builder, the domain API, the B2C extension and the validation report; the
-command line tool, packaged as a native executable, a Java 25 runtime image, a release zip and a
-container image ([`docs/install.md`](docs/install.md)). Where a build carries its registry, EN
-16931-1:2026 stands beside the default 2017 edition as a preview, which may change in any minor
-release: its registry, typed view, structural validation, `esj upgrade` between the two and a
-business rule pack no official artefact corroborates exist; a UBL or CII binding of its new terms
-does not, so a 2026 document validates `INDETERMINATE` at best and is not written to XML
-([`docs/editions.md`](docs/editions.md)). Beside
-the Java library, a TypeScript and a C# implementation of the format, measured by the shared fixture
-manifest. Changes: [`CHANGELOG.md`](CHANGELOG.md); a vulnerability: [`SECURITY.md`](SECURITY.md).
+prove them; the HTML and PDF/A-3b renderings, as a business letter or in the generic layout; the
+constrained builder, the domain API, the B2C extension and the validation report; the command
+line tool as a native executable, a Java 25 runtime image, a release zip and a container image
+([`docs/install.md`](docs/install.md)); a TypeScript and a C# implementation of the format,
+measured by the shared fixture manifest.
+
+EN 16931-1:2026 stands beside the default 2017 edition as a preview, where a build carries its
+registry. Its registry, typed view, structural validation, `esj upgrade` and a rule pack exist; a
+UBL or CII binding of its new terms does not, so a 2026 document validates `INDETERMINATE` at
+best ([`docs/editions.md`](docs/editions.md)).
+
+Changes are listed in [`CHANGELOG.md`](CHANGELOG.md); report a vulnerability as
+[`SECURITY.md`](SECURITY.md) describes.
 
 ## Documentation
 
