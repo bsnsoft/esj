@@ -58,21 +58,34 @@ inside() {
   }
   . /etc/os-release
   echo "$PRETTY_NAME, glibc $(ldd --version | head -1 | awk '{ print $NF }')"
+  # The package manager fetches the distribution's metadata from mirrors on
+  # the way; a mirror that stalls gets a time limit and two more attempts
+  # (see dist/repositories-test.sh), and the log of the last attempt.
+  attempt() {
+    n=1
+    while :; do
+      status=0
+      timeout 200 "$@" > "$w/install.log" 2>&1 || status=$?
+      [ "$status" -ne 0 ] || return 0
+      [ "$n" -lt 3 ] || { cat "$w/install.log" >&2; return "$status"; }
+      echo "  attempt $n of '$*' failed (exit $status), trying again" >&2
+      n=$((n + 1))
+      sleep 15
+    done
+  }
   case $package in
     *.deb)
       export DEBIAN_FRONTEND=noninteractive
       before=$(dpkg-query -W -f '${Package}\n' | wc -l)
-      timeout 600 apt-get update -qq > /dev/null
-      timeout 600 apt-get install -y -qq "$package" > "$w/install.log" 2>&1 ||
-        { cat "$w/install.log" >&2; exit 1; }
+      attempt apt-get update -qq || exit 1
+      attempt apt-get install -y -qq "$package" || exit 1
       after=$(dpkg-query -W -f '${Package}\n' | wc -l)
       step "installed $(dpkg-query -W -f '${Package} ${Version} ${Architecture}' esj);" \
         "$((after - before)) package(s) added"
       ;;
     *.rpm)
       before=$(rpm -qa | wc -l)
-      timeout 600 dnf install -y -q "$package" > "$w/install.log" 2>&1 ||
-        { cat "$w/install.log" >&2; exit 1; }
+      attempt dnf install -y -q "$package" || exit 1
       after=$(rpm -qa | wc -l)
       step "installed $(rpm -q esj); $((after - before)) package(s) added"
       ;;
