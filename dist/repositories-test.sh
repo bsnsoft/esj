@@ -374,10 +374,33 @@ rm -f /etc/yum.repos.d/other.repo
 dnf clean all > /dev/null 2>&1
 CLIENT
     fi
+    # A step that reaches out to the distribution's own mirrors (the page's
+    # `dnf install`, `apt-get update`) runs under a time limit of its own and
+    # gets three attempts: a mirror that stalls must not hold the container
+    # until its limit ends it without a word (CI on 2026-11-10: `dnf install
+    # esj` in fedora:latest, fifteen minutes, nothing in the log). The log of
+    # a failed attempt is printed, so that the next stall has a name.
+    cat <<'CLIENT'
+step() {
+  n=1
+  while :; do
+    status=0
+    timeout 200 sh -c 'sudo() { "$@"; }
+'"$1" > /tmp/step.log 2>&1 || status=$?
+    [ "$status" -ne 0 ] || return 0
+    echo "    attempt $n failed (exit $status):"
+    tail -n 30 /tmp/step.log | sed 's/^/      /'
+    [ "$n" -lt 3 ] || return "$status"
+    n=$((n + 1))
+    sleep 15
+  done
+}
+CLIENT
     echo 'echo "the commands of docs/install.md:"'
     block "$kind stable" | while IFS= read -r line; do
+      quoted="'$(printf '%s' "$line" | sed "s/'/'\\\\''/g")'"
       printf 'echo %s\n' "'  \$ $(printf '%s' "$line" | sed "s/'/'\\\\''/g")'"
-      printf '( %s ) > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }\n' "$line"
+      printf 'step %s\n' "$quoted"
     done
     cat <<CLIENT
 first=\$(esj --version | head -1)
@@ -397,7 +420,7 @@ CLIENT
         install='apt-get install esj'
         upgrade='apt-get install --only-upgrade esj'
         candidate=1.0.0~rc.2 release=1.0.0
-        refresh='apt-get update > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }'
+        refresh='apt-get update'
         echo 'apt-cache policy esj | sed -n "1,4p"'
         echo 'apt-get remove esj > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }' ;;
       dnf)
@@ -412,13 +435,13 @@ CLIENT
     esac
     cat <<CLIENT
 ( $(printf '%s' "$source_line" | sed "s|$served|$order/before|") ) > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }
-$refresh
-$install > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }
+step '$refresh'
+step '$install'
 [ "\$($installed)" = $candidate ] || { echo "FAILED: $kind installed esj \$($installed) from 0.9.8 and 1.0.0~rc.2" >&2; exit 1; }
 [ "\$(esj --version)" = "esj 1.0.0-rc.2" ] || { echo "FAILED: the stand-in says \$(esj --version)" >&2; exit 1; }
 ( $(printf '%s' "$source_line" | sed "s|$served|$order/after|") ) > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }
-$refresh
-$upgrade > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }
+step '$refresh'
+step '$upgrade'
 [ "\$($installed)" = $release ] || { echo "FAILED: $kind upgraded esj to \$($installed), not to $release" >&2; exit 1; }
 echo "one suite: 0.9.8 and 1.0.0~rc.2 give $candidate, and 1.0.0 added replaces it with $release"
 ( $source_line ) > /tmp/step.log 2>&1 || { cat /tmp/step.log; exit 1; }
