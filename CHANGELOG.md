@@ -6,6 +6,22 @@ named here under *Format*.
 
 ## [1.0.0] — unreleased
 
+### Security
+
+- The native executables are built with GraalVM Community 25.5.5.0.3, which carries JDK
+  25.0.5 and with it the fixes of the October 2026 Java security update — among them
+  CVE-2026-91415 (2D), CVE-2026-91334 and CVE-2026-91418 (ImageIO), CVE-2026-83400,
+  CVE-2026-87290 and CVE-2026-87367 (JAXP) and CVE-2026-91453 (the HTTP server `esj serve`
+  runs on). A native executable carries the class library of the build it was made with, so
+  every native executable up to 1.0.0-rc.6 (Homebrew, apt, dnf, the release archives) still
+  carries JDK 25.0.4.1. The runtime image and the container image take the JDK of their build
+  day and have carried 25.0.5 since 1.0.0-rc.6.
+- The container image takes in the security updates of its distribution when it is built and
+  drops pebble, the service manager Canonical places in the base image, which is neither a
+  package nor used by the image. The image of 1.0.0-rc.6 answered a scanner with 62 findings
+  in packages of the base image, two of them rated high (apt, CVE-2026-109518), none of them
+  in anything the image runs.
+
 ## [1.0.0-rc.6] — 2026-11-06
 
 ### Added

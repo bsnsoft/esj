@@ -175,7 +175,9 @@ Every release from 0.9.2 on publishes the image at `ghcr.io/bsnsoft/esj`, for li
 linux/arm64. `latest` names the version published last, a release candidate as well; a
 deployment pins the version it was tested with, `ghcr.io/bsnsoft/esj:<version>`. Java 25, an
 unprivileged account, the ahead-of-time cache recorded on the architecture it runs on, and
-`ESJ_MAX_HEAP` for the ceiling (512 MiB by default).
+`ESJ_MAX_HEAP` for the ceiling (512 MiB by default). The image is built with the security
+updates of its distribution current on its build day, and without pebble, the service manager
+of the base image.
 `esj serve` listens on port 8080 of every interface of the container (`ESJ_SERVE_BIND`), and
 serves the tools over HTTP ([`serve.md`](serve.md)); its own process has `ESJ_SERVE_HEAP`
 (256 MiB), and every child it starts `ESJ_MAX_HEAP`.

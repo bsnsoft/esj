@@ -31,6 +31,16 @@ RUN java -XX:+UseCompactObjectHeaders -XX:AOTCacheOutput=/opt/esj/esj.aot \
       -jar /opt/esj/esj.jar validate /opt/esj/training.pdf > /dev/null
 
 FROM eclipse-temurin:25-jre@sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0
+# The base image trails the security updates of its distribution by days to
+# weeks. What Ubuntu has fixed by the time this image is built is taken in, so
+# that the image carries no vulnerability with a fix a scanner at the
+# receiving end would list. pebble, the service manager Canonical places in
+# its base images, is not a package, is not used by this image and is removed
+# rather than kept unpatched.
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /usr/bin/pebble
 # The base image labels itself, and its version and build date would be read as
 # this image's own, so both are set here from what dist/package.sh passes. The
 # source names the repository the image is built from, which is what ghcr.io
