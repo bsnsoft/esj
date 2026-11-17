@@ -111,7 +111,7 @@ difference.
 ESJ was checked against the BMF letter of 15 October 2026 on mandatory e-invoicing in Germany,
 and nothing had to change ([`docs/legal-de.md`](docs/legal-de.md)). ESJ does not replace a
 transport syntax and is not a CEN or KoSIT deliverable: your customer's portal still receives
-UBL or CII, and ESJ writes it. Format 1.0, release candidate of version 1.0.0; documents of
+UBL or CII, and ESJ writes it. Format 1.0, version 1.0.0; documents of
 format 0.1 keep their digests.
 
 ## Quick start

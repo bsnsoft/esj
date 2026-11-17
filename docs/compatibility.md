@@ -76,8 +76,8 @@ Rules within the API:
 
 The Maven profile `api-check` compares every library module with the release
 `esj.api-baseline` names, leaving out what this section leaves out ([`releasing.md`](releasing.md)).
-It reports before 1.0.0, compares with 1.0.0-rc.1 from that release on, and fails the build from
-1.0.0.
+From 1.0.0 it fails the build on an incompatible change; before 1.0.0 it reported, comparing
+with the release candidates.
 
 ## Data the libraries ship
 

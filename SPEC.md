@@ -1,6 +1,6 @@
 # EN16931 Semantic JSON (ESJ) — Specification
 
-**Version 1.0 — release candidate (1.0.0-rc.1): final with release 1.0.0 unless review finds a defect**
+**Version 1.0**
 
 Author: Christian Bürckert
 Publisher: BSNSoft Solutions GmbH

@@ -6,6 +6,12 @@ named here under *Format*.
 
 ## [1.0.0] — unreleased
 
+### Changed
+
+- The API check (`mvn -B -Papi-check verify`) fails the build on an incompatible change of a
+  library module from this release on; before it reported. The baseline is the last release
+  ([`docs/compatibility.md`](docs/compatibility.md)).
+
 ### Security
 
 - The native executables are built with GraalVM Community 25.5.5.0.3, which carries JDK

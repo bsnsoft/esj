@@ -65,8 +65,8 @@ repository metadata, and the Portal refuses the bundle.
 `esj.api-baseline` names (`pom.xml`) and writes `target/japicmp/api-check.html` per module; the CI
 job *API compared with the last release* keeps it as the artifact `api-check`. A class listed as
 removed or modified incompatibly is a break, except where an element of the baseline became
-internal or `@Preview`. Before 1.0.0 the check reports; from 1.0.0 `esj.api-check.break` is `true`
-and the baseline is the last release.
+internal or `@Preview`. From 1.0.0 `esj.api-check.break` is `true`: an incompatible change fails
+the build, and the baseline is the last release.
 
 Each of the three packaging jobs of `release.yml` delivers the archives of its platform, and the
 `linux-x64` job also the platform-independent `esj-<version>.zip`; the other two build one as

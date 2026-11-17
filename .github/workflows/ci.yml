@@ -158,11 +158,11 @@ jobs:
             schema/esj-en16931-2017.schema.json)"
 
   # The public API of the libraries, compared with the last release on Maven Central
-  # (pom.xml, profile api-check; docs/releasing.md). Until 1.0.0 the comparison is a
-  # report: an incompatible change does not fail the job, the job is no required check,
-  # and the report is kept as an artifact with one line per module in the summary.
+  # (pom.xml, profile api-check; docs/releasing.md). From 1.0.0 on an incompatible
+  # change fails the job; the job is no required check, and the report is kept as an
+  # artifact with one line per module in the summary.
   api:
-    name: API compared with the last release (report)
+    name: API compared with the last release
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository

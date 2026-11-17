@@ -1,7 +1,7 @@
 # EN16931 Semantic JSON — TypeScript
 
 *Part of [EN16931 Semantic JSON](../../README.md). The format is [`SPEC.md`](../../SPEC.md); this
-package is one implementation of it. Release candidate; format version 1.0. The package is
+package is one implementation of it. Format version 1.0. The package is
 `@bsnsoft/esj`, versioned with the project; nothing is published on a registry yet.*
 
 Reader, canonical form, digests, validator (L1–L3) and the semantic rule engine, in TypeScript,

@@ -140,13 +140,14 @@
     <!--
       The API check of the profile api-check: the release on Maven Central every library
       module is compared with, whether an incompatible change fails the build, and the
-      modules that are not compared at all (the two tools set it to true). Until 1.0.0 the
-      check reports and does not fail; docs/releasing.md says how to read the report.
+      modules that are not compared at all (the two tools set it to true). From 1.0.0 on
+      the check fails the build on an incompatible change; docs/releasing.md says how to
+      read the report.
     -->
     <!-- Packages the Javadoc leaves out: internal ones; without-edition-2026 adds the edition. -->
     <esj.javadoc.excluded-packages>*.internal:*.internal.*</esj.javadoc.excluded-packages>
     <esj.api-baseline>1.0.0-rc.6</esj.api-baseline>
-    <esj.api-check.break>false</esj.api-check.break>
+    <esj.api-check.break>true</esj.api-check.break>
     <esj.api-check.skip>false</esj.api-check.skip>
   </properties>
 
@@ -522,7 +523,8 @@
         is target/japicmp/api-check.html (and .md) in each module. What is not API is left
         out: packages whose name contains internal, the preview packages of the 2026
         edition and of the upgrade, the B2C overlay, and every element marked with
-        de.bsnsoft.esj.Preview. Until 1.0.0 the check only reports (esj.api-check.break).
+        de.bsnsoft.esj.Preview. From 1.0.0 on an incompatible change fails the build
+        (esj.api-check.break).
       -->
       <id>api-check</id>
       <build>
