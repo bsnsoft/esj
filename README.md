@@ -131,7 +131,7 @@ dist/out/esj-<version>-native-<os>-<arch>/esj validate invoice.xml
 
 `bin/esj` runs the jar without packaging it; the transcripts here and under `docs/` write `esj`
 for that script with `bin/` on the `PATH`. The libraries are on Maven Central from 0.9.0: import
-`de.bsnsoft.esj:esj-bom:1.0.0-rc.6` once, then add a module by name
+`de.bsnsoft.esj:esj-bom:1.0.0` once, then add a module by name
 ([`docs/java-api.md`](docs/java-api.md)). `mvn -B install` builds `de.bsnsoft.esj:esj-core` and
 its siblings from source.
 
