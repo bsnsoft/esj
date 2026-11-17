@@ -5,35 +5,35 @@ Acquire-By-Hash: yes
 Architectures: amd64 arm64
 Codename: stable
 Components: main
-Date: Fri, 06 Nov 2026 11:28:24 +0000
+Date: Tue, 17 Nov 2026 23:18:22 +0000
 Description: esj, the command line tool of EN16931 Semantic JSON: every release and release candidate
 Label: esj
 Origin: BSNSoft Solutions GmbH
 Suite: stable
 MD5Sum:
- 9582dda0b9dd5916eff6c823ac60520f             5987 main/binary-amd64/Packages
- 4f89f81cfbdf58ccd22242a037f518e6             1607 main/binary-amd64/Packages.gz
- b198e0f4482449a7e5161aaf8618a0dd             5985 main/binary-arm64/Packages
- 7d36fcb0d233eb3b5d98e6dc72c76713             1610 main/binary-arm64/Packages.gz
+ 9b86fb67c8bc86bcc805ab6d35631098             7176 main/binary-amd64/Packages
+ 8076fb38639928b428e7064bd6c4b02a             1806 main/binary-amd64/Packages.gz
+ c585de84bc14cb6063e435a630756a7e             7174 main/binary-arm64/Packages
+ 050db4180868ef96509a0781378d261f             1809 main/binary-arm64/Packages.gz
 SHA1:
- bcbcd69cfa2dd4f2da1c4bd4293011905fe48054             5987 main/binary-amd64/Packages
- 5c410f9f3adfd3fe6023b5160ee07a3c615b3ed7             1607 main/binary-amd64/Packages.gz
- 1b19585f863b5f1b2acff39b51ed736cbfe0f8f9             5985 main/binary-arm64/Packages
- 96ecf2baca691809951131909ef914835dcf2276             1610 main/binary-arm64/Packages.gz
+ 81b9332b4c01ad4bdf31af49ec5a2d4ecf0bbbff             7176 main/binary-amd64/Packages
+ 1965b7c97a16847092510b03c1e621d8b41a0648             1806 main/binary-amd64/Packages.gz
+ 4f596fcef94602b3058a6d590d05f0d235767365             7174 main/binary-arm64/Packages
+ 8cfc26b018b41338ca9b9257b18063e341844fba             1809 main/binary-arm64/Packages.gz
 SHA256:
- 239e9489cb30ecfee900ea5b4cdf47520c7cbba338210554bd8a6ea4ed663b61             5987 main/binary-amd64/Packages
- 43fd8044a5cdda3a695b09e9957b38f21676ded4bbfa2abbb80e0cf978c6e7ec             1607 main/binary-amd64/Packages.gz
- 7275e7db779d82bb1a2dc96a44a83e25a4ce9a8b3a7dfe2566b5ce905ee3e80e             5985 main/binary-arm64/Packages
- 2c62afefa591b886ba1f4d0f6b66eace36750b5ac2dc66a4b5986553a12bd34f             1610 main/binary-arm64/Packages.gz
+ 74e71f50d91aa87b74873d944f4c8b19f95b0c2fe24739accfb48cd5c07d4e13             7176 main/binary-amd64/Packages
+ 1fe07ea610066dc1c409e0a60291f010a94bc470d030ed70a8153b880c3cd306             1806 main/binary-amd64/Packages.gz
+ d95f2921030ab9a915806d33821bdf03a8ea13a7a3075b63ee19f45bd197a903             7174 main/binary-arm64/Packages
+ 977c79eaed53b6b71990f71071d8b9408919bb031f9666a3608cc5da4e05ec1b             1809 main/binary-arm64/Packages.gz
 SHA512:
- 89b0dcf26b0fd2ad7a299a3f7483ef6f2a7b1feddd1e0cdd9cfa1053e561d6ad2faf9fa2dc3bceda98589e435087905845b274d3e4b22261b8dae1c9157855c7             5987 main/binary-amd64/Packages
- c9c9d9125d7cc0412506a72a06aaf27ca9579b84cc930546573f1fded55ca9d940612c54110a8e9c5b256bfe41fe3b1c0c41dd9cb3d75a4e8b1781667c716b9d             1607 main/binary-amd64/Packages.gz
- 3ac2de68d3c841701b05237cdd44e403498faf6ec34df94d8a19db3d2471406093eee8695fe8c1a324475acbccd102d5eda4f669b2639127d7d10eb98099967d             5985 main/binary-arm64/Packages
- 04cc952dfb5fc2fb358e8a9e0de7881c7106351ac4c1fdc076cfb224b412ed036ba0c20975b8ec1f59604a64d5e2cb890b8cf8eed4ea6b3320ca2fa183543d64             1610 main/binary-arm64/Packages.gz
+ 51241513994f01da605c05abf93e4a6ed91d7d1678c40543650a1cdfbb71e820875ce692768620513b1c96edbdb61644f22f998d83792de3f551f9d43db66cbc             7176 main/binary-amd64/Packages
+ 48c3572908eaee49d6c64eae2fec5f1d8caa201845348a70475b89a0f5e02e3efb431ec51db0f62cb7280a654a939eec7f740e057add291a3137786ace76a70b             1806 main/binary-amd64/Packages.gz
+ 597b88f9c9a0cdc8ac3acefe1c762e1f88e46bb8bb6bffbdc3bb28cb631a6c02c4ce98c8595302c676e655ef8f58c1c3d933615eaf4a7bf9e51f34b6929c6990             7174 main/binary-arm64/Packages
+ 60e304779754c82ae6aad543d2cdaa35729d79b31ef59ee2ed14dc887f5689c2dcdd0bc3ffbe87c07aaf654a0c9264c6f47f224a0bb0572d765fc8e498f60249             1809 main/binary-arm64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYKAB0WIQQ5uh52Ct5pQFWLbuwl/SovW1IOuAUCau252AAKCRAl/SovW1IO
-uMC0AQCZ6OxDxMgdhWrfNQ2HkMrDNCTsaUZ12MJ6iH45qZupNQEAnDH0xXHWar+6
-gLM06S9HkhgKBw60uXTDPUw2e4QDuQc=
-=MA9v
+iHUEARYKAB0WIQQ5uh52Ct5pQFWLbuwl/SovW1IOuAUCavzgvwAKCRAl/SovW1IO
+uEa0AP49OHSGKJNHqng/l76Wls6rrbYA3V/5yjEv0NkjjLWnOgEA7FdYTtG01AiL
+05UqD3ZTW9BQrTP1jPsbtgrTjKeGQgg=
+=c8yi
 -----END PGP SIGNATURE-----
