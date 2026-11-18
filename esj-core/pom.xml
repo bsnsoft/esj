@@ -144,5 +144,20 @@
         </includes>
       </testResource>
     </testResources>
+    <plugins>
+      <plugin>
+        <!--
+          Base64TextTest decodes malformed base64 by the hundred thousand with the runtime's
+          decoder as the reference. On x86-64 with AVX-512 VBMI that load makes the runtime
+          replace the decoder by a routine that writes past its array on such input
+          (CVE-2026-114938), so the tests of this module run with the routine switched off.
+        -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-XX:-UseBASE64Intrinsics</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

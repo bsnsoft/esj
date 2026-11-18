@@ -177,7 +177,10 @@ deployment pins the version it was tested with, `ghcr.io/bsnsoft/esj:<version>`.
 unprivileged account, the ahead-of-time cache recorded on the architecture it runs on, and
 `ESJ_MAX_HEAP` for the ceiling (512 MiB by default). The image is built with the security
 updates of its distribution current on its build day, and without pebble, the service manager
-of the base image.
+of the base image. Its Java runtime starts with `-XX:-UseBASE64Intrinsics`, and so does every
+child of `esj serve`: the base64 routine of the Java releases of October 2026 writes past its
+array on malformed input (CVE-2026-114938), and esj itself hands the decoder only whole
+groups. `ESJ_JAVA_OPTS` with `-XX:+UseBASE64Intrinsics` switches the routine on again.
 `esj serve` listens on port 8080 of every interface of the container (`ESJ_SERVE_BIND`), and
 serves the tools over HTTP ([`serve.md`](serve.md)); its own process has `ESJ_SERVE_HEAP`
 (256 MiB), and every child it starts `ESJ_MAX_HEAP`.

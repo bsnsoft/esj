@@ -16,9 +16,11 @@ import java.util.Optional;
  * into it; the abort on a heap exhaustion is built in as well. A virtual machine is started
  * again with the Java executable that runs this one, the same jar, the ahead-of-time cache
  * and object header layout this one was started with — the cache refuses a virtual machine
- * that runs without the layout it was recorded with — and the three options of the process
- * boundary of {@code docs/deployment.md}. Every other option of this process, a system
- * property among them, stays with it.
+ * that runs without the layout it was recorded with — the setting of the vectorised base64
+ * routine this one was started with, which the container image switches off
+ * (CVE-2026-114938), and the three options of the process boundary of
+ * {@code docs/deployment.md}. Every other option of this process, a system property among
+ * them, stays with it.
  *
  * <p>Both answers come from {@link ProcessHandle.Info}, which reads what the operating system
  * recorded about this process, so they hold for the jar, the runtime image, the native
@@ -101,7 +103,9 @@ final class SelfCommand {
                         + absolute(argument.substring(equals + 1)));
             }
             if ("-XX:+UseCompactObjectHeaders".equals(argument)
-                    || "-XX:-UseCompactObjectHeaders".equals(argument)) {
+                    || "-XX:-UseCompactObjectHeaders".equals(argument)
+                    || "-XX:+UseBASE64Intrinsics".equals(argument)
+                    || "-XX:-UseBASE64Intrinsics".equals(argument)) {
                 command.add(argument);
             }
             if ("-cp".equals(argument) || "-classpath".equals(argument)

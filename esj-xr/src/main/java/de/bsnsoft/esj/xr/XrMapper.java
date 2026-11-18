@@ -8,6 +8,7 @@ import de.bsnsoft.esj.SemanticValue;
 import de.bsnsoft.esj.handler.SemanticHandler;
 import de.bsnsoft.esj.imports.ImportNote;
 import de.bsnsoft.esj.imports.ImportReport;
+import de.bsnsoft.esj.internal.Base64Text;
 import de.bsnsoft.esj.json.Limits;
 import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.model.Registry;
@@ -18,7 +19,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -772,7 +772,7 @@ final class XrMapper {
         }
         byte[] bytes;
         try {
-            bytes = Base64.getDecoder().decode(base64);
+            bytes = Base64Text.decode(base64);
         } catch (IllegalArgumentException e) {
             notes.add(new ImportNote(ImportNote.Kind.MALFORMED, path.toString(),
                     "the content of " + term.id() + " is no base64 encoding of a file"));

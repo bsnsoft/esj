@@ -26,6 +26,25 @@ class SelfCommandTest {
     }
 
     @Test
+    void aChildOfTheContainerImageKeepsTheBase64RoutineSwitchedOff() {
+        List<String> entryPoint = List.of("-XX:-UseBASE64Intrinsics", "-Xms32m", "-Xmx256m",
+                "-XX:+ExitOnOutOfMemoryError", "-XX:+UseCompactObjectHeaders",
+                "-XX:AOTCache=/opt/esj/esj.aot", "-jar", "/opt/esj/esj.jar", "serve");
+        assertEquals(List.of("/opt/java/openjdk/bin/java", "-Xms32m", "-Xmx512m",
+                        "-XX:+ExitOnOutOfMemoryError", "-XX:-UseBASE64Intrinsics",
+                        "-XX:+UseCompactObjectHeaders", "-XX:AOTCache=/opt/esj/esj.aot",
+                        "-jar", "/opt/esj/esj.jar"),
+                SelfCommand.virtualMachine("/opt/java/openjdk/bin/java", entryPoint, "ignored",
+                        "512m"));
+        List<String> switchedOnAgain = List.of("-XX:-UseBASE64Intrinsics",
+                "-XX:+UseBASE64Intrinsics", "-jar", "/opt/esj/esj.jar", "serve");
+        assertEquals(List.of("java", "-Xms32m", "-Xmx512m", "-XX:+ExitOnOutOfMemoryError",
+                        "-XX:-UseBASE64Intrinsics", "-XX:+UseBASE64Intrinsics", "-jar",
+                        "/opt/esj/esj.jar"),
+                SelfCommand.virtualMachine("java", switchedOnAgain, "ignored", "512m"));
+    }
+
+    @Test
     void aChildOfAClassPathIsStartedByItsMainClassAndAbsolutePaths() {
         String classPath = String.join(java.io.File.pathSeparator, "classes", "/lib/a.jar");
         List<String> command = SelfCommand.virtualMachine("java", List.of("-cp", classPath,

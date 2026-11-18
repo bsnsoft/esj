@@ -11,13 +11,13 @@ import de.bsnsoft.esj.model.Component;
 import de.bsnsoft.esj.model.Registry;
 import de.bsnsoft.esj.model.Term;
 import de.bsnsoft.esj.imports.ImportNote;
+import de.bsnsoft.esj.internal.Base64Text;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -742,7 +742,7 @@ final class SemanticEmitter {
         }
         byte[] bytes;
         try {
-            bytes = Base64.getDecoder().decode(base64);
+            bytes = Base64Text.decode(base64);
         } catch (IllegalArgumentException e) {
             return malformed(path, "the content of " + term.id() + " is no base64 encoding"
                     + " of a file");

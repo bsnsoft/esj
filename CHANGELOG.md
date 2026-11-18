@@ -6,6 +6,25 @@ named here under *Format*.
 
 ## [1.0.1] — unreleased
 
+### Security
+
+- CVE-2026-114938 ("Java2Shell"): the vectorised base64 decoder of the Java runtime writes
+  past its array on x86-64 processors with AVX-512 VBMI when the text ends in an incomplete
+  group, in every runtime up to the releases of October 2026 (17.0.21, 21.0.13, 25.0.5).
+  Both readers of UBL and CII decoded the content of an attachment (BT-125) with that
+  decoder, unchecked, so an invoice could carry the input that triggers it. They now check
+  the text first and hand the decoder only whole four-character groups; the set of texts
+  accepted and the bytes decoded are unchanged. The overwrite needs the runtime to have
+  compiled the decoder, so in a single run of the tool it took a document with thousands of
+  attachments; a program that reads invoices with the library in a long-running process was
+  more exposed and is protected by this release on any runtime. The native executables are
+  built for x86-64-v3 and never contain the routine; processors other than x86-64 are not
+  affected.
+- The container image starts its Java runtime, and every child process of `esj serve`, with
+  `-XX:-UseBASE64Intrinsics`, until its base image carries a runtime with the fix (Temurin
+  25.0.5.1 or later). The runtime image is built with the Java runtime current on its build
+  day.
+
 ## [1.0.0] — 2026-11-17
 
 ### Changed

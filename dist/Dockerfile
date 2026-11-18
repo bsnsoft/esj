@@ -27,7 +27,8 @@
 FROM eclipse-temurin:25-jre@sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0 AS training
 COPY esj-cli/target/esj.jar /opt/esj/esj.jar
 COPY conformance/pdf/factur-x.pdf /opt/esj/training.pdf
-RUN java -XX:+UseCompactObjectHeaders -XX:AOTCacheOutput=/opt/esj/esj.aot \
+RUN java -XX:-UseBASE64Intrinsics -XX:+UseCompactObjectHeaders \
+      -XX:AOTCacheOutput=/opt/esj/esj.aot \
       -jar /opt/esj/esj.jar validate /opt/esj/training.pdf > /dev/null
 
 FROM eclipse-temurin:25-jre@sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0

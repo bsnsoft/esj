@@ -21,6 +21,11 @@ aot=
 if [ "${ESJ_AOT-1}" != 0 ] && [ -f /opt/esj/esj.aot ]; then
   aot="-XX:+UseCompactObjectHeaders -XX:AOTCache=/opt/esj/esj.aot"
 fi
-exec java \
+# The Java runtime of the base image replaces the base64 decoder by a vectorised
+# routine once it is hot, and on x86-64 with AVX-512 VBMI the routine of the October
+# 2026 releases writes past its array on malformed input (CVE-2026-114938). esj hands
+# that decoder only whole groups, and the routine is switched off here as well, before
+# the caller's options, so that a caller can switch it on again.
+exec java -XX:-UseBASE64Intrinsics \
   ${ESJ_JAVA_OPTS--Xms32m -Xmx$heap -XX:+ExitOnOutOfMemoryError} \
   $aot -jar /opt/esj/esj.jar "$@"
