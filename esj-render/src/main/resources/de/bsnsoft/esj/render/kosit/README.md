@@ -1,9 +1,9 @@
 # Vendored KoSIT visualization, HTML side
 
-The files in this directory are copies, byte for byte unmodified, of the HTML
-visualization of the semantic XR representation: the stylesheet that turns an XR document
-into one self-contained HTML page, the two stylesheets it imports, the two localization
-files it reads and the three files it inlines.
+The files in this directory are byte-for-byte unmodified copies of the HTML visualization of
+the semantic XR representation. They are the stylesheet that turns an XR document into one
+self-contained HTML page, the two stylesheets it imports, the two localization files it reads
+and the three files it inlines.
 
 | Item | Value |
 |---|---|
@@ -15,21 +15,20 @@ files it reads and the three files it inlines.
 | Modified | no |
 
 `FileSaver-v2.0.5.js` is third-party material inside that repository and carries its own
-licence: it is FileSaver.js by Eli Grey, published under the MIT licence, and the file
-states that in a comment at its head, by a link. It is vendored here as it stands there,
-and the NOTICE of this repository names it separately.
+licence. It is FileSaver.js by Eli Grey, published under the MIT licence, and a comment at its
+head states that by a link. It is vendored here as it stands there, and the NOTICE of this
+repository names it separately.
 
-The MIT licence requires the copyright notice and the permission notice to be included in
-every copy, and neither the file nor the repository it was taken from carries the text
-itself. `FileSaver-LICENSE.txt` beside it is that text, with the copyright notice the file
-states. It is the one file in this directory that is not a copy from the repository above;
-everything else here is.
+The MIT licence requires the copyright notice and the permission notice in every copy. Neither
+the file nor the repository it was taken from carries the text itself. `FileSaver-LICENSE.txt`
+beside it is that text, with the copyright notice the file states. It is the one file in this
+directory that is not a copy from the repository above.
 
-`xrechnung-html.xsl` is not run on its own. The stylesheet of this project,
-`../xsl/esj-html.xsl`, imports it and overrides one of its template rules — the one that
-writes an external document location into a link target and an attachment into the
-arguments of a script call. The bytes here are untouched by that, which is what
-`xsl:import` is for; `docs/rendering.md` says what the override does and why.
+`xrechnung-html.xsl` does not run on its own. The stylesheet of this project,
+`../xsl/esj-html.xsl`, imports it and overrides one of its template rules: the one that writes
+an external document location into a link target and an attachment into the arguments of a
+script call. The bytes here stay untouched, which is what `xsl:import` is for.
+`docs/rendering.md` says what the override does and why.
 
 ## Files and digests
 
@@ -48,32 +47,30 @@ SHA-256 over the bytes of each file, lowercase hexadecimal:
 | `xrechnung-viewer.js` | `fb31206bb89009f358891d6123573d425f6c310527b0c7f64ee041e9993c8d92` |
 | `LICENSE` | `e0d7665e91531aebb79e4feaa415796f076b0f93e9eddd6d1d05efe9d93808ac` |
 
-A test of this module recomputes these digests over the files as they are shipped, so a
-change to one of them is a failing build rather than a quiet divergence from the table.
-Nine of the ten are compared against the repository named above as well; the tenth,
-`FileSaver-LICENSE.txt`, is the licence text and is only pinned here.
+A test of this module recomputes these digests over the files as they are shipped. A change to
+one of them fails the build instead of quietly diverging from the table. The test compares 9 of
+the 10 against the repository named above as well. The tenth, `FileSaver-LICENSE.txt`, is the
+licence text and is pinned only here.
 
 ## Why these nine
 
 `xrechnung-html.xsl` is the entry point. It imports `common-xr.xsl`, which includes
-`functions.xsl`; those two are here because it needs them. `functions.xsl` reads its labels
-out of `l10n/<language>.xml` with `doc()`, which is why the two localization files are
-here and why there are two languages and not more. `xrechnung-html.xsl` inlines
-`xrechnung-viewer.css`, `xrechnung-viewer.js` and `FileSaver-v2.0.5.js` with
-`unparsed-text()`, which is what makes a rendering one file rather than a directory.
+`functions.xsl`; those two are here because it needs them. `functions.xsl` reads its labels out
+of `l10n/<language>.xml` with `doc()`. That is why the two localization files are here, and why
+there are two languages and not more. `xrechnung-html.xsl` inlines `xrechnung-viewer.css`,
+`xrechnung-viewer.js` and `FileSaver-v2.0.5.js` with `unparsed-text()`, which makes a
+rendering one file and not a directory.
 
-`common-xr.xsl` and `functions.xsl` are also vendored, at the same tag and with the same
-digests, in `esj-xr`, where the stylesheets that read UBL and CII include them. They are
-copied twice rather than shared, so that each module ships the closure of what it runs and
-neither can be broken by a change made for the other.
+`common-xr.xsl` and `functions.xsl` are also vendored in `esj-xr`, at the same tag and with the
+same digests, where the stylesheets that read UBL and CII include them. They are copied twice
+and not shared, so each module ships the closure of what it runs, and a change made for one
+cannot break the other.
 
-The resolvers of this module answer these file names and nothing else, so neither an
-`xsl:import`, nor a `doc()`, nor an `unparsed-text()` can reach the file system or the
-network.
+The resolvers of this module answer these file names and nothing else. So neither an
+`xsl:import`, nor a `doc()`, nor an `unparsed-text()` can reach the file system or the network.
 
 ## Relationship to XRechnung
 
 This module is not an XRechnung implementation and not a KoSIT deliverable. It uses the
-stylesheet for one thing: to put an invoice in front of a human reader in a layout that
-readers of electronic invoices in Germany already know, so that this project does not have
-to invent one.
+stylesheet for one thing: to show an invoice to a human reader in a layout that readers of
+electronic invoices in Germany already know, so that this project does not have to invent one.

@@ -1,8 +1,7 @@
 # Vendored KoSIT stylesheets
 
-The files in this directory are copies, byte for byte unmodified, of the XSLT
-stylesheets that transform a UBL 2.1 or UN/CEFACT CII invoice into the semantic XR
-representation.
+The files in this directory are byte-for-byte unmodified copies of the XSLT stylesheets that
+transform a UBL 2.1 or UN/CEFACT CII invoice into the semantic XR representation.
 
 | Item | Value |
 |---|---|
@@ -26,18 +25,17 @@ SHA-256 over the bytes of each file, lowercase hexadecimal:
 | `ubl-invoice-xr.xsl` | `ef2c2af5efbc5e130a4fe4b67c62080ff179a67df08522dbf9cfcf305093c899` |
 | `LICENSE` | `e0d7665e91531aebb79e4feaa415796f076b0f93e9eddd6d1d05efe9d93808ac` |
 
-A test of this module recomputes these digests over the files as they are shipped, so a
-change to one of them is a failing build rather than a quiet divergence from the table.
+A test of this module recomputes these digests over the files as they are shipped. A change to
+one of them fails the build instead of quietly diverging from the table.
 
 ## Why these five
 
-`ubl-invoice-xr.xsl`, `ubl-creditnote-xr.xsl` and `cii-xr.xsl` are the entry points, one
-per document type. Each of them includes `common-xr.xsl`, which in turn includes
-`functions.xsl`; those two are here because the three entry points need them and for no
-other reason. The localization files the upstream repository keeps beside them are not
-here: the variables that read them are never evaluated on the way to the XR
-representation, which the corpus test of this module demonstrates for every instance it
-reads.
+`ubl-invoice-xr.xsl`, `ubl-creditnote-xr.xsl` and `cii-xr.xsl` are the entry points, one per
+document type. Each of them includes `common-xr.xsl`, which in turn includes `functions.xsl`.
+Those two are here because the three entry points need them, and for no other reason. The
+localization files the upstream repository keeps beside them are not here. The variables that
+read them are never evaluated on the way to the XR representation, and the corpus test of this
+module shows that for every instance it reads.
 
 The resolver of this module answers these five file names and nothing else, so an
 `xsl:include` cannot reach the file system or the network.
@@ -45,6 +43,6 @@ The resolver of this module answers these five file names and nothing else, so a
 ## Relationship to XRechnung
 
 This module is not an XRechnung implementation and not a KoSIT deliverable. It uses the
-stylesheets for one thing only: to be told which business term of EN 16931-1 a syntax
-element stands for, so that this repository does not have to carry a second opinion on
-the syntax bindings of the standard.
+stylesheets for one thing only: they tell it which business term of EN 16931-1 a syntax element
+stands for. So this repository does not have to carry a second opinion on the syntax bindings
+of the standard.

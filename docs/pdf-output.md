@@ -2,17 +2,17 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-A hybrid invoice is a PDF a person reads with the electronic invoice attached to it. This page is
-the writing side; [`pdf-input.md`](pdf-input.md) reads, [`rendering.md`](rendering.md) draws.
+A hybrid invoice is a PDF a person reads, with the electronic invoice attached to it. This page
+is the writing side; [`pdf-input.md`](pdf-input.md) reads, [`rendering.md`](rendering.md) draws.
 
 | Command | What it does |
 |---|---|
 | `esj render <invoice> --embed cii --out <pdf>` | draws the pages and attaches the invoice to them |
 | `esj embed <pdf> <invoice> --out <pdf>` | attaches the invoice to a PDF/A-3 file from somewhere else |
 
-Both write a PDF/A-3 file carrying one embedded file, the cross industry invoice of
+Both write a PDF/A-3 file that carries one embedded file, the cross industry invoice of
 [`CiiWriter`](bindings.md), as an associated file, as Factur-X asks. Neither converts a page and
-neither draws one over another: what the file is, it stays.
+neither draws one over another: the file stays what it is.
 
 ## The file is PDF/A-3b
 
@@ -39,8 +39,8 @@ byte[] hybrid = FacturX.embed(rendering, document,
 ```
 
 `EmbedOptions` carries the profile, the `HybridFlavour`, the `PdfLimits` the input is opened
-under, an optional `PdfaCheck` the caller lends, and the extension registries the writer of the
-attachment is handed (`withExtensions(…)`). What the call writes:
+under, an optional `PdfaCheck` you lend, and the extension registries the writer of the
+attachment gets (`withExtensions(…)`). The call writes:
 
 | What | Written as |
 |---|---|
@@ -49,34 +49,33 @@ attachment is handed (`withExtensions(…)`). What the call writes:
 | the name tree | the same specification, under the attachment name, in `/Names /EmbeddedFiles` |
 | the metadata | the Factur-X extension schema and the four properties `DocumentType`, `DocumentFileName`, `Version` and `ConformanceLevel`, merged into the XMP packet the input already carries |
 
-`embedWithReport` returns the file and the report of the writer beside it, because a term the cross
-industry invoice had no place for is a term the archived record does not carry; the command line
-prints it, and a term those registries keep out of every syntax on one `info:` line, as `convert` does.
-An ESJ document of the invoice is one `esj convert` over the file away, whenever one is wanted.
-[`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) is a whole
-program around this call.
+`embedWithReport` returns the file and, beside it, the report of the writer. A term the cross
+industry invoice has no place for is a term the archived record does not carry. The command
+line prints that report, and lists the terms those registries keep out of every syntax on one
+`info:` line, as `convert` does. An ESJ document of the invoice is one `esj convert` over the
+file away. [`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) is a whole program around this call.
 
 ## Flavour and profile
 
-The flavour is one choice and not three: a file mixing one specification's attachment name with
-another's extension schema would be one no specification defines.
+You choose the flavour once, for all three columns: a file that mixes one specification's
+attachment name with another's extension schema is one no specification defines.
 
 | `HybridFlavour` | Attachment | Extension schema | Prefix, version |
 |---|---|---|---|
 | `FACTUR_X_1_0` (ZUGFeRD 2.1 and later) | `factur-x.xml` | `urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#` | `fx`, `1.0` |
 | `ZUGFERD_2_0` | `zugferd-invoice.xml` | `urn:zugferd:pdfa:CrossIndustryDocument:invoice:2p0#` | `zf`, `2p0` |
 
-`xrechnung.xml` is not written: a conventional name with no container specification behind it
-has no declaration to put beside it, and an XRechnung goes in as the profile XRECHNUNG of either
-flavour. The profiles, and which of them are EN 16931 invoices, are in [`pdf-input.md`](pdf-input.md#profiles).
+ESJ does not write `xrechnung.xml`: a conventional name with no container specification behind
+it has no declaration to put beside it. An XRechnung goes in as the profile XRECHNUNG of either
+flavour. [`pdf-input.md`](pdf-input.md#profiles) lists the profiles and which are EN 16931 invoices.
 
 ## What is refused
 
 **Nothing is converted.** The input has to be a PDF/A-3 file, which is what a rendering of
 `esj-render` is: part 3 is the part of ISO 19005 that allows a file of any type to be embedded.
-By default that is read from the input's own packet; a caller who wants more than a declaration
-passes a validator through `EmbedOptions.withCheck(…)`, which is what `--verapdf` is on the
-command line. `EmbedRefusedException` says which of these it was:
+By default ESJ reads that from the input's own packet. If you want more than a declaration,
+pass a validator through `EmbedOptions.withCheck(…)`; `--verapdf` does that on the command
+line. `EmbedRefusedException` says which of these it was:
 
 | Refused | Because |
 |---|---|
@@ -90,31 +89,32 @@ command line. `EmbedRefusedException` says which of these it was:
 
 ## veraPDF is the oracle, not this project
 
-veraPDF 1.30.2, flavour `3b`, in test scope: every rendering of the conformance corpus and of the
-examples in both languages and on both papers is validated on every build, and every corpus
-instance again after embedding, all with zero failed rules. `esj validate --verapdf <installation>`
-gives a caller that answer about a file of their own; `esj embed --verapdf` asks it of the input.
+veraPDF 1.30.2, flavour `3b`, runs in test scope on every build. It validates every rendering of
+the conformance corpus and the examples, in both languages and on both papers, and every corpus
+instance again after embedding: zero failed rules for all of them.
+`esj validate --verapdf <installation>` gives you that answer about a file of your own;
+`esj embed --verapdf` asks the same of the input.
 
 ## Determinism
 
-The same document gives the same file on every run and every machine, rendering and embedding
-alike. Producer and creator are fixed strings, file and XMP packet carry no date of any kind, the
-font subsets are a function of the text, and the only date the embedding writes is the invoice's
-own BT-2. The file identifier follows ISO 32000-1, 14.4: `/ID[0]` stays the input's, because the
-pages are the pages that came in, and `/ID[1]` is a digest of the result. `PdfInvoiceImporter`
-over the result gives the document that went in.
+The same document gives the same file on every run and every machine, for rendering and
+embedding alike. Producer and creator are fixed strings. File and XMP packet carry no date of
+any kind, and the font subsets are a function of the text. The only date the embedding writes
+is the invoice's own BT-2. The file identifier follows ISO 32000-1, 14.4: `/ID[0]` stays the
+input's, because the pages are the pages that came in, and `/ID[1]` is a digest of the result.
+`PdfInvoiceImporter` over the result gives back the document that went in.
 
 ## Attribution
 
-The container facts — attachment names, the XMP extension schema and its properties, the
-`AFRelationship` values — come from the public Factur-X and ZUGFeRD documents, with their sources
-in [`pdf-input.md`](pdf-input.md#facts-this-module-relies-on-and-where-they-come-from) and their
+The container facts come from the public Factur-X and ZUGFeRD documents: attachment names, the
+XMP extension schema and its properties, the `AFRelationship` values. Their sources are in
+[`pdf-input.md`](pdf-input.md#facts-this-module-relies-on-and-where-they-come-from) and their
 terms in [`sources.md`](sources.md). No prose is reproduced and no code was copied.
 
-The PDF library is Apache PDFBox 3.x under the Apache License, Version 2.0; the sRGB profile
-embedded as the output intent is the ICC's, copied unaltered under the terms of its profile
-library; the fonts are Liberation Sans under the SIL Open Font License, Version 1.1; the modules
-of the payment code are encoded by ZXing Core under the Apache License, Version 2.0, and drawn
-as rectangles of the page rather than placed as an image ([`letter-layout.md`](letter-layout.md#the-payment-code)).
+The PDF library is Apache PDFBox 3.x under the Apache License, Version 2.0. The sRGB profile of
+the output intent is the ICC's, copied unaltered under the terms of its profile library. The
+fonts are Liberation Sans under the SIL Open Font License, Version 1.1. ZXing Core encodes the
+modules of the payment code, under the Apache License, Version 2.0, and the renderer draws them
+as rectangles of the page, not as an image ([`letter-layout.md`](letter-layout.md#the-payment-code)).
 veraPDF is a test-scope dependency under GPLv3+ / MPLv2+ and is in no artefact this project
 publishes. The `NOTICE` of this repository names each of them.
