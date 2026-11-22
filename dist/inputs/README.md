@@ -3,9 +3,9 @@
 *Part of [EN16931 Semantic JSON](../../README.md).*
 
 Documents a reader refuses or reads the hard way, for the cases `input-*` of
-[`../cases.sh`](../cases.sh). They are not examples of anything a sender should write — the
-example invoices are under [`examples/`](../../examples/) — but the inputs a tool meets anyway,
-each in a form that takes its own way through the readers:
+[`../cases.sh`](../cases.sh). A tool meets such inputs anyway, though no sender should write them.
+Each takes its own way through the readers. The example invoices are under
+[`examples/`](../../examples/).
 
 | File | What it is | What the jar answers |
 |---|---|---|
@@ -33,19 +33,19 @@ each in a form that takes its own way through the readers:
 | `empty.xml` | no byte at all | exit 2, the file is empty |
 
 A sound invoice takes the paths through the Java runtime that the other cases of `../cases.sh`
-record. These take others: the XML parser of the runtime formats the message of each error it
-finds from a resource bundle — `XMLMessages` for a document that is not well-formed,
-`XMLSchemaMessages` for one its schema refuses — even where the tool then prints a sentence of
-its own, and an encoding other than UTF-8, UTF-16 and ISO-8859-1 is decoded by a charset the
-runtime may not carry. A native executable carries a resource bundle only where the GraalVM
-agent saw a run load it ([`../native-image.sh`](../native-image.sh)), and a charset only where
-it is told to; a runtime image carries the charsets of the modules it was linked with. These
-cases are those runs, and [`../smoke.sh`](../smoke.sh) compares what a packaged artefact
-answers to each of them with the jar's answer, byte for byte. Without them a native executable
-ended on the first document that was not well-formed with an internal error. They also showed
-that it refused an invoice in Windows-1252 that the jar reads, and a runtime image one in
-Shift_JIS: the native build now carries every charset (`-H:+AddAllCharsets`), and the runtime
-image the module `jdk.charsets` ([`../package.sh`](../package.sh)).
+record. These take others. The XML parser of the runtime formats the message of each error it finds
+from a resource bundle: `XMLMessages` for a document that is not well-formed, `XMLSchemaMessages`
+for one its schema refuses. It does so even where the tool then prints a sentence of its own. An
+encoding other than UTF-8, UTF-16 and ISO-8859-1 is decoded by a charset the runtime may not carry.
+A native executable carries a resource bundle only where the GraalVM agent saw a run load it
+([`../native-image.sh`](../native-image.sh)), and a charset only where it is told to. A runtime
+image carries the charsets of the modules it was linked with. These cases are those runs.
+[`../smoke.sh`](../smoke.sh) compares what a packaged artefact answers to each of them with the
+jar's answer, byte for byte. Without these cases, a native executable ended on the first document
+that was not well-formed with an internal error. They also showed that it refused an invoice in
+Windows-1252 that the jar reads, and that a runtime image refused one in Shift_JIS. The native
+build now carries every charset (`-H:+AddAllCharsets`), and the runtime image the module
+`jdk.charsets` ([`../package.sh`](../package.sh)).
 
 The inputs are made by [`Make.java`](Make.java), from the root of the repository:
 
@@ -53,11 +53,10 @@ The inputs are made by [`Make.java`](Make.java), from the root of the repository
 $ java dist/inputs/Make.java
 ```
 
-Each one is a document this repository already carries with one change that the source names:
-the corpus invoice `01.01a` in UBL and in CII
+Each one is a document this repository already carries, with one change that the source names. The
+sources are the corpus invoice `01.01a` in UBL and in CII
 ([`conformance/kosit/`](../../conformance/kosit/README.md), Apache License, Version 2.0), the
 example [`standard-invoice.esj.json`](../../examples/standard-invoice.esj.json) and the example
-hybrid invoice [`conformance/pdf/factur-x.pdf`](../../conformance/pdf/README.md), whose XMP
-packet the PDFs here carry. A character an encoding has no byte for is written as a character
-reference, so that the invoice says the same in every encoding it is written in. JDK 17, 21 and
-25 wrote the same bytes.
+hybrid invoice [`conformance/pdf/factur-x.pdf`](../../conformance/pdf/README.md), whose XMP packet
+the PDFs here carry. A character an encoding has no byte for is written as a character reference,
+so the invoice says the same in every encoding. JDK 17, 21 and 25 wrote the same bytes.

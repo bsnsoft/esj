@@ -3,9 +3,9 @@
 *Part of [EN16931 Semantic JSON](../../README.md).*
 
 Four render templates and the images they name, for the cases `render-artwork-*` of
-[`../cases.sh`](../cases.sh). They are not examples to copy — those are under
-[`examples/templates/`](../../examples/templates/README.md) — but the image formats a template
-may bring, each in a form that takes its own way through the Java runtime:
+[`../cases.sh`](../cases.sh). They hold the image formats a template may bring, each in a form that
+takes its own way through the Java runtime. Examples to copy are under
+[`examples/templates/`](../../examples/templates/README.md).
 
 | Template | Letterhead, first page | Letterhead, following pages | Logo |
 |---|---|---|---|
@@ -14,16 +14,15 @@ may bring, each in a form that takes its own way through the Java runtime:
 | `png.json` | `sheet-grey8.png`, an 8-bit greyscale PNG | `sheet-srgb.png`, an RGB PNG with an `sRGB` chunk | `logo-alpha.png`, an RGB PNG with an alpha channel |
 | `grey.json` | `sheet-grey1.png`, a 1-bit greyscale PNG | `sheet-grey16.png`, a 16-bit greyscale PNG | `logo-grey-alpha.png`, a greyscale PNG with an alpha channel |
 
-A PNG in RGB or with a palette, not interlaced and without an alpha channel — what
-`examples/templates/` carries — is copied into the PDF as it is. Every other image is read by
-the Java runtime first: a JPEG by the decoder in `libjavajpeg`; a PNG in grey, interlaced or
-with an alpha channel by the PNG reader of ImageIO, into a raster
-and a colour model of the bit depth; a colour profile by the colour management of the runtime,
-which also reads its built-in sRGB and grey profiles for an `sRGB` chunk and for grey with an
-alpha channel. A native executable carries those paths only where the GraalVM agent saw
-a run take them ([`../native-image.sh`](../native-image.sh)); these cases are those runs, and
-[`../smoke.sh`](../smoke.sh) compares each rendering of a packaged artefact with the jar's,
-byte for byte.
+A PNG in RGB or with a palette, not interlaced and without an alpha channel, is copied into the PDF
+as it is. That is what `examples/templates/` carries. The Java runtime reads every other image
+first. The decoder in `libjavajpeg` reads a JPEG. The PNG reader of ImageIO reads a PNG in grey,
+interlaced or with an alpha channel, into a raster and a colour model of the bit depth. The colour
+management of the runtime reads a colour profile, and also its built-in sRGB and grey profiles for
+an `sRGB` chunk and for grey with an alpha channel. A native executable carries those paths only
+where the GraalVM agent saw a run take them ([`../native-image.sh`](../native-image.sh)). These
+cases are those runs. [`../smoke.sh`](../smoke.sh) compares each rendering of a packaged artefact
+with the jar's, byte for byte.
 
 The images are drawn by [`Draw.java`](Draw.java), from the root of the repository:
 
@@ -31,9 +30,10 @@ The images are drawn by [`Draw.java`](Draw.java), from the root of the repositor
 $ java dist/artwork/Draw.java
 ```
 
-The logo is the three squares of the example mark and the sheet a hairline across the head of
-an A4 page at one pixel per five points, set pixel by pixel rather than drawn, and encoded by
-the JDK's own writers; JDK 17, 21 and 25 wrote the same bytes. Nothing here is anybody's
-picture. The colour profile in the three images that carry one is
-`esj-render/src/main/resources/de/bsnsoft/esj/render/icc/sRGB2014.icc`, unaltered, which the
-International Color Consortium allows to be copied and embedded without restriction ([`NOTICE`](../../NOTICE)).
+The logo is the three squares of the example mark. The sheet is a hairline across the head of an A4
+page at one pixel per five points. Both are set pixel by pixel, not drawn, and encoded by the JDK's
+own writers; JDK 17, 21 and 25 wrote the same bytes. Nothing here is anybody's picture. The colour
+profile in the three images that carry one is
+`esj-render/src/main/resources/de/bsnsoft/esj/render/icc/sRGB2014.icc`, unaltered. The
+International Color Consortium allows it to be copied and embedded without restriction
+([`NOTICE`](../../NOTICE)).
