@@ -207,8 +207,9 @@ container per document, and as `esj serve` (`esj-api`).
 
 ## Homebrew
 
-[`docs/homebrew/esj.rb`](homebrew/esj.rb) is a draft formula for a tap. It is not submitted
-anywhere and names the two values a release fills in.
+[`docs/homebrew/esj.rb`](homebrew/esj.rb) is the template of the formula in the tap
+[bsnsoft/homebrew-tap](https://github.com/bsnsoft/homebrew-tap). Each release fills in the
+checksums of its archives there.
 
 ## Building the artefacts
 
