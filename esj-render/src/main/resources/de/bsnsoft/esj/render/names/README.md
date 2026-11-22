@@ -1,8 +1,8 @@
 # Display names of codes
 
-What the letter layout of `esj-render` writes where a document carries a code, in the two
-languages the renderer knows. Data of this repository: a rendering is the same bytes on every
-machine, so nothing here is read from the locale data of the runtime.
+The letter layout of `esj-render` writes these names where a document carries a code, in the
+two languages the renderer knows. They are data of this repository, so nothing here comes from
+the locale data of the runtime, and a rendering is the same bytes on every machine.
 
 | File | Codes | English names | German names |
 |---|---|---|---|
@@ -14,19 +14,19 @@ machine, so nothing here is read from the locale data of the runtime.
 
 A code no file names is printed as the code.
 
-A unit beside a quantity is written with the name of more than one where the quantity is not
-one, and without the qualifier a code list puts behind a name to tell it from another one —
-`30 minutes`, not `30 minute [unit of time]`. The line under *Further details* carries the name
-of the table word for word, so nothing of the fact is lost by leaving it off the quantity. No
+Beside a quantity, the letter writes a unit with the name for more than one where the quantity
+is not one. It leaves out the qualifier a code list puts behind a name to tell it from another
+one: `30 minutes`, not `30 minute [unit of time]`. The line under *Further details* carries the
+name of the table word for word, so leaving it off the quantity loses nothing of the fact. No
 two codes of one table read alike in one language, in either number; `DisplayNamesTest` checks
 that as well.
 
-`country.json` was generated once by `CountryNames`, a test-scope class of this module, out of
-the locale data of the Java runtime its header records, and checked in. To write it again, run
-that class with this directory as its argument, on the runtime whose names the project wants to
-carry. `CountryNamesTest` regenerates and compares on that runtime and only reads the file on
-any other. The Unicode terms and the attribution are in the `NOTICE` of this repository and in
-`docs/sources.md`.
+`CountryNames`, a test-scope class of this module, generated `country.json` once out of the
+locale data of the Java runtime its header records, and the file is checked in. To write it
+again, run that class with this directory as its argument, on the runtime whose names the
+project wants to carry. `CountryNamesTest` regenerates and compares on that runtime, and only
+reads the file on any other. The Unicode terms and the attribution are in the `NOTICE` of this
+repository and in `docs/sources.md`.
 
 `DisplayNamesTest` compares the English names against the snapshots above, code for code, so a
 name printed here as a fact is the fact the snapshot carries.

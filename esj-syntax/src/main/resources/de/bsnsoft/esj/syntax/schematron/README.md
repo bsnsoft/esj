@@ -2,11 +2,11 @@
 
 The four stylesheets in this directory are the XSLT 2 implementation of ISO Schematron, the
 "skeleton", in its 2010 release by Rick Jelliffe with the Academia Sinica Computing Centre,
-Taiwan. `esj packs fetch` compiles the Schematron files a recipe fetches with them, in the three
+Taiwan. `esj packs fetch` compiles the Schematron files a recipe fetches with them, in the 3
 stages the skeleton defines: `iso_dsdl_include.xsl`, `iso_abstract_expand.xsl`, then
-`iso_svrl_for_xslt2.xsl`, which imports `iso_schematron_skeleton_for_saxon.xsl`. The compiled
-artefacts of the bundled packs are the output of an XSLT 2 skeleton of the same family, run by
-their publishers; which copy of it, the files do not say.
+`iso_svrl_for_xslt2.xsl`, which imports `iso_schematron_skeleton_for_saxon.xsl`. Their
+publishers compiled the artefacts of the bundled packs with an XSLT 2 skeleton of the same
+family; the files do not say which copy of it.
 
 | Item | Value |
 |---|---|
@@ -34,5 +34,5 @@ A test of this module recomputes the five digests over the files as they are shi
 
 The skeleton's localized message files (`sch-messages-*.xhtml`), its XSLT 1 variants, its
 documentation and the message-only front end `iso_schematron_message_xslt2.xsl` are not
-vendored: the compilation writes SVRL in the skeleton's default language, and the resolver of
+vendored. The compilation writes SVRL in the skeleton's default language, and the resolver of
 `SchematronCompiler` answers the four stylesheets above and nothing else.

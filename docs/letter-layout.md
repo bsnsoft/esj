@@ -2,9 +2,9 @@
 
 The default of the two PDF layouts ([`rendering.md`](rendering.md#two-layouts)): the invoice as
 the letter a business sends. `esj render` and `PdfRenderer.render(document)` draw it where
-neither the caller nor a template names a layout; `--layout generic`, `Layout.GENERIC` or the
-template member `"layout": "generic"` ask for the other one ([`cli.md`](cli.md#render)), and a
-layout the caller names wins over the one a template names.
+neither you nor a template names a layout. `--layout generic`, `Layout.GENERIC` or the template
+member `"layout": "generic"` ask for the other one ([`cli.md`](cli.md#render)). A layout you
+name wins over the one a template names.
 
 ## What it places where
 
@@ -24,10 +24,10 @@ layout the caller names wins over the one a template names.
 
 ## Geometry
 
-The distances a window envelope and a two-hole punch are built to, which DIN 5008 gives for a
-business letter. Millimetres from the top left corner of the paper, on A4 and on US Letter alike
-— the envelope is what they are for, not the paper. The renderer holds them as points, 1 mm =
-72/25.4 pt.
+The letter keeps the distances a window envelope and a two-hole punch are built to, which
+DIN 5008 gives for a business letter. The table gives millimetres from the top left corner of
+the paper, on A4 and on US Letter alike: the envelope is what they are for, not the paper. The
+renderer holds them as points, 1 mm = 72/25.4 pt.
 
 | Block | Where |
 |---|---|
@@ -42,26 +42,26 @@ business letter. Millimetres from the top left corner of the paper, on A4 and on
 | foot of the first page | what the seller's details need, measured before the page is filled and added to the bottom margin: the text of the letter stops above the band, the page footer stays under it, and a sender with more details gets a shorter first page rather than a line of the letter over its own foot. Details taller than half of what that page has for text are not a foot at all and stand under *Further details* instead |
 | fold marks, punch mark | at 105 and 210 from the top, and 148.5, in the left margin |
 
-A section a page could hold whole begins on the page it fits on, or on a fresh page — the payment
-block and *Further details* are never two rows at a foot and the rest overleaf. One taller than a
-page breaks, and the payment block then repeats its heading and keeps every account whole.
-
-A `margins` member of the template is put over these, which a letterhead with a tall band needs
-([`templates.md`](templates.md#the-letterhead)). **The left and the right margin hold for every
-block of the letter except the address field**, whose place a window envelope fixes. A letterhead
-that prints along an edge keeps the text clear of it by stating a margin, and says nothing else.
+A section that a page could hold whole begins on the page it fits on, or on a fresh page. The
+payment block and *Further details* are never two rows at a foot and the rest overleaf. A section
+taller than a page breaks, and the payment block then repeats its heading and keeps every account
+whole. A `margins` member of the template goes over these values, which a letterhead with a tall
+band needs ([`templates.md`](templates.md#the-letterhead)). **The left and the right margin hold for
+every block of the letter except the address field**, whose place a window envelope fixes. If your
+letterhead prints along an edge, state a margin to keep the text clear of it, and nothing else.
 
 ## Codes under their names
 
-Where a reader does not read the code, the letter writes the name — `H87` becomes `piece` — and
-lists the code once under *Further details*, as `Unit H87 = piece`. So the page never hides what
-the document says. A code no table names is printed as the code; the generic layout uses none.
+Where a reader does not read the code, the letter writes the name: `H87` becomes `piece`. It
+lists the code once under *Further details*, as `Unit H87 = piece`, so the page never hides what
+the document says. A code no table names is printed as the code. The generic layout uses none
+of the tables.
 
-Beside a quantity the unit is written the way a quantity is read: the name of more than one
-where the quantity is not one (`3 days`, `3 Tage`), and without the qualifier a code list puts
-behind a name to tell it from another one (`30 minutes`, not `30 minute [unit of time]`). The
-line under *Further details* carries the name the table gives the code, which is the name of
-the code list except where the table below says otherwise.
+Beside a quantity, the letter writes the unit the way a quantity is read. It takes the name for
+more than one where the quantity is not one (`3 days`, `3 Tage`), and leaves out the qualifier
+a code list puts behind a name to tell it from another one (`30 minutes`, not
+`30 minute [unit of time]`). The line under *Further details* carries the name the table gives
+the code. That is the name of the code list, except where the table below says otherwise.
 
 | Table | Codes | English names | German names |
 |---|---|---|---|
@@ -73,63 +73,63 @@ the code list except where the table below says otherwise.
 
 The tables are checked-in data under `esj-render/src/main/resources/de/bsnsoft/esj/render/names/`,
 with their sources in [`sources.md`](sources.md#display-names-of-codes) and the licences in
-`NOTICE`. Nothing is read from the locale data of the machine while rendering, which is what keeps
-a rendering the same bytes everywhere ([`rendering.md`](rendering.md#determinism-of-the-pdf-rendering)).
+`NOTICE`. The renderer reads nothing from the locale data of the machine, which keeps a
+rendering the same bytes everywhere ([`rendering.md`](rendering.md#determinism-of-the-pdf-rendering)).
 
 ## The payment code
 
-Where the invoice states a credit transfer, the payment block carries the QR code a payer's
-banking application reads to fill the transfer in: the EPC QR code of the guideline EPC069-12 of
-the European Payments Council, known in Germany as the *GiroCode*, drawn as squares rather than
+Where the invoice states a credit transfer, the payment block carries the QR code that a payer's
+banking application reads to fill in the transfer. It is the EPC QR code of the guideline EPC069-12
+of the European Payments Council, known in Germany as the *GiroCode*, drawn as squares rather than
 placed as a picture ([`design-decisions.md`](design-decisions.md#one-printed-code-and-it-is-drawn)).
-It is on in the letter layout and never drawn in the generic one; `"paymentCode": false` leaves it
-out, and `esj render --no-payment-code` wins over the template ([`cli.md`](cli.md#render)).
+The letter layout draws it by default, the generic one never. `"paymentCode": false` leaves it out,
+and `esj render --no-payment-code` wins over the template ([`cli.md`](cli.md#render)).
 
-It carries values the block prints beside it and computes nothing: the account identifier BT-84
-and the BIC BT-86 of the first credit transfer account, the beneficiary (the account name BT-85,
-else the payee BT-59, else the seller BT-27), the amount due BT-115, and the remittance
-information BT-83, else the invoice number BT-1. Every condition of the guideline holds or no
-code is drawn and nothing is said: BT-81 is 30 or 58, BT-5 is `EUR`, BT-84 is a well-formed IBAN
-by the check digits of ISO 13616, BT-115 is between 0.01 and 999999999.99, and the payload fits
-its bound. Three elements the payload can do without, and *Further details* says which gave way:
-a beneficiary over 70 characters is written to that length, a remittance information over 140
-gives way to the invoice number, a BT-86 that is not a BIC by ISO 9362 is left out. The payload
-is one element per line, so no element carries a line end of any kind — a reader that splits
-where Unicode does would read the next element one line too far down — nor another control
-character, a character that directs the reading order or half a surrogate pair: where the
-beneficiary, BT-83 or the invoice number standing in for it holds one, no code is drawn and
-*Further details* says which element it was. Where the document states more than one account or
-instruction, the caption names the one it pays into. A credit note or a self-billed invoice gets
-none ([below](#document-types)).
+The code carries values the block prints beside it and computes nothing: the account identifier
+BT-84 and the BIC BT-86 of the first credit transfer account, the beneficiary (the account name
+BT-85, else the payee BT-59, else the seller BT-27), the amount due BT-115, and the remittance
+information BT-83, else the invoice number BT-1. Every condition of the guideline holds, or the
+letter draws no code and says nothing: BT-81 is 30 or 58, BT-5 is `EUR`, BT-84 is a well-formed IBAN
+by the check digits of ISO 13616, BT-115 is between 0.01 and 999999999.99, and the payload fits its
+bound. The payload can do without 3 elements, and *Further details* says which gave way: a
+beneficiary over 70 characters is cut to that length, a remittance information over 140 gives way to
+the invoice number, and a BT-86 that is not a BIC by ISO 9362 is left out. The payload holds one
+element per line. So no element may carry a line end of any kind: a reader that splits where Unicode
+does would read the next element one line too far down. Nor may it carry another control character,
+a character that directs the reading order or half a surrogate pair. Where the beneficiary, BT-83 or
+the invoice number standing in for it holds one, the letter draws no code, and *Further details*
+names the element. Where the document states more than one account or instruction, the caption names
+the one the code pays into. A credit note or a self-billed invoice gets no code
+([below](#document-types)).
 
 ## Document types
 
-BT-3 gives the letter its title. For the types the table of names calls a credit note — 81, 83,
-261, 262, 296, 308, 381, 396, 420, 502, 503, 532 — it gives three words as well: the reference
-line calls BT-1 and BT-2 the number and the date of a credit note, and the totals close with the
-*amount credited* (BT-115); BT-9 keeps its name. The payment code asks its reader to pay, so a
-letter whose reader does not pay gets none, whatever the template asks: a credit note, where the
-seller pays the buyer, and a self-billed invoice — 389, 471, 473, 500, 501, 527 — which the buyer
-issues and the seller reads; it keeps the title and the words of an invoice. The payment block
-stands as the document states it. Every other type — a corrected invoice (384), a partial or a
-construction invoice (326, 386, 875–877) — is the letter of an invoice under the title that
-names it.
+BT-3 gives the letter its title. For the types the table of names calls a credit note (81, 83, 261,
+262, 296, 308, 381, 396, 420, 502, 503, 532), 3 words change with it. The reference line calls BT-1
+and BT-2 the number and the date of a credit note, and the totals close with the *amount credited*
+(BT-115); BT-9 keeps its name. The payment code asks its reader to pay, so a letter whose reader
+does not pay gets none, whatever the template asks. That is a credit note, where the seller pays the
+buyer, and a self-billed invoice (389, 471, 473, 500, 501, 527), which the buyer issues and the
+seller reads. A self-billed invoice keeps the title and the words of an invoice. The payment block
+stands as the document states it. Every other type, such as a corrected invoice (384) or a partial
+or construction invoice (326, 386, 875–877), is the letter of an invoice under the title that names
+it.
 
 ## The content rule
 
-**Every term occurrence of the document reaches a page**, in this layout as in the generic one,
-and that is a test over the conformance corpus, both languages and both papers
+**Every term occurrence of the document reaches a page**, in this layout as in the generic one.
+A test checks that over the conformance corpus, both languages and both papers
 ([`rendering.md`](rendering.md#every-value-is-on-a-page)). A value the layout has a place for
-stands in that place; every other one stands under *Further details* with its label and its
-path. A value that did not fit where it was meant to go — a recipient longer than the address
-field — goes there too rather than nowhere.
+stands in that place, and every other one stands under *Further details* with its label and its
+path. A value that did not fit where it was meant to go, such as a recipient longer than the
+address field, goes there too.
 
 ## What it never does
 
 - derive: no carried-forward sum, no computed gross figure, no sentence that combines two
-  values into a statement. What is done to a value is formatting: the number picture and the
-  date picture of the language, a percentage with the decimal places the document wrote and no
-  others — `19 %`, `10,7 %`, nothing rounded — and an account identifier that is an IBAN in
+  values into a statement. The letter only formats a value: the number picture and the date
+  picture of the language, a percentage with the decimal places the document wrote and no
+  others (`19 %`, `10,7 %`, nothing rounded), and an account identifier that is an IBAN in
   groups of four;
 - hide: nothing is dropped for being unexpected, and a code written under a name is listed;
 - reorder: a template decides the look, never the order of the blocks and never the content;
@@ -154,12 +154,12 @@ field — goes there too rather than nowhere.
 | `sellerDetails` | `footer` (default), or `details` for a letterhead that prints them already — they then stand under *Further details*, where details too tall for a foot go as well |
 | `paymentCode` | `true` (default), `false` to leave the code of a credit transfer out |
 
-The reference line takes the width the margins leave it, in as many columns as fit — five on A4
-with the full text width, fewer where a margin keeps the text off a printed edge — and runs on
-into further rows. A value wider than its column takes two columns or is wrapped inside its own
-cell, never over the cell beside it. Why it is the default, and why the foot is a distance the
-template hands over, is in [`design-decisions.md`](design-decisions.md#two-layouts-one-content-rule).
-
-Everything else a template says — letterhead, logo, colours, fonts, margins, the places for the
-terms of a model extension — works as it does in the generic layout, and [`templates.md`](templates.md)
-is the reference. `examples/templates/letter.json` is the example the README renders.
+The reference line takes the width the margins leave it, in as many columns as fit, and runs on into
+further rows. That is 5 columns on A4 with the full text width, fewer where a margin keeps the text
+off a printed edge. A value wider than its column takes two columns or wraps inside its own cell,
+never over the cell beside it.
+[`design-decisions.md`](design-decisions.md#two-layouts-one-content-rule) says why the reference
+line is the default and why the foot is a distance the template hands over. Everything else a
+template says works as it does in the generic layout: letterhead, logo, colours, fonts, margins, the
+places for the terms of a model extension. [`templates.md`](templates.md) is the reference.
+`examples/templates/letter.json` is the example the README renders.
