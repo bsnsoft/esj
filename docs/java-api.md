@@ -2,13 +2,13 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-Every snippet `README.md` and [`getting-started.md`](getting-started.md) show, and every one
-they do not. `SPEC.md` is the normative specification of the format.
+Every snippet `README.md` and [`getting-started.md`](getting-started.md) show, and every one they
+leave out. `SPEC.md` is the normative specification of the format.
 
 ## The reference implementation
 
-The format needs no library: `SPEC.md` is normative and complete, `schema/esj.schema.json` covers
-most of layer L1 for any JSON Schema 2020-12 validator, `model/en16931/2017.json` carries the
+The format needs no library. `SPEC.md` is normative and complete. `schema/esj.schema.json` covers
+most of layer L1 for any JSON Schema 2020-12 validator. `model/en16931/2017.json` carries the
 registry L2 and L3 check against, and every document in `examples/` has a canonical twin. Every
 module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Maven Central;
 **Building from source** below builds the tree itself.
@@ -29,10 +29,11 @@ module is built for Java 17 and depends on `esj-core`. From 0.9.0 they are on Ma
 | `esj-cli` | the `esj` command line tool | every module above but `esj-invoice`, picocli |
 | `esj-bom` | the version of every module above but the two tools | — |
 
-Saxon-HE 13.0 is the minimum: a build that forces 12.x keeps the XML Schema, Schematron and XSLT path working, and every HTML page of `esj-render` — the HTML report too — fails with `AbstractMethodError` (`UnparsedTextURIResolver`).
+Saxon-HE 13.0 is the minimum. Under 12.x the XML Schema, Schematron and XSLT path still work, but
+every HTML page of `esj-render`, the HTML report too, fails with `AbstractMethodError` (`UnparsedTextURIResolver`).
 
 Import the bill of materials once, then name a module of the table as a dependency without a
-version of its own; the two tools are on no repository ([`releasing.md`](releasing.md)).
+version of its own. The two tools are on no repository ([`releasing.md`](releasing.md)).
 
 ```xml
 <dependencyManagement>
@@ -50,8 +51,8 @@ version of its own; the two tools are on no repository ([`releasing.md`](releasi
 
 ## Packages
 
-**API** keeps its signatures within a major version, **preview** (`@Preview`) may change in any minor
-release, **internal** is public only because another module needs it ([`compatibility.md`](compatibility.md)).
+**API** keeps its signatures within a major version. **Preview** (`@Preview`) may change in any
+minor release. **Internal** is public only because another module needs it ([`compatibility.md`](compatibility.md)).
 
 | Package `de.bsnsoft.esj…` | Module | Status | Holds |
 |---|---|---|---|
@@ -76,15 +77,15 @@ Every snippet below is a test, in the `ReadmeExamplesTest.java` of the module it
 
 ## Reading a document
 
-A reader is strict: what fails layer L1 is not a document. `read` throws `EsjFormatException`,
-or `EsjLimitException` for a limit of section 12.2; either carries the `code()`, `path()` and
+A reader is strict: what fails layer L1 is not a document. `read` throws `EsjFormatException`, or
+`EsjLimitException` for a limit of section 12.2. Either carries the `code()`, `path()` and
 `subject()` the finding of `SPEC.md` section 9.5 would carry.
 
 ```java
 SemanticDocument document = EsjReader.strict().read(Files.readAllBytes(file));
 ```
 
-To see every defect at once, `readWithFindings` returns the document it could build with the
+To see every defect at once, call `readWithFindings`. You get the document it could build with the
 findings beside it.
 
 ```java
@@ -92,7 +93,7 @@ ReadResult result = EsjReader.strict().readWithFindings(bytes);
 List<String> problems = result.findings().stream().map(Finding::toString).toList();
 ```
 
-The limits of `SPEC.md` section 12.2 are the defaults, and every one is the caller's to set.
+The limits of `SPEC.md` section 12.2 are the defaults, and you can set every one.
 
 ```java
 EsjReader reader = EsjReader.withLimits(
@@ -101,8 +102,8 @@ EsjReader reader = EsjReader.withLimits(
 
 ## Layers
 
-Four layers over one registry, each usable on its own, each expressible through the one below it;
-only the top one is written by hand ([`design-decisions.md`](design-decisions.md)).
+Four layers sit over one registry. You can use each on its own, and each is expressible through
+the one below it. Only the top one is written by hand ([`design-decisions.md`](design-decisions.md)).
 
 | Layer | Type | Module | For |
 |---|---|---|---|
@@ -111,10 +112,10 @@ only the top one is written by hand ([`design-decisions.md`](design-decisions.md
 | constrained builder | `InvoiceBuilder` | `esj-typed` | the same, with the structure of the model checked by the compiler |
 | domain API | `Invoice`, `Party`, `Line`, `Vat` | `esj-invoice` | enums, profile defaults, one `build()` |
 
-**The document.** A value is addressed by the identifier the standard gives it.
-`canonicalContent` returns the string it carries; the typed accessors — `asDecimal`, `asDate`,
-`asBytes`, `asString` — read it on demand and refuse what the grammar does not allow, and which
-of them belongs to a term is the registry's answer, not the document's.
+**The document.** You address a value by the identifier the standard gives it. `canonicalContent`
+returns the string it carries. The typed accessors (`asDecimal`, `asDate`, `asBytes`, `asString`)
+read it on demand and refuse what the grammar does not allow. The registry, not the document, says
+which of them belongs to a term.
 
 ```java
 String invoiceNumber = document.value(SemanticPath.of("/BT-1"))
@@ -137,15 +138,15 @@ for (Map.Entry<SemanticPath, SemanticValue> entry : document.values().entrySet()
 }
 ```
 
-**The typed view and editor.** Names where the identifiers stood, one view with its own `En16931`
-per edition, generated from that edition's registry; `edit` refuses a document of another edition.
-A mandatory term comes back directly, an optional one as an `Optional`, a repeatable term or group
-as a `List`, the business term stands in the Javadoc, nothing is copied. The view neither validates
-nor hides a defect: an absent mandatory term throws `MissingValueException`, content outside the
-grammar of its semantic data type `ValueTypeException`. The `Invoice` below is
-`…esj.typed.Invoice`; six simple names — `Invoice`, `Address`, `Allowance`, `Charge`, `Delivery`
-and `Vat` — exist in that package and in `…esj.invoice`, so a class using both qualifies one of
-them.
+**The typed view and editor.** You read names where the identifiers stood. Each edition has one
+view with its own `En16931`, generated from that edition's registry; `edit` refuses a document of
+another edition. A mandatory term comes back directly, an optional one as an `Optional`, a
+repeatable term or group as a `List`. The business term stands in the Javadoc, and nothing is
+copied. The view neither validates nor hides a defect. An absent mandatory term throws
+`MissingValueException`, content outside the grammar of its semantic data type
+`ValueTypeException`. The `Invoice` below is `…esj.typed.Invoice`. Six simple names exist in that
+package and in `…esj.invoice` (`Invoice`, `Address`, `Allowance`, `Charge`, `Delivery`, `Vat`), so
+a class using both qualifies one of them.
 
 ```java
 Invoice invoice = En16931.view(document);
@@ -158,9 +159,9 @@ for (InvoiceLine line : invoice.invoiceLines()) {
 }
 ```
 
-**The constrained builder.** The same editor behind step interfaces generated from the registry:
-one step per mandatory member, in the order of the model, so that the terminal step — the only
-one carrying `build()` — is reachable once all of them are written and not before.
+**The constrained builder.** The same editor stands behind step interfaces generated from the
+registry: one step per mandatory member, in the order of the model. Only the terminal step carries
+`build()`, and you reach it once all of them are written, not before.
 
 ```java
 SemanticDocument built = InvoiceBuilder.create(Profile.EN16931)
@@ -186,21 +187,21 @@ SemanticDocument built = InvoiceBuilder.create(Profile.EN16931)
         .build();
 ```
 
-`build()` names what is missing, derives with `Totals.STANDARD`, checks layers L2 and L3 and
-hands over the document; `derive`, `validate`, `validateOrThrow` and `document` are that chain
-step by step, and `build(InvoiceRules)` adds the business rules a caller supplies.
-`InvoiceBuilder.draft(profile)` takes the same members in any order through
-`InvoiceDraft.edit(...)`, checks the same completeness and writes the same document.
+`build()` names what is missing, derives with `Totals.STANDARD`, checks layers L2 and L3 and hands
+over the document. `derive`, `validate`, `validateOrThrow` and `document` are that chain step by
+step. `build(InvoiceRules)` adds the business rules you supply. `InvoiceBuilder.draft(profile)`
+takes the same members in any order through `InvoiceDraft.edit(...)`, checks the same completeness
+and writes the same document.
 
-A `Profile` is an overlay of facts under `model/profiles/`: the values it fixes, written when the
-builder is opened, and the cardinalities it narrows, which become steps of its own chain.
-`Profile.EN16931` fixes BT-24; `Profile.XRECHNUNG_3_0` fixes BT-23 and BT-24 and narrows nineteen
-members to mandatory, seventeen of which become steps, among them BT-10, BT-34, BT-49 and BG-16.
-A term a derivation policy writes is no step of either chain (`model/derivable-terms.json`);
+A `Profile` is an overlay of facts under `model/profiles/`. It holds the values it fixes, written
+when the builder opens, and the cardinalities it narrows, which become steps of its own chain.
+`Profile.EN16931` fixes BT-24. `Profile.XRECHNUNG_3_0` fixes BT-23 and BT-24 and narrows 19 members
+to mandatory; 17 of them become steps, among them BT-10, BT-34, BT-49 and BG-16. A term a
+derivation policy writes is no step of either chain (`model/derivable-terms.json`);
 `model/README.md` reads both files.
 
-**The domain API.** The same invoice in the words of the domain, byte for byte the document
-above; the section of that name below is the rest of it.
+**The domain API.** The same invoice in the words of the domain, byte for byte the document above.
+The section of that name below has the rest.
 
 ```java
 SemanticDocument written = Invoice.create(Profile.EN16931)
@@ -218,8 +219,8 @@ SemanticDocument written = Invoice.create(Profile.EN16931)
 
 ## Validating
 
-Layers L2 and L3 are checked against the registry and are individually selectable. A finding is
-a value, not an exception: fifty problems produce fifty findings in one pass.
+The validator checks layers L2 and L3 against the registry, and you can select each. A finding is a
+value, not an exception: 50 problems produce 50 findings in one pass.
 
 ```java
 Registry registry = Registry.en16931();
@@ -232,9 +233,9 @@ ValidationResult cardinality = StructuralValidator.validate(
 
 ### The three states
 
-`ValidationResult` carries the verdict, the findings and the coverage, and derives the verdict
-from the other two: an empty finding list is not conformance, because a validator that
-evaluated nothing also reports nothing.
+`ValidationResult` carries the verdict, the findings and the coverage, and derives the verdict from
+the other two. An empty finding list is not conformance: a validator that evaluated nothing also
+reports nothing.
 
 | `status()` | when |
 |---|---|
@@ -242,21 +243,22 @@ evaluated nothing also reports nothing.
 | `INVALID` | some finding is an error that judges the document |
 | `INDETERMINATE` | nothing was found to be wrong and something was not evaluated |
 
-Three finding codes record something that was **not** evaluated rather than something that is
-wrong — `ESJ-L1-LIMIT`, `ESJ-L2-NOT-CHECKED` and `ESJ-L2-EDITION-UNKNOWN`, together
-`FindingCode.recordsSomethingNotEvaluated()`. Severity alone does not decide the state:
+Three finding codes record something that was **not** evaluated, not something that is wrong:
+`ESJ-L1-LIMIT`, `ESJ-L2-NOT-CHECKED` and `ESJ-L2-EDITION-UNKNOWN`, together
+`FindingCode.recordsSomethingNotEvaluated()`. Severity alone does not decide the state.
 `ESJ-L1-LIMIT` is an error and yields `INDETERMINATE`, because a limit is this reader's
-configuration and not a defect of the document.
+configuration and no defect of the document.
 
-`evaluated()` and `notEvaluated()` partition the three layers, so every result states what it
-did not do; the reason comes from the closed vocabulary `NotEvaluatedReason` — `LIMIT`,
-`PRECEDING-LAYER-FAILED` and `EDITION-UNKNOWN` in the order of precedence `SPEC.md` 9.5 fixes,
-and `NOT-REQUESTED`, which a layer the caller did not ask for keeps whatever else happened. A
-`merge` follows the same rule: a `LIMIT` or `PRECEDING-LAYER-FAILED` a reader names for the model
-layers does not displace the `NOT-REQUESTED` of a validator not asked for one, and the
+`evaluated()` and `notEvaluated()` partition the three layers, so every result states what it did
+not do. The reason comes from the closed vocabulary `NotEvaluatedReason`: `LIMIT`,
+`PRECEDING-LAYER-FAILED` and `EDITION-UNKNOWN` in the order of precedence `SPEC.md` 9.5 fixes, and
+`NOT-REQUESTED`. A layer you did not ask for keeps `NOT-REQUESTED` whatever else happened. A
+`merge` follows the same rule. A `LIMIT` or `PRECEDING-LAYER-FAILED` a reader names for the model
+layers does not displace the `NOT-REQUESTED` of a validator not asked for one. The
 `EDITION-UNKNOWN` of a validator that was asked is kept over the `NOT-REQUESTED` of a clean read.
-`registries()` names what the run measured against. A structural validator never evaluates L1 and a reader evaluates nothing
-else, so neither alone may say `VALID`; `merge` composes them (`SPEC.md` 3.5).
+`registries()` names what the run measured against. A structural validator never evaluates L1, and
+a reader evaluates nothing else, so neither alone may say `VALID`; `merge` composes them (`SPEC.md`
+3.5).
 
 ```java
 ReadResult read = EsjReader.strict().readWithFindings(bytes);
@@ -266,13 +268,12 @@ ValidationResult verdict = read.isWellFormed()
         : read.validation();
 ```
 
-Layer L1 is the reader's: it is decided by the bytes, so the validator refuses to be asked
-for it. An extension registry is loaded beside the core one, and the paths it describes are
-then checked rather than reported as unchecked. `withExtension` refuses an extension that
-defines an identifier outside its own namespace (`BT-999` as well as `BT-1`), and one whose
-`imports` disagree with what it does — one that places terms under core terms without naming
-that model and edition — and `Registry.admits(extension)` asks the edition question before
-combining.
+Layer L1 is the reader's: the bytes decide it, so the validator refuses to be asked for it. Load an
+extension registry beside the core one, and the paths it describes are checked instead of reported
+as unchecked. `withExtension` refuses an extension that defines an identifier outside its own
+namespace (`BT-999` as well as `BT-1`). It refuses one whose `imports` disagree with what it does,
+such as one that places terms under core terms without naming that model and edition.
+`Registry.admits(extension)` asks the edition question before combining.
 
 ```java
 Registry registry = Registry.en16931().withExtension(Registry.xrechnungExtension());
@@ -280,21 +281,20 @@ ValidationResult result = StructuralValidator.validate(
         document, registry, EnumSet.of(ValidationLayer.L2));
 ```
 
-A validator given a set of registries picks the one that describes the edition the document
-names. Where none does it evaluates nothing rather than guessing: the result carries
-`ESJ-L2-EDITION-UNKNOWN` once at document level, names both model layers as not evaluated for
-the reason `EDITION-UNKNOWN`, and is `INDETERMINATE`.
+Give a validator a set of registries, and it picks the one that describes the edition the document
+names. Where none does, it evaluates nothing instead of guessing. The result carries
+`ESJ-L2-EDITION-UNKNOWN` once at document level, names both model layers as not evaluated for the
+reason `EDITION-UNKNOWN`, and is `INDETERMINATE`.
 
 ## Canonical form and digests
 
-The canonical form is one byte sequence per document content, and the two digests of `SPEC.md`
+The canonical form is one byte sequence per document content. The two digests of `SPEC.md`
 section 8 are taken over it: the semantic digest over the semantic model and the `values`
 object, the document digest over the whole document.
 
-The document has to be one that was read whole: a document `readWithFindings` handed back after
-layer L1 found an error is missing members, and its digest then identifies content the sender
-never sent. `EsjReader.strict().read(bytes)` throws instead; a caller that read with findings
-asks `isWellFormed()` first.
+Digest only a document read whole. After layer L1 found an error, a document from
+`readWithFindings` misses members, and its digest identifies content the sender never sent.
+`EsjReader.strict().read(bytes)` throws instead; after `readWithFindings`, ask `isWellFormed()`.
 
 ```java
 byte[] canonical = Canonicalizer.canonicalBytes(document);
@@ -302,8 +302,8 @@ String semanticDigest = Canonicalizer.semanticDigest(document);
 String documentDigest = Canonicalizer.documentDigest(document);
 ```
 
-A canonicalizer needs no registry and works from bytes; `EsjWriter` writes the same document
-pretty, in the same order and with another layout.
+A canonicalizer needs no registry and works from bytes. `EsjWriter` writes the same document
+pretty, in the same order with another layout.
 
 ```java
 byte[] fromBytes = Canonicalizer.canonicalize(bytes);
@@ -314,8 +314,8 @@ byte[] canonical = EsjWriter.canonical().toBytes(document);
 
 ## Building a document
 
-The builder checks the path grammar and nothing else; whether what it produces is conformant is
-the validator's question.
+The builder checks the path grammar and nothing else. The validator decides whether what it
+produces is conformant.
 
 ```java
 SemanticDocument document = SemanticDocument.builder()
@@ -331,8 +331,8 @@ SemanticDocument document = SemanticDocument.builder()
         .build();
 ```
 
-`toBuilder` amends a document without changing it; documents are immutable, and `put` refuses
-an address that is already taken, so replacing a value is a removal and an insertion:
+`toBuilder` amends a document without changing it. Documents are immutable, and `put` refuses an
+address that is already taken, so you replace a value by a removal and an insertion:
 
 ```java
 SemanticDocument amended = document.toBuilder()
@@ -345,9 +345,9 @@ SemanticDocument amended = document.toBuilder()
 
 ## Building an invoice
 
-`En16931.newInvoice()` opens an editor whose accessors carry the same generated names as the
-view. A group is reached through a handle typed by its cardinality — a `1..1` or `0..1` group
-has one, a repeatable group has a list handle — and nested content is written in a block.
+`En16931.newInvoice()` opens an editor whose accessors carry the same generated names as the view.
+You reach a group through a handle typed by its cardinality: a `1..1` or `0..1` group has one, a
+repeatable group has a list handle. You write nested content in a block.
 
 ```java
 InvoiceEditor invoice = En16931.newInvoice();
@@ -416,22 +416,22 @@ invoice.derive(Totals.STANDARD);
 SemanticDocument document = invoice.document();
 ```
 
-That is `examples/allowances.esj.json`, term for term: the same snippet in
-`ReadmeExamplesTest` canonicalizes the document it builds and compares the bytes against
-`examples/allowances.canonical.esj.json`. No amount the invoice itself implies is typed; the
-last line before `document()` derives them. A repeatable group is written either through its
-list handle — `invoiceLines()`, which also reads, counts and removes — or through the singular
-block that appends one instance and hands the parent editor back.
+That is `examples/allowances.esj.json`, term for term. The same snippet in `ReadmeExamplesTest`
+canonicalizes the document it builds and compares the bytes against
+`examples/allowances.canonical.esj.json`. You type no amount the invoice itself implies; the last
+line before `document()` derives them. Write a repeatable group through its list handle
+(`invoiceLines()`, which also reads, counts and removes) or through the singular block that appends
+one instance and hands the parent editor back.
 
-A group comes into being when a value is written into it (`SPEC.md` 4.5): there is no `create`
-step. Setting `null` or an empty string removes a value, with one wrinkle: a term of the
-semantic data type Identifier has both a `String` and an `Identifier` setter of one argument, so
-the literal `null` needs the cast `(String) null` or `(Identifier) null`. Nothing is validated
-on the way in beyond the grammar of the semantic data type.
+A group comes into being when a value is written into it (`SPEC.md` 4.5); there is no `create`
+step. Setting `null` or an empty string removes a value. One wrinkle: a term of the semantic data
+type Identifier has both a `String` and an `Identifier` setter of one argument, so the literal
+`null` needs the cast `(String) null` or `(Identifier) null`. Nothing is validated on the way in
+beyond the grammar of the semantic data type.
 
-`En16931.edit(document)` opens an existing document for changes; the document itself is
-immutable. A list handle appends with `add`, reads with `get`, counts with `size`, empties with
-`clear` and removes with `remove`, which moves the occurrences that follow one index down.
+`En16931.edit(document)` opens an existing document for changes. A list handle appends with
+`add`, reads with `get`, counts with `size`, empties with `clear` and removes with `remove`,
+which moves the occurrences that follow one index down.
 
 ```java
 InvoiceEditor amended = En16931.edit(document);
@@ -455,12 +455,12 @@ List<Removed> removed = report.removals();
 Optional<Derived> lineNet = report.at("/BG-25/0/BT-131");
 ```
 
-`removals()` is what the run took out: BT-107 or BT-108 with no allowance or charge behind it, a
-breakdown no category and rate of the invoice uses. `replacements()` are stated values written
+`removals()` is what the run took out: BT-107 or BT-108 with no allowance or charge behind it, and
+a breakdown no category and rate of the invoice uses. `replacements()` are stated values written
 over, matched by category and rate, not by index.
 
-It writes the line net amount (BT-131) of every line, one VAT breakdown (BG-23) per pair of VAT
-category code and VAT rate, and the document totals (BG-22), in that order:
+The policy writes the line net amount (BT-131) of every line, one VAT breakdown (BG-23) per pair of
+VAT category code and VAT rate, and the document totals (BG-22), in that order:
 
 | Written | From |
 |---|---|
@@ -471,36 +471,37 @@ category code and VAT rate, and the document totals (BG-22), in that order:
 | BT-109, BT-110, BT-112 | BT-106 − BT-107 + BT-108, Σ BT-117, BT-109 + BT-110 |
 | BT-115 | BT-112 − BT-113 + BT-114, taking BT-113 and BT-114 from the invoice |
 
-Base quantity is one where not stated, a category keeps the exemption reason (BT-120, BT-121)
-its breakdown carried, BT-111 needs the exchange rate in `TotalsOptions`. Prices, quantities and
-rates keep the caller's scale; arithmetic is exact, each amount rounded half up once, and totals
-are sums of rounded amounts (6.5.13).
+Base quantity is 1 where not stated. A category keeps the exemption reason (BT-120, BT-121) its
+breakdown carried. BT-111 needs the exchange rate in `TotalsOptions`. Prices, quantities and rates
+keep your scale. Arithmetic is exact, each amount is rounded half up once, and totals are sums of
+rounded amounts (6.5.13).
 
-The derivation runs where it is asked to and never inside `document()`. Where the invoice does
-not say enough — a line with no VAT category, a category levied at a rate with no rate, a base
-quantity with no price, an allowance with no category, no line at all — it throws
-`DerivationException` naming the term and the group instance. A stated line net amount that the
-formula contradicts is refused unless `TotalsOptions.defaults().withOverwriteLines(true)`.
+The derivation runs where you ask for it, never inside `document()`. Where the invoice does not say
+enough, it throws `DerivationException` naming the term and the group instance: a line with no VAT
+category, a category levied at a rate with no rate, a base quantity with no price, an allowance
+with no category, no line at all. A stated line net amount that the formula contradicts is refused
+unless you pass `TotalsOptions.defaults().withOverwriteLines(true)`.
 
-The 2026 view (a preview) has its own policy, `…typed.v2026.Totals.of(En16931V2026Pack.minorUnits())`,
-with the same report: each amount rounded to the minor unit of its currency, BT-179 added into BT-115,
-one breakdown per exemption reason and goods/services code ([`editions.md`](editions.md)).
+The 2026 view (a preview) has its own policy,
+`…typed.v2026.Totals.of(En16931V2026Pack.minorUnits())`, with the same report. It rounds each
+amount to the minor unit of its currency, adds BT-179 into BT-115, and writes one breakdown per
+exemption reason and goods/services code ([`editions.md`](editions.md)).
 
 ## The domain API
 
-`Invoice.create(profile)` opens one step chain per profile, `Invoice.draft(profile)` takes the
-same members in any order, and `Invoice.creditNote(profile)` is the chain with BT-3 381, where
+`Invoice.create(profile)` opens one step chain per profile. `Invoice.draft(profile)` takes the
+same members in any order. `Invoice.creditNote(profile)` is the chain with BT-3 381, where
 `precedingInvoice(number, issued)` names the invoice credited (BG-3). `build()` runs
 `derive(Totals.STANDARD)`, L2 and L3, the members the profile adds, and the fatal findings of
 `Rules.en16931()`; a warning or an information goes into the report and refuses nothing.
-`buildReport()` returns the document and the findings instead of throwing, `validate()` reports
-without deriving, `document()` hands over what was written, and `Draft.edit(e -> ...)` is the
+`buildReport()` returns the document and the findings instead of throwing. `validate()` reports
+without deriving, and `document()` hands over what was written. `Draft.edit(e -> ...)` is the
 typed editor for a term this layer has no word for. A part a group has no term for is refused by
-name, and a group the model allows at most once — BG-4, BG-7, BG-10, BG-13, BG-14, BG-16 — is
-refused the second time rather than merged into the first.
+name. A group the model allows at most once (BG-4, BG-7, BG-10, BG-13, BG-14, BG-16) is refused
+the second time instead of merged into the first.
 
-A line states attributes of its item (BG-32) as names and values, any number of them, and a
-note may name its subject with a code of UNTDID 4451 (BT-21):
+A line states attributes of its item (BG-32) as names and values, any number of them. A note may
+name its subject with a code of UNTDID 4451 (BT-21):
 
 ```java
 Line line = Line.of("Hedge trimming").quantity(5, Unit.HOUR).unitPrice("82.50")
@@ -512,9 +513,8 @@ List<ItemAttribute> attributes = line.attributes();
 ```
 
 The cross industry invoice writes them as `ram:ApplicableProductCharacteristic` and
-`ram:IncludedNote/ram:SubjectCode`, UBL as `cac:AdditionalItemProperty` and as the `#AAI#`
-prefix of `cbc:Note` that the CEN syntax binding defines; `note(text)` writes a note without a
-code.
+`ram:IncludedNote/ram:SubjectCode`. UBL writes `cac:AdditionalItemProperty` and the `#AAI#` prefix
+of `cbc:Note` that the CEN syntax binding defines. `note(text)` writes a note without a code.
 
 The read side gives the same view of a document that arrived from anywhere:
 
@@ -524,22 +524,22 @@ BigDecimal due = invoice.totals().orElseThrow().amountDue();
 Coded unit = invoice.lines().get(0).unit().orElseThrow();
 ```
 
-Eleven enums are generated from the code list snapshots the rule pack `en16931/1.3.17` carries
+11 enums are generated from the code list snapshots the rule pack `en16931/1.3.17` carries
 ([`../rules/en16931/1.3.17/codelists/SOURCES.md`](../rules/en16931/1.3.17/codelists/SOURCES.md)):
 `Unit`, `InvoiceType`, `NoteSubject`, `PaymentMeansCode`, `VatCategory`, `AllowanceReason`,
-`ChargeReason`, `CurrencyCode`, `Country`, `ElectronicAddressScheme`, `VatExemptionReason`, each
-constant carrying its code and its publisher's name. A slot that takes a code takes the enum of its list or the
-interface `Coded`, so `Unit.custom("QQQ")` stays reachable and `Unit.resolve(code)` reads an
-unknown code back as a `CustomCode`; whether a code is admissible is the rule pack's answer.
-Unit prices, quantities and percentages keep the scale the caller gave; the one amount this
-layer computes — a percentage of a base amount — is rounded half up to two decimals at the
-result. `Contact.named(n).telephone(t).email(e)` names the three parts that
-`Contact.of(n, t, e)` tells apart only by position.
+`ChargeReason`, `CurrencyCode`, `Country`, `ElectronicAddressScheme`, `VatExemptionReason`. Each
+constant carries its code and its publisher's name. A slot that takes a code takes the enum of its
+list or the interface `Coded`. `Unit.custom("QQQ")` therefore stays reachable, and
+`Unit.resolve(code)` reads an unknown code back as a `CustomCode`. The rule pack decides whether a
+code is admissible. Unit prices, quantities and percentages keep the scale you gave. The one amount
+this layer computes, a percentage of a base amount, is rounded half up to 2 decimals at the result.
+`Contact.named(n).telephone(t).email(e)` names the 3 parts that `Contact.of(n, t, e)` tells apart
+only by position.
 
 ## Replaying a document
 
-A document can be consumed as a stream of events instead of a map. `Replay` produces them in
-canonical path order with the group instances nested.
+Consume a document as a stream of events instead of a map. `Replay` produces them in canonical path
+order with the group instances nested.
 
 ```java
 List<String> events = new ArrayList<>();
@@ -569,11 +569,11 @@ SemanticDocument copy = collector.document();
 
 ## Reading UBL and CII
 
-`esj-xr` reads an invoice written in UBL 2.1 (invoice or credit note) or in UN/CEFACT CII D16B.
-It holds no syntax knowledge of its own: the stylesheets of the KoSIT XRechnung visualization
-transform the document into the semantic XR representation and the importer asks the registry
-what each identifier is. This is the second of the two readers, the one the command line runs
-under `--importer xslt`; where the syntax is not named it is read off the root element.
+`esj-xr` reads an invoice written in UBL 2.1 (invoice or credit note) or in UN/CEFACT CII D16B. It
+holds no syntax knowledge of its own. The stylesheets of the KoSIT XRechnung visualization
+transform the document into the semantic XR representation, and the importer asks the registry what
+each identifier is. This is the second of the two readers, the one the command line runs under
+`--importer xslt`. Where you name no syntax, it is read off the root element.
 
 ```java
 XrImporter importer = new XrImporter();
@@ -582,8 +582,9 @@ SemanticDocument fromCii = importer.readCii(Files.readAllBytes(ciiFile)).documen
 SemanticDocument either = importer.read(Files.readAllBytes(someFile)).document();
 ```
 
-Both readers are an `InvoiceReader` and return an `ImportResult`: the document, whose `source`
-records the syntax and the SHA-256 of the bytes read, and the report of what did not reach it.
+Both readers are an `InvoiceReader` and return an `ImportResult`. You get the document, whose
+`source` records the syntax and the SHA-256 of the bytes read, and the report of what did not reach
+it.
 
 ```java
 ImportResult result = importer.read(Files.readAllBytes(invoice));
@@ -593,37 +594,36 @@ String syntax = document.source().orElseThrow().syntax().orElseThrow();
 List<ImportNote> notes = result.report().notes();
 ```
 
-An element the registry cannot place, content that spells no value of its semantic data type
-and a supplementary component the standard does not give that term are left out and described in
-the report. It does not cover content the stylesheets never emitted — a CII date with a format
-qualifier other than `102` is the known case.
+The importer leaves out three things and describes them in the report: an element the registry
+cannot place, content that spells no value of its semantic data type, and a supplementary component
+the standard does not give that term. The report does not cover content the stylesheets never
+emitted; a CII date with a format qualifier other than `102` is the known case.
 
-**What the importer refuses.** A document type declaration, outright, with an
-`XrFormatException` — and with it external entities, parameter entities and entity expansion.
-Nothing external is fetched: no entity, no DTD, no schema, no XInclude. The input is bounded in
-bytes before it is parsed, four mebibytes by default, and the XR element nesting as the mapper
-walks it; both raise `EsjLimitException`. The byte bound is low because the cost of the
-transformation grows faster than the input
-([`deployment-measurements.md`](deployment-measurements.md)); `XrImporter.maxInputBytes()`
-raises it.
+**What the importer refuses.** It refuses a document type declaration outright, with an
+`XrFormatException`, and with it external entities, parameter entities and entity expansion. It
+fetches nothing external: no entity, no DTD, no schema, no XInclude. It bounds the input in bytes
+before it is parsed, 4 MiB by default, and the XR element nesting as the mapper walks it; both
+raise `EsjLimitException`. The byte bound is low because the cost of the transformation grows
+faster than the input ([`deployment-measurements.md`](deployment-measurements.md)).
+`XrImporter.maxInputBytes()` raises it.
 
 **What the importer writes within.** The `Limits` of the reader its documents are written for,
 measured as it writes: path length, number of values, string and binary length, binary content,
-canonical size. What does not fit is left out and named in the report — a path too deep as
-`PATH_TOO_LONG`, everything else as `LIMIT_REACHED`. Sub invoice lines are the readable case,
-each level spending two of the sixteen segments a path may carry;
-`XrImporter.readerLimits()` takes a wider profile.
+canonical size. What does not fit is left out and named in the report: a path too deep as
+`PATH_TOO_LONG`, everything else as `LIMIT_REACHED`. Sub invoice lines are the readable case; each
+level spends 2 of the 16 segments a path may carry. `XrImporter.readerLimits()` takes a wider
+profile.
 
-**What the importer corrects.** The named normalizations of `XrNormalization` it was given, all
-of them by default and each switchable. The one of this release splits the note subject code
-BT-21 out of the `#AAC#` prefix the UBL binding writes into the note BT-22, at document level
-and for UBL only, the scope of the CEN rule `BR-CL-08`; `conformance/ledger/pairs.md` carries
-the rule and its source.
+**What the importer corrects.** The named normalizations of `XrNormalization` it was given: all of
+them by default, each switchable. The one of this release splits the note subject code BT-21 out of
+the `#AAC#` prefix the UBL binding writes into the note BT-22. It does so at document level and for
+UBL only, the scope of the CEN rule `BR-CL-08`; `conformance/ledger/pairs.md` carries the rule and
+its source.
 
-`XrImporter.registry()` is the core model combined with the XRechnung extension, so the
-extension terms of an XRechnung invoice are checked rather than reported as unchecked. Layer L2
-accepts every instance of the corpus; layer L3 does not, and
-`conformance/ledger/l3-findings.md` names the two instances and the reason.
+`XrImporter.registry()` is the core model combined with the XRechnung extension, so the extension
+terms of an XRechnung invoice are checked, not reported as unchecked. Layer L2 accepts every
+instance of the corpus. Layer L3 does not; `conformance/ledger/l3-findings.md` names the 2
+instances and the reason.
 
 ```java
 ValidationResult model = StructuralValidator.validate(
@@ -632,12 +632,12 @@ ValidationStatus modelStatus = model.status();
 List<Finding> modelFindings = model.findings();
 ```
 
-One layer checked is not three, so `modelStatus` is `INDETERMINATE` here whatever the findings
-say; the verdict over the imported document is the merge of all three layers.
+One layer checked is not three, so `modelStatus` is `INDETERMINATE` here whatever the findings say.
+The verdict over the imported document is the merge of all three layers.
 
-Canonicalizing is what makes two syntaxes comparable. The semantic digest covers `values` and
-nothing else, so two documents built from the same invoice in different syntaxes meet on it
-while their `source` members, and therefore their document digests, differ.
+Canonicalizing makes two syntaxes comparable. The semantic digest covers `values` and nothing else.
+Two documents built from the same invoice in different syntaxes meet on it, while their `source`
+members, and therefore their document digests, differ.
 
 ```java
 byte[] canonical = Canonicalizer.canonicalBytes(document);
@@ -650,10 +650,10 @@ whole corpus.
 
 ## Reading UBL and CII without a tree
 
-`esj-bindings` reads the same three document types a second way, and the difference is the cost
-rather than the result: it pulls the document one element at a time and matches it against the
-binding tables of `model/bindings/`, holding one element and the values it has produced, so
-eighty megabytes take seconds ([`deployment-measurements.md`](deployment-measurements.md)).
+`esj-bindings` reads the same three document types a second way, at a lower cost and with the same
+result. It pulls the document one element at a time and matches it against the binding tables of
+`model/bindings/`. It holds one element and the values it has produced, so 80 MB take seconds
+([`deployment-measurements.md`](deployment-measurements.md)).
 
 ```java
 StreamingReader reader = new StreamingReader();
@@ -666,10 +666,10 @@ SemanticDocument document = result.document();
 List<ImportNote> notes = result.report().notes();
 ```
 
-The result is the same `ImportResult` the importer returns, `source` member included; a root
-element of no syntax it reads ends in a `BindingSyntaxException`. `ReaderOptions` says what it
-may do: the registry, the `Limits` the documents are written for, and three bounds — the input
-in bytes (64 MiB by default), the element nesting, and the largest element it holds whole.
+You get the same `ImportResult` the importer returns, `source` member included. A root element of
+no syntax it reads ends in a `BindingSyntaxException`. `ReaderOptions` says what it may do: the
+registry, the `Limits` the documents are written for, and 3 bounds. They are the input in bytes (64
+MiB by default), the element nesting, and the largest element it holds whole.
 
 ```java
 StreamingReader large = new StreamingReader(ReaderOptions.defaults()
@@ -677,20 +677,20 @@ StreamingReader large = new StreamingReader(ReaderOptions.defaults()
         .withMaxInputBytes(256L * 1024 * 1024));
 ```
 
-`ReaderMode` says what happens where the document and the model disagree: `REPAIR`, the
-default, applies the named corrections the tables declare and turns a value it cannot build
-into a note; `STRICT` ends the read with a `BindingFormatException` naming the path.
-`encodingMode` is answered alike by both readers. This reader needs no XSLT processor.
+`ReaderMode` says what happens where the document and the model disagree. `REPAIR`, the default,
+applies the named corrections the tables declare and turns a value it cannot build into a note.
+`STRICT` ends the read with a `BindingFormatException` naming the path. Both readers answer
+`encodingMode` alike. This reader needs no XSLT processor.
 
-Every instance of the conformance corpus is read both ways on every build;
-[`conformance/readers.md`](../conformance/readers.md) records the result — 74 of 86 identical to
-the byte — and every differing path with its cause. This reader writes `conformance/esj/`.
+Every build reads every instance of the conformance corpus both ways.
+[`conformance/readers.md`](../conformance/readers.md) records the result, 74 of 86 identical to the
+byte, and every differing path with its cause. This reader writes `conformance/esj/`.
 
 ## Writing XML
 
-The same tables that say where a business term is read say how to write it, so `esj-bindings`
-also turns a semantic document back into XML: the element of every term and its conditions come
-from `model/bindings/`, the order of two siblings from the schema modules of the pack.
+The tables that say where a business term is read also say how to write it, so `esj-bindings` turns
+a semantic document back into XML. The element of every term and its conditions come from
+`model/bindings/`, the order of two siblings from the schema modules of the pack.
 
 ```java
 WriteResult cii = CiiWriter.writeWithReport(document, WriterOptions.defaults());
@@ -700,25 +700,26 @@ byte[] xml = ubl.xml();
 WriteReport report = ubl.report();
 ```
 
-`write(document)` returns the bytes alone and discards the report; a caller who has to know
-whether a value was left behind uses `writeWithReport`. `WriterOptions` decides whether the
-output is indented and `maxOutputBytes`, which the command line sets with `--max-output-bytes`;
-the output is UTF-8 and deterministic.
+`write(document)` returns the bytes alone and discards the report. If you have to know whether a
+value was left behind, use `writeWithReport`. `WriterOptions` decides whether the output is
+indented, and `maxOutputBytes`, which the command line sets with `--max-output-bytes`. The output
+is UTF-8 and deterministic.
 
-UBL is two document types where the semantic model has one. `WriterOptions.document()` chooses:
-`AUTO`, the default, writes a credit note where BT-3 is one of the codes the artefacts admit on
-a credit note and not on an invoice; `INVOICE` and `CREDIT_NOTE` name it, `report.syntax()` says
+UBL has two document types where the semantic model has one, and `WriterOptions.document()`
+chooses. `AUTO`, the default, writes a credit note where BT-3 is a code the artefacts admit on a
+credit note and not on an invoice. `INVOICE` and `CREDIT_NOTE` name it; `report.syntax()` says
 which was written.
 
-`WriteReport.isComplete()` says whether this document lost anything, and every note names the
-semantic path or the element and the reason: a term of an extension the syntax binding does not
-cover, a group the schema admits fewer of than the document carries, the `extensions` member, an
-element the syntax requires that the document does not state, and a character XML 1.0 has no
-place for — a text value may hold any Unicode scalar value (`SPEC.md` 12.6), so the writer
-leaves it out, writes the rest and reports `CHARACTER_NOT_REPRESENTABLE`. A term whose registry
-declares that its terms belong to no syntax, the B2C extension's, is not a loss where the writer
-is handed that registry with `WriterOptions.withExtensions(...)`: its note is
-`TERM_BY_DESIGN` with the registry, it counts neither as written nor as dropped, and
+`WriteReport.isComplete()` says whether this document lost anything. Every note names the semantic
+path or the element and the reason: a term of an extension the syntax binding does not cover, a
+group the schema admits fewer of than the document carries, the `extensions` member, an element the
+syntax requires that the document does not state, and a character XML 1.0 has no place for. A text
+value may hold any Unicode scalar value (`SPEC.md` 12.6), so the writer leaves such a character
+out, writes the rest and reports `CHARACTER_NOT_REPRESENTABLE`.
+
+Some registries declare that their terms belong to no syntax, as the B2C extension does. Hand such
+a registry to the writer with `WriterOptions.withExtensions(...)`, and its terms are no loss. Their
+note is `TERM_BY_DESIGN` with the registry, they count neither as written nor as dropped, and
 `report.byDesign()` gathers the terms by registry.
 
 ```java
@@ -730,15 +731,14 @@ if (!report.isComplete()) {
 }
 ```
 
-What the two writers produce over the corpus and the examples, measured against the artefacts
-and against reading the result back, is
 [`cii-roundtrip.md`](../conformance/writers/cii-roundtrip.md) and
-[`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md).
+[`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md) show what the two writers produce
+over the corpus and the examples, measured against the artefacts and by reading the result back.
 
 ## Writing the XR representation
 
-`XrExporter` writes an ESJ document back as an XR document — the same semantic XML the
-stylesheets produce, and the input `XrImporter.readXr` reads. It is not a syntax writer.
+`XrExporter` writes an ESJ document back as an XR document: the same semantic XML the stylesheets
+produce, and the input `XrImporter.readXr` reads. It is not a syntax writer.
 
 ```java
 XrExporter exporter = new XrExporter();
@@ -749,20 +749,20 @@ List<ExportNote> left = exported.report().notes();
 ```
 
 The element names, the attributes the supplementary components are written as and the order of
-sibling elements come from the XRechnung semantic model schema of the same KoSIT project:
-`esj-xr/src/main/resources/de/bsnsoft/esj/xr/xr-elements.tsv` is derived from it,
-checked in and derived again on every build to be compared. The same document written twice
-gives the same bytes; every instance of the corpus is imported, written and read again.
+sibling elements come from the XRechnung semantic model schema of the same KoSIT project.
+`esj-xr/src/main/resources/de/bsnsoft/esj/xr/xr-elements.tsv` is derived from it, checked in, and
+derived again on every build to be compared. The same document written twice gives the same bytes.
+Every instance of the corpus is imported, written and read again.
 
-The report names what the XR representation has no place for: a value at a path it has no
-element for (`NO_ELEMENT`), content carrying a character XML 1.0 cannot hold
-(`NOT_REPRESENTABLE`), a supplementary component the element cannot carry (`COMPONENT_DROPPED`)
-and the `extensions` subtree (`EXTENSIONS_DROPPED`). `source` is dropped without a note: the
-importer writes a new one when it reads the result back.
+The report names what the XR representation has no place for: a value at a path it has no element
+for (`NO_ELEMENT`), content carrying a character XML 1.0 cannot hold (`NOT_REPRESENTABLE`), a
+supplementary component the element cannot carry (`COMPONENT_DROPPED`) and the `extensions` subtree
+(`EXTENSIONS_DROPPED`). `source` is dropped without a note: the importer writes a new one when it
+reads the result back.
 
 ## Rendering an invoice for a reader
 
-`esj-render` has two renderers; both take a `RenderOptions` and neither changes the document.
+`esj-render` has two renderers. Both take a `RenderOptions`, and neither changes the document.
 Layout, template and page bound concern only the PDF one, the byte bound only the HTML one.
 
 ```java
@@ -784,22 +784,23 @@ byte[] generic = pdf.render(document,
 ```
 
 The HTML rendering is the document written as the XR representation and handed to
-`xrechnung-html.xsl` of the KoSIT visualization; its report is `XrExporter`'s, and the `extensions`
-subtree never reaches it. The PDF is PDF/A-3b, drawn with PDFBox in `Layout.LETTER`, a business
-letter and the default (`RenderOptions.DEFAULT_LAYOUT`), or `Layout.GENERIC`, the shape of the
-semantic model. `withTemplate(…)` brings a letterhead, a logo, colours, fonts, margins, places for
-extension terms and a layout, which `withLayout(…)` overrules ([`templates.md`](templates.md));
-`withPaymentCode(…)` decides the EPC QR code of the letter. `withMaxPages(int)` (2 000) and
-`withMaxHtmlBytes(long)` (1 GiB of UTF-8, counted while written) throw `EsjLimitException`. Two runs
-give the same bytes, an edition the registry does not describe is refused with
-`IllegalArgumentException`, and [`rendering.md`](rendering.md) is what each shows.
+`xrechnung-html.xsl` of the KoSIT visualization. Its report is `XrExporter`'s, and the `extensions`
+subtree never reaches it. The PDF is PDF/A-3b, drawn with PDFBox in one of two layouts.
+`Layout.LETTER` is a business letter and the default (`RenderOptions.DEFAULT_LAYOUT`);
+`Layout.GENERIC` has the shape of the semantic model. `withTemplate(…)` brings a letterhead, a
+logo, colours, fonts, margins, places for extension terms and a layout, which `withLayout(…)`
+overrules ([`templates.md`](templates.md)). `withPaymentCode(…)` decides the EPC QR code of the
+letter. `withMaxPages(int)` (2 000) and `withMaxHtmlBytes(long)` (1 GiB of UTF-8, counted while
+written) throw `EsjLimitException`. Two runs give the same bytes. An edition the registry does not
+describe is refused with `IllegalArgumentException`. [`rendering.md`](rendering.md) is what each
+shows.
 
 ## Validating against the official artefacts
 
-`esj-syntax` asks whether an XML invoice is what the rules of its profile say it should be: its
-XML Schema, the EN 16931 Schematron of CEN/TC 434 and the Schematron of the core invoice usage
-specification the document names in BT-24. Those artefacts travel with the repository as
-validation packs under `packs/` and are executed as data, never reimplemented.
+`esj-syntax` checks an XML invoice against the rules of its profile: its XML Schema, the EN 16931
+Schematron of CEN/TC 434 and the Schematron of the core invoice usage specification the document
+names in BT-24. Those artefacts travel with the repository as validation packs under `packs/`. ESJ
+executes them as data and never reimplements them.
 
 ```java
 SyntaxReport report = SyntaxValidator.validate(Files.readAllBytes(invoice));
@@ -810,9 +811,9 @@ List<SyntaxFinding> warnings = report.warnings();
 ```
 
 A finding names the rule identifier as the artefact reports it, its category, the level the
-artefact set, the message and location it wrote, and the pack and component that produced it.
-The verdict is `INVALID` when any finding is fatal. The order is engine, category, identifier,
-location, so two runs over the same bytes produce the same report.
+artefact set, the message and location it wrote, and the pack and component that produced it. The
+verdict is `INVALID` when any finding is fatal. Findings are ordered by engine, category,
+identifier and location, so two runs over the same bytes produce the same report.
 
 ```java
 SyntaxOptions options = SyntaxOptions.defaults()
@@ -826,20 +827,20 @@ Optional<String> profileNote = report.profileNote();
 boolean profileRulesSkipped = report.profileRulesSkipped();
 ```
 
-`profileNote` is set where a component of the pack was left out because of the profile the
-document names, and `profileRulesSkipped` is the same fact without the sentence; `ran` and
-`skipped` say which, and [`validation.md`](validation.md) has the two cases.
+`profileNote` is set where a component of the pack was left out because of the profile the document
+names. `profileRulesSkipped` is the same fact without the sentence. `ran` and `skipped` say which,
+and [`validation.md`](validation.md) has the two cases.
 
-The message of a schema finding is the platform validator's, in the default locale of the
-virtual machine; the rule identifier in `code` is read off the front of it and is the same
-everywhere. An application whose reports travel fixes its locale.
+The message of a schema finding is the platform validator's, in the default locale of the virtual
+machine. The rule identifier in `code` is read off the front of it and is the same everywhere. If
+your reports travel, fix the locale.
 
 A rule set that stops over a document is a fatal finding of that component with the code
-`ARTEFACT-STOPPED`, not a `PackException`; its `ComponentRun` stays in `ran()` and carries
-`stopped() == true`. The exception is kept for a pack that cannot be read or an artefact that
-will not compile. Reaching either limit ends the run in an `EsjLimitException` rather than in
-a verdict — `bound()` names `maxInputBytes` or `maxRuntime` and the value it had — and a document
-of a syntax no pack binds raises `SyntaxNotSupportedException`.
+`ARTEFACT-STOPPED`, not a `PackException`. Its `ComponentRun` stays in `ran()` and carries
+`stopped() == true`. The exception is kept for a pack that cannot be read or an artefact that will
+not compile. Reaching either limit ends the run in an `EsjLimitException`, not in a verdict;
+`bound()` names `maxInputBytes` or `maxRuntime` and the value it had. A document of a syntax no
+pack binds raises `SyntaxNotSupportedException`.
 
 Which packs are available, and under which licences:
 
@@ -852,19 +853,19 @@ Pack fromDisk = Packs.fromDirectory(directory);
 PackSource source = fromDisk.source();          // SUPPLIED
 ```
 
-`source()` is the one thing about a pack that the pack does not get to say: everything else a
-report prints is read out of its manifest. `PackCatalog.withDirectories(directories)` reads pack
-directories beside the bundled packs, and `SyntaxOptions.withPacks(catalog)` lets a document
-choose among them; `PackRecipes` and `PackFetcher` are what `esj packs fetch` runs
-([`validation.md`](validation.md#packs-made-on-this-machine)). Compiling a schema library and a rule set does not
-depend on the document, so each artefact is compiled once per process and shared; a
-`ComponentRun` reports the run and the compilation apart.
+`source()` is the one thing about a pack that the pack does not get to say; a report reads
+everything else out of its manifest. `PackCatalog.withDirectories(directories)` reads pack
+directories beside the bundled packs, and `SyntaxOptions.withPacks(catalog)` lets a document choose
+among them. `PackRecipes` and `PackFetcher` are what `esj packs fetch` runs
+([`validation.md`](validation.md#packs-made-on-this-machine)). Compiling a schema library and a
+rule set does not depend on the document, so each artefact is compiled once per process and shared.
+A `ComponentRun` reports the run and the compilation apart.
 
 ## Checking the business rules
 
-`esj-rules` answers the third question, and the only one that can be put to a document that was
-never XML: do the business rules of EN 16931-1, clause 6.4 hold? They are written over business
-terms rather than over the XPath of a syntax, so one rule serves UBL, CII and a native document.
+`esj-rules` answers the third question, the only one you can put to a document that was never XML:
+do the business rules of EN 16931-1, clause 6.4 hold? They are written over business terms, not
+over the XPath of a syntax, so one rule serves UBL, CII and a native document.
 
 ```java
 RuleEngine engine = En16931Pack.engine(Registry.en16931());
@@ -873,13 +874,13 @@ List<RuleFinding> findings = engine.evaluate(document);
 boolean rejected = findings.stream().anyMatch(RuleFinding::fatal);
 ```
 
-A finding carries the rule identifier as its `code`, the category (`EN_BR`, `EN_DEC` or
-`EN_CL`), the severity the rule declares, a message naming the terms and the values seen, the
-semantic paths the rule read, and the pack identifier and version together with the engine name
-`native`. `RuleFinding.ORDER` sorts a report so that two runs over one document produce the same
-list. Compiling a pack is the expensive part and does not depend on the document, so an engine
-is compiled once, evaluated many times, and is immutable and safe to share between threads.
-`En16931Pack.engine` is the pack this build carries, brought together from three things:
+A finding carries the rule identifier as its `code`, the category (`EN_BR`, `EN_DEC` or `EN_CL`),
+the severity the rule declares, a message naming the terms and the values seen, the semantic paths
+the rule read, and the pack identifier and version with the engine name `native`.
+`RuleFinding.ORDER` sorts a report so that two runs over one document produce the same list.
+Compiling a pack is the expensive part and does not depend on the document. Compile an engine once
+and evaluate it many times; it is immutable and safe to share between threads. `En16931Pack.engine`
+is the pack this build carries, brought together from 3 things:
 
 ```java
 RulePack pack = RulePacks.bundled(En16931Pack.PACK_ID, En16931Pack.version());
@@ -887,34 +888,33 @@ RuleEngine other = RuleEngine.compile(pack, Registry.en16931(),
         CodeLists.bundled(pack), En16931Pack.javaRules());
 ```
 
-The third argument is what a caller supplies for a pack it did not write. **The manifest names
-the classes of the rules written in Java; it does not load them**, so `compile` checks that
-exactly the named instances arrived. A pack that names a code list it has no snapshot for does
-not compile either, because a membership test against a list nobody loaded would pass every
-code. Either way the refusal is a `RulePackException` — a fault of the installation, never a
-statement about an invoice. A document the engine cannot decide a rule on produces an
-informational finding.
+You supply the third argument for a pack you did not write. **The manifest names the classes of the
+rules written in Java; it does not load them**, so `compile` checks that exactly the named
+instances arrived. A pack that names a code list it has no snapshot for does not compile either: a
+membership test against a list nobody loaded would pass every code. Either way the refusal is a
+`RulePackException`, a fault of the installation, never a statement about an invoice. A document
+the engine cannot decide a rule on produces an informational finding.
 
-What the pack covers, what it does not and what it comes to beside the official artefacts are
 [`../conformance/rules/coverage.md`](../conformance/rules/coverage.md),
 [`../conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md) and
-[`../conformance/rules/ledger.md`](../conformance/rules/ledger.md), and
+[`../conformance/rules/ledger.md`](../conformance/rules/ledger.md) show what the pack covers, what
+it does not, and what it comes to beside the official artefacts.
 [`../rules/README.md`](../rules/README.md) is the rule language. These findings are a layer of
-their own and never ESJ conformance (`SPEC.md` 9.4); CEN/TC 434 and the core invoice usage
+their own and never ESJ conformance (`SPEC.md` 9.4). CEN/TC 434 and the core invoice usage
 specifications remain the authority on the rules.
 
 ## Building from source
 
-The build is Maven and needs a JDK 17, 21 or 25; the compiler targets release 17.
+Build with Maven and a JDK 17, 21 or 25; the compiler targets release 17.
 
 ```text
 mvn -B verify
 ```
 
-That compiles the eleven modules, runs every test, builds the source and Javadoc jars and writes
-`esj-cli/target/esj.jar`, which `bin/esj` runs; warnings are errors in `javac` and in Javadoc. The
-generated sources under `esj-typed/src` and `esj-invoice/src` and the model schemas under
-`schema/` are checked in and regenerated from the registries with
+That compiles the 11 modules, runs every test, builds the source and Javadoc jars and writes
+`esj-cli/target/esj.jar`, which `bin/esj` runs. Warnings are errors in `javac` and in Javadoc. The
+generated sources under `esj-typed/src` and `esj-invoice/src` and the model schemas under `schema/`
+are checked in. Regenerate them from the registries with
 
 ```text
 mvn -B -Pgenerate -pl esj-generator -am process-classes
@@ -931,13 +931,13 @@ which must leave the tree unchanged; `.github/workflows/ci.yml` fails where it d
 | artifact version | `pom.xml` | `1.0.2-SNAPSHOT` |
 
 The format version follows `MAJOR.MINOR`; a reader rejects a version it does not implement.
-`SemanticDocument.formatVersion()` is the version a document carries: the one it was read in, kept
-by `toBuilder()`, the editor, `derive` and the upgrade, or `Esj.formatVersion()` for a document
-built here; the writers write it, so a document of 0.1 keeps its canonical bytes. A reader
+`SemanticDocument.formatVersion()` is the version a document carries. It is the one it was read in,
+kept by `toBuilder()`, the editor, `derive` and the upgrade, or `Esj.formatVersion()` for a
+document built here. The writers write it, so a document of 0.1 keeps its canonical bytes. A reader
 needs no registry for the edition a document names; the model layers then report
 `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` 9.2). The artifact version says nothing about the format; the
 libraries are on Maven Central from 0.9.0 ([`releasing.md`](releasing.md)). `Esj.formatVersion()`
 and `Esj.defaultSemanticModel()` return the first two of this build, `Esj.acceptedFormatVersions()`
-the versions its reader reads; a registry names an edition by
-`editionKey()` (`2017`), `edition()` (`EN 16931-1:2017+A1:2019/AC:2020`) and `semanticModel()`
-(`EN16931-1:2017+A1:2019/AC:2020`). [`compatibility.md`](compatibility.md) is what each promises.
+the versions its reader reads. A registry names an edition by `editionKey()` (`2017`), `edition()`
+(`EN 16931-1:2017+A1:2019/AC:2020`) and `semanticModel()` (`EN16931-1:2017+A1:2019/AC:2020`).
+[`compatibility.md`](compatibility.md) is what each promises.

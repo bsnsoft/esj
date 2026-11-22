@@ -5,9 +5,9 @@ this page is the .NET implementation of it. Package id, assembly and namespace a
 versioned with the project; nothing is published on a package registry yet.*
 
 Status: reader, canonicalizer, digests, structural validation (L1–L3), the JSON rule language of
-[`../../rules/README.md`](../../rules/README.md) and a generated read view, measured against the
-fixture manifest of [`../../conformance/fixtures/`](../../conformance/fixtures/README.md), which is
-where the counts of that material stand.
+[`../../rules/README.md`](../../rules/README.md) and a generated read view. The fixture manifest of
+[`../../conformance/fixtures/`](../../conformance/fixtures/README.md) measures them and holds the
+counts of that material.
 
 ## Build and test
 
@@ -15,15 +15,15 @@ where the counts of that material stand.
 $ dotnet test bindings/csharp/BSNSoft.Esj.sln
 ```
 
-Without a .NET SDK installed, in the official image, with the checkout mounted:
+Without a .NET SDK installed, run it in the official image with the checkout mounted:
 
 ```console
 $ docker run --rm -v "$PWD:/repo:ro" -v "$PWD/bindings/csharp:/repo/bindings/csharp" \
     -w /repo/bindings/csharp mcr.microsoft.com/dotnet/sdk:8.0 dotnet test
 ```
 
-The tests read the fixtures from the checkout the build recorded; `ESJ_REPOSITORY` points them at
-another one.
+The tests read the fixtures from the checkout the build recorded; set `ESJ_REPOSITORY` to point
+them at another one.
 
 | Project | What it is |
 |---|---|
@@ -50,22 +50,22 @@ BigDecimal total = view.DocumentTotals.AmountDueForPayment!.AsDecimal();
 ```
 
 Every number is a `BigDecimal` of this binding: an arbitrary-precision unscaled value on
-`System.Numerics.BigInteger` and a scale. The runtime's own `decimal` is not used anywhere, because
-the decimal grammar of section 6.4 admits sixty-four characters and that type holds twenty-eight
-digits; no value of a document passes through binary floating point at any point.
+`System.Numerics.BigInteger` and a scale. The binding never uses the runtime's own `decimal`: the
+decimal grammar of section 6.4 admits 64 characters, and that type holds 28 digits. No value of a
+document passes through binary floating point at any point.
 
-`Read` rejects a byte sequence that fails layer L1 and carries the finding code of `SPEC.md`
-section 9.6 in an `EsjFormatException`; `ReadWithFindings` reports instead and returns what it
+`Read` rejects a byte sequence that fails layer L1. It carries the finding code of `SPEC.md`
+section 9.6 in an `EsjFormatException`. `ReadWithFindings` reports instead and returns what it
 could build. A limit of section 12.2 is an `EsjLimitException` and a finding with the code
-`ESJ-L1-LIMIT`, never a verdict on the document (`Limits.Defaults.ToBuilder()` configures them).
-Both exceptions carry the `Code`, `Path` and `Subject` of the finding; the subject is the member
-access of section 9.5 — [`../../docs/bindings-csharp.md`](../../docs/bindings-csharp.md#the-api)
-lists its forms.
+`ESJ-L1-LIMIT`, never a verdict on the document; configure the limits with
+`Limits.Defaults.ToBuilder()`. Both exceptions carry the `Code`, `Path` and `Subject` of the
+finding. The subject is the member access of section 9.5;
+[`../../docs/bindings-csharp.md`](../../docs/bindings-csharp.md#the-api) lists its forms.
 
 A document this binding builds carries format version `1.0` (`Esj.Version`). The reader also
 takes `0.1`, the release candidate of 1.0, reads it by the same rules and keeps that version in
-`SemanticDocument.Version`: written back, such a document has the canonical bytes and both digests
-it had, and a document derived from it with `With` stays `0.1`. Any other `version` is
+`SemanticDocument.Version`. Written back, such a document has the canonical bytes and both
+digests it had, and a document derived from it with `With` stays `0.1`. Any other `version` is
 `ESJ-L1-ENVELOPE-VALUE` (`SPEC.md` section 4.3).
 
 ## Business rules
@@ -75,13 +75,13 @@ RuleEngine pack = En16931Pack.Engine(Registry.En16931().WithExtension(Registry.X
 IReadOnlyList<RuleFinding> findings = pack.Evaluate(invoice);
 ```
 
-The pack is `rules/en16931/1.3.17` as data: 189 rules in the JSON rule language and 28 the language
-cannot express, written in C# under the names the manifest declares and matched to it by the last
-segment of each name. Findings of the pack are their own layer and are never ESJ conformance
-(`SPEC.md` section 9.4). `Evaluate` refuses a document of an edition other than the one the pack
-was compiled against, because a path is an address relative to an edition: a caller holding a
-document with no pack for its edition reports that nothing was checked.
-`RulePackSources.ForEdition` returns the pack this build carries for an edition; for the later
+The pack is `rules/en16931/1.3.17` as data: 189 rules in the JSON rule language, and 28 the
+language cannot express. Those 28 are written in C# under the names the manifest declares, matched
+to it by the last segment of each name. Findings of the pack are their own layer and never ESJ
+conformance (`SPEC.md` section 9.4). `Evaluate` refuses a document of an edition other than the
+one the pack was compiled against, because a path is an address relative to an edition. If you
+hold a document with no pack for its edition, report that nothing was checked.
+`RulePackSources.ForEdition` returns the pack this build carries for an edition. For the later
 one that is `rules/en16931-2026/0.1`, with its rules in `Rules/En16931V2026/`, left out with it.
 
 ## What the classes cover
@@ -94,11 +94,11 @@ one that is `rules/en16931-2026/0.1`, with its rules in `Rules/En16931V2026/`, l
 | Writer (3.3) | `EsjWriter`, canonical and pretty form, for documents this API builds |
 
 Editions: every registry of `model/en16931/` this build carries (`Registry.Editions()`), with the
-XRechnung 3.0.2 and B2C 0.1 extension registries combined into the default one; a later edition is separable the
-way [`../../docs/editions.md`](../../docs/editions.md) describes, and this binding builds without its
-files. A document of an edition this build has no registry for is read, canonicalized and digested
-like any other, and its model layers report `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` sections 4.4
-and 9.2).
+XRechnung 3.0.2 and B2C 0.1 extension registries combined into the default one. A later edition
+is separable the way [`../../docs/editions.md`](../../docs/editions.md) describes, and this
+binding builds without its files. A document of an edition this build has no registry for is
+read, canonicalized and digested like any other. Its model layers report `ESJ-L2-EDITION-UNKNOWN`
+(`SPEC.md` sections 4.4 and 9.2).
 
 Not here: the writers to UBL and CII, PDF, rendering, `esj upgrade`, and the command line. Those are
 the Java implementation ([`../../docs/cli.md`](../../docs/cli.md)).
@@ -111,20 +111,20 @@ the Java implementation ([`../../docs/cli.md`](../../docs/cli.md)).
 $ python3 bindings/csharp/tools/generate-typed-view.py 2017 2026
 ```
 
-The slug of a term is the name stem the registry carries; this generator writes it PascalCase and
-names the class of a repeatable group's instance with the singular of its plural slug. The files are
-checked in, and a test holds their coverage to the registry, so a stale file fails the build.
+The slug of a term is the name stem the registry carries. The generator writes it PascalCase and
+names the class of a repeatable group's instance with the singular of its plural slug. The files
+are checked in, and a test holds their coverage to the registry, so a stale file fails the build.
 
 ## The fixture manifest
 
-`BSNSoft.Esj.Fixtures` answers the six requests of `conformance/fixtures/run.py`, so the
+`BSNSoft.Esj.Fixtures` answers the 6 requests of `conformance/fixtures/run.py`, so the
 language-neutral runner measures this binding against the same material as the reference:
 
 ```console
 $ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/csharp/BSNSoft.Esj.Fixtures -- .
 ```
 
-The same cases run as xunit tests, one test per case, which is what `dotnet test` reports.
+The same cases run as xunit tests, one test per case, and `dotnet test` reports them.
 
 ## Licence
 
