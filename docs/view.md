@@ -2,9 +2,9 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-An electronic invoice has no file type of its own: a double-click shows raw XML, or a PDF without
-the data inside it. `esj view` shows it as one page in the browser, or with `--text` in the
-terminal. It reads UBL, CII, ESJ, and a PDF carrying one of them.
+An electronic invoice has no file type of its own. A double-click shows you raw XML, or a PDF
+without the data inside it. `esj view` shows you the invoice as one page in the browser, or with
+`--text` in the terminal. It reads UBL, CII, ESJ, and a PDF that carries one of them.
 
 ```console
 $ esj view --report invoice.pdf
@@ -13,12 +13,12 @@ $ esj view --report invoice.pdf
 
 ## The page
 
-At the top: seller → buyer, the invoice number, its date and the amount due — for any type but a
-commercial invoice the type by name, and for a credit note its number, its date and the amount
-credited. On the right the result: *GÜLTIG* / *VALID*, *UNGÜLTIG* / *INVALID*, *NICHT
-ENTSCHIEDEN* / *UNDECIDED*, or *NICHT GEPRÜFT* / *NOT CHECKED* without `--report`, and under it
-the findings counted by severity. Under the header, one tab per view; a tab is there only where
-its content is, and the first one is selected:
+The header shows seller → buyer, the invoice number, its date and the amount due. For any type
+but a commercial invoice it names the type. For a credit note it shows the credit note's number,
+its date and the amount credited. On the right you see the result: *GÜLTIG* / *VALID*,
+*UNGÜLTIG* / *INVALID*, *NICHT ENTSCHIEDEN* / *UNDECIDED*, or *NICHT GEPRÜFT* / *NOT CHECKED*
+without `--report`. Under it, the findings are counted by severity. Under the header sits one tab
+per view. A tab appears only where it has content, and the first one is selected:
 
 | Tab (de / en) | Shows |
 |---|---|
@@ -27,27 +27,27 @@ its content is, and the first one is selected:
 | KoSIT | the HTML rendering of `esj render --html` ([`rendering.md`](rendering.md)); none for a document of the 2026 edition |
 | Prüfbericht / Report | with `--report`: verdict, identity, checks and findings, and one link that saves the report as a PDF |
 
-To see the PDF beside the invoice, open the page in a second window; printing prints the selected
-tab. The verdict is about the data of the electronic invoice, not about the page image of a PDF.
+To see the PDF beside the invoice, open the page in a second window. Printing prints the selected
+tab. The verdict judges the data of the electronic invoice, not the page image of a PDF.
 
-The page runs no script and fetches nothing: the tabs are radio buttons styled by CSS, every
-reference names a file of its directory, and a content security policy (`script-src 'none';
+The page runs no script and fetches nothing. The tabs are radio buttons styled by CSS, and every
+reference names a file of its directory. A content security policy (`script-src 'none';
 base-uri 'none'; form-action 'none'`) holds the browser to it. The KoSIT rendering runs its own
-script for its own tabs, in a frame sandboxed without the origin of the page. Every text of the
-document is escaped, and the characters that steer the reading order are taken out.
+script for its own tabs, in a frame sandboxed without the origin of the page. ESJ escapes every
+text of the document and takes out the characters that steer the reading order.
 
 ## In the terminal
 
 `esj view --text` writes no page and opens nothing. It prints the invoice as `esj render --text`
-does — seller, buyer, number and dates, the lines as a table, totals, payment, notes and further
-details, plain UTF-8 text `--width` characters wide (default: `COLUMNS` where it is at least 60,
-otherwise 100) — and with `--report` the lines of `esj validate` under a rule. A PDF prints the
-invoice embedded in it, never its page image; a file that leads nowhere prints the line the page
-would show, with the exit code below. `--text` with `--output json` is refused with exit code 2.
+does: seller, buyer, number and dates, the lines as a table, totals, payment, notes and further
+details, as plain UTF-8 text `--width` characters wide (default: `COLUMNS` where it is at least 60,
+otherwise 100). With `--report`, the lines of `esj validate` follow under a rule. For a PDF it
+prints the embedded invoice, never the page image. For a file that leads nowhere it prints the
+line the page would show, with the exit code below. `--text` with `--output json` exits with 2.
 
 ## Every outcome is a page
 
-From a file manager nobody sees the error stream, so a file that leads nowhere opens a page too:
+From a file manager nobody sees the error stream. So a file that leads nowhere opens a page too:
 what the file is, and what to ask the sender for. The message of the run goes to the error stream
 and into `--output json`.
 
@@ -78,26 +78,26 @@ input, a command line or a template that does not parse, and exit codes 3 and 6.
 | `<stem>.kosit.html` | `esj render <file> --html --lang <l>` |
 | `<stem>.report.html`, `<stem>.report.pdf` | `esj validate <file> --report-lang <l> --report …`, with `--report` |
 
-`<stem>` is the input name without its last extension, a separator, a control character and any
-of `<>:"|?*#%` as `_`, at most 80 characters. The same input and options give the same bytes.
-`--out <dir>` names the directory, creates it where it is missing, replaces the files above in
-it, and opens nothing. Without it the directory is a new `esj-view-<stem>-<number>`: on Linux below
-`esj-view` in the downloads directory `xdg-user-dir DOWNLOAD` names (a browser in a snap or a
-Flatpak reads neither the temporary directory nor a hidden one of the home), elsewhere in the
-temporary directory. **esj never deletes it**; the footer of the page names it.
+`<stem>` is the input name without its last extension. A separator, a control character and any
+of `<>:"|?*#%` become `_`, and the stem has at most 80 characters. The same input and options
+give the same bytes. `--out <dir>` names the directory, creates it where it is missing, replaces
+the files above in it, and opens nothing. Without it, esj makes a new `esj-view-<stem>-<number>`.
+On Linux it lies below `esj-view` in the downloads directory `xdg-user-dir DOWNLOAD` names (a
+browser in a snap or a Flatpak reads neither the temporary directory nor a hidden one of the
+home), elsewhere in the temporary directory. **esj never deletes it.** The page footer names it.
 
-The standard output is the absolute path of the page. It is opened with `open` on macOS,
-`xdg-open` on Linux where `DISPLAY` or `WAYLAND_DISPLAY` is set, and the URL handler of the shell
-on Windows; a browser that cannot be started adds a warning and keeps the exit code.
+The standard output is the absolute path of the page. esj opens it with `open` on macOS, with
+`xdg-open` on Linux where `DISPLAY` or `WAYLAND_DISPLAY` is set, and with the URL handler of the
+shell on Windows. If no browser starts, you get a warning and the exit code stays.
 `--output json` prints an object instead: `page`, `directory`, `opened`, `state` (what the file
 turned out to be: `read`, `no-invoice`, `not-established`, `several`, `unsupported`, `encrypted`,
 `not-read`, `limit`), `files` (`received`, `letter`, `html`, `reportHtml`, `reportPdf`, each
 `null` where not written), `message` (the error text or `null`) and `validation` (the object of
 `esj validate --output json`, `null` without `--report`).
 
-The language is `--lang`, else German where the first of `LC_ALL`, `LC_MESSAGES` and `LANG` that
-is set (on Windows the locale of the user) says German, and English otherwise. `--no-payment-code`
-leaves the EPC QR code out of the letter. [`cli.md`](cli.md#view) lists the options.
+Set the language with `--lang`. Without it, the page is German where the first of `LC_ALL`,
+`LC_MESSAGES` and `LANG` that is set (on Windows the user's locale) says German, else English.
+`--no-payment-code` leaves the EPC QR code out of the letter. All options: [`cli.md`](cli.md#view).
 
 ## Open with
 
@@ -107,9 +107,9 @@ leaves the EPC QR code out of the letter. [`cli.md`](cli.md#view) lists the opti
 | macOS, the native archive | `ESJ Viewer.app` beside `esj`, signed ad hoc, not notarised | `esj view --report --lang <the user's>` for each file Finder hands it, with `esj` beside the bundle, else in `/opt/homebrew/bin` or `/usr/local/bin` |
 | Windows | nothing; [`install.md`](install.md#esj-view-from-the-file-manager) has the one-line `esj-view.cmd` to choose once | `esj view --report <file>` |
 
-None of them becomes the default program of a type. A run of `ESJ Viewer.app` that ends without a
-page shows what esj wrote in a dialog. [`dist/desktop/`](../dist/desktop/README.md) has the icon and
-how the bundle is built.
+None of them becomes the default program of a type. If a run of `ESJ Viewer.app` ends without a
+page, a dialog shows what esj wrote. [`dist/desktop/`](../dist/desktop/README.md) has the icon
+and how the bundle is built.
 
 ## Not in this version
 

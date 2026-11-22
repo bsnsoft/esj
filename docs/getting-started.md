@@ -2,24 +2,24 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-Everything here is verified: the snippets by the tests named beside them, the transcripts by a
-test that runs the commands.
+Read an invoice, write one, store it and check it from the shell. A test runs every snippet and
+every transcript on this page; each section names its test.
 
 ## Build it
 
-The modules are on Maven Central from 0.9.0 ([`java-api.md`](java-api.md)); this page builds
-them from source. A JDK 17, 21 or 25 and Maven 3.9 or newer; the compiler targets
-release 17, so what it builds runs on Java 17 and later.
+The modules are on Maven Central from 0.9.0 ([`java-api.md`](java-api.md)). To build them from
+source, you need a JDK 17, 21 or 25 and Maven 3.9 or newer. The compiler targets release 17, so
+the result runs on Java 17 and later.
 
 ```text
 mvn -B verify
 ```
 
-That writes the self-contained `esj-cli/target/esj.jar`, which `bin/esj` runs — `bin\esj.cmd` on
-Windows — finding the jar relative to itself. The transcripts on this page write `esj`, that
-script with `bin/` on the `PATH`. `mvn -B install` puts the modules into the local repository,
-where a build of your own picks them up; the coordinates and what each module adds are in
-[`java-api.md`](java-api.md#the-reference-implementation).
+You get the self-contained `esj-cli/target/esj.jar`. `bin/esj` runs it (`bin\esj.cmd` on
+Windows) and finds the jar relative to itself. The transcripts on this page write `esj`: that
+script, with `bin/` on the `PATH`. Run `mvn -B install` to put the modules into your local
+repository, where a build of your own picks them up. The coordinates and what each module adds
+are in [`java-api.md`](java-api.md#the-reference-implementation).
 
 ```text
 SPEC.md         the format, normative      packs/        the official validation artefacts
@@ -38,12 +38,12 @@ esj-render/     the HTML page and the PDF an invoice is read on
 esj-cli/        the esj command line tool; bin/ runs its jar
 ```
 
-Every directory of material carries a `README.md` saying what is in it and where it came from.
+Every directory of material carries a `README.md`: what is in it and where it came from.
 
 ## Read an invoice
 
-An XML invoice and a hybrid PDF both come in as one `SemanticDocument`; nothing after that knows
-which syntax it was.
+You get one `SemanticDocument` from an XML invoice and from a hybrid PDF. Nothing after that
+knows which syntax it was.
 
 ```java
 SemanticDocument fromXml = new StreamingReader().read(Files.readAllBytes(xmlFile)).document();
@@ -52,30 +52,30 @@ String invoiceNumber = fromXml.value(SemanticPath.of("/BT-1"))
         .map(SemanticValue::asString).orElseThrow();
 ```
 
-`read` recognizes the root element and refuses a syntax it does not know; `importPdf` takes the
+`read` recognizes the root element and refuses a syntax it does not know. `importPdf` takes the
 electronic invoice out of the container and reads nothing off the page
-([`pdf-input.md`](pdf-input.md)), and the report beside the document says what did not reach it
+([`pdf-input.md`](pdf-input.md)). The report beside the document says what did not reach it
 ([`java-api.md`](java-api.md#reading-ubl-and-cii-without-a-tree)). `XrImporter` of `esj-xr` reads
 the same three types through the vendored KoSIT stylesheets.
 
-An ESJ file is read by the strict reader: what fails layer L1 is not a document.
+Read an ESJ file with the strict reader. What fails layer L1 is not a document.
 
 ```java
 SemanticDocument document = EsjReader.strict().read(Files.readAllBytes(file));
 ```
 
-The typed accessors read a value on demand and refuse what the grammar does not allow —
+The typed accessors read a value on demand and refuse what the grammar does not allow:
 `asDecimal` for the four decimal types, `asDate` for a date, `asBytes` for a binary object,
-`asString` for the rest ([`java-api.md`](java-api.md#layers)); which one belongs to a term is the
-registry's answer, and a caller who would rather not look it up reads the typed view.
+`asString` for the rest ([`java-api.md`](java-api.md#layers)). The registry says which one
+belongs to a term. If you would rather not look it up, read the typed view.
 
 *Verified by `esj-pdf/src/test/java/de/bsnsoft/esj/pdf/GettingStartedExamplesTest.java`
 and `esj-typed/src/test/java/de/bsnsoft/esj/typed/ReadmeExamplesTest.java`.*
 
 ## Create an invoice, validate it, write it
 
-`esj-invoice` writes an invoice in the words of the domain: enums instead of code lists, parties
-and lines instead of business groups, no total typed by hand.
+`esj-invoice` lets you write an invoice in the words of the domain. You use enums instead of code
+lists and parties and lines instead of business groups, and you type no total by hand.
 
 ```java
 SemanticDocument document = Invoice.create(Profile.EN16931)
@@ -103,31 +103,31 @@ SemanticDocument document = Invoice.create(Profile.EN16931)
         .build();
 ```
 
-The chain asks for what EN 16931-1 asks of every invoice and `build()` is reachable only once it
-is there; it then derives the line net amounts, the VAT breakdown and the totals, checks layers L2
-and L3 and the fatal findings of the EN 16931 rule pack, and returns the document or refuses
-naming the term it missed. That document is `examples/allowances.esj.json`; `Invoice.draft` takes
-the same members in any order and `Invoice.read` reads one back.
+The chain asks for what EN 16931-1 asks of every invoice. You reach `build()` only once all of it
+is there. `build()` derives the line net amounts, the VAT breakdown and the totals. It checks
+layers L2 and L3 and the fatal findings of the EN 16931 rule pack. Then it returns the document,
+or it refuses and names the term it missed. That document is `examples/allowances.esj.json`.
+`Invoice.draft` takes the same members in any order, and `Invoice.read` reads one back.
 
 ```java
 Files.write(file, EsjWriter.pretty().toBytes(document));
 Files.write(canonicalFile, EsjWriter.canonical().toBytes(document));
 ```
 
-The canonical form is the one to hash, to compare and to store
+Hash, compare and store the canonical form
 ([`java-api.md`](java-api.md#canonical-form-and-digests)). Under the domain API sit the constrained
-builder and the typed editor, which write any term of the standard by its own name and leave
-derivation and validation to the caller ([`java-api.md`](java-api.md#layers)).
-[`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) carries this on: the
-invoice rendered, embedded as Factur-X, read back, and the business rules checked in the three
-places a sender can check them.
+builder and the typed editor. They write any term of the standard by its own name and leave
+derivation and validation to you ([`java-api.md`](java-api.md#layers)).
+[`examples/java/HybridInvoice.java`](../examples/java/HybridInvoice.java) carries this on. It
+renders the invoice, embeds it as Factur-X, reads it back and checks the business rules in the
+three places a sender can check them.
 
 *Verified by `esj-invoice/src/test/java/de/bsnsoft/esj/invoice/DomainInvoiceTest.java`.*
 
 ## Put it into a database
 
-A document that came from outside passes the reader and the validator before it is stored; what
-goes into the row is the canonical form and the two digests.
+Pass a document from outside through the reader and the validator before you store it. The row
+gets the canonical form and the two digests.
 
 ```java
 SemanticDocument document = EsjReader.strict().read(bytes);
@@ -141,15 +141,15 @@ String semanticDigest = Canonicalizer.semanticDigest(document);
 String documentDigest = Canonicalizer.documentDigest(document);
 ```
 
-Those four values are one `INSERT`: the canonical bytes as they are, the same bytes into a
-`jsonb` column to query, the digests for deduplication and change detection; the schema, the
-views, the indexes and the key/value variant are [`storage.md`](storage.md).
+Those four values make one `INSERT`: the canonical bytes as they are, the same bytes in a `jsonb`
+column you query, and the digests for deduplication and change detection. The schema, the views,
+the indexes and the key/value variant are in [`storage.md`](storage.md).
 
 *Verified by `esj-xr/src/test/java/de/bsnsoft/esj/xr/StorageExamplesTest.java`.*
 
 ## The command line
 
-One invoice in any of the three syntaxes in, an ESJ document out:
+Convert one invoice in any of the three syntaxes into an ESJ document:
 
 ```console
 $ esj convert conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -162,8 +162,8 @@ $ esj convert conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
 ...
 ```
 
-A hybrid PDF checked against the official artefacts of its profile, against the structural layers
-of this specification and, beside them, as a container:
+Check a hybrid PDF against the official artefacts of its profile and the structural layers of this
+specification. ESJ checks the container beside them:
 
 ```console
 $ esj validate conformance/pdf/factur-x.pdf
@@ -177,7 +177,7 @@ $ echo $?
 0
 ```
 
-One value, for a shell, and a summary of a document:
+Print one value for a shell script, or a summary of a document:
 
 ```console
 $ esj get examples/standard-invoice.esj.json /BG-22/BT-112
@@ -192,9 +192,9 @@ Detected syntax:            ESJ
 INDETERMINATE — nothing fatal found; missing from the check: written-syntax (not-run-by-this-command), business-rules (not-run-by-this-command)
 ```
 
-`convert`, `validate`, `render`, `inspect`, `extract`, `get`, `list`, `diff` and `canonicalize`,
-over XML, PDF and ESJ input: [`cli.md`](cli.md) is the complete reference with every option,
-every output form and the exit codes. Input from a stranger belongs in a process of its own, and
+`convert`, `validate`, `render`, `inspect`, `extract`, `get`, `list`, `diff` and `canonicalize`
+take XML, PDF and ESJ input. [`cli.md`](cli.md) is the complete reference: every option, every
+output form and the exit codes. Run input from a stranger in a process of its own.
 [`deployment.md`](deployment.md) has the contract, the switches and the measurements.
 
 *Verified by `esj-cli/src/test/java/de/bsnsoft/esj/cli/ReadmeCliExamplesTest.java`.*
