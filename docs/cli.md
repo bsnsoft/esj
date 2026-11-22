@@ -2,32 +2,33 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-`esj-cli` is the same libraries behind a Unix tool, and this page is its complete reference. It
-reads bytes, recognizes which of the three syntaxes they are in and writes what the libraries
-return: the document to the standard output, diagnostics to the standard error stream, and an
-exit code. Every fenced `console` block here is run by
-`esj-cli/src/test/java/de/bsnsoft/esj/cli/ReadmeCliExamplesTest.java`; a line of
-three dots stands for output left out.
+`esj` reads an invoice and answers on three channels. The document goes to the standard output,
+diagnostics to the standard error stream, and the outcome is the exit code. It recognizes which of
+the three syntaxes the bytes are in. `esj-cli` is the same libraries behind a Unix tool, and this
+page is its complete reference.
+`esj-cli/src/test/java/de/bsnsoft/esj/cli/ReadmeCliExamplesTest.java` runs every fenced `console`
+block here. A line of three dots stands for output left out.
 
 ## Building and running it
+
+Build the self-contained `esj-cli/target/esj.jar`:
 
 ```text
 mvn -B verify
 ```
 
-writes the self-contained `esj-cli/target/esj.jar`. `bin/esj` runs it, and `bin\esj.cmd` does
-the same on Windows:
+Run it with `bin/esj`, or with `bin\esj.cmd` on Windows:
 
 ```text
 bin/esj --help
 ```
 
-The wrapper finds the jar relative to itself, so a checkout works without installing anything.
-It runs the virtual machine with `-Xms32m -Xmx512m -XX:+ExitOnOutOfMemoryError`, the command line
-[`deployment.md`](deployment.md) prescribes; `ESJ_JAVA_OPTS` replaces that list, so a larger heap
-is `ESJ_JAVA_OPTS='-Xmx2g -XX:+ExitOnOutOfMemoryError' bin/esj …`. A machine without a JDK runs
-one of the artefacts of [`install.md`](install.md), which answer as this jar does. The examples
-below are written as `esj` and name files of this repository, so they can be pasted from its root.
+The wrapper finds the jar relative to itself, so a checkout runs without installing anything. It
+starts the virtual machine with `-Xms32m -Xmx512m -XX:+ExitOnOutOfMemoryError`, the command line
+[`deployment.md`](deployment.md) prescribes. `ESJ_JAVA_OPTS` replaces that list: for a larger heap,
+run `ESJ_JAVA_OPTS='-Xmx2g -XX:+ExitOnOutOfMemoryError' bin/esj …`. Without a JDK, install one of
+the artefacts of [`install.md`](install.md); they answer as this jar does. The examples below call
+`esj` and name files of this repository, so you can paste them at its root.
 
 | Command | What it does |
 |---|---|
@@ -35,7 +36,7 @@ below are written as `esj` and name files of this repository, so they can be pas
 | `validate` | run the official artefacts of the profile, the structural layers L1 to L3 and the business rules |
 | `render` | write the invoice as a PDF, or with `--html` as one self-contained page |
 | `embed` | write the invoice into a PDF/A-3 file, so that pages and invoice are one file |
-| `view` | one page about a file — as received, as read, with `--report` the report — opened in the browser ([`view.md`](view.md)) |
+| `view` | open one page about a file in the browser: as received, as read, and with `--report` the report ([`view.md`](view.md)) |
 | `inspect` | one page: what the document is, who it is between, what it comes to |
 | `extract` | write the electronic invoice of a PDF out, or list what the PDF carries |
 | `get` | the value at one semantic path |
@@ -47,30 +48,32 @@ below are written as `esj` and name files of this repository, so they can be pas
 | `serve` | the tools over HTTP: a REST API with its OpenAPI description, and an MCP server |
 | `mcp` | the tools as an MCP server over the standard streams, for an agent on this machine |
 
-[`editions.md`](editions.md) is the reference for `upgrade` and for editions: its option table,
-what every other command does with a document of a non-default edition, and the refusals. A
-component written for one edition refuses a document of another with exit code 4, naming both.
-[`serve.md`](serve.md) is the reference for `serve` and `mcp`, a preview: every call they take
-runs `esj` again as a child process with a heap ceiling and a deadline.
+For `upgrade` and editions, read [`editions.md`](editions.md): its option table, what every other
+command does with a document of a non-default edition, and the refusals. A component written for one
+edition refuses a document of another with exit code 4 and names both. For `serve` and `mcp`, a
+preview, read [`serve.md`](serve.md). Every call they take runs `esj` again as a child process with
+a heap ceiling and a deadline.
 
-Every command reads a file name, or `-` for the standard input — `diff` reads two — and takes
-`--from` to name the syntax instead of recognizing it, `--importer` to choose the reader,
-`--extension xrechnung`, `--extension b2c` or both separated by a comma to load an extension
-registry, `--verbose` and `--debug`, and the limit switches of [Limits](#limits) below. An input may be an ESJ document, a UBL invoice or credit
-note, a cross industry invoice, or a PDF carrying one of the three — see
-[Hybrid invoices (PDF)](#hybrid-invoices-pdf). `--attachment <name>` names the attachment of
-such a PDF to read, `--attachment-index <position>` names it by the position the tool prints
-where two attachments carry one name, and `--strict` refuses a document whose bytes are not
-written in the encoding it declares instead of recoding them.
+Every command reads a file name, or `-` for the standard input; `diff` reads two. An input may be an
+ESJ document, a UBL invoice or credit note, a cross industry invoice, or a PDF carrying one of the
+three ([Hybrid invoices (PDF)](#hybrid-invoices-pdf)). Every command takes `--from` to name the
+syntax instead of recognizing it, `--importer` to choose the reader, and:
+
+- `--extension xrechnung`, `b2c` or `xrechnung,b2c` to load an extension registry;
+- `--attachment <name>` to name the attachment of a PDF to read, and `--attachment-index <position>`
+  to name it by the position the tool prints where two attachments carry one name;
+- `--strict` to refuse, not recode, a document whose bytes do not match its declared encoding;
+- `--verbose`, `--debug` and the limit switches of [Limits](#limits).
 
 `esj --version` prints the versions of the tool, the format, the default semantic model and the
-registries; `esj --list-packs` the validation packs (origin, components, documents, licence, rules
-each profile levels), the recipes of [`esj packs fetch`](#packs) and the rule packs (edition,
+registries. `esj --list-packs` prints the validation packs (origin, components, documents, licence,
+rules each profile levels), the recipes of [`esj packs fetch`](#packs) and the rule packs (edition,
 rules per oracle). Neither takes an input.
 
 ## convert
 
-A UBL invoice in, an ESJ document out, in the pretty form of `SPEC.md` section 7.7:
+`esj convert` reads a UBL invoice and writes an ESJ document, in the pretty form of `SPEC.md`
+section 7.7:
 
 ```console
 $ esj convert conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -86,9 +89,8 @@ $ esj convert conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
 ...
 ```
 
-`-` reads the standard input instead. At the end of the document is the provenance: `source`
-carries the syntax the bytes were written in and the SHA-256 of those bytes, which is not part
-of the semantic identity (`SPEC.md` section 4.7).
+`-` reads the standard input. The document ends with its provenance: `source` carries the syntax of
+the bytes and their SHA-256. It is not part of the semantic identity (`SPEC.md` section 4.7).
 
 ```console
 $ cat conformance/kosit/business-cases/standard/01.01a-INVOICE_uncefact.xml | esj convert -
@@ -101,14 +103,14 @@ $ cat conformance/kosit/business-cases/standard/01.01a-INVOICE_uncefact.xml | es
 ```
 
 `--canonical` writes the canonical bytes of `SPEC.md` section 7 instead: no insignificant
-whitespace, no trailing line feed, and the same bytes from any conformant implementation.
-`--pretty` is the default and asking for both at once is refused.
+whitespace, no trailing line feed, and the same bytes from any conformant implementation. `--pretty`
+is the default, and asking for both is refused.
 
 ### Writing UBL and CII
 
-`--to cii` writes a UN/CEFACT CII D16B invoice instead, from the same binding tables the reader
-matches documents against. The input may be UBL, CII or ESJ, so a UBL invoice goes over to CII
-in one command, through the semantic model.
+`--to cii` writes a UN/CEFACT CII D16B invoice. The writer uses the binding tables the reader
+matches documents against. The input may be UBL, CII or ESJ, so one command takes a UBL invoice over
+to CII, through the semantic model.
 
 ```console
 $ esj convert --to cii --out invoice.cii.xml \
@@ -120,11 +122,9 @@ $ echo $?
 0
 ```
 
-`--out` writes the result to a file; without it the invoice goes to the standard output.
-
-A syntax has no place for everything a semantic document may hold, and every value the writer
-could not place becomes a warning on the error stream, collapsed one line per distinct sentence
-with a count, and every one of them under `--verbose`:
+A syntax has no place for some of what a semantic document may hold. Every value the writer could
+not place becomes a warning on the error stream. Equal sentences collapse into one line with a
+count, and `--verbose` prints every one:
 
 ```console
 $ esj convert --to cii --extension xrechnung --out extension.cii.xml \
@@ -135,32 +135,33 @@ warning: 130 values of the document have no place in this syntax and were not wr
 ...
 ```
 
-Those are the sub invoice lines of the XRechnung extension, which it binds for UBL alone.
-The `info:` line is the other half of a conversion: a core invoice usage specification states its
-levels per scenario, and a scenario is a profile *and* a syntax, so the file written here will be
-judged by the target syntax's table ([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-profile-as-an-artefacts-is)).
+These are the sub invoice lines of the XRechnung extension, which it binds for UBL alone. The
+`info:` line is the other half of a conversion. A core invoice usage specification states its levels
+per scenario, and a scenario is a profile *and* a syntax. So the table of the target syntax judges
+the file written here
+([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-profile-as-an-artefacts-is)).
 
-A syntax may also require an element that no business term of the document states, and the
-binding table says what is written there. Every such value is an `info:` line of its own on the
-error stream, collapsed the same way; nothing was lost, so it is not a warning and the exit code
-stays 0. [`bindings.md`](bindings.md) names the three of this release.
+A syntax may also require an element that no business term of the document states. The binding table
+then says what to write there. Each such value gets an `info:` line of its own on the error stream,
+collapsed the same way. Nothing was lost, so it is no warning and the exit code stays 0.
+[`bindings.md`](bindings.md) names the three of this release.
 
-A term whose registry declares that its terms belong to no transport syntax is no loss either: the
-B2C extension records the figures a customer was shown, and the invoice travels as the net values
-of the core terms ([`b2c.md`](b2c.md)). With the registry loaded, one `info:` line per registry
-names the terms that stay in the ESJ document:
+A term whose registry declares that its terms belong to no transport syntax is no loss either. The
+B2C extension records the figures a customer was shown, and the invoice travels as the net values of
+the core terms ([`b2c.md`](b2c.md)). With the registry loaded, one `info:` line per registry names
+the terms that stay in the ESJ document:
 
 ```console
 $ esj convert --to cii --extension b2c --out b2c.cii.xml examples/b2c-gross.esj.json
 info: 4 terms of ESJ-B2C 0.1 stay in the ESJ document by design: BT-B2C-010, BT-B2C-001, BT-B2C-002, BT-B2C-003
 ```
 
-A loss is warned about and the exit code stays 0, because a person converting a document wants
-the file and the list. **An automated caller that must not lose a value passes `--fail-on-loss`.**
-Where the writer leaves part of the document behind — a value, a supplementary component, the
-`extensions` member or a character XML cannot hold — nothing is written, neither to `--out` nor
-to the standard output, and the run leaves with exit code 8. A value written by convention and a
-term left behind by design are not losses and do not stop the conversion:
+A loss gets a warning and the exit code stays 0, because a person converting a document wants the
+file and the list. **An automated caller that must not lose a value passes `--fail-on-loss`.** Where
+the writer leaves part of the document behind (a value, a supplementary component, the `extensions`
+member or a character XML cannot hold), it writes nothing, neither to `--out` nor to the standard
+output. The run leaves with exit code 8. A value written by convention and a term left behind by
+design are no losses and do not stop the conversion:
 
 ```console
 $ esj convert --to cii --extension xrechnung --fail-on-loss --out extension.cii.xml \
@@ -172,7 +173,7 @@ $ echo $?
 ```
 
 `--output json` carries the same list as data. The report goes to the standard output, so the
-invoice needs somewhere else to go and `--out` becomes required:
+invoice needs another place, and `--out` becomes required:
 
 ```console
 $ esj convert --to cii --out invoice.cii.xml --output json \
@@ -192,15 +193,16 @@ $ esj convert --to cii --out invoice.cii.xml --output json \
 }
 ```
 
-A note about a term left behind by design names its registry in a `registry` member. A
-conversion `--fail-on-loss` refused reports `"wrote": "nothing"`, `"out": null` and `"bytes": 0`
-beside the list of what it would have lost, and leaves with 8.
+A note about a term left behind by design names its registry in a `registry` member. A conversion
+that `--fail-on-loss` refused reports `"wrote": "nothing"`, `"out": null` and `"bytes": 0` beside
+the list of what it would have lost, and leaves with 8.
 
 [`cii-roundtrip.md`](../conformance/writers/cii-roundtrip.md) and
 [`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md) measure the two writers.
 
 | Option | What it does |
 |---|---|
+| `--out <file>` | write the result to this file; without it, the invoice goes to the standard output |
 | `--to cii\|ubl` | write a cross industry invoice, or an OASIS UBL 2.1 Invoice or Credit Note |
 | `--fail-on-loss` | write nothing and leave with exit code 8 where the target syntax has no place for part of the document |
 | `--ubl-document invoice\|creditnote\|auto` | which UBL document to write; `auto` is the default and takes it from the invoice type code BT-3, and the run says which it wrote |
@@ -214,33 +216,32 @@ info: converted examples/credit-note.esj.json (ESJ, 46 values) to a UBL credit n
 
 ## Which reader reads the XML
 
-This tool ships two readers, and `--importer` chooses between them for every command that takes
-an XML input.
+Two readers ship, and `--importer` chooses one for every command that takes an XML input.
 
 | Token | What it is |
 |---|---|
 | `streaming` | **The default.** The document is matched against the binding tables of `model/bindings/` one element at a time. The reader holds one element and the values it has produced, so an invoice of tens of megabytes costs seconds. The one element it holds is held within `--max-buffered-bytes` and `--max-buffered-elements`; `conformance/readers.md` names the one class of document that reaches them and the other reader does not. |
 | `xslt` | The vendored XRechnung visualization stylesheets, whose output is mapped to semantic paths. It builds three trees of the document; `docs/deployment-measurements.md` has what that costs at size. |
 
-They share no code: the second is the oracle the first is measured against on every build. Over
-the 86 instances of the conformance corpus they produce the same document for 74 and differ for
-the other 12 at three business terms, all three limitations of the XSLT path, which
-`conformance/readers.md` records with the counts. An ESJ input is read by neither, and
-`esj inspect` says so on its `Read with` line.
+They share no code. Every build measures the first against the second as its oracle. Over the 86
+instances of the conformance corpus they produce the same document for 74. For the other 12 they
+differ at three business terms, all three limitations of the XSLT path; `conformance/readers.md`
+records them with the counts. Neither reads an ESJ input, and `esj inspect` says so on its
+`Read with` line.
 
 ## validate
 
 `esj validate` runs three checks over one input and gives one verdict.
 
-The **syntax engine** runs the official artefacts of the profile BT-24 names — the XML Schema
-modules of its syntax, the EN 16931 Schematron of CEN/TC 434 and the Schematron of the core
-invoice usage specification — over the XML exactly as it arrived; they are carried under `packs/`
-unmodified and executed as data (`esj --list-packs`, `packs/SOURCES.md`). The **semantic engine**
-runs the structural layers of SPEC section 9 — L1 for an ESJ input, L2 and L3 for both — and then
-the business rules of EN 16931-1, clause 6.4 over the business terms. What each finding category
-means and what their answers were measured against is [`validation.md`](validation.md).
+The **syntax engine** runs the official artefacts of the profile BT-24 names over the XML exactly as
+it arrived. These are the XML Schema modules of its syntax, the EN 16931 Schematron of CEN/TC 434
+and the Schematron of the core invoice usage specification. They sit unmodified under `packs/` and
+run as data (`esj --list-packs`, `packs/SOURCES.md`). The **semantic engine** runs the structural
+layers of SPEC section 9: L1 for an ESJ input, L2 and L3 for both. Then it checks the business rules
+of EN 16931-1, clause 6.4 over the business terms. [`validation.md`](validation.md) says what each
+finding category means and what their answers were measured against.
 
-Both blocks are printed, both name what they did not run, and the last line is the verdict:
+The run prints both blocks, each names what it did not run, and the last line is the verdict:
 
 ```console
 $ esj validate conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -265,15 +266,13 @@ $ echo $?
 0
 ```
 
-The `Profile` line names what the document says about itself in BT-24 and the pack chosen for
-that claim.
+The `Profile` line names what the document says about itself in BT-24 and the pack chosen for that
+claim. The rows of the syntax block are the components of that pack, in the order of its manifest
+and under the pack's own names, such as `en16931-ubl-schematron`. The components of the other syntax
+go unused; `--verbose` and the JSON report print them.
 
-The rows of the syntax block are the components of that pack, in the order its manifest lists
-them, under the pack's own names — `en16931-ubl-schematron`. The components of the other syntax
-go unused and are printed under `--verbose` and in the JSON report.
-
-A severity in the syntax block is the artefact's flag or the level the document's profile gives
-that rule, never a judgement of this tool; the line names both where they differ
+A severity in the syntax block is the artefact's flag or the level the document's profile gives that
+rule, never a judgement of this tool. Where the two differ, the line names both
 ([`validation.md`](validation.md#two-publishers-two-levels)):
 
 ```text
@@ -284,10 +283,10 @@ The levels are data of the pack, from the configuration the specification publis
 artefacts ([`packs/SOURCES.md`](../packs/SOURCES.md), and
 [`conformance/syntax/ledger.md`](../conformance/syntax/ledger.md) for what they come to).
 
-An ESJ document was never XML, so no artefact will look at it as it stands. It is therefore
-written into a syntax binding in memory — a cross industry invoice, or a UBL document with
-`--via ubl` — and the artefacts of its profile run over the result. Nothing is written to disk
-and the document under test stays the ESJ one; the row names the binding it was read through:
+An ESJ document was never XML, so no artefact can look at it as it stands. `esj validate` therefore
+writes it into a syntax binding in memory, a cross industry invoice or, with `--via ubl`, a UBL
+document, and runs the artefacts of its profile over the result. Nothing goes to disk, and the
+document under test stays the ESJ one. The row names the binding it was read through:
 
 ```console
 $ esj validate examples/standard-invoice.esj.json
@@ -306,14 +305,15 @@ $ echo $?
 0
 ```
 
-Where the writer had to leave something out, the XML is not the document that was handed over: the
-row is not applicable, the cause is `term-not-in-syntax`, `term-not-stated` or
-`element-not-in-model`, and the run ends `INDETERMINATE`. The row runs where the binding table states
-a value for the element, and where everything left out belongs to an extension registry declaring
-`"transport": "none"`, which the row names and `written.byDesign` carries ([b2c.md](b2c.md)).
+Where the writer had to leave something out, the XML is not the document you handed over. The row is
+then not applicable, the cause is `term-not-in-syntax`, `term-not-stated` or `element-not-in-model`,
+and the run ends `INDETERMINATE`. The row runs in two cases: where the binding table states a value
+for the element, and where everything left out belongs to an extension registry declaring
+`"transport": "none"`. The row names that registry, and `written.byDesign` carries it
+([b2c.md](b2c.md)).
 
-A document the registry rejects leaves with exit code 1, the layer below the failure reported
-as not checked rather than as passed:
+A document the registry rejects leaves with exit code 1. The layer below the failure is reported as
+not checked, never as passed:
 
 ```console
 $ esj validate examples/invalid/unknown-term.esj.json
@@ -340,30 +340,32 @@ $ echo $?
 
 ### The business rules, checked here
 
-The third engine runs the business rules of EN 16931-1, clause 6.4 — `BR-*`, `BR-CO-*`, `BR-DEC-*`
-and the code list rules `BR-CL-*` — over the business terms of the semantic model rather than over
-the XPath of a syntax, so one rule decides a UBL invoice, a CII invoice and a document that was
-never XML alike. [`../rules/README.md`](../rules/README.md) is the engine and the rule language,
+The third engine checks the business rules of EN 16931-1, clause 6.4: `BR-*`, `BR-CO-*`, `BR-DEC-*`
+and the code list rules `BR-CL-*`. It reads the business terms of the semantic model, not the XPath
+of a syntax. So one rule decides a UBL invoice, a CII invoice and a document that was never XML
+alike. [`../rules/README.md`](../rules/README.md) describes the engine and the rule language,
 [`../conformance/rules/coverage.md`](../conformance/rules/coverage.md) what the pack covers, and
 [`../conformance/rules/ledger.md`](../conformance/rules/ledger.md) what it was measured against.
 
-**For an ESJ document this is the only engine that checks the business rules**: there is no XML and no artefact; `examples/invalid/arithmetic-mismatch.esj.json` shows it, with exit code 1.
+**For an ESJ document this is the only engine that checks the business rules**: there is no XML and
+no artefact. `examples/invalid/arithmetic-mismatch.esj.json` shows it, with exit code 1.
 
 | Option | What it does |
 |---|---|
 | `--rules en16931` | check the EN 16931 pack this build carries — the default |
 | `--rules none` | leave the business rules out |
 
-`--rules none --no-syntax` is the fast path for a very large document: the structural layers
-alone; `--no-syntax` alone adds the business rules, linear in the number of invoice lines.
+For a very large document, `--rules none --no-syntax` is the fast path: the structural layers alone.
+`--no-syntax` alone adds the business rules, linear in the number of invoice lines.
 
 Over an XML input both engines check those rules, so one rule identifier can appear twice in one
-report — once against the XML tree, once against the imported document. Neither is merged into
-the other: the text form names the overlap under the native findings, and `--output json` keeps
-`syntax.findings` and `rules.findings` apart. A native finding of a rule the core invoice usage
-specification levels down is levelled the same way: the line reads `info, fatal by the standard,
-levelled by the profile <identifier>`, the JSON report carries both, and the pack itself knows no
-profile ([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-profile-as-an-artefacts-is)).
+report: once against the XML tree, once against the imported document. Neither is merged into the
+other. The text form names the overlap under the native findings, and `--output json` keeps
+`syntax.findings` and `rules.findings` apart. Where the core invoice usage specification levels a
+rule down, the native finding of that rule is levelled the same way. The line reads
+`info, fatal by the standard, levelled by the profile <identifier>`, the JSON report carries both,
+and the pack itself knows no profile
+([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-profile-as-an-artefacts-is)).
 
 ### Choosing, replacing and leaving out the pack
 
@@ -376,28 +378,31 @@ profile ([`validation.md`](validation.md#a-native-finding-is-levelled-by-the-pro
 | `--via cii\|ubl` | which syntax an ESJ input is written to for the artefacts to read; `cii` is the default |
 | `--max-runtime <duration>` | how long the whole command may take over the document: `500ms`, `90s`, `5m`, or a bare number of seconds — a global switch, described under [Limits](#limits) |
 
-A manifest writes its own identity, so a directory can call itself the release this build carries:
-the `Profile:` line then reads `supplied with --pack` and `syntax.pack.source` says `supplied`.
-A pack of a pack directory is named with the directory it was read from — `(pack
-peppol-bis-billing/3.0/3.0.21, from /home/me/esj-packs/peppol-bis-billing/3.0/3.0.21)` — and
+A manifest writes its own identity, so a directory can call itself the release this build carries.
+The `Profile:` line then reads `supplied with --pack`, and `syntax.pack.source` says `supplied`. A
+pack of a pack directory is named with the directory it was read from, as in
+`(pack peppol-bis-billing/3.0/3.0.21, from /home/me/esj-packs/peppol-bis-billing/3.0/3.0.21)`. Its
 `syntax.pack.source` says `directory`, with the directory in `syntax.pack.location`.
-`ESJ_PACKS` names pack directories as a path list, `:` between entries (`;` on Windows), before
-those of `--packs`. A directory that does not exist, a pack there with the identity of a bundled
-one, and a document whose profile a pack there and another pack both recognize are refused with
-exit code 2, naming what collides ([`validation.md`](validation.md#packs-made-on-this-machine)) —
-except where those packs are releases of one pack, same id and version: then the newest release
-is taken (3.0.21 before 3.0.20, 3.0.10 after 3.0.9) and `--pack <id/version/release>` takes another.
-Nothing is fetched at run time. `--no-syntax` leaves a component of the complete check out, so the
-run reaches no verdict: exit code 9 and `syntax-binding (skipped-by-caller)` in the last line and
-in `reasons` ([`validation.md`](validation.md#--no-syntax-and---rules)).
 
-`--max-runtime` is one number over the whole command: the clock starts before anything is
-opened, and each step runs inside what is left. A run that reaches it while it is still deciding
-leaves with **exit code 7 and no report at all** — never with a verdict of invalid: a document
-the tool gave up on is not a document the tool rejected. The message names the step the time ran
-out in, and where that step is the official artefacts it names both numbers, the whole command's
-and what was left of it once the document had been read. Reached while the `--report` file is
-being drawn, it is the other thing: the file is given up and the verdict stands (above).
+`ESJ_PACKS` names pack directories as a path list, `:` between entries (`;` on Windows), before
+those of `--packs`. Nothing is fetched at run time. The run refuses three cases with exit code 2 and
+names what collides ([`validation.md`](validation.md#packs-made-on-this-machine)): a directory that
+does not exist, a pack there with the identity of a bundled one, or a document whose profile a pack
+there and another pack both recognize. Releases of one pack, same id and version, do not collide:
+the newest release wins (3.0.21 before 3.0.20, 3.0.10 after 3.0.9), and
+`--pack <id/version/release>` takes another.
+
+`--no-syntax` leaves a component of the complete check out, so the run reaches no verdict: exit code
+9, and `syntax-binding (skipped-by-caller)` in the last line and in `reasons`
+([`validation.md`](validation.md#--no-syntax-and---rules)).
+
+`--max-runtime` is one number over the whole command. The clock starts before anything is opened,
+and each step runs inside what is left. A run that reaches it while it is still deciding leaves with
+**exit code 7 and no report at all**, never with a verdict of invalid. A document the tool gave up
+on is not a document it rejected. The message names the step the time ran out in. Where that step is
+the official artefacts, it names both numbers: the whole command's, and what was left once the
+document had been read. A deadline met while the `--report` file is drawn gives up the file only
+([The report](#the-report)).
 
 ```console
 $ esj validate --max-runtime 1ms conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml
@@ -408,8 +413,8 @@ $ echo $?
 
 #### When a profile brings no rules with it
 
-The pack is chosen by what the document says in BT-24, and the two outcomes a pipeline has to
-tell apart are printed under the rows:
+BT-24 chooses the pack. Under the rows, the run prints which of two outcomes it met, and a pipeline
+has to tell them apart:
 
 ```text
   no core invoice usage specification of this pack applies to this profile: the EN 16931
@@ -428,8 +433,8 @@ Where a recipe of this build brings the rules of the profile, one more line says
   --packs <directory> or ESJ_PACKS adds it
 ```
 
-The first is `VALID` with exit 0, the second `INDETERMINATE` with exit 9 and the cause
-`no-rules-for-profile`; both set `syntax.profileRulesSkipped` and `profile-rules` in
+The first is `VALID` with exit 0. The second is `INDETERMINATE` with exit 9 and the cause
+`no-rules-for-profile`. Both set `syntax.profileRulesSkipped` and put `profile-rules` in
 `notChecked` ([`validation.md`](validation.md#when-a-profile-brings-no-rules-with-it)).
 
 ### The JSON report
@@ -511,55 +516,60 @@ $ esj validate examples/invalid/unknown-term.esj.json --output json
 }
 ```
 
-`invoice` is the verdict on the document: `checked`, which says whether the rules of EN 16931
-were the question asked of it, `ok`, which is `null` where they were not and the answer
-otherwise, and `reason` naming which of `profile-not-en16931`, `xml-encoding`, `layer-error`,
-`syntax-finding` and `rule-finding` — a business rule of EN 16931 the native pack faulted at
-the level the verdict counts it at — it was where the answer is no. `ok` is `null` as well
-for a run that found nothing fatal and did not perform the whole of the check, which is the
-`INDETERMINATE` line; `ok: true` means completely checked, nothing fatal found. `invoice` is
-separate from `container`: a container that is wrong about the invoice it carries says
-nothing about the invoice. `syntax`, `written.syntax`, `rules`, `layers.l1`, `layers.l2` and
-`layers.l3` each
-carry `checked`, which says whether that check ran, and `ok`, which has three answers:
-`true`, `false`, and `null` where the check did not run — and `null` again where a layer ran
-over less than the whole document, which is the row the text form writes as `no verdict`.
-That second case is the one `reasons` names rather than the layer's own findings: an
-extension path no loaded registry describes leaves the finding on `l2` and leaves `l3` with
+`invoice` is the verdict on the document, apart from `container`:
+
+- `checked` says whether the rules of EN 16931 were the question asked of it.
+- `ok` is the answer, and `null` where they were not. It is `null` as well for a run that found
+  nothing fatal and did not perform the whole check, the `INDETERMINATE` line. `ok: true` means
+  completely checked, nothing fatal found.
+- `reason` names, where the answer is no, which of `profile-not-en16931`, `xml-encoding`,
+  `layer-error`, `syntax-finding` and `rule-finding` it was. `rule-finding` is a business rule of EN
+  16931 the native pack faulted at the level the verdict counts it at.
+
+A container that is wrong about the invoice it carries says nothing about the invoice. `syntax`,
+`written.syntax`, `rules`, `layers.l1`, `layers.l2` and `layers.l3` each carry `checked`, whether
+that check ran, and `ok`, with three answers: `true`, `false`, and `null` where the check did not
+run. `ok` is `null` again where a layer ran over less than the whole document; the text form writes
+that row as `no verdict`. In that second case `reasons` names the cause, not the layer's own
+findings. An extension path no loaded registry describes leaves the finding on `l2` and leaves `l3`
 nothing to count, so both are `null` while only one says why.
 
-Each finding of a layer carries `path`, `code`, `severity`, `message` and `subject`: the member
-access the reader met the problem at; for a model finding the identifier of the segment that is
-unknown or breaks the index rule, the term whose group chain is wrong, or the component that is
-missing or not allowed; the term or group a cardinality finding is about. `subject` is always a
-string, and `""` where the finding names nothing beyond its path. A missing mandatory term is
-reported at the path of the instance that lacks it, so `subject` is what names the term
-(specification, section 9.5).
-`notChecked` lists the same thing as stable tokens: `format-l1` for an XML input, which is read
-through the importer rather than as ESJ bytes; `model-l2` and `cardinality-l3` where the layer
-above them ended the run before they were reached, and where they ran and could not measure what
-they were asked to; `business-rules` where the native rule engine did not run — `--rules none`,
-a document a structural layer rejected, or a model layer that measured nothing — which is about
-that engine alone, since where `syntax.ran` names an EN 16931 Schematron component that did not
-stop, those rules were checked by the artefact; `profile-rules` where a rule set of the pack was
-left out because of the profile the document names ([When a profile brings no rules with
-it](#when-a-profile-brings-no-rules-with-it)); `syntax-binding` for an XML input whose binding
-was not checked, which is `--no-syntax` or `esj inspect`; and `written-syntax` for an ESJ input
-the artefacts did not reach.
+Each finding of a layer carries `path`, `code`, `severity`, `message` and `subject`. `subject` is
+always a string, and `""` where the finding names nothing beyond its path. It names:
 
-`written` is that last row as data, present whatever the input was: `required` says whether this
-input needed it, `target` names the binding the document was written through, and `syntax` is
-the same object as the one above it, read from different bytes.
+- for layer L1, the member access the reader met the problem at;
+- for a model finding, the identifier of the segment that is unknown or breaks the index rule, the
+  term whose group chain is wrong, or the component that is missing or not allowed;
+- for a cardinality finding, the term or group it is about. A missing mandatory term is reported at
+  the path of the instance that lacks it, so `subject` names the term (specification, section 9.5).
 
-`reasons` is the sharper list beside it and the one the verdict turns on: the components of the
-**complete check** for this kind of input that did not run or did not complete, each with a
+`notChecked` lists the same as stable tokens:
+
+- `format-l1` for an XML input, which the importer reads instead of ESJ bytes;
+- `model-l2` and `cardinality-l3` where the layer above ended the run before them, and where they
+  ran and could not measure what they were asked to;
+- `business-rules` where the native rule engine did not run: `--rules none`, a document a structural
+  layer rejected, or a model layer that measured nothing. The token is about that engine alone:
+  where `syntax.ran` names an EN 16931 Schematron component that did not stop, the artefact checked
+  those rules;
+- `profile-rules` where the profile the document names left a rule set of the pack out ([When a
+  profile brings no rules with it](#when-a-profile-brings-no-rules-with-it));
+- `syntax-binding` for an XML input whose binding was not checked: `--no-syntax` or `esj inspect`;
+- `written-syntax` for an ESJ input the artefacts did not reach.
+
+`written` is that last row as data, present whatever the input was. `required` says whether this
+input needed it, `target` names the binding the document was written through, and `syntax` is the
+object described above, read from different bytes.
+
+`reasons` is the sharper list, and the verdict turns on it. It names the components of the
+**complete check** for this kind of input that did not run or did not complete. Each carries a
 `component` token and a `cause` from the closed vocabulary of
-[`validation.md`](validation.md#verdict-and-exit-code), non-empty where `verdict` is
-`INDETERMINATE`. `notChecked` is the longer list — everything this run did not look at or could
-not measure, including what there was nothing to look at — and says nothing about why.
+[`validation.md`](validation.md#verdict-and-exit-code). It is non-empty where `verdict` is
+`INDETERMINATE`. `notChecked` is the longer list: everything this run did not look at or could not
+measure, including what there was nothing to look at. It says nothing about why.
 
-Where the native rule engine ran, `rules` carries the pack that was run — `id` and `version` —
-and `findings`, one entry per thing a rule of this project said:
+Where the native rule engine ran, `rules` carries the pack it ran (`id` and `version`) and
+`findings`, one entry per thing a rule of this project said:
 
 ```json
 {
@@ -575,18 +585,21 @@ and `findings`, one entry per thing a rule of this project said:
 }
 ```
 
-`paths` is where the rule looked, in the order it looked: a value read once appears as its own
-path, and a value read as an aggregate appears as the pattern it was summed over. The message is
-this project's own English, never a translation of a published assertion; `flag` is the level
-the rule declares and `severity` the one the verdict is made on.
+`paths` lists where the rule looked, in the order it looked. A value read once appears as its own
+path; a value read as an aggregate appears as the pattern it was summed over. The message is this
+project's own English, never a translation of a published assertion. `flag` is the level the rule
+declares, `severity` the one the verdict is made on.
 
-Where the syntax engine ran, `syntax` carries the customization identifier the document named,
-the pack chosen for it with `source` — `bundled`, `supplied` (`--pack <directory>`) or `directory`
-(a pack directory) — and `location`, the directory it was read from, `null` for a bundled pack,
-`profileNote` and `profileRulesSkipped` — the sentence for a person and the same fact for a
-program — `ran` and `skipped`, every component of the pack with the reason each one did not run
-and whether a component that ran `stopped` over the document, and `findings`, one entry per
-thing an artefact said:
+Where the syntax engine ran, `syntax` carries:
+
+- the customization identifier the document named;
+- the pack chosen for it, with `source` (`bundled`, `supplied` for `--pack <directory>`, or
+  `directory` for a pack directory) and `location`, the directory it was read from, `null` for a
+  bundled pack;
+- `profileNote` and `profileRulesSkipped`: the sentence for a person, the same fact for a program;
+- `ran` and `skipped`: every component of the pack with the reason each one did not run, and whether
+  a component that ran `stopped` over the document;
+- `findings`, one entry per thing an artefact said:
 
 ```json
 {
@@ -606,53 +619,49 @@ thing an artefact said:
 }
 ```
 
-`severity` is the level the profile of the document gives that rule and is what the verdict is
-made on; `flag` is the level the artefact itself set, which is what a comparison against another
-tool running the same artefact is made on.
+`severity` is the level the profile of the document gives that rule, and the verdict is made on it.
+`flag` is the level the artefact itself set; compare it with another tool running the same artefact.
 
 `message` and `location` are the artefact's own text, normalized in whitespace and otherwise
-untouched, and `code` is the rule identifier its publisher gave it. The message above is shortened
-on this page only, because a rule set's words travel under its own licence; a run prints them in
-full. The `pack*` and `component` fields travel with every finding so that a report still means
-something after the pack is replaced; `line` and `column` are `null` where the artefact reported
-none.
+untouched. `code` is the rule identifier its publisher gave it. This page shortens the message
+above, because a rule set's words travel under its own licence; a run prints them in full. The
+`pack*` and `component` fields travel with every finding, so a report still means something after
+the pack is replaced. `line` and `column` are `null` where the artefact reported none.
 
-Two codes are not a publisher's. `XSD-INVALID` stands for a schema message that named no
-validity constraint, and `ARTEFACT-STOPPED` for a rule set that stopped over the document
-instead of finishing — an amount no arithmetic of the artefact can carry is the case that
-happens. The second is fatal: a rule set that did not finish has checked nothing, and its
-component is in `syntax.ran` with `stopped` set to `true`. The native rule engine still answers
-over such a document, so the two blocks can read very differently; a pack that will not
-*compile* leaves with exit code 2 instead.
+Two codes are not a publisher's. `XSD-INVALID` stands for a schema message that named no validity
+constraint. `ARTEFACT-STOPPED` stands for a rule set that stopped over the document instead of
+finishing; an amount no arithmetic of the artefact can carry is the case that happens. It is fatal:
+a rule set that did not finish has checked nothing, and its component is in `syntax.ran` with
+`stopped` set to `true`. The native rule engine still answers over such a document, so the two
+blocks can read very differently. A pack that will not *compile* leaves with exit code 2.
 
-The sentence of a schema finding is the platform's, in the language the process runs in; the
-`esj` command fixes that to English, and a program that embeds the library sets the locale of
-its own process. No duration appears in any form: a report of this tool is compared, diffed and
-checked in, so it says what the document decides and never what the machine was doing at the
-time. What each artefact cost is on the error stream under `--verbose`.
+The sentence of a schema finding is the platform's, in the language the process runs in. The `esj`
+command fixes that to English; a program that embeds the library sets the locale of its own process.
+No form carries a duration. You compare, diff and check in a report of this tool, so it says what
+the document decides and never what the machine was doing at the time. `--verbose` prints what each
+artefact cost on the error stream.
 
-`warnings` carries the content that could not be brought into the document, one entry per
-distinct note with the number of times it was made; the distance between the source syntax and
-EN 16931 itself — a supplementary component the standard does not give that term, an element
-that was empty to begin with — is an information-level note and is in `information`, an array of
-the same shape. The printed lines say the same in a `Conversion:` line, and no line where there
-is nothing to report. Notes are counted rather than values, because one note can stand for a
-whole subtree the importer skipped, and an empty note list is the absence of an observation
-rather than a claim that everything reached the document.
+`warnings` carries the content that could not be brought into the document, one entry per distinct
+note with the number of times it was made. The distance between the source syntax and EN 16931
+itself is an information-level note in `information`, an array of the same shape. Such a distance is
+a supplementary component the standard does not give that term, or an element that was empty to
+begin with. The printed lines say the same in a `Conversion:` line, and print none where there is
+nothing to report. Notes are counted instead of values, because one note can stand for a whole
+subtree the importer skipped. An empty note list is the absence of an observation, not a claim that
+everything reached the document.
 
-Each layer gates the next: an L1 error ends the run and the later layers are reported as not
-checked, never as passed; L2 gates L3 the same way (`--level l2` asks for the model layer
-alone); and a document that fails the schema of its syntax is not one the rule sets are run
-over, with `skipped` and the reason on their rows. Every check cuts its own list of findings at
-twenty lines and says how many it left out; the count on the row above it is never cut, and
-`--output json` carries every finding.
+Each layer gates the next. An L1 error ends the run, and the later layers are reported as not
+checked, never as passed. L2 gates L3 the same way; `--level l2` asks for the model layer alone. The
+rule sets do not run over a document that fails the schema of its syntax; their rows say `skipped`
+with the reason. Every check cuts its own list of findings at 20 lines and says how many it left
+out. The count on the row above is never cut, and `--output json` carries every finding.
 
-`--verbose` does five things on the error stream: it says what was detected and how long the run
-took, in every command and not only in `esj convert`; it shows the importer's information-level
-notes, which are otherwise silent; it lists every warning and every finding instead of the first
-twenty of each; it prints what each artefact of the pack cost to compile and to run; and, for a
-PDF, it says what the PDF library had to say about the file — the records that library writes
-about a damaged object structure, which go nowhere without it (`docs/pdf-input.md`).
+`--verbose` does five things on the error stream, in every command and not only in `esj convert`. It
+says what was detected and how long the run took. It shows the importer's information-level notes,
+which are otherwise silent. It lists every warning and every finding instead of the first 20 of
+each. It prints what each artefact of the pack cost to compile and to run. For a PDF, it prints the
+records the PDF library writes about a damaged object structure, which go nowhere without it
+(`docs/pdf-input.md`).
 
 ### The report
 
@@ -682,32 +691,31 @@ VALID
 | `--report-time <moment>` | print this moment, exactly as written; without it the report names none |
 | `--no-invoice` | leave the rendered invoice out |
 
-The printed lines are the same with and without it; the exit code is not, where the report was
-not delivered. A destination that cannot be written, and a report given up on the deadline, both
-leave with exit code 6 — the output that was not written in full — unless the verdict is invalid
-and keeps code 1, because code 0 says the caller received everything it asked for. The HTML form
-carries the invoice in a sandboxed `iframe` written with `srcdoc`, which keeps the vendored KoSIT
-style sheet and script off the report around it ([`rendering.md`](rendering.md)); printing it
-cuts the invoice off at the frame, and the PDF form sets the invoice after the report as pages of
-the same file instead, in the generic layout: a report is a proof, not a letter. Attachments of
-the invoice travel inside either file. What it commits to, row by row:
-[`validation.md`](validation.md#the-report).
+The printed lines are the same with and without `--report`. The exit code is not, where the report
+was not delivered. A destination that cannot be written and a report given up on the deadline both
+leave with exit code 6, the output that was not written in full. An invalid verdict keeps code 1,
+because code 0 says the caller received everything it asked for. The HTML form carries the invoice
+in a sandboxed `iframe` written with `srcdoc`, which keeps the vendored KoSIT style sheet and script
+off the report around it ([`rendering.md`](rendering.md)). Printing it cuts the invoice off at the
+frame. The PDF form sets the invoice after the report as pages of the same file instead, in the
+generic layout: a report is a proof, not a letter. Attachments of the invoice travel inside either
+file. [`validation.md`](validation.md#the-report) says what the report commits to, row by row.
 
-The file is bounded: at most 200 findings per block — the heaviest first, so a cut never hides
-an error behind warnings — and 2000 characters of any one text, each with the remainder counted.
-The HTML form writes the whole rendering into one attribute, so a document whose rendering would
-run past two million characters is left out of it, measured on the document before anything is
-rendered: a rendering that does not fit in the page does not fit in the heap either, and a report
-that lost the verdict to a heap exhaustion is worse than one without a picture. The PDF form has
-pages and carries it. `--output json` carries every finding in full.
+The file is bounded. It holds at most 200 findings per block, the heaviest first, so a cut never
+hides an error behind warnings. Any one text holds at most 2000 characters, with the remainder
+counted. The HTML form writes the whole rendering into one attribute. So it leaves out a rendering
+that would run past 2 million characters, measured on the document before anything is rendered. A
+rendering that does not fit in the page does not fit in the heap either. A report that lost the
+verdict to a heap exhaustion is worse than one without a picture. The PDF form has pages and carries
+the rendering. `--output json` carries every finding in full.
 
 ## Hybrid invoices (PDF)
 
-A ZUGFeRD or Factur-X invoice is a PDF with the electronic invoice attached to it, and every
-command that takes an input takes one. The file is recognized by its `%PDF-` header, the
-attachment whose bytes spell an invoice is taken out of it, and from there the run is the run it
-would have been if that XML had been the file. What the container had to say is reported beside
-it and never mixed into it:
+Every command that takes an input takes a ZUGFeRD or Factur-X invoice, a PDF with the electronic
+invoice attached to it. The tool recognizes the file by its `%PDF-` header and takes out the
+attachment whose bytes spell an invoice. From there the run is the one it would have been if that
+XML had been the file. The run reports what the container had to say beside it and never mixes the
+two:
 
 ```console
 $ esj validate conformance/pdf/factur-x.pdf
@@ -747,18 +755,17 @@ $ echo $?
 0
 ```
 
-The checks are structural: the embedded files name tree, the associated files array, the embedded
-file dictionary, and the XMP packet with the Factur-X extension schema, including whether it
-agrees with the attachment and with BT-24. **PDF/A conformance is none of them**; it is validated
-where [`--verapdf`](#validating-the-pdfa-claim) names a validator, and nowhere else.
+The checks are structural. They cover the embedded files name tree, the associated files array, the
+embedded file dictionary, and the XMP packet with the Factur-X extension schema, including whether
+it agrees with the attachment and with BT-24. **PDF/A conformance is none of them**; only
+[`--verapdf`](#validating-the-pdfa-claim) validates it, with a validator you name.
 
-The two verdicts stay apart, either of them failing is exit code 1, and `--output json` carries
-them as `container.ok` and `invoice.checked` with `invoice.ok`. A layer that did not run has not
-failed: `invoice.reason` says which of `profile-not-en16931`, `xml-encoding`, `layer-error`,
-`syntax-finding` and `rule-finding` kept it from running or made it fail.
+The two verdicts stay apart, and either one failing is exit code 1. `--output json` carries them as
+`container.ok` and `invoice.checked` with `invoice.ok`. A layer that did not run has not failed:
+`invoice.reason` says what kept it from running or made it fail ([above](#the-json-report)).
 
 **Nothing is read off the page.** A PDF whose invoice exists only as printed text carries no
-structured invoice, and that is what is reported, with exit code 2.
+structured invoice; the run says so, with exit code 2.
 
 | What the file is | What happens | Code |
 |---|---|---|
@@ -784,54 +791,56 @@ structured invoice, and that is what is reported, with exit code 2.
 | broken, truncated, or a `/Predictor` stage declaring values this format does not define | refused as malformed, before the row length is computed | 2 |
 | larger than a bound of this run | refused, naming the bound and the switch | 7 |
 
-`--attachment <name>` names the attachment that is meant, on every command — `esj diff` applies
-it to both of its inputs. Nothing in a PDF makes a name unique, so `--attachment` refuses a name
-that two attachments carry — the name a file specification gives, or a key under which the name
-tree lists two files — and `extract --list` ends the line of such an attachment with `one of 2 files
-the name tree lists under "…"`; `--attachment-index <position>` names one by the position the listing prints,
-counted from one, and is the one selector the file cannot influence. A file a page refers to rather
-than the name tree is listed with its place, `not in the name tree: a file attachment annotation on
-page 1` ([`pdf-input.md`](pdf-input.md#where-the-invoice-may-lie-and-what-counts-as-one)). Given both, the position
-selects and the name is checked against it. Where several attachments could be the invoice and
-the caller named one, `PDF-EMBEDDED-SEVERAL` names the others at warning level, and the
-`Embedded invoice:` line, `container.attachmentIndex` and `"selected": true` say which one the
-verdict is about. Where the *only* attachment is undetermined, the refusal says that what the
-file holds was not established; either selector reads it anyway.
+`esj diff` applies `--attachment <name>` to both of its inputs. Nothing in a PDF makes a name
+unique. So `--attachment` refuses a name that two attachments carry: the name a file specification
+gives, or a key under which the name tree lists two files. `extract --list` ends the line of such an
+attachment with `one of 2 files the name tree lists under "…"`. `--attachment-index <position>`
+names one by the position the listing prints, counted from one. It is the one selector the file
+cannot influence. Given both, the position selects and the name is checked against it. The listing
+names a file a page refers to, instead of the name tree, with its place:
+`not in the name tree: a file attachment annotation on page 1`
+([`pdf-input.md`](pdf-input.md#where-the-invoice-may-lie-and-what-counts-as-one)). Where several
+attachments could be the invoice and you named one, `PDF-EMBEDDED-SEVERAL` names the others at
+warning level. The `Embedded invoice:` line, `container.attachmentIndex` and `"selected": true` say
+which one the verdict is about. Where the *only* attachment is undetermined, the refusal says that
+what the file holds was not established; either selector reads it anyway.
 
-**MINIMUM and BASIC WL are not EN 16931 invoices**: they carry no invoice line. `esj validate`
-reads such a file, reports the container, says `profile MINIMUM: not an EN 16931 invoice — EN
-16931 validation not applicable`, writes `Invoice: NOT CHECKED (profile MINIMUM)` rather than
-`INVALID`, and **leaves with exit code 1**, which in `--output json` is `invoice.checked: false`
-and `invoice.ok: null` with `invoice.reason: "profile-not-en16931"`. BASIC, EN 16931, EXTENDED
-and XRECHNUNG go down the ordinary path. ZUGFeRD 1.0 is refused rather than read: its root
-element is `CrossIndustryDocument` and it is no binding of EN 16931, and exit code 4 keeps that
-apart from the codes that say something about the document.
+**MINIMUM and BASIC WL are not EN 16931 invoices**: they carry no invoice line. `esj validate` reads
+such a file, reports the container and says
+`profile MINIMUM: not an EN 16931 invoice — EN 16931 validation not applicable`. It writes
+`Invoice: NOT CHECKED (profile MINIMUM)` instead of `INVALID` and **leaves with exit code 1**. In
+`--output json` that is `invoice.checked: false` and `invoice.ok: null` with
+`invoice.reason: "profile-not-en16931"`. BASIC, EN 16931, EXTENDED and XRECHNUNG go down the
+ordinary path. ZUGFeRD 1.0 is refused, not read: its root element is `CrossIndustryDocument` and it
+is no binding of EN 16931. Exit code 4 keeps that apart from the codes that say something about the
+document.
 
 ### Validating the PDF/A claim
 
-`PDF/A-3 declared` is a declaration: it is read out of the XMP packet, and nothing in this build
-checks it. `--verapdf` closes that gap with a veraPDF installation of your own — the directory it
-was installed into, or its executable — which this project never bundles and never downloads.
+`PDF/A-3 declared` is read out of the XMP packet, and nothing in this build checks it. `--verapdf`
+closes that gap with a veraPDF installation of your own, which this project never bundles or
+downloads: the directory it was installed into, or its executable.
 
 ```text
 $ esj validate invoice.pdf --verapdf /opt/verapdf
   PDF/A-3 declared           yes, PDF/A-3B — veraPDF 1.30.2, "PDF/A-3B validation profile": PASS
 ```
 
-The validator runs as a process of its own inside `--max-runtime`, and the row carries its version,
-the profile it ran and its verdict; `--output json` carries the same under `pdfaValidator`, beside
+The validator runs as a process of its own inside `--max-runtime`. The row carries its version, the
+profile it ran and its verdict; `--output json` carries the same under `pdfaValidator`, beside
 `pdfa.validated`. A file it rejects is a container that is wrong about itself: `Container: INVALID`,
-exit code 1. A validator that was asked for and could not run leaves with 2, or with 7 where the
-clock ran out, and never with `VALID`. Without the switch the row reads `declared, not validated`
-and has no part in the verdict. It reads the input as it came: use veraPDF 1.30.2 or later, 1.31.71
-or later on its development line ([advisories](https://github.com/veraPDF/veraPDF-validation/security/advisories)
-of earlier releases), and cap its heap with `JAVA_OPTS`, which it inherits (`JAVA_OPTS=-Xmx1g`).
-The switch is also on [`embed`](#embed) and `render --embed cii`.
+exit code 1. A validator you asked for that could not run leaves with 2, or with 7 where the clock
+ran out, and never with `VALID`. Without the switch the row reads `declared, not validated` and has
+no part in the verdict. veraPDF reads the input as it came. Use veraPDF 1.30.2 or later, 1.31.71 or
+later on its development line
+([advisories](https://github.com/veraPDF/veraPDF-validation/security/advisories) of earlier
+releases). Cap its heap with `JAVA_OPTS`, which it inherits (`JAVA_OPTS=-Xmx1g`). The switch is also
+on [`embed`](#embed) and `render --embed cii`.
 
 ### The container in `--output json`
 
-The block of lines has an object beside it, under `container`, which is `null` for every input
-that was not a PDF. `detected` still names the syntax of the invoice that was read:
+The JSON report carries the container under `container`, which is `null` for every input that was
+not a PDF. `detected` still names the syntax of the invoice that was read:
 
 ```console
 $ esj validate conformance/pdf/factur-x.pdf --output json
@@ -886,23 +895,23 @@ $ esj validate conformance/pdf/factur-x.pdf --output json
 ...
 ```
 
-`ok` is the container verdict and nothing else: `false` where a `PDF-*` finding of error
-severity was made, and silent about the invoice, which `invoice` answers on its own.
-`attachment`, `attachmentIndex` and `kind` name the attachment the run was about, and are `null`
-where a command reported a container without reading an invoice out of it. `profile` is the
-profile as the report settled it and `en16931Invoice` whether the rules of the standard apply.
+`ok` is the container verdict and nothing else. It is `false` where a `PDF-*` finding of error
+severity was made, and silent about the invoice, which `invoice` answers on its own. `attachment`,
+`attachmentIndex` and `kind` name the attachment the run was about. They are `null` where a command
+reported a container without reading an invoice out of it. `profile` is the profile as the report
+settled it, and `en16931Invoice` says whether the rules of the standard apply.
 
-`pdfa` is what the file declares about itself, with `validated: false` in the
-object. `facturX` is the extension schema of the XMP packet, property by property; its namespace
-says whether the file was written as Factur-X or as ZUGFeRD 2.0. `findings` carries the `PDF-*`
-codes of [`pdf-input.md`](pdf-input.md). `attachments` lists everything the container carries:
-`selected` marks the one the verdict is about, `kind` and `root` say what its bytes were, and
-`name`, `mediaType`, `declaredSize` and `relationship` what the file claims — never believed.
+`pdfa` is what the file declares about itself, with `validated: false` in the object. `facturX` is
+the extension schema of the XMP packet, property by property; its namespace says whether the file
+was written as Factur-X or as ZUGFeRD 2.0. `findings` carries the `PDF-*` codes of
+[`pdf-input.md`](pdf-input.md). `attachments` lists everything the container carries. `selected`
+marks the one the verdict is about, and `kind` and `root` say what its bytes were. `name`,
+`mediaType`, `declaredSize` and `relationship` say what the file claims, never believed.
 
 ### extract
 
-`esj extract` hands back the bytes of the attachment, unchanged. `--list` says what the
-container carries instead:
+`esj extract` hands back the bytes of the attachment, unchanged. `--list` says what the container
+carries instead:
 
 ```console
 $ esj extract conformance/pdf/factur-x.pdf --list
@@ -911,9 +920,9 @@ Attachments:  1
   1  "factur-x.xml" (CII, 9622 bytes declared), media type "text/xml", AFRelationship "Alternative", in /AF
 ```
 
-The classification is decided by the first bytes of each attachment and by nothing else: an
-attachment called `factur-x.xml` that holds a UBL invoice is listed as a UBL invoice and the
-disagreement is a finding. The declared size is what the file claims, not what was measured.
+The first bytes of each attachment decide its classification, and nothing else does. An attachment
+called `factur-x.xml` that holds a UBL invoice is listed as a UBL invoice, and the disagreement is a
+finding. The declared size is what the file claims, not what was measured.
 
 Without `--list` the attachment goes to the standard output, or to the file `--out` names:
 
@@ -923,46 +932,46 @@ $ esj extract conformance/pdf/factur-x.pdf
 ...
 ```
 
-**The name of an attachment is never used as a file name.** It is attacker-controlled — path
-separators, `..`, a misleading double extension, control characters (`SPEC.md`, section 12.5) —
-so `esj extract` writes to the standard output or to the path `--out` names, and nowhere else.
-That path is the caller's and is written like any other file: a symbolic link there is followed.
+**The name of an attachment is never used as a file name.** An attacker controls it: path
+separators, `..`, a misleading double extension, control characters (`SPEC.md`, section 12.5). So
+`esj extract` writes to the standard output or to the path `--out` names, and nowhere else. That
+path is yours, and the tool writes it like any other file: it follows a symbolic link there.
 
-`esj inspect` shows the same facts about the container as part of its page, before the usual
-summary of the invoice. Where several attachments could be the invoice and none was named, it
-prints that block and nothing else, leaves with exit code 2 and puts the refusal on the error
-stream; `esj extract --list` lists the same attachments with exit code 0.
+`esj inspect` shows the same facts about the container as part of its page, before the usual summary
+of the invoice. Where several attachments could be the invoice and none was named, it prints that
+block and nothing else, leaves with exit code 2 and puts the refusal on the error stream.
+`esj extract --list` lists the same attachments with exit code 0.
 
 ## Encoding: repair is not validation
 
 An XML document declares the encoding of its own bytes, and the two sometimes disagree.
-`esj validate` is strict, always: its verdict is about the bytes it was handed, so bytes that are
-not written in the encoding they declare are a fatal syntax finding, category `XML`, code
-`XML-ENCODING`, naming what was declared and what the bytes are, and the layers below are
-reported as not checked. The syntax block opens with the row `XML bytes` and the finding under
-it, the exit code is 1, and the row below it is `XML`. `--output json` carries the first as
-`xml.ok` and `xml.findings` and the second under `syntax`.
+`esj validate` is always strict: its verdict is about the bytes it was handed. Bytes not written in
+the encoding they declare are a fatal syntax finding, category `XML`, code `XML-ENCODING`, naming
+what was declared and what the bytes are. The layers below are reported as not checked. The syntax
+block opens with the row `XML bytes` and the finding under it, the row below it is `XML`, and the
+exit code is 1. `--output json` carries the first as `xml.ok` and `xml.findings` and the second
+under `syntax`.
 
-`--after-repair` runs the checks a second time on the recoded bytes under a heading of its own;
-the verdict line and the exit code stay those of the original bytes. Every other command recodes,
-whichever reader `--importer` chose — from UTF-8, UTF-16, ISO-8859-1 and Windows-1252 only — with
-one line on the error stream and the note `ENCODING_REPAIRED`, which `esj inspect` and
+`--after-repair` runs the checks a second time on the recoded bytes, under a heading of its own. The
+verdict line and the exit code stay those of the original bytes. Every other command recodes,
+whichever reader `--importer` chose, from UTF-8, UTF-16, ISO-8859-1 and Windows-1252 only. It prints
+one line on the error stream and records the note `ENCODING_REPAIRED`, which `esj inspect` and
 `--output json` show:
 
 ```text
 warning: invoice.xml: encoding repaired: declared UTF-8, read as ISO-8859-1; esj validate is strict about this and --strict makes every command so
 ```
 
-A repair is not a loss and is not counted as one. `--strict` turns it off for every command,
-which is then exit code 2 with the reason. Bytes that decode neither in the declared charset nor
-in one of the four are read by no command in either mode: exit code 2 naming the charset,
+A repair is not a loss and is not counted as one. `--strict` turns it off for every command, which
+then leaves with exit code 2 and the reason. No command, in either mode, reads bytes that decode
+neither in the declared charset nor in one of the four: exit code 2 naming the charset,
 `XML-ENCODING` under `esj validate`.
 
 ## render
 
 `esj render` writes an invoice as a PDF, with `--html` as one self-contained HTML page, or with
-`--text` as plain text for a terminal; the input is any of the three syntaxes or a PDF carrying
-one of them.
+`--text` as plain text for a terminal. The input is any of the three syntaxes, or a PDF carrying
+one.
 
 | Option | |
 |---|---|
@@ -986,8 +995,8 @@ $ echo $?
 ```
 
 That PDF is the invoice as the letter a business sends ([`letter-layout.md`](letter-layout.md)).
-`--layout generic` draws the shape of the semantic model instead, and a template may name either
-layout, as `letterhead.json` names the generic one:
+`--layout generic` draws the shape of the semantic model instead. A template may name either layout;
+`letterhead.json` names the generic one:
 
 ```console
 $ esj render examples/standard-invoice.esj.json --layout generic --out generic.pdf
@@ -1016,8 +1025,8 @@ $ esj render conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml \
 warning: this page carries the content of a document somebody else wrote; open it as you would any file from a stranger. See docs/rendering.md
 ```
 
-An HTML run that also names `--page` or `--template` is told that the option took no effect
-rather than refused:
+An HTML run that also names `--page` or `--template` is told that the option took no effect; it is
+not refused:
 
 ```console
 $ esj render examples/minimal.esj.json --html --page LETTER --out invoice.html
@@ -1025,17 +1034,18 @@ warning: --page is the paper of the PDF; the HTML page has none, so the renderin
 warning: this page carries the content of a document somebody else wrote; open it as you would any file from a stranger. See docs/rendering.md
 ```
 
-Every rendering is net and derives nothing, the same document twice gives the same bytes, and
-the PDF is PDF/A-3b ([`pdf-output.md`](pdf-output.md)). **An HTML rendering is a page built
-from a document somebody else wrote.** [`rendering.md`](rendering.md) is what each one shows.
+Every rendering is net and derives nothing. The same document twice gives the same bytes, and the
+PDF is PDF/A-3b ([`pdf-output.md`](pdf-output.md)). **An HTML rendering is a page built from a
+document somebody else wrote.** [`rendering.md`](rendering.md) says what each one shows.
 
 ### The invoice as text
 
-`--text` writes the letter without its paper, top to bottom: the seller, the buyer, the title with
-the number, the dates and the references, the lines as a table (number, item with its wrapped
-description, quantity and unit, unit price, VAT rate, net amount), the allowances and charges, the
-totals, the payment details, the notes, and the further details with every value no block has a
-place for. The facts, names and number formats are the letter's, in the language of `--lang`.
+`--text` writes the letter without its paper, top to bottom. First come the seller, the buyer, the
+title with the number, the dates and the references. Then come the lines as a table (number, item
+with its wrapped description, quantity and unit, unit price, VAT rate, net amount), the allowances
+and charges, the totals, the payment details and the notes. Last come the further details, with
+every value no block has a place for. The facts, names and number formats are the letter's, in the
+language of `--lang`.
 
 ```console
 $ esj render examples/standard-invoice.esj.json --text --lang en --width 80 --out -
@@ -1053,28 +1063,27 @@ No.  Item                   Quantity  Unit price, net (EUR)  VAT           (EUR)
 ```
 
 It is plain text: rules of `-` and `=`, UTF-8 values as the document wrote them, no colour, no
-box-drawing character, and no control character of the document. No line is longer than the
-width and nothing is cut; a table whose columns do not fit is written row by row. A PDF input
-prints the invoice embedded in it. `--html`, `--embed` and `--text` exclude each other; `--page`,
-`--layout` and `--template` are told they took no effect. The text is held to
-`--max-output-bytes`.
+box-drawing character, and no control character of the document. No line is longer than the width,
+and nothing is cut: a table whose columns do not fit is written row by row. A PDF input prints the
+invoice embedded in it. `--html`, `--embed` and `--text` exclude each other; `--page`, `--layout`
+and `--template` are told they took no effect. `--max-output-bytes` bounds the text.
 
-Exit codes are those of every other command: 2 for a document that could not be read, recognized
-or rendered and for a template that is not one, 7 for a bound of this run the rendering outgrew
-— with nothing written — and 6 for a destination that could not be written.
-
-The cost of `render` is the drawing: the PDF is built whole in memory before its first byte is
-written, so a document inside every bound can still have a rendering that is not. `--max-pages`
-is the bound here, `--max-output-bytes` bounds the HTML page, `--max-runtime` defaults to 5m,
-and a heap that runs out ends the process with 3;
-[`deployment-measurements.md`](deployment-measurements.md) says what to give it.
+Exit codes are those of every other command. 2 is a document that could not be read, recognized or
+rendered, or a template that is not one. 7 is a bound of this run the rendering outgrew, with
+nothing written. 6 is a destination that could not be written. The cost of `render` is the drawing.
+The PDF is built whole in memory before its first byte is written, so a document inside every bound
+can still have a rendering that is not. `--max-pages` is the bound here, and `--max-output-bytes`
+bounds the HTML page. `--max-runtime` defaults to 5m, and a heap that runs out ends the process with
+code 3. [`deployment-measurements.md`](deployment-measurements.md) says how much heap to give it.
 
 ## embed
 
-`esj embed` writes an invoice into a PDF/A-3 file: the pages stay what they were, the cross
-industry invoice is attached as an associated file, the embedded files name tree names it, and
-the XMP packet declares it through the Factur-X extension schema. `esj render --embed cii` is
-the same step where the pages are this tool's own.
+`esj embed` writes an invoice into a PDF/A-3 file. The pages stay what they were. The command
+attaches the cross industry invoice as an associated file, names it in the embedded files name tree,
+and declares it in the XMP packet through the Factur-X extension schema. `esj render --embed cii` is
+the same step where the pages are this tool's own. What the cross industry invoice had no place for
+goes to the error stream, as under `convert --to cii`. The invoice XML is the one file the command
+embeds.
 
 | Option | |
 |---|---|
@@ -1095,22 +1104,19 @@ $ echo $?
 0
 ```
 
-What the cross industry invoice had no place for goes to the error stream, as under
-`convert --to cii`. The invoice XML is the one file the command embeds.
-
-**Nothing is converted and nothing is overwritten.** A PDF/A-1 or PDF/A-2 input is refused
-rather than lifted to part 3, and a file that already carries something that could be the
-invoice is refused rather than given a second one. Every refusal leaves with exit code 2;
-[`pdf-output.md`](pdf-output.md) is the complete list, what is written into the file, and where
-the facts about the format were taken from.
+**Nothing is converted and nothing is overwritten.** The command refuses a PDF/A-1 or PDF/A-2 input
+instead of lifting it to part 3. It refuses a file that already carries something that could be the
+invoice instead of giving it a second one. Every refusal leaves with exit code 2.
+[`pdf-output.md`](pdf-output.md) has the complete list, what is written into the file, and where the
+facts about the format were taken from.
 
 ## view
 
-`esj view` shows an invoice: in the browser, as one page with the invoice facts and the verdict
-at the top and a tab each for the PDF as it came, the letter `render` draws from its data, the
-KoSIT rendering and, with `--report`, the report of `validate`; with `--text`, in the terminal.
-[`view.md`](view.md) is the reference: the page, the outcomes, the files, the directory and the
-entries that offer it under *Open with*.
+`esj view` shows an invoice in the browser. The page carries the invoice facts and the verdict at
+the top. Below them, it has a tab each for the PDF as it came, the letter `render` draws from its
+data, the KoSIT rendering and, with `--report`, the report of `validate`. With `--text` it shows the
+invoice in the terminal. [`view.md`](view.md) is the reference: the page, the outcomes, the files,
+the directory and the entries that offer it under *Open with*.
 
 | Option | |
 |---|---|
@@ -1132,18 +1138,18 @@ $ echo $?
 0
 ```
 
-Every outcome is a page, a PDF without an invoice and a file that is not read included, because
-a file manager shows no error stream; a refusal of the read leaves with the code `render` leaves
-with for the same file, a page that shows the invoice with 0, and with `--report` the code is the
-one of `validate`. With `--text` a refusal prints the line the page would show. Only a name that
-is no readable file, the standard input, a command line that does not parse and a template that
-is not one are answered on the error stream alone. Limits and `--max-runtime` are those of
-`render`, and the directory is never deleted: the browser reads it after the command has ended.
+Every outcome is a page, a PDF without an invoice and a file that is not read included, because a
+file manager shows no error stream. A refusal of the read leaves with the code `render` leaves with
+for the same file, and a page that shows the invoice with 0. With `--report` the code is the one of
+`validate`. With `--text` a refusal prints the line the page would show. Only four cases answer on
+the error stream alone: a name that is no readable file, the standard input, a command line that
+does not parse, and a template that is not one. Limits and `--max-runtime` are those of `render`.
+The directory is never deleted, because the browser reads it after the command ends.
 
 ## inspect
 
-The quickest way to see what a file says. The page has the same lines for every document — a
-term that is absent is shown as absent — so two of these pages can be compared with `diff`:
+`esj inspect` is the quickest way to see what a file says. The page has the same lines for every
+document, and shows an absent term as absent, so you can compare two of these pages with `diff`:
 
 ```console
 $ esj inspect examples/standard-invoice.esj.json
@@ -1182,16 +1188,16 @@ Semantic
 INDETERMINATE — nothing fatal found; missing from the check: written-syntax (not-run-by-this-command), business-rules (not-run-by-this-command)
 ```
 
-The last line of this page is never `VALID`, and that is the point: this command runs the
+The last line of this page is never `VALID`, and that is deliberate. This command runs the
 structural layers and neither the official artefacts nor the rule pack, so a component of the
-complete check is always missing, and it says which in the same three words `esj validate` uses.
-A file this page found nothing wrong with can still be rejected by `esj validate`, and the exit
-code — 9, not 0 — says so without anybody reading the line.
+complete check is always missing. It says which, in the same three words `esj validate` uses. A file
+this page found nothing wrong with can still be rejected by `esj validate`, and the exit code, 9 and
+not 0, says so without anybody reading the line.
 
-The `Validation pack` line names the pack `esj validate` would run against the document, which
-follows from its syntax and the customization identifier of BT-24; `--pack` names a different
-one, and `--packs` and `ESJ_PACKS` add pack directories as they do for `validate`. Where the
-document names a profile that pack carries no rule set for, the line says so.
+The `Validation pack` line names the pack `esj validate` would run, as the syntax and the
+customization identifier of BT-24 decide it; `--pack` names a different one, and `--packs` and
+`ESJ_PACKS` add pack directories as they do for `validate`. Where the document names a profile that
+pack carries no rule set for, the line says so.
 
 ## get and list
 
@@ -1202,7 +1208,7 @@ $ esj get examples/standard-invoice.esj.json /BG-22/BT-112
 2915.5
 ```
 
-The supplementary components of a value are not in that string; `--json` writes the whole value
+That string leaves out the supplementary components of a value. `--json` writes the whole value
 object instead, in the canonical form of `SPEC.md` section 7:
 
 ```console
@@ -1210,8 +1216,8 @@ $ esj get examples/standard-invoice.esj.json /BT-1 --json
 "RE-2026-0042"
 ```
 
-A path the document carries no value at is not an error of the input: the message goes to the
-error stream and the exit code is 1, the shape `grep` gives it:
+A path the document carries no value at is no error of the input. The message goes to the error
+stream and the exit code is 1, the shape `grep` gives it:
 
 ```console
 $ esj get examples/standard-invoice.esj.json /BG-3/0/BT-25
@@ -1220,19 +1226,19 @@ $ echo $?
 1
 ```
 
-Where the reason is a property of the path rather than of this document, the message says so in
-the words the validator would use:
+Where the reason is a property of the path and not of this document, the message says so in the
+words the validator would use:
 
 ```console
 $ esj get examples/standard-invoice.esj.json /BT-9999
 examples/standard-invoice.esj.json carries no value at /BT-9999: the registry of EN 16931-1:2017+A1:2019/AC:2020 does not contain BT-9999
 ```
 
-`esj list` writes the whole document as lines of path, type and canonical value, separated by
-tabs and in canonical path order; a value carrying a line break is written on one line with the
-escape `\n`, and `--format json` writes the same three fields as an array of objects. The C0
-and C1 controls, DEL, U+2028, U+2029 and the bidirectional controls (U+061C, U+200E, U+200F,
-U+202A–E, U+2066–9) are written `\uXXXX` in every text line and JSON report; `esj get` is raw.
+`esj list` writes the whole document as lines of path, type and canonical value, separated by tabs
+and in canonical path order. A value carrying a line break stays on one line, with the escape `\n`.
+`--format json` writes the same three fields as an array of objects. Every text line and JSON report
+escapes the C0 and C1 controls, DEL, U+2028, U+2029 and the bidirectional controls (U+061C, U+200E,
+U+200F, U+202A–E, U+2066–9). They appear as `\uXXXX`; `esj get` is raw.
 
 ```console
 $ esj list examples/standard-invoice.esj.json
@@ -1253,10 +1259,10 @@ $ esj list examples/standard-invoice.esj.json
 
 ## diff
 
-Two documents are compared in the semantic model rather than in a syntax, so the two files may
-be written in different ones. The KoSIT test suite carries forty business cases twice, once in
-UBL and once in CII; here is a pair whose two renderings agree, printing nothing and leaving
-with 0, the two semantic digests on the error stream:
+`esj diff` compares two documents in the semantic model, not in a syntax, so the two files may be
+written in different ones. The KoSIT test suite carries 40 business cases twice, once in UBL and
+once in CII. Here is a pair whose two renderings agree: the command prints nothing, leaves with 0
+and writes the two semantic digests on the error stream:
 
 ```console
 $ esj diff conformance/kosit/business-cases/standard/01.01a-INVOICE_ubl.xml \
@@ -1269,8 +1275,9 @@ $ echo $?
 
 Equal semantic digests over two files written in different syntaxes are what the litmus test of
 [`conformance.md`](conformance.md) claims over the whole corpus. Where a pair does not agree, the
-difference is named by semantic path. In the pair below the city and the postcode of both parties
-stand in the opposite fields — a property of the test instances, not of a reader:
+command names the difference by semantic path; `--summary` counts the differing paths instead. In
+the pair below the city and the postcode of both parties stand in the opposite fields, a property of
+the test instances and not of a reader:
 
 ```console
 $ esj diff conformance/kosit/business-cases/standard/03.06a-INVOICE_ubl.xml \
@@ -1291,12 +1298,10 @@ $ echo $?
 1
 ```
 
-`--summary` counts the differing paths instead of naming them.
-
 ## canonicalize
 
-Without an option the command writes the canonical bytes of `SPEC.md` section 7, which end
-without a line feed; `--digest` writes the two digests of section 8 taken over them instead:
+Without an option the command writes the canonical bytes of `SPEC.md` section 7, which end without a
+line feed. `--digest` writes the two digests of section 8, taken over them, instead:
 
 ```console
 $ esj canonicalize examples/standard-invoice.esj.json --digest
@@ -1304,15 +1309,15 @@ semantic: 6007ca07a940291633dd24e20a1b815532aa8be0cb24c5cca50c04ffe2ec8d2a
 document: 0c8521c18f12bfdc90713cda4dafd8e0f171094c63c5d2201b82a4be9fa8ba94
 ```
 
-The semantic digest is taken over the semantic model and the `values` object and answers *did
-the invoice change*; the document digest is taken over the whole document and answers *is this
-the file I received*. Two extractions of the same invoice differ in `source`, and therefore in
-their document digests, while their semantic digests agree.
+The semantic digest covers the semantic model and the `values` object and answers *did the invoice
+change*. The document digest covers the whole document and answers *is this the file I received*.
+Two extractions of the same invoice differ in `source`, and therefore in their document digests,
+while their semantic digests agree.
 
 ## packs
 
-The validation packs themselves, rather than a document. `esj packs list` prints what
-`esj --list-packs` prints and takes `--packs <directory>`, which a top-level switch cannot:
+`esj packs` works on the validation packs themselves, not on a document. `esj packs list` prints
+what `esj --list-packs` prints and takes `--packs <directory>`, which a top-level switch cannot:
 
 ```console
 $ esj packs list
@@ -1330,14 +1335,13 @@ peppol-bis-billing-3.0.20
 ...
 ```
 
-`origin` is `bundled` or the directory a pack was read from; a pack of a pack directory adds the
-note of its manifest and, for every rule set compiled on this machine, the file it was compiled
-from and the SHA-256 of the stylesheet, which is what the engine weighs before it runs it.
-
+`origin` is `bundled` or the directory a pack was read from. A pack of a pack directory adds the
+note of its manifest. For every rule set compiled on this machine it adds the file it was compiled
+from and the SHA-256 of the stylesheet. The engine weighs that digest before it runs the stylesheet.
 `esj packs fetch <recipe> --into <directory>` makes the pack of a recipe this build carries, for
 artefacts whose publisher permits their use and not their redistribution
 ([`validation.md`](validation.md#packs-made-on-this-machine)). It is the one command of the tool
-that opens a network connection, and it opens one only to the base URL of that recipe.
+that opens a network connection, and only to the base URL of that recipe.
 
 | Option | What it does |
 |---|---|
@@ -1356,30 +1360,26 @@ peppol-bis-billing/3.0/3.0.21 written to /home/me/esj-packs/peppol-bis-billing/3
 esj validate <file> --packs /home/me/esj-packs runs it, as does ESJ_PACKS=/home/me/esj-packs
 ```
 
-Every file is fetched over https, with no redirect followed and 60 seconds each, and weighed
-against the size and the SHA-256 the recipe pins; a file that differs is named, with both
-digests, and nothing is written. The Schematron is compiled in process with the ISO Schematron
-skeleton this build carries, and a schema that would include a file the recipe does not name is
-refused. The pack is assembled in a directory of the pack directory whose name begins with a dot,
-which no run reads packs from, and moved into place in one step, then read back, every file weighed against its manifest. A target
-that already holds the same files is left alone (`is already, unchanged, in`), one that holds a
-different pack is refused unless `--replace` is given, and one that holds anything else is
-refused. A proxy is taken from the Java system properties `https.proxyHost` and
-`https.proxyPort`. The command leaves with 0 when the pack is there, and with 2 when a recipe is
-unknown, a file cannot be fetched or is not the one pinned, or the target holds what the command
-does not overwrite; `--verbose` adds how long fetching and compiling took.
+The command fetches every file over https, follows no redirect, allows 60 seconds each, and weighs
+each against the size and the SHA-256 the recipe pins. A file that differs is named, with both
+digests, and nothing is written. The command compiles the Schematron in process with the ISO
+Schematron skeleton this build carries. It refuses a schema that would include a file the recipe
+does not name. It assembles the pack in a directory of the pack directory whose name begins with a
+dot, which no run reads packs from. Then it moves the pack into place in one step and reads it back,
+weighing every file against its manifest. A target that already holds the same files is left alone
+(`is already, unchanged, in`). A target that holds a different pack is refused unless you pass
+`--replace`, and one that holds anything else is refused. The proxy comes from the Java system
+properties `https.proxyHost` and `https.proxyPort`. The command leaves with 0 when the pack is
+there. It leaves with 2 when a recipe is unknown, a file cannot be fetched or is not the one pinned,
+or the target holds what the command does not overwrite. `--verbose` adds how long fetching and
+compiling took.
 
 ## Limits
 
-Reading an invoice costs memory and time before anything is known about it, so a run reads
-within bounds: how large an XML input may be, how large an ESJ document, how many values it may
-carry, how long one value may be, how deep a path may go, how many nodes may sit inside
-`extensions`, and — the two bounds on what a run writes — how large an XML document or HTML page
-it writes may be and how many pages one rendering may have.
-They are the limits of `SPEC.md` section 12.2, and they are **policy of the reading party, not
-conformance** (section 3.1).
-
-Two profiles ship, and `--limits` chooses between them:
+Reading an invoice costs memory and time before anything is known about it. So a run reads and
+writes within the bounds of the table below. They are the limits of `SPEC.md` section 12.2, and they
+are **policy of the reading party, not conformance** (section 3.1). Two profiles ship, and
+`--limits` chooses between them:
 
 | Bound | `--limits default` | `--limits large` | Switch |
 |---|---|---|---|
@@ -1397,52 +1397,50 @@ Two profiles ship, and `--limits` chooses between them:
 | characters held of one element | 33 MiB | 33 MiB | `--max-buffered-bytes` |
 | elements held of one element | 100 000 | 100 000 | `--max-buffered-elements` |
 
-The XML output bounds what a writer may produce and is not the input bound read backwards: a
-cross industry invoice runs to about three times the UBL invoice it was converted from. It bounds
-the page of `render --html` as well, measured while it is written: ten thousand lines are about
-130 MB of HTML. The last two are the streaming reader's alone — a condition that asks about a
-child element is decided only once that element has been read, so the element it stands on is
-held whole — and a refusal says which of the two was met.
+The XML output bound limits what a writer may produce; it is not the input bound read backwards. A
+cross industry invoice runs to about three times the UBL invoice it was converted from. The bound
+also limits the page of `render --html`, measured while it is written: 10 000 lines are about 130 MB
+of HTML. The last two bounds belong to the streaming reader alone. A condition that asks about a
+child element is decided only once that element has been read, so the reader holds the element it
+stands on whole. A refusal says which of the two was met.
 
-A bound is a promise that an input of that size will be read, so a profile needs the heap its
-bounds imply. Measured as the smallest `-Xmx` at which an input **at** the bound is read and
-judged: everything the default profile accepts is read within `-Xmx256m`, which is why `bin/esj`
-runs `-Xmx512m`; `large` needs about `-Xmx1g` from a file argument and `-Xmx1536m` from the
-standard input, and about `-Xmx3g` for XML at its 256 MiB bound under `--importer xslt`
+A bound is a promise that an input of that size will be read, so a profile needs the heap its bounds
+imply. Measured as the smallest `-Xmx` at which an input **at** the bound is read and judged:
+everything the default profile accepts is read within `-Xmx256m`, which is why `bin/esj` runs
+`-Xmx512m`. `large` needs about `-Xmx1g` from a file argument and `-Xmx1536m` from the standard
+input, and about `-Xmx3g` for XML at its 256 MiB bound under `--importer xslt`
 ([`deployment-measurements.md`](deployment-measurements.md)).
 
-A PDF is read within two bounds of its own and shares a third. `--max-pdf-bytes` bounds the
-file, `--max-attachments` how many attachments are enumerated, and the attachment carrying the
-invoice is bounded by `--max-input-bytes`. A stream that inflates past that bound is cut off and
-reported rather than buffered whole; the XMP packet is read within a library bound no switch
-moves.
+A PDF is read within two bounds of its own and shares a third. `--max-pdf-bytes` bounds the file,
+`--max-attachments` how many attachments are enumerated, and `--max-input-bytes` the attachment
+carrying the invoice. A stream that inflates past that bound is cut off and reported, not buffered
+whole. A library bound no switch moves limits the XMP packet.
 
 `--max-pdf-bytes` bounds a second thing: **everything one container decodes**. A PDF keeps its
-objects in compressed streams that the library decodes while it opens the file, so this reader
-measures each as the library reaches it against one budget for the file; spending it leaves with
-exit code 7 and no verdict. The budget is raised where the attachment bounds of a run are larger
-than the file bound, and in the same proportion it bounds how many objects the object streams may
-declare together and how many objects the reader walks on the pages to find the files they refer
-to. Two refusals behind no switch complete it: a structural stream whose filter
-chain this reader does not run, and a `/Predictor` row wider than a mebibyte
-([`pdf-input.md`](pdf-input.md)).
+objects in compressed streams that the library decodes while it opens the file. This reader measures
+each as the library reaches it, against one budget for the file; spending it leaves with exit code 7
+and no verdict. The budget is raised where the attachment bounds of a run are larger than the file
+bound. In the same proportion it bounds how many objects the object streams may declare together,
+and how many objects the reader walks on the pages to find the files they refer to. Two refusals
+behind no switch complete it: a structural stream whose filter chain this reader does not run, and a
+`/Predictor` row wider than a mebibyte ([`pdf-input.md`](pdf-input.md)).
 
 `large` moves seven bounds and no more: the XML input, the XML output, the document, the PDF, the
 number of values, the nodes inside `extensions` and the pages of a rendering. The size of one value,
-the length of a path and the depth of `extensions` stay where the default profile puts them;
+the length of a path and the depth of `extensions` stay where the default profile puts them.
 `--max-string-bytes` and `--max-binary-bytes` move those, and a refusal names which case it is.
 
 **Refusing at `large`'s own bounds costs nothing from a file and about twice the bound from a
-stream.** A file argument is refused on the length the file system reports; the standard input
-is collected until one byte past the bound, so a refusal there needs a heap that can hold about
-twice it, and a process that cannot exhausts the heap first, which the JVM answers with its own
-exit code 3. A switch takes a plain number of bytes or one with a `k`, `M` or `G` suffix for
-multiples of 1024, applied on top of the profile whichever order the two were written in, so
+stream.** A file argument is refused on the length the file system reports. The standard input is
+collected until one byte past the bound, so a refusal there needs a heap that can hold about twice
+it. A process that cannot exhausts the heap first, which the JVM answers with its own exit code 3. A
+switch takes a plain number of bytes, or one with a `k`, `M` or `G` suffix for multiples of 1024. It
+applies on top of the profile in whichever order you write the two, so
 `--limits large --max-values 250000` is a large profile with one bound moved down.
 [`deployment-measurements.md`](deployment-measurements.md) has both bounds in both forms.
 
-Reaching a bound is exit code 7 and not code 2, and the message names the bound and the switch
-that raises it:
+Reaching a bound is exit code 7, not code 2, and the message names the bound and the switch that
+raises it:
 
 ```console
 $ esj convert examples/standard-invoice.esj.json --max-values 5
@@ -1451,26 +1449,26 @@ $ echo $?
 7
 ```
 
-`esj validate` answers the same way: a document that outgrew a bound leaves with 7 rather than 1,
-and a bound a reader ran into leaves with 7 naming the switch that would have kept the value,
-rather than writing a document with a term missing. `--max-runtime <duration>` bounds the time
-instead of the bytes: `500ms`, `90s`, `5m` or a bare number of seconds, one number over the whole
-run, and five minutes for every command that reads a document where none is given. `esj validate`
-spends it step by step and names the step it ran out in; behind it, and for every other command,
-a watchdog ends the process half a second later with one line on the error stream and code 7:
+`esj validate` answers the same way. A document that outgrew a bound leaves with 7 instead of 1. A
+bound a reader ran into leaves with 7 and names the switch that would have kept the value; the tool
+does not write a document with a term missing. `--max-runtime <duration>` bounds the time instead of
+the bytes: `500ms`, `90s`, `5m` or a bare number of seconds, one number over the whole run. Every
+command that reads a document gets 5 minutes where you give none. `esj validate` spends it step by
+step and names the step it ran out in. Behind it, and for every other command, a watchdog ends the
+process half a second later with one line on the error stream and code 7:
 
 ```text
 esj: runtime limit of 30 s reached; no verdict on the document
 ```
 
-It is a second layer: `timeout 30 esj validate - < invoice.xml`, or a `destroyForcibly()` on the
+It is a second layer. `timeout 30 esj validate - < invoice.xml`, or a `destroyForcibly()` on the
 caller's side, stays the primary guard; a heap that runs out first ends the process with code 3.
-`conformance/scale/README.md` describes the synthetic instances the large profile was sized
-against, and [`deployment.md`](deployment.md) is where these switches belong in a service.
+`conformance/scale/README.md` describes the synthetic instances the large profile was sized against,
+and [`deployment.md`](deployment.md) shows where these switches belong in a service.
 
 ## Exit codes
 
-The exit codes are the interface a script is written against; their meanings do not change:
+Write your scripts against the exit codes; their meanings do not change:
 
 | Code | Meaning |
 |---|---|
@@ -1490,22 +1488,22 @@ that left part of the check out leaves with 9, which is why `esj inspect` never 
 **Code 7 is no verdict**: the last line reads `NO VERDICT — a limit of this run was reached …`,
 `verdict` is `null`, and `reasons` names `limit-reached` under each component the limit cut short.
 
-A consumer that closes the pipe is not a failure. `esj list x | head -1` means "I have seen
-enough", so the tool stops writing, says nothing, and leaves with the code the command reached;
-which of the two a refused write is follows from what the standard output is attached to — a
-pipe, a socket or a terminal has a reader that can walk away, a file or a device does not.
+A consumer that closes the pipe is not a failure. `esj list x | head -1` means "I have seen enough",
+so the tool stops writing, says nothing, and leaves with the code the command reached. What the
+standard output is attached to decides which of the two a refused write is. A pipe, a socket or a
+terminal has a reader that can walk away; a file or a device does not.
 
 ## What it does not do
 
-It does not present **its own rule engine as the standard**. The business rules of EN 16931-1,
-clause 6.4 are checked by the artefacts their publishers released, which this tool runs and does
-not reimplement; the native pack of `--rules en16931` checks the same clause over the business
-terms, and its findings are a layer of their own that is never ESJ conformance. Where the two
-part company, [`../conformance/rules/ledger.md`](../conformance/rules/ledger.md) says so rule by
-rule, and `esj --list-packs` names the release this build carries.
+It does not present **its own rule engine as the standard**. The artefacts their publishers released
+check the business rules of EN 16931-1, clause 6.4; this tool runs them and does not reimplement
+them. The native pack of `--rules en16931` checks the same clause over the business terms. Its
+findings are a layer of their own and never ESJ conformance. Where the two part company,
+[`../conformance/rules/ledger.md`](../conformance/rules/ledger.md) says so rule by rule, and
+`esj --list-packs` names the release this build carries.
 
-It reads **no invoice off the page of a PDF** — no optical character recognition, no layout
-analysis, no heuristic extraction, none planned ([Hybrid invoices](#hybrid-invoices-pdf)).
+It reads **no invoice off the page of a PDF**: no optical character recognition, no layout analysis,
+no heuristic extraction, none planned ([Hybrid invoices](#hybrid-invoices-pdf)).
 
-It reads **extension terms only when they are asked for**: without `--extension` such an element
+It reads **extension terms only when you ask for them**. Without `--extension` such an element
 becomes a warning on the error stream, and such a path leaves the run `INDETERMINATE`.
