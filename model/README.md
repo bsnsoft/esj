@@ -1,9 +1,8 @@
 # `model/` — the ESJ term registry
 
-This directory holds the machine-readable description of the semantic model that
-EN16931 Semantic JSON (ESJ) encodes. Everything in ESJ that depends on *which*
-business terms exist — path validation, cardinality checking, the generated typed
-API — reads these files and nothing else.
+These files describe, machine-readably, the semantic model that EN16931 Semantic JSON (ESJ)
+encodes. Everything in ESJ that depends on *which* business terms exist reads these files and
+nothing else: path validation, cardinality checking, the generated typed API.
 
 | File | What it is |
 |---|---|
@@ -21,19 +20,19 @@ API — reads these files and nothing else.
 ## One file per edition
 
 A registry file describes exactly one edition of one model: `<model>/<edition key>.json`.
-The `edition` member carries the full edition string in the spelling the standards body uses
-— `EN 16931-1:2017+A1:2019/AC:2020` — and the file name carries the short key. A document
-writes that string with every space removed in its `semanticModel` member; `SPEC.md`
-sections 4.4 and 10 give the mapping. A later edition arrives as a new file beside the older
-one and never as a rewrite of it, and a file is self-contained: no registry imports another
-core registry and neither carries a delta of the other. `Registry.editionKeys()` lists the
-editions a build carries, `Registry.forEdition(key)` reads one and
-`Registry.forSemanticModel(string)` finds the one a document is measured against; 2017 stays
-the edition everything writes unless a caller asks for another.
+The `edition` member carries the full edition string in the spelling the standards body uses,
+`EN 16931-1:2017+A1:2019/AC:2020`; the file name carries the short key. A document writes that
+string with every space removed in its `semanticModel` member, and `SPEC.md` sections 4.4 and
+10 give the mapping. A later edition arrives as a new file beside the older one, never as a
+rewrite of it. A file is self-contained: no registry imports another core registry, and
+neither carries a delta of the other. `Registry.editionKeys()` lists the editions a build
+carries, `Registry.forEdition(key)` reads one, and `Registry.forSemanticModel(string)` finds
+the one a document is measured against. Everything writes 2017 unless you ask for another
+edition.
 
-The files of the 2026 edition are **separable**: `en16931/2026.paths` lists what a
-distribution leaves out when that edition is not shipped, and the Maven profile
-`without-edition-2026` builds without them, with `Registry.editionKeys()` reporting `2017`
+The files of the 2026 edition are **separable**. `en16931/2026.paths` lists what a
+distribution leaves out when it does not ship that edition. The Maven profile
+`without-edition-2026` builds without them, and `Registry.editionKeys()` then reports `2017`
 alone. Prose that states facts of the edition, this page among it, is not separable.
 `../docs/editions.md` has the rest, and what no build does for that edition.
 
@@ -43,36 +42,36 @@ An extension registry names what it builds on in its `imports` member:
 "imports": [{ "model": "EN16931-1", "edition": "EN 16931-1:2017+A1:2019/AC:2020" }]
 ```
 
-The edition string is copied character for character from the registry the extension was
-written against, and combining the two is refused when the strings differ: an extension's
+Copy the edition string character for character from the registry the extension was written
+against. ESJ refuses to combine the two when the strings differ, because an extension's
 parents, its `reusesTerms` and its cardinalities were checked against one list of terms.
 `registry.schema.json` requires `imports` of every registry whose groups carry terms of
-another model, and `esj-core` additionally checks that no `parent` points outside the file.
+another model. `esj-core` also checks that no `parent` points outside the file.
 
-An extension registry may also declare `"transport": "none"`, with the `transportNote` that says
-why: its terms are bound by no transport syntax by design, so the UBL or CII written from a
-document using them is the whole invoice and `esj validate` counts the written-syntax row and
-names them instead of answering `term-not-in-syntax` (`../docs/b2c.md`). `b2c/0.1.json` is the
-one file of this release that declares it.
+An extension registry may also declare `"transport": "none"`, with a `transportNote` that says
+why. No transport syntax binds its terms, by design. The UBL or CII written from a document
+using them is then the whole invoice: `esj validate` counts the written-syntax row and names
+the terms instead of answering `term-not-in-syntax` (`../docs/b2c.md`). Only `b2c/0.1.json`
+declares it in this release.
 
 ## An extension namespace is permanent
 
 `imports` names the edition of another model, never a version of the extension's own
-namespace. An identifier published in an extension namespace — `BT-DEX-001`, `BT-B2C-001` —
-keeps its meaning, its semantic data type and its structural semantics in every later
-registry of that namespace; an incompatible revision takes a new namespace. A namespace may
-grow, and a registry file is versioned so that a validator knows which identifiers it holds,
-but a version never says what one of them means. `SPEC.md` sections 5.6, 10 and 11.1 state
-the rule normatively.
+namespace. An identifier published in an extension namespace, such as `BT-DEX-001` or
+`BT-B2C-001`, keeps its meaning, its semantic data type and its structural semantics in every
+later registry of that namespace. An incompatible revision takes a new namespace. A namespace
+may grow. A registry file carries a version so that a validator knows which identifiers it
+holds, but a version never says what one of them means. `SPEC.md` sections 5.6, 10 and 11.1
+state the rule normatively.
 
 ## The registry contains no normative prose
 
-The registry records facts about the structure of the model — identifiers, names,
+The registry records facts about the structure of the model: identifiers, names,
 parent/child relations, cardinalities, semantic data types, supplementary components, code
-list names, decimal limits — and reproduces no sentence of EN 16931-1, of the XRechnung
-specification or of Peppol BIS Billing 3.0. Every `description` and every entry in `notes`
-is original wording; where a statement rests on the standard, the note names the clause, the
-table or the rule identifier instead of quoting it. `docs/sources.md` says how to obtain the
+list names, decimal limits. It reproduces no sentence of EN 16931-1, of the XRechnung
+specification or of Peppol BIS Billing 3.0. Every `description` and every entry in `notes` is
+original wording. Where a statement rests on the standard, the note names the clause, the
+table or the rule identifier instead of quoting it. `docs/sources.md` says where you get the
 normative text.
 
 ## File format
@@ -141,13 +140,13 @@ A term looks like this:
 `Amount`, `UnitPriceAmount`, `Quantity`, `Percentage`, `Code`, `Identifier`,
 `DocumentReference`, `Date`, `Text`, `BinaryObject`, and `Time`, which the 2026 edition
 adds and gives to BT-166 alone. The datatype decides the grammar of the content and the
-supplementary components; `SPEC.md` section 6 gives the rules.
+supplementary components. `SPEC.md` section 6 gives the rules.
 
 ### Supplementary components
 
-`components` is non-empty only on `Identifier` and `BinaryObject` terms — 14 terms carrying
-16 components in the 2017 registry, 17 carrying 19 in the 2026 one. Each component has a
-`role` that names the ESJ value member it feeds:
+`components` is non-empty only on `Identifier` and `BinaryObject` terms: 14 terms carry 16
+components in the 2017 registry, 17 carry 19 in the 2026 one. Each component has a `role`
+that names the ESJ value member it feeds:
 
 | `role` | ESJ value member | Where |
 |---|---|---|
@@ -156,13 +155,13 @@ supplementary components; `SPEC.md` section 6 gives the rules.
 | `mimeCode` | `mimeCode` | BT-125 |
 | `filename` | `filename` | BT-125 |
 
-A scheme member is allowed in an ESJ document only where the registry lists a
-component for that term. Everything else an XML syntax may attach to a value
-(`@listID`, `@languageID`, `@currencyID`, `@schemeName`, …) is a syntax carrier or
-is forbidden by the CEN syntax rules, and has no place in ESJ.
+An ESJ document may carry a scheme member only where the registry lists a component for
+that term. Everything else an XML syntax may attach to a value (`@listID`, `@languageID`,
+`@currencyID`, `@schemeName`, …) is a syntax carrier or forbidden by the CEN syntax rules, and
+has no place in ESJ.
 
-A `scheme` component carries `schemeList` where the edition or, for 2017, the CEN validation
-artefacts fix the list the scheme code comes from. All 13 scheme components of the 2017
+A `scheme` component carries `schemeList` where the edition, or for 2017 the CEN validation
+artefacts, fix the list the scheme code comes from. All 13 scheme components of the 2017
 registry do:
 
 | `schemeList` | Terms | Rule |
@@ -176,42 +175,43 @@ registry do:
 | `ISO 6523 ICD` | BT-71 | `BR-CL-26` |
 
 The rules are the code-list assertions of `EN16931-UBL-codes.sch` in the CEN/TC 434
-validation artefacts 1.3.16, and each term's `notes` names the one it comes from. The 2026
-registry names no rule, because that edition has no artefacts: each of its 16 assignments
-rests on the usage note of the term's own Table 2 row, which is why BT-157 reads `UNTDID
-7143` there and `ISO 6523 ICD` here. `schemeList` is documentation: it reaches the Javadoc
-of the generated accessors so that a caller writing `identifiers().add(value, scheme)` can
-see which list the scheme comes from, and nothing else. Membership of a code list is a
-business rule decided by a versioned rule pack, and the structural layers never check it.
-There is no `schemeList` on `schemeVersion`, `mimeCode` or `filename`, and the schema
-refuses one there.
+validation artefacts 1.3.16. Each term's `notes` names the one it comes from. The 2026
+registry names no rule, because that edition has no artefacts. Each of its 16 assignments
+rests on the usage note of the term's own Table 2 row; that is why BT-157 reads `UNTDID 7143`
+there and `ISO 6523 ICD` here.
+
+`schemeList` is documentation and nothing else. It reaches the Javadoc of the generated
+accessors, so when you write `identifiers().add(value, scheme)` you see which list the scheme
+comes from. Membership of a code list is a business rule that a versioned rule pack decides;
+the structural layers never check it. `schemeVersion`, `mimeCode` and `filename` carry no
+`schemeList`, and the schema refuses one there.
 
 **The `BT-x-y` numbering of components is informative.** Neither edition numbers the
-supplementary components; the style is the one implementers commonly use, and where it comes
-from could not be verified — CEN/TS 16931-3-2 and CEN/TS 16931-3-3 were not obtained, and the
-string occurs nowhere in the CEN/TC 434 validation artefacts. The notes of every affected
-term say so. Treat `role` as the normative-facing member and the component id as a label.
+supplementary components. The style is the one implementers commonly use, and its origin is
+unverified: this project did not obtain CEN/TS 16931-3-2 and CEN/TS 16931-3-3, and the string
+occurs nowhere in the CEN/TC 434 validation artefacts. The notes of every affected term say
+so. Treat `role` as the normative-facing member and the component id as a label.
 
 ### `maxDecimals` and `maxDecimalsRule`
 
-How many fraction digits a term allows is a fact of the edition, and the two editions state
-it differently:
+The edition fixes how many fraction digits a term allows, and the two editions state it
+differently:
 
 | Edition | Amounts | Unit prices | Quantities | Percentages |
 |---|---|---|---|---|
 | 2017, Table 26 | `"maxDecimals": 2` on all 21 | unlimited | unlimited | unlimited |
 | 2026, Table 28 | `"maxDecimalsRule": "iso4217-minor-unit"` | `"iso4217-minor-unit-plus-2"` | BT-129 4, BT-149 2 | 2, and BT-167 6 |
 
-A term states a number or a rule, never both. The limit is a business rule, not a structural
-one: an ESJ reader accepts a value with more decimals and a rule pack rejects it (`rules/`, the
-`BR-DEC-*` rules).
+A term states a number or a rule, never both. The limit is a business rule. An ESJ reader
+accepts a value with more decimals, and a rule pack rejects it (`rules/`, the `BR-DEC-*`
+rules).
 
 ### `codeList`
 
-All 22 `Code` terms of the 2017 registry carry a `codeList`; of the 37 in the 2026 registry,
-33 do and four do not, because their usage note spells the permitted values out instead of
-naming a published list. The value is the list name without a version: the applicable
-version is the latest published at the time of the syntax binding. The 2017 assignments:
+All 22 `Code` terms of the 2017 registry carry a `codeList`. Of the 37 in the 2026 registry,
+33 do; 4 do not, because their usage note spells the permitted values out instead of naming a
+published list. The value is the list name without a version. The applicable version is the
+latest published at the time of the syntax binding. The 2017 assignments:
 
 | Code list | Terms |
 |---|---|
@@ -227,29 +227,27 @@ version is the latest published at the time of the syntax binding. The 2017 assi
 | `VATEX` | BT-121 |
 | `UN/ECE Recommendation 20 with Rec 21 extension` | BT-130, BT-150 |
 
-Every one of those assignments is justified in the term's own `notes`, by a usage note of
-Table 2, by a `BR-CL-*` rule of the CEN validation artefacts, or by both. One oddity is
-recorded there rather than smoothed over: the UBL artefacts phrase the tax point date code
-rule (BT-8) against UNTDID 2005 while the CII artefacts phrase it against UNTDID 2475. The
-allowance and charge reason rules are separate and unambiguous: `BR-CL-19` applies to the
-allowance reason code (UNCL 5189, BT-98 and BT-140) and `BR-CL-20` to the charge reason code
-(UNCL 7161, BT-105 and BT-145).
+The term's own `notes` justify every one of those assignments, by a usage note of Table 2, by
+a `BR-CL-*` rule of the CEN validation artefacts, or by both. The notes record one oddity as
+it is: the UBL artefacts phrase the tax point date code rule (BT-8) against UNTDID 2005, the
+CII artefacts against UNTDID 2475. The allowance and charge reason rules are separate and
+unambiguous. `BR-CL-19` applies to the allowance reason code (UNCL 5189, BT-98 and BT-140),
+`BR-CL-20` to the charge reason code (UNCL 7161, BT-105 and BT-145).
 
 The 2026 registry adds `UNTDID 5153` (BT-177, BT-193), `UNTDID 6313` (BT-211) and further
 terms to the lists above, all of them on the strength of a Table 2 usage note.
 
 **Membership belongs to a versioned rule pack, never to the registry.** A code list gains
-and loses codes on its own schedule while a structural verdict must not move, so the
-registry says which list a value is drawn from — a fact of the semantic model — and a dated
-rule pack says which codes that list held. A membership check is therefore a business rule
-(`SPEC.md` section 9.4), and its answer is always relative to a named rule pack;
-`rules/en16931/1.3.17` is one.
+and loses codes on its own schedule, and a structural verdict must not move with it. So the
+registry says which list a value is drawn from, a fact of the semantic model, and a dated rule
+pack says which codes that list held. A membership check is therefore a business rule
+(`SPEC.md` section 9.4). Its answer is always relative to a named rule pack, such as
+`rules/en16931/1.3.17`.
 
 ### `slug`
 
-`slug` is an ESJ convention with no standing in any standard. It exists so that a
-generated API can read `invoice.seller().postalAddress().countryCode()` instead of
-`invoice.get("BT-40")`. The rules:
+`slug` is an ESJ convention with no standing in any standard. With it, a generated API reads
+`invoice.seller().postalAddress().countryCode()` instead of `invoice.get("BT-40")`. The rules:
 
 1. A lowerCamelCase ASCII stem matching `^[a-z][A-Za-z0-9]*$`, language-neutral: a generator
    applies its target's naming convention and escapes that language's keywords itself.
@@ -266,30 +264,33 @@ generated API can read `invoice.seller().postalAddress().countryCode()` instead 
    the 2026 edition calls it "Payment term text". `SPEC.md` section 10 states rules 1, 2 and
    the editorial part of 3 normatively.
 
-Slugs are stable API surface: changing one is a breaking change for `esj-typed`, adding one
-is not.
+Slugs are stable API surface. Changing one breaks `esj-typed`; adding one does not.
 
 ## `derivable-terms.json`, `profiles/` and `enums.json`
 
 None of these states a fact the registry carries, and none takes part in validation.
 `derivable-terms.json` lists what `Totals`, the derivation policy of `esj-typed`, writes:
 BT-131, BG-22 with its sums and BG-23 with the VAT breakdown. The constrained builder leaves
-them to `derive()` rather than asking a caller for them; they stay settable by hand.
+them to `derive()` instead of asking you for them, and you can still set them by hand.
 
 A profile overlay carries `constant` and `typeSuffix` for the generated `Profile` and the
-types of its chain, `narrows` — `id`, the registry cardinality and the profile's — and
-`fixed`, the values it writes into every invoice it opens. `xrechnung-3.0.2.json` holds the
-nineteen narrowings of the cross-check below; adding a profile is adding a file.
+types of its chain. `narrows` holds `id`, the registry cardinality and the profile's; `fixed`
+holds the values it writes into every invoice it opens. `xrechnung-3.0.2.json` holds the 19
+narrowings of the cross-check below. To add a profile, add a file.
 
-`enums.json` names one enum per list the domain API offers a word for — nine of the eleven
-code lists the registry names (UNTDID 2005 of BT-8 and UNTDID 4451 of BT-21 are left out) and
-the scheme list EAS as the tenth — the snapshots of the rule pack `en16931` `1.3.17` it is generated from, and the naming rule in
-words beside the data it applies to. An enum names the list as the registry spells it, and
-the generator refuses a list no term names.
+`enums.json` names three things:
+
+- one enum per list the domain API offers a word for: 9 of the 11 code lists the registry
+  names (UNTDID 2005 of BT-8 and UNTDID 4451 of BT-21 are left out), and the scheme list EAS
+  as the tenth;
+- the snapshots of the rule pack `en16931` `1.3.17` the enums are generated from;
+- the naming rule, in words beside the data it applies to.
+
+An enum names the list as the registry spells it. The generator refuses a list no term names.
 
 ## The B2C extension
 
-`b2c/0.1.json`, namespace `B2C`, four terms:
+`b2c/0.1.json`, namespace `B2C`, 4 terms:
 
 | Path | Term | Datatype | Cardinality |
 |---|---|---|---|
@@ -298,35 +299,35 @@ the generator refuses a list no term names.
 | `/BG-25/<n>/BT-B2C-003` | Displayed line VAT amount | `Amount` | 0..1 |
 | `/BT-B2C-010` | Displayed invoice gross total | `Amount` | 0..1 |
 
-Each term records a figure the customer was shown or agreed to; absence means nothing was
-shown at that level.
+Each term records a figure the customer was shown or agreed to. A missing term means nothing
+was shown at that level.
 
-The registry states **no arithmetic relation** — neither among its own terms nor between one
-of them and a term of EN 16931-1 — so BT-114 stays the invoice rounding amount of the
-standard and the core terms keep their meaning. Deriving one figure from another is a policy
-of the SDK, which names its preconditions and reports what it did (`../docs/b2c.md`).
+The registry states **no arithmetic relation**, neither among its own terms nor between one of
+them and a term of EN 16931-1. BT-114 stays the invoice rounding amount of the standard, and
+the core terms keep their meaning. Deriving one figure from another is a policy of the SDK;
+it names its preconditions and reports what it did (`../docs/b2c.md`).
 
 `examples/b2c-gross.esj.json` is a three-line consumer invoice carrying all four.
 
 ## How the registry was derived
 
-The 2026 registry was built from the normative text of **EN 16931-1:2026**, Table 2 of
-clause 6.3 and clause 6.5, and from nothing else. That edition has no validation artefacts,
-so no `codeList` or `schemeList` of the 2017 registry was carried forward on the strength of
-a rule written for the older one. The rest of this section is about the 2017 registry.
+The 2026 registry comes from the normative text of **EN 16931-1:2026**, Table 2 of clause 6.3
+and clause 6.5, and from nothing else. That edition has no validation artefacts, so no
+`codeList` or `schemeList` of the 2017 registry was carried forward on the strength of a rule
+written for the older one. The rest of this section is about the 2017 registry.
 
-The core registry was built from the **normative text of EN 16931-1:2017+A1:2019 with the
+The core registry comes from the **normative text of EN 16931-1:2017+A1:2019 with the
 corrigendum AC:2020 applied**, principally Table 2 (the semantic data model) and clause 6.5
 (semantic data types, decimals and rounding). The corrigendum changes the semantic data type
-of BT-21 from Text to Code, which the uncorrected print of Table 2 still shows as Text; that
-correction is applied here and recorded in BT-21's notes.
+of BT-21 from Text to Code; the uncorrected print of Table 2 still shows Text. The registry
+applies that correction and records it in BT-21's notes.
 
-Code list assignments were taken from the `BR-CL-*` rules of the CEN/TC 434 validation
-artefacts (release 1.3.16, EUPL-1.2) and from the Table 2 usage notes, each checked against
-both before being written.
+The code list assignments come from the `BR-CL-*` rules of the CEN/TC 434 validation
+artefacts (release 1.3.16, EUPL-1.2) and from the Table 2 usage notes. Each was checked
+against both before it was written.
 
-The result was then cross-checked, term by term, against three independent
-implementations of the same model, facts only and no prose:
+The result was then cross-checked, term by term, against 3 independent implementations of the
+same model, facts only and no prose:
 
 - the **KoSIT XRechnung semantic-model XSD** (Apache-2.0). It declares INVOICING PERIOD at
   the invoice root where EN 16931-1 Table 2 places it inside DELIVERY INFORMATION (BG-13);
@@ -338,30 +339,29 @@ implementations of the same model, facts only and no prose:
 - the **Peppol BIS Billing 3.0 structure files**, which bind several business
   terms to one syntax element in places and therefore label elements differently.
 
-Differences were resolved in favour of EN 16931-1. National restrictions are notes and never
-applied to `min`, `max` or `datatype`; nothing from Peppol BIS is reproduced here.
+Where they differed, EN 16931-1 won. National restrictions are notes and never change `min`,
+`max` or `datatype`. Nothing from Peppol BIS is reproduced here.
 
-The XRechnung extension registry was built the same way from the semantic model column of
-table 1.1 of the XRechnung 3.0.2 UBL syntax-binding extension, cross-checked against the KoSIT
-schema. `b2c/0.1.json` was derived from nothing outside this repository.
+The XRechnung extension registry comes, the same way, from the semantic model column of table
+1.1 of the XRechnung 3.0.2 UBL syntax-binding extension, cross-checked against the KoSIT
+schema. `b2c/0.1.json` derives from nothing outside this repository.
 
 ## Regenerating and validating
 
-The registry files are checked in: they are the input to code generation, not its output.
-
-**After an edit, regenerate** the artefacts derived from the registries — the sources of
+The registry files are checked in as the input to code generation. **After an edit,
+regenerate** the artefacts derived from them from the repository root: the sources of
 `esj-typed`, its constrained builder, the code list enums of `esj-invoice` and the model schema
-of each edition under `schema/` — from the repository root:
+of each edition under `schema/`.
 
 ```sh
 mvn -B -Pgenerate -pl esj-generator -am process-classes
 ```
 
-The build in `.github/workflows/ci.yml` runs the same command and fails when the checked-in
+The build in `.github/workflows/ci.yml` runs the same command. It fails when the checked-in
 files differ from what it produces.
 
-The `esj-core` test suite validates every registry file against `registry.schema.json`. To
-run the same check by hand, with either engine:
+The `esj-core` test suite validates every registry file against `registry.schema.json`. Run
+the same check by hand with either engine:
 
 ```sh
 # Node
@@ -382,8 +382,8 @@ for f in ('en16931/2017.json', 'en16931/2026.json', 'xrechnung/3.0.2.json', 'b2c
 "
 ```
 
-JSON Schema cannot express the cross-term invariants. Those are checked by the
-`esj-core` test suite and must hold after any edit:
+JSON Schema cannot express the cross-term invariants. The `esj-core` test suite checks them,
+and they must hold after any edit:
 
 - exactly 196 terms in the 2017 core registry, 255 in the 2026 one, 12 in
   `xrechnung/3.0.2.json`, 4 in `b2c/0.1.json`;
@@ -403,9 +403,9 @@ JSON Schema cannot express the cross-term invariants. Those are checked by the
 - every term of the 2017 registry is a term of the 2026 registry with the same stem, and
   `upgrade-2017-2026.json` says exactly what the two registries say about their difference.
 
-**Changing a slug** means editing the `slug` member and re-running code
-generation; the rules of `SPEC.md` section 10 — unique among siblings, one stem
-per concept, a plural for a repeatable group — are enforced by the test suite.
+**To change a slug**, edit the `slug` member and re-run code generation. The test suite
+enforces the rules of `SPEC.md` section 10: unique among siblings, one stem per concept, a
+plural for a repeatable group.
 
 ## Attribution
 

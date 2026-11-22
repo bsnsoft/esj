@@ -1,19 +1,18 @@
 # Sources of the vendored validation packs
 
 Everything under `packs/` is third-party material, copied **unmodified** from a published
-release of its owner. This file records, for every component, where it was published, which
-release it is, under which licence it is distributed, the SHA-256 of the upstream archive and
-of each vendored file, and the day the bytes were fetched.
+release of its owner. For every component you find here where it was published, which release
+it is, under which licence it is distributed, the SHA-256 of the upstream archive and of each
+vendored file, and the day the bytes were fetched.
 
-Two files in each pack are written by this project rather than copied: `pack.json`, the
-manifest, and the `NOTICE` beside each schema set, whose body is the notice comment at the head
-of the schema files themselves, quoted verbatim. Nothing else here is ours; the manifest itself
-carries one body of third-party material, the levels each profile gives rules, recorded below
-with the rest.
+This project writes 2 files in each pack instead of copying them: `pack.json`, the manifest,
+and the `NOTICE` beside each schema set, whose body is the notice comment at the head of the
+schema files themselves, quoted verbatim. Nothing else here is ours. The manifest carries one
+body of third-party material, the levels each profile gives rules, recorded below.
 
-The digests below are checked on every build. `PackContentsTest` in `esj-syntax` recomputes
-each one over the bytes as they are packaged and fails on any difference, on a missing file and
-on a file the inventory of `pack.json` does not list.
+Every build checks the digests below. `PackContentsTest` in `esj-syntax` recomputes each one
+over the packaged bytes and fails on any difference, on a missing file and on a file the
+inventory of `pack.json` does not list.
 
 ---
 
@@ -21,15 +20,14 @@ on a file the inventory of `pack.json` does not list.
 
 Retrieved **2026-10-18**. 28 files, 2,821,651 bytes (2.69 MiB).
 
-This pack combines two bundles of different dates. Its EN 16931 Schematron is release 1.3.17
+This pack combines 2 bundles of different dates. Its EN 16931 Schematron is release 1.3.17
 of the CEN validation artefacts, published 2026-10-12 and effective from 2026-11-15, end of
-day; the release date of the pack is the date of that bundle, because it is the newer of the
-two. Everything else — the XRechnung Schematron, both schema sets and the level tables — is
-the KoSIT validator configuration of 2026-08-31, byte for byte the files of the pack
-`xrechnung/3.0.2/2026-08-31` below, taken from the same archive. On the day this pack was
-made, KoSIT had published no configuration that carries release 1.3.17. The pack
-`xrechnung/3.0.2/2026-08-31` stays bundled and is chosen with
-`--pack xrechnung/3.0.2/2026-08-31`.
+day. The pack takes its release date from that bundle, the newer of the two. Everything else
+is the KoSIT validator configuration of 2026-08-31: the XRechnung Schematron, both schema sets
+and the level tables, byte for byte the files of the pack `xrechnung/3.0.2/2026-08-31` below,
+taken from the same archive. On the day this pack was made, KoSIT had published no
+configuration that carries release 1.3.17. The pack `xrechnung/3.0.2/2026-08-31` stays
+bundled; choose it with `--pack xrechnung/3.0.2/2026-08-31`.
 
 ### Upstream archives
 
@@ -57,8 +55,8 @@ tag `validation-1.3.17`. The licence file of that tag has the same bytes as the 
 | Licence file | `cen/1.3.17/LICENSE` |
 | Modified | no |
 
-The release notes of 1.3.17 state the same licence as those of 1.3.16. The stylesheets are
-executed as data, as in the pack below.
+The release notes of 1.3.17 state the same licence as those of 1.3.16. ESJ executes the
+stylesheets as data, as in the pack below.
 
 | File | sha256 |
 |---|---|
@@ -69,11 +67,11 @@ executed as data, as in the pack below.
 ### Components of the KoSIT configuration of 2026-08-31
 
 The XRechnung Schematron 2.6.0, the UBL 2.1 and the UN/CEFACT CII D16B schema modules, their
-licence and notice files and the level tables are those of the pack `xrechnung/3.0.2/2026-08-31`:
-the same archive, the same files, the same digests, the same 56 levels in the same eight
-tables. Their publishers, licences and the reasons for the two `NOTICE` files are recorded in
-that section and hold here unchanged. None of the 56 levels names a rule that release 1.3.17
-renamed or removed; all eighteen rule identifiers they name are in the compiled CEN
+licence and notice files and the level tables are those of the pack
+`xrechnung/3.0.2/2026-08-31`. Same archive, same files, same digests, same 56 levels in the
+same 8 tables. That section records their publishers, licences and the reasons for the two
+`NOTICE` files, and they hold here unchanged. None of the 56 levels names a rule that release
+1.3.17 renamed or removed; all 18 rule identifiers they name are in the compiled CEN
 stylesheets of 1.3.17. The `NOTICE` of the UBL schema modules carries the Notices section of
 the UBL 2.1 OS specification as copied on 2026-09-19.
 
@@ -106,9 +104,9 @@ the UBL 2.1 OS specification as copied on 2026-09-19.
 
 ### What was left out
 
-The same as for the pack below. From the CEN release archives of 1.3.17: the Schematron
-sources under `schematron/`, including the preprocessed and abstract rule files, and the
-example instances under `examples/`.
+The same as for the pack below. From the CEN release archives of 1.3.17, the pack leaves out
+the Schematron sources under `schematron/`, including the preprocessed and abstract rule
+files, and the example instances under `examples/`.
 
 ---
 
@@ -126,8 +124,8 @@ Retrieved **2026-09-19**. 28 files, 2,814,010 bytes (2.68 MiB).
 | `xrechnung-3.0.2-validator-configuration-2026-08-31.zip` | <https://github.com/itplr-kosit/validator-configuration-xrechnung/releases/download/v2026-08-31/xrechnung-3.0.2-validator-configuration-2026-08-31.zip> | `2530cd107c414511c5d0462ec10f886910395abfca820db82e83d70bf01221a8` |
 | `LICENSE` of the same tag | <https://raw.githubusercontent.com/itplr-kosit/validator-configuration-xrechnung/v2026-08-31/LICENSE> | `73f2898ad26e1fcb9ec4649cdf8466ea0bda47644b7c12efc10a703bdfb94a9f` |
 
-The two licence files are fetched from the source tree at the same tag, because neither release
-archive carries one.
+The 2 licence files come from the source tree at the same tag, because neither release archive
+carries one.
 
 ### Component: EN 16931 Schematron, compiled (`cen/1.3.16/`)
 
@@ -145,9 +143,9 @@ The licence file opens with the sentence
 
 > Licensed under European Union Public Licence (EUPL) version 1.2.
 
-and the release notes of 1.3.16 repeat it. The stylesheets are the publisher's own compilation
-of the Schematron rules of that release; they are executed as data and nothing in this
-repository is derived from the XPath expressions inside them.
+and the release notes of 1.3.16 repeat it. The stylesheets are the publisher's own
+compilation of the Schematron rules of that release. ESJ executes them as data, and nothing in
+this repository derives from the XPath expressions inside them.
 
 | File | sha256 |
 |---|---|
@@ -156,9 +154,9 @@ repository is derived from the XPath expressions inside them.
 | `cen/1.3.16/LICENSE` | `fc22ec1dcd8bee4636a395fb332e2308cde870fb3fdc71a2e260b919877cdef5` |
 
 The XRechnung validator configuration of the same date ships its own compilation of the same
-1.3.16 rules. This pack takes the CEN artefacts from the CEN release instead, so that the
-EN 16931 rules in a report are the ones their own publisher released; the two compilations
-differ in bytes because they were produced by different Schematron compilers.
+1.3.16 rules. This pack takes the CEN artefacts from the CEN release instead, so the EN 16931
+rules in your report are the ones their own publisher released. The two compilations differ
+in bytes because different Schematron compilers produced them.
 
 ### Component: XRechnung Schematron, compiled (`xrechnung-schematron/2.6.0/`)
 
@@ -179,12 +177,12 @@ grants use under the sentence
 > Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
 > except in compliance with the License.
 
-The addendum concerns the standard behind the rules rather than the rules themselves: it states
-that XRechnung falls under the licence agreement between the European Commission and CEN, that
-the copyright in EN 16931 rests with CEN, that copies of the standard are distributed by the
-national standards bodies — in Germany DIN — and that reproduction of XRechnung as an
-implementation of that data model is permitted by CEN and DIN, who give no warranty for such
-derivatives. The same addendum is in the licence file of every KoSIT XRechnung component.
+The addendum concerns the standard behind the rules, not the rules themselves. It states that
+XRechnung falls under the licence agreement between the European Commission and CEN, and that
+the copyright in EN 16931 rests with CEN. It adds that the national standards bodies, in
+Germany DIN, distribute copies of the standard, and that CEN and DIN permit the reproduction of
+XRechnung as an implementation of that data model and give no warranty for such derivatives.
+The licence file of every KoSIT XRechnung component carries the same addendum.
 
 | File | sha256 |
 |---|---|
@@ -204,26 +202,26 @@ derivatives. The same addendum is in the licence file of every KoSIT XRechnung c
 | Notice file | `xsd/ubl-2.1/NOTICE` |
 | Modified | no |
 
-Every file carries its notice in a comment at its head, and that comment grants nothing: it is
-an identification block ending in
+Every file carries its notice in a comment at its head. That comment grants nothing; it is an
+identification block ending in
 
 > Copyright (c) OASIS Open 2013. All Rights Reserved.
 
-The permission to copy and redistribute is elsewhere — in the Notices section of the UBL 2.1 OS
-specification (<http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.html>, retrieved 2026-09-19),
-which permits copying and distribution, in whole or in part, **provided that the copyright
-notice and that section accompany the copies**. So both have to travel with these files, and
-both are in `xsd/ubl-2.1/NOTICE`: the file header verbatim, and the Notices section verbatim
-after it. The component next door needs no such addition only because UN/CEFACT put its
-permission paragraph inside its own files.
+The permission to copy and redistribute stands in the Notices section of the UBL 2.1 OS
+specification (<http://docs.oasis-open.org/ubl/os-UBL-2.1/UBL-2.1.html>, retrieved 2026-09-19).
+It permits copying and distribution, in whole or in part, **provided that the copyright notice
+and that section accompany the copies**. So both travel with these files, and both are in
+`xsd/ubl-2.1/NOTICE`: the file header verbatim, and the Notices section verbatim after it. The
+component next door needs no such addition only because UN/CEFACT put its permission paragraph
+inside its own files.
 
-There is no SPDX identifier for the terms OASIS publishes its standards under, so the manifest
-uses the `LicenseRef-OASIS-UBL-2.1` name, and what it resolves to is that Notices section as
-carried in `xsd/ubl-2.1/NOTICE`.
+SPDX has no identifier for the terms OASIS publishes its standards under, so the manifest uses
+the name `LicenseRef-OASIS-UBL-2.1`. It resolves to that Notices section as carried in
+`xsd/ubl-2.1/NOTICE`.
 
-The fifteen files are the transitive `schemaLocation` closure of `UBL-Invoice-2.1.xsd` and
-`UBL-CreditNote-2.1.xsd` — the two document schemas the syntax engine validates against — and
-not the whole UBL schema library. The closure is computed from the files rather than listed by
+The 15 files are the transitive `schemaLocation` closure of `UBL-Invoice-2.1.xsd` and
+`UBL-CreditNote-2.1.xsd`, the two document schemas the syntax engine validates against. They
+are not the whole UBL schema library. The closure is computed from the files, not listed by
 hand.
 
 | File | sha256 |
@@ -258,14 +256,14 @@ hand.
 | Modified | no |
 
 The notice in the files permits copying and redistribution provided the copyright notice and
-the permission paragraph travel with the copies, and forbids modifying the documents. Both
-conditions are met here: the files are byte for byte the published ones, the notice is inside
-each of them, and `xsd/cii-d16b/NOTICE` quotes it verbatim beside them. Its copyright line
-reads
+the permission paragraph travel with the copies. It forbids modifying the documents. This
+pack meets both conditions: the files are byte for byte the published ones, the notice is
+inside each of them, and `xsd/cii-d16b/NOTICE` quotes it verbatim beside them. Its copyright
+line reads
 
 > Copyright (C) UN/CEFACT (2016). All Rights Reserved.
 
-The four files are the transitive import closure of `CrossIndustryInvoice_100pD16B.xsd`.
+The 4 files are the transitive import closure of `CrossIndustryInvoice_100pD16B.xsd`.
 
 | File | sha256 |
 |---|---|
@@ -285,25 +283,24 @@ The four files are the transitive import closure of `CrossIndustryInvoice_100pD1
 | Licence | Apache License, Version 2.0, as the packaging of that release |
 | Form here | transcribed into the `levels` member of `pack.json`; the file itself is not vendored |
 
-A compiled Schematron artefact flags each of its rules, and that flag is what the artefact says
+A compiled Schematron artefact flags each of its rules; that flag is what the artefact says
 about the rule in general. The specification behind a profile may say something else about a
 rule for documents of its own profile, and it is the body entitled to say it: it decides what
 makes a document of its profile unacceptable. XRechnung states these levels in the
-`customLevel` elements of the scenarios of its validator configuration, and the official
-validator applies them when it decides whether to accept a document, while reporting the
-artefact's own flag beside each finding. The syntax engine does the same, which is why a
-finding here carries both levels.
+`customLevel` elements of the scenarios of its validator configuration. The official
+validator applies them when it decides whether to accept a document, and reports the
+artefact's own flag beside each finding. The syntax engine does the same, so a finding here
+carries both levels.
 
-This is the one place a fact is taken out of `scenarios.xml` rather than the file being
-vendored. The rest of that file configures the KoSIT validator engine — which artefact runs for
-which document, and in which order — and this project decides that for itself from the syntax
-and the customization identifier. The levels are not engine configuration; they are what the
-specification says about its own rules, and a report that ignored them would describe rules
-nobody published in that form.
+Only here does this project take a fact out of `scenarios.xml` instead of vendoring the file.
+The rest of it configures the KoSIT validator engine: which artefact runs for which document,
+in which order. This project decides that itself from the syntax and the customization
+identifier. The levels are what the specification says about its own rules,
+not engine configuration; a report without them describes rules nobody published in that form.
 
-56 entries in eight tables, transcribed verbatim, with the level names of the
-configuration mapped to those of a report: `error` is `fatal`, `warning` is `warning`,
-`information` is `information`.
+56 entries in 8 tables, transcribed verbatim, with the level names of the configuration mapped
+to those of a report: `error` is `fatal`, `warning` is `warning`, `information` is
+`information`.
 
 | Table | Syntax | Profile | Levels |
 |---|---|---|---|
@@ -316,42 +313,45 @@ configuration mapped to those of a report: `error` is `fatal`, `warning` is `war
 | `xrechnung-extension-cii` | CII | XRechnung 3.0 Extension | `BR-CL-10` information, `BR-CL-11` information, `BR-CL-21` information, `BR-CL-23` warning, `BR-CL-24` information, `BR-CL-25` information, `BR-CL-26` information, `CII-SR-452` fatal, `CII-SR-453` fatal, `CII-SR-454` fatal, `CII-SR-465` fatal, `CII-SR-466` fatal, `CII-SR-475` information, `CII-SR-476` information |
 | `xrechnung-cvd-cii` | CII | XRechnung 3.0 CVD | `BR-CL-13` information, `BR-CL-21` warning, `BR-CL-23` warning, `CII-SR-452` fatal, `CII-SR-453` fatal, `CII-SR-454` fatal, `CII-SR-465` fatal, `CII-SR-466` fatal, `CII-SR-475` information, `CII-SR-476` information |
 
-The configuration has no scenario for a UBL CreditNote of the extension profile, so this pack
-has no table for that combination either, and the flags of the artefacts stand for it.
+The configuration has no scenario for a UBL CreditNote of the extension profile, and this pack
+no table. The flags of the artefacts stand for that combination.
 
 `conformance/syntax/ledger.md` records what these tables come to over the conformance corpus
 and the mutation set, and what the verdicts would be without them.
 
 ### What was left out
 
-The XRechnung validator configuration archive holds 113 files, 5,696,701 bytes unpacked. Taken
-from it are the two XRechnung stylesheets and the nineteen schema modules above. Not taken as
-files: `scenarios.xml` and the scenario schema, which configure the KoSIT validator engine —
-this project selects the artefacts itself from the syntax and the customization identifier of
-the document, and takes from `scenarios.xml` only the levels recorded above; the report stylesheets and the report schema, which produce that engine's report
-format; the archive's own copy of the compiled CEN stylesheets, for the reason given above; the
-`CHANGELOG.md`, `README.md` and `docs/`; and the UBL and CII schema modules no invoice document
-imports. The KoSIT validator engine itself is not part of the archive and is not used here.
+The XRechnung validator configuration archive holds 113 files, 5,696,701 bytes unpacked. The
+pack takes from it the 2 XRechnung stylesheets and the 19 schema modules above. It does not
+take as files:
 
-Not taken from the CEN release archives: the Schematron sources under `schematron/`, including
+- `scenarios.xml` and the scenario schema, which configure the KoSIT validator engine. This
+  project selects the artefacts itself from the syntax and the customization identifier of the
+  document, and takes from `scenarios.xml` only the levels recorded above;
+- the report stylesheets and the report schema, which produce that engine's report format;
+- the archive's own copy of the compiled CEN stylesheets, for the reason given above;
+- the `CHANGELOG.md`, `README.md` and `docs/`, and the UBL and CII schema modules no invoice
+  document imports.
+
+The KoSIT validator engine is not part of the archive and is not used here. Not taken from the CEN release archives: the Schematron sources under `schematron/`, including
 the preprocessed and abstract rule files, and the example instances under `examples/`.
 
 ## Why the artefacts are vendored rather than fetched
 
-A build resolves nothing over the network for these files, and neither does a run. `git clone`
-followed by `mvn verify` works offline, works behind a proxy that does not know
-`github.com`, and works in five years when a release asset has moved. A digest in git is also
-the only form of "this is the artefact that ran" that survives: a report names a pack and a
-release, and `SOURCES.md` says exactly which bytes that was.
+Neither a build nor a run resolves these files over the network. `git clone` followed by
+`mvn verify` works offline, behind a proxy that does not know `github.com`, and in 5 years
+when a release asset has moved. A digest in git is also the only form of "this is the
+artefact that ran" that survives. A report names a pack and a release, and `SOURCES.md` says
+exactly which bytes that was.
 
 The obligations are the same either way. The self-contained jar of `esj-cli` distributes these
-files whether the build downloaded them or found them here, so vendoring adds no licence
-condition that redistribution did not already impose — it only makes the conditions visible in
-the tree. The licences permit it: EUPL-1.2 and Apache-2.0 for the two Schematron sets, and the
-notices of OASIS and UN/CEFACT for the schemas, each of which asks that the notice travel with
-the copy, which is why the notices are beside the files and in the `NOTICE` of this repository.
+files whether the build downloaded them or found them here. Vendoring adds no licence condition
+that redistribution did not already impose; it only makes the conditions visible in the tree.
+The licences permit it: EUPL-1.2 and Apache-2.0 for the two Schematron sets, and the notices
+of OASIS and UN/CEFACT for the schemas. Each notice asks to travel with the copy, so the
+notices stand beside the files and in the `NOTICE` of this repository.
 
 Running a stylesheet is not deriving from it. The Java in this repository executes these files
-as data; no rule, expression or message from them is translated into code. That is the line the
-project holds, and it is why the EUPL of the CEN artefacts and the Apache-2.0 of this project
-sit side by side without either reaching into the other.
+as data and translates no rule, expression or message from them into code. The project holds
+that line, and so the EUPL of the CEN artefacts and the Apache-2.0 of this project sit side by
+side without either reaching into the other.
