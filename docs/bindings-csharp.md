@@ -2,14 +2,13 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-`bindings/csharp/` reads, canonicalizes, digests and validates ESJ documents on .NET 8 with no
-dependency beyond the base class library, and runs the rule pack of
-[`rules/`](../rules/README.md) unchanged. It implements [`SPEC.md`](../SPEC.md) rather than
-wrapping the Java library: the registries of `model/` and the pack of `rules/` are read as
-data, and the fixture manifest of
-[`conformance/fixtures/`](../conformance/fixtures/README.md) measures both implementations
-against the same material. The syntax binding tables for UBL and CII are a different subject
-and live in [`bindings.md`](bindings.md).
+With `bindings/csharp/` you read, canonicalize, digest and validate ESJ documents on .NET 8,
+with no dependency beyond the base class library. It runs the rule pack of
+[`rules/`](../rules/README.md) unchanged. It implements [`SPEC.md`](../SPEC.md) instead of
+wrapping the Java library: it reads the registries of `model/` and the pack of `rules/` as data.
+The fixture manifest of [`conformance/fixtures/`](../conformance/fixtures/README.md) measures both
+implementations against the same material. The syntax binding tables for UBL and CII are another
+subject, on [`bindings.md`](bindings.md).
 
 ## Build and test
 
@@ -17,16 +16,16 @@ and live in [`bindings.md`](bindings.md).
 $ dotnet test bindings/csharp/BSNSoft.Esj.sln
 ```
 
-Without a .NET SDK installed, in the official image, with the checkout mounted:
+Without a .NET SDK installed, run it in the official image with the checkout mounted:
 
 ```console
 $ docker run --rm -v "$PWD:/repo:ro" -v "$PWD/bindings/csharp:/repo/bindings/csharp" \
     -w /repo/bindings/csharp mcr.microsoft.com/dotnet/sdk:8.0 dotnet test
 ```
 
-The tests read the fixtures from the checkout the build recorded, and `ESJ_REPOSITORY` points
-them at another one. [`bindings/csharp/README.md`](../bindings/csharp/README.md) is the
-package's own page.
+The tests read the fixtures from the checkout the build recorded; set `ESJ_REPOSITORY` to point
+them at another one. [`bindings/csharp/README.md`](../bindings/csharp/README.md) is the package's
+own page.
 
 | Project | What it is |
 |---|---|
@@ -52,26 +51,26 @@ Invoice view = new(invoice);
 BigDecimal total = view.DocumentTotals.AmountDueForPayment!.AsDecimal();
 ```
 
-`Read` rejects a byte sequence that fails layer L1 and carries the finding code of `SPEC.md`
-section 9.6 in an `EsjFormatException`; `ReadWithFindings` reports instead and returns what it
+`Read` rejects a byte sequence that fails layer L1. It carries the finding code of `SPEC.md`
+section 9.6 in an `EsjFormatException`. `ReadWithFindings` reports instead and returns what it
 could build. A limit of section 12.2 is an `EsjLimitException` and a finding with the code
-`ESJ-L1-LIMIT`, never a verdict on the document, and `Limits.Defaults.ToBuilder()` configures
-the bounds; a bound past `Limits.MaxDocumentBytesBound` or `Limits.MaxExtensionDepthBound` is
-refused when it is given. `Validator.Validate` answers `VALID`, `INVALID` or `INDETERMINATE` with
-the components that did not run.
+`ESJ-L1-LIMIT`, never a verdict on the document. Configure the bounds with
+`Limits.Defaults.ToBuilder()`; a bound past `Limits.MaxDocumentBytesBound` or
+`Limits.MaxExtensionDepthBound` is refused when you give it. `Validator.Validate` answers
+`VALID`, `INVALID` or `INDETERMINATE` with the components that did not run.
 
-Both exceptions carry the `Code`, `Path` and `Subject` of the finding of the same defect. A subject
-is the member access of `SPEC.md` section 9.5, whole: `format`, `source.syntax`,
+Both exceptions carry the `Code`, `Path` and `Subject` of the finding of the same defect. A
+subject is the member access of `SPEC.md` section 9.5, whole: `format`, `source.syntax`,
 `values["/BG-4/BT-29/0"].scheme`, `values["/BT-1"]["foo"]`, `extensions["de.example"]["a"][1]`,
-`["profile"]` — a name the specification defines after a dot, a name the document chose in
-brackets, escaped, a lone surrogate as `\ud800`. `ESJ-L1-JSON` and `ESJ-L1-ENCODING` carry neither
-path nor subject; their message names the byte offset of the token. `SemanticValue` normalizes the
-line endings of every string it is built with (section 6.8), as the reader does.
+`["profile"]`. A name the specification defines stands after a dot, a name the document chose in
+brackets, escaped, and a lone surrogate as `\ud800`. `ESJ-L1-JSON` and `ESJ-L1-ENCODING` carry
+neither path nor subject; their message names the byte offset of the token. `SemanticValue`
+normalizes the line endings of every string it is built with (section 6.8), as the reader does.
 
 Every number is a `BigDecimal` of this binding: an arbitrary-precision unscaled value on
-`System.Numerics.BigInteger` and a scale. The runtime's own `decimal` is not used anywhere,
-because the decimal grammar of section 6.4 admits sixty-four characters and that type holds
-twenty-eight digits; no value of a document passes through binary floating point at any point.
+`System.Numerics.BigInteger` and a scale. The binding never uses the runtime's own `decimal`:
+the decimal grammar of section 6.4 admits 64 characters, and that type holds 28 digits. No value
+of a document passes through binary floating point at any point.
 
 ## Business rules
 
@@ -81,12 +80,12 @@ IReadOnlyList<RuleFinding> findings = pack.Evaluate(invoice);
 ```
 
 The pack is `rules/en16931/1.3.17` as data: 189 rules in the JSON rule language of
-[`rules/README.md`](../rules/README.md) and 28 the language cannot express, written in C# under
+[`rules/README.md`](../rules/README.md), and 28 the language cannot express, written in C# under
 the names the manifest declares. Findings of the pack are a layer of their own and never ESJ
 conformance (`SPEC.md` section 9.4). `Evaluate` refuses a document of an edition other than the
 one the pack was compiled against, because a path is an address relative to an edition.
-`RulePacks.Read` reads a pack of the rule language from a stream — one whose rules stand in that
-one file, such as a pack a caller wrote — and `RuleEngine.Compile` compiles it the same way.
+`RulePacks.Read` reads a pack of the rule language from a stream, one whose rules stand in that
+one file, such as a pack you wrote. `RuleEngine.Compile` compiles it the same way.
 
 ## What is covered
 
@@ -97,18 +96,17 @@ one file, such as a pack a caller wrote — and `RuleEngine.Compile` compiles it
 | Canonicalizer (3.4) | `Canonicalizer`, both digests over the canonical bytes |
 | Validator (3.5) | `Validator`, `StructuralValidator`, layers L1 to L3, tri-state result |
 
-Every registry under `model/en16931/` this build carries is offered by `Registry.Editions()`, with
-the XRechnung 3.0.2 and B2C 0.1 extension registries combined into the default one.
-`Registry.Load` and `WithExtension` make the checks of `SPEC.md` section 10 and throw
-`EsjFormatException`: components a value can satisfy, no identifier twice, an extension that
-defines identifiers of its own namespace only, and an extension combined only with the edition
-its `imports` names. A later
-edition is separable the way [`editions.md`](editions.md) describes, and this binding builds
-without its files; a document of an edition it has no registry for is read, canonicalized and
-digested like any other and reports `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` sections 4.4 and 9.2).
+`Registry.Editions()` offers every registry under `model/en16931/` this build carries, with the
+XRechnung 3.0.2 and B2C 0.1 extension registries combined into the default one. `Registry.Load`
+and `WithExtension` make the checks of `SPEC.md` section 10 and throw `EsjFormatException`:
+components a value can satisfy, no identifier twice, an extension that defines identifiers of
+its own namespace only, and an extension combined only with the edition its `imports` names. A
+later edition is separable the way [`editions.md`](editions.md) describes, and this binding
+builds without its files. A document of an edition it has no registry for is read, canonicalized
+and digested like any other and reports `ESJ-L2-EDITION-UNKNOWN` (`SPEC.md` sections 4.4 and 9.2).
 
-`Typed/Invoice2017.cs` and `Typed/Invoice2026.cs` are the generated read views, checked in and
-held to the registry by a test, so a stale file fails the build:
+`Typed/Invoice2017.cs` and `Typed/Invoice2026.cs` are the generated read views. They are checked
+in, and a test holds them to the registry, so a stale file fails the build:
 
 ```console
 $ python3 bindings/csharp/tools/generate-typed-view.py 2017 2026
@@ -123,13 +121,13 @@ are the Java implementation ([`cli.md`](cli.md)).
 $ python3 conformance/fixtures/run.py --binding dotnet run --project bindings/csharp/BSNSoft.Esj.Fixtures -- .
 ```
 
-`BSNSoft.Esj.Fixtures` answers the six requests of the runner over a pipe: the
-digests, the canonical bytes, the findings with severity, status and the layers not evaluated, the
-rule identifiers, and whether a set of registries is accepted. A `validate` request may carry
-`limits` under the names of `Limits` (`maxStringBytes`, `maxExtensionDepth`, …) and the registry
-files to validate with in `registries`. The same cases run as xunit tests, one test per case, which is what `dotnet test`
-reports, so a case that the reference implementation writes into the manifest fails here until
-this binding answers it too. The job `bindings` of the CI runs `dotnet test` and the runner on
-every push.
+`BSNSoft.Esj.Fixtures` answers the 6 requests of the runner over a pipe: the digests, the
+canonical bytes, the findings with severity, status and the layers not evaluated, the rule
+identifiers, and whether a set of registries is accepted. A `validate` request may carry `limits`
+under the names of `Limits` (`maxStringBytes`, `maxExtensionDepth`, …) and the registry files to
+validate with in `registries`. The same cases run as xunit tests, one test per case, and
+`dotnet test` reports them. A case that the reference implementation writes into the manifest
+therefore fails here until this binding answers it too. The job `bindings` of the CI runs
+`dotnet test` and the runner on every push.
 
 Author: Christian Bürckert.

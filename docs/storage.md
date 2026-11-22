@@ -2,15 +2,15 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-Store the invoice, not its transport syntax. A document is a map from semantic path to value:
-the whole invoice in one column, the terms an application cares about in indexes and views of
-their own, nothing in the schema coupled to UBL or CII. Do not index UBL, do not index CII;
-index `/BT-1`.
+Store the invoice, not its transport syntax. A document is a map from semantic path to value.
+You keep the whole invoice in one column and the terms your application cares about in indexes
+and views of their own. Nothing in the schema is coupled to UBL or CII. Do not index UBL, do not
+index CII; index `/BT-1`.
 
-The statements are PostgreSQL 14 or newer, and every one is executed in the order this page
-prints it, by `esj-xr/src/test/java/de/bsnsoft/esj/xr/StorageExamplesTest.java`
-against a PostgreSQL 18 it starts itself and fills with the UBL and the CII rendering of one
-invoice.
+The statements need PostgreSQL 14 or newer.
+`esj-xr/src/test/java/de/bsnsoft/esj/xr/StorageExamplesTest.java` runs every one in the order
+printed here, against a PostgreSQL 18 it starts itself and fills with the UBL and the CII
+rendering of one invoice.
 
 ## A table and a query
 
@@ -22,7 +22,7 @@ CREATE TABLE invoice (
 );
 ```
 
-Not the final schema: [jsonb is not canonical ESJ](#jsonb-is-not-canonical-esj) adds two
+This is not the final schema. [jsonb is not canonical ESJ](#jsonb-is-not-canonical-esj) adds 2
 columns, and [Validate before you store](#validate-before-you-store) runs before the `INSERT`.
 
 ```sql
@@ -33,9 +33,9 @@ SELECT id,
   FROM invoice;
 ```
 
-`/BT-1` is the business term "Invoice number" of EN 16931, and the query is the same whether the
+`/BT-1` is the business term "Invoice number" of EN 16931. The query is the same whether the
 invoice arrived as UBL or as CII. `semantic_digest` is the digest over the semantic content
-(`SPEC.md` section 8), the same in either syntax; the Java that writes a row is in
+(`SPEC.md` section 8), the same in either syntax. The Java that writes a row is in
 [Validate before you store](#validate-before-you-store).
 
 ## Views
@@ -58,8 +58,8 @@ SELECT invoice_number, seller_name, total_with_vat
  ORDER BY issue_date DESC;
 ```
 
-ESJ is the persistence model, the view the query model: the rest of the application sees columns.
-The UBL and the CII rendering of one invoice give two rows here that differ only in `id`.
+ESJ is the persistence model, the view the query model: the rest of your application sees
+columns. The UBL and the CII rendering of one invoice give 2 rows here that differ only in `id`.
 
 ## Expression indexes
 
@@ -70,8 +70,8 @@ CREATE INDEX invoice_total_idx  ON invoice (((document -> 'values' ->> '/BG-22/B
 ```
 
 A date needs one step more. `text::date` reads the session's `DateStyle`, so PostgreSQL refuses
-it in an index expression — *functions in index expression must be marked IMMUTABLE* — and the
-same refusal applies to a generated column. `to_date` with an explicit pattern is immutable:
+it in an index expression (*functions in index expression must be marked IMMUTABLE*). It refuses
+it in a generated column too. `to_date` with an explicit pattern is immutable:
 
 ```sql
 CREATE FUNCTION esj_date(text) RETURNS date
@@ -88,8 +88,8 @@ SELECT document -> 'values' ->> '/BT-1' AS invoice_number
  ORDER BY esj_date(document -> 'values' ->> '/BT-2') DESC;
 ```
 
-An index is attached to a business term, so it keeps working when the next invoice of that
-seller arrives in the other syntax.
+The index sits on a business term, so it keeps working when the next invoice of that seller
+arrives in the other syntax.
 
 ## Materialized views
 
@@ -119,9 +119,9 @@ SELECT invoice_number, seller_name, total_with_vat
  ORDER BY issue_date DESC;
 ```
 
-`CONCURRENTLY` keeps the view readable while it refreshes; it needs the unique index above and a
-transaction of its own, so inside `BEGIN … COMMIT` — or on a JDBC connection with auto-commit off
-— it is refused. The stored form stays generic; the read model is what is tuned.
+`CONCURRENTLY` keeps the view readable while it refreshes. It needs the unique index above and a
+transaction of its own. PostgreSQL refuses it inside `BEGIN … COMMIT` and on a JDBC connection
+with auto-commit off. The stored form stays generic; you tune the read model.
 
 ## Projections
 
@@ -133,9 +133,9 @@ ESJ, stored once ────────┼── VAT reporting
                          └── analytics
 ```
 
-An accounting list reads BT-1, BT-2, BT-27, BT-112 and BT-115; a payment workflow the payment
-terms and the account of BG-17; a VAT report the breakdown of BG-23 — each a projection of the
-same stored invoice, none of them prescribed by ESJ.
+An accounting list reads BT-1, BT-2, BT-27, BT-112 and BT-115. A payment workflow reads the
+payment terms and the account of BG-17, a VAT report the breakdown of BG-23. Each is a
+projection of the same stored invoice, and ESJ prescribes none of them.
 
 ## The key/value table
 
@@ -155,12 +155,12 @@ CREATE INDEX invoice_value_number_idx    ON invoice_value (content) WHERE path =
 CREATE INDEX invoice_value_lookup        ON invoice_value (path, md5(content));
 ```
 
-One row per value, which joins and aggregates like any other table. The column is `content` and
-not `value` because `VALUE` is reserved. The four nullable columns are the supplementary
-components the semantic model gives some terms: the scheme and its version of an identifier, the
-media type and the file name of a binary object. The general lookup index is over `md5(content)`,
-because BT-125 carries an attached document as base64 and a B-tree entry of a PostgreSQL page
-cannot hold one; the partial index on `/BT-1` fits an invoice number and needs no digest.
+One row per value joins and aggregates like any other table. The column is `content`, because
+`VALUE` is reserved. The 4 nullable columns are the supplementary components the semantic model
+gives some terms: the scheme and its version of an identifier, the media type and the file name
+of a binary object. The general lookup index is over `md5(content)`. BT-125 carries an attached
+document as base64, and a B-tree entry of a PostgreSQL page cannot hold one. The partial index
+on `/BT-1` fits an invoice number and needs no digest.
 
 ```java
 try (PreparedStatement values = connection.prepareStatement(
@@ -183,7 +183,7 @@ try (PreparedStatement values = connection.prepareStatement(
 ```
 
 One term over every invoice, one value looked up through the digest index, and the lines of one
-invoice in the canonical order — numeric, so line 10 sorts after line 2:
+invoice in the canonical order, which is numeric: line 10 sorts after line 2:
 
 ```sql
 SELECT document_id, content AS invoice_number
@@ -205,14 +205,14 @@ SELECT path, content
 ```
 
 The rows are the whole semantic content, so a document rebuilt from them has the semantic digest
-the stored one had; the provenance is outside that digest (`SPEC.md` section 4.7) and stays in
-the `invoice` row.
+the stored one had. The provenance is outside that digest (`SPEC.md` section 4.7) and stays in the
+`invoice` row.
 
 ## Typed projections
 
-The ESJ value is authoritative and a typed database value is a derived query projection:
-`/BG-22/BT-112 -> "2915.5"` is the invoice, `2915.5::numeric` is what the index and the sum are
-built on, `/BT-2 -> "2026-01-31"` projects to `date`.
+The ESJ value is authoritative; a typed database value is a derived query projection.
+`/BG-22/BT-112 -> "2915.5"` is the invoice, and you build the index and the sum on
+`2915.5::numeric`. `/BT-2 -> "2026-01-31"` projects to `date`.
 
 ```sql
 SELECT currency, count(*) AS invoices, sum(total_with_vat) AS total
@@ -220,23 +220,22 @@ SELECT currency, count(*) AS invoices, sum(total_with_vat) AS total
  GROUP BY currency;
 ```
 
-Choose the scale deliberately: an amount carries as many decimals as the edition of its
-registry allows — two in 2017, the minor unit of its currency in 2026 — and a unit price, a
-quantity and a percentage as many as they need (`SPEC.md` section 6.4). `numeric` without a
-scale keeps every digit, where `numeric(19, 2)` would silently round a unit price.
+Choose the scale on purpose. An amount carries as many decimals as the edition of its registry
+allows: 2 in 2017, the minor unit of its currency in 2026. A unit price, a quantity and a
+percentage carry as many as they need (`SPEC.md` section 6.4). `numeric` without a scale keeps
+every digit; `numeric(19, 2)` would silently round a unit price.
 
 ## Other stores
 
 A key/value store takes the document digest as the key and the canonical bytes as the value, or
-one entry per semantic path where single terms are read; a document store keeps the same JSON and
-indexes the same paths; a search index takes the paths a query reaches as its fields. Of what is
+one entry per semantic path where single terms are read. A document store keeps the same JSON and
+indexes the same paths. A search index takes the paths a query reaches as its fields. Of what is
 above, only `jsonb` and its operators, `RETURNING`, `substring(… from …)` and the index
 expressions are PostgreSQL's own.
 
 ## Source of truth
 
-For outgoing invoices ESJ can be the stored invoice, with the transport representations
-generated from it:
+For outgoing invoices, store ESJ and generate the transport representations from it:
 
 ```text
                     ┌── UBL
@@ -246,14 +245,14 @@ ERP ──> ESJ ────────┼── Factur-X / PDF
                     └── reporting
 ```
 
-A stored document goes back out as a cross industry invoice or as a UBL document: of the 86
-corpus instances, 85 and 40 are accepted by the official artefacts and 80 and 86 read back as
-the document they were written from, each difference named in
+A stored document goes back out as a cross industry invoice or as a UBL document. Of the 86
+corpus instances, the official artefacts accept 85 and 40, and 80 and 86 read back as the
+document they were written from.
 [`../conformance/writers/cii-roundtrip.md`](../conformance/writers/cii-roundtrip.md) and
-[`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md). Incoming invoices run the other
-way — UBL or CII, import, ESJ, storage — and the original is worth keeping: `source.sha256` binds a document to
-the bytes it came from but cannot reconstruct them, and those bytes carry signatures and
-archival evidence, outside the semantic content.
+[`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md) name each difference. Incoming
+invoices run the other way: UBL or CII, import, ESJ, storage. Keep the original. `source.sha256`
+binds a document to the bytes it came from but cannot reconstruct them. Those bytes carry
+signatures and archival evidence, outside the semantic content.
 
 ## jsonb is not canonical ESJ
 
@@ -263,10 +262,10 @@ ALTER TABLE invoice
     ADD COLUMN document_digest CHAR(64) NOT NULL;
 ```
 
-`jsonb` keeps neither member order nor the bytes that arrived, so serializing the column back
-does not reproduce the canonical form and its digest. `canonical_esj` is the authoritative
-serialization and `document` the queryable copy of it. Two added columns rather than a second
-`CREATE TABLE`, because this page runs top to bottom and `NOT NULL` wants an empty table.
+`jsonb` keeps neither member order nor the bytes that arrived. Serializing the column back does
+not reproduce the canonical form and its digest. `canonical_esj` is the authoritative
+serialization, `document` the queryable copy of it. The 2 columns are added instead of a second
+`CREATE TABLE`, because the test runs this page top to bottom and `NOT NULL` wants an empty table.
 
 | Question | Column |
 |---|---|
@@ -274,15 +273,15 @@ serialization and `document` the queryable copy of it. Two added columns rather 
 | Do I have this invoice already, in any syntax? | `semantic_digest` |
 | Did the invoice change, or only its packaging? | `semantic_digest` |
 
-A document stored while the format was 0.1 keeps its bytes and both digests: a reader of 1.0
+A document stored while the format was 0.1 keeps its bytes and both digests. A reader of 1.0
 reads it and writes it in version 0.1 (`SPEC.md` section 4.3). The same values written now carry
 `1.0`, the same semantic digest and another document digest.
 
 ## Validate before you store
 
 Incoming bytes, ESJ reader, validation, canonical bytes and digests, insert. Generic JSON
-handling drops what layer L1 has to see — duplicate member names above all — so a document that
-came from outside is read by the reader before anything puts it into a `jsonb` column.
+handling drops what layer L1 has to see, duplicate member names above all. Read a document from
+outside with the reader before anything puts it into a `jsonb` column.
 
 ```java
 SemanticDocument document = EsjReader.strict().read(bytes);
@@ -307,19 +306,19 @@ try (PreparedStatement insert = connection.prepareStatement(
 }
 ```
 
-An invoice the application built itself is serialized from that model and has passed the same
-validator on the way ([`getting-started.md`](getting-started.md)); an XML or PDF invoice passes
+An invoice your application built itself is serialized from that model and passed the same
+validator on the way ([`getting-started.md`](getting-started.md)). An XML or PDF invoice passes
 the importer first ([`java-api.md`](java-api.md#reading-ubl-and-cii)).
 
 ## The schema does not mirror the standard
 
-One column per business term ties the table to one edition of EN 16931, leaves a few hundred
+One column per business term ties the table to one edition of EN 16931. It leaves a few hundred
 nullable columns, needs a migration for every term that is added and has nowhere to put a group
-that repeats. A semantic path carries the index in it — `/BG-25/0/BT-126`, `/BG-25/1/BT-126` — so
-three lines and three hundred are one schema, and an extension term is a row, not a column.
+that repeats. A semantic path carries the index in it (`/BG-25/0/BT-126`, `/BG-25/1/BT-126`), so
+3 lines and 300 are one schema, and an extension term is a row, not a column.
 
 ## Why `/BT-1` and not an XPath
 
 PostgreSQL stores and queries XML as well, but an index on an XML path is an index on a transport
-syntax: UBL and CII put the invoice number in different elements, so a UBL XPath index means "the
-invoice number, as UBL writes it" and CII needs a second one. `/BT-1` means the invoice number.
+syntax. UBL and CII put the invoice number in different elements. A UBL XPath index means "the
+invoice number, as UBL writes it", and CII needs a second one. `/BT-1` means the invoice number.
