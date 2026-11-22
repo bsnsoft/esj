@@ -4,25 +4,24 @@
 for the rule language and [`docs/validation.md`](../../../../docs/validation.md) for what a
 finding of this engine means.*
 
-A rule that asks whether a code is on a list is asking about a list that has a date. A
-currency is withdrawn, a country is added, a reason code is retired; if the engine read the
-list of the day it runs, the same invoice would be valid in one year and invalid in the next
-without anyone having changed anything, and a report from the archive could not be
-reproduced. So every list is a **snapshot**: one file, named by the day it was taken, frozen
-for as long as this pack version exists. A newer list is a newer pack, never an edit here.
+A rule that asks whether a code is on a list asks about a list that has a date. A currency is
+withdrawn, a country is added, a reason code is retired. If the engine read the list of the
+day it runs, the same invoice would be valid in one year and invalid in the next without
+anyone changing anything, and nobody could reproduce a report from the archive. So every list
+is a **snapshot**: one file, named by the day it was taken, frozen for as long as this pack
+version exists. A newer list is a newer pack, never an edit here.
 
 Two rules decide where a snapshot may come from.
 
 **From the publisher, not from another implementation.** A copy of a list inside somebody
-else's validator is a copy of a copy: it has a licence of its own, an error history of its
-own and a release cycle of its own. In particular the code list files distributed with the
-CEN validation artefacts are EUPL-1.2 material and are never a source for a file in this
-directory, and no private material is either.
+else's validator is a copy of a copy, with a licence, an error history and a release cycle of
+its own. The code list files distributed with the CEN validation artefacts are EUPL-1.2
+material and never a source for a file in this directory. Neither is private material.
 
 **With its provenance written down.** Each row below names the publisher, the page the
 snapshot was taken from, the day it was taken and what the publisher says about reuse. Where
-what the publisher says is unclear, the snapshot is taken anyway and the uncertainty is
-recorded in its row, so that the decision is visible rather than implied.
+the publisher's statement is unclear, the snapshot is taken anyway and its row records the
+uncertainty, so the decision is visible.
 
 ## Layout
 
@@ -44,17 +43,17 @@ A snapshot file:
 }
 ```
 
-`name` on an entry is the description the publisher gives the code, and is left out where the
+`name` on an entry is the description the publisher gives the code; it is left out where the
 publisher gives none. The pack manifest names which day of which list this pack decides
-against; a list with no snapshot named there cannot be asked about, and a rule that names one
-anyway does not compile — a membership test against a list nobody loaded would pass every
-code, and a rule that silently passes everything is worse than a pack that will not start.
+against. No rule can ask about a list with no snapshot named there, and a rule that names one
+anyway does not compile. A membership test against a list nobody loaded would pass every code,
+and a rule that silently passes everything is worse than a pack that will not start.
 
 ## Where these snapshots came from
 
-Every snapshot in this directory was taken on **2026-09-19**. Eight files were downloaded,
-and every list below was extracted mechanically from one of them; nothing was typed by hand
-and nothing was taken from an implementation.
+Every snapshot in this directory was taken on **2026-09-19**. From 8 downloaded files,
+every list below was extracted mechanically. Nothing was typed by hand and nothing was taken
+from an implementation.
 
 | File | Publisher | URL | SHA-256 of the bytes downloaded |
 |---|---|---|---|
@@ -67,34 +66,33 @@ and nothing was taken from an implementation.
 | `image.csv` (media types) | IANA | `https://www.iana.org/assignments/media-types/image.csv` | `946acb46321e250c658d1e135363496d7940ee83f23df9d2baf3760f9197c8bc` |
 | `text.csv` (media types) | IANA | `https://www.iana.org/assignments/media-types/text.csv` | `8b81eb8746d62d742808221f093f3ea32c3d059f6352dd60b17526464218e8cf` |
 
-All eight are spreadsheets, XML, JSON or CSV; the codes were read out of the cells, the
-elements, the members and the rows, so each snapshot is a mechanical extraction and not a
-transcription.
+All 8 are spreadsheets, XML, JSON or CSV. The codes were read out of the cells, the elements,
+the members and the rows, so each snapshot is a mechanical extraction, not a transcription.
 
 ### The one thing a reader has to know about these sources
 
-Thirteen of the eighteen lists below did not come from the body that originates them. **The sites
-of UNECE and of the Library of Congress' `www.loc.gov` refuse automated retrieval** — a
-request to `service.unece.org` (the UNTDID data element pages), to `unece.org` (the
-Recommendation 20 and 21 spreadsheets) and to `www.loc.gov` answers with a bot check rather
-than with the file, and this project does not work around a bot check. **ISO publishes no
-free machine-readable form of the ISO/IEC 6523 ICD list at all.** What was taken instead
-is the European Commission's own publication for the standard this pack is about: the workbook
-*EN 16931 code lists values*, which states which codes of each list the European eInvoicing
-standard admits, published on the Commission's registry of supporting artefacts for EN 16931.
-It is not the CEN validation artefacts and carries none of their files; it is a separate
-publication, by a different body, of the code list values rather than of the rules.
+Of the 18 lists below, 13 did not come from the body that originates them. **The sites of
+UNECE and of the Library of Congress' `www.loc.gov` refuse automated retrieval.** A request to
+`service.unece.org` (the UNTDID data element pages), to `unece.org` (the Recommendation 20 and
+21 spreadsheets) and to `www.loc.gov` answers with a bot check instead of the file, and this
+project does not work around a bot check. **ISO publishes no free machine-readable form of the
+ISO/IEC 6523 ICD list at all.** This project took instead the European Commission's own
+publication for the standard this pack is about: the workbook *EN 16931 code lists values*,
+published on the Commission's registry of supporting artefacts for EN 16931. It states which
+codes of each list the European eInvoicing standard admits. It is not the CEN validation
+artefacts and carries none of their files. A different body publishes it, and it holds the
+code list values, not the rules.
 
-Two consequences, both of which belong in the ledger rather than in a footnote.
+This has 2 consequences, and both belong in the ledger, not in a footnote.
 
-The Commission's workbook is in places a **restriction** of the list it names, which is what
-the rules of the standard ask about: `untdid-2005` carries the three codes the standard
-admits and not the hundreds UNTDID has, and `untdid-5305` carries the nine VAT category
-codes. Where the rule is written as a membership test in a restricted list, this is the right
-list to ask; where a rule wanted the full list, the note on the rule says so.
+The Commission's workbook is in places a **restriction** of the list it names, and the rules of
+the standard ask about that restriction. `untdid-2005` carries the 3 codes the standard admits,
+not the hundreds UNTDID has, and `untdid-5305` carries the 9 VAT category codes. Where the rule
+is a membership test in a restricted list, this is the right list to ask. Where a rule wanted
+the full list, the note on the rule says so.
 
 `iso-4217` and `iso-639`, by contrast, come from the maintenance agency and the registration
-authority themselves, and are therefore a **different** list from the one the artefacts carry —
+authority themselves. They are therefore a **different** list from the one the artefacts carry,
 different in both directions, not merely wider. Measured on 2026-09-20 against the currency
 list `BR-CL-03/04/05` carry in the 1.3.16 artefacts (178 codes) and against the snapshot here
 (178 codes):
@@ -102,20 +100,20 @@ list `BR-CL-03/04/05` carry in the 1.3.16 artefacts (178 codes) and against the 
 - the artefacts accept `CNH` and `STD`, which the snapshot does not carry;
 - the snapshot accepts `STN` and `XAD`, which the artefacts do not carry.
 
-So an invoice in `CNH` or `STD` passes the artefacts and is reported fatal by this pack, and an
-invoice in `STN` or `XAD` does the reverse. Neither direction is the safe one, and the
-divergence is a real one of four codes rather than a theoretical lag: it is recorded here, in
-the note on `BR-CL-04`, and in `conformance/rules/ledger.md`.
+An invoice in `CNH` or `STD` passes the artefacts and this pack reports it fatal; an invoice in
+`STN` or `XAD` does the reverse. Neither direction is the safe one. The divergence is real, 4
+codes, not a theoretical lag. It is recorded here, in the note on `BR-CL-04`, and in
+`conformance/rules/ledger.md`.
 
 ### Licences and terms, and what is uncertain
 
-**None of the four publishers states a licence for the data on the page it is offered from**,
-across the eight files listed above. That is the uncertainty, it applies to all of them, and it
-is recorded here for the author to decide rather than resolved by this stage:
+**None of the 4 publishers states a licence for the data on the page it is offered from**,
+across the 8 files listed above. That uncertainty applies to all of them. It stays recorded
+here as an open question for the author:
 
-- the Commission's pages offer the workbooks for implementers of EN 16931 and state no terms;
-  reuse of Commission documents is generally governed by Commission Decision 2011/833/EU, but
-  the pages do not cite it, so this is inference and not a statement;
+- the Commission's pages offer the workbooks for implementers of EN 16931 and state no terms.
+  Commission Decision 2011/833/EU generally governs the reuse of Commission documents, but the
+  pages do not cite it, so this is inference, not a statement;
 - SIX Group publishes the ISO 4217 tables as the maintenance agency and states no terms on
   the download;
 - the Library of Congress publishes the ISO 639 vocabularies at `id.loc.gov` as the
@@ -123,9 +121,9 @@ is recorded here for the author to decide rather than resolved by this stage:
 - IANA publishes the media type registry as the registry operator and states no terms for the
   CSV representations the three media type files were read from.
 
-What each snapshot carries is a list of codes and the short names their publisher gives them.
-No prose of any publisher is reproduced, and the `terms` member of every snapshot file says
-in one sentence what was found on the page it came from.
+Each snapshot carries a list of codes and the short names their publisher gives them. No prose
+of any publisher is reproduced. The `terms` member of every snapshot file says in one sentence
+what was found on the page it came from.
 
 ## The lists
 
@@ -150,28 +148,27 @@ in one sentence what was found on the page it came from.
 | `vatex` | VAT exemption reason codes | Commission VATEX code list, version 8 | 88 | taken, codes not marked deprecated |
 | `mime-code` | Media types of an attached document | IANA media types registry | 6 | taken, the restriction the norm states |
 
-One of the eighteen is carried without a rule that asks about it, and is therefore not named in
-the pack manifest either: `iso-639` is not the code list of any business term of the 2017
-edition. It was taken because the domain API of a later phase needs the enumeration, and because
-a list taken now is a list whose provenance was recorded while the page it came from still said
-what it says. The other seventeen are named in the manifest and are what the rules decide
-against.
+Of the 18 lists, only `iso-639` has no rule that asks about it, so the pack manifest does not
+name it either: it is not the code list of any business term of the 2017 edition. It was taken
+for an enumeration the domain API was expected to need, and because a list taken now is a list whose
+provenance was recorded while the page it came from still said what it says. The manifest
+names the other 17, and the rules decide against them.
 
 ### The two lists that are read differently from the others
 
-`iso-6523-icd` and `mime-code` are the two snapshots that deserve a sentence of their own.
+`iso-6523-icd` and `mime-code` need a sentence of their own.
 
-The **ICD list** is the one this directory said for a while it could not have: ISO publishes
-no free machine-readable form of it, and the only copies in easy reach are the code list files
-of the CEN validation artefacts, which this directory does not take from. The European
-Commission's workbook has a sheet of it, and that sheet is the source here — the same
-publication nine other snapshots come from, taken the same way. Four rules decide against it:
+The **ICD list** is the one this directory said for a while it could not have. ISO publishes no
+free machine-readable form of it, and the only copies in easy reach are the code list files of
+the CEN validation artefacts, which this directory does not take from. The European
+Commission's workbook has a sheet of it, and that sheet is the source here: the same
+publication 9 other snapshots come from, taken the same way. 4 rules decide against it:
 `BR-CL-10`, `BR-CL-11`, `BR-CL-21` and `BR-CL-26`.
 
-The **media types** are the other way round. The registry is IANA's and is published openly,
-but the list a rule may ask about is not the registry: EN 16931-1 admits exactly six media
-types for an attachment (clause 6.5.11, and the usage note of BT-125), and an invoice that
-carries a seventh is one the standard does not admit however well registered that type is. So
-the snapshot is the six, and what the IANA download is for is that each of the six is looked
-up in the registry it belongs to and carried only if it is there. A snapshot taken when one of
-them had been deregistered would not be written at all.
+The **media types** are the other way round. IANA publishes the registry openly, but the list
+a rule may ask about is not the registry. EN 16931-1 admits exactly 6 media types for an
+attachment (clause 6.5.11, and the usage note of BT-125). The standard does not admit an
+invoice that carries a seventh, however well registered that type is. So the snapshot is the
+6. The IANA download serves to look each of the 6 up in the registry it belongs to; a type is
+carried only if it is there. A snapshot taken when one of them had been deregistered would not
+be written at all.

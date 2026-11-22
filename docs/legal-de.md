@@ -2,29 +2,28 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-Since 1 January 2025 an electronic invoice under German VAT law must use a structured
-electronic format. § 14 Abs. 1 Satz 6 UStG offers two routes: a format conforming to
-EN 16931 and to the syntaxes of Directive 2014/55/EU, or a format agreed between issuer and
-recipient that allows the correct and complete extraction of the information the UStG
-requires into a format conforming to EN 16931 or interoperable with it. Section 14.1
-paragraph 15 of the Umsatzsteuer-Anwendungserlass, as amended by the BMF letter of 15 October
-2025, defines interoperable for that purpose: the information must be processable from the
-original format without loss, and there is a loss when the content or the meaning of an item
-changes or is no longer recognisable.
+If you invoice under German VAT law, your e-invoices must use a structured electronic format
+since 1 January 2025. § 14 Abs. 1 Satz 6 UStG offers two routes. (1) A format conforming to EN
+16931 and to the syntaxes of Directive 2014/55/EU. (2) A format that issuer and recipient agree
+on; it must allow the correct and complete extraction of the information the UStG requires into
+a format conforming to EN 16931 or interoperable with it. Section 14.1 paragraph 15 of the
+Umsatzsteuer-Anwendungserlass, as amended by the BMF letter of 15 October 2025, defines
+interoperable: the information must be processable from the original format without loss. A loss
+occurs when the content or the meaning of an item changes or is no longer recognisable.
 
-ESJ is built to make that extraction mechanical: values are keyed by EN 16931 business terms,
-the registry records the semantic data type of each term, and the canonical form makes the
-result of an extraction byte-comparable. Whether a concrete use of ESJ meets those
-requirements is for the parties to assess, and an agreement between them is a precondition.
-B2G invoicing and the Peppol network are outside the scope of this project.
+ESJ makes that extraction mechanical. It keys values by EN 16931 business terms, its registry
+records the semantic data type of each term, and its canonical form makes the result of an
+extraction byte-comparable. The parties assess whether a concrete use of ESJ meets those
+requirements, and they must agree on the format first. B2G invoicing and the Peppol network are outside
+the scope of this project.
 
 ## Checked against the BMF letter of 15 October 2026
 
-No change to the format, the registries, the bindings or the rule packs follows from the
+The format, the registries, the bindings and the rule packs stay as they are after the
 [BMF letter of 15 October 2026](https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Steuerarten/Umsatzsteuer/Umsatzsteuer-Anwendungserlass/2026-10-15-obligatorische-elektronische-rechnung.html) (III C 5 - S 7287-a/00019/021/017), checked
-paragraph by paragraph on 2026-10-15. It applies to supplies from 1 January 2025, with a transition until
-31 December 2027; an e-invoice issued until 31 December 2026 that follows the letters of
-15 October 2024 and 15 October 2025 is not objected to.
+paragraph by paragraph on 2026-10-15. The letter applies to supplies from 1 January 2025, with a
+transition until 31 December 2027. The tax authorities do not object to an e-invoice issued until
+31 December 2026 that follows the letters of 15 October 2024 and 15 October 2025.
 
 | Rn. | What the letter says | What ESJ offers |
 |---|---|---|
