@@ -1,32 +1,32 @@
 # Peppol BIS Billing 3.0: the evidence, fetched at test time
 
 Nothing in this directory is OpenPeppol's. The Peppol BIS Billing 3.0 validation artefacts, as
-published by OpenPeppol, carry no open-source licence, so they are not in this repository and
-the pack that runs them is made on the user's machine by `esj packs fetch` from a recipe:
+OpenPeppol publishes them, carry no open-source licence, so they are not in this repository.
+`esj packs fetch` makes the pack that runs them on your machine, from a recipe:
 [`peppol-bis-billing-3.0.21.json`](../../packs/recipes/peppol-bis-billing-3.0.21.json), the
-release `esj packs fetch peppol-bis-billing` follows, and
+release `esj packs fetch peppol-bis-billing` follows, or
 [`peppol-bis-billing-3.0.20.json`](../../packs/recipes/peppol-bis-billing-3.0.20.json).
 The same holds for the documents each pack is measured against: OpenPeppol's own examples and
-its own Schematron unit tests of the same release. This page names them; the tests fetch them.
+its own Schematron unit tests of the same release. They are named here, and the tests fetch them.
 
-Two test classes do, once for each release, and only with `-Desj.network=true`; without it they
-are skipped with a message that names the property, and the build stays offline:
+2 test classes do, once for each release, and only with `-Desj.network=true`. Without the
+property they are skipped with a message that names it, and the build stays offline:
 
 | Test | What it does |
 |---|---|
 | `esj-syntax` `PeppolUnitTestsTest` | fetches and compiles the pack, then runs every test of `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` through the rule sets its configuration names and compares the rules that fire with the ones each test expects |
 | `esj-cli` `PeppolPackTest` | runs `esj packs fetch` — for 3.0.21 as `esj packs fetch peppol-bis-billing` —, then `esj validate --packs` over every example of `rules/examples/` and over five documents made from `base-example.xml` by one change each |
 
-Every file is fetched from the revision its recipe pins — the tag `v3.0.20`, and for 3.0.21, which
-OpenPeppol did not tag, the commit `806866bd2bd91d7e9623b68f08164e8fbe9e67a0` — and weighed
-against the digest below before it is used; a file that differs fails the test by name. The
-continuous integration runs both in its JDK 21 build job (`.github/workflows/ci.yml`).
+The tests fetch every file from the revision its recipe pins: the tag `v3.0.20`, and for 3.0.21,
+which OpenPeppol did not tag, the commit `806866bd2bd91d7e9623b68f08164e8fbe9e67a0`. They weigh
+each file against the digest below before they use it, and a file that differs fails the test by
+name. The continuous integration runs both in its JDK 21 build job (`.github/workflows/ci.yml`).
 
 ## Evidence
 
-3.0.20 was run on 2026-09-30 and 3.0.21 on 2026-10-06, each with the recipe as it stands,
+3.0.20 ran on 2026-09-30 and 3.0.21 on 2026-10-06, each with the recipe as it stands, by
 `mvn -B verify -Desj.network=true`. The two tests hold every count below, the rule table row by
-row; the times were taken on a macOS arm64 machine under load, and are indications.
+row. The times come from a macOS arm64 machine under load and are indications.
 
 | | 3.0.21 | 3.0.20 |
 |---|---|---|
@@ -36,19 +36,19 @@ row; the times were taken on a macOS arm64 machine under load, and are indicatio
 | Rules whose every expectation holds | 62 of 62 | 58 of 58 |
 | Rules with an expectation that does not hold | 0 | 0 |
 
-A second fetch leaves a pack alone. With both releases in one pack directory, a Peppol document
-is judged by 3.0.21, the newest release of the pack; `--pack peppol-bis-billing/3.0/3.0.20` runs
+A second fetch leaves a pack alone. With both releases in one pack directory, ESJ judges a Peppol
+document by 3.0.21, the newest release of the pack. `--pack peppol-bis-billing/3.0/3.0.20` runs
 the older one.
 
 A test set of `rules/unit-UBL-PEPPOL/` and `rules/unit-CII-PEPPOL/` names a configuration of
-OpenPeppol's build and holds tests, each a document — mostly a fragment — and the rule
+OpenPeppol's build and holds tests. Each test is a document, mostly a fragment, with the rule
 identifiers it expects to fire as an error or as a warning, or not to fire, sometimes with a
 count. `PeppolUnitTestsTest` runs the rule sets of the configuration over each document as the
-syntax engine runs them, without the XML Schema in front, because a fragment is no document the
-schema admits and the tests do not ask about it: `peppolbis-en16931-base-3.0-ubl` and `-cii` run
-the Peppol rules of the syntax, `peppolbis-en16931-01-3.0-ubl-invoice` runs the EN 16931 rules
-with them. A rule is *identical* where every expectation about it holds, flag and count included;
-a dash marks a rule the release has no test about.
+syntax engine runs them. It runs them without the XML Schema in front, because the schema admits
+no fragment and the tests do not ask about it. `peppolbis-en16931-base-3.0-ubl` and `-cii` run
+the Peppol rules of the syntax; `peppolbis-en16931-01-3.0-ubl-invoice` runs the EN 16931 rules
+with them. A rule is *identical* where every expectation about it holds, flag and count included.
+A dash marks a rule the release has no test about.
 
 | Rule | 3.0.20 | 3.0.21 |
 |---|---|---|
@@ -126,15 +126,15 @@ through `esj validate --packs`:
 | a business process no Peppol process names (BT-23) | 1 | `PEPPOL-EN16931-R007` |
 | a specification identifier no pack names (BT-24) | 9 | none: the bundled pack is chosen and no CIUS rule runs; with `--pack` naming the Peppol pack the Peppol rule sets do not apply either |
 
-Both releases answer each change alike. The last row is the design, not a gap: the specification
-identifier is how a pack and its rule sets are chosen, so `PEPPOL-EN16931-R004`, which asks for
-that identifier, cannot fire on a document that is judged by the pack. The unit tests hold it,
-with the other rules.
+Both releases answer each change alike. The last row is the design, not a gap. ESJ chooses a pack
+and its rule sets by the specification identifier, so `PEPPOL-EN16931-R004`, which asks for that
+identifier, cannot fire on a document the pack judges. The unit tests hold it, with the other
+rules.
 
 ## From 3.0.20 to 3.0.21
 
-What the four rule sets of the two releases name, by rule identifier and flag, compared on the
-fetched files. Rules whose test changed but whose identifier and flag did not are not listed.
+The table compares what the 4 rule sets of the two releases name, by rule identifier and flag, on
+the fetched files. It leaves out rules whose test changed but whose identifier and flag did not.
 
 | Rule set | New | From `warning` to `fatal` | Withdrawn |
 |---|---|---|---|
@@ -144,15 +144,15 @@ fetched files. Rules whose test changed but whose identifier and flag did not ar
 | EN 16931, CII (1.3.15 → 1.3.16) | `CII-SR-467` to `CII-SR-494`, 28 rules, 25 `fatal` and `CII-SR-474` to `-476` `warning` | — | `BR-CO-25` |
 
 `PEPPOL-COMMON-R040`, the GS1 check digit of a GLN (scheme `0088`), reads different fields in the
-two syntaxes in both releases: in UBL `EndpointID`, party identifiers and `CompanyID`, in CII
-every identifier with that scheme, the item's standard identifier (BT-157) and the delivery
-location (BT-71) among them. Five of the ten 3.0.21 examples carry a `0088` value there that is no
-valid GLN: written to CII by `esj convert --to cii` they fail the rule, where the UBL original
-passes.
+two syntaxes in both releases. In UBL it reads `EndpointID`, party identifiers and `CompanyID`. In
+CII it reads every identifier with that scheme, the item's standard identifier (BT-157) and the
+delivery location (BT-71) among them. 5 of the 10 3.0.21 examples carry a `0088` value there that
+is no valid GLN. Written to CII by `esj convert --to cii`, they fail the rule, where the UBL
+original passes.
 
 ## Files
 
-The files of each release, SHA-256 and path, under the heading of its recipe. Two unit test
+The files of each release, SHA-256 and path, under the heading of its recipe. 2 unit test
 files end in `.xm` rather than `.xml` in the publisher's repository; they are listed and run like
 the others.
 

@@ -2,9 +2,9 @@
 
 *Part of [EN16931 Semantic JSON](../README.md).*
 
-`esj validate` runs two engines over one input and ends in one verdict. What each runs, what a
-finding means, what a verdict and an exit code commit to, and what has been measured.
-[`cli.md`](cli.md) is the option-by-option reference.
+`esj validate` runs two engines over one input and gives you one verdict. Below: what each engine
+runs, what a finding means, what a verdict and an exit code promise, and what has been measured.
+[`cli.md`](cli.md) is the reference for every option.
 
 ## Two engines
 
@@ -22,24 +22,24 @@ finding means, what a verdict and an exit code commit to, and what has been meas
                   one verdict
 ```
 
-The **syntax engine** takes the bytes exactly as they arrived and runs the official artefacts of
-the profile BT-24 names, in the release the pack names. The **semantic engine** runs the
-structural layers of `SPEC.md` section 9 over the semantic document — L1 for an ESJ input, L2 and
-L3 for both — and then the business rules of EN 16931-1, clause 6.4 over the business terms. It
-knows nothing about XML.
+The **syntax engine** takes the bytes exactly as they arrived. It runs the official artefacts of the
+profile BT-24 names, in the release the pack names. The **semantic engine** runs the structural
+layers of `SPEC.md` section 9 over the semantic document: L1 for an ESJ input, L2 and L3 for both.
+Then it runs the business rules of EN 16931-1, clause 6.4, over the business terms. It knows no XML.
 
-Both run over an XML input. **Semantic validity does not prove syntax-binding validity**: an
-element written where the binding forbids it, an identifier without the scheme attribute the
-binding requires, a code in an attribute the importer never reads are all invisible in the
-semantic document, because an import is a projection. An ESJ document that never was XML is
-written out through a binding table in memory, so that the artefacts read it too.
+Both engines run over an XML input, because **semantic validity does not prove syntax-binding
+validity**. An import is a projection, so the semantic document cannot show an element written where
+the binding forbids it. Nor can it show an identifier without the scheme attribute the binding
+requires, or a code in an attribute the importer never reads. An ESJ document that never was XML is
+written out through a binding table in memory, so the artefacts read it too.
 
 ## The packs
 
-A **validation pack** is a directory of the official artefacts for one profile, in the form a
-machine can execute, unmodified, each file under the licence it came with.
-[`../packs/README.md`](../packs/README.md) describes it; [`../packs/SOURCES.md`](../packs/SOURCES.md)
-records for every file where it was published, under which licence, with which SHA-256 and when.
+A **validation pack** is a directory of the official artefacts for one profile. Each file is
+unmodified, executable by a machine, under its own licence.
+[`../packs/README.md`](../packs/README.md) describes the format.
+[`../packs/SOURCES.md`](../packs/SOURCES.md) records for every file where it was published, its
+licence, its SHA-256 and the date.
 
 This build carries two releases of one pack, `xrechnung/3.0.2/2026-10-12` and
 `xrechnung/3.0.2/2026-08-31`, each of four components:
@@ -51,99 +51,93 @@ This build carries two releases of one pack, `xrechnung/3.0.2/2026-10-12` and
 | `en16931-ubl-schematron`, `en16931-cii-schematron` | the EN 16931 Schematron of CEN/TC 434, compiled to XSLT: release 1.3.17 in the pack of 2026-10-12, release 1.3.16 in the pack of 2026-08-31 | EUPL-1.2 |
 | `xrechnung-ubl-schematron`, `xrechnung-cii-schematron` | the XRechnung Schematron 2.6.0, compiled to XSLT | Apache-2.0 |
 
-and eight level tables, 56 rules in all, which are what the XRechnung profiles say a rule of
-those artefacts means for a document of their own profile (**Two publishers, two levels**
-below). `esj --list-packs` prints all of it for a build.
+Each release also carries eight level tables with 56 rules in all. They say what a rule of those
+artefacts means for a document of the XRechnung profiles (**Two publishers, two levels** below).
+`esj --list-packs` prints all of it for a build.
 
-The newer release is the one a document is judged by. CEN/TC 434 published release 1.3.17 of
-its validation artefacts on 2026-10-12, in effect from the end of 2026-11-15; no release of the
-XRechnung validator configuration carries it yet, so the pack `xrechnung/3.0.2/2026-10-12` is
-release 1.3.17 together with the XRechnung Schematron, the schema modules and the level tables
-of the configuration of 2026-08-31. `--pack xrechnung/3.0.2/2026-08-31` keeps the previous
-release, with CEN 1.3.16, for an invoice that is to be judged by it.
+ESJ judges a document by the newer release. CEN/TC 434 published release 1.3.17 of its validation
+artefacts on 2026-10-12, in effect from the end of 2026-11-15. No release of the XRechnung validator
+configuration carries it yet. The pack `xrechnung/3.0.2/2026-10-12` is therefore release 1.3.17
+together with the XRechnung Schematron, the schema modules and the level tables of the configuration
+of 2026-08-31. `--pack xrechnung/3.0.2/2026-08-31` judges by the previous release, CEN 1.3.16.
 
-Three properties a report depends on:
+**A release is identity.** Profile, profile version and the release date of the artefact bundle name
+a pack, and every report shows all three. A bugfix release adds, removes or re-levels rules, so a
+new release is a new directory beside the old one.
 
-**A release is identity.** A pack is named by profile, profile version and the release date of
-the artefact bundle, and all three appear in every report, because a bugfix release adds,
-removes or re-levels rules. A new release is a new directory beside the old one.
+**Nothing is fetched at run time.** The packs are in the jar, so a build works offline. Every build
+recomputes the digests in `SOURCES.md`, so they are those of the artefacts that judged. The one
+command that goes to the network is `esj packs fetch` (below), and only when you call it.
 
-**Nothing is fetched at run time.** The packs are in the jar, so a build works offline and the
-digests in `SOURCES.md`, recomputed on every build, are those of the artefacts that judged. The
-one command that goes to the network is `esj packs fetch` (below), and only when it is called.
-
-**A pack can be replaced, and every form says when it was.** `--pack <directory>` runs a pack
-from a directory holding a `pack.json`, `--pack <id>` selects a bundled one or one of a pack
-directory; a manifest writes its own identity, so the origin is printed beside the name and
-`--output json` carries `syntax.pack.source` — `bundled`, `supplied` or `directory` — and
-`syntax.pack.location`, the directory the files that ran were read from. Adding a release is a
-directory, a manifest, the provenance rows and a line in the index — no code:
-[`../packs/README.md`](../packs/README.md#adding-a-release).
+**You can replace a pack, and every form says when you did.** `--pack <directory>` runs a pack from
+a directory holding a `pack.json`. `--pack <id>` selects a bundled pack or one of a pack directory.
+A manifest writes its own identity, so ESJ prints the origin beside the name. `--output json`
+carries `syntax.pack.source` (`bundled`, `supplied` or `directory`) and `syntax.pack.location`, the
+directory ESJ read the files from. A new release needs a directory, a manifest, the provenance rows
+and a line in the index, and no code: [`../packs/README.md`](../packs/README.md#adding-a-release).
 
 ### Packs made on this machine
 
-Some artefacts may be used but not redistributed. The Peppol BIS Billing 3.0 validation
-artefacts, as published by OpenPeppol, carry no open-source licence and OpenPeppol permits no
-redistribution without its consent, so no file of them is in this repository or in any artefact
-it publishes. What esj carries instead is its own work: a recipe that names the files of one
-release with their SHA-256, and the command that follows it.
+Some artefacts may be used but not redistributed. The Peppol BIS Billing 3.0 validation artefacts,
+as OpenPeppol publishes them, carry no open-source licence. OpenPeppol permits no redistribution
+without its consent, so no file of them is in this repository or in any artefact it publishes. esj
+carries its own work instead: a recipe naming the files of one release with their SHA-256, and the
+command that follows it.
 
 ```text
 $ esj packs fetch peppol-bis-billing --into ~/esj-packs
 $ esj validate --packs ~/esj-packs invoice.xml
 ```
 
-This build carries two recipes: `peppol-bis-billing-3.0.21`, the May 2026 release that is
-mandatory from 2026-08-17, and `peppol-bis-billing-3.0.20`. `peppol-bis-billing`, the identifier
-of the pack, names the newest release this build carries; a recipe's own name names that
-release. OpenPeppol tagged 3.0.20 (`v3.0.20`) but not 3.0.21, so the 3.0.21 recipe fetches below
-the commit `806866bd2bd91d7e9623b68f08164e8fbe9e67a0` of the branch `2026-Q2-QA2` — never below a
-branch name, which moves. Its two UBL files were, when the recipe was written, byte for byte the
-ones OpenPeppol publishes under `docs.peppol.eu/poacc/billing/3.0/files/`; the CII files are
-published only in the repository.
+This build carries two recipes: `peppol-bis-billing-3.0.21`, the May 2026 release that is mandatory
+from 2026-08-17, and `peppol-bis-billing-3.0.20`. The pack identifier `peppol-bis-billing` names the
+newest release this build carries; a recipe's own name names its release. OpenPeppol tagged 3.0.20
+(`v3.0.20`) but not 3.0.21. The 3.0.21 recipe therefore fetches below the commit
+`806866bd2bd91d7e9623b68f08164e8fbe9e67a0` of the branch `2026-Q2-QA2`, never below a branch name,
+which moves. When the recipe was written, its two UBL files were byte for byte the ones OpenPeppol
+publishes under `docs.peppol.eu/poacc/billing/3.0/files/`. The CII files are only in the repository.
 
-`esj packs fetch` downloads the four Schematron files of the release from the OpenPeppol
-repository over https, refuses any whose SHA-256 is not the one the recipe pins and then writes
-nothing, compiles each to XSLT in process with the ISO Schematron skeleton this build carries,
-copies the UBL and CII schema modules out of the bundled pack, and writes the pack to
-`<directory>/peppol-bis-billing/3.0/<release>` with a `pack.json` that records the source URLs, the
+`esj packs fetch` downloads the four Schematron files of the release from the OpenPeppol repository
+over https. It refuses any file whose SHA-256 is not the one the recipe pins, and then writes
+nothing. It compiles each file to XSLT in process, with the ISO Schematron skeleton this build
+carries, and copies the UBL and CII schema modules out of the bundled pack. It writes the pack to
+`<directory>/peppol-bis-billing/3.0/<release>`, with a `pack.json` that records the source URLs, the
 fetch date and the SHA-256 of every file it wrote. A second fetch into the same directory leaves an
-identical pack alone; a different one is refused unless `--replace` is given.
+identical pack alone and refuses a different one unless you pass `--replace`.
 
-A **pack directory** is a directory of packs laid out as `<id>/<version>/<release>/pack.json`.
-`--packs <directory>` on `validate` and `inspect`, repeatable, and the environment variable
-`ESJ_PACKS`, a path list, name pack directories; every pack found there joins the bundled ones
-and is chosen the same way, by the profile the document names in BT-24. Two rules keep the
-choice unambiguous: a pack there with the identity of a bundled pack is refused by name, and a
-document whose profile two packs recognize, one of them from a pack directory, is refused with
-both named — `--pack <id>` chooses. The one exception is the order a publisher gives: where the
-packs that recognize the profile are all releases of one pack — the same id and version, as
-`peppol-bis-billing/3.0/3.0.20` and `peppol-bis-billing/3.0/3.0.21` fetched side by side are — the
-newest release is taken, compared part by part (3.0.9 before 3.0.10), and the report names it;
-`--pack peppol-bis-billing/3.0/3.0.20` runs the older one. A document of another profile is
-judged as without the directory. `esj --list-packs` and `esj packs list` print the origin of every pack, `bundled` or
-the directory, and for a rule set compiled on this machine the file it came from and the SHA-256
-of what came out; the recipes this build carries are listed after the packs. A container reads a
-pack directory from a mount ([`install.md`](install.md#container-image)).
+A **pack directory** is a directory of packs laid out as `<id>/<version>/<release>/pack.json`. Name
+pack directories with `--packs <directory>` on `validate` and `inspect` (repeatable) or with the
+environment variable `ESJ_PACKS`, a path list. Every pack found there joins the bundled ones. ESJ
+chooses among them the same way, by the profile the document names in BT-24. Two rules keep the
+choice unambiguous. ESJ refuses by name a pack there with the identity of a bundled pack. It refuses
+a document whose profile two packs recognize, one of them from a pack directory, and names both;
+choose with `--pack <id>`. The one exception is the order a publisher gives. Sometimes the packs
+that recognize the profile are all releases of one pack, with the same id and version, as
+`peppol-bis-billing/3.0/3.0.20` and `peppol-bis-billing/3.0/3.0.21` fetched side by side are. Then
+ESJ takes the newest release, compared part by part (3.0.9 before 3.0.10), and the report names it.
+`--pack peppol-bis-billing/3.0/3.0.20` runs the older one. A document of another profile is judged
+as without the directory. `esj --list-packs` and `esj packs list` print the origin of every pack,
+`bundled` or the directory. For a rule set compiled on this machine they also print the file it came
+from and the SHA-256 of what came out. They list the recipes this build carries after the packs. A
+container reads a pack directory from a mount ([`install.md`](install.md#container-image)).
 
-The pack carries the rule sets the release ships: the EN 16931 Schematron of CEN/TC 434 in the
-version OpenPeppol took into it — 1.3.16 of 2026-04-10 for 3.0.21 and 1.3.15 of 2025-10-16 for
-3.0.20, as the files state — and the
-Peppol rules for UBL and for CII, each at the level its artefact flags: the build configuration of
-the release runs the schema, the CEN rules and the Peppol rules of a syntax together and levels no
-rule, so the pack has no level table. The Peppol rules run for
-`urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0` and every
-identifier that begins with it, for Invoice and CreditNote alike; a document of any other profile
-is not chosen for this pack.
+The pack carries the rule sets the release ships. First, the EN 16931 Schematron of CEN/TC 434 in
+the version OpenPeppol took into it, as the files state: 1.3.16 of 2026-04-10 for 3.0.21, and 1.3.15
+of 2025-10-16 for 3.0.20. Then the Peppol rules for UBL and for CII, each at the level its artefact
+flags. The build configuration of the release runs the schema, the CEN rules and the Peppol rules of
+a syntax together and levels no rule, so the pack has no level table. The Peppol rules run for
+`urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0` and every identifier
+that begins with it, for Invoice and CreditNote alike. No document of another profile gets this
+pack.
 
 ## The check table
 
-The rows of the syntax block are the components of the chosen pack in manifest order; the rows of
-the semantic block are the layers. Every row is `OK`, a count of findings, `no verdict` where the
-row ran and could not measure what it was asked to — a limit, an unknown edition, a path only an
-extension registry defines — or a reason it did not run. A pack carries the artefacts of every
-syntax it covers, so a UBL invoice leaves the CII rows unused; `--verbose` prints them and the
-JSON report always carries them.
+The rows of the syntax block are the components of the chosen pack, in manifest order. The rows of
+the semantic block are the layers. Every row reads `OK`, a count of findings, a reason it did not
+run, or `no verdict`. The last means the row ran and could not measure what it was asked to: a
+limit, an unknown edition, a path only an extension registry defines. A pack carries the artefacts
+of every syntax it covers, so a UBL invoice leaves the CII rows unused. `--verbose` prints them; the
+JSON report always has them.
 
 | Row | What it ran |
 |---|---|
@@ -157,32 +151,31 @@ JSON report always carries them.
 | `EN 16931 business rules (native, pack …)` | the business rules of clause 6.4 as rules of this project, over the business terms; the row names the pack and either what it found or the reason it did not run |
 | `official artefacts over the written CII` | for an ESJ input: the schema and Schematron rows above, over the XML the document was written to |
 
-A program reads `syntax.ran`, `syntax.skipped`, `layers` and `rules` in the JSON report instead,
-with the components under the pack's own names (`en16931-ubl-schematron`), and `notChecked` as a
-list of stable tokens — `format-l1`, `model-l2`, `cardinality-l3`, `business-rules`,
-`profile-rules`, `syntax-binding`, `written-syntax`. `notChecked` is everything this run did not
-look at or could not measure, including what there was nothing to look at: layer L1 over a document
-that arrived as XML is in it and is no gap. The `reasons` array beside it carries the missing
-components of the complete check, each with its cause, and is the list the verdict turns on; every
-component of `reasons` is in `notChecked`.
+A program reads `syntax.ran`, `syntax.skipped`, `layers` and `rules` in the JSON report instead. The
+components appear there under the pack's own names (`en16931-ubl-schematron`). `notChecked` is a
+list of stable tokens: `format-l1`, `model-l2`, `cardinality-l3`, `business-rules`, `profile-rules`,
+`syntax-binding`, `written-syntax`. It names everything this run did not look at or could not
+measure, including what there was nothing to look at: L1 over an XML input is in it and is no gap.
+The `reasons` array beside it carries the missing components of the complete check, each with its
+cause. The verdict turns on that list, and every component of `reasons` is also in `notChecked`.
 
-The last row is the engine of [`rules/`](../rules/README.md) and of the module `esj-rules`: one
-rule serves a UBL invoice, a CII invoice and a document that was never XML alike. Its findings
-are a layer of their own — category `EN-BR`, `EN-DEC` or `EN-CL`, engine `native` — and are
-never presented as ESJ conformance (`SPEC.md` 9.4).
+The business-rules row is the engine of [`rules/`](../rules/README.md) and of the module
+`esj-rules`. One rule serves a UBL invoice, a CII invoice and a document that was never XML alike.
+Its findings are a layer of their own (category `EN-BR`, `EN-DEC` or `EN-CL`, engine `native`), and
+ESJ never presents them as ESJ conformance (`SPEC.md` 9.4).
 
-Both engines check those rules and one identifier can appear in both blocks. Neither report is
-merged into the other and neither is suppressed: the artefact reads the document as it arrived, the
+Both engines check those rules, so one identifier can appear in both blocks. ESJ neither merges one
+report into the other nor suppresses either. The artefact reads the document as it arrived, the
 native pack what the import carried into the model. The lines and the report file name the overlap
-under the native findings; `--output json` keeps `syntax.findings` and `rules.findings` apart, with
-the engine on every finding.
+under the native findings. `--output json` keeps `syntax.findings` and `rules.findings` apart, the
+engine on every finding.
 
 ## The rule pack
 
 [`../packs/`](../packs/README.md) holds other people's artefacts, [`../rules/`](../rules/README.md)
-this project's own. A **rule pack** is a directory of rules written over business terms, with the
-code list snapshots its membership tests are decided against and a manifest naming both, one
-per edition (`esj --list-packs`). The pack of the default edition:
+this project's own. A **rule pack** is a directory of rules written over business terms. It holds
+the code list snapshots its membership tests are decided against and a manifest naming both. There
+is one per edition (`esj --list-packs`). The pack of the default edition:
 
 | `en16931/1.3.17` | |
 |---|---|
@@ -191,30 +184,29 @@ per edition (`esj --list-packs`). The pack of the default edition:
 | Code lists | 17 dated snapshots of 2026-10-18 — the code list workbook version 18, the EAS list version 17 and the VATEX list version 9 among their sources — each with its publisher, its retrieval date and what that publisher says about reuse in [`../rules/en16931/1.3.17/codelists/SOURCES.md`](../rules/en16931/1.3.17/codelists/SOURCES.md) |
 | Verified against | the CEN/TC 434 validation artefacts, release 1.3.17 |
 
-`1.3.17` is the release of the artefacts the pack was *measured against*. The pack
-`en16931/1.3.16` stays in the tree beside it, with the identifiers `BR-AF-*` and `BR-AG-*` that
-release used for the categories `L` and `M`; `esj validate` runs the newer one. The pack
-`en16931-2026/0.1`, a preview like its edition, has no release behind it ([`editions.md`](editions.md#what-works-for-a-2026-document-today)).
+`1.3.17` is the release of the artefacts the pack was *measured against*. The pack `en16931/1.3.16`
+stays in the tree beside it, with the identifiers `BR-AF-*` and `BR-AG-*` that release used for the
+categories `L` and `M`. `esj validate` runs the newer one. The pack `en16931-2026/0.1`, a preview
+like its edition, has no release behind it
+([`editions.md`](editions.md#what-works-for-a-2026-document-today)).
 
 ### The rule language, in short
 
-A rule is a JSON object: the identifier the standard gives it, a severity, the business group
-it is a statement about, the terms it reads, an assertion built from a closed set of thirty-four
-operators, a message, and the clause of the standard in `source`.
-
-Four properties of the language matter to a reader of a report. A rule addresses business terms
-and never an occurrence index. A rule with a business group as its context is evaluated once per
-instance of that group and reports at the instance it failed at. Arithmetic is exact
-`BigDecimal`, and the operator that counts fraction digits applies to the fixed-scale amounts of
-the standard alone — a unit price, a quantity and a percentage have no decimal limit and are
-never rounded or cut. A rule a closed operator set cannot express is written in Java under the
-same identifier, in the same pack, producing the same finding.
-[`../rules/README.md`](../rules/README.md) is the whole language.
+A rule is a JSON object with seven parts: the identifier the standard gives it, a severity, the
+business group it is a statement about, the terms it reads, an assertion built from a closed set of
+34 operators, a message, and the clause of the standard in `source`.
+[`../rules/README.md`](../rules/README.md) is the whole language. Four properties matter when you
+read a report. A rule addresses business terms, never an occurrence index. A rule whose context is a
+business group runs once per instance of that group and reports at the instance it failed at.
+Arithmetic is exact `BigDecimal`. The operator that counts fraction digits applies only to the
+fixed-scale amounts of the standard; a unit price, a quantity and a percentage have no decimal
+limit, and no rule rounds or cuts them. A rule the closed operator set cannot express is written in
+Java: same identifier, same pack, same finding.
 
 ### What it covers, and what it does not
 
-Every identifier of the official validation artefacts of release 1.3.17 is either implemented
-here or named with a reason, and a test of `esj-rules` reads the table that says which:
+Every identifier of the official validation artefacts of release 1.3.17 is either implemented here
+or named with a reason. A test of `esj-rules` reads the table that says which:
 
 | | Rules of the release | Implemented | Not applicable | Deferred |
 |---|---|---|---|---|
@@ -222,52 +214,51 @@ here or named with a reason, and a test of `esj-rules` reads the table that says
 | Code list rules | 22 | 21 | 1 | 0 |
 | **Together** | **223** | **216** | **1** | **6** |
 
-The 217 of the pack are those 216 and `BR-CO-25`, which the standard states in clause 6.4.2 —
-an invoice with an amount due for payment states a payment due date or payment terms — and which
-release 1.3.17 carries no identifier for.
-
-The seven that are not implemented are in
-[`../conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md), each with
-its reason: `BR-CL-03` is about an attribute of the XML binding the semantic model has no place
-for, `BR-CO-05` to `BR-CO-08` ask whether a reason code and a free-text reason agree, which the
-official artefacts assert nothing for either, and `BR-B-01` and `BR-B-02` wait for an edition of
-the standard. The rule-by-rule table is
-[`../conformance/rules/coverage.md`](../conformance/rules/coverage.md); what the pack says about
-invoices known to be good is [`../conformance/rules/corpus.md`](../conformance/rules/corpus.md).
+The 217 of the pack are those 216 and `BR-CO-25`. The standard states that rule in clause 6.4.2 (an
+invoice with an amount due for payment states a payment due date or payment terms), and release
+1.3.17 carries no identifier for it. ESJ does not implement 7 rules;
+[`../conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md) gives each
+reason. `BR-CL-03` is about an attribute of the XML binding the semantic model has no place for.
+`BR-CO-05` to `BR-CO-08` ask whether a reason code and a free-text reason agree; the official
+artefacts assert nothing for them either. `BR-B-01` and `BR-B-02` wait for an edition of the
+standard. [`../conformance/rules/coverage.md`](../conformance/rules/coverage.md) is the table rule
+by rule; [`../conformance/rules/corpus.md`](../conformance/rules/corpus.md) shows what the pack says
+about invoices known to be good.
 
 ## What the import reports
 
-The layers and the native rule pack can only decide what the import carried, so what it did
-*not* carry is reported. Three rules govern it.
+The layers and the native rule pack can only decide what the import carried, so the import reports
+what it did *not* carry. Three rules govern it.
 
-**Nothing is dropped in silence.** Where the model has a place for what arrived, the value is
-kept: an identifier the binding does not select by its scheme reaches the document without one,
-the model layer reports `ESJ-L2-COMPONENT-MISSING` at its path and `BR-62` to `BR-65` report it
-— the one model error that does not stop the rule pack. Where the binding has no place for it
-— in CII a tax registration under neither the value added tax scheme nor the fiscal one is
-neither BT-31 nor BT-32, where UBL binds BT-32 by the negation and takes it — the element is
-reported under the rule below. [`../conformance/readers.md`](../conformance/readers.md) records both, term by term.
+**Nothing is dropped in silence.** Where the model has a place for what arrived, ESJ keeps the
+value. An identifier the binding does not select by its scheme reaches the document without one. The
+model layer then reports `ESJ-L2-COMPONENT-MISSING` at its path, and `BR-62` to `BR-65` report it
+too. It is the one model error that does not stop the rule pack. Where the binding has no place for
+an element, ESJ reports it under the next rule. In CII a tax registration under neither the value
+added tax scheme nor the fiscal one is neither BT-31 nor BT-32, while UBL binds BT-32 by the
+negation and takes it. [`readers.md`](../conformance/readers.md) records both, term by term.
 
 **A syntax element the binding cannot classify is reported, not dropped.** A binding selects the
-element carrying a term by a value in or on it — an allowance charge by its indicator, payment
-instructions by the payment means type code, a CII date by its format qualifier — and an element
-that states no such value is selected by nothing. Both readers write one `UNPLACEABLE` note per
-element, naming it and the terms consequently absent; [`../conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md)
-records which rules that costs.
+element that carries a term by a value in or on it: an allowance charge by its indicator, payment
+instructions by the payment means type code, a CII date by its format qualifier. Nothing selects an
+element that states no such value. Both readers then write one `UNPLACEABLE` note per element,
+naming it and the terms that are absent as a result.
+[`../conformance/rules/not-applicable.md`](../conformance/rules/not-applicable.md) records which
+rules that costs.
 
-**A notation the semantic document cannot carry is reported.** The canonical decimal form writes
-no trailing zeros, so `319.860` is `319.86` in the document; the importer warns at that path.
+**A notation the semantic document cannot carry is reported.** The canonical decimal form writes no
+trailing zeros, so `319.860` is `319.86` in the document, and the importer warns at that path.
 
-A warning-level note means content of the source did not reach the document; an information-level
-note means nothing EN 16931 has a place for was lost. The warnings are on the error stream of
-every command that imports, collapsed and cut off, and `--verbose` adds the information-level
-notes; in `--output json` they are the `warnings` and `information` arrays, and in the report file
-([`cli.md`](cli.md#the-report)) a warning is a finding of the engine `importer` and an
+A warning-level note means content of the source did not reach the document. An information-level
+note means ESJ lost nothing EN 16931 has a place for. Every command that imports prints the warnings
+on the error stream, collapsed and cut off; `--verbose` adds the information-level notes. In
+`--output json` they are the `warnings` and `information` arrays. In the report file
+([`cli.md`](cli.md#the-report)) a warning is a finding of the engine `importer`, and an
 information-level note stands under *Before the check*.
 
 ## Finding categories
 
-A validation produces findings from several rule sets at once, so every finding carries a
+One validation produces findings from several rule sets at once. ESJ therefore gives every finding a
 category, derived from the identifier the artefact reported:
 
 | Category | What a finding of it is about |
@@ -282,28 +273,29 @@ category, derived from the identifier the artefact reported:
 | `XR-EXT` | a rule of the XRechnung extension |
 | `OTHER` | an identifier of no family this table names; the identifier travels with the finding unchanged |
 
-A build enumerates the identifiers out of the vendored artefacts and asks the table about every
-one; a family of a later release that is not in the table lands in `OTHER` with its identifier
-intact. Beside the category, a finding carries the rule identifier, the artefact's message, the
-node it names, the pack and engine it came from, and two levels.
+A build enumerates the identifiers of the vendored artefacts and asks the table about every one. A
+family of a later release that is not in the table lands in `OTHER` with its identifier intact.
+Beside the category, a finding carries the rule identifier, the artefact's message, the node it
+names, the pack and engine it came from, and two levels.
 
 ### Two publishers, two levels
 
-The artefact flags each of its rules, and the core invoice usage specification a document names
-may say something else about that rule for its own profile. XRechnung does both: `BR-CL-13` down
+The artefact flags each of its rules. The core invoice usage specification a document names may say
+something else about that rule for its own profile. XRechnung does both: it levels `BR-CL-13` down
 for its CVD profile, whose item classification scheme the EN 16931 code list does not carry, and
-`UBL-CR-646` up for its standard profile. A finding therefore reports both — `flag` is the
-artefact's, untouched, `severity` is the level the profile asks for and the one the verdict is made
-on, and where they differ every form says so, `[information, flagged fatal by the artefact]`. The
-levels are data of the pack, transcribed from the configuration the specification publishes and
-recorded in [`../packs/SOURCES.md`](../packs/SOURCES.md); nothing in the code levels anything. Over
-the 149 documents of the ledger below, 19 carry a finding whose two levels differ, and on 7 of
-those the verdict would be the other one without the tables.
+`UBL-CR-646` up for its standard profile. A finding therefore reports both levels. `flag` is the
+artefact's, untouched. `severity` is the level the profile asks for, and ESJ makes the verdict on
+it. Where the two differ, every form says so: `[information, flagged fatal by the artefact]`.
+
+The levels are data of the pack, transcribed from the configuration the specification publishes and
+recorded in [`../packs/SOURCES.md`](../packs/SOURCES.md). Nothing in the code levels anything. Over
+the 149 documents of the ledger below, 19 carry a finding whose two levels differ. On 7 of those,
+the verdict would be the other one without the tables.
 
 ## The complete check
 
-**`VALID` and exit code 0 are given only where the complete check for that kind of input ran and
-nothing fatal was found.** What that check is, this tool decides per input kind:
+**You get `VALID` and exit code 0 only where the complete check for that kind of input ran and found
+nothing fatal.** ESJ defines that check per input kind:
 
 | Input | The complete check |
 |---|---|
@@ -311,38 +303,38 @@ nothing fatal was found.** What that check is, this tool decides per input kind:
 | **ESJ** | layers L1, L2 and L3, the business rules of EN 16931 as the native pack, and the official artefacts of its profile over the XML the document is written to |
 | **PDF** | the container checks of this tool, plus the rows of the embedded XML |
 
-**Layer L1 is in the ESJ row and in no other**: L1 is decided by the bytes of an ESJ document
-(`SPEC.md` section 9.1), a document that arrived as UBL, as CII or inside a PDF never was such a byte
-sequence, and `SPEC.md` section 3.5 measures a result over it against L2 and L3 alone, so an XML
-input reaches `VALID` with `format-l1` among the rows this run did not look at.
+**Layer L1 is in the ESJ row and in no other.** The bytes of an ESJ document decide L1 (`SPEC.md`
+section 9.1). A document that arrived as UBL, as CII or inside a PDF never was such a byte sequence,
+and `SPEC.md` section 3.5 measures a result over it against L2 and L3 alone. An XML input therefore
+reaches `VALID` with `format-l1` among the rows this run did not look at.
 
-**A document that names EN 16931 and no CIUS needs no CIUS rules**, and the check is complete;
-a document that names a specification the pack carries no rules for leaves the same rule sets
-unused and *was* checked less thoroughly than it asked to be. The `baseProfiles` member of the
-pack manifest tells the two apart ([`../packs/README.md`](../packs/README.md#the-manifest)).
+**A document that names EN 16931 and no CIUS needs no CIUS rules**, and its check is complete
+([When a profile brings no rules with it](#when-a-profile-brings-no-rules-with-it) has the other
+case). The `baseProfiles` member of the pack manifest tells the two apart
+([`../packs/README.md`](../packs/README.md#the-manifest)).
 
-**The native rules are a required row for an ESJ input and an additional one for XML.** For an
-XML input the official artefacts of the profile define `VALID`, so the native pack adds evidence
-rather than coverage and `--rules none` leaves the check complete. For an ESJ input the pack is a
-row of its own and `--rules none` makes it `skipped-by-caller`, with the verdict `INDETERMINATE`,
-as `--no-syntax` does for an XML input. A fatal native finding is `INVALID` for either input; a
-declared CIUS the native rules do not cover stays a gap for an ESJ input until a pack covers it.
+**The native rules are a required row for an ESJ input and an additional one for XML.** For an XML
+input the official artefacts of the profile define `VALID`. The native pack adds evidence, not
+coverage, and `--rules none` leaves the check complete. For an ESJ input the pack is a row of its
+own. `--rules none` makes it `skipped-by-caller`, with the verdict `INDETERMINATE`, as `--no-syntax`
+does for an XML input. A fatal native finding is `INVALID` for either input. For an ESJ input, a
+declared CIUS that the native rules do not cover stays a gap until a pack covers it.
 
 **The official artefacts reach an ESJ input through a binding table.** No artefact reads a document
-that was never XML, so `esj validate` writes it out — a cross industry invoice, or a UBL document
-with `--via ubl` — and runs the artefacts of its profile over the result. Nothing is written to
-disk and the document under test stays the ESJ one. The row holds only while the two say the same
-thing, and four causes say where it does not: `term-not-in-syntax`, `term-not-stated`,
-`element-not-in-model` and `written-over-bound` (the table below); the row is then not applicable
-and the verdict `INDETERMINATE`. An element the binding table states a value for is written and the
-row runs; `--no-syntax` takes the row out, and a profile with no artefact leaves it
+that was never XML. `esj validate` therefore writes it out, as a cross industry invoice or, with
+`--via ubl`, as a UBL document, and runs the artefacts of its profile over the result. Nothing goes
+to disk, and the document under test stays the ESJ one. The row holds only while the two say the
+same thing. Four causes name where they do not: `term-not-in-syntax`, `term-not-stated`,
+`element-not-in-model` and `written-over-bound` (table below). The row is then not applicable, and
+the verdict is `INDETERMINATE`. ESJ writes an element the binding table states a value for, and the
+row runs. `--no-syntax` takes the row out, and a profile with no artefact leaves it
 `no-rules-for-profile`.
 [`../conformance/writers/cii-roundtrip.md`](../conformance/writers/cii-roundtrip.md) and
-[`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md) measure both writers over the
-corpus, which is what the coverage of this row rests on.
+[`ubl-roundtrip.md`](../conformance/writers/ubl-roundtrip.md) measure both writers over the corpus,
+which this row rests on.
 
 **PDF/A conformance is outside the verdict** unless [`--verapdf`](cli.md#validating-the-pdfa-claim)
-names a validator, whose refusal makes the container `INVALID`; without it the row reads what the
+names a validator. Its refusal makes the container `INVALID`. Without it, the row reads what the
 file declares ([`pdf-input.md`](pdf-input.md)).
 
 ## Verdict and exit code
@@ -355,25 +347,25 @@ The verdict is one word over both engines, and there are three of them:
 | `INVALID` | a fatal finding in anything that ran, whatever the coverage | 1 |
 | `INDETERMINATE` | nothing fatal was found and a component of the complete check did not run or did not complete | 9 |
 
-**The verdict is technical conformance** with EN 16931 and the official artefacts: a fatal
-business-rule finding is `INVALID`, as for the KoSIT validator. For German VAT the [BMF letter of
-15 October 2026](https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Steuerarten/Umsatzsteuer/Umsatzsteuer-Anwendungserlass/2026-10-15-obligatorische-elektronische-rechnung.html) (Rn. 22 f.) tells format, business-rule and content errors apart: a file
-with a business-rule error and no format error stays an e-invoice under § 14 UStG where its
-mandatory details are complete and correct. Those mandatory details are not checked in this
-version ([`legal-de.md`](legal-de.md)).
+**The verdict is technical conformance** with EN 16931 and the official artefacts. A fatal
+business-rule finding is `INVALID`, as for the KoSIT validator. For German VAT the
+[BMF letter of 15 October 2026](https://www.bundesfinanzministerium.de/Content/DE/Downloads/BMF_Schreiben/Steuerarten/Umsatzsteuer/Umsatzsteuer-Anwendungserlass/2026-10-15-obligatorische-elektronische-rechnung.html)
+(Rn. 22 f.) tells format, business-rule and content errors apart. A file with a business-rule error
+and no format error stays an e-invoice under § 14 UStG where its mandatory details are complete and
+correct. This version does not check those mandatory details ([`legal-de.md`](legal-de.md)).
 
-A run stopped by a **bound of this run** reaches none of the three. Exit code **7** means that:
-a bound was met and the document was not judged, so read it again against a larger bound rather
-than reject it. Whether a report exists turns on whether the document had been built by then:
+A run stopped by a **bound of this run** reaches none of the three, and leaves with exit code **7**.
+A bound was met and the document was not judged: read it again against a larger bound, do not reject
+it. Whether you get a report depends on whether the document had been built by then:
 
 | Where the bound was met | What the run leaves |
 |---|---|
 | after the document exists: an ESJ input under a reader bound of `SPEC.md` section 12.2 | the whole answer. Last line `NO VERDICT — a limit of this run was reached …`, the rows the bound cut short `no verdict`, `"verdict": null` and the cause `limit-reached` under each component of `reasons` |
 | while the document is still being built: every importer path, so every XML and every PDF input, as well as [`--max-runtime`](cli.md#limits) and the container bounds ([`pdf-input.md`](pdf-input.md)) | no answer at all. One line on the error stream, nothing on the standard output — with `--output json` as well |
 
-`INDETERMINATE` always carries why — the last printed line is `INDETERMINATE — nothing fatal
-found; missing from the check: …`, naming each component and its cause, and `--output json`
-carries the same as a `reasons` array of `{component, cause}`, from a closed vocabulary:
+`INDETERMINATE` always carries why. The last printed line is `INDETERMINATE — nothing fatal found;
+missing from the check: …` and names each component with its cause. `--output json` carries the same
+as a `reasons` array of `{component, cause}`, from a closed vocabulary:
 
 | `cause` | What happened |
 |---|---|
@@ -394,11 +386,12 @@ carries the same as a `reasons` array of `{component, cause}`, from a closed voc
 
 ### The container
 
-A PDF input adds two more ways for the verdict to be `INVALID`, both about the container rather than
+A PDF input adds two more ways for the verdict to be `INVALID`. Both are about the container, not
 the invoice: a container whose own checks failed, and a container whose profile carries no invoice
-line — `INVALID` with exit 1, the reason "not an EN 16931 invoice" and an `Invoice:` line reading
-`NOT CHECKED (profile MINIMUM)`, so that nobody books a conformant MINIMUM file as a bad invoice.
-The report keeps the two apart, in two lines and two members ([`pdf-input.md`](pdf-input.md)).
+line. The second gives `INVALID` with exit 1, the reason "not an EN 16931 invoice" and an `Invoice:`
+line reading `NOT CHECKED (profile MINIMUM)`, so that nobody books a conformant MINIMUM file as a
+bad invoice. The report keeps the two apart, in two lines and two members
+([`pdf-input.md`](pdf-input.md)).
 
 ### Exit codes
 
@@ -415,24 +408,26 @@ The report keeps the two apart, in two lines and two members ([`pdf-input.md`](p
 | 8 | the conversion cannot be completed as constrained: `esj convert --fail-on-loss` found part of the document the target syntax has no place for | nothing was written; keep the ESJ document, or convert without the option and accept what the warnings name |
 | 9 | nothing fatal, and part of the check did not run or did not complete | read `reasons`; supply what is missing, or accept the reduced check deliberately |
 
-`--max-runtime` is one number over the whole command — taking the bytes in, reading the document
-into the model, running the artefacts, and a validator lent by `--verapdf` — and the message of a
-run it stopped names the step the time ran out in.
+`--max-runtime` is one number over the whole command: taking the bytes in, reading the document into
+the model, running the artefacts, and a validator lent by `--verapdf`. When it stops a run, the
+message names the step the time ran out in.
 
 ### When a profile brings no rules with it
 
-A document that names a specification the pack carries no rules for is checked against the
-schema of its syntax and nothing else: `INDETERMINATE`, cause `no-rules-for-profile`. A document
-that names EN 16931 and no CIUS leaves the same rule sets unused and is complete. Both name the
-rule sets left out, set `syntax.profileRulesSkipped` and carry `profile-rules` in `notChecked`.
-Where a recipe of this build brings the rules of the profile — Peppol BIS Billing 3.0 — the text
-report adds a line with the `esj packs fetch` command that makes their pack
-([Packs made on this machine](#packs-made-on-this-machine)); the verdict stays what it is.
+ESJ checks a document that names a specification the pack carries no rules for against the schema of
+its syntax and nothing else: `INDETERMINATE`, cause `no-rules-for-profile`. Such a document *was*
+checked less thoroughly than it asked to be. A document that names EN 16931 and no CIUS leaves the
+same rule sets unused and is complete. Both name the rule sets left out, set
+`syntax.profileRulesSkipped` and carry `profile-rules` in `notChecked`. Where a recipe of this build
+brings the rules of the profile (Peppol BIS Billing 3.0), the text report adds a line with the
+`esj packs fetch` command that makes their pack
+([Packs made on this machine](#packs-made-on-this-machine)). The verdict stays what it is.
 
 ## The report
 
-`esj validate --report proof.html` (or `.pdf`) writes the same run as one file to keep: the
-verdict, the rows and the exit code the command printed, never a second run ([`cli.md`](cli.md#the-report)).
+`esj validate --report proof.html` (or `.pdf`) writes the same run as one file you can keep: the
+verdict, the rows and the exit code the command printed, never a second run
+([`cli.md`](cli.md#the-report)).
 
 | | |
 |---|---|
@@ -441,61 +436,61 @@ verdict, the rows and the exit code the command printed, never a second run ([`c
 | Two languages | `--report-lang de` (the default) or `en`, for the report's own words and for the invoice in it. A rule, a check or a pack someone else named keeps the name it came with |
 | The same bytes | the same input and the same options give the same file: no clock, no duration, no build stamp. `--report-time` prints the moment the caller passes, exactly as written |
 
-It claims no more than the run did: a line under the verdict says that it is technical conformance,
-the PDF/A row reads what the container declares, not `OK`, unless `--verapdf` ran, and the syntax
-block over an input that was never XML is `not applicable`, never a pass. A check that did not run
-says so and why, an `INDETERMINATE` verdict names each component, and a levelled finding carries
-both levels. A document no renderer of this build takes is reported all the same, with the sentence
-that says what refused it where the invoice would be; so is one whose rendering would be larger than
-the HTML form carries ([`cli.md`](cli.md#the-report)).
+The report claims no more than the run did. A line under the verdict says that it is technical
+conformance. The PDF/A row reads what the container declares, not `OK`, unless `--verapdf` ran. The
+syntax block over an input that was never XML is `not applicable`, never a pass. A check that did
+not run says so and why, an `INDETERMINATE` verdict names each component, and a levelled finding
+carries both levels. ESJ reports a document that no renderer of this build takes all the same, with
+the sentence that says what refused it where the invoice would be. The same holds for a document
+whose rendering would be larger than the HTML form carries ([`cli.md`](cli.md#the-report)).
 
 ## `--no-syntax` and `--rules`
 
-`--no-syntax` leaves the official artefacts out and runs the semantic engine alone: for a document
-too large to pay the Schematron for, and for a pipeline that validated the XML elsewhere
-([`validation-measurements.md`](validation-measurements.md) has the numbers). What remains — the
-structural layers and the native business rules — is linear in the number of invoice lines, which
-is how a document of hundreds of thousands of lines is validated. It is never the default, and a
-run that uses it reaches no verdict in every form: the last line reads `INDETERMINATE — nothing
-fatal found; missing from the check: syntax-binding (skipped-by-caller)`, the `verdict` member
-reads `INDETERMINATE`, the exit code is 9 and `notChecked` carries `syntax-binding` — or
-`written-syntax` for an ESJ input, whose artefacts read the written document.
+`--no-syntax` leaves the official artefacts out and runs the semantic engine alone. Use it for a
+document too large to pay the Schematron for, or in a pipeline that validated the XML elsewhere
+([`validation-measurements.md`](validation-measurements.md) has the numbers). What remains, the
+structural layers and the native business rules, is linear in the number of invoice lines. That is
+how ESJ validates a document of hundreds of thousands of lines. It is never the default, and a run
+that uses it reaches no verdict in any form. The last line reads `INDETERMINATE — nothing fatal
+found; missing from the check: syntax-binding (skipped-by-caller)`. The `verdict` member reads
+`INDETERMINATE` and the exit code is 9. `notChecked` carries `syntax-binding`, or `written-syntax`
+for an ESJ input, whose artefacts read the written document.
 
-`--rules none` leaves the native business rules out, `--rules en16931` — the default — runs the pack
-this build carries, and the two switches are independent. Over an ESJ input `--rules none` takes out
-a required row and the verdict is `INDETERMINATE`, cause `skipped-by-caller`; over an XML input the
-official artefacts carry the check and it stays complete. The two together are the cheapest run
-there is, the structural layers alone, and reach no verdict on either input.
+`--rules none` leaves the native business rules out. `--rules en16931`, the default, runs the pack
+this build carries. The two switches are independent; what `--rules none` costs per input is under
+[The complete check](#the-complete-check). Together they are the cheapest run there is, the
+structural layers alone, and reach no verdict on either input.
 
 `--via cii` is the default because the cross industry invoice carries the semantic model most
-completely: over the corpus the artefacts accept 85 of the 86, all but the one whose extension the
-binding does not cover, where UBL requires elements EN 16931-1 states no term for. `--via ubl` is
-for a caller whose documents travel as UBL and wants that syntax's artefacts to have judged them.
+completely. Over the corpus the artefacts accept 85 of the 86, all but the one whose extension the
+binding does not cover; UBL requires elements EN 16931-1 states no term for. Pass `--via ubl` if
+your documents travel as UBL and you want that syntax's artefacts to judge them.
 
 ### A native finding is levelled by the profile, as an artefact's is
 
-The native pack states what the standard states, at the level the rule declares. Where the level
-table of the pack levels a rule identifier for the profile the document names in BT-24
-(**Two publishers, two levels** above), the native finding of that identifier is levelled the
-same way before it counts: the text report writes `info, fatal by the standard, levelled by the
-profile <identifier>`, the JSON report carries both as `severity` and `flag`, and a fatal one
-left after levelling is the `invoice.reason` `rule-finding` ([`cli.md`](cli.md#the-json-report)).
+The native pack states what the standard states, at the level the rule declares. The level table of
+the pack may level a rule identifier for the profile the document names in BT-24 (**Two publishers,
+two levels** above). ESJ then levels the native finding of that identifier the same way before it
+counts. The text report writes `info, fatal by the standard, levelled by the profile <identifier>`,
+and the JSON report carries both as `severity` and `flag`. A fatal one left after levelling is the
+`invoice.reason` `rule-finding` ([`cli.md`](cli.md#the-json-report)).
 
-The levels are a fact of the profile, not of the syntax: this holds for XML, for the XML inside a
-PDF and for an ESJ document that names a profile; where no syntax chooses a table, only what
-every table of that profile agrees on applies. A document that names no profile, or one the pack
-has no table for, is not levelled. Four corpus instances turn on it, three with an identification
-scheme their own specification defines and the EN 16931 code list does not, one over BR-CO-16:
+The levels are a fact of the profile, not of the syntax. This holds for XML, for the XML inside a
+PDF and for an ESJ document that names a profile. Where no syntax chooses a table, only what every
+table of that profile agrees on applies. ESJ does not level a document that names no profile, or one
+the pack has no table for. Four corpus instances turn on it: three with an identification scheme
+their own specification defines and the EN 16931 code list does not, one over BR-CO-16.
 [`../conformance/rules/corpus.md`](../conformance/rules/corpus.md) names them.
 
-**A scenario is a profile and a syntax**, so one invoice can be `VALID` as UBL and `INVALID` as CII:
-a document is levelled by the table of the syntax it arrived in, and `esj convert` and
-`esj render --embed` say so in an `info:` line where the target syntax's table is the stricter one
+**A scenario is a profile and a syntax**, so one invoice can be `VALID` as UBL and `INVALID` as CII.
+ESJ levels a document by the table of the syntax it arrived in. Where the target syntax's table is
+the stricter one, `esj convert` and `esj render --embed` say so in an `info:` line
 ([`design-decisions.md`](design-decisions.md#business-rules-are-a-layer-of-their-own-and-are-checked)).
 
 ## The oracle: measured, not asserted
 
-Each engine was put beside the published thing it could be wrong about, over the same bytes, and the answers were compared finding by finding.
+Each engine ran beside the published thing it could be wrong about, over the same bytes, finding by
+finding.
 
 ### The syntax engine, beside the official validator
 
@@ -516,32 +511,32 @@ Each engine was put beside the published thing it could be wrong about, over the
 | the verdict | 146 of 149 — and on the 3 that differ, neither run accepted the document |
 
 The mutations are the second half of the question: a corpus of valid documents can only show that
-neither side complains. Each lives as data — an instance, a location in it and one change to make
-there — so no broken invoice is checked in.
+neither side complains. Each mutation lives as data, an instance, a location in it and one change to
+make there, so no broken invoice is checked in.
 
-No configuration release of KoSIT carries release 1.3.17 yet, so the oracle ran the configuration
-of 2026-08-31 with the stylesheets of this pack in place of its own; run as published, it differs
-on 5 documents, each by a change of the release, and the verdicts are the same either way. The
-incomplete row is not a disagreement about an invoice. The **verdicts** differ on 3 documents, all naming a core
-invoice usage specification no scenario of the official configuration matches: that validator
-rejects such a document without running anything, this one checks what does apply and then reaches
-no verdict either — `INDETERMINATE`, cause `no-rules-for-profile`, exit code 9.
+No configuration release of KoSIT carries release 1.3.17 yet. The oracle therefore ran the
+configuration of 2026-08-31 with the stylesheets of this pack in place of its own. Run as published,
+it differs on 5 documents, each by a change of the release, and the verdicts are the same either
+way. The incomplete row is not a disagreement about an invoice. The **verdicts** differ on 3
+documents. All 3 name a core invoice usage specification that no scenario of the official
+configuration matches. That validator rejects such a document without running anything. This one
+checks what does apply and then reaches no verdict either: `INDETERMINATE`, cause
+`no-rules-for-profile`, exit code 9.
 
-**What the ledger licenses this project to say** is the figures above and nothing further: not a
-proof of equivalence on documents nobody has run. The oracle is not part of the build — running it
-needs a download of the official validator — and what the build keeps is its answer, with a test
-that re-runs this engine over the mutation set and pins every identifier it must report.
+**What the ledger licenses this project to say** is the figures above and nothing further. It is no
+proof of equivalence on documents nobody has run. The oracle is not part of the build, because
+running it needs a download of the official validator. The build keeps its answer, with a test that
+re-runs this engine over the mutation set and pins every identifier it must report.
 
 ### The Peppol pack, beside OpenPeppol's own tests
 
-A pack made by `esj packs fetch` is compiled on the machine that runs it, so the question is
-whether the compiled rule sets say what their publisher's tests say they say. Nothing of
-OpenPeppol is in this repository, so the evidence is fetched at test time: two tests run only with
-`-Desj.network=true`, once for each release this build carries, fetch every file from the revision
-the recipe pins and weigh it against the SHA-256
-[`../conformance/peppol/README.md`](../conformance/peppol/README.md) records, and the continuous
-integration runs them in the JDK 21 job. Without the property they are skipped by name and the
-build stays offline.
+`esj packs fetch` compiles a pack on the machine that runs it. The question is whether the compiled
+rule sets say what their publisher's tests say they say. Nothing of OpenPeppol is in this
+repository, so the tests fetch the evidence at test time. Two tests run only with
+`-Desj.network=true`, once for each release this build carries. They fetch every file from the
+revision the recipe pins and weigh it against the SHA-256 that
+[`../conformance/peppol/README.md`](../conformance/peppol/README.md) records. CI runs them in the
+JDK 21 job. Without the property they are skipped by name, and the build stays offline.
 
 | | 3.0.21 | 3.0.20 |
 |---|---|---|
@@ -552,14 +547,14 @@ build stays offline.
 | Rules with an expectation that does not hold | 0 | 0 |
 
 3.0.21 adds the warnings `PEPPOL-COMMON-R054`, `-R055`, `-R056-1`, `-R056-2` and `-R057` (Dutch
-identifiers and VAT numbers), and in UBL `DE-R-T02`; it makes `PEPPOL-COMMON-R052` and `-R053`, and
-in UBL `DK-R-003` and `DK-R-017`, fatal; and it takes the EN 16931 rules in version 1.3.16, which
-withdraws `BR-CO-25` and adds `UBL-SR-56` and `CII-SR-467` to `CII-SR-494`. The table by rule set is in
-[`../conformance/peppol/README.md`](../conformance/peppol/README.md#from-3020-to-3021).
+identifiers and VAT numbers), and in UBL `DE-R-T02`. It makes `PEPPOL-COMMON-R052` and `-R053`, and
+in UBL `DK-R-003` and `DK-R-017`, fatal. It takes the EN 16931 rules in version 1.3.16, which
+withdraws `BR-CO-25` and adds `UBL-SR-56` and `CII-SR-467` to `CII-SR-494`. The table by rule set is
+in [`../conformance/peppol/README.md`](../conformance/peppol/README.md#from-3020-to-3021).
 
-A unit test is a fragment and the rules it expects to fire, or not to fire; the test runs the rule
-sets its configuration names over it — the Peppol rules of the syntax, with the EN 16931 rules
-where the configuration adds them — and compares rule identifier by rule identifier, with the
+A unit test is a fragment and the rules it expects to fire, or not to fire. The test runs the rule
+sets its configuration names over the fragment: the Peppol rules of the syntax, with the EN 16931
+rules where the configuration adds them. It compares rule identifier by rule identifier, with the
 flag and, where the test states one, the count.
 
 Four changes to `base-example.xml`, one at a time, each `INVALID` with exit 1 under either release:
@@ -571,22 +566,22 @@ Four changes to `base-example.xml`, one at a time, each `INVALID` with exit 1 un
 | category `S` with the exemption reason `VATEX-EU-G` | `BR-S-10`, `PEPPOL-EN16931-P0104` |
 | a business process no Peppol process names (BT-23) | `PEPPOL-EN16931-R007` |
 
-A specification identifier (BT-24) the pack does not name is not a change it can judge: the
-identifier is how the pack is chosen, so the document is judged by the bundled pack and ends
-`INDETERMINATE`, cause `no-rules-for-profile`, and so it does with `--pack` naming the Peppol pack,
+A specification identifier (BT-24) the pack does not name is not a change the pack can judge. The
+identifier is how ESJ chooses the pack, so the bundled pack judges the document, and it ends
+`INDETERMINATE`, cause `no-rules-for-profile`. So it does with `--pack` naming the Peppol pack,
 whose Peppol rule sets do not apply to it. `PEPPOL-EN16931-R004`, the rule that asks for that
 identifier, is among the 58 of the unit tests.
 
 Fetching and compiling the pack takes about 5 seconds with the jar and about 2 with the native
-executable, a second or so of it the download; a document then takes what a bundled pack takes,
+executable; about a second of it is the download. A document then takes what a bundled pack takes:
 0.2 to 0.3 seconds for each of OpenPeppol's examples with the native executable.
 
 ### The rule pack, beside the official Schematron
 
-The rules are written over business terms, so what nobody can check by reading them is whether
-they decide an invoice the way the artefacts of CEN/TC 434 decide it. Same bytes through both
-engines, identifier against identifier, every difference named in
-[`../conformance/rules/ledger.md`](../conformance/rules/ledger.md).
+The rules are written over business terms, so reading them cannot show whether they decide an
+invoice the way the artefacts of CEN/TC 434 decide it. The same bytes go through both engines,
+identifier against identifier, and
+[`../conformance/rules/ledger.md`](../conformance/rules/ledger.md) names every difference.
 
 | | |
 |---|---|
@@ -595,8 +590,8 @@ engines, identifier against identifier, every difference named in
 | Input | the 86 instances of the conformance corpus and 455 mutations of them |
 | Compared | the identifiers of category `EN-BR`, `EN-DEC` and `EN-CL` that each engine reports |
 
-Both engines are on the class path, so the comparison runs in the ordinary build: nothing is
-downloaded and nothing installed, and these mutations too live as data.
+Both engines are on the class path, so the comparison runs in the ordinary build. Nothing is
+downloaded or installed, and these mutations too live as data.
 
 | Of the 217 rules of the pack | |
 |---|---|
@@ -618,28 +613,31 @@ downloaded and nothing installed, and these mutations too live as data.
 | Both engines reporting, with the same identifiers | 4 |
 | Either engine reporting something the other does not | 0 |
 
-Agreement measured on one shape of a defect is not agreement on the rule, so a rule with an
-agreeing mutation and a differing one is counted as neither and the differing shape is named. The
-80 differences come down to twelve causes, every one a property of the two engines rather than of
-an invoice: an operand the rule needs was removed and the artefacts decide an arithmetic rule against
-a node that is not there; a trailing zero the canonical decimal form does not carry, which the
-decimal rules count in the XML and cannot count in the document; a business term the syntax binding
-did not carry into the model; two artefacts numbering one defect differently; a rule the release
-does not carry; an artefact expression that cannot fire; nine rules where the two artefacts ask
-for a different closeness of the same two figures, where the pack faults from the wider reading on
-and warns inside the zone only one artefact grants; and three that release 1.3.17 brought — the CII
-artefact numbers the categories `L` and `M` the other way round and asks for a rate above zero in
-`L`, both artefacts dropped the prefix `EL` from `BR-CO-09`, and the UBL artefact reports
-`BR-CO-09` on a tax scheme that states no identifier, which 25 mutations show. The pack follows
-the standard in all three. Each is in the ledger with its mutation. Only the second changes a
-verdict: a valid invoice with a Greek VAT identifier is invalid against release 1.3.17; the
-third adds a finding to a document that `UBL-SR-53` already reports in both releases.
+Agreement on one shape of a defect is not agreement on the rule. A rule with an agreeing mutation
+and a differing one therefore counts as neither, and the ledger names the differing shape. The 80
+differences come down to 12 causes. Every one is a property of the two engines, not of an invoice:
+
+- an operand the rule needs was removed, and the artefacts decide an arithmetic rule against a node
+  that is not there; a trailing zero the canonical decimal form does not carry, which the decimal
+  rules count in the XML and cannot count in the document;
+- a business term the syntax binding did not carry into the model; two artefacts numbering one
+  defect differently; a rule the release does not carry; an artefact expression that cannot fire;
+- nine rules where the two artefacts ask for a different closeness of the same two figures; the pack
+  faults from the wider reading on and warns inside the zone only one artefact grants;
+- and 3 that release 1.3.17 brought: the CII artefact numbers the categories `L` and `M` the other
+  way round and asks for a rate above zero in `L`; both artefacts dropped the prefix `EL` from
+  `BR-CO-09`; and the UBL artefact reports `BR-CO-09` on a tax scheme that states no identifier,
+  which 25 mutations show.
+
+The pack follows the standard in all 3, and the ledger has each with its mutation. Only the second
+changes a verdict: a valid invoice with a Greek VAT identifier is invalid against release 1.3.17.
+The third adds a finding to a document that `UBL-SR-53` already reports in both releases.
 
 **What the ledger licenses this project to say** is exactly the figures above, each of the 80
-differences named with its reason. The first figure may not be quoted alone: a rule counted as
-agreeing has been measured on the shapes the mutation set carries and on no others.
+differences named with its reason. Do not quote the first figure alone: a rule counted as agreeing
+was measured on the shapes the mutation set carries and on no others.
 
-What may **not** be said is that this pack implements the official rule sets or may be used in
-place of them. The artefacts and the core invoice usage specifications are the authority on the
-business rules of EN 16931; `SPEC.md` section 9.4 keeps this engine's findings a layer of their
-own, and `esj validate` runs the released artefacts over every XML input whatever this pack says.
+What may **not** be said is that this pack implements the official rule sets or may replace them.
+The artefacts and the core invoice usage specifications are the authority on the business rules of
+EN 16931. `SPEC.md` section 9.4 keeps this engine's findings a layer of their own, and
+`esj validate` runs the released artefacts over every XML input, whatever this pack says.

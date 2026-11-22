@@ -1,7 +1,7 @@
 # Fixture manifest
 
-Every case an implementation of ESJ has to pass, written in no programming language, so that
-a binding in another language is measured against the same material as the reference one.
+Every case an implementation of ESJ has to pass, written in no programming language. You measure
+a binding in another language against the same material as the reference one.
 
 ```sh
 python3 conformance/fixtures/run.py                      # what the manifest contains
@@ -45,40 +45,41 @@ python3 conformance/fixtures/run.py --binding ./binding  # run it against an imp
 
 ## The outcome
 
-An outcome is the whole answer of a validation of the bytes at layers L1 to L3: the `status`, the
-layers in `notEvaluated` with their reasons, and every finding — errors, warnings and information
-alike — with its `path`, `code`, `subject` and `severity` (`SPEC.md` section 9.5). The subject is
-recorded for every finding, the empty one included, and compared like the rest.
+An outcome is the whole answer of a validation of the bytes at layers L1 to L3. It holds the
+`status`, the layers in `notEvaluated` with their reasons, and every finding (errors, warnings and
+information alike) with its `path`, `code`, `subject` and `severity` (`SPEC.md` section 9.5). Every
+finding records its subject, the empty one included, compared like the rest.
 
-The findings are compared in the order the reference reported them where `SPEC.md` fixes that
-order: the findings of the reader (section 9.6, how far a reader reads and in which order), and
-the findings of one path at layer L2 (section 9.2, the checks of a path). The paths of layer L2
-and the findings of layer L3 are compared as sets. A document of a part is validated only by a
-binding that carries the edition of that part; its digests are compared by every binding.
+Where `SPEC.md` fixes the order of findings, the runner compares them in the order the reference
+reported them. That holds for the findings of the reader (section 9.6, how far a reader reads and
+in which order) and for the findings of one path at layer L2 (section 9.2, the checks of a path).
+It compares the paths of layer L2 and the findings of layer L3 as sets. Only a binding that
+carries the edition of a part validates a document of that part; every binding compares its
+digests.
 
 ## Arithmetic
 
-The `arithmetic` section pins what `rules/README.md` says about division: a quotient that
-terminates is exact however many fraction digits it needs, one that does not is computed to 34
-fraction digits, half up, and a division by zero is absent. Each rule of its pack asserts that a
-quotient is *not* the value worked out by hand for it, so an implementation that divides as the
-language says reports every one of them; a rule it leaves silent names a quotient it computed
-differently or not at all, and the note of that rule says what it pins. The two rules about a
-division by zero stay silent, because the quotient they read is absent. A `rules` request that
-names a pack (`run.py` documents it) is how the runner hands a binding this pack instead of its
-own.
+The `arithmetic` section pins what `rules/README.md` says about division. A quotient that
+terminates is exact, however many fraction digits it needs. One that does not terminate is
+computed to 34 fraction digits, half up, and a division by zero is absent. Each rule of the pack
+asserts that a quotient is *not* the value worked out by hand for it. An implementation that
+divides as the language says therefore reports every one of them. A rule it leaves silent names a
+quotient it computed differently or not at all, and the note of that rule says what it pins. The
+2 rules about a division by zero stay silent, because the quotient they read is absent. With a
+`rules` request that names a pack (`run.py` documents it), the runner hands a binding this pack
+instead of its own.
 
 A `documents` entry names the registries it was measured with, core registry first. A binding
-that carries fewer of them measures other terms than the manifest records: an extension term
-whose registry is not loaded is reported as not checked (`SPEC.md` section 5.6).
+that carries fewer of them measures other terms than the manifest records: it reports an
+extension term whose registry is not loaded as not checked (`SPEC.md` section 5.6).
 
 ## Editions
 
-`parts` names further manifest files. A part carries the fixtures of one edition and is left
-out of a distribution that does not ship that edition, so a part that is not there is not an
-error. An implementation that does not carry the edition a part names still answers its
-digests and its canonical bytes — those need no registry — and reports
-`ESJ-L2-EDITION-UNKNOWN` instead of evaluating L2 and L3 (`SPEC.md` sections 4.4 and 9.2).
+`parts` names further manifest files. A part carries the fixtures of one edition, and a
+distribution that does not ship that edition leaves it out; a missing part is not an error. An
+implementation that does not carry the edition a part names still answers its digests and its
+canonical bytes, which need no registry. It reports `ESJ-L2-EDITION-UNKNOWN` instead of evaluating
+L2 and L3 (`SPEC.md` sections 4.4 and 9.2).
 
 ## Scope
 
@@ -88,16 +89,15 @@ It does not cover `esj upgrade`, the writers, PDF or rendering.
 
 ## How it is kept true
 
-`FixtureManifestTest` in `esj-cli` builds these files from the reference implementation on
-every build and compares them with what is checked in, byte for byte. A manifest cannot
-therefore record an expectation the implementation does not meet. The candidates of the
-grammar tables, the bounds of the `bounds` section and the sets of `registryChecks` are written
-down in that test; what the manifest records about them is measured. The quotients of
-`arithmetic/pack.json` are written by hand, and the same test holds the reference
-implementation to every one of them before it records what the pack reports.
-`AnnexBExampleTest` holds the bytes, lengths and digests `SPEC.md` appendix B prints to the
-files of `annex-b/` and to this manifest. After the corpus, a registry or a finding code has
-changed, regenerate the files:
+On every build, `FixtureManifestTest` in `esj-cli` builds these files from the reference
+implementation and compares them with what is checked in, byte for byte. A manifest therefore
+cannot record an expectation the implementation does not meet. That test writes down the
+candidates of the grammar tables, the bounds of the `bounds` section and the sets of
+`registryChecks`; what the manifest records about them is measured. The quotients of
+`arithmetic/pack.json` are written by hand, and the same test holds the reference implementation
+to every one of them before it records what the pack reports. `AnnexBExampleTest` holds the
+bytes, lengths and digests `SPEC.md` appendix B prints to the files of `annex-b/` and to this
+manifest. After the corpus, a registry or a finding code has changed, regenerate the files:
 
 ```sh
 mvn -B -pl esj-cli -am test -Desj.fixtures.rewrite=true
