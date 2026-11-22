@@ -1,8 +1,8 @@
 # KoSIT XRechnung test suite instances
 
-The files under `business-cases/` and `technical-cases/` are copies, byte for byte
-unmodified, of the invoice instances of the XRechnung test suite. They are the input
-side of the conformance corpus described in the README one directory up.
+The files under `business-cases/` and `technical-cases/` are byte-for-byte unmodified copies of
+the invoice instances of the XRechnung test suite. They are the input side of the conformance
+corpus that the README one directory up describes.
 
 | Item | Value |
 |---|---|
@@ -18,9 +18,9 @@ party.
 
 ## Checksums
 
-SHA-256 over the bytes of every instance, in the format of `sha256sum`, relative to
-this directory. A test of `esj-xr` recomputes the list, which is at the same time how
-it enumerates the corpus: a file that is not listed here is not part of it.
+SHA-256 over the bytes of every instance, in the format of `sha256sum`, relative to this
+directory. A test of `esj-xr` recomputes the list and enumerates the corpus by it: a file not
+listed here is not part of the corpus.
 
 ```text
 bd93caab863ad27cf16e98f61b737b64fd5773c2bdbf452bb573b15f867f1ea6  business-cases/extension/04.01a-INVOICE_ubl.xml

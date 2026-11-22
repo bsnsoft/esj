@@ -1,19 +1,19 @@
 # Validation packs
 
 A **validation pack** is a directory of the official validation artefacts for one invoice
-profile, in the form a machine can execute: XML Schema modules and compiled Schematron
-stylesheets, exactly as their publishers released them, with a manifest that says which file
+profile, in a form a machine can execute. It holds XML Schema modules and compiled Schematron
+stylesheets, exactly as their publishers released them, and a manifest that says which file
 applies to which document.
 
-The packs are here because the syntax engine of `esj validate` runs them rather than
-reimplementing them. The rules of EN 16931 and of a CIUS are maintained, versioned and
-corrected by their owners; a Java translation of an XPath expression would be a second
-opinion with its own release cycle, and a wrong one on the day the owner ships a fix. So the
-artefacts travel as data and the engine is the only thing this project writes.
+The syntax engine of `esj validate` runs these packs; it does not reimplement them. Their owners
+maintain, version and correct the rules of EN 16931 and of a CIUS. A Java translation of an XPath
+expression would be a second opinion with its own release cycle, and a wrong one on the day the
+owner ships a fix. So the artefacts travel as data, and the engine is the only thing this project
+writes.
 
-Nothing under `packs/` is this project's work but the recipes under `recipes/` ([Recipes](#recipes)).
-Every other file keeps the licence it came with, and [`SOURCES.md`](SOURCES.md) records for each
-one where it came from, under which licence, with which digest and on which day it was fetched.
+Nothing under `packs/` is this project's work except the recipes under `recipes/`
+([Recipes](#recipes)). Every other file keeps the licence it came with. [`SOURCES.md`](SOURCES.md)
+records for each where it came from, its licence, its digest and the day it was fetched.
 
 ## Layout
 
@@ -30,132 +30,128 @@ packs/
     xsd/cii-d16b/                 the schema modules CrossIndustryInvoice imports
 ```
 
-A pack is named by three parts, and all three are needed to say which rules ran: the profile
-(`xrechnung`), the version of that profile (`3.0.2`) and the release date of the artefact
-bundle (`2026-08-31`). Two releases of the same profile version differ — a bugfix release
-adds, removes or re-levels rules — so the release date is part of the identity and appears in
-every report.
+3 parts name a pack, and you need all 3 to say which rules ran: the profile (`xrechnung`), the
+version of that profile (`3.0.2`) and the release date of the artefact bundle (`2026-08-31`).
+Two releases of the same profile version differ, because a bugfix release adds, removes or
+re-levels rules. The release date is therefore part of the identity, and every report shows it.
 
 ## The manifest
 
-`pack.json` has four parts.
+`pack.json` has 4 parts.
 
-**`components`** is what the engine reads. One entry per artefact: its `role` (`xsd` or
-`schematron-xslt`), the `entry` file to load per document syntax, the files that belong to it,
-its `license`, the licence or notice file beside it, the URL it was published at and the
-archive it was taken from, and `unmodified`, which is true for every file of a bundled pack and
-false only for a rule set a recipe compiled on the user's machine.
+**`components`** is what the engine reads, one entry per artefact. An entry gives its `role`
+(`xsd` or `schematron-xslt`), the `entry` file to load per document syntax, the files that belong
+to it, its `license`, the licence or notice file beside it, the URL it was published at and the
+archive it was taken from. `unmodified` is true for every file of a bundled pack, and false only
+for a rule set a recipe compiled on the user's machine.
 
-**`levels`** is what each profile says about rules of those artefacts. An artefact flags each
-of its rules, and that flag is what it says about the rule in general; a core invoice usage
+**`levels`** is what each profile says about the rules of those artefacts. An artefact flags
+each of its rules, and that flag is what it says about the rule in general. A core invoice usage
 specification may say something else about a rule for documents of its own profile, and it is
-the body entitled to say it. One entry per profile: the syntax and profile it applies to, and
-a level of `fatal`, `warning` or `information` per rule identifier. A finding then carries
-both — the flag the artefact set, and the level the profile gives it, which is the one the
-verdict is made on. `SOURCES.md` records where each table was published. A pack whose profiles
-level nothing has no `levels` member, and every flag then stands as the artefact set it.
+the body entitled to say it. There is one entry per profile: the syntax and profile it applies
+to, and a level of `fatal`, `warning` or `information` per rule identifier. A finding then carries
+both: the flag the artefact set, and the level the profile gives it, on which ESJ makes the
+verdict. `SOURCES.md` records where each table was published. A pack whose profiles level nothing
+has no `levels` member, and every flag then stands as the artefact set it.
 
-**`baseProfiles`** is the list of specification identifiers that name no core invoice usage
-specification — `urn:cen.eu:en16931:2017` for the pack below. It exists because a rule set left
-out for the profile is two different facts: a document that names EN 16931 and no CIUS leaves
-the CIUS rule sets unused and has been checked completely, and a document that names a
-specification this pack carries no rules for leaves them unused and has been checked less
-thoroughly than it asked to be. The components cannot tell the two apart — the same rule sets
-are skipped in both cases — so the manifest says which identifiers are the first case, and only
-the second leaves the engine's verdict `INDETERMINATE`. A pack without the member treats every
-skipped rule set as a gap.
+**`baseProfiles`** lists the specification identifiers that name no core invoice usage
+specification: `urn:cen.eu:en16931:2017` for the pack below. A rule set left out for the profile
+can mean two different facts. A document that names EN 16931 and no CIUS leaves the CIUS rule
+sets unused and has been checked completely. A document that names a specification this pack
+carries no rules for leaves them unused and has been checked less thoroughly than it asked to be.
+The components cannot tell the two apart, because the same rule sets are skipped in both cases.
+So the manifest says which identifiers are the first case, and only the second leaves the
+engine's verdict `INDETERMINATE`. A pack without the member treats every skipped rule set as a gap.
 
-**`files`** is the inventory: every file of the pack except `pack.json` itself, with its
-SHA-256. It is what makes the pack reviewable. A test in `esj-syntax` recomputes every digest
-over the bytes as they are packaged and fails if one differs, if a listed file is missing, or
-if a file is present that the inventory does not list. A pack cannot drift quietly, and a file
-cannot be slipped in.
+**`files`** is the inventory: every file of the pack except `pack.json` itself, with its SHA-256.
+It makes the pack reviewable. A test in `esj-syntax` recomputes every digest over the bytes as
+they are packaged. It fails if one differs, if a listed file is missing, or if a file is present
+that the inventory does not list. A pack cannot drift quietly, and nobody can slip a file in.
 
 ## How a document selects a pack
 
-Two facts decide, and both are read from the document itself:
+2 facts decide, and ESJ reads both from the document itself:
 
 1. the **syntax** — `ubl-invoice`, `ubl-creditnote` or `cii`, from the root element;
 2. the **profile** — the customization identifier in BT-24 (Specification identifier).
 
 A component applies when the document's syntax is in its `appliesTo.syntax` and the profile
 matches one of the patterns in `appliesTo.profile`. A pattern is an exact identifier, or an
-identifier followed by `*`, which matches any suffix; `*` alone matches every profile and is
-what the schema components carry, because an XML Schema does not depend on the profile.
+identifier followed by `*`, which matches any suffix. `*` alone matches every profile. The schema
+components carry it, because an XML Schema does not depend on the profile.
 
-So a UBL invoice that names the XRechnung 3.0 CIUS is checked against the UBL 2.1 schema, the
-EN 16931 UBL Schematron and the XRechnung UBL Schematron, and a CII document that names no
-CIUS is checked against the CII schema and the EN 16931 CII Schematron alone.
+So ESJ checks a UBL invoice that names the XRechnung 3.0 CIUS against the UBL 2.1 schema, the
+EN 16931 UBL Schematron and the XRechnung UBL Schematron. It checks a CII document that names no
+CIUS against the CII schema and the EN 16931 CII Schematron alone.
 
-A level table is chosen the same way, and the first one of the manifest that names the syntax
-and matches the profile is the one that applies. A document whose profile matches none of them
-is judged on the flags of the artefacts alone.
+ESJ chooses a level table the same way: the first one of the manifest that names the syntax and
+matches the profile applies. A document whose profile matches none of them is judged on the
+flags of the artefacts alone.
 
 `esj --list-packs` prints what a build carries, component by component, with the licence of
-each. `esj validate --pack <directory|id>` overrides the choice: a directory holding a
-`pack.json`, which is how a release newer than a build reaches the engine, or the identity of a
+each. `esj validate --pack <directory|id>` overrides the choice. Pass a directory holding a
+`pack.json` to bring a release newer than the build to the engine, or pass the identity of a
 pack. `--packs <directory>` and the environment variable `ESJ_PACKS` add **pack directories**,
-laid out as this one is, `<id>/<version>/<release>/pack.json`; their packs join the bundled ones
-and are chosen the same way. A pack there with the identity of a bundled one is refused, and so
-is a document whose profile a pack there and another pack both recognize: `--pack` chooses.
-Nothing is ever fetched at run time, and a pack directory is a directory of files the tool will
-execute, so where it came from is the caller's business.
+laid out as this one is, `<id>/<version>/<release>/pack.json`. Their packs join the bundled ones
+and are chosen the same way. ESJ refuses a pack there with the identity of a bundled one. It also
+refuses a document whose profile a pack there and another pack both recognize; `--pack` chooses.
+Nothing is ever fetched at run time. A pack directory holds files the tool will execute, so where
+it came from is your business.
 
 ## Adding a release
 
 A release is **never** overwritten. A new bundle is a new directory beside the old one, and the
-old digests stay valid for every report that ever named them. Adding one is:
+old digests stay valid for every report that ever named them. To add one:
 
-1. build the directory from the upstream archives, with every file copied byte for byte;
-2. write `pack.json`, including the level tables and the inventory;
-3. add the rows to `SOURCES.md` and the entries to `NOTICE` at the root of the repository;
-4. name the directory in the index the engine finds its packs by,
-   `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/bundled-packs.json` —
-   a class path inside a jar is not a directory that can be listed, so the packs are
-   named rather than discovered;
-5. run `mvn -B -q verify`, which checks the digests, the inventory and that the index and
-   the packaged packs are the same list.
+1. Build the directory from the upstream archives, with every file copied byte for byte.
+2. Write `pack.json`, including the level tables and the inventory.
+3. Add the rows to `SOURCES.md` and the entries to `NOTICE` at the root of the repository.
+4. Name the directory in the index the engine finds its packs by,
+   `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/bundled-packs.json`. A class path inside a
+   jar is not a directory that can be listed, so the packs are named, not discovered.
+5. Run `mvn -B -q verify`. It checks the digests, the inventory, and that the index and the
+   packaged packs are the same list.
 
 A release may take its parts from upstream releases of different days, and then its title says
-so. `xrechnung/3.0.2/2026-10-12` is release 1.3.17 of the EN 16931 Schematron, published on
-that day, with the XRechnung Schematron, the schema modules and the level tables of the KoSIT
-configuration of 2026-08-31, which no configuration release has replaced yet; `SOURCES.md` lists
-both archives. Where several releases of one pack are bundled, a document is judged by the newest
-and `--pack <id/version/release>` names another.
+so. `xrechnung/3.0.2/2026-10-12` is release 1.3.17 of the EN 16931 Schematron, published on that
+day. It comes with the XRechnung Schematron, the schema modules and the level tables of the KoSIT
+configuration of 2026-08-31, which no configuration release has replaced yet. `SOURCES.md` lists
+both archives. Where several releases of one pack are bundled, ESJ judges a document by the
+newest, and `--pack <id/version/release>` names another.
 
 ## Recipes
 
 Some artefacts may be used and not redistributed: the Peppol BIS Billing 3.0 validation
-artefacts, as published by OpenPeppol, carry no open-source licence. They are not in this
-directory, and a **recipe** takes their place — this project's own file, packaged into the jar
-like a pack and named in `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/bundled-recipes.json`.
+artefacts, as OpenPeppol publishes them, carry no open-source licence. They are not in this
+directory. A **recipe** takes their place: this project's own file, packaged into the jar like a
+pack and named in `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/bundled-recipes.json`.
 `esj packs fetch <recipe> --into <directory>` follows it on the machine that runs it.
 
 [`recipes/peppol-bis-billing-3.0.21.json`](recipes/peppol-bis-billing-3.0.21.json) and
 [`recipes/peppol-bis-billing-3.0.20.json`](recipes/peppol-bis-billing-3.0.20.json) each name:
 
 - the identity of the pack it makes, `peppol-bis-billing/3.0/3.0.21` and `…/3.0.20`;
-- the release it takes the files from: repository, the tag where the publisher tagged the release
-  (`v3.0.20`) and the commit the tag named when the recipe was written, or for a release without a
-  tag (3.0.21) the commit alone and the branch it was found on; and the base URL the files are
-  fetched below, which is below the tag or, without one, below the commit — never below a branch,
-  which moves, and a recipe whose base is below neither is refused;
+- the release it takes the files from: the repository, the tag where the publisher tagged the
+  release (`v3.0.20`) and the commit the tag named when the recipe was written. For a release
+  without a tag (3.0.21) it names the commit alone and the branch it was found on;
+- the base URL the files are fetched below: below the tag or, without one, below the commit,
+  never below a branch, which moves. A recipe whose base is below neither is refused;
 - each Schematron file, with its size, its SHA-256, the syntaxes and profiles its rule set
   applies to, its licence and the directory of the pack it goes into;
-- the components it copies out of a bundled pack — the UBL 2.1 and CII D16B schema modules of
-  `xrechnung/3.0.2/2026-08-31`, whose notices permit it — so that the pack is complete;
+- the components it copies out of a bundled pack, so that the pack is complete: the UBL 2.1 and
+  CII D16B schema modules of `xrechnung/3.0.2/2026-08-31`, whose notices permit it;
 - `baseProfiles`, as a manifest has them.
 
-A file whose bytes are not the ones pinned is refused by name and nothing is written, so a
-release its publisher changed after the recipe was written needs a new recipe, not a new fetch.
-The Schematron files are compiled to XSLT in process with the ISO Schematron XSLT 2 skeleton of
-`esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/schematron/`, MIT-licensed, whose
-`README.md` records its origin and digests; a schema that includes a file the recipe does not
-name is refused.
+The fetch refuses by name a file whose bytes are not the ones pinned, and writes nothing. A
+release its publisher changed after the recipe was written therefore needs a new recipe, not a
+new fetch. The fetch compiles the Schematron files to XSLT in process with the ISO Schematron
+XSLT 2 skeleton of `esj-syntax/src/main/resources/de/bsnsoft/esj/syntax/schematron/`, which is
+MIT-licensed; its `README.md` records its origin and digests. A schema that includes a file the
+recipe does not name is refused.
 
-The identifier of the pack, `esj packs fetch peppol-bis-billing`, names the recipe of the newest
-release in the index; a recipe's own name names its release. A recipe for a newer release is a new
-file and a new line in the index, and the older recipe stays.
+The identifier of the pack, as in `esj packs fetch peppol-bis-billing`, names the recipe of the
+newest release in the index; a recipe's own name names its release. A recipe for a newer release
+is a new file and a new line in the index, and the older recipe stays.
 
 A fetched pack is a pack like any other and is read by the same code:
 
@@ -168,25 +164,24 @@ A fetched pack is a pack like any other and is read by the same code:
   xsd/ubl-2.1/, xsd/cii-d16b/  copied from the bundled pack, with their notices
 ```
 
-Its manifest has two members a bundled one has not: `note`, one line on the terms of the files,
-which `esj --list-packs` prints, and `recipe`, the recipe, the repository, the tag or branch as
+Its manifest has 2 members a bundled one has not. `note` is one line on the terms of the files,
+which `esj --list-packs` prints. `recipe` names the recipe, the repository, the tag or branch as
 the recipe has it, the commit and what compiled the rule sets. A compiled rule set is a component
-with `unmodified` false, the
-source it was compiled from listed beside it, and the fetched source in `files` too, so that the
-pack can be reviewed on the machine that holds it. `retrieved` is the day of the fetch; everything
-else is a function of the recipe, the skeleton and the Schematron processor, so a second fetch
-writes the same files and leaves the pack alone.
+with `unmodified` false and the source it was compiled from listed beside it. The fetched source
+is in `files` too, so you can review the pack on the machine that holds it. `retrieved` is the day
+of the fetch. Everything else is a function of the recipe, the skeleton and the Schematron
+processor, so a second fetch writes the same files and leaves the pack alone.
 
 ## Size
 
-A pack is a few megabytes: each of the two here is 2.7 MiB over 28 files, and most of it is the
-two compiled CEN stylesheets. Only supported releases stay in the tree. When a release stops being
-supported it is removed in a release of this project rather than kept forever — the history
-still has it, and a report that names it still names something that can be reconstructed from
-the digests in `SOURCES.md`.
+A pack is a few megabytes. Each of the 2 here is 2.7 MiB over 28 files, most of it the 2
+compiled CEN stylesheets. Only supported releases stay in the tree. A release that stops being
+supported is removed in a release of this project, not kept forever. The history still has it,
+and a report that names it still names something you can reconstruct from the digests in
+`SOURCES.md`.
 
-Two things keep the directory from growing without bound. Only what the engine *executes* is
-here: no Schematron sources, no scenario configuration, no documentation, no example
-instances, and no validator engine. And the schema sets are the transitive import closure of
-the document schemas, computed rather than guessed, so a schema library arrives with the files
-that are reachable from `Invoice`, `CreditNote` and `CrossIndustryInvoice` and with no others.
+2 things keep the directory from growing without bound. Only what the engine *executes* is here:
+no Schematron sources, no scenario configuration, no documentation, no example instances, and no
+validator engine. And the schema sets are the transitive import closure of the document schemas,
+computed, not guessed. A schema library arrives with the files reachable from `Invoice`,
+`CreditNote` and `CrossIndustryInvoice`, and no others.
