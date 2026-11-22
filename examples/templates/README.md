@@ -15,25 +15,25 @@ Four templates for `esj render --template`, and the artwork they stand on. The f
 | `mark.png` | the logo |
 
 The first three name the generic layout, the shape of the semantic model, in their `"layout"`
-member. A template that names none is drawn in the letter layout, the default, and
-`letter.json` names it all the same.
+member. A template that names none is drawn in the letter layout, the default; `letter.json`
+names it all the same.
 
 ```console
 esj render invoice.xml --template examples/templates/letterhead.json --out invoice.pdf
 esj render invoice.xml --template examples/templates/letter.json --out letter.pdf
 ```
 
-The artwork carries nobody's design, and it is deliberately restrained: the name of an example
-company in the head of the sheet, a hairline under it, a mark of three squares — nothing behind
-the text and nothing at the foot, so a branded page is the plain page with a sender's identity
-on it. It is drawn by the tests of `esj-render`, which also check that these files are what that
-code draws. Replace all of it. The name is the whole of the text on it: an address, a register
-number or the word for a kind of document printed on the sheet would be a second sender and a
-second title beside the ones the rendering writes out of the invoice.
+The artwork carries nobody's design and stays restrained: the name of an example company in the
+head of the sheet, a hairline under it, a mark of three squares. Nothing stands behind the text
+and nothing at the foot, so a branded page is the plain page with a sender's identity on it. The
+tests of `esj-render` draw it and check that these files are what that code draws. Replace all
+of it. The name is the whole text on it: an address, a register number or the word for a kind of
+document on the sheet would be a second sender and a second title beside the ones the rendering
+writes out of the invoice.
 
-`gross.json` places `BT-B2C-001`, `BT-B2C-002`, `BT-B2C-003` and `BT-B2C-010`, the displayed
-gross figures of a consumer invoice. **That extension is not defined in this version** — there
-is no registry for it here — and the template does not need one: `label` and `type` in the
-placement are what carry such a term until there is. A document that carries none of the four
-renders on `gross.json` exactly as it renders on `letterhead.json`: a place is filled only
-where the document fills it.
+`gross.json` places `BT-B2C-001`, `BT-B2C-002`, `BT-B2C-003` and `BT-B2C-010`, the displayed gross
+figures of a consumer invoice. They belong to the B2C extension, `model/b2c/0.1.json`, which
+`esj render --extension b2c` loads ([`docs/b2c.md`](../../docs/b2c.md)). The template does not
+need that registry: `label` and `type` in the placement carry the term where the registry is not
+loaded. A document that carries none of the four renders on `gross.json` exactly as it renders on
+`letterhead.json`. A place is filled only where the document fills it.

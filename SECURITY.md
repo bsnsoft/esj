@@ -2,27 +2,28 @@
 
 ## Supported version
 
-The latest release. Nothing older is patched: a fix goes into the next release, and a report
-against an earlier one is checked against the latest release first.
+The latest release. Nothing older is patched: a fix goes into the next release. A report against
+an earlier release is first checked against the latest one.
 
 ## Reporting
 
 Report a vulnerability through the repository's *Security* tab, *Report a vulnerability*
-(GitHub private vulnerability reporting). Please do not open a public issue for one, and do
-not send it by e-mail; this project publishes no address for it. Include the input that shows
-it, the command, and the version from `esj --version`.
-
-This is a project of one author: expect an answer in days rather than hours, and
-a fix in the next release rather than in a dated window.
+(GitHub private vulnerability reporting). Please do not open a public issue for it, and do not
+send it by e-mail: this project publishes no address for that. Include the input that shows it,
+the command, and the version from `esj --version`. One author runs this project. Expect an
+answer within days, not hours, and a fix in the next release rather than in a dated window.
 
 ## Checking a release
 
-The archives of a release and its container image carry, from 0.9.5 on, a build provenance
-attestation that `gh attestation verify <file> --repo bsnsoft/esj` checks, and its Linux packages
-from 0.9.8 on; the artefacts on Maven Central, the indices of the apt and dnf repositories at
-`https://apt.bsnsoft.de` and the rpm packages in them are signed with the OpenPGP key of BSNSoft
-Solutions GmbH, fingerprint `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`. The macOS executable is signed ad hoc and
-not notarised. The commands: [`docs/install.md`](docs/install.md#checking-a-download).
+Check where a release came from and that nobody changed it, with the commands of
+[`docs/install.md`](docs/install.md#checking-a-download):
+
+- The archives and the container image from 0.9.5 on, and the Linux packages from 0.9.8 on,
+  carry a build provenance attestation. `gh attestation verify <file> --repo bsnsoft/esj` checks it.
+- The artefacts on Maven Central, the indices of the apt and dnf repositories at
+  `https://apt.bsnsoft.de` and their rpm packages are signed with the OpenPGP key of BSNSoft
+  Solutions GmbH, fingerprint `39BA1E760ADE6940558B6EEC25FD2A2F5B520EB8`.
+- The macOS executable is signed ad hoc and not notarised.
 
 ## What counts
 
@@ -36,15 +37,14 @@ not notarised. The commands: [`docs/install.md`](docs/install.md#checking-a-down
 
 ## What the project does about untrusted input
 
-Every document is input somebody else wrote. The library parses it behind one XML front door
-that resolves no entity, fetches no schema, processes no XInclude and executes no stylesheet it
-was not given, and reads it within the bounds of `--limits` (specification, section 12.2). The
-recommended way to run it over input you do not control is the packaged command line as a
-separate process with a heap ceiling and a timeout, so that a document that exhausts a resource
-costs one process ([`docs/deployment.md`](docs/deployment.md), [`docs/install.md`](docs/install.md)).
-PDF input is opened as a container only: nothing is read off the page of a PDF, and an
-attachment is what the container declares it to be.
+Every document is input somebody else wrote. The library parses it behind one XML front door,
+which resolves no entity, fetches no schema, processes no XInclude and executes no stylesheet it
+was not given. It reads within the bounds of `--limits` (specification, section 12.2). For input
+you do not control, run the packaged command line as a separate process with a heap ceiling and a
+timeout: a document that exhausts a resource then costs one process
+([`docs/deployment.md`](docs/deployment.md), [`docs/install.md`](docs/install.md)). ESJ opens a
+PDF as a container only. It reads nothing off the page, and an attachment is what the container
+declares it to be.
 
-Validation says what an invoice is, not what it is worth: a verdict of `VALID` is a statement
-about EN 16931 and the packs named in the report, not a statement that the document is safe to
-act on.
+A verdict of `VALID` speaks about EN 16931 and the packs the report names. It does not say that
+the document is safe to act on.

@@ -5,9 +5,9 @@
 One question, one command or one snippet. `invoice.xml` stands for a UBL or CII invoice,
 `invoice.pdf` for a Factur-X or ZUGFeRD file, `invoice.esj.json` for an ESJ document,
 `letterhead.json` for a render template and `pages.pdf` for a PDF/A-3 file without an invoice. A
-test runs every `esj` line over files of the repository, but the one that needs an installed
-veraPDF and the one that fetches over the network, and every other block is taken as it stands
-from the page it links to, where a test runs it.
+test runs every `esj` line over files of the repository, except the one that needs an installed
+veraPDF and the one that fetches over the network. Every other block is copied as it stands from
+the page it links to, where a test runs it.
 
 ## Reading
 
@@ -69,7 +69,7 @@ esj validate --extension xrechnung invoice.xml   # with the extension terms of X
 ```
 
 **How do I check a Peppol BIS Billing 3.0 invoice?** The Peppol artefacts may not be
-redistributed, so esj carries a recipe and makes the pack on the machine that runs it
+redistributed. So esj carries a recipe and builds the pack on your machine
 ([`validation.md`](validation.md#packs-made-on-this-machine)).
 ```sh
 esj packs fetch peppol-bis-billing --into esj-packs   # once, over the network: release 3.0.21, SHA-256 checked, compiled here
@@ -106,8 +106,8 @@ esj diff invoice.xml invoice.pdf            # the same semantic digest: no diffe
 esj validate invoice.xml --output json      # invoice.ok, syntax.findings, rules.findings, reasons
 ```
 
-**How do I tell "invalid" from "could not be checked"?** By the exit code: 0 `VALID`, 1 `INVALID`, 9
-`INDETERMINATE` with `reasons`, 7 a limit and no verdict ([`cli.md`](cli.md#exit-codes)).
+**How do I tell "invalid" from "could not be checked"?** Read the exit code: 0 `VALID`, 1 `INVALID`,
+9 `INDETERMINATE` with `reasons`, 7 a limit and no verdict ([`cli.md`](cli.md#exit-codes)).
 
 **Which official artefacts run, in which version?**
 ```sh
@@ -148,8 +148,8 @@ esj canonicalize invoice.esj.json --digest  # semantic: the content; document: t
 ```
 
 **Do documents stored in format 0.1 stay as they are?** Yes. A reader of format 1.0 reads a
-document of version 0.1 and writes it in that version, so its canonical bytes and both digests
-do not change; a document created now carries `1.0` ([`compatibility.md`](compatibility.md#the-format)).
+document of version 0.1 and writes it in that version. Its canonical bytes and both digests stay
+the same. A document you create now carries `1.0` ([`compatibility.md`](compatibility.md#the-format)).
 
 **How do I keep the link to the bytes that arrived?**
 ```sh
@@ -193,24 +193,24 @@ esj render invoice.esj.json --out invoice.pdf   # the letter layout puts it in t
 esj render examples/b2c-gross.esj.json --extension b2c --template examples/templates/gross.json --out invoice.pdf
 ```
 
-**How do I issue a final invoice after partial invoices?** Name each partial invoice in BG-3, put
-the partial amounts paid as one sum into BT-113 and the details into BT-22 or an embedded attachment
-(BG-24); `derive()` computes the amount due, BT-115, with BT-113 taken off. In the domain API that
-is `precedingInvoice(number, issued)`, `paidAmount(...)`, `note(...)` and
+**How do I issue a final invoice after partial invoices?** Name each partial invoice in BG-3. Put
+the partial amounts paid as one sum into BT-113, and the details into BT-22 or an embedded
+attachment (BG-24). `derive()` computes the amount due, BT-115, with BT-113 taken off. In the
+domain API you call `precedingInvoice(number, issued)`, `paidAmount(...)`, `note(...)` and
 `attachment(Attachment.embedded(...))`. The BMF letter of 15 October 2026 allows this until 30 June
 2030 (Rn. 3 f., [`legal-de.md`](legal-de.md)).
 
-**How do I invoice construction work with a bill of quantities?** The trades as invoice lines, the
-bill of quantities as an embedded human-readable attachment (BG-24) or, structured, as the sub-lines
-BG-DEX-01 of the XRechnung extension (BMF letter of 15 October 2026, Rn. 13 f.).
+**How do I invoice construction work with a bill of quantities?** Write the trades as invoice
+lines. Add the bill of quantities as an embedded human-readable attachment (BG-24) or, structured,
+as the sub-lines BG-DEX-01 of the XRechnung extension (BMF letter of 15 October 2026, Rn. 13 f.).
 ```sh
 esj get --extension xrechnung conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml /BG-25/0/BG-DEX-01/0/BT-131   # the net amount of the first sub-line of line 1
 ```
 
-**How do I correct an invoice?** With an e-invoice of a correction type — 384, a credit note (381,
-`Invoice.creditNote(profile)`) or a self-billed invoice (389) — that names the corrected invoice in
-BG-3 (`precedingInvoice(number, issued)`); the letter layout prints that reference under the title
-(BMF letter of 15 October 2026, Rn. 20 f.).
+**How do I correct an invoice?** Send an e-invoice of a correction type: 384, a credit note (381,
+`Invoice.creditNote(profile)`) or a self-billed invoice (389). It names the corrected invoice in
+BG-3 (`precedingInvoice(number, issued)`), and the letter layout prints that reference under the
+title (BMF letter of 15 October 2026, Rn. 20 f.).
 ```sh
 esj render examples/credit-note.esj.json --out credit-note.pdf   # the title names the credit note, the line under it the invoice it corrects
 ```
@@ -257,7 +257,7 @@ string digest = Canonicalizer.SemanticDigest(invoice);
 
 ## Java
 
-The lines are those of [`getting-started.md`](getting-started.md), [`java-api.md`](java-api.md),
+The snippets come from [`getting-started.md`](getting-started.md), [`java-api.md`](java-api.md),
 [`b2c.md`](b2c.md) and the README.
 
 **How do I read an e-invoice in Java?**
@@ -274,8 +274,8 @@ String sellerName = invoice.seller().name();
 BigDecimal amountDue = invoice.documentTotals().amountDueForPayment();
 ```
 
-**How do I write an invoice in the words of the domain?** The chain goes on with seller, buyer,
-payment and lines; `build()` derives the totals, checks layers L2 and L3 and the fatal rules.
+**How do I write an invoice in the words of the domain?** The chain continues with seller, buyer,
+payment and lines. `build()` derives the totals and checks layers L2 and L3 and the fatal rules.
 ```java
 SemanticDocument document = Invoice.create(Profile.EN16931)
         .number("RE-2026-0211")

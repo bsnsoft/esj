@@ -5,9 +5,9 @@
 Eine Frage, ein Befehl oder ein Ausschnitt. `invoice.xml` steht für eine UBL- oder CII-Rechnung,
 `invoice.pdf` für eine Factur-X- oder ZUGFeRD-Datei, `invoice.esj.json` für ein ESJ-Dokument,
 `letterhead.json` für eine Render-Vorlage und `pages.pdf` für eine PDF/A-3-Datei ohne Rechnung.
-Ein Test führt jede `esj`-Zeile über Dateien des Repositorys aus, bis auf die, die ein
-installiertes veraPDF braucht, und die, die über das Netz holt; jeder andere Block steht
-wörtlich auf der verlinkten englischen Seite, wo ein Test ihn ausführt.
+Ein Test führt jede `esj`-Zeile über Dateien des Repositorys aus. Ausgenommen sind nur die Zeile,
+die ein installiertes veraPDF braucht, und die, die über das Netz holt. Jeder andere Block steht
+wörtlich auf der verlinkten englischen Seite, und dort führt ein Test ihn aus.
 
 ## Lesen
 
@@ -68,8 +68,8 @@ esj validate invoice.xml                    # das Paket folgt aus BT-24: xrechnu
 esj validate --extension xrechnung invoice.xml   # zusätzlich die Erweiterungsterme der XRechnung
 ```
 
-**Wie prüfe ich eine Rechnung nach Peppol BIS Billing 3.0?** Die Peppol-Artefakte dürfen nicht
-weitergegeben werden, deshalb bringt esj ein Rezept mit und baut das Paket auf dem eigenen Rechner
+**Wie prüfe ich eine Rechnung nach Peppol BIS Billing 3.0?** Die Peppol-Artefakte darf niemand
+weitergeben. Deshalb bringt esj ein Rezept mit und baut das Paket auf Ihrem Rechner
 ([`validation.md`](validation.md#packs-made-on-this-machine)).
 ```sh
 esj packs fetch peppol-bis-billing --into esj-packs   # einmal, über das Netz: Release 3.0.21, SHA-256 geprüft, hier kompiliert
@@ -106,8 +106,8 @@ esj diff invoice.xml invoice.pdf            # derselbe semantische Digest: kein 
 esj validate invoice.xml --output json      # invoice.ok, syntax.findings, rules.findings, reasons
 ```
 
-**Wie unterscheide ich »ungültig« von »konnte nicht geprüft werden«?** Am Exit-Code: 0 `VALID`, 1
-`INVALID`, 9 `INDETERMINATE` mit `reasons`, 7 ein Limit ohne Urteil ([`cli.md`](cli.md#exit-codes)).
+**Wie unterscheide ich »ungültig« von »konnte nicht geprüft werden«?** Der Exit-Code sagt es: 0
+`VALID`, 1 `INVALID`, 9 `INDETERMINATE` mit `reasons`, 7 ein Limit ohne Urteil ([`cli.md`](cli.md#exit-codes)).
 
 **Welche offiziellen Artefakte laufen, in welcher Version?**
 ```sh
@@ -148,8 +148,8 @@ esj canonicalize invoice.esj.json --digest  # semantic: der Inhalt; document: di
 ```
 
 **Bleiben Dokumente im Format 0.1, wie sie sind?** Ja. Ein Leser des Formats 1.0 liest ein
-Dokument der Version 0.1 und schreibt es in dieser Version, kanonische Bytes und beide Digests
-ändern sich nicht; ein jetzt erzeugtes Dokument trägt `1.0` ([`compatibility.md`](compatibility.md#the-format)).
+Dokument der Version 0.1 und schreibt es in dieser Version. Kanonische Bytes und beide Digests
+bleiben gleich. Ein Dokument, das Sie jetzt erzeugen, trägt `1.0` ([`compatibility.md`](compatibility.md#the-format)).
 
 **Wie behalte ich den Bezug zu den Bytes, die ankamen?**
 ```sh
@@ -193,24 +193,24 @@ esj render invoice.esj.json --out invoice.pdf   # das Brief-Layout setzt ihn in 
 esj render examples/b2c-gross.esj.json --extension b2c --template examples/templates/gross.json --out invoice.pdf
 ```
 
-**Wie stelle ich eine Endrechnung nach Abschlagsrechnungen aus?** Jede Abschlagsrechnung in BG-3
-nennen, die vereinnahmten Teilentgelte als eine Summe in BT-113 angeben und die Einzelheiten in
-BT-22 oder in einem eingebetteten Anhang (BG-24); `derive()` rechnet den Zahlbetrag BT-115 mit
-abgezogenem BT-113. In der Domänen-API sind das `precedingInvoice(number, issued)`,
-`paidAmount(...)`, `note(...)` und `attachment(Attachment.embedded(...))`. Das BMF-Schreiben vom
-15.10.2026 lässt das bis zum 30.06.2030 zu (Rn. 3 f., [`legal-de.md`](legal-de.md)).
+**Wie stelle ich eine Endrechnung nach Abschlagsrechnungen aus?** Nennen Sie jede Abschlagsrechnung
+in BG-3. Die vereinnahmten Teilentgelte stehen als eine Summe in BT-113, die Einzelheiten in BT-22
+oder in einem eingebetteten Anhang (BG-24). `derive()` rechnet den Zahlbetrag BT-115 abzüglich
+BT-113. Die Domänen-API hat dafür `precedingInvoice(number, issued)`, `paidAmount(...)`, `note(...)`
+und `attachment(Attachment.embedded(...))`. Das BMF-Schreiben vom 15.10.2026 lässt das bis zum
+30.06.2030 zu (Rn. 3 f., [`legal-de.md`](legal-de.md)).
 
-**Wie rechne ich Bauleistungen mit Leistungsverzeichnis ab?** Die Gewerke als Rechnungspositionen,
-das Leistungsverzeichnis als eingebetteter menschenlesbarer Anhang (BG-24) oder strukturiert als
-Unterpositionen BG-DEX-01 der XRechnung-Erweiterung (BMF-Schreiben vom 15.10.2026, Rn. 13 f.).
+**Wie rechne ich Bauleistungen mit Leistungsverzeichnis ab?** Die Gewerke werden Positionen der
+Rechnung. Das Leistungsverzeichnis wird ein eingebetteter menschenlesbarer Anhang (BG-24) oder,
+strukturiert, Unterpositionen BG-DEX-01 der XRechnung-Erweiterung (BMF-Schreiben vom 15.10.2026, Rn. 13 f.).
 ```sh
 esj get --extension xrechnung conformance/kosit/business-cases/extension/04.01a-INVOICE_ubl.xml /BG-25/0/BG-DEX-01/0/BT-131   # der Nettobetrag der ersten Unterposition von Position 1
 ```
 
-**Wie berichtige ich eine Rechnung?** Mit einer E-Rechnung eines Berichtigungstyps — 384, einer
-kaufmännischen Gutschrift (381, `Invoice.creditNote(profile)`) oder einer Gutschrift des
-Leistungsempfängers (389) —, die die berichtigte Rechnung in BG-3 nennt
-(`precedingInvoice(number, issued)`); das Brief-Layout druckt diesen Bezug unter den Titel
+**Wie berichtige ich eine Rechnung?** Senden Sie eine E-Rechnung eines Berichtigungstyps: 384, eine
+kaufmännische Gutschrift (381, `Invoice.creditNote(profile)`) oder eine Gutschrift des
+Leistungsempfängers (389). Sie nennt die berichtigte Rechnung in BG-3
+(`precedingInvoice(number, issued)`). Das Brief-Layout druckt diesen Bezug unter den Titel
 (BMF-Schreiben vom 15.10.2026, Rn. 20 f.).
 ```sh
 esj render examples/credit-note.esj.json --out credit-note.pdf   # der Titel nennt die Gutschrift, die Zeile darunter die berichtigte Rechnung
@@ -276,7 +276,7 @@ BigDecimal amountDue = invoice.documentTotals().amountDueForPayment();
 ```
 
 **Wie schreibe ich eine Rechnung in den Worten der Domäne?** Die Kette geht weiter mit
-Verkäufer, Käufer, Zahlung und Positionen; `build()` leitet die Summen ab und prüft die Schichten
+Verkäufer, Käufer, Zahlung und Positionen. `build()` leitet die Summen ab und prüft die Schichten
 L2 und L3 sowie die fatalen Regeln.
 ```java
 SemanticDocument document = Invoice.create(Profile.EN16931)
