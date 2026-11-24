@@ -24,14 +24,14 @@
 # The ahead-of-time cache is recorded on the runtime it will be used on, by a
 # run that does what the tool is for. A cache from another build of the virtual
 # machine is ignored, so it is made here rather than shipped in.
-FROM eclipse-temurin:25-jre@sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0 AS training
+FROM eclipse-temurin:25-jre@sha256:4ed132f6832e9804b123e89a849a7b4502756ae64a4ee08ebab939d9d5d0a9fa AS training
 COPY esj-cli/target/esj.jar /opt/esj/esj.jar
 COPY conformance/pdf/factur-x.pdf /opt/esj/training.pdf
 RUN java -XX:-UseBASE64Intrinsics -XX:+UseCompactObjectHeaders \
       -XX:AOTCacheOutput=/opt/esj/esj.aot \
       -jar /opt/esj/esj.jar validate /opt/esj/training.pdf > /dev/null
 
-FROM eclipse-temurin:25-jre@sha256:ecdc0adb37bde1a281c4d245a3cd535004b1fc8322d560f5b09463b248c81df0
+FROM eclipse-temurin:25-jre@sha256:4ed132f6832e9804b123e89a849a7b4502756ae64a4ee08ebab939d9d5d0a9fa
 # The base image trails the security updates of its distribution by days to
 # weeks. What Ubuntu has fixed by the time this image is built is taken in, so
 # that the image carries no vulnerability with a fix a scanner at the
