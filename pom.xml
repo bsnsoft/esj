@@ -98,8 +98,8 @@
     <zxing.version>3.5.4</zxing.version>
     <junit.version>6.1.3</junit.version>
     <json-schema-validator.version>3.0.9</json-schema-validator.version>
-    <embedded-postgres.version>2.2.2</embedded-postgres.version>
-    <embedded-postgres-binaries.version>18.6.0</embedded-postgres-binaries.version>
+    <embedded-postgres.version>2.2.3</embedded-postgres.version>
+    <embedded-postgres-binaries.version>19.0.0</embedded-postgres-binaries.version>
     <verapdf.version>1.30.4</verapdf.version>
     <test-jackson3.version>3.3.0</test-jackson3.version>
     <postgresql-driver.version>42.7.14</postgresql-driver.version>
